@@ -9,12 +9,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
@@ -29,6 +30,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -42,18 +44,17 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
-import { MAT_DIALOG_DATA,MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 
 export interface DialogData {
   repair_guid?: string;
   sot_guid?: string;
-  
+
 }
 
 @Component({
@@ -91,7 +92,9 @@ export interface DialogData {
     MatCardModule,
     TlxFormFieldComponent,
     PreventNonNumericDirective,
-     MatDialogContent
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 
@@ -207,7 +210,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
-    REPAIR_ESTIMATE_DETAILS:'COMMON-FORM.REPAIR-ESITMATE-DETAILS'
+    REPAIR_ESTIMATE_DETAILS: 'COMMON-FORM.REPAIR-ESITMATE-DETAILS'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -238,7 +241,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
   surveyorList: UserItem[] = []
 
   customerCodeControl = new UntypedFormControl();
-  dialogTitle:string='';
+  dialogTitle: string = '';
 
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
@@ -282,7 +285,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
-   
+
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -1106,7 +1109,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
-      this.dialogTitle=this.translatedLangText.REPAIR_ESTIMATE_DETAILS;
+      this.dialogTitle = this.translatedLangText.REPAIR_ESTIMATE_DETAILS;
     });
   }
 

@@ -1,5 +1,5 @@
 import { Direction } from '@angular/cdk/bidi';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,33 +25,24 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
-import { BillingDS } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { DailyQCDetail, SurveyorPerformanceSummary, ReportDS } from 'app/data-sources/reports';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { DailyQCDetail, ReportDS, SurveyorPerformanceSummary } from 'app/data-sources/reports';
+import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { YardSummaryPdfComponent } from 'app/document-template/pdf/tank-activity/yard/summary-pdf/yard-summary-pdf.component';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { UserDS } from 'app/data-sources/user';
+import { SurveyorDetailPerformancePdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/detail/surveyor-detail-pdf.component';
+import { SurveyorPerformanceSummaryPdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/summary/surveyor-summary-pdf.component';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {PendingEstimateReportPdfComponent} from 'app/document-template/pdf/pending-estimate-report-pdf/pending-estimate-report-pdf.component'
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
-import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
-import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
-import {UserDS}from 'app/data-sources/user';
-import { SurveyorPerformanceSummaryPdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/summary/surveyor-summary-pdf.component';
-import { SurveyorDetailPerformancePdfComponent } from 'app/document-template/pdf/admin-reports/performance/surveyor/detail/surveyor-detail-pdf.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 @Component({
   selector: 'app-surveyor-performance-report',
   standalone: true,
@@ -63,7 +54,6 @@ import { SurveyorDetailPerformancePdfComponent } from 'app/document-template/pdf
     MatIconModule,
     MatTableModule,
     MatSortModule,
-    NgClass,
     MatCheckboxModule,
     MatRippleModule,
     MatProgressSpinnerModule,
@@ -80,9 +70,10 @@ import { SurveyorDetailPerformancePdfComponent } from 'app/document-template/pdf
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatSlideToggleModule,
-    PreventNonNumericDirective
-    
+    MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -157,26 +148,26 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    OUTSTANDING_DAYS:'COMMON-FORM.OUTSTANDING-DAYS',
-    MAX_DAYS:'COMMON-FORM.MAX-DAYS',
-    MIN_DAYS:'COMMON-FORM.MIN-DAYS',
-    WARNING_OUTSTANDING_DAYS:'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
-    TEAM:'COMMON-FORM.TEAM',
-    ALLOCATION_DATE:"COMMON-FORM.ALLOCATION-DATE",
-    APPROVED_DATE:"COMMON-FORM.APPROVED-DATE",
-    ESTIMATE_DATE:"COMMON-FORM.ESTIMATE-DATE",
-    QC_DATE:"COMMON-FORM.QC-DATE",
-    REVENUE:'COMMON-FORM.REVENUE',
-    APPROVAL:'COMMON-FORM.APPROVAL',
-    QC_DETAIL:'COMMON-FORM.QC-DETAIL',
-    GENERATE_REPORT:'COMMON-FORM.GENERATE-REPORT',
-    MONTH_START:'COMMON-FORM.MONTH-START',
-    MONTH_END:'COMMON-FORM.MONTH-END',
-    YEAR:'COMMON-FORM.YEAR',
-    SURVEYOR_NAME:"COMMON-FORM.SURVEYOR-NAME",
-    ESTIMATE_STATUS:"COMMON-FORM.ESTIMATE-STATUS",
-    MONTH_TOTAL:"COMMON-FORM.MONTH-TOTAL"
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    OUTSTANDING_DAYS: 'COMMON-FORM.OUTSTANDING-DAYS',
+    MAX_DAYS: 'COMMON-FORM.MAX-DAYS',
+    MIN_DAYS: 'COMMON-FORM.MIN-DAYS',
+    WARNING_OUTSTANDING_DAYS: 'COMMON-FORM.WARNING-OUTSTANDING-DAYS',
+    TEAM: 'COMMON-FORM.TEAM',
+    ALLOCATION_DATE: "COMMON-FORM.ALLOCATION-DATE",
+    APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
+    ESTIMATE_DATE: "COMMON-FORM.ESTIMATE-DATE",
+    QC_DATE: "COMMON-FORM.QC-DATE",
+    REVENUE: 'COMMON-FORM.REVENUE',
+    APPROVAL: 'COMMON-FORM.APPROVAL',
+    QC_DETAIL: 'COMMON-FORM.QC-DETAIL',
+    GENERATE_REPORT: 'COMMON-FORM.GENERATE-REPORT',
+    MONTH_START: 'COMMON-FORM.MONTH-START',
+    MONTH_END: 'COMMON-FORM.MONTH-END',
+    YEAR: 'COMMON-FORM.YEAR',
+    SURVEYOR_NAME: "COMMON-FORM.SURVEYOR-NAME",
+    ESTIMATE_STATUS: "COMMON-FORM.ESTIMATE-STATUS",
+    MONTH_TOTAL: "COMMON-FORM.MONTH-TOTAL"
   }
 
   invForm?: UntypedFormGroup;
@@ -191,14 +182,14 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  userDS:UserDS;
- teamDS:TeamDS;
-  reportDS:ReportDS;
+  userDS: UserDS;
+  teamDS: TeamDS;
+  reportDS: ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
   selectedEstimateLabourCost?: number;
-  repairTeamList:TeamItem[]=[];
+  repairTeamList: TeamItem[] = [];
   stmEstList: SteamItem[] = [];
   sotList: StoringOrderTankItem[] = [];
   customer_companyList_detail?: CustomerCompanyItem[];
@@ -231,10 +222,10 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport=false;
-  repData:any[]=[];
-  monthList:string[]=[];
-  yearList:string[]=[];
+  isGeneratingReport = false;
+  repData: any[] = [];
+  monthList: string[] = [];
+  yearList: string[] = [];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -252,9 +243,9 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.teamDS= new TeamDS(this.apollo);
-    this.reportDS=new ReportDS(this.apollo);
-    this.userDS= new UserDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
+    this.reportDS = new ReportDS(this.apollo);
+    this.userDS = new UserDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -278,56 +269,56 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       inv_dt: ['']
     })
   }
-  
+
 
   initSearchFormDetail() {
     this.searchFormDetail = this.fb.group(
       {
-        tank_no:[''],
-        eir_no:[''],
+        tank_no: [''],
+        eir_no: [''],
         customer_code: this.customerCodeControlDetail,
         repair_type: [''],
         surveyor: [''],
-        est_dt_start:[''],
-        est_dt_end:[''],
-        est_status:[''],
+        est_dt_start: [''],
+        est_dt_end: [''],
+        est_status: [''],
       },
     );
   }
 
   initSearchFormSummary() {
     var thisYear = new Date().getFullYear();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchFormSummary = this.fb.group(
       {
         customer_code: this.customerCodeControlSummary,
         repair_type: [''],
         surveyor: [''],
-        month_start:[`${thisMonth}`],
-        month_end:[`${thisMonth}`],
-        year:[`${thisYear}`]
+        month_start: [`${thisMonth}`],
+        month_end: [`${thisMonth}`],
+        year: [`${thisYear}`]
       },
     );
   }
 
-   // Custom validator to check if min <= max
-   minMaxDaysValidator(form:UntypedFormGroup) {
-    
-      const minControl = form.get('min_days');
-      const maxControl = form.get('max_days');
+  // Custom validator to check if min <= max
+  minMaxDaysValidator(form: UntypedFormGroup) {
 
-      const min = minControl?.value;
-      const max = maxControl?.value;
+    const minControl = form.get('min_days');
+    const maxControl = form.get('max_days');
 
-      if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
-        minControl?.setErrors({ invalidRange: true });
-        maxControl?.setErrors({ invalidRange: true });
-        return { invalidRange: true }; // Form-level error
-      } else {
-        minControl?.setErrors(null);
-        maxControl?.setErrors(null);
-        return null; // No error
-      }
+    const min = minControl?.value;
+    const max = maxControl?.value;
+
+    if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
+      minControl?.setErrors({ invalidRange: true });
+      maxControl?.setErrors({ invalidRange: true });
+      return { invalidRange: true }; // Form-level error
+    } else {
+      minControl?.setErrors(null);
+      maxControl?.setErrors(null);
+      return null; // No error
+    }
   }
 
   initializeValueChanges() {
@@ -338,15 +329,15 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         var searchCriteria = '';
         if (typeof value === 'string') {
           searchCriteria = value;
-        } 
+        }
 
-        this.subs.sink = this.userDS.searchUser({and:[ { userName: { contains: searchCriteria }},{aspnetuserroles: { some: { aspnetroles: {Role: {eq: 'Surveyor' }}}}}]},
-           { userName: 'ASC' }).subscribe(data => {
-          this.surveyorList = data
-          .map(u => u.userName)
-          .filter((name): name is string => name !== undefined);
-          
-        });
+        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { aspnetuserroles: { some: { aspnetroles: { Role: { eq: 'Surveyor' } } } } }] },
+          { userName: 'ASC' }).subscribe(data => {
+            this.surveyorList = data
+              .map(u => u.userName)
+              .filter((name): name is string => name !== undefined);
+
+          });
       })
     ).subscribe();
 
@@ -365,7 +356,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList_summary = data
           this.updateValidators(this.customerCodeControlSummary, this.customer_companyList_summary);
-        
+
         });
       })
     ).subscribe();
@@ -378,15 +369,15 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         var searchCriteria = '';
         if (typeof value === 'string') {
           searchCriteria = value;
-        } 
+        }
 
-        this.subs.sink = this.userDS.searchUser({and:[ { userName: { contains: searchCriteria }},{aspnetuserroles: { some: { aspnetroles: {Role: {eq: 'Surveyor' }}}}}]},
-           { userName: 'ASC' }).subscribe(data => {
-          this.surveyorList = data
-          .map(u => u.userName)
-          .filter((name): name is string => name !== undefined);
-          
-        });
+        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { aspnetuserroles: { some: { aspnetroles: { Role: { eq: 'Surveyor' } } } } }] },
+          { userName: 'ASC' }).subscribe(data => {
+            this.surveyorList = data
+              .map(u => u.userName)
+              .filter((name): name is string => name !== undefined);
+
+          });
       })
     ).subscribe();
 
@@ -412,18 +403,17 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
   }
 
- 
+
   public loadData() {
     var thisYear = new Date().getFullYear();
-    var startYear = thisYear-5;
-    for(var i=startYear ; i<=thisYear;i++)
-    {
+    var startYear = thisYear - 5;
+    for (var i = startYear; i <= thisYear; i++) {
       this.yearList.push(i.toString());
     }
-    this.monthList=Array.from({ length: 12 }, (_, i) =>
+    this.monthList = Array.from({ length: 12 }, (_, i) =>
       new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
     );
-   
+
     const queries = [
       // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
@@ -439,23 +429,24 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       this.processStatusCvList = data;
     });
 
-    const where : any ={
-      and:[
-          {
-            department_cv:{eq:'REPAIR'}
-          },
-           { or:[
-               {delete_dt:{eq:null}},
-               {delete_dt:{eq:0}}
-             ]
-           }
+    const where: any = {
+      and: [
+        {
+          department_cv: { eq: 'REPAIR' }
+        },
+        {
+          or: [
+            { delete_dt: { eq: null } },
+            { delete_dt: { eq: 0 } }
+          ]
+        }
       ]
     };
-    
-    this.teamDS.loadItems(where,{description:"ASC"},100).subscribe(data=>{
-        this.repairTeamList=data;
+
+    this.teamDS.loadItems(where, { description: "ASC" }, 100).subscribe(data => {
+      this.repairTeamList = data;
     });
- }
+  }
 
   showNotification(
     colorName: string,
@@ -494,12 +485,12 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   search_detail() {
-   // var repType:number = Number(this.searchForm?.get("report_type")?.value);
+    // var repType:number = Number(this.searchForm?.get("report_type")?.value);
     this.searchDetail();
   }
 
   searchSummary() {
-    
+
     var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
@@ -507,31 +498,28 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
     this.selection.clear();
-    var date:string='';
-    var team:string='';
-    this.repData=[];
+    var date: string = '';
+    var team: string = '';
+    this.repData = [];
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-    
+
     // where.repair={some:{status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}},any:true};
     // if (this.searchForm!.get('tank_no')?.value) {
     //   where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     //   cond_counter++;
     // }
-    var searchFrm=this.searchFormSummary;
-    if(searchFrm?.invalid)
-    {
-      if(!(searchFrm!.get('month_start')?.value) )
-        {
-          const requiredControl = searchFrm!.get('month_start');
+    var searchFrm = this.searchFormSummary;
+    if (searchFrm?.invalid) {
+      if (!(searchFrm!.get('month_start')?.value)) {
+        const requiredControl = searchFrm!.get('month_start');
         if (requiredControl) {
           requiredControl.setErrors({ required: true });
           requiredControl.markAsTouched();
         }
       }
 
-      if(!(searchFrm!.get('month_end')?.value))
-      {
+      if (!(searchFrm!.get('month_end')?.value)) {
         const requiredControl = searchFrm!.get('month_end');
         if (requiredControl) {
           requiredControl.setErrors({ required: true });
@@ -540,73 +528,69 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
       }
 
-      if(!(searchFrm!.get('year')?.value))
-        {
-          const requiredControl = searchFrm!.get('year');
-          if (requiredControl) {
-            requiredControl.setErrors({ required: true });
-            requiredControl.markAsTouched();
-          }
-  
+      if (!(searchFrm!.get('year')?.value)) {
+        const requiredControl = searchFrm!.get('year');
+        if (requiredControl) {
+          requiredControl.setErrors({ required: true });
+          requiredControl.markAsTouched();
         }
+
+      }
     }
-     
-    this.isGeneratingReport=true;
-    
+
+    this.isGeneratingReport = true;
+
 
     if (searchFrm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${searchFrm!.get('customer_code')?.value.code }`;
+      where.customer_code = `${searchFrm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
     if (searchFrm?.get('month_start')?.value) {
-      var month=searchFrm?.get('month_start')?.value;
-      
+      var month = searchFrm?.get('month_start')?.value;
+
       const monthIndex = this.monthList.findIndex(m => month === m);
-      where.start_month = (monthIndex+1);
+      where.start_month = (monthIndex + 1);
     }
 
     if (searchFrm?.get('month_end')?.value) {
-      var month=searchFrm?.get('month_end')?.value;
+      var month = searchFrm?.get('month_end')?.value;
       const monthIndex = this.monthList.findIndex(m => month === m);
-      where.end_month = (monthIndex+1);
+      where.end_month = (monthIndex + 1);
     }
 
-    
-    if((searchFrm!.get('surveyor')?.value))
-    {
-      where.surveyor_name = `${searchFrm!.get('surveyor')?.value }`;
+
+    if ((searchFrm!.get('surveyor')?.value)) {
+      where.surveyor_name = `${searchFrm!.get('surveyor')?.value}`;
       cond_counter++;
     }
 
-     if(searchFrm!.get('repair_type')?.value)
-    {
+    if (searchFrm!.get('repair_type')?.value) {
       const repTypes = searchFrm!.get('repair_type')?.value;
       if (Array.isArray(repTypes)) {
-          const repairTypes: string[] = repTypes.map(t => t.code_val);
-          where.repair_type=repairTypes;
+        const repairTypes: string[] = repTypes.map(t => t.code_val);
+        where.repair_type = repairTypes;
       }
     }
-    if(searchFrm!.get('year')?.value)
-    {
-      where.year = Number(`${searchFrm!.get('year')?.value }`);
+    if (searchFrm!.get('year')?.value) {
+      where.year = Number(`${searchFrm!.get('year')?.value}`);
     }
-    date=`${searchFrm?.get('month_start')?.value} - ${searchFrm?.get('month_end')?.value} ${searchFrm?.get('year')?.value}`;
-    
+    date = `${searchFrm?.get('month_start')?.value} - ${searchFrm?.get('month_end')?.value} ${searchFrm?.get('year')?.value}`;
+
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
-     this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
       return;
     }
 
     this.lastSearchCriteria = where;
 
-    this.performSearchSurveyorPerformanceSummary(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType,date,team);
+    this.performSearchSurveyorPerformanceSummary(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team);
   }
 
   searchDetail() {
-    
+
     var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
@@ -614,138 +598,128 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
     this.selection.clear();
-    var date:string='';
-    var team:string='';
-    this.repData=[];
+    var date: string = '';
+    var team: string = '';
+    this.repData = [];
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-    
+
     // where.repair={some:{status_cv :{in:["JOB_IN_PROGRESS","ASSIGNED"]}},any:true};
     // if (this.searchForm!.get('tank_no')?.value) {
     //   where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     //   cond_counter++;
     // }
-    var searchFrm=this.searchFormDetail;
-    if(searchFrm?.invalid)
-      {
-        if(!(searchFrm!.get('est_dt_start')?.value)||!(searchFrm!.get('est_dt_end')?.value) )
-          {
-            const requiredControl = searchFrm!.get('est_dt_start');
-          if (requiredControl) {
-            requiredControl.setErrors({ required: true });
-            requiredControl.markAsTouched();
-          }
+    var searchFrm = this.searchFormDetail;
+    if (searchFrm?.invalid) {
+      if (!(searchFrm!.get('est_dt_start')?.value) || !(searchFrm!.get('est_dt_end')?.value)) {
+        const requiredControl = searchFrm!.get('est_dt_start');
+        if (requiredControl) {
+          requiredControl.setErrors({ required: true });
+          requiredControl.markAsTouched();
         }
-        return;
       }
-     
-    this.isGeneratingReport=true;
+      return;
+    }
+
+    this.isGeneratingReport = true;
     if (searchFrm!.get('tank_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.tank_no = `${searchFrm!.get('tank_no')?.value }`;
+      where.tank_no = `${searchFrm!.get('tank_no')?.value}`;
       cond_counter++;
     }
 
     if (searchFrm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${searchFrm!.get('customer_code')?.value.code }`;
+      where.customer_code = `${searchFrm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
     if (searchFrm!.get('eir_no')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.eir_no = `${searchFrm!.get('eir_no')?.value }`;
+      where.eir_no = `${searchFrm!.get('eir_no')?.value}`;
       cond_counter++;
     }
 
-    if((searchFrm!.get('est_dt_start')?.value) && (searchFrm!.get('est_dt_end')?.value))
-    {
-        var start_dt=new Date(searchFrm!.value['est_dt_start']);
-        var end_dt=new Date(searchFrm!.value['est_dt_end']);
-        where.start_date=Utility.convertDate(start_dt);
-        where.end_date=Utility.convertDate(end_dt,true);
-        date=`${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`
-        cond_counter++;
+    if ((searchFrm!.get('est_dt_start')?.value) && (searchFrm!.get('est_dt_end')?.value)) {
+      var start_dt = new Date(searchFrm!.value['est_dt_start']);
+      var end_dt = new Date(searchFrm!.value['est_dt_end']);
+      where.start_date = Utility.convertDate(start_dt);
+      where.end_date = Utility.convertDate(end_dt, true);
+      date = `${Utility.convertDateToStr(start_dt)} - ${Utility.convertDateToStr(end_dt)}`
+      cond_counter++;
     }
-    if((searchFrm!.get('surveyor')?.value))
-    {
-      where.surveyor_name = `${searchFrm!.get('surveyor')?.value }`;
+    if ((searchFrm!.get('surveyor')?.value)) {
+      where.surveyor_name = `${searchFrm!.get('surveyor')?.value}`;
       cond_counter++;
     }
 
-     if(searchFrm!.get('repair_type')?.value)
-      {
-       const repTypes = searchFrm!.get('repair_type')?.value;
-       if (Array.isArray(repTypes)) {
-           const repairTypes: string[] = repTypes.map(t => t.code_val);
-           where.repair_type=repairTypes;
-       }
+    if (searchFrm!.get('repair_type')?.value) {
+      const repTypes = searchFrm!.get('repair_type')?.value;
+      if (Array.isArray(repTypes)) {
+        const repairTypes: string[] = repTypes.map(t => t.code_val);
+        where.repair_type = repairTypes;
       }
+    }
 
-      if(searchFrm!.get('est_status')?.value)
-        {
-         const estStatus = searchFrm!.get('est_status')?.value;
-         if (Array.isArray(estStatus)) {
-             const EstStatus: string[] = estStatus.map(t => t.code_val);
-             where.estimate_status=EstStatus;
-         }
-        }
-    
+    if (searchFrm!.get('est_status')?.value) {
+      const estStatus = searchFrm!.get('est_status')?.value;
+      if (Array.isArray(estStatus)) {
+        const EstStatus: string[] = estStatus.map(t => t.code_val);
+        where.estimate_status = EstStatus;
+      }
+    }
+
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
-     this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
       return;
     }
 
     this.lastSearchCriteria = where;
-    this.performSearchSurveyorPerformanceDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType,date,team);
+    this.performSearchSurveyorPerformanceDetail(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, queryType, date, team);
   }
 
   performSearchSurveyorPerformanceSummary(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
-     before?: string, queryType?: number,date?:string,team?:string) {
+    before?: string, queryType?: number, date?: string, team?: string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchAdminReportSurveyorPerformanceSummary(this.lastSearchCriteria)
       .subscribe(data => {
-        if(data)
-        {
-            this.repData =[data];
-            this.onExportSurveyorPerformanceSummaryReport(this.repData,date!,team!);
+        if (data) {
+          this.repData = [data];
+          this.onExportSurveyorPerformanceSummaryReport(this.repData, date!, team!);
         }
-        else
-        {
-          this.isGeneratingReport=false
+        else {
+          this.isGeneratingReport = false
         }
-     
+
       });
 
 
   }
 
   performSearchSurveyorPerformanceDetail(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number,
-    before?: string, queryType?: number,date?:string,team?:string) {
+    before?: string, queryType?: number, date?: string, team?: string) {
 
-   // if(queryType==1)
-   // {
-   this.subs.sink = this.reportDS.searchAdminReportSurveyorPerformanceDetail(this.lastSearchCriteria)
-     .subscribe(data => {
-       if(data.length>0)
-       {
-           this.repData =data;
-           this.onExportSurveyorPerformanceDetialReport(this.repData,date!,team!);
-       }
-       else
-       {
-         this.isGeneratingReport=false
-       }
-    
-     });
+    // if(queryType==1)
+    // {
+    this.subs.sink = this.reportDS.searchAdminReportSurveyorPerformanceDetail(this.lastSearchCriteria)
+      .subscribe(data => {
+        if (data.length > 0) {
+          this.repData = data;
+          this.onExportSurveyorPerformanceDetialReport(this.repData, date!, team!);
+        }
+        else {
+          this.isGeneratingReport = false
+        }
+
+      });
 
 
- }
+  }
 
- 
+
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
     let first: number | undefined = undefined;
@@ -773,7 +747,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       }
     }
 
-   // this.performSearch(pageSize, pageIndex, first, after, last, before);
+    // this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -833,7 +807,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     ]);
   }
 
-  resetDialog(event: Event,report_type:number) {
+  resetDialog(event: Event, report_type: number) {
     event.preventDefault(); // Prevents the form submission
 
     let tempDirection: Direction;
@@ -843,14 +817,13 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       tempDirection = 'ltr';
     }
 
-    if(report_type===1)
-    {
+    if (report_type === 1) {
       this.resetFormSummary();
     }
-    else{
+    else {
       this.resetFormDetail();
     }
-    
+
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
@@ -868,16 +841,16 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // });
   }
 
-  
+
   resetFormSummary() {
     var thisYear = new Date().getFullYear().toString();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchFormSummary?.patchValue({
       repair_type: '',
-      month_start:thisMonth,
-      month_end:thisMonth,
+      month_start: thisMonth,
+      month_end: thisMonth,
       surveyor: '',
-      year:thisYear ,
+      year: thisYear,
     });
     this.customerCodeControlSummary.reset('');
     this.noCond = false;
@@ -885,15 +858,15 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
   resetFormDetail() {
     var thisYear = new Date().getFullYear().toString();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchFormDetail?.patchValue({
       repair_type: '',
-      tank_no:'',
+      tank_no: '',
       eir_no: '',
-      est_dt_start:'',
-      est_dt_end:'',
+      est_dt_start: '',
+      est_dt_end: '',
       surveyor: '',
-      year:thisYear,
+      year: thisYear,
       est_status: ''
     });
     this.customerCodeControlDetail.reset('');
@@ -913,15 +886,15 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
 
-  onExportSurveyorPerformanceSummaryReport(repData: SurveyorPerformanceSummary[],date:string,team:string) {
+  onExportSurveyorPerformanceSummaryReport(repData: SurveyorPerformanceSummary[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(repData?.length<=0){
-      this.isGeneratingReport=false;
+    if (repData?.length <= 0) {
+      this.isGeneratingReport = false;
       return;
 
-    } 
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -931,31 +904,31 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
     const dialogRef = this.dialog.open(SurveyorPerformanceSummaryPdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        date:date,
-        team:team
+        date: date,
+        team: team
 
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  onExportSurveyorPerformanceDetialReport(repData: DailyQCDetail[],date:string,team:string) {
+  onExportSurveyorPerformanceDetialReport(repData: DailyQCDetail[], date: string, team: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(repData?.length<=0){
-      this.isGeneratingReport=false;
+    if (repData?.length <= 0) {
+      this.isGeneratingReport = false;
       return;
 
-    } 
+    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -965,25 +938,24 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
     const dialogRef = this.dialog.open(SurveyorDetailPerformancePdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        date:date,
-        team:team
+        date: date,
+        team: team
 
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
-  isDateRequired(date_type:string):boolean
-  {
-    var retval:boolean = true;
+  isDateRequired(date_type: string): boolean {
+    var retval: boolean = true;
     // var repType:number = Number(this.searchForm?.get("report_type")?.value);
     // if(date_type=="APPROVED")
     // {
@@ -991,16 +963,16 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // }
     // else if(date_type=="QC")
     // {
-    
+
     //   return [1,3].includes(repType);
     // }
-    
+
     return retval;
 
   }
 
   onReportTypeChange(event: Event) {
-   // var startDateControl = this.searchForm?.get('qc_dt')!;
+    // var startDateControl = this.searchForm?.get('qc_dt')!;
     //startDateControl?.markAsUntouched();
     // startDateControl.setErrors(null);
     // if(this.isDateRequired('QC'))
@@ -1018,38 +990,35 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // }
   }
 
-  AllowToSearch():boolean
-  {
-     var bAllow:boolean =true;
+  AllowToSearch(): boolean {
+    var bAllow: boolean = true;
 
-     
-     if (this.searchFormSummary?.get('month_start')?.value) {
-      var month_start=this.searchFormSummary?.get('month_start')?.value;
+
+    if (this.searchFormSummary?.get('month_start')?.value) {
+      var month_start = this.searchFormSummary?.get('month_start')?.value;
       const monthStartIndex = this.monthList.findIndex(m => month_start === m);
-      month_start = (monthStartIndex+1);
-    
+      month_start = (monthStartIndex + 1);
+
       if (this.searchFormSummary?.get('month_end')?.value) {
 
-            var month_end=this.searchFormSummary?.get('month_end')?.value;
-            const monthEndIndex = this.monthList.findIndex(m => month_end === m);
-            month_end = (monthEndIndex+1);
+        var month_end = this.searchFormSummary?.get('month_end')?.value;
+        const monthEndIndex = this.monthList.findIndex(m => month_end === m);
+        month_end = (monthEndIndex + 1);
 
-          if (this.searchFormSummary?.get('year')?.value) {
-          var year = Number(this.searchFormSummary?.get('year')?.value); 
-          bAllow=!Utility.isSelectedDateGreaterThanToday(month_start,year);
-           if(bAllow)
-           {
-            bAllow=!Utility.isSelectedDateGreaterThanToday(month_end,year);
-             if(bAllow)
-             {
-               bAllow = month_start<=month_end;
-             }
-           }
+        if (this.searchFormSummary?.get('year')?.value) {
+          var year = Number(this.searchFormSummary?.get('year')?.value);
+          bAllow = !Utility.isSelectedDateGreaterThanToday(month_start, year);
+          if (bAllow) {
+            bAllow = !Utility.isSelectedDateGreaterThanToday(month_end, year);
+            if (bAllow) {
+              bAllow = month_start <= month_end;
+            }
           }
+        }
       }
     }
-   
-     return bAllow;
+
+    return bAllow;
 
   }
   onTabFocused() {

@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -35,7 +35,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
@@ -81,6 +81,9 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatCardModule,
     MatTabsModule,
     BayOverviewComponent
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -392,7 +395,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         {
           storing_order_tank: {
             tank_status_cv: { in: ["CLEANING"] }
-            ,purpose_cleaning: { eq: true }
+            , purpose_cleaning: { eq: true }
           }
         }
       ]
@@ -964,21 +967,21 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     return (foundIncomplete?.length || 0) > 0;
   }
 
-   onTabFocused() {
-        this.resetForm();
-        this.onFilterCleaning();
-      }
-    
+  onTabFocused() {
+    this.resetForm();
+    this.onFilterCleaning();
+  }
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     switch (event.index) {
-      
+
       case 0:
         this.onTabFocused(); break;
       case 1:
         this.bayOverviewComponent.RefreshContent();
-      
-    
+
+
     }
   }
 }

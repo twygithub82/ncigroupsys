@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,7 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -35,13 +35,13 @@ import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 import { PeriodicTestDuePdfComponent } from 'app/document-template/pdf/periodic-test-pdf/periodic-test-pdf.component';
+import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-periodic-test-due-report',
@@ -71,6 +71,9 @@ import { reportPreviewWindowDimension } from 'environments/environment';
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -146,15 +149,15 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     YARD: 'COMMON-FORM.YARD',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
-    TRANSFER_DATE:'COMMON-FORM.TRANSFER-DATE',
-    REFERENCE:'COMMON-FORM.REFERENCE',
-    SURVEY_DATE:'COMMON-FORM.SURVEY-DATE',
-    SURVEY_TYPE:'COMMON-FORM.SURVEY-TYPE',
-    SURVEY_NAME:'COMMON-FORM.SURVEY-NAME',
-    DUE_TYPE:'COMMON-FORM.DUE-TYPE',
-    NEXT_TEST_DUE:'COMMON-FORM.NEXT-TEST-TYPE-DUE',
-    NORMAL:'COMMON-FORM.NORMAL',
-    DUE:'COMMON-FORM.DUE'
+    TRANSFER_DATE: 'COMMON-FORM.TRANSFER-DATE',
+    REFERENCE: 'COMMON-FORM.REFERENCE',
+    SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
+    SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
+    SURVEY_NAME: 'COMMON-FORM.SURVEY-NAME',
+    DUE_TYPE: 'COMMON-FORM.DUE-TYPE',
+    NEXT_TEST_DUE: 'COMMON-FORM.NEXT-TEST-TYPE-DUE',
+    NORMAL: 'COMMON-FORM.NORMAL',
+    DUE: 'COMMON-FORM.DUE'
   }
 
   invForm?: UntypedFormGroup;
@@ -169,7 +172,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   //igDS: InGateDS;
   cvDS: CodeValuesDS;
   //tcDS: TariffCleaningDS;
-  repDS:ReportDS;
+  repDS: ReportDS;
 
   // stmDS: SteamDS;
   // plDS: PackageLabourDS;
@@ -189,7 +192,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   //inventoryTypeCvList: CodeValuesItem[] = [];
   //yardCvList: CodeValuesItem[] = [];
-  testCvList:CodeValuesItem[]=[];
+  testCvList: CodeValuesItem[] = [];
 
   processType: string = "STEAMING";
   billingParty: string = "CUSTOMER";
@@ -208,8 +211,8 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  dueType:string[]=[];
-  periodicTestRes:periodic_test_due_item[]=[];
+  dueType: string[] = [];
+  periodicTestRes: periodic_test_due_item[] = [];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -231,7 +234,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     //this.plDS = new PackageLabourDS(this.apollo);
     //this.billDS = new BillingDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.repDS= new ReportDS(this.apollo);
+    this.repDS = new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -243,7 +246,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
-    
+
   }
 
   initInvoiceForm() {
@@ -259,9 +262,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       last_cargo: this.lastCargoControl,
       eir_no: [''],
       tank_no: [''],
-      reference:[''],
-      due_type:[''],
-      next_test_due:['']
+      reference: [''],
+      due_type: [''],
+      next_test_due: ['']
 
     });
   }
@@ -286,9 +289,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
       })
     ).subscribe();
 
-    
 
-    
+
+
   }
 
   public loadData() {
@@ -365,45 +368,45 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     const periodicTestDueReq: any = {};
 
 
-    
+
 
     if (this.searchForm?.get('customer_code')?.value) {
-     
-      periodicTestDueReq.customer_code=this.searchForm!.get('customer_code')?.value?.code;
+
+      periodicTestDueReq.customer_code = this.searchForm!.get('customer_code')?.value?.code;
       cond_counter++;
     }
 
     if (this.searchForm?.get('tank_no')?.value) {
-      periodicTestDueReq.tank_no=this.searchForm!.get('tank_no')?.value;
+      periodicTestDueReq.tank_no = this.searchForm!.get('tank_no')?.value;
       cond_counter++;
     }
 
     if (this.searchForm?.get('eir_no')?.value) {
-      periodicTestDueReq.eir_no=this.searchForm!.get('eir_no')?.value;
+      periodicTestDueReq.eir_no = this.searchForm!.get('eir_no')?.value;
       cond_counter++;
     }
 
     if (this.searchForm?.get('due_type')?.value) {
       var result = this.searchForm!.get('due_type')?.value.join('|');
-      if(this.dueType.length==this.searchForm!.get('due_type')?.value.length)
-        result="";
-      periodicTestDueReq.due_type=result;
+      if (this.dueType.length == this.searchForm!.get('due_type')?.value.length)
+        result = "";
+      periodicTestDueReq.due_type = result;
       cond_counter++;
     }
 
 
     if (this.searchForm?.get('next_test_due')?.value) {
       var result = this.searchForm!.get('next_test_due')?.value
-      ?.map((item: { code_val: string }) => item.code_val) // Extract 'code' values
-      .join('|');
-      if(this.testCvList.length==this.searchForm!.get('next_test_due')?.value.length)
-        result="";
+        ?.map((item: { code_val: string }) => item.code_val) // Extract 'code' values
+        .join('|');
+      if (this.testCvList.length == this.searchForm!.get('next_test_due')?.value.length)
+        result = "";
       periodicTestDueReq.next_test_due = result;
       cond_counter++;
     }
 
-    var date:string=''
-   
+    var date: string = ''
+
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) return;
@@ -416,7 +419,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
-  performSearch(date :string) {
+  performSearch(date: string) {
     this.subs.sink = this.repDS.searchPeriodicTestDueSummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.periodicTestRes = data;
@@ -425,22 +428,22 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
         // this.startCursor = this.stmDS.pageInfo?.startCursor;
         // this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         // this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-       // this.ProcessReportTransferYard(date);
+        // this.ProcessReportTransferYard(date);
       });
 
   }
 
   onPageEvent(event: PageEvent) {
-    
+
   }
 
-  
+
 
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
-      this.dueType=[this.translatedLangText.NORMAL,this.translatedLangText.DUE]
+      this.dueType = [this.translatedLangText.NORMAL, this.translatedLangText.DUE]
     });
   }
 
@@ -478,9 +481,9 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     this.searchForm?.patchValue({
       eir_no: '',
       tank_no: '',
-      reference:'', 
-      due_type:'',
-      next_test_due:''
+      reference: '',
+      due_type: '',
+      next_test_due: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -508,35 +511,35 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-   ProcessPeriodicTestDueReport() {
-      if (this.periodicTestRes.length === 0) return;
-  
-      var report_records: report_periodic_test_due_group_customer[] = [];
-  
-      this.periodicTestRes.map(s => {
-  
-        if (s) {
-          var repTransaction: report_periodic_test_due_group_customer = report_records.find(r => r.customer_code === s.customer_code) || new report_periodic_test_due_group_customer();
-          let newTnx = false;
-          if (!repTransaction.customer_code) {
-            repTransaction.customer_code = s.customer_code;
-            repTransaction.customer_name=s.customer_name;
-            newTnx = true;
-          }
-          if (!repTransaction.periodic_test_due) repTransaction.periodic_test_due = [];
-          repTransaction.periodic_test_due?.push(s);
-          if (newTnx) report_records.push(repTransaction);
-  
-  
-  
+  ProcessPeriodicTestDueReport() {
+    if (this.periodicTestRes.length === 0) return;
+
+    var report_records: report_periodic_test_due_group_customer[] = [];
+
+    this.periodicTestRes.map(s => {
+
+      if (s) {
+        var repTransaction: report_periodic_test_due_group_customer = report_records.find(r => r.customer_code === s.customer_code) || new report_periodic_test_due_group_customer();
+        let newTnx = false;
+        if (!repTransaction.customer_code) {
+          repTransaction.customer_code = s.customer_code;
+          repTransaction.customer_name = s.customer_name;
+          newTnx = true;
         }
-      });
-  
-  
-      this.onExportDetail(report_records);
-  
-  
-    }
+        if (!repTransaction.periodic_test_due) repTransaction.periodic_test_due = [];
+        repTransaction.periodic_test_due?.push(s);
+        if (newTnx) report_records.push(repTransaction);
+
+
+
+      }
+    });
+
+
+    this.onExportDetail(report_records);
+
+
+  }
 
   onExportDetail(repStatus: report_periodic_test_due_group_customer[]) {
     //this.preventDefault(event);
@@ -552,7 +555,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
     const dialogRef = this.dialog.open(PeriodicTestDuePdfComponent, {
       width: reportPreviewWindowDimension.landscape_width_rate,
-      maxWidth:reportPreviewWindowDimension.landscape_maxWidth,
+      maxWidth: reportPreviewWindowDimension.landscape_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_inventory: repStatus,
@@ -580,8 +583,8 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
     const dialogRef = this.dialog.open(LocationStatusSummaryPdfComponent, {
       width: reportPreviewWindowDimension.portrait_width_rate,
-      maxWidth:reportPreviewWindowDimension.portrait_maxWidth,
-     maxHeight: reportPreviewWindowDimension.report_maxHeight,
+      maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
+      maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         report_summary_status: repStatus,
       },

@@ -1,57 +1,48 @@
+import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { NgClass, DatePipe, formatDate, CommonModule } from '@angular/common';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatButtonModule } from '@angular/material/button';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { UnsubscribeOnDestroyAdapter, TableElement, TableExportUtil } from '@shared';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Observable, Subscription, fromEvent } from 'rxjs';
-import { map, filter, tap, catchError, finalize, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { Utility } from 'app/utilities/utility';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDividerModule } from '@angular/material/divider';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { MatCardModule } from '@angular/material/card';
+import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
-import { MatTabsModule } from '@angular/material/tabs';
-import { JobOrderDS, JobOrderGO, JobOrderItem } from 'app/data-sources/job-order';
-import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { RepairPartItem } from 'app/data-sources/repair-part';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { StoringOrderDS } from 'app/data-sources/storing-order';
+import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TimeTableDS } from 'app/data-sources/time-table';
+import { Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { Subscription } from 'rxjs';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-job-order-qc',
@@ -85,6 +76,9 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
     MatCardModule,
     MatTabsModule,
     MatButtonToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -95,7 +89,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     // 'estimate_dt',
     // 'approve_dt',
     'qc_dt',
-  //  'repair_type',
+    //  'repair_type',
     'status_cv'
   ];
 
@@ -143,20 +137,20 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   repairDS: RepairDS;
   joDS: JobOrderDS;
   ttDS: TimeTableDS;
-  steamDs:SteamDS;
+  steamDs: SteamDS;
 
   availableProcessStatus: string[] = [
-     'APPROVED',
-     'JOB_IN_PROGRESS',
-     'QC_COMPLETED',
-     'COMPLETED',
-     'ASSIGNED',
-     'PARTIAL_ASSIGNED',
-     //'PENDING',
-   ]
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'QC_COMPLETED',
+    'COMPLETED',
+    'ASSIGNED',
+    'PARTIAL_ASSIGNED',
+    //'PENDING',
+  ]
 
-   
-  deList:SteamItem[]=[];
+
+  deList: SteamItem[] = [];
   repEstList: RepairItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
@@ -198,7 +192,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.repairDS = new RepairDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
-    this.steamDs= new SteamDS(this.apollo);
+    this.steamDs = new SteamDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -258,10 +252,10 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
-  onSteamFilter(){
+  onSteamFilter() {
     const where: any = {
-     // status_cv: { in: ["JOB_IN_PROGRESS", "CANCELED", "AV","COMPLETED"] },
-      approve_by:{neq:"system"},
+      // status_cv: { in: ["JOB_IN_PROGRESS", "CANCELED", "AV","COMPLETED"] },
+      approve_by: { neq: "system" },
       steaming_part: {
         all: {
           delete_dt: { eq: null },
@@ -279,7 +273,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
         }
       }
     };
-    
+
     // where.and.push({
     //   residue_part:{some:{job_order: { status_cv: {eq:'COMPLETED' }}}}
     // });
@@ -328,7 +322,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
   onFilter() {
     const where: any = {
-      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED", "AV","COMPLETED"] },
+      status_cv: { in: ["JOB_IN_PROGRESS", "QC_COMPLETED", "AV", "COMPLETED"] },
       repair_part: {
         all: {
           delete_dt: { eq: null },

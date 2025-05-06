@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -34,11 +34,11 @@ import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { LocationTransferReportComponent } from './location/location-transfer.component';
 @Component({
   selector: 'app-main-transfer',
@@ -56,7 +56,6 @@ import { LocationTransferReportComponent } from './location/location-transfer.co
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatPaginatorModule,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -71,7 +70,6 @@ import { LocationTransferReportComponent } from './location/location-transfer.co
     MatCardModule,
     MatTabsModule,
     LocationTransferReportComponent,
-   
   ]
 })
 export class MainTransferComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -164,7 +162,7 @@ export class MainTransferComponent extends UnsubscribeOnDestroyAdapter implement
     RESIDUE_BILLING: "MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
-    LOCATION_TRANSFER:'MENUITEMS.REPORTS.LIST.LOCATION-TRANSFER'
+    LOCATION_TRANSFER: 'MENUITEMS.REPORTS.LIST.LOCATION-TRANSFER'
 
   }
 
@@ -526,8 +524,8 @@ export class MainTransferComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  
-  
+
+
 
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
@@ -602,9 +600,9 @@ export class MainTransferComponent extends UnsubscribeOnDestroyAdapter implement
     return retval;
   }
 
-  
 
-  
+
+
 
   isStarted(cleanItem: InGateCleaningItem | undefined) {
 

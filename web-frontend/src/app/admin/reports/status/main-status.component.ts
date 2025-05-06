@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -40,7 +40,6 @@ import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { LocationStatusReportComponent } from './location/location-status.component';
 import { YardStatusReportComponent } from './yard/yard-status.component';
 
 @Component({
@@ -59,7 +58,6 @@ import { YardStatusReportComponent } from './yard/yard-status.component';
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatPaginatorModule,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -74,7 +72,6 @@ import { YardStatusReportComponent } from './yard/yard-status.component';
     MatCardModule,
     MatTabsModule,
     YardStatusReportComponent,
-    
   ]
 })
 export class MainStatusComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

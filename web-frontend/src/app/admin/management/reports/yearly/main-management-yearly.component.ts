@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -34,15 +34,15 @@ import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { RevenueYearlyAdminReportComponent } from './revenue-yearly/revenue-yearly.component';
 import { InventoryYearlyAdminReportComponent } from './inventory-yearly/inventory-yearly.component';
 import { ManHourYearlyAdminReportComponent } from './manhour-yearly/manhour-yearly.component';
+import { RevenueYearlyAdminReportComponent } from './revenue-yearly/revenue-yearly.component';
 
 @Component({
   selector: 'app-main-management-yearly',
@@ -60,7 +60,6 @@ import { ManHourYearlyAdminReportComponent } from './manhour-yearly/manhour-year
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatPaginatorModule,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -74,9 +73,9 @@ import { ManHourYearlyAdminReportComponent } from './manhour-yearly/manhour-year
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    RevenueYearlyAdminReportComponent, 
+    RevenueYearlyAdminReportComponent,
     InventoryYearlyAdminReportComponent,
-    ManHourYearlyAdminReportComponent 
+    ManHourYearlyAdminReportComponent
   ]
 })
 export class MainManagementYearlyComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -116,7 +115,7 @@ export class MainManagementYearlyComponent extends UnsubscribeOnDestroyAdapter i
 
   translatedLangText: any = {};
   langText = {
-   
+
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
@@ -129,13 +128,13 @@ export class MainManagementYearlyComponent extends UnsubscribeOnDestroyAdapter i
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANING: "COMMON-FORM.CLEANING",
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_REPORT:'COMMON-FORM.STEAM-REPORT',
-    RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
-    REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
-    CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
-    INVENTORY_REPORT:'COMMON-FORM.INVENTORY-REPORT',
-    REVENUE_REPORT:'COMMON-FORM.REVENUE-REPORT',
-    MANHOUR_REPORT:'COMMON-FORM.MANHOUR-REPORT',
+    STEAM_REPORT: 'COMMON-FORM.STEAM-REPORT',
+    RESIDUE_REPORT: 'COMMON-FORM.RESIDUE-REPORT',
+    REPAIR_REPORT: 'COMMON-FORM.REPAIR-REPORT',
+    CLEAN_REPORT: 'COMMON-FORM.CLEAN-REPORT',
+    INVENTORY_REPORT: 'COMMON-FORM.INVENTORY-REPORT',
+    REVENUE_REPORT: 'COMMON-FORM.REVENUE-REPORT',
+    MANHOUR_REPORT: 'COMMON-FORM.MANHOUR-REPORT',
 
   }
 
@@ -807,19 +806,19 @@ export class MainManagementYearlyComponent extends UnsubscribeOnDestroyAdapter i
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-   @ViewChild('inventoryYearlyReport') inventoryYearlyReport!: InventoryYearlyAdminReportComponent;
-       @ViewChild('revenueYearlyReport') revenueYearlyReport!: RevenueYearlyAdminReportComponent;
-       
-         
-    onTabSelected(event: MatTabChangeEvent): void {
-      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-      switch (event.index) {
-       
-       case 0:
-          this.inventoryYearlyReport?.onTabFocused(); break;
-       case 1:
-           this.revenueYearlyReport?.onTabFocused(); break;
-    
-      }
+  @ViewChild('inventoryYearlyReport') inventoryYearlyReport!: InventoryYearlyAdminReportComponent;
+  @ViewChild('revenueYearlyReport') revenueYearlyReport!: RevenueYearlyAdminReportComponent;
+
+
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+
+      case 0:
+        this.inventoryYearlyReport?.onTabFocused(); break;
+      case 1:
+        this.revenueYearlyReport?.onTabFocused(); break;
+
     }
+  }
 }

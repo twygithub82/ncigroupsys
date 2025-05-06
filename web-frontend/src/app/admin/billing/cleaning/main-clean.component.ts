@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -36,16 +36,16 @@ import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
-import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 //import { FormDialogComponent } from './form-dialog/form-dialog.component';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { CleanBillingComponent } from './clean/clean-billing.component';
 import { ResidueBillingComponent } from './residue/residue-billing.component';
 import { SteamBillingComponent } from './steam/steam-billing.component';
-import { ModulePackageService } from 'app/services/module-package.service';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 @Component({
   selector: 'app-main-clean',
   standalone: true,
@@ -79,11 +79,13 @@ import { ModulePackageService } from 'app/services/module-package.service';
     CleanBillingComponent,
     SteamBillingComponent,
     ResidueBillingComponent
-   
-]
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
+  ]
 })
 export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
- // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
+  // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
   // displayedColumns = [
   //   'tank_no',
   //   'customer',
@@ -163,14 +165,14 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     REPAIR_EST_TAB_TITLE: 'COMMON-FORM.JOB-ALLOCATION',
     JOB_ORDER_TAB_TITLE: 'COMMON-FORM.JOBS',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    METHOD:"COMMON-FORM.METHOD",
+    METHOD: "COMMON-FORM.METHOD",
     QC: 'COMMON-FORM.QC',
-    BAY_OVERVIEW:"COMMON-FORM.BAY-OVERVIEW",
-    CLEANING:"COMMON-FORM.CLEANING",
-    CLEANING_BILLING:"MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_BILLING:"MENUITEMS.BILLING.LIST.STEAM-BILL",
-    RESIDUE_BILLING:"MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
-   
+    BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
+    CLEANING: "COMMON-FORM.CLEANING",
+    CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
+    STEAM_BILLING: "MENUITEMS.BILLING.LIST.STEAM-BILL",
+    RESIDUE_BILLING: "MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
+
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -196,13 +198,13 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     'CANCELED'
   ]
 
-  cleanMethodList:CleaningMethodItem[]=[];
+  cleanMethodList: CleaningMethodItem[] = [];
   clnEstList: InGateCleaningItem[] = [];
   jobOrderList: JobOrderItem[] = [];
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
-  processStatusCvList:CodeValuesItem[]=[];
+  processStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -271,8 +273,8 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
   initSearchForm() {
     this.filterCleanForm = this.fb.group({
       filterClean: [''],
-      cleanMethod:[''],
-      status_cv: [['APPROVED','ASSIGNED']],
+      cleanMethod: [''],
+      status_cv: [['APPROVED', 'ASSIGNED']],
       customer: [''],
     });
     this.filterJobOrderForm = this.fb.group({
@@ -322,7 +324,7 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
 
   public loadData() {
     // this.onFilterCleaning();
-  //  this.onFilterJobOrder();
+    //  this.onFilterJobOrder();
 
     // const queries = [
     //   { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
@@ -399,7 +401,7 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     //   ]
     // };
 
- 
+
     // // or: [
     // //   { storing_order_tank: { tank_no: { contains: "" } } },
     // //   { estimate_no: { contains: "" } }
@@ -495,26 +497,26 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     // this.pageIndexJobOrder = pageIndex;
   }
 
-  
+
   onPageEventClean(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexClean ) {
+      if (pageIndex > this.pageIndexClean) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorClean;
@@ -523,15 +525,14 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
         last = pageSize;
         before = this.startCursorClean;
       }
-      else if (pageIndex==this.pageIndexClean)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorClean;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexClean) {
+
+        first = pageSize;
+        after = this.previous_endCursorClean;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
 
@@ -569,24 +570,24 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   onPageEventJobOrder(event: PageEvent) {
-    const { pageIndex, pageSize,previousPageIndex } = event;
-    let first : number| undefined = undefined;
+    const { pageIndex, pageSize, previousPageIndex } = event;
+    let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
-   // let order:any|undefined=this.lastOrderBy;
+    // let order:any|undefined=this.lastOrderBy;
     // Check if the page size has changed
     if (this.pageSizeClean !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndexClean = 0;
-      this.pageSizeClean=pageSize;
+      this.pageSizeClean = pageSize;
       first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       //if (pageIndex > this.pageIndex && this.hasNextPage) {
-        if (pageIndex > this.pageIndexJobOrder ) {
+      if (pageIndex > this.pageIndexJobOrder) {
         // Navigate forward
         first = pageSize;
         after = this.endCursorJobOrder;
@@ -595,18 +596,17 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
         last = pageSize;
         before = this.startCursorJobOrder;
       }
-      else if (pageIndex==this.pageIndexJobOrder)
-      {
-        
-          first = pageSize;
-          after = this.previous_endCursorJobOrder;
-     
-          
-          //this.paginator.pageIndex=this.pageIndex;
-          
+      else if (pageIndex == this.pageIndexJobOrder) {
+
+        first = pageSize;
+        after = this.previous_endCursorJobOrder;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
-    
+
     this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
@@ -654,7 +654,7 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayCleanMethodFn(cm: CleaningMethodItem): string {
-    return cm  ? `${cm.description} `: '';
+    return cm ? `${cm.description} ` : '';
   }
   initializeFilterCustomerCompany() {
     // this.filterCleanForm!.get('customer')!.valueChanges.pipe(
@@ -672,8 +672,8 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     //     });
     //   })
     // ).subscribe();
-  
-  
+
+
     // this.filterCleanForm!.get('cleanMethod')!.valueChanges.pipe(
     //   startWith(''),
     //   debounceTime(300),
@@ -770,7 +770,7 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
   resetForm() {
     this.filterCleanForm?.patchValue({
       filterRepair: '',
-      cleanMethod:''
+      cleanMethod: ''
     });
   }
 
@@ -791,19 +791,18 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayTankStatus(status:string):string{
-    var retval:string="-";
+  displayTankStatus(status: string): string {
+    var retval: string = "-";
 
-    retval= this.processStatusCvList!
-    .filter(item => item.code_val === status)
-    .map(item => item.description)[0]!; // Returns the description of the first match
+    retval = this.processStatusCvList!
+      .filter(item => item.code_val === status)
+      .map(item => item.description)[0]!; // Returns the description of the first match
 
-    if(retval==="") retval="-"
+    if (retval === "") retval = "-"
     return retval;
   }
 
-  popupDialogForm(row:InGateCleaningItem, action:string)
-  {
+  popupDialogForm(row: InGateCleaningItem, action: string) {
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
     //   tempDirection = 'rtl';
@@ -814,10 +813,10 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     // if(row.status_cv==='QC_COMPLETED') action='view';
     // var rows :InGateCleaningItem[] =[] ;
     // rows.push(row);
-    
+
 
     // const dialogRef = this.dialog.open(FormDialogComponent,{
-      
+
     //   width: '1000px',
     //   data: {
     //     action: action,
@@ -827,182 +826,180 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
     //   position: {
     //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
     //   }
-        
+
     // });
 
     // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     //      if (result) {
     //       if(result>0)
     //         {
-             
+
     //           this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
     //         }
     //   }
     //   });
-   
-   }
 
-    toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-      //  this.stopPropagation(event);  // Prevents the form submission
-      //  if (!isStarted) {
-      //    const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
-      //    console.log(param)
-      //    const firstValidRepairPart = jobOrderItem.cleaning?.find(
-      //      (cleaning) => cleaning?.guid !== null
-      //    );
-      //    this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
-      //      if (result.data.startJobTimer > 0) {
-      //        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-      //        this.UpdateCleaningStatusInProgress(item.guid!);
-      //      }
-      //    });
-      //  } else {
-      //    const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
-      //    if (found?.length) {
-      //      const newParam = new TimeTableItem(found[0]);
-      //      newParam.stop_time = Utility.convertDate(new Date()) as number;
-      //      newParam.job_order = new JobOrderGO({ ...jobOrderItem });
-      //      const param = [newParam];
-      //      console.log(param)
-      //      this.ttDS.stopJobTimer(param).subscribe(result => {
-      //       if(result.data.stopJobTimer)
-      //       {
-      //         this.completeJob( jobOrderItem) 
-      //       }
+  }
 
-      //      });
-      //    }
-      //  }
-     }
-   
-     completeJob(jobOrderItem: JobOrderItem) {
-       
-      //  const newParam = new UpdateJobOrderRequest({
-      //    guid: jobOrderItem?.guid,
-      //    remarks: jobOrderItem?.remarks,
-      //    start_dt: jobOrderItem?.start_dt,
-      //    complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-      //  });
-      //  const param = [newParam];
-      //  console.log(param)
-      //  this.joDS.completeJobOrder(param).subscribe(result => {
-      //    console.log(result)
-      //    if (result?.data?.completeJobOrder! > 0) {
-      //      var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
-      //      this.UpdateCleaningStatusCompleted(item.guid!);
-      //    }
-      //  });
-     }
+  toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
+    //  this.stopPropagation(event);  // Prevents the form submission
+    //  if (!isStarted) {
+    //    const param = [new TimeTableItem({ job_order_guid: jobOrderItem?.guid, job_order: new JobOrderGO({ ...jobOrderItem }) })];
+    //    console.log(param)
+    //    const firstValidRepairPart = jobOrderItem.cleaning?.find(
+    //      (cleaning) => cleaning?.guid !== null
+    //    );
+    //    this.ttDS.startJobTimer(param, firstValidRepairPart?.guid!).subscribe(result => {
+    //      if (result.data.startJobTimer > 0) {
+    //        var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+    //        this.UpdateCleaningStatusInProgress(item.guid!);
+    //      }
+    //    });
+    //  } else {
+    //    const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+    //    if (found?.length) {
+    //      const newParam = new TimeTableItem(found[0]);
+    //      newParam.stop_time = Utility.convertDate(new Date()) as number;
+    //      newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+    //      const param = [newParam];
+    //      console.log(param)
+    //      this.ttDS.stopJobTimer(param).subscribe(result => {
+    //       if(result.data.stopJobTimer)
+    //       {
+    //         this.completeJob( jobOrderItem) 
+    //       }
 
-     UpdateCleaningStatusInProgress(clean_guid: string) {
+    //      });
+    //    }
+    //  }
+  }
 
+  completeJob(jobOrderItem: JobOrderItem) {
 
-      // const where: any = {
-      //   and: []
-      // };
-  
-  
-      // where.and.push({
-      //   guid: { eq: clean_guid }
-      // });
-  
-  
-      // this.subs.sink = this.cleanDS.search(where)
-      //   .subscribe(data => {
-      //     if (data.length > 0) {
-      //       var cln = data[0];
-      //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-      //       rep.action = 'IN_PROGRESS';
-      //       delete rep.storing_order_tank;
-      //       delete rep.job_order;
-      //       delete rep.customer_company;
-      //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-  
-      //         console.log(result);
-  
-      //       });
-      //       //  this.clnDS.
-      //     }
-      //   });
-    }
+    //  const newParam = new UpdateJobOrderRequest({
+    //    guid: jobOrderItem?.guid,
+    //    remarks: jobOrderItem?.remarks,
+    //    start_dt: jobOrderItem?.start_dt,
+    //    complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    //  });
+    //  const param = [newParam];
+    //  console.log(param)
+    //  this.joDS.completeJobOrder(param).subscribe(result => {
+    //    console.log(result)
+    //    if (result?.data?.completeJobOrder! > 0) {
+    //      var item: InGateCleaningItem = new InGateCleaningItem(jobOrderItem.cleaning![0]!);
+    //      this.UpdateCleaningStatusCompleted(item.guid!);
+    //    }
+    //  });
+  }
 
-    UpdateCleaningStatusCompleted(clean_guid: string) {
+  UpdateCleaningStatusInProgress(clean_guid: string) {
 
 
-      // const where: any = {
-      //   and: []
-      // };
-  
-      // where.and.push({
-      //   job_order: { status_cv: { eq: 'COMPLETED' } }
-      // });
-  
-      // where.and.push({
-      //   guid: { eq: clean_guid }
-      // });
-  
-  
-      // this.subs.sink = this.cleanDS.search(where)
-      //   .subscribe(data => {
-      //     if (data.length > 0) {
-      //       var cln = data[0];
-      //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
-      //       rep.action = 'COMPLETE';
-      //       delete rep.storing_order_tank;
-      //       delete rep.job_order;
-      //       delete rep.customer_company;
-      //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
-      //         console.log(result); 
-      //         if(result.data.updateCleaning>0)
-      //         {
-      //            this.onFilterCleaning();
-      //         }
-              
-  
-      //       });
-      //       //  this.clnDS.
-      //     }
-      //   });
-    }
+    // const where: any = {
+    //   and: []
+    // };
 
-     // isStarted(jobOrderItem: JobOrderItem | undefined) {
+
+    // where.and.push({
+    //   guid: { eq: clean_guid }
+    // });
+
+
+    // this.subs.sink = this.cleanDS.search(where)
+    //   .subscribe(data => {
+    //     if (data.length > 0) {
+    //       var cln = data[0];
+    //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+    //       rep.action = 'IN_PROGRESS';
+    //       delete rep.storing_order_tank;
+    //       delete rep.job_order;
+    //       delete rep.customer_company;
+    //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+
+    //         console.log(result);
+
+    //       });
+    //       //  this.clnDS.
+    //     }
+    //   });
+  }
+
+  UpdateCleaningStatusCompleted(clean_guid: string) {
+
+
+    // const where: any = {
+    //   and: []
+    // };
+
+    // where.and.push({
+    //   job_order: { status_cv: { eq: 'COMPLETED' } }
+    // });
+
+    // where.and.push({
+    //   guid: { eq: clean_guid }
+    // });
+
+
+    // this.subs.sink = this.cleanDS.search(where)
+    //   .subscribe(data => {
+    //     if (data.length > 0) {
+    //       var cln = data[0];
+    //       var rep: InGateCleaningItem = new InGateCleaningItem(cln);
+    //       rep.action = 'COMPLETE';
+    //       delete rep.storing_order_tank;
+    //       delete rep.job_order;
+    //       delete rep.customer_company;
+    //       this.cleanDS.updateInGateCleaning(rep).subscribe(result => {
+    //         console.log(result); 
+    //         if(result.data.updateCleaning>0)
+    //         {
+    //            this.onFilterCleaning();
+    //         }
+
+
+    //       });
+    //       //  this.clnDS.
+    //     }
+    //   });
+  }
+
+  // isStarted(jobOrderItem: JobOrderItem | undefined) {
   //   return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
   // }
 
-  isStarted(cleanItem:InGateCleaningItem | undefined) {
+  isStarted(cleanItem: InGateCleaningItem | undefined) {
 
-    if(cleanItem?.job_order)
-      {
-        let jobOrderItem = cleanItem?.job_order;
-        return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
-      }
-      return false;
+    if (cleanItem?.job_order) {
+      let jobOrderItem = cleanItem?.job_order;
+      return jobOrderItem?.time_table?.some(x => x?.start_time && !x?.stop_time);
+    }
+    return false;
 
-    
+
   }
 
-  canStartJob(cleanItem:InGateCleaningItem | undefined) {
+  canStartJob(cleanItem: InGateCleaningItem | undefined) {
     // if(cleanItem?.job_order)
     // {
     //   return this.joDS.canStartJob(cleanItem?.job_order);
     // }
     return false;
-    
+
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
     return false; //this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
   }
 
-  canShowAction(cleanItem:InGateCleaningItem)
-  {
-    return cleanItem.status_cv=='JOB_IN_PROGRESS';
+  canShowAction(cleanItem: InGateCleaningItem) {
+    return cleanItem.status_cv == 'JOB_IN_PROGRESS';
 
 
   }
 
-  sortList( itemList:any[]) {
-    itemList.sort((a:any, b:any) => {
+  sortList(itemList: any[]) {
+    itemList.sort((a: any, b: any) => {
       const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
       return numA - numB;
@@ -1019,23 +1016,23 @@ export class MainCleaningComponent extends UnsubscribeOnDestroyAdapter implement
   onRefreshMainTab() {
     // Logic to refresh the content of the main tab
     console.log('Refreshing main tab content...');
-    this.onPageEventClean({pageIndex:this.pageIndexClean,pageSize:this.pageSizeClean,length:this.pageSizeClean});
+    this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
-  
-     @ViewChild('cleanBilling') cleanBilling!: CleanBillingComponent;
-     @ViewChild('steamBilling') steamBilling!: SteamBillingComponent;
-     @ViewChild('residueBilling') residueBilling!: ResidueBillingComponent;
-       
+
+  @ViewChild('cleanBilling') cleanBilling!: CleanBillingComponent;
+  @ViewChild('steamBilling') steamBilling!: SteamBillingComponent;
+  @ViewChild('residueBilling') residueBilling!: ResidueBillingComponent;
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     switch (event.index) {
-     
-     case 0:
+
+      case 0:
         this.cleanBilling?.onTabFocused(); break;
-     case 1:
-         this.steamBilling?.onTabFocused(); break;
-     case 2:
-          this.residueBilling?.onTabFocused(); break;
+      case 1:
+        this.steamBilling?.onTabFocused(); break;
+      case 2:
+        this.residueBilling?.onTabFocused(); break;
     }
   }
 }

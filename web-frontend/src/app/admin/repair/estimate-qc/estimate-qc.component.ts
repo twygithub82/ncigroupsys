@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
@@ -70,7 +70,6 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
     TranslateModule,
     CommonModule,
     MatTableModule,
-    MatPaginatorModule,
     MatProgressSpinnerModule,
     RouterLink,
     MatRadioModule,

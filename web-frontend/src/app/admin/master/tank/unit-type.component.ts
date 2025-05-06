@@ -10,12 +10,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -25,25 +26,24 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Utility } from 'app/utilities/utility';
-import { MatDividerModule } from '@angular/material/divider';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotItem } from 'app/data-sources/package-depot';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
-import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { maxTankCount } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
-import { TreeMapModule } from '@swimlane/ngx-charts';
-import { maxTankCount } from 'environments/environment';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-package-repair',
@@ -74,10 +74,11 @@ import { maxTankCount } from 'environments/environment';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
-
 })
-
 
 export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
@@ -211,7 +212,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
-    FLAT_RATE_ONLY:'COMMON-FORM.FLAT-RATE-ONLY',
+    FLAT_RATE_ONLY: 'COMMON-FORM.FLAT-RATE-ONLY',
   }
 
   minMaterialCost: number = -20;
@@ -269,7 +270,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    public modulePackageService :ModulePackageService,
+    public modulePackageService: ModulePackageService,
   ) {
     super();
     this.initPcForm();
@@ -644,7 +645,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
@@ -707,17 +708,14 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
-  DisableAddTankButton()
-  {
-    var retval:boolean=false;
+  DisableAddTankButton() {
+    var retval: boolean = false;
 
-    if(this.modulePackageService.isStarterPackage())
-    {
-      if(this.unitTypeItems.length>maxTankCount)
-      {
+    if (this.modulePackageService.isStarterPackage()) {
+      if (this.unitTypeItems.length > maxTankCount) {
         return true;
       }
-    
+
     }
     return retval;
   }

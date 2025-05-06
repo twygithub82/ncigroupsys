@@ -5,6 +5,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -15,38 +16,37 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Utility } from 'app/utilities/utility';
-import { MatCardModule } from '@angular/material/card';
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
 import { ResidueItem } from 'app/data-sources/residue';
 import { SteamDS, SteamItem } from "app/data-sources/steam";
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { SearchStateService } from 'app/services/search-criteria.service';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { debounceTime, startWith, tap } from 'rxjs';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { SearchStateService } from 'app/services/search-criteria.service';
-import { debounceTime, startWith, tap } from 'rxjs';
 
 @Component({
   selector: 'app-job-order',
@@ -81,6 +81,9 @@ import { debounceTime, startWith, tap } from 'rxjs';
     MatTabsModule,
     JobOrderTaskComponent,
     BayOverviewComponent
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: MatPaginatorIntl }
   ]
 })
 export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -446,7 +449,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
 
     if (this.filterSteamForm!.get('customer')?.value) {
       where.and.push({
-        storing_order_tank:{storing_order:{customer_company:{ code: { eq: (this.filterSteamForm!.get('customer')?.value).code } }}}
+        storing_order_tank: { storing_order: { customer_company: { code: { eq: (this.filterSteamForm!.get('customer')?.value).code } } } }
       });
     }
 
@@ -519,22 +522,22 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   initializeFilterCustomerCompany() {
-      this.filterSteamForm!.get('customer')!.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        tap(value => {
-          var searchCriteria = '';
-          if (value && typeof value === 'object') {
-            searchCriteria = value.code;
-          } else {
-            searchCriteria = value || '';
-          }
-          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-            this.customer_companyList = data
-          });
-        })
-      ).subscribe();
-    }
+    this.filterSteamForm!.get('customer')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (value && typeof value === 'object') {
+          searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
+        }
+        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+          this.customer_companyList = data
+        });
+      })
+    ).subscribe();
+  }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -580,7 +583,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     this.resetForm();
     this.onFilterSteam();
-  
+
   }
 
   resetForm() {
@@ -788,20 +791,20 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
 
-    
-       @ViewChild('steamJobOrderTask') steamJobOrderTask!: JobOrderTaskComponent;
-       @ViewChild('steamBayOverview') steamBayOverview!: BayOverviewComponent;
-         
-    onTabSelected(event: MatTabChangeEvent): void {
-      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-      switch (event.index) {
-       
-       case 0:
-          this.onTabFocused(); break;
-       case 1:
-           this.steamJobOrderTask?.onTabFocused(); break;
-       case 2:
-            this.steamBayOverview?.onTabFocused(); break;
-      }
+
+  @ViewChild('steamJobOrderTask') steamJobOrderTask!: JobOrderTaskComponent;
+  @ViewChild('steamBayOverview') steamBayOverview!: BayOverviewComponent;
+
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+
+      case 0:
+        this.onTabFocused(); break;
+      case 1:
+        this.steamJobOrderTask?.onTabFocused(); break;
+      case 2:
+        this.steamBayOverview?.onTabFocused(); break;
     }
+  }
 }

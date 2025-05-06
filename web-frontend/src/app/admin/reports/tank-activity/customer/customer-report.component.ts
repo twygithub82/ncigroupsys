@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,7 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
@@ -73,6 +73,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -147,13 +150,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS'
   }
 
-  availableProcessStatus: string[] = 
-  [
-    '',
-    'CLEANING',
-    'REPAIR',
-    'STORAGE'
-  ]
+  availableProcessStatus: string[] =
+    [
+      '',
+      'CLEANING',
+      'REPAIR',
+      'STORAGE'
+    ]
 
   invForm?: UntypedFormGroup;
   searchForm?: UntypedFormGroup;
@@ -439,13 +442,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     }
 
 
-    var customerNm:string='';
+    var customerNm: string = '';
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      var cust=this.searchForm!.get('customer_code')?.value;
+      var cust = this.searchForm!.get('customer_code')?.value;
       where.storing_order = { customer_company: { code: { eq: cust.code } } };
       cond_counter++;
-      
+
       customerNm = this.ccDS.displayName(cust);
     }
 
@@ -572,29 +575,28 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       return;
     }
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,customerNm);
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, customerNm);
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string , customerNm?:string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, customerNm?: string) {
     // this.selection.clear();
-    var filterSpecificTankStatus=true;
+    var filterSpecificTankStatus = true;
     this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
 
         this.sotList = data;
 
-        if(filterSpecificTankStatus && this.sotList.length>0)
-        {
-          var availStatus = this.availableProcessStatus.filter(s=>s!="");
-          this.sotList = this.sotList.filter(sot=> availStatus.includes(sot.tank_status_cv!));
+        if (filterSpecificTankStatus && this.sotList.length > 0) {
+          var availStatus = this.availableProcessStatus.filter(s => s != "");
+          this.sotList = this.sotList.filter(sot => availStatus.includes(sot.tank_status_cv!));
         }
         this.endCursor = this.stmDS.pageInfo?.endCursor;
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
         report_type = this.cvDS.getCodeDescription(report_type, this.depotStatusCvList);
-        this.ProcessReportCustomerTankActivity(report_type!,customerNm!);
+        this.ProcessReportCustomerTankActivity(report_type!, customerNm!);
         // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
@@ -774,7 +776,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
 
 
-  ProcessReportCustomerTankActivity(report_type: string,customerNm:string) {
+  ProcessReportCustomerTankActivity(report_type: string, customerNm: string) {
     if (this.sotList.length === 0) {
       this.isGeneratingReport = false;
       return;
@@ -819,12 +821,12 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     });
 
 
-    this.onExportDetail(report_customer_tank_acts, report_type,customerNm);
+    this.onExportDetail(report_customer_tank_acts, report_type, customerNm);
 
 
   }
 
-  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[], report_type: string,customerNm:string) {
+  onExportDetail(repCustomerTankActivity: report_customer_tank_activity[], report_type: string, customerNm: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -843,7 +845,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       data: {
         report_customer_tank_activity: repCustomerTankActivity,
         type: report_type,
-        customerName:customerNm
+        customerName: customerNm
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -853,8 +855,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     });
   }
 
-  onTabFocused()
-  {
+  onTabFocused() {
     this.resetForm();
   }
 

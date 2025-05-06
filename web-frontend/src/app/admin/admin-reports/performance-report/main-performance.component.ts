@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -34,15 +34,16 @@ import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { SurveyorPerformanceReportComponent } from './surveyor/surveyor-performance-report.component';
 import { CleaningPerformanceReportComponent } from './cleaning/cleaning-performance-report.component';
 import { SteamPerformanceReportComponent } from './steam/steam-performance-report.component';
+import { SurveyorPerformanceReportComponent } from './surveyor/surveyor-performance-report.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-performance-team',
@@ -77,7 +78,9 @@ import { SteamPerformanceReportComponent } from './steam/steam-performance-repor
     SteamPerformanceReportComponent,
     SurveyorPerformanceReportComponent,
     CleaningPerformanceReportComponent
-    
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -117,7 +120,7 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
 
   translatedLangText: any = {};
   langText = {
-   
+
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
@@ -129,12 +132,12 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
     QC: 'COMMON-FORM.QC',
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANER: "COMMON-FORM.CLEANER",
-    STEAM:"COMMON-FORM.STEAM",
-    SURVEYOR:"COMMON-FORM.SURVEYOR",
+    STEAM: "COMMON-FORM.STEAM",
+    SURVEYOR: "COMMON-FORM.SURVEYOR",
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    SURVEYOR_PERFORMANCE_REPORT:"COMMON-FORM.SURVEYOR-PERFORMANCE-REPORT",
-    CLEANING_PERFORMANCE_REPORT:"COMMON-FORM.CLEANING-PERFORMANCE-REPORT",
-    STEAMING_PERFORMANCE_REPORT:"COMMON-FORM.STEAMING-PERFORMANCE-REPORT",
+    SURVEYOR_PERFORMANCE_REPORT: "COMMON-FORM.SURVEYOR-PERFORMANCE-REPORT",
+    CLEANING_PERFORMANCE_REPORT: "COMMON-FORM.CLEANING-PERFORMANCE-REPORT",
+    STEAMING_PERFORMANCE_REPORT: "COMMON-FORM.STEAMING-PERFORMANCE-REPORT",
 
   }
 
@@ -453,7 +456,7 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
     return cm ? `${cm.description} ` : '';
   }
   initializeFilterCustomerCompany() {
-  
+
   }
 
 
@@ -464,10 +467,10 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  
+
 
   calculateNetCost(repair: RepairItem): any {
-    
+
     return undefined;
   }
 
@@ -545,17 +548,17 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   popupDialogForm(row: InGateCleaningItem, action: string) {
-    
+
 
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-   
+
   }
 
   completeJob(jobOrderItem: JobOrderItem) {
 
-  
+
   }
 
   UpdateCleaningStatusInProgress(clean_guid: string) {
@@ -566,10 +569,10 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
   UpdateCleaningStatusCompleted(clean_guid: string) {
 
 
-    
+
   }
 
-  
+
 
   isStarted(cleanItem: InGateCleaningItem | undefined) {
 
@@ -618,10 +621,10 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-    @ViewChild('cleanPerformRep') cleanPerformRep!: CleaningPerformanceReportComponent;
-    @ViewChild('steamPerformRep') steamPerformRep!: SteamPerformanceReportComponent;
-    @ViewChild('surveyorPerformRep') surveyorPerformRep!: SurveyorPerformanceReportComponent;
-    
+  @ViewChild('cleanPerformRep') cleanPerformRep!: CleaningPerformanceReportComponent;
+  @ViewChild('steamPerformRep') steamPerformRep!: SteamPerformanceReportComponent;
+  @ViewChild('surveyorPerformRep') surveyorPerformRep!: SurveyorPerformanceReportComponent;
+
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     switch (event.index) {
@@ -630,7 +633,7 @@ export class MainPerformanceComponent extends UnsubscribeOnDestroyAdapter implem
       case 1:
         this.steamPerformRep?.onTabFocused(); break;
       case 2:
-          this.surveyorPerformRep?.onTabFocused(); break;
+        this.surveyorPerformRep?.onTabFocused(); break;
     }
   }
 }
