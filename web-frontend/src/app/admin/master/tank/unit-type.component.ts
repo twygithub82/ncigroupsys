@@ -713,7 +713,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
     if(this.modulePackageService.isStarterPackage())
     {
-      if(this.unitTypeItems.length>maxTankCount)
+      if(this.tnkDS.totalCount>maxTankCount)
       {
         return true;
       }

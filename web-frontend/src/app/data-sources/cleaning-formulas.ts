@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
+import { CleaningMethodItem } from './cleaning-method';
 
 export const ADD_CLEANING_FORMULA = gql`
   mutation addCleaningFormula($cf: cleaning_formulaInput!) {
@@ -27,6 +28,23 @@ export const SEARCH_CLEANING_FORMULA_QUERY = gql`
   query queryCleaningFormula($where: cleaning_formulaFilterInput , $order:[cleaning_formulaSortInput!], $first: Int, $after: String, $last: Int, $before: String){
     queryCleaningFormula(where: $where , order: $order, first: $first, after: $after, last: $last, before: $before){
       nodes {
+          cleaning_method_formula (where:{delete_dt:{eq:null}}) {
+            formula_guid
+            guid
+            method_guid
+            cleaning_method {
+              category_guid
+              create_by
+              create_dt
+              delete_dt
+              description
+              guid
+              name
+              sequence
+              update_by
+              update_dt
+            }
+          }
           create_by
           create_dt
           delete_dt
@@ -55,6 +73,31 @@ export const SEARCH_CLEANING_FORMULA_COUNT = gql`
   }
 `;
 
+export class CleaningMethodFormulaItem{
+  public guid?: string;
+  public formula_guid?: string;
+  public method_guid?: string;
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
+  public sequence?: number;
+  public cleaning_method?:CleaningMethodItem;
+  
+  constructor(item: Partial<CleaningMethodFormulaItem> = {}) {
+    this.guid = item.guid;
+    this.formula_guid = item.formula_guid;
+    this.method_guid = item.method_guid;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+    this.sequence=item.sequence;
+    this.cleaning_method=item.cleaning_method;
+  }
+}
 
 export class CleaningFormulaItem {
   public guid?: string;
@@ -65,6 +108,7 @@ export class CleaningFormulaItem {
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
+  public cleaning_method_formula?:CleaningMethodFormulaItem[];
 
   constructor(item: Partial<CleaningFormulaItem> = {}) {
     this.guid = item.guid;
@@ -75,6 +119,7 @@ export class CleaningFormulaItem {
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
+    this.cleaning_method_formula=item.cleaning_method_formula;
   }
 }
 

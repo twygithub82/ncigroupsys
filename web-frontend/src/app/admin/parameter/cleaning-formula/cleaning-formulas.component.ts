@@ -39,6 +39,7 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-cleaning-formulas',
@@ -75,7 +76,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   displayedColumns = [
     'category_description',
     'category_duration',
-    'update_date'
+    'update_date',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA'
@@ -443,5 +445,53 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     // this.banTypeControl.reset();
   }
 
+  handleDelete(event: Event, row: any, ): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.deleteItem(row);
+  }
+
+  deleteItem(row: CleaningFormulaItem) {
+     
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+          action: 'new',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+         this.RmoveCleaningFormula(row.guid!);
+        }
+      });
+    }
+  
+  CanDelete(row: CleaningFormulaItem):boolean{
+    var bRetval:boolean =false;
+
+      if(!bRetval)
+      {
+        bRetval = (row?.cleaning_method_formula?.length||0)===0;
+      }
+    return bRetval;
+  }
+
+  RmoveCleaningFormula( guids: string) {
+  
+      this.fmlDS.deleteCleaningFormula([guids]).subscribe(result => {
+        if (result.data.deleteCleaningFormula) {
+          this.handleSaveSuccess(result.data.deleteCleaningFormula);
+          this.search();
+        }
+      })
+  
+    }
 
 }

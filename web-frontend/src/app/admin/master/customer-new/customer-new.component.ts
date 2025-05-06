@@ -628,17 +628,17 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   deleteItem(row: StoringOrderTankItem, index: number) {
+    
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        item: row,
-        langText: this.langText,
-        index: index
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
       },
       direction: tempDirection
     });
@@ -1044,7 +1044,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   handleDelete(event: Event, row: any, index: number): void {
+    event.preventDefault(); // Prevents the form submission
+    event.stopPropagation();
     this.deleteItem(row, index);
+
   }
 
   cancelItem(event: Event, row: RepairPartItem) {

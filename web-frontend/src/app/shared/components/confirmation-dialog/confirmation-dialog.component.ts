@@ -2,8 +2,9 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDia
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatDividerModule } from '@angular/material/divider';
+import { Utility } from 'app/utilities/utility';
 
 export interface DialogData {
   action: string;
@@ -32,6 +33,7 @@ export class ConfirmationDialogComponent {
   index: number;
   headerText: string;
   act: string;
+  translatedLangText: any = {};
   langText: any = {
     CANCEL: 'COMMON-FORM.CANCEL',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -42,8 +44,10 @@ export class ConfirmationDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+     private translate: TranslateService
   ) {
+    this.translateLangText();
     // Set the defaults
     this.headerText = data.headerText || this.langText.ARE_YOU_SURE_DELETE
     this.index = data.index;
@@ -62,5 +66,15 @@ export class ConfirmationDialogComponent {
   }
   hideCancel(): boolean {
     return this.act == "confirm_only";
+  }
+
+   translateLangText() {
+      Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+        this.translatedLangText = translations;
+      });
+    }
+
+  getCloseButtonContent():string{
+    return `${this.translatedLangText.CLOSE}`;
   }
 }
