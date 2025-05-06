@@ -697,6 +697,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     console.log(schedulingSot);
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '35vw',
       data: {
         action: "cancel",
         sot: sot,
