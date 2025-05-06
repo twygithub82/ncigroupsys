@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -25,7 +25,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -35,12 +35,12 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CleaningEstimatePdfComponent } from 'app/document-template/pdf/cleaning-estimate-pdf/cleaning-estimate-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { SearchStateService } from 'app/services/search-criteria.service';
-import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-in-gate',
@@ -71,6 +71,9 @@ import { ModulePackageService } from 'app/services/module-package.service';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -183,7 +186,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     private apollo: Apollo,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    public modulePackageService:ModulePackageService
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

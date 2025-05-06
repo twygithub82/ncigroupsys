@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -24,10 +24,10 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem } from 'app/data-sources/billing';
@@ -75,6 +75,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatDividerModule,
     MatSlideToggleModule,
     MatCardModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -623,7 +626,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,

@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -27,6 +27,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, BillingSOTItem, BillingStorageDetail, StorageDetailRequest } from 'app/data-sources/billing';
@@ -74,6 +75,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatSlideToggleModule,
     MatCardContent,
     MatCardModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -447,7 +451,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
       var condInvDt = {};
 
-      condInvDt={storing_order_tank:{storage_detail:{some:{ billing: { invoice_dt: { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) } } }}}};
+      condInvDt = { storing_order_tank: { storage_detail: { some: { billing: { invoice_dt: { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) } } } } } };
       where.and.push(condInvDt);
 
       //where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
@@ -460,7 +464,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
       var condInvDt = {};
 
-      condInvDt={storing_order_tank:{storage_detail:{some:{  end_dt: { gte: Utility.convertDate(this.searchForm!.value['cutoff_dt']), lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) } } }}};
+      condInvDt = { storing_order_tank: { storage_detail: { some: { end_dt: { gte: Utility.convertDate(this.searchForm!.value['cutoff_dt']), lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) } } } } };
       where.and.push(condInvDt);
 
       //where.create_dt = { lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) };
@@ -492,7 +496,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
       var condInvDt = {};
 
-      condInvDt={storing_order_tank:{storage_detail:{some:{ billing: { invoice_no:  { contains: this.searchForm!.get('inv_no')?.value } } }}}};
+      condInvDt = { storing_order_tank: { storage_detail: { some: { billing: { invoice_no: { contains: this.searchForm!.get('inv_no')?.value } } } } } };
       where.and.push(condInvDt);
 
       //where.storage_billing.invoice_no = { contains: this.searchForm!.get('inv_no')?.value };
@@ -622,7 +626,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,

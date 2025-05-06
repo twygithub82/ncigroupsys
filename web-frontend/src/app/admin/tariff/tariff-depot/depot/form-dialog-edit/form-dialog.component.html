@@ -2,7 +2,7 @@
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-         <h3>{{GetTitle()}}</h3> 
+         <h4>{{GetTitle()}}</h4> 
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -17,7 +17,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                  <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.PROFILE_NAME }}</mat-label>
-                    <input matInput formControlName="name" type="text" required >
+                    <input matInput formControlName="name" type="text" required 
+                    (input)="onAlphaNumericOnly($event, 'name')">
                     <!-- @if (pcForm.get('name')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.PROFILE_NAME }} {{translatedLangText.CARGO_REQUIRED}}

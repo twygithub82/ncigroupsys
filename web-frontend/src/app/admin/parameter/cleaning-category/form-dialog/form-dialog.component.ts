@@ -10,7 +10,6 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/materi
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -62,7 +61,6 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     PreventNonNumericDirective
   ],
 })
@@ -177,7 +175,8 @@ export class FormDialogComponent {
     CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
     CATEGORY_COST: "COMMON-FORM.CARGO-COST",
-    CLEANING_CATEGORY: "COMMON-FORM.CLEANING-CATEGORY"
+    CLEANING_CATEGORY: "COMMON-FORM.CLEANING-CATEGORY",
+    CATEGORY: "COMMON-FORM.CATEGORY"
   };
 
 
@@ -242,10 +241,10 @@ export class FormDialogComponent {
   }
   GetTitle() {
     if (this.selectedItem.name !== undefined) {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_CATEGORY;
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CATEGORY;
     }
     else {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_CATEGORY;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.CATEGORY;
     }
   }
 

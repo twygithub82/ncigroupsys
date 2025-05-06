@@ -1,6 +1,6 @@
 import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -9,27 +9,25 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FileManagerService } from '@core/service/filemanager.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Utility } from 'app/utilities/utility';
-import { HttpClientModule } from '@angular/common/http';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatTabsModule } from '@angular/material/tabs';
-import { FileManagerService } from '@core/service/filemanager.service';
+import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
@@ -37,11 +35,11 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { ClassNoItem, TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { BehaviorSubject, startWith, debounceTime, firstValueFrom, tap } from 'rxjs';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { BehaviorSubject, debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 
 @Component({
@@ -70,7 +68,6 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
     CommonModule,
     MatLabel,
     MatTableModule,
-    MatPaginatorModule,
     MatProgressSpinnerModule,
     MatRadioModule,
     MatDividerModule,

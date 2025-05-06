@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -27,6 +27,7 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -35,14 +36,13 @@ import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-c
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { MessageDialogComponent } from 'app/shared/components/message-dialog/message-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -71,6 +71,9 @@ import { ModulePackageService } from 'app/services/module-package.service';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 

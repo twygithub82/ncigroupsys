@@ -10,7 +10,6 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/materi
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -60,7 +59,6 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     PreventNonNumericDirective
   ],
 })
@@ -121,6 +119,7 @@ export class FormDialogComponent {
     MIN_DURATION: "COMMON-FORM.MIN-DURATION",
     MAX_DURATION: "COMMON-FORM.MAX-DURATION",
     CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
+    FORMULA: "COMMON-FORM.FORMULA",
     DURATION: "COMMON-FORM.DURATION-MIN"
   };
 
@@ -161,10 +160,10 @@ export class FormDialogComponent {
 
   GetTitle() {
     if (this.selectedItem.description !== undefined) {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_FORMULA;
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.FORMULA;
     }
     else {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_FORMULA;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.FORMULA;
     }
   }
 

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -10,7 +10,6 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/materi
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -71,7 +70,6 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     PreventNonNumericDirective
   ],
 })
@@ -188,6 +186,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    PROFILE: 'COMMON-FORM.PROFILE',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
@@ -268,7 +267,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
   GetTitle() {
 
-    return this.translatedLangText.EDIT + " " + this.translatedLangText.DEPOT_PROFILE;
+    return this.translatedLangText.EDIT + " " + this.translatedLangText.PROFILE;
 
   }
 
@@ -501,6 +500,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
     return `${day}/${month}/${year}`;
 
+  }
+
+  onAlphaNumericOnly(event: Event, controlName: string): void {
+    Utility.onAlphaNumericOnly(event, this.pcForm?.get(controlName)!);
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {

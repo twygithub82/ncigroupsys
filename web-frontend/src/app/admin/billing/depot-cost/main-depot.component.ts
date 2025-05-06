@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -47,6 +47,7 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 //import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 //import { CleanBillingComponent } from './clean/clean-billing.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GateBillingComponent } from './gate/gate-billing.component';
 import { LOLOBillingComponent } from './lolo/lolo-billing.component';
 import { PreinspectionBillingComponent } from './pre-inspection/preinspection-billing.component';
@@ -85,7 +86,9 @@ import { StorageBillingComponent } from './storage/storage-billing.component';
     PreinspectionBillingComponent,
     StorageBillingComponent,
     GateBillingComponent
-
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -988,7 +991,7 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     return cleanItem.status_cv == 'JOB_IN_PROGRESS';
   }
 
-  
+
   sortList(itemList: any[]) {
     itemList.sort((a: any, b: any) => {
       const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
@@ -1010,24 +1013,24 @@ export class MainDepotComponent extends UnsubscribeOnDestroyAdapter implements O
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
- 
-     @ViewChild('storageBilling') storageBilling!: StorageBillingComponent;
-      @ViewChild('loloBilling') loloBilling!: LOLOBillingComponent;
-      @ViewChild('preinspectBilling') preinspectBilling!: PreinspectionBillingComponent;
-      @ViewChild('gateBilling') gateBilling!: GateBillingComponent;
-      
-    onTabSelected(event: MatTabChangeEvent): void {
-      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-      switch (event.index) {
-       
-       case 0:
-          this.gateBilling?.onTabFocused(); break;
-       case 1:
-           this.preinspectBilling?.onTabFocused(); break;
-       case 2:
-            this.loloBilling?.onTabFocused(); break;
-       case 3:
-             this.storageBilling?.onTabFocused(); break;
-      }
+
+  @ViewChild('storageBilling') storageBilling!: StorageBillingComponent;
+  @ViewChild('loloBilling') loloBilling!: LOLOBillingComponent;
+  @ViewChild('preinspectBilling') preinspectBilling!: PreinspectionBillingComponent;
+  @ViewChild('gateBilling') gateBilling!: GateBillingComponent;
+
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+
+      case 0:
+        this.gateBilling?.onTabFocused(); break;
+      case 1:
+        this.preinspectBilling?.onTabFocused(); break;
+      case 2:
+        this.loloBilling?.onTabFocused(); break;
+      case 3:
+        this.storageBilling?.onTabFocused(); break;
     }
+  }
 }

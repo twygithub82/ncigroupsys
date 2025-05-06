@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -6,17 +6,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabBody, MatTabGroup, MatTabHeader, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
@@ -25,14 +25,14 @@ import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { TankDS, TankItem } from 'app/data-sources/tank';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { provideNgxMask } from 'ngx-mask';
 import { firstValueFrom } from 'rxjs';
+import { ModulePackageService } from 'app/services/module-package.service';
+
 
 export interface DialogData {
   action?: string;
@@ -71,7 +71,6 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     MatSlideToggleModule
   ],
 })
@@ -221,6 +220,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    public modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();

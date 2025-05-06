@@ -10,7 +10,6 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/materi
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -74,7 +73,6 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     PreventNonNumericDirective
   ],
 })
@@ -192,6 +190,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    PROFILE: 'COMMON-FORM.PROFILE',
     VIEW: 'COMMON-FORM.VIEW',
     DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
@@ -306,7 +305,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
   GetTitle() {
 
-    return this.translatedLangText.NEW + " " + this.translatedLangText.DEPOT_PROFILE;
+    return this.translatedLangText.NEW + " " + this.translatedLangText.PROFILE;
 
   }
 
@@ -378,6 +377,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         this.pcForm?.get('name')?.setErrors({ existed: true });
       }
     });
+  }
+
+  onAlphaNumericOnly(event: Event, controlName: string): void {
+    Utility.onAlphaNumericOnly(event, this.pcForm?.get(controlName)!);
   }
 
   displayLastUpdated(r: TariffDepotItem) {

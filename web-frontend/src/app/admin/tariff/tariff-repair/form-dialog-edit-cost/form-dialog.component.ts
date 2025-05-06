@@ -10,7 +10,6 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@ang
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -81,7 +80,6 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     PreventNonNumericDirective
   ],
 })

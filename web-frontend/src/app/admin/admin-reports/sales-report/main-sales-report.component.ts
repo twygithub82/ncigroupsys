@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -34,14 +34,15 @@ import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { SalesMonthlyAdminReportComponent } from 'app/admin/admin-reports/sales-report/sales-monthly-report/sales-monthly.component';
+import { SalesYearlyAdminReportComponent } from 'app/admin/admin-reports/sales-report/sales-yearly-report/sales-yearly.component';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import {SalesMonthlyAdminReportComponent} from 'app/admin/admin-reports/sales-report/sales-monthly-report/sales-monthly.component';
-import{SalesYearlyAdminReportComponent}from 'app/admin/admin-reports/sales-report/sales-yearly-report/sales-yearly.component';
 
 @Component({
   selector: 'app-main-sales-report',
@@ -75,7 +76,9 @@ import{SalesYearlyAdminReportComponent}from 'app/admin/admin-reports/sales-repor
     MatTabsModule,
     SalesMonthlyAdminReportComponent,
     SalesYearlyAdminReportComponent
-    
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class MainSalesReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -115,7 +118,7 @@ export class MainSalesReportComponent extends UnsubscribeOnDestroyAdapter implem
 
   translatedLangText: any = {};
   langText = {
-   
+
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
@@ -128,12 +131,12 @@ export class MainSalesReportComponent extends UnsubscribeOnDestroyAdapter implem
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANING: "COMMON-FORM.CLEANING",
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_REPORT:'COMMON-FORM.STEAM-REPORT',
-    RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
-    REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
-    CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
-    MONTHLY_SALES_REPORT:'COMMON-FORM.MONTHLY-SALES-REPORT',
-    YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT'
+    STEAM_REPORT: 'COMMON-FORM.STEAM-REPORT',
+    RESIDUE_REPORT: 'COMMON-FORM.RESIDUE-REPORT',
+    REPAIR_REPORT: 'COMMON-FORM.REPAIR-REPORT',
+    CLEAN_REPORT: 'COMMON-FORM.CLEAN-REPORT',
+    MONTHLY_SALES_REPORT: 'COMMON-FORM.MONTHLY-SALES-REPORT',
+    YEARLY_SALES_REPORT: 'COMMON-FORM.YEARLY-SALES-REPORT'
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -804,19 +807,19 @@ export class MainSalesReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  
-      @ViewChild('salesMonthlyRep') salesMonthlyRep!: SalesMonthlyAdminReportComponent;
-      @ViewChild('salesYearlyRep') salesYearlyRep!: SalesYearlyAdminReportComponent;
-      
-      
-    onTabSelected(event: MatTabChangeEvent): void {
-      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-      switch (event.index) {
-        case 0:
-          this.salesMonthlyRep?.onTabFocused(); break;
-        case 1:
-          this.salesYearlyRep?.onTabFocused(); break;
-       
-      }
+
+  @ViewChild('salesMonthlyRep') salesMonthlyRep!: SalesMonthlyAdminReportComponent;
+  @ViewChild('salesYearlyRep') salesYearlyRep!: SalesYearlyAdminReportComponent;
+
+
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+      case 0:
+        this.salesMonthlyRep?.onTabFocused(); break;
+      case 1:
+        this.salesYearlyRep?.onTabFocused(); break;
+
     }
+  }
 }

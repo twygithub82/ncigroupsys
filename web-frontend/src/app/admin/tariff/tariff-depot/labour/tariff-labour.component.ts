@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -25,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { TariffBufferItem } from 'app/data-sources/tariff-buffer';
@@ -63,6 +64,9 @@ import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.compone
     MatAutocompleteModule,
     MatDividerModule,
     PreventNonNumericDirective
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
@@ -391,8 +395,8 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
       this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
       this.hasNextPage = this.tariffLabourDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.tariffLabourDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
+      // this.pageIndex = 0;
+      // this.paginator.pageIndex = 0;
       this.selection.clear();
       if (!this.hasPreviousPage)
         this.previous_endCursor = undefined;

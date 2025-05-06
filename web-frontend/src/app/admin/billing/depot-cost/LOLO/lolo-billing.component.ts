@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -27,6 +27,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, BillingSOTItem } from 'app/data-sources/billing';
@@ -73,6 +74,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatSlideToggleModule,
     MatCardContent,
     MatCardModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -378,8 +382,8 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
-    where.and=[];
-    where.and.push({or:[{lift_on:{eq:true}},{lift_off:{eq:true}}]});
+    where.and = [];
+    where.and.push({ or: [{ lift_on: { eq: true } }, { lift_off: { eq: true } }] });
     //where.and=[{lift_on:{eq:true}},{lift_off:{eq:true}}];
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
@@ -404,11 +408,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
 
-    if(this.searchForm!.get('invoiced')?.value)
-      {
-        where.or = [{loff_billing_guid:{ neq: null }},{lon_billing_guid:{ neq: null }}];
-        
-      }
+    if (this.searchForm!.get('invoiced')?.value) {
+      where.or = [{ loff_billing_guid: { neq: null } }, { lon_billing_guid: { neq: null } }];
+
+    }
 
     if (this.searchForm!.get('customer_code')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -441,11 +444,11 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
       if (!where.and) where.and = [];
-      var orCond=[];
-      orCond.push({lon_billing:{invoice_dt:{ gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) }}});
-      orCond.push({loff_billing:{invoice_dt:{ gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) }}});
-      where.and.push({or:orCond});
-     //where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
+      var orCond = [];
+      orCond.push({ lon_billing: { invoice_dt: { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) } } });
+      orCond.push({ loff_billing: { invoice_dt: { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end']) } } });
+      where.and.push({ or: orCond });
+      //where.gateio_billing.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
@@ -477,14 +480,14 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     if (this.searchForm!.get('inv_no')?.value) {
       if (!where.and) where.and = [];
-      var orCond=[];
-      orCond.push({lon_billing:{invoice_no : { contains: this.searchForm!.get('inv_no')?.value }}});
-      orCond.push({loff_billing:{invoice_no : { contains: this.searchForm!.get('inv_no')?.value }}});
-      where.and.push({or:orCond});
+      var orCond = [];
+      orCond.push({ lon_billing: { invoice_no: { contains: this.searchForm!.get('inv_no')?.value } } });
+      orCond.push({ loff_billing: { invoice_no: { contains: this.searchForm!.get('inv_no')?.value } } });
+      where.and.push({ or: orCond });
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-   
+
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
@@ -605,7 +608,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,

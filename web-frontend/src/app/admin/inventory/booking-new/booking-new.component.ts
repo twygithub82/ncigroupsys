@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -28,7 +28,7 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
@@ -77,6 +77,9 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatDividerModule,
     MatCardModule,
     PreventNonNumericDirective,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -574,7 +577,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
         this.sotSelection.clear();
         this.selectedCompany = "";
         this.selectedItemsPerPage = {};
-        
+
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
@@ -879,7 +882,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     //   if (result.action === 'confirmed') {
     //     this.resetForm();
-  this.search();
+    this.search();
     //   }
     // });
   }

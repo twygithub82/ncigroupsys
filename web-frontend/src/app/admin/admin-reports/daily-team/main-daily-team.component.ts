@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -34,13 +34,14 @@ import { Utility } from 'app/utilities/utility';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import {DailyTeamReportComponent} from './reports/daily-team-report.component'
+import { DailyTeamReportComponent } from './reports/daily-team-report.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-main-daily-team',
@@ -73,7 +74,9 @@ import {DailyTeamReportComponent} from './reports/daily-team-report.component'
     MatCardModule,
     MatTabsModule,
     DailyTeamReportComponent
-    
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -113,7 +116,7 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
 
   translatedLangText: any = {};
   langText = {
-   
+
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
@@ -126,10 +129,10 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANING: "COMMON-FORM.CLEANING",
     CLEANING_BILLING: "MENUITEMS.BILLING.LIST.CLEANING-BILL",
-    STEAM_REPORT:'COMMON-FORM.STEAM-REPORT',
-    RESIDUE_REPORT:'COMMON-FORM.RESIDUE-REPORT',
-    REPAIR_REPORT:'COMMON-FORM.REPAIR-REPORT',
-    CLEAN_REPORT:'COMMON-FORM.CLEAN-REPORT',
+    STEAM_REPORT: 'COMMON-FORM.STEAM-REPORT',
+    RESIDUE_REPORT: 'COMMON-FORM.RESIDUE-REPORT',
+    REPAIR_REPORT: 'COMMON-FORM.REPAIR-REPORT',
+    CLEAN_REPORT: 'COMMON-FORM.CLEAN-REPORT',
 
   }
 
@@ -448,7 +451,7 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
     return cm ? `${cm.description} ` : '';
   }
   initializeFilterCustomerCompany() {
-  
+
   }
 
 
@@ -459,10 +462,10 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
-  
+
 
   calculateNetCost(repair: RepairItem): any {
-    
+
     return undefined;
   }
 
@@ -540,17 +543,17 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   popupDialogForm(row: InGateCleaningItem, action: string) {
-    
+
 
   }
 
   toggleJobState(event: Event, isStarted: boolean | undefined, jobOrderItem: JobOrderItem) {
-   
+
   }
 
   completeJob(jobOrderItem: JobOrderItem) {
 
-  
+
   }
 
   UpdateCleaningStatusInProgress(clean_guid: string) {
@@ -561,10 +564,10 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
   UpdateCleaningStatusCompleted(clean_guid: string) {
 
 
-    
+
   }
 
-  
+
 
   isStarted(cleanItem: InGateCleaningItem | undefined) {
 
@@ -615,6 +618,6 @@ export class MainDailyTeamComponent extends UnsubscribeOnDestroyAdapter implemen
 
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-   
+
   }
 }

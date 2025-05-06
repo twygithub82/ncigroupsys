@@ -10,12 +10,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -25,24 +26,23 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
-import { Utility } from 'app/utilities/utility';
-import { MatDividerModule } from '@angular/material/divider';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tariff-repair',
@@ -75,6 +75,9 @@ import { ModulePackageService } from 'app/services/module-package.service';
     MatAutocompleteModule,
     MatDividerModule,
     PreventNonNumericDirective
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter

@@ -11,7 +11,6 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/materi
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -69,14 +68,10 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     MatTooltipModule,
     CdkDrag,
-    //CdkDropListGroup,
     CdkDropList,
     CdkDragPlaceholder,
-    // CdkDragHandle,
-
   ],
 })
 export class FormDialogComponent {
@@ -204,6 +199,7 @@ export class FormDialogComponent {
     CLEANING_STEPS: "COMMON-FORM.CLEANING-STEPS",
     NO_CLEANING_STEPS: "COMMON-FORM.NO-CLEANING-STEPS",
     PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
+    PROCESS: "COMMON-FORM.PROCESS",
     CATEGORY:"COMMON-FORM.CATEGORY"
   };
 
@@ -299,10 +295,10 @@ export class FormDialogComponent {
   }
   GetTitle() {
     if (this.selectedItem.name !== undefined) {
-      return this.translatedLangText.UPDATE + " " + this.translatedLangText.CLEANING_METHOD;
+      return this.translatedLangText.UPDATE + " " + this.translatedLangText.PROCESS;
     }
     else {
-      return this.translatedLangText.NEW + " " + this.translatedLangText.CLEANING_METHOD;
+      return this.translatedLangText.NEW + " " + this.translatedLangText.PROCESS;
     }
   }
 

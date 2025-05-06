@@ -2,7 +2,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -28,7 +28,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -75,6 +75,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatCardModule,
     MatTabsModule,
     MatButtonToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -252,10 +255,14 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     if (this.filterJobOrderForm!.get('filterRepair')?.value) {
       const tankNo = this.filterJobOrderForm!.get('filterRepair')?.value;
       where.or = [
-        { storing_order_tank: { or: [
-          { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
-          { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
-        ] } },
+        {
+          storing_order_tank: {
+            or: [
+              { tank_no: { contains: Utility.formatContainerNumber(tankNo) } },
+              { tank_no: { contains: Utility.formatTankNumberForSearch(tankNo) } }
+            ]
+          }
+        },
         // { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } } }
       ];
     }
@@ -440,7 +447,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value?.code||'';
+          searchCriteria = value?.code || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data

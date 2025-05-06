@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,7 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
@@ -33,20 +33,17 @@ import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity, report_status } from 'app/data-sources/reports';
+import { ReportDS, tank_survey_summary, tank_survey_summary_group_by_survey_dt } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { LocationStatusSummaryPdfComponent } from 'app/document-template/pdf/status/location-pdf/location-status-summary-pdf.component';
-import { TransferLocationPdfComponent } from 'app/document-template/pdf/transfer-location-pdf/transfer-location-pdf.component';
+import { TankSurveyPdfComponent } from 'app/document-template/pdf/tank-survey/tank-survey-pdf/tank-survey-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { ReportDS, tank_survey_summary, tank_survey_summary_group_by_survey_dt } from 'app/data-sources/reports'
-import { TankSurveyPdfComponent } from 'app/document-template/pdf/tank-survey/tank-survey-pdf/tank-survey-pdf.component';
 import { reportPreviewWindowDimension } from 'environments/environment';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tank-survey-report',
@@ -76,6 +73,9 @@ import { reportPreviewWindowDimension } from 'environments/environment';
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -213,7 +213,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   noCond: boolean = false;
   surveyList: tank_survey_summary[] = [];
 
-  isGeneratingReport=false;
+  isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -388,7 +388,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
   search(report_type: number) {
 
-    this.isGeneratingReport=true;
+    this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     var dailytankSurveyReq: any = {};
@@ -420,7 +420,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.searchForm?.get('svy_name')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      dailytankSurveyReq.surveyor_name = this.searchForm?.get('svy_name')?.value?.name||"";
+      dailytankSurveyReq.surveyor_name = this.searchForm?.get('svy_name')?.value?.name || "";
       cond_counter++;
     }
 
@@ -459,7 +459,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
-     this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
       return;
     }
     // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
@@ -572,11 +572,10 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
 
   ProcessReportTankSurvey(date: string) {
-    if (this.surveyList.length === 0)
-      {
-        this.isGeneratingReport=false;
-        return;
-      } 
+    if (this.surveyList.length === 0) {
+      this.isGeneratingReport = false;
+      return;
+    }
 
     var report_summary: tank_survey_summary_group_by_survey_dt[] = [];
 
@@ -628,7 +627,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 

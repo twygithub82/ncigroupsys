@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -44,8 +44,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {RepairEstimatePreviewComponent} from './preview_repair_estimate/estimate-preview.component';
-
+import { RepairEstimatePreviewComponent } from './preview_repair_estimate/estimate-preview.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-repair-billing',
@@ -65,7 +65,6 @@ import {RepairEstimatePreviewComponent} from './preview_repair_estimate/estimate
     MatProgressSpinnerModule,
     MatMenuModule,
     MatPaginatorModule,
-    RouterLink,
     TranslateModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -79,6 +78,9 @@ import {RepairEstimatePreviewComponent} from './preview_repair_estimate/estimate
     MatDividerModule,
     MatCardModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -164,7 +166,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     OWNER: 'COMMON-FORM.OWNER',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
     DELETE: 'COMMON-FORM.DELETE',
-    
+
   }
 
   invForm?: UntypedFormGroup;
@@ -666,7 +668,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
@@ -1263,31 +1265,31 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     return '-';
   }
 
-  showEstimateDetail(event: Event, row:RepairItem){
+  showEstimateDetail(event: Event, row: RepairItem) {
     this.preventDefault(event);  // Prevents the form submission
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
     //  const addSot = row ?? new RepairPartItem();
-     // addSot.repair_guid = addSot.repair_guid;
-      const dialogRef = this.dialog.open(RepairEstimatePreviewComponent, {
-        width: '90vw',
-        height: '90vh',
-        data: {
-          
-          repair_guid: row.guid,
-          sot_guid: row.sot_guid
-  
-        },
-        direction: tempDirection
-      });
-    
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-       
-      });
+    // addSot.repair_guid = addSot.repair_guid;
+    const dialogRef = this.dialog.open(RepairEstimatePreviewComponent, {
+      width: '90vw',
+      height: '90vh',
+      data: {
+
+        repair_guid: row.guid,
+        sot_guid: row.sot_guid
+
+      },
+      direction: tempDirection
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+    });
   }
-  
+
 }

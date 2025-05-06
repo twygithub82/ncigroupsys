@@ -1,5 +1,5 @@
 import { Direction } from '@angular/cdk/bidi';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -25,21 +25,21 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS } from 'app/data-sources/billing';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { report_customer_tank_activity, ReportDS, ZeroApprovalCostItem } from 'app/data-sources/reports';
-import { Utility } from 'app/utilities/utility';
+import { ReportDS, ZeroApprovalCostItem } from 'app/data-sources/reports';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ZeroApprovalCostPdfComponent } from 'app/document-template/pdf/admin-reports/zero-approval-cost/zero-approval-cost-pdf.component';
+import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -55,7 +55,6 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatIconModule,
     MatTableModule,
     MatSortModule,
-    NgClass,
     MatCheckboxModule,
     MatRippleModule,
     MatProgressSpinnerModule,
@@ -73,6 +72,9 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatAutocompleteModule,
     MatDividerModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -145,9 +147,9 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
-    YEAR:'COMMON-FORM.YEAR',
-    MONTH:'COMMON-FORM.MONTH',
-    COST_TYPE:'COMMON-FORM.COST-TYPE'
+    YEAR: 'COMMON-FORM.YEAR',
+    MONTH: 'COMMON-FORM.MONTH',
+    COST_TYPE: 'COMMON-FORM.COST-TYPE'
 
   }
 
@@ -163,7 +165,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
-  repDS:ReportDS;
+  repDS: ReportDS;
   //clnDS:InGateCleaningDS;
   stmDS: SteamDS;
   plDS: PackageLabourDS;
@@ -172,9 +174,9 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
   selectedEstimateLabourCost?: number;
-  
+
   sotList: StoringOrderTankItem[] = [];
-  repData:ZeroApprovalCostItem[]=[];
+  repData: ZeroApprovalCostItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   branch_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -204,9 +206,9 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
   isGeneratingReport = false;
-  yearList:string[]=[];
-  monthList:string[]=[];
-  filterCostType:string[]=['CLEANING','REPAIR','STEAMING','RESIDUE'];
+  yearList: string[] = [];
+  monthList: string[] = [];
+  filterCostType: string[] = ['CLEANING', 'REPAIR', 'STEAMING', 'RESIDUE'];
 
   constructor(
     public httpClient: HttpClient,
@@ -218,7 +220,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.translateLangText();
-    
+
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
@@ -227,7 +229,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     this.stmDS = new SteamDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
-    this.repDS=new ReportDS(this.apollo);
+    this.repDS = new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -236,7 +238,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    
+
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
     this.initSearchForm();
@@ -251,16 +253,16 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   }
   initSearchForm() {
     var thisYear = new Date().getFullYear();
-    var thisMonth= new Date().toLocaleString("en-US",{month:"long"});
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm = this.fb.group({
       tank_no: [''],
       eir_no: [''],
       customer_code: this.customerCodeControl,
       last_cargo: this.lastCargoControl,
-      month:`${thisMonth}`,
-      year:`${thisYear}`,
+      month: `${thisMonth}`,
+      year: `${thisYear}`,
       depot_status_cv: [''],
-      cost_type:[''],
+      cost_type: [''],
     });
   }
 
@@ -314,12 +316,11 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
 
   public loadData() {
     var thisYear = new Date().getFullYear();
-    var startYear = thisYear-5;
-    for(var i=startYear ; i<=thisYear;i++)
-    {
+    var startYear = thisYear - 5;
+    for (var i = startYear; i <= thisYear; i++) {
       this.yearList.push(i.toString());
     }
-    this.monthList=Array.from({ length: 12 }, (_, i) =>
+    this.monthList = Array.from({ length: 12 }, (_, i) =>
       new Date(2000, i, 1).toLocaleString("en-US", { month: "long" })
     );
     const queries = [
@@ -333,9 +334,9 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
       this.costTypeCvList = data;
-      var allType = this.costTypeCvList.find(c=>c.code_val=='CLEANING');
+      var allType = this.costTypeCvList.find(c => c.code_val == 'CLEANING');
       this.searchForm?.patchValue({
-        cost_type:allType
+        cost_type: allType
       });
     });
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -401,16 +402,16 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-    
+
     var cond_counter = 0;
     var report_type: string = "ALL";
     const where: any = {};
     this.selectedEstimateItem = undefined;
     this.selectedEstimateLabourCost = 0;
     this.selection.clear();
-    var date:string="";
-    var customer:string="";
-    var code:string="";
+    var date: string = "";
+    var customer: string = "";
+    var code: string = "";
 
     // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
 
@@ -418,21 +419,20 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     // {
     //    queryType=2;
     // }
-    if(this.searchForm?.invalid)return;
+    if (this.searchForm?.invalid) return;
 
     this.isGeneratingReport = true;
-    
+
 
     if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no = `${this.searchForm!.get('tank_no')?.value}` ;
+      where.tank_no = `${this.searchForm!.get('tank_no')?.value}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('depot_status_cv')?.value) {
-      if(this.searchForm!.get('depot_status_cv')?.value!=='ALL')
-      {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
-        where.tank_status=`${this.searchForm!.get('depot_status_cv')?.value}`;
+      if (this.searchForm!.get('depot_status_cv')?.value !== 'ALL') {
+        // if(!where.storing_order_tank) where.storing_order_tank={};
+        where.tank_status = `${this.searchForm!.get('depot_status_cv')?.value}`;
       }
       cond_counter++;
     }
@@ -447,7 +447,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
-      where.eir_no=`${this.searchForm!.get('eir_no')?.value}`;
+      where.eir_no = `${this.searchForm!.get('eir_no')?.value}`;
       cond_counter++;
     }
 
@@ -458,30 +458,30 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.searchForm?.get('month')?.value) {
 
-      var month=this.searchForm?.get('month')?.value;
+      var month = this.searchForm?.get('month')?.value;
       const monthIndex = this.monthList.findIndex(m => month === m);
-      where.month = (monthIndex+1);
+      where.month = (monthIndex + 1);
     }
 
     if (this.searchForm?.get('year')?.value) {
-      where.year = Number(this.searchForm?.get('year')?.value); 
+      where.year = Number(this.searchForm?.get('year')?.value);
     }
 
-    date= `${this.searchForm?.get('month')?.value} - ${this.searchForm?.get('year')?.value}`;
+    date = `${this.searchForm?.get('month')?.value} - ${this.searchForm?.get('year')?.value}`;
 
     // if (this.searchForm!.get('eir_dt')?.value) {
     if (this.searchForm!.get('cost_type')?.value) {
-      report_type=`${this.searchForm!.get('cost_type')?.value.description}`
-      where.report_type=`${this.searchForm!.get('cost_type')?.value.code_val}`;
+      report_type = `${this.searchForm!.get('cost_type')?.value.description}`
+      where.report_type = `${this.searchForm!.get('cost_type')?.value.code_val}`;
 
-      
+
     }
-    this.lastSearchCriteria =where;
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type,date,customer,code);
+    this.lastSearchCriteria = where;
+    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, date, customer, code);
 
   }
 
-  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string,date?:string,customer?:string,code?:string) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, date?: string, customer?: string, code?: string) {
     // this.selection.clear();
     this.subs.sink = this.repDS.searchAdminReportZeroApprovalCostReport(this.lastSearchCriteria)
       .subscribe(data => {
@@ -490,7 +490,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
         this.startCursor = this.stmDS.pageInfo?.startCursor;
         this.hasNextPage = this.stmDS.pageInfo?.hasNextPage ?? false;
         this.hasPreviousPage = this.stmDS.pageInfo?.hasPreviousPage ?? false;
-        this.onExportDetail(data,report_type!,date!,customer!,code!);
+        this.onExportDetail(data, report_type!, date!, customer!, code!);
         // this.checkInvoicedAndGetTotalCost();
         //this.checkInvoiced();
         //this.distinctCustomerCodes= [... new Set(this.stmEstList.map(item=>item.customer_company?.code))];
@@ -596,7 +596,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
@@ -615,19 +615,19 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     this.searchForm?.patchValue({
       tank_no: '',
       eir_no: '',
-      month:'',
-      year:'',
+      month: '',
+      year: '',
       depot_status_cv: 'ALL',
       //cost_type:''
-      cost_type:this.costTypeCvList.find(c=>c.code_val=='CLEANING'),
-      
+      cost_type: this.costTypeCvList.find(c => c.code_val == 'CLEANING'),
+
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
     this.noCond = false;
   }
 
- 
+
 
 
   IsApproved(steam: SteamItem) {
@@ -636,15 +636,14 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
- 
 
-  onExportDetail(repData: ZeroApprovalCostItem[], report_type: string,date:string,customer:string,code:string) {
+
+  onExportDetail(repData: ZeroApprovalCostItem[], report_type: string, date: string, customer: string, code: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if(repData.length==0)
-    {
-      this.isGeneratingReport=false;
+    if (repData.length == 0) {
+      this.isGeneratingReport = false;
       return;
     }
     let tempDirection: Direction;
@@ -661,9 +660,9 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       data: {
         repData: repData,
         repType: report_type,
-        date:date,
-        customer:customer,
-        code:code
+        date: date,
+        customer: customer,
+        code: code
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -672,8 +671,8 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       this.isGeneratingReport = false;
     });
   }
-  displayCostTypeFn(cs:CodeValuesItem ): string {
-    return cs.description||'';
+  displayCostTypeFn(cs: CodeValuesItem): string {
+    return cs.description || '';
   }
 
 

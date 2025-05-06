@@ -17,7 +17,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
@@ -62,7 +62,6 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatPaginatorModule,
     RouterLink,
     TranslateModule,
     MatExpansionModule,
@@ -422,7 +421,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
           this.handleSaveSuccess(result?.data?.updateOutGate);
         });
       } else {
-        const publishOutGateSurvey = !this.modulePackage.isGrowthPackage() && !this.modulePackage.isCustomizedPackage();
+        const publishOutGateSurvey = this.modulePackage.isGrowthPackage() || this.modulePackage.isCustomizedPackage();
         console.log('hasOutSurvey', publishOutGateSurvey)
         this.ogDS.addOutGate(og, ro, publishOutGateSurvey).subscribe(result => {
           console.log(result?.data)
@@ -484,5 +483,13 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  onAlphaOnly(event: Event, controlName: string): void {
+    Utility.onAlphaOnly(event, this.outGateForm?.get(controlName)!);
+  }
+
+  onAlphaNumericOnly(event: Event, controlName: string): void {
+    Utility.onAlphaNumericOnly(event, this.outGateForm?.get(controlName)!);
   }
 }

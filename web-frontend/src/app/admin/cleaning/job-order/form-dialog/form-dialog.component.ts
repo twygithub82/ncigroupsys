@@ -12,7 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
@@ -38,6 +38,7 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ConfirmationDialogComponent } from '../dialogs/confirm-form-dialog/confirm-form-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 export interface DialogData {
   action?: string;
@@ -56,7 +57,6 @@ export interface DialogData {
   selector: 'app-package-depot-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
-  providers: [provideNgxMask()],
   standalone: true,
   imports: [
     MatButtonModule,
@@ -82,19 +82,17 @@ export interface DialogData {
     MatDividerModule,
     MatProgressSpinnerModule,
   ],
+  providers: [
+    provideNgxMask(),
+    { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
+  ]
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'index',
     'desc',
     'depot',
     'package',
-    // 'total',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   action: string;
