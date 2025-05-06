@@ -410,7 +410,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '65vw',
+      width: '80vw',
       //height: '80vh',
       data: {
         action: 'update',
@@ -440,7 +440,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '65vw',
+      width: '80vw',
       //height: '80vh',
       data: {
         action: 'update',
@@ -472,7 +472,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '55vw',
+      width: '80vw',
       //height: '80vh',
       data: {
         action: 'update',
@@ -702,7 +702,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       });
     }
   }

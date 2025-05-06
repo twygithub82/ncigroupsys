@@ -160,6 +160,7 @@ $custom-accent: mat.define-palette((50: lighten($blue-accent, 40%),
 $custom-warn: mat.define-palette(mat.$red-palette);
 $custom-success: mat.define-palette(mat.$green-palette);
 $custom-secondary: mat.define-palette(mat.$gray-palette);
+$custom-info: mat.define-palette(mat.$blue-palette);
 
 // Create the theme object
 $custom-theme: mat.define-light-theme((color: (primary: $custom-primary,

@@ -176,6 +176,7 @@ export class FormDialogComponent {
     EDIT_PACKAGE_CLEANING: "MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
     PACKAGE_LABOUR: "COMMON-FORM.PACKAGE-LABOUR",
+    TARIFF_LABOUR:'MENUITEMS.TARIFF.LIST.TARIFF-LABOUR',
     COST: "COMMON-FORM.COST",
     CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
 
@@ -262,7 +263,7 @@ export class FormDialogComponent {
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
 
       });
     }

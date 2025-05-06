@@ -619,7 +619,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
-      ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/steam/job-order'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }

@@ -119,11 +119,11 @@
         "EXCLUSIVE-STEAMING": "Exclusive Steaming",
         "PACKAGE-LABOUR": "Labour Cost",
         "PACKAGE-DEPOT": "Depot Cost",
-        "PACKAGE-REPAIR": "Repair",
+        "PACKAGE-REPAIR": "Repair Cost",
         "PACKAGE-BUFFER": "Buffer Cleaning",
         "PACKAGE-RESIDUE": "Residue Disposal",
         "PACKAGE-CLEANING-NEW": "New Package Cleaning",
-        "PACKAGE-CLEANING-EDIT": "Edit Cleaning"
+        "PACKAGE-CLEANING-EDIT": "Edit Cleaning Cost"
       }
     },
     "CLEANING-MANAGEMENT": {

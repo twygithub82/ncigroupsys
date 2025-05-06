@@ -337,7 +337,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       customer_name: [''],
       customer_type: [''],
       billing_branches: [''],
-      country_code: [DEFAULT_COUNTRY_CODE],
+      country_code: [''],//[DEFAULT_COUNTRY_CODE],
       phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
@@ -1097,7 +1097,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
         //this.router.navigate(['/admin/master/estimate-template']);
         // Navigate to the route and pass the JSON object
         this.router.navigate(['/admin/master/customer'], {

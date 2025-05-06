@@ -335,7 +335,7 @@ EnableValidator(path: string) {
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
-        ComponentUtil.showNotification('snackbar-success', successMsg, 'top', 'center', this.snackBar);
+        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
 
       });
     }
@@ -408,12 +408,14 @@ EnableValidator(path: string) {
   }
 
   getMaterialCostLabel(){
-    var lbl = this.translatedLangText.UPDATE + ' ' + this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'(%)':'');
+    //var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'($)':'');
+    var lbl = this.translatedLangText.MATERIAL_COST + ' $';
     return lbl;
   }
 
   getLabourHourLabel(){
-    var lbl = this.translatedLangText.UPDATE + ' ' + this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
+    //var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
+    var lbl = this.translatedLangText.LABOUR_HOUR;
     return lbl;
   }
 
