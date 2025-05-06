@@ -1868,7 +1868,20 @@ textarea,
 }
 
 .nav-item.nav-toggle a {
-  margin-left: 18px !important;
+  margin-left: 0px !important;
+}
+
+.navbar-header .logo img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: fill;
+}
+
+.nav>li>a {
+  position: relative;
+  display: block;
+  padding: 3px 0px;
 }
 
 .w-40 {

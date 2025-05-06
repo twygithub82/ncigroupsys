@@ -75,7 +75,7 @@ export class Dashboard1Component implements OnInit {
   langText = {
     DASHBOARD: 'COMMON-FORM.DASHBOARD',
   }
-  pageTitle = 'MENUITEMS.DASHBOARD.TEXT'
+  pageTitle = ''
   breadcrumsMiddleList = [
   ]
 
