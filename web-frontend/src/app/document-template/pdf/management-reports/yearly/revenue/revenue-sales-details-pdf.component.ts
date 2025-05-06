@@ -1128,7 +1128,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     var cats=[];
     var indx=0;
     if(showPreinspectSurcharge){
-      var lbl="Pre-inspection";
+      var lbl="Pre-Inspection";
       var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
       ds.push({
         label:lbl,
