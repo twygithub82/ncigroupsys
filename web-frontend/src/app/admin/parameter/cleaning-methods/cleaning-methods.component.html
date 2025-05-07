@@ -103,6 +103,18 @@
                     <span class="mobile-label">{{translatedLangText.LAST_UPDATED }}:</span>{{displayLastUpdated(row)}}
                   </mat-cell>
                 </ng-container>
+                <ng-container matColumnDef="actions">
+                  <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef>
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
+                    @if(CanDelete(row)){
+                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="handleDelete($event, row)"
+                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                      <mat-icon>delete_forever</mat-icon>
+                    </button>
+                    }
+                  </mat-cell>
+                </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
                   [style.cursor]="'pointer'" matRipple>

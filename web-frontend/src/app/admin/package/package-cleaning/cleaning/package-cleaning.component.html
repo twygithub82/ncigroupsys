@@ -48,7 +48,7 @@
                         </button>
                       </mat-chip-row>
                       }
-                    </mat-chip-grid>
+                    
                     <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
                       [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                       (matChipInputTokenEnd)="add($event)">
@@ -61,6 +61,7 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
+                  </mat-chip-grid>
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">

@@ -38,6 +38,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-cleaning-category',
@@ -78,7 +79,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     'category_name',
     'category_description',
     'category_cost',
-    'update_date'
+    'update_date',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-CATEGORY'
@@ -496,4 +498,53 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     // this.hazardLevelControl.reset();
     // this.banTypeControl.reset();
   }
+
+   handleDelete(event: Event, row: any, ): void {
+      event.preventDefault();
+      event.stopPropagation();
+      this.deleteItem(row);
+    }
+  
+    deleteItem(row: CleaningCategoryItem) {
+       
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          data: {
+            headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+            action: 'new',
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result?.action === 'confirmed') {
+           this.RmoveCleaningCategory(row.guid!);
+          }
+        });
+      }
+      
+   CanDelete(row: CleaningCategoryItem):boolean{
+      var bRetval:boolean =false;
+  
+        if(!bRetval)
+        {
+          bRetval = (row?.tariff_cleanings?.length||0)===0;
+        }
+      return bRetval;
+    }
+  
+    RmoveCleaningCategory( guids: string) {
+    
+        this.catDS.deleteCleaningCategory([guids]).subscribe(result => {
+          if (result.data.deleteCleaningCategory) {
+            this.handleSaveSuccess(result.data.deleteCleaningCategory);
+            this.search();
+          }
+        })
+    
+      }
 }

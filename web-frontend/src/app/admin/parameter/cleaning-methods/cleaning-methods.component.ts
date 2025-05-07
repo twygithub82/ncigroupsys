@@ -39,6 +39,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-cleaning-methods',
@@ -79,8 +80,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     'category_name',
     'category_description',
     //'category_cost',
-    'update_date'
-    //'last_cargo',
+    'update_date',
+    'actions',
     // 'so_no',
     //'customer_code'
 
@@ -490,4 +491,54 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       name: ''
     });
   }
+
+  
+     handleDelete(event: Event, row: any, ): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.deleteItem(row);
+      }
+    
+      deleteItem(row: CleaningMethodItem) {
+         
+          let tempDirection: Direction;
+          if (localStorage.getItem('isRtl') === 'true') {
+            tempDirection = 'rtl';
+          } else {
+            tempDirection = 'ltr';
+          }
+          const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            data: {
+              headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+              action: 'new',
+            },
+            direction: tempDirection
+          });
+          this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+            if (result?.action === 'confirmed') {
+             this.RmoveCleaningMethod(row.guid!);
+            }
+          });
+        }
+        
+     CanDelete(row: CleaningMethodItem):boolean{
+        var bRetval:boolean =false;
+    
+          if(!bRetval)
+          {
+            bRetval = (!row?.cleaning_category) && (row?.cleaning_method_formula?.length||0)===0;
+          }
+        return bRetval;
+      }
+    
+      RmoveCleaningMethod( guids: string) {
+      
+          this.mthDS.deleteCleaningMethod([guids]).subscribe(result => {
+            if (result.data.deleteCleaningMethod) {
+              this.handleSaveSuccess(result.data.deleteCleaningMethod);
+              this.search();
+            }
+          })
+      
+        }
 }

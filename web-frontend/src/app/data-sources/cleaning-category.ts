@@ -18,6 +18,12 @@ export const UPDATE_CLEANING_CATEGORY = gql`
   }
   `;
 
+export const DELETE_CLEANING_CATEGORY = gql`
+  mutation deleteCleaningCategory($deleteCleanCategory_guids: [String!]!) {
+   deleteCleaningCategory(deleteCleanCategory_guids: $deleteCleanCategory_guids)
+ }
+ `;
+
 export const SEARCH_CLEANING_CATEGORY_QUERY = gql`
   query queryCleaningCategory($where: cleaning_categoryFilterInput , $order:[cleaning_categorySortInput!], $first: Int, $after: String, $last: Int, $before: String){
     queryCleaningCategory(where: $where , order: $order, first: $first, after: $after, last: $last, before: $before){
@@ -32,6 +38,12 @@ export const SEARCH_CLEANING_CATEGORY_QUERY = gql`
           name
           update_by
           update_dt
+          tariff_cleanings {
+            class_cv
+            guid
+            cargo
+            delete_dt
+          }
       }
       totalCount
       pageInfo {
@@ -59,6 +71,12 @@ export const GET_CLEANING_CATEGORY_QUERY = gql`
         name
         update_by
         update_dt
+        tariff_cleanings{
+            class_cv
+            guid
+            cargo
+            delete_dt
+          }
     }
       totalCount
       pageInfo {
@@ -176,6 +194,20 @@ export class CleaningCategoryDS extends BaseDataSource<CleaningCategoryItem> {
       mutation: UPDATE_CLEANING_CATEGORY,
       variables: {
         cc
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  deleteCleaningCategory(deleteCleanCategory_guids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_CLEANING_CATEGORY,
+      variables: {
+        deleteCleanCategory_guids
       }
     }).pipe(
       catchError((error: ApolloError) => {
