@@ -184,7 +184,7 @@
                 <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CITY_NAME }}</mat-label>
-                    <input matInput formControlName="city_name"  (input)="onAlphaNumericOnly($event, 'city_name')">
+                    <input matInput formControlName="city_name"  (input)="onAlphaNumericWithSpace($event, 'city_name')">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">

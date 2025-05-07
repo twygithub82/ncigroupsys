@@ -379,9 +379,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-  onAlphaNumericOnly(event: Event, controlName: string): void {
-    Utility.onAlphaNumericOnly(event, this.pcForm?.get(controlName)!);
+
+  onAlphaNumericWithSpace(event: Event, controlName: string): void {
+    Utility.onAlphaNumericWithSpace(event, this.pcForm?.get(controlName)!);
   }
+  
 
   displayLastUpdated(r: TariffDepotItem) {
     var updatedt = r.update_dt;
