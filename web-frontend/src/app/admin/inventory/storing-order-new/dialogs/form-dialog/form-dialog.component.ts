@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -324,6 +324,20 @@ export class FormDialogComponent {
     });
 
     this.onPurposeChangeCheck(null);
+
+    this.storingOrderTankForm.get('eta_dt')?.valueChanges.subscribe((eta) => {
+      this.storingOrderTankForm.get('etr_dt')?.setValidators([
+        this.dateAfter(eta)
+      ]);
+      this.storingOrderTankForm.get('etr_dt')?.updateValueAndValidity();
+    });
+  
+    this.storingOrderTankForm.get('etr_dt')?.valueChanges.subscribe((etr) => {
+      this.storingOrderTankForm.get('eta_dt')?.setValidators([
+        this.dateBefore(etr)
+      ]);
+      this.storingOrderTankForm.get('eta_dt')?.updateValueAndValidity();
+    });
   }
 
   handleValueChange(value: any) {
@@ -454,5 +468,22 @@ export class FormDialogComponent {
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+  
+  dateAfter(minDate: Date): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return control.value && minDate && control.value < minDate
+        ? { dateTooEarly: true }
+        : null;
+    };
+  }
+  
+  // Custom validator: ETA before ETR
+  dateBefore(maxDate: Date): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return control.value && maxDate && control.value > maxDate
+        ? { dateTooLate: true }
+        : null;
+    };
   }
 }
