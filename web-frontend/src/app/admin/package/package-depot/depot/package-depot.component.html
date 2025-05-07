@@ -39,7 +39,7 @@
                           </button>
                         </mat-chip-row>
                       }
-                    </mat-chip-grid>
+                    
                     <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
                      [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
                     <mat-autocomplete #customerCode="matAutocomplete"  (optionSelected)="selected($event)">
@@ -50,6 +50,7 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
+                  </mat-chip-grid>
                   </mat-form-field>
                 </div>
               
@@ -65,7 +66,7 @@
                           </button>
                         </mat-chip-row>
                       }
-                    </mat-chip-grid>
+                   
                     <input #profileInput [formControl]="profileNameControl" [matAutocomplete]="profileName"
                      [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" >
                     <mat-autocomplete #profileName="matAutocomplete"  (optionSelected)="selectedProfile($event)">
@@ -76,6 +77,7 @@
                       </mat-option>
                       }
                     </mat-autocomplete>
+                  </mat-chip-grid>
                   </mat-form-field>
                 </div>
                 <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
