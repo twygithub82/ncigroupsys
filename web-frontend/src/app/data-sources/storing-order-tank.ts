@@ -4673,6 +4673,10 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return sot.status_cv === 'WAITING' || sot.status_cv === 'PREORDER';
   }
 
+  canEdit(sot: StoringOrderTankItem): boolean {
+    return sot && (!sot.status_cv || sot.status_cv === 'WAITING' || sot.status_cv === 'PREORDER');
+  }
+
   canRollbackStatus(sot: StoringOrderTankItem): boolean {
     const status_cv = [
       "SO_GENERATED",

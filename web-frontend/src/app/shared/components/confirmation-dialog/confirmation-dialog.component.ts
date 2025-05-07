@@ -45,7 +45,7 @@ export class ConfirmationDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-     private translate: TranslateService
+    private translate: TranslateService
   ) {
     this.translateLangText();
     // Set the defaults
@@ -68,13 +68,13 @@ export class ConfirmationDialogComponent {
     return this.act == "confirm_only";
   }
 
-   translateLangText() {
-      Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
-        this.translatedLangText = translations;
-      });
-    }
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
 
-  getCloseButtonContent():string{
+  getCloseButtonContent(): string {
     return `${this.translatedLangText.CLOSE}`;
   }
 }

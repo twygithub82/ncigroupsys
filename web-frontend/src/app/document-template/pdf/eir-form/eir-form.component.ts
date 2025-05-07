@@ -15,15 +15,14 @@ import { customerInfo } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-// import { saveAs } from 'file-saver';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileManagerService } from '@core/service/filemanager.service';
-// import { fileSave } from 'browser-fs-access';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AuthService } from '@core';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export interface DialogData {
   type: string;
@@ -130,7 +129,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     DIAMITER: 'COMMON-FORM.DIAMITER',
     PIECES: 'COMMON-FORM.PIECES',
     VOLUME: 'COMMON-FORM.VOLUME',
-    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
+    REMARKS: 'COMMON-FORM.REMARKS',
     BRAND: 'COMMON-FORM.BRAND',
     BOTTOM: 'COMMON-FORM.BOTTOM',
     TOP: 'COMMON-FORM.TOP',
@@ -1633,5 +1632,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         }
       });
     }
+  }
+
+  isOthers(formControlValue: any) {
+    return BusinessLogicUtil.isOthers(formControlValue);
   }
 }

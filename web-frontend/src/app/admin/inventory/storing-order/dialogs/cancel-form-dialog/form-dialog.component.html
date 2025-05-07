@@ -1,6 +1,6 @@
 <div class="container">
   <div class="modalHeader">
-    <h3 mat-dialog-title>{{data.langText.ARE_YOU_SURE_CANCEL | translate}}</h3>
+    <h4 mat-dialog-title>{{data.langText.ARE_YOU_SURE_CANCEL | translate}}</h4>
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <mat-divider></mat-divider>
@@ -11,20 +11,19 @@
           matRipple>
           <mat-card-header class="pt-2 pe-2 pb-0">
             <mat-card-title class="pt-1">
-              {{data.langText.SO_NO | translate}}: {{so.get('so_no')?.value}}
+              {{data.langText.SO_NO | translate}}: <span
+                class="font-bold text-decoration-underline">{{so.get('so_no')?.value}}</span>
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
-              @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
-              <div [class]="'row mb-1'">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
-                  <mat-label>
-                    {{data.langText.TANK_NO | translate}}: {{sot.get('tank_no')?.value}}
-                  </mat-label>
-                </div>
+            @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
+            <div [class]="'row mb-1'">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
+                <mat-label>{{sot.get('tank_no')?.value}}</mat-label>
               </div>
-              }
+            </div>
+            }
             }
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">

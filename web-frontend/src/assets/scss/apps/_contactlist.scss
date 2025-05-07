@@ -10,23 +10,28 @@
     font-size: 20px;
     margin-top: 5px;
   }
+
   span {
     float: left;
     width: calc(100% - 30px);
     margin-bottom: 20px;
   }
+
   .fa-envelope {
     font-size: 15px;
   }
+
   .fa-mobile {
     font-size: 25px;
   }
 }
+
 .contact-photo {
   float: left;
   width: 100%;
   text-align: center;
   padding-top: 20px;
+
   img {
     margin: 0 auto;
     width: 130px;
@@ -35,35 +40,43 @@
     border-radius: 50% 50% 50% 50%;
   }
 }
+
 .contact-usertitle {
   text-align: center;
   margin-top: 5px;
 }
+
 .contact-usertitle-name {
   font-size: 20px;
   margin-bottom: 2px;
   font-weight: bold;
   color: #3a405b;
 }
+
 .contact-usertitle-job {
   color: #777777;
   font-size: 12px;
   margin-bottom: 5px;
 }
+
 .newLabelBtn {
   padding: 20px 0;
   text-align: center;
 }
+
 .alert-dismissible .close {
   text-indent: 0;
 }
+
 .alert.alert-dismissible {
   color: #ffffff;
 }
+
 .contact_list {
   .phone {
     position: relative;
     padding-left: 20px;
+
     .material-icons {
       position: absolute;
       left: 0;
@@ -72,11 +85,13 @@
     }
   }
 }
+
 .list-group-unbordered {
   .list-group-item {
     border: 0px;
   }
 }
+
 .contact-header {
   display: flex;
 

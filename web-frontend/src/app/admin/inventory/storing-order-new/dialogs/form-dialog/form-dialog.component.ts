@@ -442,7 +442,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return !this.storingOrderTank.actions?.length || (!this.sotDS.canRollbackStatus(this.storingOrderTank) && ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback'));
+    return this.sotDS.canEdit(this.storingOrderTank) || (!this.sotDS.canRollbackStatus(this.storingOrderTank) && ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback'));
   }
 
   updateValidators(validOptions: any[]) {

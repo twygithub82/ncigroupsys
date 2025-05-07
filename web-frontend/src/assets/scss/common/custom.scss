@@ -1806,6 +1806,7 @@ textarea,
 .snackbar-container {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -2221,6 +2222,15 @@ table.advance-table mat-cell {
   padding-right: 2px;
 }
 
+mat-step-header.mat-step-header,
 mat-step-header.mat-step-header:hover {
+  border-radius: 20px !important;
+}
+
+.contact-detail-label {
+  margin-right: 5px;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 20px !important;
 }

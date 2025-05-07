@@ -186,7 +186,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     DIAMITER: 'COMMON-FORM.DIAMITER',
     PIECES: 'COMMON-FORM.PIECES',
     VOLUME: 'COMMON-FORM.VOLUME',
-    OTHER_COMMENTS: 'COMMON-FORM.OTHER-COMMENTS',
+    REMARKS: 'COMMON-FORM.REMARKS',
     BRAND: 'COMMON-FORM.BRAND',
     BOTTOM: 'COMMON-FORM.BOTTOM',
     TOP: 'COMMON-FORM.TOP',
@@ -1058,23 +1058,23 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
-      this.airlineCvList = addDefaultSelectOption(data, "--Select--");
+      this.airlineCvList = addDefaultSelectOption(data, "N.A.");
       this.detectChanges();
     });
     this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
-      this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");
+      this.airlineConnCvList = addDefaultSelectOption(data, "N.A.");
       this.detectChanges();
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
-      this.disCompCvList = data || [];
+      this.disCompCvList = addDefaultSelectOption(data, "N.A.");
       this.detectChanges();
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
-      this.disValveCvList = addDefaultSelectOption(data, "--Select--");
+      this.disValveCvList = addDefaultSelectOption(data, "N.A.");
       this.detectChanges();
     });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
-      this.disValveSpecCvList = addDefaultSelectOption(data, "--Select--");
+      this.disValveSpecCvList = addDefaultSelectOption(data, "N.A.");
       this.detectChanges();
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {
@@ -1106,7 +1106,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
-      this.valveBrandCvList = data || [];
+      this.valveBrandCvList = addDefaultSelectOption(data, "N.A.");
       this.detectChanges();
     });
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
@@ -1442,6 +1442,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onFormSubmit() {
+    // TODO :: Need save and publish
     if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('tank_details.unit_type_guid')?.value;

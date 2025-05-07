@@ -73,11 +73,13 @@
           </tr>
           <tr>
             <td>
-              {{translatedLangText.OPERATOR}}: <b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
+              {{translatedLangText.OPERATOR}}:
+              <b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
             </td>
             <td>{{translatedLangText.OWNER}}: <b>{{eirDetails?.in_gate?.tank?.customer_company?.name}}</b></td>
             <td>
-              {{translatedLangText.LAST_RELEASE_DATE}}: <b>{{displayDate(eirDetails?.in_gate?.tank?.last_release_dt) || '-'}}</b>
+              {{translatedLangText.LAST_RELEASE_DATE}}: <b>{{displayDate(eirDetails?.in_gate?.tank?.last_release_dt) ||
+                '-'}}</b>
             </td>
             <td>{{translatedLangText.LAST_TEST}}: <b>{{last_test_desc}}</b></td>
           </tr>
@@ -89,14 +91,16 @@
                 ({{displayDate(eirDetails?.dom_dt)}})</b>
             </td>
             <td>
-              {{translatedLangText.TAKE_IN_STATUS}}: <b>{{getCleanStatusDescription(eirDetails?.in_gate?.tank?.clean_status_cv)}}</b>
+              {{translatedLangText.TAKE_IN_STATUS}}:
+              <b>{{getCleanStatusDescription(eirDetails?.in_gate?.tank?.clean_status_cv)}}</b>
             </td>
           </tr>
           <tr>
             <td>{{translatedLangText.CAPACITY}}: <b>{{eirDetails?.capacity}} L</b></td>
             <td>{{translatedLangText.TARE_WEIGHT}}: <b>{{eirDetails?.tare_weight}} KG</b></td>
             <td>
-              {{translatedLangText.MAX_GROSS_WEIGHT}}: <b>{{getMaxGrossWeightDescription(eirDetails?.max_weight_cv)}}</b>
+              {{translatedLangText.MAX_GROSS_WEIGHT}}:
+              <b>{{getMaxGrossWeightDescription(eirDetails?.max_weight_cv)}}</b>
             </td>
             <td>{{translatedLangText.TANK_HEIGHT}}: <b>{{getTankHeightDescription(eirDetails?.height_cv)}}</b></td>
           </tr>
@@ -106,14 +110,13 @@
     <div class="d-flex">
       <div class="frame-info-content mt-1 mb-1">
         <div class="frame-walkway-legend">
-          
+
           <div class="d-flex align-items-center pt-5px">
             <div class="me-4 d-flex align-items-center">
-              <img mat-card-image src="assets/images/icons/walkway.jpg"
-                class="walkway-img img-fluid me-2 mt-1 mb-1">
+              <img mat-card-image src="assets/images/icons/walkway.jpg" class="walkway-img img-fluid me-2 mt-1 mb-1">
               <span>{{translatedLangText.WALKWAY}}</span>
             </div>
-            
+
             <div class="d-flex align-items-center pt-5px">
               <img mat-card-image src="assets/images/icons/damage-image.png"
                 class="walkway-img img-fluid me-2 mt-1 mb-1">
@@ -299,11 +302,18 @@
                 {{translatedLangText.FOOT_VALVE}}
                 @if (eirDetails?.foot_valve_cv) {
                 (
-                @for (codeValue of footValveCvList; track codeValue; let index = $index) {
+                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.foot_valve_oth}}
+                </span>
+                }
+                @else {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.foot_valve_cv}">
                   {{codeValue.description}}
                 </span>
-                @if (index + 1 !== footValveCvList.length) {
+                }
+                @if (index + 1 !== valveBrandCvList.length) {
                 /
                 }
                 }
@@ -319,7 +329,7 @@
                 }
               </td>
             </tr>
-            <tr>
+            <!-- <tr>
               <td>
                 {{translatedLangText.BRAND}}
                 @if (eirDetails?.btm_valve_brand_cv) {
@@ -344,7 +354,7 @@
                 <mat-icon>close</mat-icon>
                 }
               </td>
-            </tr>
+            </tr> -->
             <tr>
               <td>
                 {{translatedLangText.BOTTOM_DIS_VALVE__ABB}}
@@ -820,7 +830,8 @@
               <div class="haulier-info-content">
                 <div class="haulier-info-upper">
                   <div class="receiver-title">
-                    <b>{{translatedLangText.FOR}} {{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
+                    <b>{{translatedLangText.FOR}}
+                      {{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
                   </div>
                   <div class="receiver-description">
                     <span>{{translatedLangText.EIR_HAULIER_DECLARATION}}</span>
@@ -858,7 +869,7 @@
       <span>{{eirDisclaimerNote}}</span>
     </div> -->
     <div class="footer-info-content">
-       <span>
+      <span>
         <!-- {{customerInfo.eirDisclaimerVer}} -->
       </span>
       <span>

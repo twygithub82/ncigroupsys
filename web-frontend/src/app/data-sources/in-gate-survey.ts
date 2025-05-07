@@ -490,13 +490,18 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
       totalCount
       nodes {
         airline_valve_conn_cv
+        airline_valve_conn_oth
         airline_valve_conn_spec_cv
+        airline_valve_conn_spec_oth
         airline_valve_cv
+        airline_valve_oth
         airline_valve_dim
         airline_valve_pcs
         btm_dis_comp_cv
         btm_dis_valve_cv
+        btm_dis_valve_oth
         btm_dis_valve_spec_cv
+        btm_dis_valve_spec_oth
         buffer_plate
         capacity
         cladding_cv
@@ -508,6 +513,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
         dipstick
         dom_dt
         foot_valve_cv
+        foot_valve_oth
         guid
         height_cv
         in_gate_guid
@@ -518,6 +524,7 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
         test_dt
         manlid_comp_cv
         manlid_cover_cv
+        manlid_cover_oth
         manlid_cover_pcs
         manlid_cover_pts
         manlid_seal_cv
@@ -536,7 +543,9 @@ export const QUERY_IN_GATE_SURVEY_BY_ID_FOR_EIR_PDF = gql`
         thermometer_cv
         top_dis_comp_cv
         top_dis_valve_cv
+        top_dis_valve_oth
         top_dis_valve_spec_cv
+        top_dis_valve_spec_oth
         update_by
         update_dt
         walkway_cv

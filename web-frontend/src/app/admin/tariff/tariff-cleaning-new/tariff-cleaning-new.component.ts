@@ -392,7 +392,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.classNoCvList = data;
     });
     this.cvDS.connectAlias('banTypeCv').subscribe(data => {
-      this.banTypeCvList = data;
+      this.banTypeCvList = addDefaultSelectOption(data, "--Select--");;
     });
     this.cvDS.connectAlias('openGateCv').subscribe(data => {
       this.openGateCvList = data;
@@ -959,3 +959,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     return this.sdsFileLoading;
   }
 }
+function addDefaultSelectOption(data: CodeValuesItem[], arg1: string): CodeValuesItem[] {
+  throw new Error('Function not implemented.');
+}
+
