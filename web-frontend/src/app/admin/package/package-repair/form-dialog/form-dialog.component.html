@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader_r3">
+  <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h4>{{this.translatedLangText.EDIT}} {{this.translatedLangText.REPAIR_COST}} </h4>
@@ -11,8 +11,8 @@
   </div>
   <div mat-dialog-content class="auto-height">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
-      <div class="row justify-content-center">
-        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="card">
 
             <div class="row">
@@ -79,7 +79,7 @@
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="selectedItems" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="fName">
                       <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                        *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
@@ -132,7 +132,7 @@
           </div>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right m-r-40">
+      <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
         <button mat-flat-button color="primary" (click)="save()">
           <mat-icon>

@@ -446,7 +446,7 @@
                   @if (repairDS.canQCComplete(repairItem)) {
                   <button mat-flat-button color="basic"
                     [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)"
-                    class="m-l-5 bg-green" (click)="onQCComplete($event)">
+                    class="m-l-5 mt-2 bg-green" (click)="onQCComplete($event)">
                     <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {
                       done

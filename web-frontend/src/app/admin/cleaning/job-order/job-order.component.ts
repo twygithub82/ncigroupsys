@@ -778,6 +778,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      height: '80vh',
       data: {
         action: action,
         langText: this.langText,

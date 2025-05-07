@@ -383,7 +383,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '70vw',
+      width: '60vw',
       //height: '80vh',
       data: {
         action: 'update',
@@ -411,7 +411,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     var rows: CustomerCompanyCleaningCategoryItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '70vw',
+      width: '60vw',
       //height: '80vh',
       data: {
         action: 'update',
