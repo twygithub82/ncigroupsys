@@ -269,10 +269,10 @@
                       }
                       <!-- Display file name and preview button -->
                       <div *ngIf="selectedFile">
-                        <p>{{ tcForm!.get('cargo_name')?.value??'' }}
+                        <!-- <p>{{ tcForm!.get('cargo_name')?.value??'' }}
                           <span *ngIf="selectedFileChanged">*</span>
-                        </p>
-                        <button mat-raised-button color="primary" (click)="previewFile()" type="button">Preview</button>
+                        </p> -->
+                        <button class="mt-2" mat-raised-button color="primary" (click)="previewFile()" type="button">Preview</button>
                       </div>
                       <!-- @if (this.selectedFileLoading | async) { -->
                       <div class="tbl-spinner" *ngIf="sdsFileLoading">

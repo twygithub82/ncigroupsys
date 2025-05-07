@@ -1369,4 +1369,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   onAlphaNumericOnly(event: Event, controlName: string): void {
     Utility.onAlphaNumericOnly(event, this.ccForm?.get(controlName)!);
   }
+
+  onAlphaNumericWithSpace(event: Event, controlName: string): void {
+    Utility.onAlphaNumericWithSpace(event, this.ccForm?.get(controlName)!);
+  }
+
 }

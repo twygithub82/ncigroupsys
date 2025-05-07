@@ -502,9 +502,10 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  onAlphaNumericOnly(event: Event, controlName: string): void {
-    Utility.onAlphaNumericOnly(event, this.pcForm?.get(controlName)!);
+  onAlphaNumericWithSpace(event: Event, controlName: string): void {
+    Utility.onAlphaNumericWithSpace(event, this.pcForm?.get(controlName)!);
   }
+  
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {

@@ -2,7 +2,7 @@
   <div class="modalHeader_r3">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h4>{{this.translatedLangText.EDIT}} {{this.translatedLangText.PACKAGE_REPAIR}} </h4>
+        <h4>{{this.translatedLangText.EDIT}} {{this.translatedLangText.REPAIR_COST}} </h4>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -81,23 +81,29 @@
                   <table mat-table [dataSource]="selectedItems" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="fName">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
+                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                       *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                           }}:</span>{{row.customer_company.code}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="lName">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
+                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                       *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                           }}:</span>{{row.customer_company.name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="email">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME
+                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                       *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                       *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.PART_NAME
                           }}:</span>{{row.tariff_repair?.part_name}}</mat-cell>
                     </ng-container>
