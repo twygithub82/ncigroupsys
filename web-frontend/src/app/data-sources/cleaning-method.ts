@@ -24,6 +24,12 @@ export const UPDATE_CLEANING_METHOD = gql`
   }
   `;
 
+export const DELETE_CLEANING_METHOD = gql`
+  mutation deleteCleaningMethod($deleteCleanMethod_guids: [String!]!) {
+   deleteCleaningMethod(deleteCleanMethod_guids: $deleteCleanMethod_guids)
+ }
+ `;
+
 export const GET_CLEANING_METHOD_QUERY = gql`
   query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!],$first:Int) {
     queryCleaningMethod(where: $where , order: $order,first:$first) {
@@ -235,6 +241,20 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
       mutation: UPDATE_CLEANING_METHOD,
       variables: {
         cc
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+  deleteCleaningMethod(deleteCleanMethod_guids: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_CLEANING_METHOD,
+      variables: {
+        deleteCleanMethod_guids
       }
     }).pipe(
       catchError((error: ApolloError) => {
