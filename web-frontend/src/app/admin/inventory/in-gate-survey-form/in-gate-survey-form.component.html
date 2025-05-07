@@ -37,70 +37,70 @@
             @if (!(igDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5 p-l-25">
                       <span>{{translatedLangText.TANK_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <div class="contact-detail-info font-bold">{{in_gate?.tank?.tank_no}}</div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5 p-l-25">
                       <span>{{translatedLangText.CUSTOMER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{ccDS.displayName(in_gate?.tank?.storing_order?.customer_company)}}
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5 p-l-25">
                       <span>{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{ccDS.displayName(in_gate?.tank?.customer_company)}}
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span>{{translatedLangText.EIR_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{in_gate?.eir_no}}
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span>{{translatedLangText.EIR_DATE}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <div class="contact-detail-info font-bold">
                         {{displayDateTime(in_gate?.eir_dt)}}
                       </div>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span>{{translatedLangText.LAST_CARGO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <div class="contact-detail-info font-bold">{{in_gate?.tank?.tariff_cleaning?.cargo}}
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5">
                       <span>{{translatedLangText.PURPOSE}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
@@ -110,7 +110,7 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5">
                       <span>{{translatedLangText.CLEAN_STATUS}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
@@ -120,7 +120,7 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5 align-right">
+                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5">
                       <span>{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
