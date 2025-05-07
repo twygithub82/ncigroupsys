@@ -67,3 +67,13 @@ td div img:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow on hover */
   }
 
+  ::ng-deep .custom-body-row:last-of-type {
+    border-radius: 0px 0px 12px 12px;
+    overflow: hidden;
+    //background-color: #fff;
+    //box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  ::ng-deep .custom-body-row:first-of-type {
+    border-radius: 12px 12px 0 0;
+  }
