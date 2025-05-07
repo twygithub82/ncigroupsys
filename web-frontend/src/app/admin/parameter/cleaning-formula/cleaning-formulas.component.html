@@ -13,21 +13,33 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
                     <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
-                    <button mat-mini-fab class="primary-light" color="" (click)="refresh()" (click)="$event.stopPropagation()">
+                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+                    <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
+                      (click)="$event.stopPropagation()">
                       <mat-icon>refresh</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                        (click)="$event.stopPropagation()" />
-                    </div>
+                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                      (click)="$event.stopPropagation()" />
+                  </div>
                   }
                 </mat-panel-description>
               </mat-expansion-panel-header>
@@ -57,18 +69,16 @@
                       <input matInput formControlName="duration_max" type="number">
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto align-items-center justify-content-end pe-4">
-                    <button mat-mini-fab color="primary" (click)="search()"  matTooltip={{translatedLangText.SEARCH}}>
+                  <!-- <div
+                    class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto align-items-center justify-content-end pe-4">
+                    <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <button  mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"  
-                    matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                      matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
-                    <!-- <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                      {{translatedLangText.CLEAR_ALL}}
-                    </button> -->
-                  </div>
+                  </div> -->
                 </div>
               </form>
             </mat-expansion-panel>
@@ -115,15 +125,14 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
+                  <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef>
                   </mat-header-cell>
-                  
-                  <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
                     @if(CanDelete(row)){
-                        <button mat-icon-button (click)="$event.stopPropagation()" (click)="handleDelete($event, row)"
-                        [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                        <mat-icon>delete_forever</mat-icon>
-                      </button>
+                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="handleDelete($event, row)"
+                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                      <mat-icon>delete_forever</mat-icon>
+                    </button>
                     }
                   </mat-cell>
                 </ng-container>

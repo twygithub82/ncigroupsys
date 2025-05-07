@@ -7,7 +7,17 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.ADD">
+              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
                 <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
@@ -42,20 +52,22 @@
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <mat-chip-grid #chipGrid>
                       @for (cust of selectedCustomers; track cust) {
-                        <mat-chip-row color="primary" (removed)="remove(cust)">
-                          {{cust.code}}
-                          <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        </mat-chip-row>
+                      <mat-chip-row color="primary" (removed)="remove(cust)">
+                        {{cust.code}}
+                        <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
                       }
                    
                     <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
-                     [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
-                    <mat-autocomplete #customerCode="matAutocomplete"  (optionSelected)="selected($event)">
+                      [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      (matChipInputTokenEnd)="add($event)">
+                    <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
-                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) || false"></mat-checkbox>
+                        <mat-checkbox color="primary" style="padding: 0 12px;"
+                          [checked]="itemSelected(cc) || false"></mat-checkbox>
                         {{ccDS.displayName(cc)}}
                       </mat-option>
                       }
@@ -75,16 +87,18 @@
                     <input matInput formControlName="hourly_rate" type="number" min="0">
                   </mat-form-field>
                 </div>
-               
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+
+                <!-- <div
+                  class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                   <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                     <mat-icon>search</mat-icon>
                   </button>
-                  <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}} >
+                  <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                    matTooltip={{translatedLangText.CLEAR_ALL}}>
                     <mat-icon>clear_all</mat-icon>
                   </button>
-                  
-                </div>
+
+                </div> -->
               </div>
             </form>
           </div>

@@ -7,6 +7,18 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()"
+                  [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
+                  <mat-icon>assignment</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()"
+                  [disabled]="((sotDS.loading$ | async) || isGeneratingReport)">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -146,11 +158,11 @@
                   <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                   <mat-select formControlName="tank_status_cv">
                     @for (codeValue of tankStatusCvList; track codeValue) {
-                      @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
+                    @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                    <mat-option [value]="codeValue.code_val">
+                      {{codeValue.description}}
+                    </mat-option>
+                    }
                     }
                   </mat-select>
                 </mat-form-field>
@@ -168,19 +180,18 @@
                   </mat-select>
                 </mat-form-field>
               </div> -->
-              <div
+              <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center  ms-auto justify-content-end">
-                <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.DETAIL_REPORT}} [disabled]="(sotDS.loading$ | async)">
+                <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.DETAIL_REPORT}}
+                  [disabled]="(sotDS.loading$ | async)">
                   <mat-icon>assignment</mat-icon>
                 </button>
-                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                  <mat-icon>cached</mat-icon>
-                </button> -->
-                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)" [disabled]="((sotDS.loading$ | async)||isGeneratingReport)"
+                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)"
+                  [disabled]="((sotDS.loading$ | async) || isGeneratingReport)"
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>

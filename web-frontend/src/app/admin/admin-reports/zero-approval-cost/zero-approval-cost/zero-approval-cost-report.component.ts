@@ -596,7 +596,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     this.resetForm();
-    this.search();
+    // this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
@@ -612,31 +612,25 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   resetForm() {
+    var thisYear = new Date().getFullYear();
+    var thisMonth = new Date().toLocaleString("en-US", { month: "long" });
     this.searchForm?.patchValue({
       tank_no: '',
       eir_no: '',
-      month: '',
-      year: '',
-      depot_status_cv: 'ALL',
-      //cost_type:''
+      month: `${thisMonth}`,
+      year: `${thisYear}`,
+      depot_status_cv: '',
       cost_type: this.costTypeCvList.find(c => c.code_val == 'CLEANING'),
-
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
     this.noCond = false;
   }
 
-
-
-
   IsApproved(steam: SteamItem) {
     const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
     return validStatus.includes(steam!.status_cv!);
-
   }
-
-
 
   onExportDetail(repData: ZeroApprovalCostItem[], report_type: string, date: string, customer: string, code: string) {
     //this.preventDefault(event);

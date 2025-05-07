@@ -164,7 +164,7 @@
                 }
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                     [disabled]="!(groupNameCvList.length)" hidden>
+                    [disabled]="!(groupNameCvList.length)" hidden>
                     <mat-icon class="col-white">
                       @if ((groupNameCvList.length)) {
                       add
@@ -335,7 +335,7 @@
                           </button>
                           <mat-menu #menu="matMenu">
                             @if (repairDS.canAmend(repairItem)) {
-                            <button mat-menu-item >
+                            <button mat-menu-item>
                               <mat-icon>delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
@@ -481,7 +481,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.LABOUR_DISCOUNT"
-                                type="number" min="0" max="99" >
+                                type="number" min="0" max="99">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -490,7 +490,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
-                                type="number" min="0" max="99" >
+                                type="number" min="0" max="99">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -821,7 +821,8 @@
                     {{translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
                   }
-                  <button mat-flat-button color="primary" [disabled]="(repairDS.actionLoading$ | async)" (click)="onClose($event)">
+                  <button mat-flat-button color="primary" [disabled]="(repairDS.actionLoading$ | async)"
+                    (click)="onClose($event)">
                     <mat-icon>
                       @if (!(repairDS.actionLoading$ | async)) {
                       close

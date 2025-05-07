@@ -4,7 +4,6 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
-
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -14,6 +13,17 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -88,7 +98,7 @@
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="inv_picker">
-                        <input matStartDate placeholder="Start date" formControlName="inv_dt_start" >
+                        <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
                         <input matEndDate placeholder="End date" formControlName="inv_dt_end">
                       </mat-date-range-input>
                       <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
@@ -138,15 +148,16 @@
                   <div class="col-1 d-flex align-items-center">
                     <mat-slide-toggle formControlName="invoiced"> {{translatedLangText.INVOICED}}</mat-slide-toggle>
                   </div>
-                  <div
+                  <!-- <div
                     class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
-                    <button  mat-mini-fab class="m-l-5 bg-dark-gold"  (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                      matTooltip={{translatedLangText.CLEAR_ALL}}>
                       <mat-icon>clear_all</mat-icon>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </form>
             </mat-expansion-panel>
@@ -231,7 +242,7 @@
                   <mat-panel-description class="d-flex align-items-center gap-2">
                     <div class="w-40">
                       <span class="font-bold me-1">{{translatedLangText.TANK_NO}}:</span>
-                    {{sotRow.tank_no}}
+                      {{sotRow.tank_no}}
                     </div>
                     <div class="w-40">
                       <span class="font-bold me-1">{{translatedLangText.EIR_NO}}:</span>
@@ -379,7 +390,8 @@
                           <mat-cell mat-cell *matCellDef="let row" class="">
                             @if(row.invoiced)
                             {
-                            <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{getInvoiceDate(row)}}
+                            <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>
+                            {{getInvoiceDate(row)}}
                             }
                             @else
                             {
@@ -390,7 +402,7 @@
                         </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                         (click)="showEstimateDetail($event, repairRow)" matRipple>
+                          (click)="showEstimateDetail($event, repairRow)" matRipple>
                         </mat-row>
                       </table>
                     </div>

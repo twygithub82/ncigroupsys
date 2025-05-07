@@ -7,6 +7,25 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.OVERVIEW_SUMMARY">
+                <button mat-mini-fab color="primary" (click)="search_overview_summary()"
+                  (click)="$event.stopPropagation()"
+                  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()">
+                  <mat-icon>show_chart</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_SUMMARY">
+                <button mat-mini-fab color="primary" (click)="search_detail_summary()"
+                  (click)="$event.stopPropagation()"
+                  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()">
+                  <mat-icon>assessment</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -61,7 +80,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div
+              <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center  ms-auto justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search_overview_summary()"  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport"
                   matTooltip={{translatedLangText.OVERVIEW_SUMMARY}} [disabled]="!AllowToSearch()">
@@ -75,14 +94,11 @@
                   matTooltip={{translatedLangText.DETAIL_REPORT}} hidden>
                   <mat-icon>assignment</mat-icon>
                 </button>
-                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                  <mat-icon>cached</mat-icon>
-                </button> -->
                 <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)" [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async)||isGeneratingReport"
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>

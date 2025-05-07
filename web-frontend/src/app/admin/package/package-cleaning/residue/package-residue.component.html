@@ -7,19 +7,28 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                <div class="m-l-" [matTooltip]="translatedLangText.EDIT">
-                  <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                    <mat-icon class="col-white">edit</mat-icon>
-                  </button>
-                </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
+                <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                  <mat-icon class="col-white">edit</mat-icon>
+                </button>
+              </div>
               }
-
               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                  <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                    (click)="$event.stopPropagation()" />
-                </div>
+              <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                  (click)="$event.stopPropagation()" />
+              </div>
               }
             </mat-panel-description>
           </mat-expansion-panel-header>
@@ -40,8 +49,9 @@
                       }
                    
                     <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
-                     [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
-                    <mat-autocomplete #customerCode="matAutocomplete"  (optionSelected)="selected($event)">
+                      [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      (matChipInputTokenEnd)="add($event)">
+                    <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
                         <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) || false"></mat-checkbox>
@@ -65,15 +75,16 @@
                     <input matInput formControlName="customer_cost" type="number" min="0">
                   </mat-form-field>
                 </div>
-                <div
+                <!-- <div
                   class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                   <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                     <mat-icon>search</mat-icon>
                   </button>
-                  <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                  <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                    matTooltip={{translatedLangText.CLEAR_ALL}}>
                     <mat-icon>clear_all</mat-icon>
                   </button>
-                </div>
+                </div> -->
               </div>
             </form>
           </div>
@@ -93,14 +104,14 @@
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
                 <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleEstimate(row)"
-                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="HideCheckBox(row)" >
+                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="HideCheckBox(row)">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="residue_type">
               <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.RESIDUE_TYPE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" >
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
                   }}:</span>{{row.tariff_residue.description}}</mat-cell>
             </ng-container>
@@ -123,20 +134,16 @@
                   }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_cost">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.CUSTOMER_COST
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COST
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row"
-                (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST}}:</span>
                 {{row.cost.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tariff_cost">
-              <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.TARIFF_COST
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.TARIFF_COST
                 }} $</mat-header-cell>
-              <mat-cell *matCellDef="let row"
-                (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}} $:</span>
                 {{row.tariff_residue.cost.toFixed(2)}}</mat-cell>
             </ng-container>

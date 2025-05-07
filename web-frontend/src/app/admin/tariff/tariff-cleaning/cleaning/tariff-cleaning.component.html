@@ -7,17 +7,29 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.ADD">
-                <button mat-mini-fab color="primary" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
+              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                <button mat-mini-fab color="primary" (click)="search()" 
+                  (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                  (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
+                <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+              <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                 <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
                   (click)="$event.stopPropagation()">
                   <mat-icon>refresh</mat-icon>
                 </button>
-              </div>
+              </div> -->
               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
               <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
@@ -121,7 +133,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div
+              <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto d-flex justify-content-end pe-4">
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
@@ -130,7 +142,7 @@
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>

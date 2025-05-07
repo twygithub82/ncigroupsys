@@ -7,6 +7,16 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                  <mat-icon>search</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -153,7 +163,7 @@
                       </mat-select>
                     </mat-form-field>
                   </div> -->
-              <div
+              <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
@@ -162,7 +172,7 @@
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>
@@ -205,11 +215,12 @@
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
                   <input matInput [formControl]="invoiceTotalCostControl" readonly>
-  
+
                 </mat-form-field>
               </div>
               <div class="col-xl-5 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-                <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5" (click)="save($event)">
+                <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5"
+                  (click)="save($event)">
                   <mat-icon>
                     save
                   </mat-icon>

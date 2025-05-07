@@ -7,6 +7,17 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
+              <div class="m-l-" [matTooltip]="translatedLangText.GENERATE_REPORT">
+                <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
+                  [disabled]="(isGeneratingReport)">
+                  <mat-icon>assignment</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -40,7 +51,7 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEANING_PROCESS}}</mat-label>
-                  <mat-select formControlName="clean_process" >
+                  <mat-select formControlName="clean_process">
                     @for (prc of cleanProcessList; track prc) {
                     <mat-option [value]="prc">
                       {{prc.description}}
@@ -52,8 +63,7 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CARGO}}</mat-label>
-                  <input matInput formControlName="cargo" 
-                    [matAutocomplete]="cargoCode">
+                  <input matInput formControlName="cargo" [matAutocomplete]="cargoCode">
                   <mat-autocomplete #cargoCode="matAutocomplete" [displayWith]="displayCargoFn">
                     @for (cg of cargoList; track cg) {
                     <mat-option [value]="cg">
@@ -66,7 +76,7 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEANING_PROCESS}}</mat-label>
-                  <mat-select formControlName="clean_process" >
+                  <mat-select formControlName="clean_process">
                     @for (prc of cleanProcessList; track prc) {
                     <mat-option [value]="prc">
                       {{prc.description}}
@@ -107,33 +117,29 @@
               <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEANER}}</mat-label>
-                  <input matInput formControlName="cleaner"
-                  [matAutocomplete]="cleanerName">
-                  <mat-autocomplete #cleanerName="matAutocomplete" >
+                  <input matInput formControlName="cleaner" [matAutocomplete]="cleanerName">
+                  <mat-autocomplete #cleanerName="matAutocomplete">
                     @for (cln of cleanerList; track cln) {
                     <mat-option [value]="cln">
                       {{cln}}
                     </mat-option>
                     }
-                </mat-autocomplete>
+                  </mat-autocomplete>
                 </mat-form-field>
               </div>
-              
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+
+              <!-- <div
+                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
-                  [disabled]="(isGeneratingReport)"
-                  matTooltip={{translatedLangText.GENERATE_REPORT}}>
+                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.GENERATE_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
-                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                  <mat-icon>cached</mat-icon>
-                </button> -->
                 <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event)"
                   [disabled]="((sotDS.loading$ | async)||isGeneratingReport)"
                   matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </div>
           </form>
         </mat-expansion-panel>
