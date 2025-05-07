@@ -312,8 +312,8 @@
                     </button>
                   </mat-cell>
                 </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                <mat-header-row *matHeaderRowDef="displayedColumns"  class="custom-body-row"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"  class="custom-body-row" (click)="editCall(row)"
                   [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>

@@ -121,8 +121,8 @@
                         <span class="mobile-label">{{translatedLangText.TARIFF_COST
                           }}:</span>{{row.tariff_repair.material_cost.toFixed(2)}}</mat-cell>
                     </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+                    <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row" [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>

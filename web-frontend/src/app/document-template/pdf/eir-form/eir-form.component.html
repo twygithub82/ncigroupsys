@@ -52,54 +52,53 @@
       <table class="tank-info">
         <tbody>
           <tr>
-            <td class="td-col-2-25">{{translatedLangText.SO_NO}}:
+            <td class="td-col-2-8">{{translatedLangText.SO_NO}}:
               <b>{{eirDetails?.in_gate?.tank?.storing_order?.so_no}}</b>
             </td>
-            <td class="td-col-2-25">{{translatedLangText.SO_DATE}}:
+            <td class="td-col-2-8">{{translatedLangText.SO_DATE}}:
               <b>{{displayDate(eirDetails?.in_gate?.tank?.storing_order?.create_dt)}}</b>
             </td>
-            <td class="td-col-7-5" colspan="2">
+            <td class="td-col-6-4" colspan="2">
               {{translatedLangText.LAST_CARGO}}:
               <b>{{eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo}}</b>
             </td>
           </tr>
           <tr>
-            <td>{{translatedLangText.TANK_NO}}:<br><b>{{eirDetails?.in_gate?.tank?.tank_no}}</b></td>
-            <td>{{translatedLangText.EIR_NO}}:<br><b>{{eirDetails?.in_gate?.eir_no}}</b></td>
+            <td>{{translatedLangText.TANK_NO}}: <b>{{eirDetails?.in_gate?.tank?.tank_no}}</b></td>
+            <td>{{translatedLangText.EIR_NO}}: <b>{{eirDetails?.in_gate?.eir_no}}</b></td>
             <td class="td-col-4">
-              {{translatedLangText.TAKE_IN_REFERENCE}}:<br><b>{{eirDetails?.in_gate?.tank?.job_no}}</b></td>
+              {{translatedLangText.TAKE_IN_REFERENCE}}: <b>{{eirDetails?.in_gate?.tank?.job_no}}</b></td>
             <td class="td-col-3-5">
-              {{translatedLangText.DATE_OF_INSPECTION}}:<br><b>{{displayDate(eirDetails?.create_dt)}}</b></td>
+              {{translatedLangText.DATE_OF_INSPECTION}}: <b>{{displayDate(eirDetails?.create_dt)}}</b></td>
           </tr>
           <tr>
             <td>
-              {{translatedLangText.OPERATOR}}:<br><b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
+              {{translatedLangText.OPERATOR}}: <b>{{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
             </td>
-            <td>{{translatedLangText.OWNER}}:<br><b>{{eirDetails?.in_gate?.tank?.customer_company?.name}}</b></td>
+            <td>{{translatedLangText.OWNER}}: <b>{{eirDetails?.in_gate?.tank?.customer_company?.name}}</b></td>
             <td>
-              {{translatedLangText.LAST_RELEASE_DATE}}:<br>
-              <b>{{displayDate(eirDetails?.in_gate?.tank?.last_release_dt) || '-'}}</b>
+              {{translatedLangText.LAST_RELEASE_DATE}}: <b>{{displayDate(eirDetails?.in_gate?.tank?.last_release_dt) || '-'}}</b>
             </td>
-            <td>{{translatedLangText.LAST_TEST}}:<br><b>{{last_test_desc}}</b></td>
+            <td>{{translatedLangText.LAST_TEST}}: <b>{{last_test_desc}}</b></td>
           </tr>
           <tr>
-            <td>{{translatedLangText.UNIT_TYPE}}:<br><b>{{eirDetails?.in_gate?.tank?.tank?.unit_type}}</b></td>
-            <td>{{translatedLangText.CLADDING}}:<br><b>{{getCladdingDescription(eirDetails?.cladding_cv)}}</b></td>
+            <td>{{translatedLangText.UNIT_TYPE}}: <b>{{eirDetails?.in_gate?.tank?.tank?.unit_type}}</b></td>
+            <td>{{translatedLangText.CLADDING}}: <b>{{getCladdingDescription(eirDetails?.cladding_cv)}}</b></td>
             <td>
-              {{translatedLangText.MANUFACTURER_DOM}}:<br><b>{{getManufactureDescription(eirDetails?.manufacturer_cv)}}
+              {{translatedLangText.MANUFACTURER_DOM}}: <b>{{getManufactureDescription(eirDetails?.manufacturer_cv)}}
                 ({{displayDate(eirDetails?.dom_dt)}})</b>
             </td>
             <td>
-              {{translatedLangText.TAKE_IN_STATUS}}:<br><b>{{getCleanStatusDescription(eirDetails?.in_gate?.tank?.clean_status_cv)}}</b>
+              {{translatedLangText.TAKE_IN_STATUS}}: <b>{{getCleanStatusDescription(eirDetails?.in_gate?.tank?.clean_status_cv)}}</b>
             </td>
           </tr>
           <tr>
-            <td>{{translatedLangText.CAPACITY}}:<br><b>{{eirDetails?.capacity}} L</b></td>
-            <td>{{translatedLangText.TARE_WEIGHT}}:<br><b>{{eirDetails?.tare_weight}} KG</b></td>
+            <td>{{translatedLangText.CAPACITY}}: <b>{{eirDetails?.capacity}} L</b></td>
+            <td>{{translatedLangText.TARE_WEIGHT}}: <b>{{eirDetails?.tare_weight}} KG</b></td>
             <td>
-              {{translatedLangText.MAX_GROSS_WEIGHT}}:<br><b>{{getMaxGrossWeightDescription(eirDetails?.max_weight_cv)}}</b>
+              {{translatedLangText.MAX_GROSS_WEIGHT}}: <b>{{getMaxGrossWeightDescription(eirDetails?.max_weight_cv)}}</b>
             </td>
-            <td>{{translatedLangText.TANK_HEIGHT}}:<br><b>{{getTankHeightDescription(eirDetails?.height_cv)}}</b></td>
+            <td>{{translatedLangText.TANK_HEIGHT}}: <b>{{getTankHeightDescription(eirDetails?.height_cv)}}</b></td>
           </tr>
         </tbody>
       </table>
@@ -107,12 +106,20 @@
     <div class="d-flex">
       <div class="frame-info-content mt-1 mb-1">
         <div class="frame-walkway-legend">
-          <img mat-card-image src="assets/images/icons/walkway.jpg"
-            class="walkway-img img-fluid me-3 mt-1 mb-1">
-            <span class="me-3">{{translatedLangText.WALKWAY}}</span>
-          <img mat-card-image src="assets/images/icons/damage-image.png"
-            class="walkway-img img-fluid me-3 mt-1 mb-1">
-            <span>{{translatedLangText.DAMAGED}}</span>
+          
+          <div class="d-flex align-items-center pt-5px">
+            <div class="me-4 d-flex align-items-center">
+              <img mat-card-image src="assets/images/icons/walkway.jpg"
+                class="walkway-img img-fluid me-2 mt-1 mb-1">
+              <span>{{translatedLangText.WALKWAY}}</span>
+            </div>
+            
+            <div class="d-flex align-items-center pt-5px">
+              <img mat-card-image src="assets/images/icons/damage-image.png"
+                class="walkway-img img-fluid me-2 mt-1 mb-1">
+              <span>{{translatedLangText.DAMAGED}}</span>
+            </div>
+          </div>
         </div>
         <div class="frame-type-info">
           <div class="frame-line mt-1">
@@ -255,12 +262,12 @@
         <table class="manlid-info">
           <tbody>
             <tr class="th">
-              <td class="td-col-11">
+              <td class="td-col-11" colspan="2">
                 <b>{{translatedLangText.BOTTOM_DIS_COMP}}</b>
               </td>
-              <td class="td-col-1">
+              <!-- <td class="td-col-1">
                 <b></b>
-              </td>
+              </td> -->
             </tr>
             <tr>
               <td>
@@ -426,12 +433,12 @@
               </td>
             </tr>
             <tr class="th">
-              <td class="td-col-11">
+              <td class="td-col-11" colspan="2">
                 <b>{{translatedLangText.TOP_DIS_COMP}}</b>
               </td>
-              <td class="td-col-1">
+              <!-- <td class="td-col-1">
                 <b></b>
-              </td>
+              </td> -->
             </tr>
             <tr>
               <td>
@@ -591,12 +598,12 @@
         <table class="manlid-info w-50"> -->
           <tbody>
             <tr class="th">
-              <td class="td-col-11">
+              <td class="td-col-11" colspan="2">
                 <b>{{translatedLangText.MANLID_COMPARTMENT}}</b>
               </td>
-              <td class="td-col-1">
+              <!-- <td class="td-col-1">
                 <b></b>
-              </td>
+              </td> -->
             </tr>
             <tr>
               <td>
@@ -778,7 +785,7 @@
       </div>
     </div>
     <div class="comment-info-content mt-1">
-      <span><b>{{translatedLangText.OTHER_COMMENTS}}</b>: {{eirDetails?.comments}}</span>
+      <span><b>{{translatedLangText.REMARKS}}</b>: {{eirDetails?.comments}}</span>
     </div>
     <div class="purpose-info-content mt-1">
       <span><b>{{translatedLangText.PURPOSE}}</b>: {{displayTankPurpose(eirDetails?.in_gate?.tank)}}</span>
@@ -813,7 +820,7 @@
               <div class="haulier-info-content">
                 <div class="haulier-info-upper">
                   <div class="receiver-title">
-                    <b>{{translatedLangText.FOR}} {{translatedLangText.DELIVERY_COURIER}}</b>
+                    <b>{{translatedLangText.FOR}} {{eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}}</b>
                   </div>
                   <div class="receiver-description">
                     <span>{{translatedLangText.EIR_HAULIER_DECLARATION}}</span>
@@ -846,13 +853,13 @@
 
   <div id="eir-form-footer" class="pdf-container pdf-footer">
     <hr class="mt-0 mb-1" />
-    <div class="disclaimer">
+    <!-- <div class="disclaimer">
       <span class="font-bold text-decoration-underline">{{translatedLangText.DISCLAIMER}}: </span>
       <span>{{eirDisclaimerNote}}</span>
-    </div>
+    </div> -->
     <div class="footer-info-content">
-      <span>
-        {{customerInfo.eirDisclaimerVer}}
+       <span>
+        <!-- {{customerInfo.eirDisclaimerVer}} -->
       </span>
       <span>
         {{translatedLangText.COMPUTER_GENERATED_NOTE}}
