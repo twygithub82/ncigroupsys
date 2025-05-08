@@ -2,7 +2,7 @@
   <div class="modalHeader_r2">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h4>{{this.translatedLangText.PAGE_TITLE}} - {{this.getAction()}} </h4>
+        <h4>{{this.getAction()}} </h4>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -44,7 +44,7 @@
                     </div>
                   </div>
                   <div class="spacer"></div>
-                  <div mat-dialog-actions class="align-right m-r-60">
+                  <div mat-dialog-actions class="align-right" style="margin-right: 10%">
                     @if(canRollBack())
                     {
                     <button mat-flat-button color="accent" (click)="onRollback($event)" class="m-r-5">
