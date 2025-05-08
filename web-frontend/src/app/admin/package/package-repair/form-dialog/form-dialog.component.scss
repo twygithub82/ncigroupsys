@@ -8,8 +8,6 @@
 table.mat-table {
   width: 100%;
   border-collapse: collapse;
-  padding-left: 0px;
-  padding-right: 0px;
 }
 
 .mat-cell, .mat-header-cell {
@@ -76,6 +74,6 @@ td div img:hover {
   table.curve-table {
     border-collapse: separate; /* Important for border-radius to work */
     border-spacing: 0;
-    border-radius: 35px;
+    border-radius: 38px;
     overflow: hidden; /* Helps apply the radius to inner content */
   }

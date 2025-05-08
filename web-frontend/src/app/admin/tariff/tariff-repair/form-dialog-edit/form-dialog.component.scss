@@ -28,8 +28,6 @@ td div img:hover {
     transform: scale(1.1);
     cursor: pointer;
   }
-
-
   
   td div {
     //display: flex;
@@ -58,4 +56,11 @@ td div img:hover {
    .mat-mdc-dialog-content {
     
     max-height: 90vh;
+  }
+
+  table.curve-table {
+    border-collapse: separate; /* Important for border-radius to work */
+    border-spacing: 0;
+    border-radius: 38px;
+    overflow: hidden; /* Helps apply the radius to inner content */
   }
