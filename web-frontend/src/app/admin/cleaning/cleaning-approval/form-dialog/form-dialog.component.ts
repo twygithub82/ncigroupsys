@@ -213,6 +213,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     CLEANING_APPROVAL: "MENUITEMS.CLEANING.LIST.APPROVAL",
     KIV: "COMMON-FORM.KIV",
+    FULL_KIV: "COMMON-FORM.FULL-KIV",
     NO_ACTION: "COMMON-FORM.NO-ACTION",
     APPROVE: "COMMON-FORM.APPROVE",
     APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
@@ -573,7 +574,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     let retval = "";
     switch (this.action) {
       case "kiv":
-        retval = this.translatedLangText.KIV;
+        retval = this.translatedLangText.FULL_KIV;
         break;
       case "approve":
         retval = this.translatedLangText.APPROVE;

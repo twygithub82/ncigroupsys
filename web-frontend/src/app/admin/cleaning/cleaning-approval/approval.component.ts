@@ -547,7 +547,10 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   ViewTank(row: InGateCleaningItem) {
-    this.popupDialogForm(row, "view");
+    if(row.status_cv == "KIV")
+      this.popupDialogForm(row, "kiv");
+    else
+      this.popupDialogForm(row, "view");
   }
 
   popupDialogForm(row: InGateItem, action: string) {

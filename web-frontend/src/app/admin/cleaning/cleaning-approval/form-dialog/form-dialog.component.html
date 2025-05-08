@@ -1,8 +1,8 @@
 <div class="addContainer">
-  <div class="modalHeader_r2">
+  <div class="modalHeader div-padding">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h4>{{this.translatedLangText.CLEANING_APPROVAL}} - {{this.getAction()}} </h4>
+        <h4>{{this.getAction()}} </h4>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -43,7 +43,7 @@
                 </div> -->
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.NO_ACTION}} {{translatedLangText.DATE}}</mat-label>
+                    <mat-label>{{translatedLangText.DATE}}</mat-label>
                     <input matInput [matDatepicker]="noaction_dt_picker" placeholder="Select date"
                       formControlName="no_action_dt" [required]="this.ShowNoActionDate()">
                     <mat-datepicker-toggle matSuffix [for]="noaction_dt_picker"></mat-datepicker-toggle>
@@ -73,7 +73,7 @@
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                 <mat-icon class="me-2">error</mat-icon>
-                <mat-label>{{this.getNatureInGateAlert()}}</mat-label>
+                <mat-label class="align-items-center">{{this.getNatureInGateAlert()}}</mat-label>
               </div>
             </div>
           </div>
@@ -264,21 +264,21 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center">
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
                                 <div class="table-label cost-label">
                                   {{translatedLangText.APPROVAL}}
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
                                 <div class="table-label cost-label">
                                   {{translatedLangText.JOB_ALLOCATION}}
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
                                 <div class="table-label cost-label">
                                   {{translatedLangText.JOB_COMPLETION}}
                                 </div>
