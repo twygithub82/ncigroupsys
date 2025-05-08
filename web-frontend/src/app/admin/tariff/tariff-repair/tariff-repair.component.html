@@ -166,7 +166,7 @@
           <div class="body overflow-auto">
             <div class="responsive_table">
               <table mat-table [dataSource]="trfRepairItems" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl">
+                class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl curve-table">
                 <!-- Checkbox Column -->
                 @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                 <ng-container matColumnDef="select">
@@ -209,31 +209,31 @@
                 </ng-container>
                 <ng-container matColumnDef="gname">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                    [ngClass]="'tbl-col-width-per-2-xl'">{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl'">
                     <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
                     {{this.displayGroupNameCodeValue_Description(row.tariff_repair?.group_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subgroup">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-1_75-xl'">{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl'"
+                    [ngClass]="'tbl-col-width-per-2-xl'">{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="hour">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
+                    [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
                     {{row.tariff_repair?.labour_hour || "-"}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="bDate">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.MATERIAL$}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.MATERIAL$}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.MATERIAL$}}:</span>
                     <div class="cost-label">
