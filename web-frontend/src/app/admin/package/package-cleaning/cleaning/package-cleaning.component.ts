@@ -7,7 +7,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -241,6 +241,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
   }
 
   @ViewChild('custInput', { static: true })
@@ -765,7 +766,12 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-
+      this.search();
+    }
+    else
+    {
+      this.selectedCustomers.splice(index, 1);
+      this.search();
     }
 
     if (this.custInput) {
@@ -844,5 +850,42 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       retval = (index >= 0);
       return retval;
     }
+
+  getSelectedCustomersDisplay():string{
+    var retval:string = "";
+    if(this.selectedCustomers?.length>1){
+      retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+    }
+    else if(this.selectedCustomers?.length==1){
+      retval =`${this.selectedCustomers[0].name}`
+    }
+    return retval;
+  }
   
+  removeAllSelectedCustomers(): void {
+   this.selectedCustomers=[];
+  }
+
+  onCheckboxClicked(row: CustomerCompanyItem) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
+    // if (!event.checked) {
+    //   const index = this.selectedCustomers.findIndex(c => c.code === row.code);
+
+    //   if(index >= 0) { this.selectedCustomers.splice(index, 1); } // Handle checked
+    // } 
+    // else
+    // {
+    //   this.selectedCustomers.push(row);
+    //   this.search();
+
+    // }
+
+    // if (this.custInput) {
+    //   this.searchCustomerCompanyList('');
+    //   this.custInput.nativeElement.value = '';
+
+    // }
+  }
+
 }

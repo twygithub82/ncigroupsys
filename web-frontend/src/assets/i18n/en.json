@@ -1230,7 +1230,9 @@
     "ENTER-EMAIL": "Enter Email",
     "INVALID-EMAIL": "Invalid Email",
     "SUBMIT": "Submit",
-    "LOGIN": "Login"
+    "LOGIN": "Login",
+    "CUSTOMERS-SELECTED": "Customers Selected",
+    "PROFILES-SELECTED": "Profiles Selected"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

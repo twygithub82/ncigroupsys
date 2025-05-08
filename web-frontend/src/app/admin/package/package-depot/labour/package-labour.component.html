@@ -40,14 +40,17 @@
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <mat-chip-grid #chipGrid>
-                      @for (cust of selectedCustomers; track cust) {
-                      <mat-chip-row color="primary" (removed)="remove(cust)">
-                        <span> {{cust.code}}</span>
-                        <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
-                          <mat-icon>cancel</mat-icon>
-                        </button>
-                      </mat-chip-row>
-                      }
+                      <!-- @for (cust of selectedCustomers; track cust) { -->
+                       @if(this.selectedCustomers.length>0){
+                        <mat-chip-row color="primary" (click)="removeAllSelectedCustomers()">
+                          <span> {{getSelectedCustomersDisplay()}}</span>
+                          <button matChipRemove hidden>
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip-row>
+                       }
+                     
+                      <!-- } -->
                    
                     <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
                       [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
@@ -55,7 +58,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
-                        <mat-checkbox color="primary" style="padding: 0 12px;"
+                        <mat-checkbox color="primary" style="padding: 0 12px;" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
                           [checked]="itemSelected(cc) || false"></mat-checkbox>
                         {{ccDS.displayName(cc)}}
                       </mat-option>
