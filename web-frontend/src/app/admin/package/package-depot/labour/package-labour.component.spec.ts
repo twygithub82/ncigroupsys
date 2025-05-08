@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PackageCleaningComponent } from './package-cleaning.component';
+import { PackageLabourComponent } from './package-labour.component';
 
-describe('PackageCleaningComponent', () => {
-  let component: PackageCleaningComponent;
-  let fixture: ComponentFixture<PackageCleaningComponent>;
+describe('PackageLabourComponent', () => {
+  let component: PackageLabourComponent;
+  let fixture: ComponentFixture<PackageLabourComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PackageCleaningComponent]
+      imports: [PackageLabourComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(PackageCleaningComponent);
+    fixture = TestBed.createComponent(PackageLabourComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

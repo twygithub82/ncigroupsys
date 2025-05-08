@@ -217,6 +217,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
   }
 
   @ViewChild('custInput', { static: true })
@@ -706,23 +707,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     retval = (!tempMax || tempMax === 9999 ? '-' : tempMax);
     return retval;
   }
-  selected(event: MatAutocompleteSelectedEvent): void {
-    const customer = event.option.value;
-    const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
-    if (!(index >= 0)) {
-      this.selectedCustomers.push(customer);
-
-    }
-
-    if (this.custInput) {
-      this.searchCustomerCompanyList('');
-      this.custInput.nativeElement.value = '';
-
-    }
-    // this.updateFormControl();
-    //this.customerCodeControl.setValue(null);
-    //this.pcForm?.patchValue({ customer_code: null });
-  }
+  
 
   add(event: MatChipInputEvent): void {
     const input = event.input;
@@ -776,5 +761,51 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
+  
+
+  
+getSelectedCustomersDisplay():string{
+  var retval:string = "";
+  if(this.selectedCustomers?.length>1){
+    retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+  }
+  else if(this.selectedCustomers?.length==1){
+    retval =`${this.selectedCustomers[0].name}`
+  }
+  return retval;
 }
 
+removeAllSelectedCustomers(): void {
+ this.selectedCustomers=[];
+}
+
+
+selected(event: MatAutocompleteSelectedEvent): void {
+  const customer = event.option.value;
+  const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
+  if (!(index >= 0)) {
+    this.selectedCustomers.push(customer);
+    this.search();
+  }
+  else
+  {
+    this.selectedCustomers.splice(index, 1);
+    this.search();
+  }
+
+  if (this.custInput) {
+    this.searchCustomerCompanyList('');
+    this.custInput.nativeElement.value = '';
+
+  }
+  // this.updateFormControl();
+  //this.customerCodeControl.setValue(null);
+  //this.pcForm?.patchValue({ customer_code: null });
+}
+
+onCheckboxClicked(row: CustomerCompanyItem) {
+const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+this.selected(fakeEvent);
+
+}
+  }

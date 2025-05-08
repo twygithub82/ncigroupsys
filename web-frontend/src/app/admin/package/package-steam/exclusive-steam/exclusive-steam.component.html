@@ -47,14 +47,16 @@
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <mat-chip-grid #chipGrid>
-                      @for (cust of selectedCustomers; track cust) {
-                      <mat-chip-row color="primary" (removed)="remove(cust)">
-                        {{cust.code}}
-                        <button matChipRemove [attr.aria-label]="translatedLangText.REMOVE +' '+ cust.code">
+                      <!-- @for (cust of selectedCustomers; track cust)  -->
+                      @if(this.selectedCustomers.length>0)
+                      {
+                      <mat-chip-row color="primary" (click)="removeAllSelectedCustomers()" >
+                        {{getSelectedCustomersDisplay()}}
+                        <button matChipRemove hidden>
                           <mat-icon>cancel</mat-icon>
                         </button>
                       </mat-chip-row>
@@ -66,7 +68,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
-                        <mat-checkbox color="primary" style="padding: 0 12px;"
+                        <mat-checkbox color="primary" style="padding: 0 12px;"  (click)="onCheckboxClicked(cc);$event.stopPropagation()"
                           [checked]="itemSelected(cc) || false"></mat-checkbox>
                         {{ccDS.displayName(cc)}}
                       </mat-option>

@@ -10,6 +10,7 @@ import { BaseDataSource } from './base-ds';
 import { CleaningFormulaItem } from './cleaning-formulas';
 import { CleaningStepItem } from './cleaning-steps';
 import { CleaningCategoryItem } from './cleaning-category';
+import { TariffCleaningItem } from './tariff-cleaning';
 
 
 export const ADD_CLEANING_METHOD = gql`
@@ -100,6 +101,14 @@ export const SEARCH_CLEANING_METHOD_QUERY = gql`
             update_dt
           }
         }
+        tariff_cleanings{
+          guid
+          description
+          storing_order_tank(where:{delete_dt:{eq:null}}){
+            guid
+            tank_no
+          }
+        }
       }
       totalCount
       pageInfo {
@@ -151,6 +160,7 @@ export class CleaningMethodItem {
   public cleaning_method_formula?: CleaningStepItem[];
   public category_guid?:string;
   public cleaning_category?:CleaningCategoryItem;
+  public tariff_cleanings?:TariffCleaningItem[];
 
   constructor(item: Partial<CleaningMethodItem> = {}) {
     this.guid = item.guid;
@@ -165,6 +175,7 @@ export class CleaningMethodItem {
     this.cleaning_method_formula = item.cleaning_method_formula;
     this.category_guid=item.category_guid;
     this.cleaning_category=item.cleaning_category;
+    this.tariff_cleanings=item.tariff_cleanings;
   }
 }
 
