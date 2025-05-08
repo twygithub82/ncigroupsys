@@ -302,7 +302,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
     let where: any = {};
     if (this.pcForm!.value['name']) {
-      where.profile_name = { contains: this.pcForm!.value['name'] };
+      where.profile_name = { eq: this.pcForm!.value['name'] };
     }
 
     this.subs.sink = this.trfDepotDS.SearchTariffDepot(where).subscribe(data => {

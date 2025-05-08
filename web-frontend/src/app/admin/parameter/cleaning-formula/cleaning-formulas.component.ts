@@ -492,6 +492,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       this.fmlDS.deleteCleaningFormula([guids]).subscribe(result => {
         if (result.data.deleteCleaningFormula) {
           this.handleSaveSuccess(result.data.deleteCleaningFormula);
+          this.pageIndex=0;
           this.search();
         }
       })

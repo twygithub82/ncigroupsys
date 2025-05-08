@@ -526,7 +526,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     
           if(!bRetval)
           {
-            bRetval = (!row?.cleaning_category) && (row?.cleaning_method_formula?.length||0)===0;
+            bRetval =(row?.tariff_cleanings?.length||0)===0;
           }
         return bRetval;
       }
@@ -536,6 +536,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
           this.mthDS.deleteCleaningMethod([guids]).subscribe(result => {
             if (result.data.deleteCleaningMethod) {
               this.handleSaveSuccess(result.data.deleteCleaningMethod);
+              this.pageIndex=0;
               this.search();
             }
           })
