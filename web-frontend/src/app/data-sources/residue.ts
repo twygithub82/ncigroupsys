@@ -764,7 +764,6 @@ export const ROLLBACK_COMPLETED_RESIDUE = gql`
   mutation rollbackCompletedResidue($residueJobOrder: [ResJobOrderRequestInput!]!) {
     rollbackCompletedResidue(residueJobOrder: $residueJobOrder)
   }
-
 `
 
 export const ROLLBACK_ASSIGNED_RESIDUE = gql`

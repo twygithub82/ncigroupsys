@@ -1,6 +1,10 @@
-<div class="container">
+<div class="addContainer">
   <div class="modalHeader_left_align">
-    <h3 mat-dialog-title>{{dialogTitle}}</h3>
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4 mat-dialog-title>{{dialogTitle}}</h4>
+      </div>
+    </div>
   </div>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
     <form class="register-form" [formGroup]="confirmationForm" #formDirective="ngForm">
