@@ -2,12 +2,9 @@
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h3>{{dialogTitle}}</h3>
+        <h4 mat-dialog-title>{{dialogTitle}}</h4>
       </div>
     </div>
-    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
-      <mat-icon>close</mat-icon>
-    </button>
   </div>
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="purposeForm" #formDirective="ngForm">

@@ -265,7 +265,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   tankSideCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
 
-  scale = 1.2;
+  scale = 2.5;
   imageQuality = 1;
 
   generatedPDF: any;
@@ -424,8 +424,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
 
         // Calculate natural dimensions for the body content
-        const imgWidth = canvas.width * 0.264583; // Convert px to mm
-        const imgHeight = canvas.height * 0.264583;
+        const rect = element.getBoundingClientRect();
+        const imgWidth = rect.width * 0.264583;  // px to mm
+        const imgHeight = rect.height * 0.264583;
         const aspectRatio = imgWidth / imgHeight;
 
         // Calculate scaled width and height to fit the page without stretching
@@ -440,7 +441,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
           if (yOffset > 0) pdf.addPage();
 
           // Add Header and get its height
-          const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
+          const headerHeight = 28;
+          await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftRightMargin, leftRightMargin, this.translate);
           this.generatingPdfProgress += 33;
 
           // Adjust usable height by subtracting header height
@@ -471,10 +473,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         }
         this.generatingPdfProgress = 100;
         // pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
-        this.generatedPDF = pdf.output('blob');
-        // this.uploadEir(this.eirDetails?.guid, this.generatedPDF);
-        this.onDownloadClick();
+        // this.generatedPDF = pdf.output('blob');
+        // this.onDownloadClick();
         this.generatingPdfLoadingSubject.next(false);
+        Utility.previewPDF(pdf, `${this.getReportTitle()}`);
+        this.dialogRef.close();
       } catch (error) {
         console.error('Error generating PDF:', error);
       }
@@ -1535,8 +1538,14 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     return Utility.convertEpochToDateStr(input);
   }
 
+  getReportTitle(): string {
+    var title: string = '';
+    title = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`
+    return `${title}`
+  }
+
   async onDownloadClick() {
-    const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
+    const fileName = this.getReportTitle(); // Define the filename
     if (this.generatedPDF) {
       console.log(`Download from generatedPDF`)
       this.downloadFile(this.generatedPDF, fileName);

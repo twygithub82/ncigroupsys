@@ -421,19 +421,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           status_cv: inGateClnItem.status_cv,
           approve_dt: this.displayDateFromEpoch(inGateClnItem.approve_dt),
           na_dt: this.displayDateFromEpoch(inGateClnItem.na_dt),
-          //remarks: inGateClnItem.remarks,
           cleaning_cost: inGateClnItem.cleaning_cost,
           buffer_cost: inGateClnItem.buffer_cost
         });
         this.PatchBillingParty(inGateClnItem);
         this.createCleaningChargesItem();
-        //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
-
       }
     });
-
-
-
   }
 
   displayCustomerName(cc?: CustomerCompanyItem): string {
@@ -504,7 +498,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rep.cleaning_cost = Number(this.pcForm.get('cleaning_cost')?.value);
         rep.buffer_cost = Number(this.pcForm.get('buffer_cost')?.value);
         rep.remarks = this.pcForm.get("remarks")?.value;
-
     }
 
     if (this.action.toUpperCase() === "NO_ACTION") {
@@ -533,10 +526,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         delete rep.job_order;
         this.igCleanDS.updateInGateCleaning(rep).subscribe(result => {
           if (result.data.updateCleaning > 0) {
-
             console.log('valid');
             this.handleSaveSuccess(result.data.updateCleaning);
-
           }
         });
       }
@@ -545,10 +536,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       delete rep.job_order;
       this.igCleanDS.updateInGateCleaning(rep).subscribe(result => {
         if (result.data.updateCleaning > 0) {
-
           console.log('valid');
           this.handleSaveSuccess(result.data.updateCleaning);
-
         }
       });
     }

@@ -35,25 +35,25 @@ export class JobOrderGO {
   public delete_dt?: number;
 
   constructor(item: Partial<JobOrderGO> = {}) {
-    this.guid = item.guid;
+    this.guid = item?.guid;
 
-    this.sot_guid = item.sot_guid;
-    this.team_guid = item.team_guid;
-    this.job_order_no = item.job_order_no;
-    this.working_hour = item.working_hour;
-    this.total_hour = item.total_hour;
-    this.job_type_cv = item.job_type_cv;
-    this.status_cv = item.status_cv;
-    this.remarks = item.remarks;
-    this.start_dt = item.start_dt;
-    this.complete_dt = item.complete_dt;
-    this.qc_dt = item.qc_dt;
-    this.qc_by = item.qc_by;
-    this.create_dt = item.create_dt;
-    this.create_by = item.create_by;
-    this.update_dt = item.update_dt;
-    this.update_by = item.update_by;
-    this.delete_dt = item.delete_dt;
+    this.sot_guid = item?.sot_guid;
+    this.team_guid = item?.team_guid;
+    this.job_order_no = item?.job_order_no;
+    this.working_hour = item?.working_hour;
+    this.total_hour = item?.total_hour;
+    this.job_type_cv = item?.job_type_cv;
+    this.status_cv = item?.status_cv;
+    this.remarks = item?.remarks;
+    this.start_dt = item?.start_dt;
+    this.complete_dt = item?.complete_dt;
+    this.qc_dt = item?.qc_dt;
+    this.qc_by = item?.qc_by;
+    this.create_dt = item?.create_dt;
+    this.create_by = item?.create_by;
+    this.update_dt = item?.update_dt;
+    this.update_by = item?.update_by;
+    this.delete_dt = item?.delete_dt;
   }
 }
 
