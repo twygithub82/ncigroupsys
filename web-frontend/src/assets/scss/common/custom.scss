@@ -2238,3 +2238,14 @@ mat-step-header.mat-step-header:hover {
 .no-results {
   display: none;
 }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  &.text-column {
+    color: mat.get-color-from-palette(custom-theme.$custom-info, 700);
+  }
+}
