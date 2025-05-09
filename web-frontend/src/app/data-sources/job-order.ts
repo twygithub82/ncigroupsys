@@ -440,6 +440,7 @@ const GET_STARTED_JOB_ORDER = gql`
             cleaning_method {
               guid
               description
+              name
             }
           }
           residue {

@@ -332,6 +332,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
+  getToggleTable(): boolean{
+    return this.selectedItem.status_cv === "KIV" ? false : true;
+  }
+
   initializeValueChanges() {
     this.pcForm!.get('bill_to')!.valueChanges.pipe(
       startWith(''),
@@ -409,18 +413,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           tank_no: inGateClnItem.storing_order_tank?.tank_no,
           customer: this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
           eir_no: inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
-          eir_dt: this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
-          quotation_dt: this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+          eir_dt: this.displayDate(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+          quotation_dt: this.displayDate(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
           cargo: inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
           job_no: inGateClnItem.job_no,
           depot_estimate_cost: Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
           customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
           update_by: inGateClnItem.approve_by,
-          update_on: this.displayDateFromEpoch(inGateClnItem.approve_dt),
+          update_on: this.displayDate(inGateClnItem.approve_dt),
           job_no_input: inGateClnItem.job_no,
           status_cv: inGateClnItem.status_cv,
-          approve_dt: this.displayDateFromEpoch(inGateClnItem.approve_dt),
-          na_dt: this.displayDateFromEpoch(inGateClnItem.na_dt),
+          approve_dt: this.displayDate(inGateClnItem.approve_dt),
+          na_dt: this.displayDate(inGateClnItem.na_dt),
           cleaning_cost: inGateClnItem.cleaning_cost,
           buffer_cost: inGateClnItem.buffer_cost
         });
@@ -434,6 +438,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return String(cc?.code ? `${cc.code} (${cc.name})` : '');
   }
 
+  displayDate(input: number | undefined): string | undefined {
+    if (input === null) return "-";
+    return Utility.convertEpochToDateStr(input);
+  }
 
 
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
@@ -752,4 +760,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return retval;
   }
 
+  getMaxDate(){
+    return new Date();
+  }
 }

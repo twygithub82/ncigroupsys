@@ -1,5 +1,5 @@
 <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
-  <div class="container p-4">
+  <div class="container p-4 mb-2">
     <h4 mat-dialog-title>{{confirmStatement}}</h4>
     <mat-card [ngClass]="{'card-content m-b-10': true, 'bg-light-grey': false}" matRipple>
       <mat-card-content>
@@ -23,7 +23,7 @@
       <mat-card-actions [ngClass]="'empty-card-actions'">
       </mat-card-actions>
     </mat-card>
-    <div mat-dialog-actions class="align-right">
+    <div mat-dialog-actions class="mt-1 align-right">
       <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmDelete()">
         {{data.langText.CONFIRM}}
       </button>
