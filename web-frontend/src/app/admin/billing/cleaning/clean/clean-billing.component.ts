@@ -88,9 +88,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'last_cargo',
     //'purpose',
     'cost',
-    'tank_status_cv',
     'invoice_no',
     'invoice_date',
+    'tank_status_cv',
     //'invoiced',
     //'action'
   ];

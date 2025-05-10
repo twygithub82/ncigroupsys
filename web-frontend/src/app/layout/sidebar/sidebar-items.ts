@@ -1011,7 +1011,7 @@ export const ROUTES: RouteInfo[] = [
     submenu: [
       {
         path: "admin/billing/depot",
-        title: "MENUITEMS.BILLING.LIST.DEPOT-COST-BILL",
+        title: "MENUITEMS.BILLING.LIST.DEPOT-COST",
         iconType: "",
         icon: "",
         class: "ml-menu",

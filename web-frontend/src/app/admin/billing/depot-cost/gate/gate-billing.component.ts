@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -1159,6 +1159,17 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
   displayNumber(value: number) {
     return Utility.formatNumberDisplay(value);
+  }
+
+  onToggleInvoiced(event: MatSlideToggleChange) {
+    // if (event.checked) {
+    //   const currentDateTime = new Date();
+    //   console.log('Toggle is ON. Current date/time:', currentDateTime);
+  
+    //   // Call your function to use the date/time
+    //   //this.handleInvoicedToggle(currentDateTime);
+    // }
+    this.search();
   }
 
   delete_invoice(event: Event, row: any, billType: string) {

@@ -50,10 +50,16 @@ input[type=radio]:checked + label{
 label + input[type=radio] + label {
   border-left: solid $borderWidth $fg;
 }
+
 .radio-group {
   border: solid $borderWidth $fg;
   display: inline-block;
   margin: 20px;
   border-radius: 5px;
   overflow: hidden;
+}
+
+.scaled-toggle {
+  margin: 5px 0;
+  font-size: 1.5rem; 
 }
