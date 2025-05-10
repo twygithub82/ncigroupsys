@@ -1026,7 +1026,7 @@
                                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <div class="responsive_table">
                                       <table mat-table [dataSource]="steamItem" matSort
-                                        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header ">
                                         <ng-container matColumnDef="id">
                                           <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -1335,7 +1335,7 @@
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <div class="responsive_table">
                                     <table mat-table [dataSource]="residueItem" matSort
-                                      class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                      class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                       <ng-container matColumnDef="id">
                                         <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                         <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -2032,8 +2032,77 @@
                               </tbody>
                             </table> -->
                           </div>
-                          <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                            <div class="row justify-content-center">
+                          <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                            <div class="responsive_table">
+                              <table mat-table [dataSource]="sotDepotCostDetails" matSort
+                                class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+                                <ng-container matColumnDef="description">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                    {{translatedLangText.DESCRIPTION}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                                    <span
+                                      class="mobile-tab-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="job_no">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                    {{translatedLangText.JOB_NO}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                                    <span class="mobile-tab-label">{{translatedLangText.JOB_NO}}:</span>
+                                    <span>{{row.job_no ?? "-"}}</span>
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="invoice">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                    {{translatedLangText.INVOICE}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                                    <span class="mobile-tab-label">{{translatedLangText.INVOICE}}:</span>
+                                    <span>
+                                      @if (row.billing_guid) {
+                                      <!-- <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon> -->
+                                      {{row.invoice_no}}
+                                      }
+                                      @else {
+                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
+                                      }
+                                    </span>
+                                  </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="cost">
+                                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                    {{translatedLangText.COST}}
+                                  </mat-header-cell>
+                                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                                    <span class="mobile-tab-label">{{translatedLangText.COST}}:</span>
+                                    <span>{{parse2Decimal(row.cost!) || '-'}}</span>
+                                  </mat-cell>
+                                </ng-container>
+                                <mat-header-row *matHeaderRowDef="displayedColumnsDepotCostDetails"></mat-header-row>
+                                <mat-row *matRowDef="let row; columns: displayedColumnsDepotCostDetails;"
+                                  (click)="repairDialog($event, row)" [style.cursor]="'pointer'" matRipple>
+                                </mat-row>
+                              </table>
+                            </div>
+                            <!-- No result -->
+                            @if (!(repairDS.loading$ | async) && !repairItem.length) {
+                            <div class="no-results">
+                              <mat-divider></mat-divider>
+                              <div class="no-results m-l-20 pt-3">
+                                <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                              </div>
+                            </div>
+                            }
+                            <!-- Loading spinner -->
+                            @if (repairDS.loading$ | async) {
+                            <div class="tbl-spinner">
+                              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                              </mat-progress-spinner>
+                            </div>
+                            }
+                            <!-- <div class="row justify-content-center">
                               <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                 <div class="row">
                                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -2197,7 +2266,7 @@
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </div> -->
                             <!-- <table class="table table-striped table-hover m-b-0">
                               <thead>
                                 <tr>
@@ -2347,7 +2416,7 @@
                               </ng-template>
                               <div class="responsive_table">
                                 <table mat-table [dataSource]="bookingList" matSort
-                                  class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                  class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                   <ng-container matColumnDef="id">
                                     <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -2440,7 +2509,7 @@
                               </ng-template>
                               <div class="responsive_table">
                                 <table mat-table [dataSource]="schedulingList" matSort
-                                  class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                  class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                   <ng-container matColumnDef="id">
                                     <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -2521,7 +2590,7 @@
                           @if (tab.component == 'booking') {
                           <div class="responsive_table">
                             <table mat-table [dataSource]="bookingList" matSort
-                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
                                 <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -2607,7 +2676,7 @@
                           @if (tab.component == 'scheduling') {
                           <div class="responsive_table">
                             <table mat-table [dataSource]="schedulingList" matSort
-                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
                                 <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -2716,7 +2785,7 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <div class="responsive_table">
                             <table mat-table [dataSource]="surveyList" matSort
-                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
                                 <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -2855,7 +2924,7 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                           <div class="responsive_table">
                             <table mat-table [dataSource]="transferList" matSort
-                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                              class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
                                 <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>

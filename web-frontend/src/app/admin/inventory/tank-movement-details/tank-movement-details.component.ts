@@ -180,6 +180,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'update_dt'
   ];
 
+  displayedColumnsDepotCostDetails = [
+    "description",
+    "job_no",
+    "invoice",
+    "cost"
+  ]
+
   pageTitle = 'MENUITEMS.INVENTORY.LIST.TANK-MOVEMENT-DETAILS'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/tank-movement' },
@@ -546,6 +553,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   tariffDepotList: TariffDepotItem[] = [];
   packageBufferList?: PackageBufferItem[];
+  sotDepotCostDetails: any = []
 
   last_test_desc?: string = "";
   next_test_desc?: string = "";
@@ -2381,6 +2389,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (data.length > 0) {
         console.log(`sot: `, data)
         this.sot = data[0];
+        this.loadSotDepotCost();
         this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
         // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
         this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
@@ -2516,5 +2525,47 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.tariffDepotList = data;
       }
     });
+  }
+
+  loadSotDepotCost() {
+    if (this.sot) {
+      this.sotDepotCostDetails = [
+        {
+          "description": this.translatedLangText.PRE_INSPECTION,
+          "job_no": this.sot?.preinspect_job_no,
+          "billing_guid": this.sot?.billing_sot?.preinsp_billing_guid,
+          "invoice_no": this.sot?.billing_sot?.preinsp_billing?.invoice_no,
+          "cost": this.sot?.billing_sot?.preinspection_cost
+        },
+        {
+          "description": this.translatedLangText.LIFT_OFF,
+          "job_no": this.sot?.liftoff_job_no,
+          "billing_guid": this.sot?.billing_sot?.loff_billing_guid,
+          "invoice_no": this.sot?.billing_sot?.loff_billing?.invoice_no,
+          "cost": this.sot?.billing_sot?.lift_off_cost
+        },
+        {
+          "description": this.translatedLangText.LIFT_ON,
+          "job_no": this.sot?.lifton_job_no,
+          "billing_guid": this.sot?.billing_sot?.lon_billing_guid,
+          "invoice_no": this.sot?.billing_sot?.lon_billing?.invoice_no,
+          "cost": this.sot?.billing_sot?.lift_on_cost
+        },
+        {
+          "description": this.translatedLangText.GATE_IN,
+          "job_no": this.sot?.job_no,
+          "billing_guid": this.sot?.billing_sot?.gin_billing_guid,
+          "invoice_no": this.sot?.billing_sot?.gin_billing?.invoice_no,
+          "cost": this.sot?.billing_sot?.gate_in_cost
+        },
+        {
+          "description": this.translatedLangText.GATE_OUT,
+          "job_no": this.sot?.release_job_no,
+          "billing_guid": this.sot?.billing_sot?.gout_billing_guid,
+          "invoice_no": this.sot?.billing_sot?.gout_billing?.invoice_no,
+          "cost": this.sot?.billing_sot?.gate_out_cost
+        },
+      ]
+    }
   }
 }
