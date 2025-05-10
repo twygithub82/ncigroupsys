@@ -67,7 +67,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row">
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span>{{translatedLangText.EIR_NO}}:</span>
@@ -98,7 +98,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row">
                     <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5">
                       <span>{{translatedLangText.PURPOSE}}:</span>
@@ -1601,13 +1601,20 @@
                                   <mat-label>{{translatedLangText.BOTTOM_DIS_COMP}}:</mat-label>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                  <mat-radio-group formControlName="btm_dis_comp_cv">
+                                  <!-- <mat-radio-group formControlName="btm_dis_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
                                     </mat-radio-button>
                                     }
-                                  </mat-radio-group>
+                                  </mat-radio-group> -->
+                                  <mat-button-toggle-group formControlName="btm_dis_comp_cv" class="m-r-10"
+                                    color="primary" appearance="standard" exclusiveToggle>
+                                    @for (codeValue of disCompCvList; track codeValue) {
+                                    <mat-button-toggle
+                                      [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                    }
+                                  </mat-button-toggle-group>
                                 </div>
                               </div>
                               <div class="row">
@@ -1620,13 +1627,20 @@
                                       <mat-label>{{translatedLangText.FOOT_VALVE}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="foot_valve_cv">
+                                      <!-- <mat-radio-group formControlName="foot_valve_cv">
                                         @for (codeValue of valveBrandCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="foot_valve_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1665,13 +1679,20 @@
                                       <mat-label>{{translatedLangText.BOTTOM_DIS_VALVE}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="btm_dis_valve_cv">
+                                      <!-- <mat-radio-group formControlName="btm_dis_valve_cv">
                                         @for (codeValue of disValveCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="btm_dis_valve_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of disValveCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1697,13 +1718,20 @@
                                         {{translatedLangText.SPECIFICATION}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="btm_dis_valve_spec_cv">
+                                      <!-- <mat-radio-group formControlName="btm_dis_valve_spec_cv">
                                         @for (codeValue of disValveSpecCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="btm_dis_valve_spec_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1711,7 +1739,8 @@
                                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="btm_dis_valve_spec_oth" (input)="onAlphaOnly($event)" />
+                                    <input matInput formControlName="btm_dis_valve_spec_oth"
+                                      (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1784,13 +1813,20 @@
                                   <mat-label>{{translatedLangText.TOP_DIS_COMP}}:</mat-label>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                  <mat-radio-group formControlName="top_dis_comp_cv">
+                                  <!-- <mat-radio-group formControlName="top_dis_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
                                     </mat-radio-button>
                                     }
-                                  </mat-radio-group>
+                                  </mat-radio-group> -->
+                                  <mat-button-toggle-group formControlName="top_dis_comp_cv" class="m-r-10"
+                                    color="primary" appearance="standard" exclusiveToggle>
+                                    @for (codeValue of disCompCvList; track codeValue) {
+                                    <mat-button-toggle
+                                      [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                    }
+                                  </mat-button-toggle-group>
                                 </div>
                               </div>
                               <div class="row">
@@ -1800,13 +1836,20 @@
                                       <mat-label>{{translatedLangText.TOP_DIS_VALVE}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="top_dis_valve_cv">
+                                      <!-- <mat-radio-group formControlName="top_dis_valve_cv">
                                         @for (codeValue of disValveCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="top_dis_valve_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of disValveCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1832,13 +1875,20 @@
                                         {{translatedLangText.SPECIFICATION}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="top_dis_valve_spec_cv">
+                                      <!-- <mat-radio-group formControlName="top_dis_valve_spec_cv">
                                         @for (codeValue of disValveSpecCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="top_dis_valve_spec_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1846,7 +1896,8 @@
                                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="top_dis_valve_spec_oth" (input)="onAlphaOnly($event)" />
+                                    <input matInput formControlName="top_dis_valve_spec_oth"
+                                      (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1877,13 +1928,20 @@
                                       <mat-label>{{translatedLangText.AIRLINE_VALVE}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="airline_valve_cv">
+                                      <!-- <mat-radio-group formControlName="airline_valve_cv">
                                         @for (codeValue of airlineCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="airline_valve_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of airlineCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1936,13 +1994,20 @@
                                       <mat-label>{{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="airline_valve_conn_cv">
+                                      <!-- <mat-radio-group formControlName="airline_valve_conn_cv">
                                         @for (codeValue of airlineConnCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="airline_valve_conn_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of airlineConnCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1950,7 +2015,8 @@
                                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_oth" (input)="onAlphaOnly($event)" />
+                                    <input matInput formControlName="airline_valve_conn_oth"
+                                      (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1967,13 +2033,20 @@
                                       <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="airline_valve_conn_spec_cv">
+                                      <!-- <mat-radio-group formControlName="airline_valve_conn_spec_cv">
                                         @for (codeValue of valveBrandCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="airline_valve_conn_spec_cv"
+                                        class="m-r-10" color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
@@ -1981,7 +2054,8 @@
                                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_spec_oth" (input)="onAlphaOnly($event)" />
+                                    <input matInput formControlName="airline_valve_conn_spec_oth"
+                                      (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -2015,13 +2089,20 @@
                                   <mat-label>{{translatedLangText.MANLID_COMPARTMENT}}:</mat-label>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                  <mat-radio-group formControlName="manlid_comp_cv">
+                                  <!-- <mat-radio-group formControlName="manlid_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
                                     </mat-radio-button>
                                     }
-                                  </mat-radio-group>
+                                  </mat-radio-group> -->
+                                  <mat-button-toggle-group formControlName="manlid_comp_cv" class="m-r-10"
+                                    color="primary" appearance="standard" exclusiveToggle>
+                                    @for (codeValue of disCompCvList; track codeValue) {
+                                    <mat-button-toggle
+                                      [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                    }
+                                  </mat-button-toggle-group>
                                 </div>
                               </div>
                               <div class="row">
@@ -2031,13 +2112,20 @@
                                       <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                      <mat-radio-group formControlName="manlid_cover_cv">
+                                      <!-- <mat-radio-group formControlName="manlid_cover_cv">
                                         @for (codeValue of valveBrandCvList; track codeValue) {
                                         <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                           {{codeValue.description}}
                                         </mat-radio-button>
                                         }
-                                      </mat-radio-group>
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="manlid_cover_cv" class="m-r-10"
+                                        color="primary" appearance="standard" exclusiveToggle>
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
                                     </div>
                                   </div>
                                 </div>
