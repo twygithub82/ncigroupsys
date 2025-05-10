@@ -2249,3 +2249,7 @@ h6 {
     color: mat.get-color-from-palette(custom-theme.$custom-info, 700);
   }
 }
+
+mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 36px;
+}

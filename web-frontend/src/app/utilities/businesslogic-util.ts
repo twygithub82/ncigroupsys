@@ -2,8 +2,12 @@ import { CodeValuesItem } from "app/data-sources/code-values";
 import { modulePackage } from "environments/environment";
 
 export class BusinessLogicUtil {
-    static isOthers(value: string): boolean {
-        return value === 'OTHERS';
+    static isOthers(value: string | string[]): boolean {
+        if (Array.isArray(value)) {
+            return value.includes('OTHERS');
+        } else {
+            return value === 'OTHERS';
+        }
     }
 
     static getCodeDescription(codeValType: string | undefined, codeValItem: CodeValuesItem[]): string | undefined {
