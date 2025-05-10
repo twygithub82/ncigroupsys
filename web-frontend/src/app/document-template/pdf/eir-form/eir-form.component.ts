@@ -341,6 +341,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       // }
     }
   }
+  
 
   showPDF(): void {
     // const element = document.getElementById('eir-form-template');
@@ -533,162 +534,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
             }
           },
         });
-
-      
+   
         
-      //   var data1 = [
-      //     { 
-      //         content: [{ 
-      //             text: 'This text has a strikethrough', 
-      //             decoration: 'lineThrough' 
-      //         }],
-      //         colSpan: 2  
-      //     },
-      //     [
-      //         `${this.translatedLangText.BOTTOM_DIS_COMP__ABB} ${this.getFormattedDisCompDescription()}`,
-      //         this.eirDetails?.btm_dis_comp_cv ? 'o' : 'x'
-      //     ],
-      //     [
-      //         `${this.translatedLangText.FOOT_VALVE} ${this.getFormattedFootValve()}`,
-      //         this.eirDetails?.foot_valve_cv ? 'o' : 'x'
-      //     ],
-      //     [
-      //         `${this.translatedLangText.BOTTOM_DIS_VALVE__ABB} ${this.getFormattedBottomDisValveSection()}`,
-      //         this.eirDetails?.btm_dis_valve_cv ? 'o' : 'x'
-      //     ],
-      //     [
-      //         `${this.translatedLangText.THERMOMETER}`,
-      //         this.eirDetails?.thermometer ? 'o' : 'x'
-      //     ],
-      //     [
-      //         `${this.translatedLangText.LADDER}`,
-      //         this.eirDetails?.ladder ? 'o' : 'x'
-      //     ],
-      //     [
-      //         `${this.translatedLangText.DATA_CSC_TRANSPORT_PLATE}`,
-      //         this.eirDetails?.data_csc_transportplate ? 'o' : 'x'
-      //     ],
-      //     { 
-      //         content: `${this.translatedLangText.TOP_DIS_COMP}`, 
-      //         colSpan: 2 
-      //     }
-      // ];
-      
-      // startY = lastTableFinalY + 5;
-      // var tableWidth = 150;
-      // var grayGreyText = [this.translatedLangText.BOTTOM_DIS_COMP, this.translatedLangText.TOP_DIS_COMP];
-      
-      // autoTable(pdf, {
-      //     body: data1,
-      //     startY: startY,
-      //     theme: 'grid',
-      //     margin: { left: leftMargin + pageWidth - tableWidth },
-      //     styles: {
-      //         fontSize: fontSz,
-      //         minCellHeight: minHeightHeaderCol,
-      //         lineWidth: 0.5,
-      //         lineColor: [0, 0, 0],
-      //     },
-      //     tableWidth: tableWidth, // Changed from hardcoded 100 to use the variable
-      //     bodyStyles: {
-      //         fillColor: [255, 255, 255],
-      //         halign: 'left',
-      //         valign: 'middle',
-      //     },
-      //     didParseCell: function(data) {
-      //         if (grayGreyText.some(text => data.cell.raw.includes(text))) {
-      //             data.cell.styles.fillColor = [90, 90, 90];
-      //             data.cell.styles.textColor = [255, 255, 255]; // Add white text for better contrast
-      //         }
-      //     },
-      //     didDrawPage: (data: any) => {
-      //         const pageCount = pdf.getNumberOfPages();
-      //         lastTableFinalY = data.cursor.y;
-      
-      //         var pg = pagePositions.find(p => p.page == pageCount);
-      //         if (!pg) {
-      //             pagePositions.push({ 
-      //                 page: pageCount, 
-      //                 x: pdf.internal.pageSize.width - 20, 
-      //                 y: pdf.internal.pageSize.height - 10 
-      //             });
-      //             if (pageCount > 1) {
-      //                 Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-      //             }
-      //         }
-      //     },
-      // });
-      
-      // var buffer = 10;
-      // var CurrentPage = 1;
-      // for (let n = 0; n < this.report_inventory_cln_dtl.length; n++) {
-      //   if (n > 0) lastTableFinalY += 8;
-      //   //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      //   let cust = this.report_inventory_cln_dtl[n];
-  
-  
-      //   var repPage = pdf.getNumberOfPages();
-      //   //if(repPage==1)lastTableFinalY=45;
-  
-      //   if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-      //     pdf.addPage();
-      //     lastTableFinalY = 5 + topMargin;
-      //   }
-      //   else {
-      //     CurrentPage = repPage;
-      //   }
-      //   lastTableFinalY += 5;
-      //   startY = lastTableFinalY + 3;
-      //   pdf.setFontSize(8);
-      //   pdf.setTextColor(0, 0, 0); // Black text
-      //   pdf.text(`${cust.cargo}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      //   const data: any[][] = []; // Explicitly define data as a 2D array
-      //   for (let i = 0; i < (cust.storing_order_tank?.length || 0); i++) {
-      //     var itm = cust.storing_order_tank?.[i];
-      //     data.push([
-      //       (i + 1).toString(), itm?.tank_no || "", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
-      //       this.DipslayCleanDuration(itm!) || "", itm?.tariff_cleaning?.un_no || "", this.DisplayCleanMethod(itm!) || ""
-      //     ]);
-      //   }
-  
-        // pdf.setDrawColor(0, 0, 0); // red line color
-  
-        // pdf.setLineWidth(0.1);
-        // pdf.setLineDashPattern([0, 0], 0);
-        // Add table using autoTable plugin
-      //   autoTable(pdf, {
-      //     head: headers,
-      //     body: data,
-      //     startY: startY, // Start table at the current startY value
-      //     theme: 'grid',
-      //     margin: { left: leftMargin },
-      //     styles: {
-      //       fontSize: fontSz,
-      //       minCellHeight: minHeightHeaderCol
-  
-      //     },
-      //     columnStyles: comStyles,
-      //     headStyles: headStyles, // Custom header styles
-      //     bodyStyles: {
-      //       fillColor: [255, 255, 255],
-      //       halign: 'left', // Left-align content for body by default
-      //       valign: 'middle', // Vertically align content
-      //     },
-      //     didDrawPage: (data: any) => {
-      //       const pageCount = pdf.getNumberOfPages();
-  
-      //       lastTableFinalY = data.cursor.y;
-  
-      //       var pg = pagePositions.find(p => p.page == pageCount);
-      //       if (!pg) {
-      //         pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-      //         if (pageCount > 1) {
-      //           Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-      //         }
-      //       }
-      //     },
-      //   });
-      // }
+     
 
 //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
       startY = lastTableFinalY+2;
@@ -712,8 +560,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
 
       var startRectY = startY + imgHeight + 2;
-      var rectBoxHeight=15;
-      var bufferLabel = 18;
+      var rectBoxHeight=13;
+      var bufferLabel = 16;
       var textContent=`${this.translatedLangText.REMARKS}:`;
       await PDFUtility.drawRectangleBox(pdf,leftMargin,startRectY, chartContentWidth, rectBoxHeight);
       PDFUtility.addText(pdf,textContent,startRectY+5,leftMargin+2,8,true);
@@ -726,7 +574,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       PDFUtility.addText(pdf,textContent,startRectY+5,leftMargin+bufferLabel,8);
       await PDFUtility.drawRectangleBox(pdf,leftMargin,startRectY, chartContentWidth, rectBoxHeight);
       textContent=this.eirDetails?.in_gate?.tank?.remarks||''
-      PDFUtility.addText(pdf,textContent,startRectY+13,leftMargin,8);
+      PDFUtility.addText(pdf,textContent,startRectY+8,leftMargin+2,8);
       startRectY+=rectBoxHeight+2;
       rectBoxHeight=pageHeight-rectBoxHeight-startRectY+2;
       
@@ -752,7 +600,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       textContent=`${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
       PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX,8, false, 'helvetica', true, textWrapWidth);
       
-      bufferLabelY+=36;
+      bufferLabelY+=41;
       var gapLabel=(textWrapWidth/2);      
 
       textContent=`${this.translatedLangText.SURVEY_BY}:`;
@@ -794,7 +642,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
       lastTableFinalY=startRectY+bufferLabelY;
       textContent=`${this.translatedLangText.COMPUTER_GENERATED_NOTE}`;
-      PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY+5, 8);
+      PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY+6, 8);
       //const totalPages = pdf.getNumberOfPages();
   
       // pagePositions.forEach(({ page, x, y }) => {
@@ -887,7 +735,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     
     
   async generatePDF(): Promise<void> {
-    
+    await this.exportToPDF_r1();
+  /*  
     const element = document.getElementById('eir-form-body');
     if (!element) {
       console.error('Template element not found');
@@ -902,13 +751,13 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         //   scale: this.scale, // Increase resolution
         // });
 
-        // const pdf = new jsPDF('p', 'mm', 'a4');
-        // const pageWidth = pdf.internal.pageSize.width; // A4 page width
-        // const pageHeight = pdf.internal.pageSize.height; // A4 page height
-        // const leftRightMargin = 5; // Fixed left and right margins
-        // const topMargin = 5; // Reduced top margin
-        // const bottomMargin = 5; // Reduced bottom margin
-        // const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.width; // A4 page width
+        const pageHeight = pdf.internal.pageSize.height; // A4 page height
+        const leftRightMargin = 5; // Fixed left and right margins
+        const topMargin = 5; // Reduced top margin
+        const bottomMargin = 5; // Reduced bottom margin
+        const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
 
         // Calculate natural dimensions for the body content
         const rect = element.getBoundingClientRect();
@@ -916,52 +765,52 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         const imgHeight = rect.height * 0.264583;
         const aspectRatio = imgWidth / imgHeight;
 
-        // // Calculate scaled width and height to fit the page without stretching
-        // const scaledWidth = pageWidth - leftRightMargin * 2; // Adjusted width with fixed margins
-        // const scaledHeight = scaledWidth / aspectRatio;
+        // Calculate scaled width and height to fit the page without stretching
+        const scaledWidth = pageWidth - leftRightMargin * 2; // Adjusted width with fixed margins
+        const scaledHeight = scaledWidth / aspectRatio;
 
-        // let yOffset = 0;
-        // let currentPage = 1;
-        // const totalPages = Math.ceil(imgHeight / usableHeight);
+        let yOffset = 0;
+        let currentPage = 1;
+        const totalPages = Math.ceil(imgHeight / usableHeight);
 
-        // while (yOffset < imgHeight) {
-        //   if (yOffset > 0) pdf.addPage();
+        while (yOffset < imgHeight) {
+          if (yOffset > 0) pdf.addPage();
 
           // Add Header and get its height
           const headerHeight = 28;
           await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftRightMargin, leftRightMargin, this.translate);
           this.generatingPdfProgress += 33;
 
-        //   // Adjust usable height by subtracting header height
-        //   const adjustedUsableHeight = usableHeight - headerHeight;
+          // Adjust usable height by subtracting header height
+          const adjustedUsableHeight = usableHeight - headerHeight;
 
-        //   // Add Body Content
-        //   const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
-        //   const canvasChunk = document.createElement('canvas');
-        //   const context = canvasChunk.getContext('2d');
+          // Add Body Content
+          const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
+          const canvasChunk = document.createElement('canvas');
+          const context = canvasChunk.getContext('2d');
 
-        //   // Create a new canvas for the current chunk
-        //   canvasChunk.width = canvas.width;
-        //   canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
+          // Create a new canvas for the current chunk
+          canvasChunk.width = canvas.width;
+          canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
 
-        //   if (context) {
-        //     context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
-        //   }
+          if (context) {
+            context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
+          }
 
-        //   const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
-        //   pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
-        //   this.generatingPdfProgress += 33;
+          const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
+          pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+          this.generatingPdfProgress += 33;
 
-        //   // Add Footer
-        //   await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+          // Add Footer
+          await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
 
           yOffset += chunkHeight;
           currentPage++;
-        }
+       // }
         this.generatingPdfProgress = 100;
-        // pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
-        // this.generatedPDF = pdf.output('blob');
-        // this.onDownloadClick();
+        pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
+        this.generatedPDF = pdf.output('blob');
+        this.onDownloadClick();
         this.generatingPdfLoadingSubject.next(false);
         Utility.previewPDF(pdf, `${this.getReportTitle()}`);
         this.dialogRef.close();
@@ -969,7 +818,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         console.error('Error generating PDF:', error);
       }
     }
-    return;
+    return;*/
   }
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
