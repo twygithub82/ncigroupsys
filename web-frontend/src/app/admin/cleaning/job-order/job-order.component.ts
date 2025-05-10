@@ -437,7 +437,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.filterCleanForm?.get('eir_dt_start')?.value || this.filterCleanForm?.get('eir_dt_end')?.value) {
       const igSearch: any = {}
-      igSearch.eir_dt = { gte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_start']), lte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_end']) };
+      igSearch.eir_dt = { gte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_start']), lte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_end'],true) };
       where.and.push({
         storing_order_tank: { in_gate: { some: igSearch } }
       });
