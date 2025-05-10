@@ -25,7 +25,7 @@ import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleanin
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CleaningStepItem } from 'app/data-sources/cleaning-steps';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
@@ -92,7 +92,7 @@ export class FormDialogComponent {
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
-  cleanCategoryList?:CleaningCategoryItem[];
+  cleanCategoryList?: CleaningCategoryItem[];
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
@@ -200,7 +200,7 @@ export class FormDialogComponent {
     NO_CLEANING_STEPS: "COMMON-FORM.NO-CLEANING-STEPS",
     PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
     PROCESS: "COMMON-FORM.PROCESS",
-    CATEGORY:"COMMON-FORM.CATEGORY"
+    CATEGORY: "COMMON-FORM.CATEGORY"
   };
 
 
@@ -218,12 +218,12 @@ export class FormDialogComponent {
   ) {
     // Set the defaults
 
-    
+
     this.selectedItem = data.selectedItem;
     this.updatedMethodFormulaLinkList = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);
-    this.catDS=new CleaningCategoryDS(this.apollo);
+    this.catDS = new CleaningCategoryDS(this.apollo);
     this.action = data.action!;
     this.pcForm = this.createCleaningCategory();
     this.translateLangText();
@@ -232,20 +232,18 @@ export class FormDialogComponent {
 
   }
 
-  loadData()
-  {
-     const where:any={ or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]};
+  loadData() {
+    const where: any = { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] };
 
-     this.catDS.search(where,{ sequence: 'ASC'},100).subscribe(data=>{
-      this.cleanCategoryList=data;
+    this.catDS.search(where, { sequence: 'ASC' }, 100).subscribe(data => {
+      this.cleanCategoryList = data;
 
-      if(this.selectedItem.cleaning_category)
-        {
-          this.pcForm.patchValue({
-            category:data.find(c=>c.guid==this.selectedItem.cleaning_category?.guid)
-          });
-        }
-     });
+      if (this.selectedItem.cleaning_category) {
+        this.pcForm.patchValue({
+          category: data.find(c => c.guid == this.selectedItem.cleaning_category?.guid)
+        });
+      }
+    });
   }
 
   initializeValueChanges() {
@@ -281,7 +279,7 @@ export class FormDialogComponent {
       selected_formulas: this.selectedItem,
       formula: this.cleanFormulaControl,
       remarks: [''],
-      category:['']
+      category: ['']
     });
   }
 
@@ -324,7 +322,6 @@ export class FormDialogComponent {
 
 
   save() {
-
     if (!this.pcForm?.valid) return;
 
     let cc: CleaningMethodItem = new CleaningMethodItem(this.selectedItem);
@@ -332,11 +329,9 @@ export class FormDialogComponent {
     // tc.guid='';
     cc.name = this.pcForm.value['name'];
     cc.description = this.pcForm.value['description'];
-    if( this.pcForm.value['category'])
-    {
-      cc.category_guid= this.pcForm.value['category'].guid;
+    if (this.pcForm.value['category']) {
+      cc.category_guid = this.pcForm.value['category'].guid;
     }
-
 
     const where: any = {};
     if (this.pcForm!.value['name']) {
@@ -351,10 +346,7 @@ export class FormDialogComponent {
             console.log(result)
             this.handleSaveSuccess(result?.data?.updateCleaningMethod);
           });
-
-        }
-        else {
-
+        } else {
           cc.cleaning_method_formula = this.removeCleaningFormulaFromUpdatedMethodFormulaLinkList();
           this.mthDS.addCleaningMethod(cc).subscribe(result => {
             console.log(result)
@@ -362,8 +354,7 @@ export class FormDialogComponent {
           });
         }
 
-      }
-      else {
+      } else {
         var allowUpdate = true;
         for (let i = 0; i < p.length; i++) {
           if (p[i].guid != this.selectedItem.guid) {
@@ -372,13 +363,12 @@ export class FormDialogComponent {
           }
         }
         if (allowUpdate) {
-
           if (this.selectedItem.guid) {
             cc.cleaning_method_formula = this.processCleaningStepListForUpdating();
+            cc.tariff_cleanings = undefined;
             this.mthDS.updateCleaningMethod(cc).subscribe(result => {
               console.log(result)
               this.handleSaveSuccess(result?.data?.updateCleaningMethod);
-
             });
 
           }

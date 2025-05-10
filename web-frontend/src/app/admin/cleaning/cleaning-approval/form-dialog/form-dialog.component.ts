@@ -213,6 +213,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     CLEANING_APPROVAL: "MENUITEMS.CLEANING.LIST.APPROVAL",
     KIV: "COMMON-FORM.KIV",
+    FULL_KIV: "COMMON-FORM.FULL-KIV",
     NO_ACTION: "COMMON-FORM.NO-ACTION",
     APPROVE: "COMMON-FORM.APPROVE",
     APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
@@ -331,6 +332,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
+  getToggleTable(): boolean{
+    return this.selectedItem.status_cv === "KIV" ? false : true;
+  }
+
   initializeValueChanges() {
     this.pcForm!.get('bill_to')!.valueChanges.pipe(
       startWith(''),
@@ -408,37 +413,35 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           tank_no: inGateClnItem.storing_order_tank?.tank_no,
           customer: this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
           eir_no: inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
-          eir_dt: this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
-          quotation_dt: this.displayDateFromEpoch(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+          eir_dt: this.displayDate(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
+          quotation_dt: this.displayDate(inGateClnItem.storing_order_tank?.in_gate[0]?.eir_dt),
           cargo: inGateClnItem.storing_order_tank?.tariff_cleaning.cargo,
           job_no: inGateClnItem.job_no,
           depot_estimate_cost: Number(inGateClnItem.storing_order_tank?.tariff_cleaning?.cleaning_category?.cost).toFixed(2),
           customer_approval_cost: Number(inGateClnItem.cleaning_cost!)!.toFixed(2),
           update_by: inGateClnItem.approve_by,
-          update_on: this.displayDateFromEpoch(inGateClnItem.approve_dt),
+          update_on: this.displayDate(inGateClnItem.approve_dt),
           job_no_input: inGateClnItem.job_no,
           status_cv: inGateClnItem.status_cv,
-          approve_dt: this.displayDateFromEpoch(inGateClnItem.approve_dt),
-          na_dt: this.displayDateFromEpoch(inGateClnItem.na_dt),
-          //remarks: inGateClnItem.remarks,
+          approve_dt: this.displayDate(inGateClnItem.approve_dt),
+          na_dt: this.displayDate(inGateClnItem.na_dt),
           cleaning_cost: inGateClnItem.cleaning_cost,
           buffer_cost: inGateClnItem.buffer_cost
         });
         this.PatchBillingParty(inGateClnItem);
         this.createCleaningChargesItem();
-        //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
-
       }
     });
-
-
-
   }
 
   displayCustomerName(cc?: CustomerCompanyItem): string {
     return String(cc?.code ? `${cc.code} (${cc.name})` : '');
   }
 
+  displayDate(input: number | undefined): string | undefined {
+    if (input === null) return "-";
+    return Utility.convertEpochToDateStr(input);
+  }
 
 
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
@@ -503,7 +506,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         rep.cleaning_cost = Number(this.pcForm.get('cleaning_cost')?.value);
         rep.buffer_cost = Number(this.pcForm.get('buffer_cost')?.value);
         rep.remarks = this.pcForm.get("remarks")?.value;
-
     }
 
     if (this.action.toUpperCase() === "NO_ACTION") {
@@ -532,10 +534,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         delete rep.job_order;
         this.igCleanDS.updateInGateCleaning(rep).subscribe(result => {
           if (result.data.updateCleaning > 0) {
-
             console.log('valid');
             this.handleSaveSuccess(result.data.updateCleaning);
-
           }
         });
       }
@@ -544,10 +544,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       delete rep.job_order;
       this.igCleanDS.updateInGateCleaning(rep).subscribe(result => {
         if (result.data.updateCleaning > 0) {
-
           console.log('valid');
           this.handleSaveSuccess(result.data.updateCleaning);
-
         }
       });
     }
@@ -573,7 +571,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     let retval = "";
     switch (this.action) {
       case "kiv":
-        retval = this.translatedLangText.KIV;
+        retval = this.translatedLangText.FULL_KIV;
         break;
       case "approve":
         retval = this.translatedLangText.APPROVE;
@@ -762,4 +760,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return retval;
   }
 
+  getMaxDate(){
+    return new Date();
+  }
 }

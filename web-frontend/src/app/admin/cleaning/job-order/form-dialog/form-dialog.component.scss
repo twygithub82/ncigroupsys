@@ -68,7 +68,7 @@ td div img {
 }
 
 .team-button.selected {
-  background-color: #4caf50;
+  background-color: #5579f5;
   /* Change to your desired color */
   color: white;
 }
@@ -76,4 +76,17 @@ td div img {
 .spacer {
   height: 20px;
   /* Adjust to increase spacing further */
+}
+
+.card {
+  padding: 10px;
+}
+
+
+
+.cost-label {
+  display: flex;
+  justify-content: center;    /* horizontal alignment */
+  align-items: center;   
+  width: 100%;
 }

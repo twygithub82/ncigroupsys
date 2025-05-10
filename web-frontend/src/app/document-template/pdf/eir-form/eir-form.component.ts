@@ -910,10 +910,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         // const bottomMargin = 5; // Reduced bottom margin
         // const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
 
-        // // Calculate natural dimensions for the body content
-        // const imgWidth = canvas.width * 0.264583; // Convert px to mm
-        // const imgHeight = canvas.height * 0.264583;
-        // const aspectRatio = imgWidth / imgHeight;
+        // Calculate natural dimensions for the body content
+        const rect = element.getBoundingClientRect();
+        const imgWidth = rect.width * 0.264583;  // px to mm
+        const imgHeight = rect.height * 0.264583;
+        const aspectRatio = imgWidth / imgHeight;
 
         // // Calculate scaled width and height to fit the page without stretching
         // const scaledWidth = pageWidth - leftRightMargin * 2; // Adjusted width with fixed margins
@@ -926,9 +927,10 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         // while (yOffset < imgHeight) {
         //   if (yOffset > 0) pdf.addPage();
 
-        //   // Add Header and get its height
-        //   const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-        //   this.generatingPdfProgress += 33;
+          // Add Header and get its height
+          const headerHeight = 28;
+          await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftRightMargin, leftRightMargin, this.translate);
+          this.generatingPdfProgress += 33;
 
         //   // Adjust usable height by subtracting header height
         //   const adjustedUsableHeight = usableHeight - headerHeight;
@@ -953,16 +955,16 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         //   // Add Footer
         //   await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
 
-        //   yOffset += chunkHeight;
-        //   currentPage++;
-        // }
-        // this.generatingPdfProgress = 100;
-        // // pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
+          yOffset += chunkHeight;
+          currentPage++;
+        }
+        this.generatingPdfProgress = 100;
+        // pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
         // this.generatedPDF = pdf.output('blob');
-        // this.uploadEir(this.eirDetails?.guid, this.generatedPDF);
-       // this.onDownloadClick();
-        this.exportToPDF_r1();
+        // this.onDownloadClick();
         this.generatingPdfLoadingSubject.next(false);
+        Utility.previewPDF(pdf, `${this.getReportTitle()}`);
+        this.dialogRef.close();
       } catch (error) {
         console.error('Error generating PDF:', error);
       }
@@ -2023,8 +2025,14 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     return Utility.convertEpochToDateStr(input);
   }
 
+  getReportTitle(): string {
+    var title: string = '';
+    title = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`
+    return `${title}`
+  }
+
   async onDownloadClick() {
-    const fileName = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`; // Define the filename
+    const fileName = this.getReportTitle(); // Define the filename
     if (this.generatedPDF) {
       console.log(`Download from generatedPDF`)
       this.downloadFile(this.generatedPDF, fileName);

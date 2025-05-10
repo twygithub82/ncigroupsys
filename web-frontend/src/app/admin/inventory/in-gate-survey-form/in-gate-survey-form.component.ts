@@ -1612,6 +1612,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const dialogRef = this.dialog.open(EirFormComponent, {
+      position: { top: '-9999px', left: '-9999px' },
       width: '794px',
       height: '80vh',
       data: {

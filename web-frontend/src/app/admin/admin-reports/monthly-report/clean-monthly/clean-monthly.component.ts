@@ -411,12 +411,12 @@ export class CleanMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
-  }
-
-  displayDate(input: number | undefined): string | undefined {
+  }  displayDate(input: number | undefined): string | undefined {
     if (input === null) return "-";
     return Utility.convertEpochToDateStr(input);
   }
+
+
 
   onPageEvent(event: PageEvent) {
 

@@ -303,7 +303,7 @@
                 @if (eirDetails?.foot_valve_cv) {
                 (
                 @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val)) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.foot_valve_oth) {
                 <span [ngClass]="">
                   {{eirDetails?.foot_valve_oth}}
                 </span>
@@ -361,9 +361,16 @@
                 @if (eirDetails?.btm_dis_valve_cv) {
                 (
                 @for (codeValue of disValveCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.btm_dis_valve_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.btm_dis_valve_oth}}
+                </span>
+                }
+                @else {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_dis_valve_cv}">
                   {{codeValue.description}}
                 </span>
+                }
                 @if (index + 1 !== disValveCvList.length) {
                 /
                 }
@@ -371,10 +378,17 @@
                 )
                 (
                 @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.btm_dis_valve_spec_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.btm_dis_valve_spec_oth}}
+                </span>
+                }
+                @else {
                 <span
                   [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_dis_valve_spec_cv}">
                   {{codeValue.description}}
                 </span>
+                }
                 @if (index + 1 !== disValveSpecCvList.length) {
                 /
                 }
@@ -481,9 +495,16 @@
                 @if (eirDetails?.top_dis_valve_cv) {
                 (
                 @for (codeValue of disValveCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.top_dis_valve_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.top_dis_valve_oth}}
+                </span>
+                }
+                @else {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_dis_valve_cv}">
                   {{codeValue.description}}
                 </span>
+                }
                 @if (index + 1 !== disValveCvList.length) {
                 /
                 }
@@ -491,10 +512,17 @@
                 )
                 (
                 @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.top_dis_valve_spec_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.top_dis_valve_spec_oth}}
+                </span>
+                }
+                @else {
                 <span
                   [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_dis_valve_spec_cv}">
                   {{codeValue.description}}
                 </span>
+                }
                 @if (index + 1 !== disValveSpecCvList.length) {
                 /
                 }
@@ -513,39 +541,20 @@
             </tr>
             <tr>
               <td>
-                {{translatedLangText.BRAND}}
-                @if (eirDetails?.top_valve_brand_cv) {
-                (
-                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
-                <span
-                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_valve_brand_cv}">
-                  {{codeValue.description}}
-                </span>
-                @if (index + 1 !== valveBrandCvList.length) {
-                /
-                }
-                }
-                )
-                }
-              </td>
-              <td>
-                @if (eirDetails?.top_valve_brand_cv) {
-                <mat-icon>checked</mat-icon>
-                }
-                @else {
-                <mat-icon>close</mat-icon>
-                }
-              </td>
-            </tr>
-            <tr>
-              <td>
                 {{translatedLangText.AIRLINE_VALVE}}
                 @if (eirDetails?.airline_valve_cv) {
                 (
                 @for (codeValue of airlineCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.airline_valve_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.airline_valve_oth}}
+                </span>
+                }
+                @else {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_cv}">
                   {{codeValue.description}}
                 </span>
+                }
                 @if (index + 1 !== airlineCvList.length) {
                 /
                 }
@@ -572,16 +581,23 @@
                 @if (eirDetails?.airline_valve_conn_cv) {
                 (
                 @for (codeValue of airlineConnCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.airline_valve_conn_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.airline_valve_conn_oth}}
+                </span>
+                }
+                @else {
                 <span
                   [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_conn_cv}">
                   {{codeValue.description}}
                 </span>
+                }
                 @if (index + 1 !== airlineConnCvList.length) {
                 /
                 }
                 }
                 )
-                (
+                <!-- (
                 @for (codeValue of manlidCoverCvList; track codeValue; let index = $index) {
                 <span
                   [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_conn_spec_cv}">
@@ -591,11 +607,44 @@
                 /
                 }
                 }
-                )
+                ) -->
                 }
               </td>
               <td>
                 @if (eirDetails?.airline_valve_conn_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.BRAND}}
+                @if (eirDetails?.airline_valve_conn_spec_cv) {
+                (
+                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.airline_valve_conn_spec_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.airline_valve_conn_spec_oth}}
+                </span>
+                }
+                @else {
+                <span
+                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_conn_spec_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== valveBrandCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td>
+                @if (eirDetails?.airline_valve_conn_spec_cv) {
                 <mat-icon>checked</mat-icon>
                 }
                 @else {
@@ -642,13 +691,20 @@
             </tr>
             <tr>
               <td>
-                {{translatedLangText.MANLID_COVER}}
+                {{translatedLangText.BRAND}}
                 @if (eirDetails?.manlid_cover_cv) {
                 (
-                @for (codeValue of manlidCoverCvList; track codeValue; let index = $index) {
+                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
+                @if (isOthers(codeValue.code_val) && eirDetails?.manlid_cover_cv) {
+                <span [ngClass]="">
+                  {{eirDetails?.manlid_cover_oth}}
+                </span>
+                }
+                @else {
                 <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_cover_cv}">
                   {{codeValue.description}}
                 </span>
+                }
                 @if (index + 1 !== manlidCoverCvList.length) {
                 /
                 }

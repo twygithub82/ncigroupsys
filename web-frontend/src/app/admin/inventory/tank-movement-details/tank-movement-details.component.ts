@@ -442,7 +442,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
-    APPLY_ALL: 'COMMON-FORM.APPLY-ALL'
+    APPLY_ALL: 'COMMON-FORM.APPLY-ALL',
+    DURATION: 'COMMON-FORM.DURATION'
   }
 
   sot_guid: string | null | undefined;
@@ -938,9 +939,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeValType, this.cleanStatusCvList);
   }
 
-
-  getSurveyTypeDescription(codeValType: string): string | undefined {
+  getSurveyTypeDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.surveyTypeCvList);
+  }
+
+  getMaxGrossWeightDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.maxGrossWeightCvList);
   }
 
   translateLangText() {
@@ -2033,6 +2037,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return !this.isNoPurpose(this.sot!, 'cleaning') && this.canRemovePurpose('cleaning');
   }
 
+  canRemoveRepairPurpose() {
+    return !this.isNoPurpose(this.sot!, 'repair') && this.canRemovePurpose('repair');
+  }
+
   canOverwriteCleaningApproval() {
     const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
@@ -2089,7 +2097,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackResidueCompleted(row: ResidueItem) {
-    return this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && this.cleaningItem?.[0]?.status_cv === 'APPROVED';
+    return this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && (this.cleaningItem?.[0]?.status_cv === 'APPROVED' || this.cleaningItem?.[0]?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   onRollbackResidueJobs(event: Event, row: ResidueItem) {
@@ -2208,20 +2216,36 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const distinctJobOrders: JobOrderGO = new JobOrderGO(row?.job_order);
-        const jobOrder = {
-          guid: row?.guid,
-          remarks: result.remarks,
-          sot_guid: row?.sot_guid,
-          sot_status: this.sot?.tank_status_cv,
-          job_order: [distinctJobOrders]
+        const distinctJobOrders = row?.job_order ? [new JobOrderGO(row?.job_order)] : null;
+        if (distinctJobOrders) {
+          const jobOrder = {
+            guid: row?.guid,
+            remarks: result.remarks,
+            sot_guid: row?.sot_guid,
+            sot_status: this.sot?.tank_status_cv,
+            job_order: distinctJobOrders
+          }
+          console.log(jobOrder);
+          this.joDS?.rollbackJobInProgressCleaning(jobOrder).subscribe(result => {
+            this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
+            this.loadDataHandling_sot(this.sot_guid!);
+            this.loadDataHandling_cleaning(this.sot_guid!);
+          });
+        } else {
+          var rep: InGateCleaningItem = new InGateCleaningItem(row);
+          rep.action = "APPROVE";
+          rep.approve_dt = row?.approve_dt;
+          rep.job_no = row?.job_no;
+          delete rep.job_order;
+          this.cleaningDS.updateInGateCleaning(rep).subscribe(result => {
+            if (result.data.updateCleaning > 0) {
+              console.log('valid');
+              this.handleSaveSuccess(result.data.updateCleaning);
+              this.loadDataHandling_sot(this.sot_guid!);
+              this.loadDataHandling_cleaning(this.sot_guid!);
+            }
+          });
         }
-        console.log(jobOrder);
-        this.joDS?.rollbackJobInProgressCleaning(jobOrder).subscribe(result => {
-          this.handleSaveSuccess(result?.data?.rollbackJobInProgressCleaning);
-          this.loadDataHandling_sot(this.sot_guid!);
-          this.loadDataHandling_cleaning(this.sot_guid!);
-        });
       }
     });
   }
@@ -2358,10 +2382,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sot = data[0];
         this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
         // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
-        // this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
-        //   console.log(`packageDepot: `, data)
-        //   this.pdItem = data[0];
-        // });
+        this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
+          console.log(`packageDepot: `, data)
+          this.pdItem = data[0];
+        });
         this.tiDS.getTankInfoForMovement(this.sot?.tank_no!).subscribe(data => {
           console.log(`tankInfo: `, data)
           this.tiItem = data[0];

@@ -312,10 +312,6 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
   team?:string;
   customer?:string;
   index: number = 0;
-  // date:string='';
-  // invType:string='';
-
-
 
   constructor(
     public dialogRef: MatDialogRef<DailyApprovalPdfComponent>,
@@ -333,13 +329,6 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-
-
-
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
       .replace(/{companyUen}/g, this.customerInfo.companyUen)

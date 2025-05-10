@@ -243,6 +243,11 @@ export class Utility {
     return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes}`;
   }
 
+  static getToday(): string{
+    return new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+  }
+
+
   static getEarlierDate(date1: Date, date2: Date): Date {
     return date1 < date2 ? date1 : date2;
   }

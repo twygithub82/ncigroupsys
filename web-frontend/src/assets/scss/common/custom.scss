@@ -2234,3 +2234,18 @@ mat-step-header.mat-step-header:hover {
 .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 20px !important;
 }
+
+.no-results {
+  display: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  &.text-column {
+    color: mat.get-color-from-palette(custom-theme.$custom-info, 700);
+  }
+}
