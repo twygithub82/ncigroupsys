@@ -574,7 +574,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         retval = this.translatedLangText.FULL_KIV;
         break;
       case "approve":
-        retval = this.translatedLangText.APPROVE;
+        retval = this.translatedLangText.APPROVAL;
         break;
       case "no_action":
         retval = this.translatedLangText.NO_ACTION;

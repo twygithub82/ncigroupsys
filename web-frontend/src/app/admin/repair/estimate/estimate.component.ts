@@ -84,6 +84,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'estimate_no',
+    'estimate_date',
     'job_no',
     'net_cost',
     'status_cv',
