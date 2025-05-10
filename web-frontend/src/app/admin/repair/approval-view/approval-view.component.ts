@@ -134,6 +134,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    APPROVE_SUCCESS: 'COMMON-FORM.APPROVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -913,7 +914,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      let successMsg = this.translatedLangText.APPROVE_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/repair/approval']);
     }

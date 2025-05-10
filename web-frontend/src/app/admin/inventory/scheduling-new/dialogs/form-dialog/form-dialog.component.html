@@ -13,7 +13,7 @@
     <form class="register-form" [formGroup]="schedulingForm!" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-          <h5>{{data.translatedLangText.SCHEDULING_DETAILS}}</h5>
+          <!-- <h5>{{data.translatedLangText.SCHEDULING_DETAILS}}</h5> -->
           <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width" appearance="fill">
@@ -39,7 +39,7 @@
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.SCHEDULING_DATE}}</mat-label>
+                <mat-label>{{data.translatedLangText.DATE}}</mat-label>
                 <input matInput formControlName="scheduling_dt" [matDatepicker]="scheduling_dt_picker"
                   [min]="startDateToday" required>
                 <mat-datepicker-toggle matSuffix [for]="scheduling_dt_picker"></mat-datepicker-toggle>
@@ -56,7 +56,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
               <div class="booking-tbl responsive_table">
                 <table mat-table [dataSource]="this.dataSource" formArrayName="schedulingSot" matSort
-                  class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="tank_no">
                     <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
                       {{data.translatedLangText.TANK_NO}}

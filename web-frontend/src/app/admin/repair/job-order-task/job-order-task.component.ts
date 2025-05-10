@@ -124,6 +124,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     ALLOCATE_DATE: 'COMMON-FORM.ALLOCATE-DATE',
+    APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     TEAM: 'COMMON-FORM.TEAM',
     SEARCH: 'COMMON-FORM.SEARCH',
   }
@@ -658,6 +659,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         }
       }
     });
+    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
   private subscribeToJobOrderEvent(

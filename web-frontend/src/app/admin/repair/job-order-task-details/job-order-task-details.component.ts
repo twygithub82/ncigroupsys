@@ -866,12 +866,12 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '30vw',
       data: {
         last_remarks: this.jobOrderItem?.remarks,
         action: 'rollback',
         translatedLangText: this.translatedLangText,
-        dialogTitle: this.translatedLangText.ROLLBACK
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK
       },
       direction: tempDirection
     });

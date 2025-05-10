@@ -146,12 +146,22 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     BOOKED: 'COMMON-FORM.BOOKED',
     SCHEDULED: 'COMMON-FORM.SCHEDULED',
     SCHEDULING_DATE: 'COMMON-FORM.SCHEDULING-DATE',
+    DATE: 'COMMON-FORM.DATE',
     EXISTED: 'COMMON-FORM.EXISTED',
     REMARKS: 'COMMON-FORM.REMARKS',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
+
+  availableProcessStatus: string[] = [
+    'CLEANING',
+    'REPAIR',
+    'STEAM',
+    'RESIDUE',
+    'STORAGE',
+    'RELEASED'
+  ]
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();

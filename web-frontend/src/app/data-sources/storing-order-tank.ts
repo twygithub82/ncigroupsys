@@ -1453,6 +1453,7 @@ const GET_STORING_ORDER_TANKS_REPAIR = gql`
           total_cost
           sot_guid
           remarks
+          create_dt
           delete_dt
           storing_order_tank {
             storing_order {

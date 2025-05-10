@@ -880,7 +880,7 @@
                                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.STORAGE_BEGIN_DATE}}:</span>
+                                        <span>{{translatedLangText.BEGIN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
@@ -1533,21 +1533,21 @@
                                     </div>
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.JOB_NO}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{cleaningItem?.[0]?.job_no || "-"}}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                                         <span>{{translatedLangText.JOB_STATUS}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
                                           {{getProcessStatusDescription(cleaningItem?.[0]?.status_cv) || "-"}}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                                        <span>{{translatedLangText.JOB_NO}}:</span>
+                                      </div>
+                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                        <div class="contact-detail-info font-bold">
+                                          {{cleaningItem?.[0]?.job_no || "-"}}
                                         </div>
                                       </div>
                                     </div>
@@ -1732,7 +1732,7 @@
                                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <div class="responsive_table">
                                       <table mat-table [dataSource]="repairItem" matSort
-                                        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                                        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                         <ng-container matColumnDef="id">
                                           <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                                           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -1972,7 +1972,7 @@
                                 <div class="row">
                                   <div
                                     class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-0 p-t-5 p-b-5 align-right">
-                                    <span>{{translatedLangText.STORAGE_BEGIN_DATE}}:</span>
+                                    <span>{{translatedLangText.BEGIN_DATE}}:</span>
                                   </div>
                                   <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-0 p-t-5 p-b-5">
                                     <span
@@ -1984,7 +1984,7 @@
                                 <div class="row">
                                   <div
                                     class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-0 p-t-5 p-b-5 align-right">
-                                    <span>{{translatedLangText.STORAGE_BILLED_UNTIL}}:</span>
+                                    <span>{{translatedLangText.BILLED_UNTIL}}:</span>
                                   </div>
                                   <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-0 p-t-5 p-b-5">
                                     <span
@@ -2111,7 +2111,7 @@
                                       <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                       }
                                       @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
                                       }
                                     </span>
                                   </div>
@@ -2123,7 +2123,7 @@
                                       <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                       }
                                       @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
                                       }
                                     </span>
                                   </div>
@@ -2135,7 +2135,7 @@
                                       <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                       }
                                       @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
                                       }
                                     </span>
                                   </div>
@@ -2147,7 +2147,7 @@
                                       <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                       }
                                       @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
                                       }
                                     </span>
                                   </div>
@@ -2159,7 +2159,7 @@
                                       <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
                                       }
                                       @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
+                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
                                       }
                                     </span>
                                   </div>

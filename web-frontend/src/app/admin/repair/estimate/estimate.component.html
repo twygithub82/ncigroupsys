@@ -232,7 +232,7 @@
                     @if ((filterDeleted(row.repair || [])?.length ?? 0) > 0) {
                     <div class="responsive_table">
                       <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
-                        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="id">
                           <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                           <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}</mat-cell>
@@ -246,6 +246,17 @@
                             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{repairRow.estimate_no}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="estimate_date">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            {{translatedLangText.ESTIMATE_DATE}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let repairRow"
+                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            <span
+                              class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>{{this.displayDate(repairRow.create_dt)}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="job_no">
@@ -268,7 +279,7 @@
                             <span class="mobile-tab-label">{{translatedLangText.NET_COST}}:</span>
                             <!-- <span>$</span><span class="ms-3">{{repairRow.net_cost}}</span> -->
                             <div class="cost-label">
-                              <span>$</span><span>{{repairRow.net_cost}}</span>
+                              <span>$ {{repairRow.net_cost}}</span>
                             </div>
                           </mat-cell>
                         </ng-container>
@@ -332,7 +343,11 @@
                     </div>
                     }
                     @else {
-                    {{translatedLangText.NO_RESULT}}
+                    <!-- {{translatedLangText.NO_RESULT}} -->
+                    <!-- <mat-divider></mat-divider> -->
+                    <div class="no-results m-l-20 pt-3">
+                      <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                    </div>
                     }
                   </mat-card-content>
                 </mat-expansion-panel>
