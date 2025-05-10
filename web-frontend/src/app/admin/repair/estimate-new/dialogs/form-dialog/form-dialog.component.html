@@ -85,7 +85,7 @@
             <mat-label>{{data.translatedLangText.LOCATION}}</mat-label>
             <mat-select formControlName="location_cv">
               @for (codeValue of data.populateData.partLocationCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+              <mat-option [value]="codeValue.code_val"  (onSelectionChange)="onOptionClicked($event, codeValue.code_val,'location_cv');" >{{codeValue.description}}</mat-option>
               }
             </mat-select>
             <!-- @if (repairPartForm.get('location_cv')?.hasError('required')) {

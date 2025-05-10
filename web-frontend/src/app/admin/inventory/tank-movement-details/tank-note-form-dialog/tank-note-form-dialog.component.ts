@@ -67,7 +67,7 @@ export class TankNoteFormDialogComponent {
   ) {
     // Set the defaults
     this.action = data.action!;
-    this.dialogTitle = 'Update Notes';
+    this.dialogTitle = data.translatedLangText.TANK_NOTES;
     this.tankNoteForm = this.createForm();
   }
 

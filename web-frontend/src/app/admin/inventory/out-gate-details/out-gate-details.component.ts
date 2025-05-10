@@ -421,7 +421,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
           this.handleSaveSuccess(result?.data?.updateOutGate);
         });
       } else {
-        const publishOutGateSurvey = this.modulePackage.isGrowthPackage() || this.modulePackage.isCustomizedPackage();
+        const publishOutGateSurvey = true;// this.modulePackage.isGrowthPackage() || this.modulePackage.isCustomizedPackage();
         console.log('hasOutSurvey', publishOutGateSurvey)
         this.ogDS.addOutGate(og, ro, publishOutGateSurvey).subscribe(result => {
           console.log(result?.data)

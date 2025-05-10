@@ -1237,7 +1237,9 @@
     "SUBMIT": "Submit",
     "LOGIN": "Login",
     "CUSTOMERS-SELECTED": "Customers Selected",
-    "PROFILES-SELECTED": "Profiles Selected"
+    "PROFILES-SELECTED": "Profiles Selected",
+    "BILLED-UNTIL": "Billed Until",
+    "TANK-NOTES": "Tank Notes"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

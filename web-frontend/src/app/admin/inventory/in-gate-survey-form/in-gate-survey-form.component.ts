@@ -56,6 +56,8 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
+import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
 
 @Component({
   selector: 'app-in-gate',
@@ -89,7 +91,9 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatCardModule,
     MatStepperModule,
     MatRadioModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    MatButtonToggleModule,
+    ExclusiveToggleDirective
   ],
   providers: [
     {
@@ -1058,23 +1062,28 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
-      this.airlineCvList = addDefaultSelectOption(data, "N.A.");
+      // this.airlineCvList = addDefaultSelectOption(data, "N.A.");
+      this.airlineCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
-      this.airlineConnCvList = addDefaultSelectOption(data, "N.A.");
+      // this.airlineConnCvList = addDefaultSelectOption(data, "N.A.");
+      this.airlineConnCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
-      this.disCompCvList = addDefaultSelectOption(data, "N.A.");
+      // this.disCompCvList = addDefaultSelectOption(data, "N.A.");
+      this.disCompCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('disValveCv').subscribe(data => {
-      this.disValveCvList = addDefaultSelectOption(data, "N.A.");
+      // this.disValveCvList = addDefaultSelectOption(data, "N.A.");
+      this.disValveCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('disValveSpecCv').subscribe(data => {
-      this.disValveSpecCvList = addDefaultSelectOption(data, "N.A.");
+      // this.disValveSpecCvList = addDefaultSelectOption(data, "N.A.");
+      this.disValveSpecCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {
@@ -1106,7 +1115,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
-      this.valveBrandCvList = addDefaultSelectOption(data, "N.A.");
+      // this.valveBrandCvList = addDefaultSelectOption(data, "N.A.");
+      this.valveBrandCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('tankSideCv').subscribe(data => {
@@ -1223,12 +1233,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       },
       compartment_type: {
         bottomFormGroup: {
-          btm_dis_comp_cv: ig.in_gate_survey?.btm_dis_comp_cv,
-          btm_dis_valve_cv: ig.in_gate_survey?.btm_dis_valve_cv,
+          btm_dis_comp_cv: [ig.in_gate_survey?.btm_dis_comp_cv],
+          btm_dis_valve_cv: [ig.in_gate_survey?.btm_dis_valve_cv],
           btm_dis_valve_oth: ig.in_gate_survey?.btm_dis_valve_oth,
-          btm_dis_valve_spec_cv: ig.in_gate_survey?.btm_dis_valve_spec_cv,
+          btm_dis_valve_spec_cv: [ig.in_gate_survey?.btm_dis_valve_spec_cv],
           btm_dis_valve_spec_oth: ig.in_gate_survey?.btm_dis_valve_spec_oth,
-          foot_valve_cv: ig.in_gate_survey?.foot_valve_cv,
+          foot_valve_cv: [ig.in_gate_survey?.foot_valve_cv],
           foot_valve_oth: ig.in_gate_survey?.foot_valve_oth,
           btm_valve_brand_cv: ig.in_gate_survey?.btm_valve_brand_cv,
           thermometer: ig.in_gate_survey?.thermometer,
@@ -1237,24 +1247,24 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           data_csc_transportplate: ig.in_gate_survey?.data_csc_transportplate
         },
         topFormGroup: {
-          top_dis_comp_cv: ig.in_gate_survey?.top_dis_comp_cv,
-          top_dis_valve_cv: ig.in_gate_survey?.top_dis_valve_cv,
+          top_dis_comp_cv: [ig.in_gate_survey?.top_dis_comp_cv],
+          top_dis_valve_cv: [ig.in_gate_survey?.top_dis_valve_cv],
           top_dis_valve_oth: ig.in_gate_survey?.top_dis_valve_oth,
-          top_dis_valve_spec_cv: ig.in_gate_survey?.top_dis_valve_spec_cv,
+          top_dis_valve_spec_cv: [ig.in_gate_survey?.top_dis_valve_spec_cv],
           top_dis_valve_spec_oth: ig.in_gate_survey?.top_dis_valve_spec_oth,
           top_valve_brand_cv: ig.in_gate_survey?.top_valve_brand_cv,
-          airline_valve_cv: ig.in_gate_survey?.airline_valve_cv,
+          airline_valve_cv: [ig.in_gate_survey?.airline_valve_cv],
           airline_valve_oth: ig.in_gate_survey?.airline_valve_oth,
           airline_valve_pcs: ig.in_gate_survey?.airline_valve_pcs,
           airline_valve_dim: ig.in_gate_survey?.airline_valve_dim,
-          airline_valve_conn_cv: ig.in_gate_survey?.airline_valve_conn_cv,
+          airline_valve_conn_cv: [ig.in_gate_survey?.airline_valve_conn_cv],
           airline_valve_conn_oth: ig.in_gate_survey?.airline_valve_conn_oth,
-          airline_valve_conn_spec_cv: ig.in_gate_survey?.airline_valve_conn_spec_cv,
+          airline_valve_conn_spec_cv: [ig.in_gate_survey?.airline_valve_conn_spec_cv],
           airline_valve_conn_spec_oth: ig.in_gate_survey?.airline_valve_conn_spec_oth,
         },
         manlidFormGroup: {
-          manlid_comp_cv: ig.in_gate_survey?.manlid_comp_cv,
-          manlid_cover_cv: ig.in_gate_survey?.manlid_cover_cv,
+          manlid_comp_cv: [ig.in_gate_survey?.manlid_comp_cv],
+          manlid_cover_cv: [ig.in_gate_survey?.manlid_cover_cv],
           manlid_cover_oth: ig.in_gate_survey?.manlid_cover_oth,
           manlid_cover_pcs: ig.in_gate_survey?.manlid_cover_pcs,
           manlid_cover_pts: ig.in_gate_survey?.manlid_cover_pts,
@@ -1457,7 +1467,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       ig.in_gate_survey = undefined;
       ig.tank = sot;
 
-      const periodicTestFormGroup = this.getBottomFormGroup();
       let igs: InGateSurveyGO = new InGateSurveyGO(this.in_gate?.in_gate_survey);
       igs.guid = this.in_gate?.in_gate_survey?.guid;
       igs.in_gate_guid = this.in_gate?.in_gate_survey?.in_gate_guid || this.in_gate?.guid;
@@ -1477,38 +1486,38 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.comments = this.surveyForm.get('tank_details.comments')?.value;
 
       const bottomFormGroup = this.getBottomFormGroup();
-      igs.btm_dis_comp_cv = bottomFormGroup.get('btm_dis_comp_cv')?.value;
-      igs.btm_dis_valve_cv = bottomFormGroup.get('btm_dis_valve_cv')?.value;
+      igs.btm_dis_comp_cv = bottomFormGroup.get('btm_dis_comp_cv')?.value?.[0];
+      igs.btm_dis_valve_cv = bottomFormGroup.get('btm_dis_valve_cv')?.value?.[0];
       igs.btm_dis_valve_oth = bottomFormGroup.get('btm_dis_valve_oth')?.value;
-      igs.btm_dis_valve_spec_cv = bottomFormGroup.get('btm_dis_valve_spec_cv')?.value;
+      igs.btm_dis_valve_spec_cv = bottomFormGroup.get('btm_dis_valve_spec_cv')?.value?.[0];
       igs.btm_dis_valve_spec_oth = bottomFormGroup.get('btm_dis_valve_spec_oth')?.value;
-      igs.foot_valve_cv = bottomFormGroup.get('foot_valve_cv')?.value;
+      igs.foot_valve_cv = bottomFormGroup.get('foot_valve_cv')?.value?.[0];
       igs.foot_valve_oth = bottomFormGroup.get('foot_valve_oth')?.value;
-      igs.btm_valve_brand_cv = bottomFormGroup.get('btm_valve_brand_cv')?.value;
+      // igs.btm_valve_brand_cv = bottomFormGroup.get('btm_valve_brand_cv')?.value?.[0];
       igs.thermometer = bottomFormGroup.get('thermometer')?.value;
       igs.thermometer_cv = bottomFormGroup.get('thermometer_cv')?.value;
       igs.ladder = bottomFormGroup.get('ladder')?.value;
       igs.data_csc_transportplate = bottomFormGroup.get('data_csc_transportplate')?.value;
 
       const topFormGroup = this.getTopFormGroup();
-      igs.top_dis_comp_cv = topFormGroup.get('top_dis_comp_cv')?.value;
-      igs.top_dis_valve_cv = topFormGroup.get('top_dis_valve_cv')?.value;
+      igs.top_dis_comp_cv = topFormGroup.get('top_dis_comp_cv')?.value?.[0];
+      igs.top_dis_valve_cv = topFormGroup.get('top_dis_valve_cv')?.value?.[0];
       igs.top_dis_valve_oth = topFormGroup.get('top_dis_valve_oth')?.value;
-      igs.top_dis_valve_spec_cv = topFormGroup.get('top_dis_valve_spec_cv')?.value;
+      igs.top_dis_valve_spec_cv = topFormGroup.get('top_dis_valve_spec_cv')?.value?.[0];
       igs.top_dis_valve_spec_oth = topFormGroup.get('top_dis_valve_spec_oth')?.value;
-      igs.top_valve_brand_cv = topFormGroup.get('top_valve_brand_cv')?.value;
-      igs.airline_valve_cv = topFormGroup.get('airline_valve_cv')?.value;
+      // igs.top_valve_brand_cv = topFormGroup.get('top_valve_brand_cv')?.value;
+      igs.airline_valve_cv = topFormGroup.get('airline_valve_cv')?.value?.[0];
       igs.airline_valve_oth = topFormGroup.get('airline_valve_oth')?.value;
       igs.airline_valve_pcs = topFormGroup.get('airline_valve_pcs')?.value;
       igs.airline_valve_dim = topFormGroup.get('airline_valve_dim')?.value;
-      igs.airline_valve_conn_cv = topFormGroup.get('airline_valve_conn_cv')?.value;
+      igs.airline_valve_conn_cv = topFormGroup.get('airline_valve_conn_cv')?.value?.[0];
       igs.airline_valve_conn_oth = topFormGroup.get('airline_valve_conn_oth')?.value;
-      igs.airline_valve_conn_spec_cv = topFormGroup.get('airline_valve_conn_spec_cv')?.value;
+      igs.airline_valve_conn_spec_cv = topFormGroup.get('airline_valve_conn_spec_cv')?.value?.[0];
       igs.airline_valve_conn_spec_oth = topFormGroup.get('airline_valve_conn_spec_oth')?.value;
 
       const manlidFormGroup = this.getManlidFormGroup();
-      igs.manlid_comp_cv = manlidFormGroup.get('manlid_comp_cv')?.value;
-      igs.manlid_cover_cv = manlidFormGroup.get('manlid_cover_cv')?.value;
+      igs.manlid_comp_cv = manlidFormGroup.get('manlid_comp_cv')?.value?.[0];
+      igs.manlid_cover_cv = manlidFormGroup.get('manlid_cover_cv')?.value?.[0];
       igs.manlid_cover_oth = manlidFormGroup.get('manlid_cover_oth')?.value;
       igs.manlid_cover_pcs = manlidFormGroup.get('manlid_cover_pcs')?.value;
       igs.manlid_cover_pts = manlidFormGroup.get('manlid_cover_pts')?.value;
@@ -1604,11 +1613,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   onDownload() {
     let tempDirection: Direction;
+    
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
+
     const dialogRef = this.dialog.open(EirFormComponent, {
       position: { top: '-9999px', left: '-9999px' },
       width: '794px',
@@ -1624,6 +1635,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
+    this.fileManagerService.actionLoadingSubject.next(true);
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    
     this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
       console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
       if (result?.type === 'published') {
@@ -1633,8 +1650,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       } else if (result?.type === 'uploaded') {
         this.eirPdf = result?.eirPdf;
       }
+      
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+      this.fileManagerService.actionLoadingSubject.next(false);
     });
 
     // this.container.clear();

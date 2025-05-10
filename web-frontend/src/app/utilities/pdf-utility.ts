@@ -5,9 +5,25 @@ import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
 import { Utility } from "./utility";
 
 export class PDFUtility {
-  static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number) {
-    pdf.setFontSize(fontSize); // Title font size 
-    pdf.text(content, leftPost, topPos); // Position it at the top
+  static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
+    bold :boolean=false,fontFamily: string = 'helvetica',wrap:boolean=false,maxWidth:number=0) {
+
+    pdf.saveGraphicsState();
+    const fontStyle = bold ? 'bold' : 'normal';
+    if(wrap){
+      pdf.setFont(fontFamily, fontStyle);
+      pdf.setFontSize(fontSize); // Title font size 
+      pdf.text(content, leftPost, topPos, {maxWidth:maxWidth});
+    }
+    else{
+      pdf.setFont(fontFamily, fontStyle);
+      pdf.setFontSize(fontSize); // Title font size 
+      pdf.text(content, leftPost, topPos);
+    }
+    // pdf.setFont(fontFamily, fontStyle);
+    // pdf.setFontSize(fontSize); // Title font size 
+    // pdf.text(content, leftPost, topPos); // Position it at the top
+    pdf.restoreGraphicsState();
   }
 
   static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number) {
@@ -245,6 +261,61 @@ export class PDFUtility {
     const imgHeight = heightHeader - 21;
     const imgWidth = 60;
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
+  }
+
+  static async drawRectangleBox(
+    doc: jsPDF,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    options?: {
+      lineWidth?: number;
+      lineColor?: string;
+      fillColor?: string;
+      borderRadius?: number;
+      dashed?: boolean;
+      dashPattern?: number[];
+    }
+  ){
+    // Save the current graphics state
+    doc.saveGraphicsState();
+  
+    // Set default options
+    const {
+      lineWidth = 0.3,
+      lineColor = '#000000',
+      fillColor = undefined,
+      borderRadius = 0,
+      dashed = false,
+      dashPattern = [3, 2],
+    } = options || {};
+  
+    // Set line properties
+    doc.setLineWidth(lineWidth);
+    doc.setDrawColor(lineColor);
+  
+    // Set fill if provided
+    if (fillColor) {
+      doc.setFillColor(fillColor);
+    }
+  
+    // Set dashed line if requested
+    if (dashed) {
+      doc.setLineDashPattern(dashPattern, 0);
+    }
+  
+    // Draw the rectangle
+    if (borderRadius > 0) {
+      // Draw a rounded rectangle
+      doc.roundedRect(x, y, width, height, borderRadius, borderRadius, fillColor ? 'FD' : 'D');
+    } else {
+      // Draw a regular rectangle
+      doc.rect(x, y, width, height, fillColor ? 'FD' : 'D');
+    }
+  
+    // Restore the graphics state
+    doc.restoreGraphicsState();
   }
 
   static removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

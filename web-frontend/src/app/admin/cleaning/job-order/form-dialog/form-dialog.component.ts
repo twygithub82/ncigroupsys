@@ -359,7 +359,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       if (data?.length) {
         data.forEach(d => {
           this.teamList?.forEach(team => {
-            if (team.guid === d.team?.guid) {
+            if (team.guid === d.team?.guid && d.cleaning?.length||0>0) {
               // If the team GUID matches, update isOccupied to true
               team.isOccupied = true;
               team.tank_no = d.storing_order_tank?.tank_no;

@@ -129,7 +129,7 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
       {
         label: this.translatedLangText.OUT_GATE_SURVEY,
         component: 'app-out-gate-survey',
-        modulePackage: ['growth', 'customized']
+        modulePackage: ['starter', 'growth', 'customized']
       }
     ];
   
