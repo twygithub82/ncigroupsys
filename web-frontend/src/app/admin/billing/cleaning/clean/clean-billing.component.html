@@ -197,7 +197,7 @@
                   } -->
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 mb-0">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
                   <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
@@ -211,14 +211,14 @@
                   } -->
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
                   <input matInput [formControl]="invoiceTotalCostControl" readonly>
 
                 </mat-form-field>
               </div>
-              <div class="col-xl-5 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                 <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5"
                   (click)="save($event)">
                   <mat-icon>
