@@ -554,7 +554,7 @@ export const ROUTES: RouteInfo[] = [
       // },
       {
         path: "admin/inventory/scheduling",
-        title: "MENUITEMS.INVENTORY.LIST.SCHEDULING",
+        title: "MENUITEMS.INVENTORY.LIST.SCHEDULE",
         iconType: "",
         icon: "",
         class: "ml-menu",

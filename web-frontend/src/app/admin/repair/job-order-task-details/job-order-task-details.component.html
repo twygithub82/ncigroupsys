@@ -139,7 +139,7 @@
               }
               @if (!(joDS.loadingSubject | async)) {
                 <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 ms-2 m-b-10">
                     {{translatedLangText.JOB_ORDER_NO}}: <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
@@ -147,8 +147,8 @@
                   </div>
                 </div>
               <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  <button mat-flat-button (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10'">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ">
+                  <button mat-flat-button (click)="viewTimeTableDetails($event)" [ngClass]="['m-r-10']">
                     <mat-icon>view_list</mat-icon>
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
@@ -371,17 +371,17 @@
               }
               @if (!(joDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10 ">
                   {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
                 </div>
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.ESTIMATE_DATE}}: <span
                     class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
+                <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.STATUS}}: <span
                     [ngClass]="'font-bold badge ' + repairDS.getStatusBadgeClass(repairItem?.status_cv)">{{getProcessStatusDescription(repairItem?.status_cv)}}</span>
-                </div>
+                </div> -->
               </div>
               <div class="row">
                 <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0">
