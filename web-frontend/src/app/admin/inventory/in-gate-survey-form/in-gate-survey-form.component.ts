@@ -1604,11 +1604,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   onDownload() {
     let tempDirection: Direction;
+    
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
+
     const dialogRef = this.dialog.open(EirFormComponent, {
       width: '794px',
       height: '80vh',
@@ -1623,6 +1625,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
+    this.fileManagerService.actionLoadingSubject.next(true);
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    
     this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
       console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
       if (result?.type === 'published') {
@@ -1632,8 +1640,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       } else if (result?.type === 'uploaded') {
         this.eirPdf = result?.eirPdf;
       }
+      
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+      this.fileManagerService.actionLoadingSubject.next(false);
     });
 
     // this.container.clear();
