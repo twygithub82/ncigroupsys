@@ -12,7 +12,8 @@
             <div class="header">
               <h3>
                 @if (releaseOrderItem.ro_no) {
-                  {{translatedLangText.RELEASE_ORDER}}: {{releaseOrderItem.ro_no}}
+                  <!-- {{translatedLangText.RELEASE_ORDER}}: -->
+                  {{releaseOrderItem.ro_no}}
                 }
               </h3>
             </div>
@@ -52,7 +53,7 @@
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.RELEASE_ORDER_DATE}}</mat-label>
+                    <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                     <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker" [min]="startDateRO"
                       required>
                     <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>

@@ -268,8 +268,8 @@
       "LIST": {
         "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
         "PERIODIC-TEST-SURVEY-DETAILS": "Periodic Test Survey Details",
-        "OTHERS-SURVEY": "Others Survey",
-        "OTHERS-SURVEY-DETAILS": "Others Survey Details"
+        "OTHERS-SURVEY": "External Survey",
+        "OTHERS-SURVEY-DETAILS": "External Survey Details"
       }
     },
     "REPORTS": {
@@ -576,6 +576,7 @@
     "REPAIR-COMPLETION-DATE": "Repair Complete Date",
     "SCHEDULING-DETAILS": "Scheduling Details",
     "RELEASE-DATE": "Release Date",
+    "SCHEDULE-DATE": "Schedule Date",
     "RO-NOTES": "RO Notes",
     "BOOKED": "Booked",
     "SCHEDULED": "Scheduled",
@@ -859,6 +860,7 @@
     "APPROVAL-REFERENCE": "Approval Reference",
     "STORAGE-BILLING-DETAILS": "Storage Billing Details",
     "STORAGE-BILLED-UNTIL": "Storage Billed Until",
+    "BILLED-UNTIL": "Billed Until",
     "BOOKING": "Booking",
     "SCHEDULING": "Scheduling",
     "SURVEY-DETAILS": "Survey Details",

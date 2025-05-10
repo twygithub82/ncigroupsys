@@ -25,17 +25,17 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.SELECT_ALL">
                     <mat-checkbox class="card-checkbox ms-1" (change)="masterToggle()"
                       (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
                       [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
                       {{translatedLangText.SELECT_ALL}}
                     </mat-checkbox>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                      (click)="$event.stopPropagation()">
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
@@ -240,7 +240,7 @@
                     @if ((filterDeleted(row.scheduling_sot || [])?.length ?? 0) > 0) {
                     <div class="responsive_table">
                       <table mat-table [dataSource]="filterDeleted(row.scheduling_sot || [])" matSort
-                        class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                        class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="id">
                           <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
                           <mat-cell *matCellDef="let schedulingSotRow">{{schedulingSotRow.guid}}</mat-cell>
@@ -304,7 +304,9 @@
                     </div>
                     }
                     @else {
-                    {{translatedLangText.NO_RESULT}}
+                    <div class="no-results">
+                      {{translatedLangText.NO_RESULT}}
+                    </div>
                     }
                   </mat-card-content>
                 </mat-expansion-panel>
@@ -425,10 +427,12 @@
             }
             <!-- No result -->
             @if (!(sotDS.loading$ | async) && !sotList.length) {
-            <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-            </div>
+              <div class="no-results">
+                <mat-divider></mat-divider>
+                <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
+                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                </div>
+              </div>
             }
             <!-- Loading spinner -->
             @if (sotDS.loading$ | async) {

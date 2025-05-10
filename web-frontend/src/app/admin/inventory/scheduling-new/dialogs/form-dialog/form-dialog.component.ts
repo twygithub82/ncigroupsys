@@ -115,11 +115,11 @@ export class FormDialogComponent {
     this.igDS = new InGateDS(this.apollo);
     this.action = data.action!;
     if (this.action === 'edit') {
-      this.dialogTitle = 'Edit Scheduling';
+      this.dialogTitle = 'Edit Schedule';
       this.scheduling_guid = data.scheduling_guid;
       this.storingOrderTank = data.item;
     } else {
-      this.dialogTitle = 'New Scheduling';
+      this.dialogTitle = 'New Schedule';
       this.storingOrderTank = data.item ? data.item : [new StoringOrderTankItem()];
     }
     this.existingBookTypeCvs = this.storingOrderTank.flatMap(tank =>

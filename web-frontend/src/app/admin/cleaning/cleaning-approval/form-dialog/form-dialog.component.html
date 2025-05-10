@@ -253,8 +253,6 @@
                 <mat-label style="display: flex; justify-content: left;">&nbsp;</mat-label>
               </div>
             </div>
-
-            @if(this.getToggleTable()){
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
@@ -308,7 +306,14 @@
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'}}</span>
+                                    <span></span><span>
+                                      <!-- {{this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'}} -->
+                                      {{
+                                        this.pcForm.get('status_cv')?.value === 'KIV' 
+                                          ? '-' 
+                                          : (this.pcForm.get('update_by')?.value || '-')
+                                      }}
+                                    </span>
                                     <!-- <span></span><span>+</span> -->
                                   </div>
                                 </div>
@@ -346,7 +351,12 @@
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span></span><span>{{this.pcForm.get('update_on')?.value!=='-'?this.displayDate(this.pcForm.get('update_on')?.value):'-'}}</span>
+                                    <span></span><span>
+                                      <!-- {{this.pcForm.get('update_on')?.value!=='-'?this.displayDate(this.pcForm.get('update_on')?.value):'-'}} -->
+                                      {{ this.pcForm.get('status_cv')?.value === 'KIV' 
+                                        ? '-' 
+                                        : (this.pcForm.get('update_on')?.value || '-')}}
+                                    </span>
                                   </div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -373,7 +383,6 @@
                   </div>
                 </div>
               </div>
-            }
           </div>
         </div>
       </div>
