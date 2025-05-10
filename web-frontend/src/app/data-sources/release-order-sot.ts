@@ -285,7 +285,7 @@ export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem>
   }
 
   canEdit(status_cv: any): boolean {
-    return status_cv === undefined || status_cv === null || status_cv === '' || status_cv === 'PENDING';
+    return status_cv === undefined || status_cv === null || status_cv === '' || status_cv === 'WAITING';
   }
 
   getReleaseOrderSotItem(roSot: ReleaseOrderSotItem[] | undefined): ReleaseOrderSotItem | undefined {
