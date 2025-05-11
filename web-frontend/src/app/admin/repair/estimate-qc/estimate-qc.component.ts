@@ -79,7 +79,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
   ]
 })
 export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  tabIndex = 2;
+  tabIndex = 'job-qc';
   displayedColumns = [
     'seq',
     'subgroup_name_cv',

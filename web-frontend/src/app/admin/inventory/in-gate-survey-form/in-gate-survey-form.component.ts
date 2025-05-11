@@ -103,7 +103,7 @@ import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directi
   ]
 })
 export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  tabIndex = 1;
+  tabIndex = 'in-gate-survey';
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: this.tabIndex } },
