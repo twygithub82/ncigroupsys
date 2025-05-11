@@ -290,19 +290,6 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
       this.search();
     }
   }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
-  }
 
   // export table data in excel file
   exportExcel() {

@@ -220,6 +220,7 @@ export class FormDialogComponent {
     if (this.schedulingForm?.get('book_type_cv')?.value) {
       let scheduling = new SchedulingGO(this.scheduling);
       scheduling.book_type_cv = this.schedulingForm.get('book_type_cv')?.value;
+      const overallScheduleDt = this.schedulingForm.get('scheduling_dt')?.value?.clone();
 
       this.getSchedulingArray().controls.forEach(ctrl => {
         console.log(ctrl.get('reference')?.value); // ✅ expect actual string
@@ -228,14 +229,14 @@ export class FormDialogComponent {
       let schedulingSot: SchedulingSotItem[] = [];
       this.getSchedulingArray().controls.forEach((group: AbstractControl) => {
         const fg = group as UntypedFormGroup;
-
+        const rowScheduleDt = fg.get('scheduling_dt')?.value ? fg.get('scheduling_dt')?.value?.clone() : overallScheduleDt;
         schedulingSot.push(new SchedulingSotItem({
           guid: fg.get('guid')?.value,
           scheduling_guid: fg.get('scheduling_guid')?.value,
           sot_guid: fg.get('sot_guid')?.value,
           status_cv: fg.get('status_cv')?.value,
           reference: fg.get('reference')?.value,
-          scheduling_dt: Utility.convertDate(fg.get('scheduling_dt')?.value) as number
+          scheduling_dt: Utility.convertDate(rowScheduleDt) as number
         }));
       });
 

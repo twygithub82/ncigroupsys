@@ -2226,7 +2226,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const distinctJobOrders = row?.job_order ? [new JobOrderGO(row?.job_order)] : null;
-        if (distinctJobOrders) {
+        if (distinctJobOrders && distinctJobOrders?.[0]?.status_cv === 'JOB_IN_PROGRESS') {
           const jobOrder = {
             guid: row?.guid,
             remarks: result.remarks,
