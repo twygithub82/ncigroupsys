@@ -280,9 +280,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
     REPAIR_IN_DATE: 'COMMON-FORM.REPAIR-IN-DATE',
-    REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST: 'COMMON-FORM.REPAIR-ESTIMATE-OUTSTANDING-TANK-LIST'
-
-
+    PENDING_REPAIR_ESTIMATE: 'COMMON-FORM.PENDING-REPAIR-ESTIMATE',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   public pieChartOptions!: Partial<ChartOptions>;
@@ -787,7 +786,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSz = 6;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -795,9 +794,10 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
-      this.translatedLangText.EIR_NO, this.translatedLangText.CUSTOMER,
-      this.translatedLangText.OWNER, this.translatedLangText.EIR_DATE,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
+      this.translatedLangText.CUSTOMER, this.translatedLangText.EIR_NO, 
+      // this.translatedLangText.OWNER, 
+      this.translatedLangText.EIR_DATE,
       this.translatedLangText.CLEAN_DATE, this.translatedLangText.REPAIR_TYPE,
       this.translatedLangText.REPAIR_IN_DATE, this.translatedLangText.DAYS
     ]];
@@ -806,9 +806,9 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
       1: { halign: 'left', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      2: { halign: 'left', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
@@ -867,8 +867,9 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.sotList[n];
       data.push([
-        (++idx).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "", this.DisplayCustomerName(itm) || "",
-        this.DisplayOwner(itm) || "", this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "",
+        (++idx).toString(), itm.tank_no || "", this.DisplayCustomerName(itm) || "", this.DisplayEIRNo(itm) || "", 
+        //this.DisplayOwner(itm) || "", 
+        this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "",
         this.DisplayRepairType(itm) || "", this.DisplayRepairInDate(itm) || "", this.DisplayDays(itm) || "0",
       ]);
     }
@@ -1259,7 +1260,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.REPAIR_ESTIMATE_OUTSTANDING_TANK_LIST}`
+    return `${this.translatedLangText.PENDING_REPAIR_ESTIMATE}`
   }
 
   processCustomerStatus(repStatus: report_status[]) {
@@ -1704,7 +1705,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
   }
 
   DisplayCustomerName(sot: StoringOrderTankItem) {
-    return `${sot.storing_order?.customer_company?.name})`
+    return `${sot.storing_order?.customer_company?.name}`
   }
 
   DisplayEIRNo(sot: StoringOrderTankItem) {
