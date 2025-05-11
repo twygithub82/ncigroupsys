@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -92,10 +92,10 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     'estimate_no',
     'job_no',
     'net_cost',
-    'status_cv',
     //'remarks',
     'invoice_no',
     'invoice_date',
+    'status_cv',
     //'actions'
   ];
 
@@ -1252,6 +1252,10 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     return '-';
 
+  }
+
+  onToggleInvoiced(event: MatSlideToggleChange) {
+    this.search();
   }
 
   getInvoiceDate(row: RepairItem): string | undefined {
