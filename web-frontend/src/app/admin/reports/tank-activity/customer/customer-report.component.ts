@@ -146,7 +146,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
     CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
-    ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS'
   }
 
@@ -859,4 +859,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.resetForm();
   }
 
+  getMaxDate(){
+    return new Date();
+  }
 }

@@ -303,8 +303,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     CLOSING_BALANCE: 'COMMON-FORM.CLOSING-BALANCE',
     LOCATION: 'COMMON-FORM.LOCATION',
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
-    DAILY_INVENTORY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY'
-
+    DAILY_INVENTORY_SUMMARY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY-SUMMARY'
 
   }
 
@@ -832,7 +831,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -878,7 +877,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     const data: any[][] = []; // Explicitly define data as a 2D array
     //  pdf.setFontSize(8);
     //  pdf.setTextColor(0, 0, 0); // Black text
-    const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+    const invDate = `${this.translatedLangText.INVENTORY_DATE}:  ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 10, 8)
     // pdf.text(invDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
@@ -1497,7 +1496,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.DAILY_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
+    return `${this.translatedLangText.DAILY_INVENTORY_SUMMARY}`
   }
 
   processCustomerStatus(repStatus: report_status[]) {

@@ -234,9 +234,10 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
     CLEANING_INVENTORY: 'COMMON-FORM.CLEANING-INVENTORY',
+    CLEANING_ACTIVITY:'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
     CUSTOMER_WISE: 'COMMON-FORM.CUSTOMER-WISE',
     CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
-
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -821,14 +822,14 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.CUSTOMER_CODE,
+      this.translatedLangText.S_N, this.translatedLangText.CUSTOMER_CODE,
       this.translatedLangText.CUSTOMER, this.translatedLangText.NO_OF_TANKS
     ]];
 
@@ -858,7 +859,9 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
-    Utility.AddTextAtCenterPage(pdf, this.translatedLangText.CUSTOMER_WISE, pageWidth, leftMargin, rightMargin, topMargin + 42, 9);
+    
+    //Utility.AddTextAtCenterPage(pdf, this.translatedLangText.CUSTOMER_WISE, pageWidth, leftMargin, rightMargin, topMargin + 42, 9);
+
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
 
@@ -867,7 +870,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const clnDate = `${this.translatedLangText.CLEANING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
+    const clnDate = `${this.translatedLangText.CLEANING_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
     // pdf.text(clnDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     Utility.AddTextAtRightCornerPage(pdf, clnDate, pageWidth, leftMargin, rightMargin + 4, startY - 3, 8);
     var idx = 0;
@@ -1285,7 +1288,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
+    return `${this.translatedLangText.CLEANING_ACTIVITY} - ${this.translatedLangText.CUSTOMER}`
   }
 
   GetWiseTitle(): string {
