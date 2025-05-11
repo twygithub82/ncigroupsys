@@ -207,6 +207,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     this.lastCargoControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.last_cargoList)]);
     this.initSearchForm();
     this.initializeValueChanges();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

@@ -185,6 +185,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
   ngOnInit() {
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

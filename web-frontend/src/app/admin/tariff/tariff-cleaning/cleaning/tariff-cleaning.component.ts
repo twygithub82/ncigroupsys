@@ -200,6 +200,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
   refresh() {

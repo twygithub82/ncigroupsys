@@ -149,6 +149,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   ngOnInit() {
     this.initSearchForm();
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

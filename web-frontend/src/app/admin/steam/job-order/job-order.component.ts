@@ -258,6 +258,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
       }
     });
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

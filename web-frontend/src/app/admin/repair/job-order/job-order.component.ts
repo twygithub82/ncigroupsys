@@ -267,6 +267,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       this.selectedTabIndex = index >= 0 ? index : 0;
     });
     this.initializeValueChanges();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

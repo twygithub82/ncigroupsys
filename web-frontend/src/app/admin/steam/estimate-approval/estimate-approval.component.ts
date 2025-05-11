@@ -250,6 +250,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

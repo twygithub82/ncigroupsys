@@ -282,6 +282,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.displayColumnChanged();
     this.translateLangText();

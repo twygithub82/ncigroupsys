@@ -256,6 +256,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();

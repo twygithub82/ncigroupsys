@@ -198,6 +198,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.displayColumnChanged();
   }

@@ -254,6 +254,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.countryCodes = Utility.getCountryCodes();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
