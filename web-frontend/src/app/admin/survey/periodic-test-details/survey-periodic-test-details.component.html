@@ -122,6 +122,56 @@
                     </div>
                   </div>
                 </div>
+                 <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row" hidden>
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.EIR_NO}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.EIR_DATE}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{displayDate(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.PURPOSE}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">
+                        {{displayTankPurpose(sotItem)}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.LAST_TEST}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">{{last_test_desc}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
+                      <span>{{translatedLangText.CURRENT_STATUS}}:</span>
+                    </div>
+                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(sotItem?.tank_status_cv)}}
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
               </div>
             </mat-card-content>
             }

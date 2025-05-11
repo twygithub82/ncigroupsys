@@ -430,7 +430,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const sotGuidList = this.getFormSotGuids();
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
+      width: '80vw',
+      maxWidth:'1200px',
       data: {
         sotIdList: sotGuidList, //this.releaseOrderItem.release_order_sot?.map((tank) => tank.sot_guid),
         action: 'new',

@@ -180,7 +180,7 @@
               </mat-tab>
               }
               @if (tab.component == 'app-job-qc') {
-              <mat-tab>
+              <mat-tab [label]="translatedLangText.QC">
                 <ng-template mat-tab-label>
                   <span [ngClass]="'m-r-10'">{{ translatedLangText.QC }}</span>
                 </ng-template>

@@ -1,7 +1,7 @@
 <div class="addContainer">
   <div class="modalHeader">
     <div class="editRowModal">
-      <div class="modalHeader clearfix">
+      <div class="modalHeader clearfix p-0">
         <h4>{{dialogTitle}}</h4>
       </div>
     </div>
@@ -95,11 +95,11 @@
         </table>
       </div> -->
       @for (s of schedulingFilteredList; track s) {
-      <mat-card [ngClass]="{'card-content p-2 m-b-10 bg-light-grey-opacity-30': true}" matRipple>
+      <mat-card [ngClass]="{'card-content p-2 m-b-0 bg-light-grey-opacity-30': true}" matRipple>
         @for(row of s.scheduling_sot; track row) {
         <mat-card [ngClass]="{
               'bg-light-grey': checkDisable(row!), 
-              'card-content p-0 m-b-10 cursor-pointer': true
+              'card-content p-0 m-b-0 cursor-pointer': true
             }" (click)="toggleRow(row!)" matRipple>
           <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title class="pt-1">
@@ -115,50 +115,41 @@
 
           <mat-card-content>
             <div class="row">
-              <!-- First Column -->
-              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
-                <div class="card-detail-item">
+               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0"> 
+                <div class="row">
+                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <span class="font-bold">{{data.translatedLangText.EIR_NO}}:</span>
                   <span class="card-detail-value">
                     {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}
                   </span>
                 </div>
-
-                <div class="card-detail-item">
-                  <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
-                  <span class="card-detail-value">
-                    {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
-                  </span>
-                </div>
-              </div>
-
-              <!-- Second Column -->
-              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
-                <div class="card-detail-item">
+                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
                   <span class="card-detail-value">
                     {{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
                   </span>
                 </div>
-
-                <div class="card-detail-item">
+                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <span class="font-bold">{{data.translatedLangText.SCHEDULING_DATE}}:</span>
                   <span [class]="{'text-danger': over3Days(row)}" class="card-detail-value">
                     {{displayDate(row.scheduling_dt)}}
                   </span>
                 </div>
-              </div>
-
-              <!-- Third Column -->
-              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-2">
-                <div class="card-detail-item">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                  <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
+                  <span class="card-detail-value">
+                    {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
+                  </span>
+                </div>
+                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
                   <span [class]="{'text-danger': notStorage(row)}" class="card-detail-value">
                     {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
                   </span>
                 </div>
               </div>
-            </div>
+             </div> 
+           </div>
           </mat-card-content>
 
           <mat-card-actions class="empty-card-actions"></mat-card-actions>

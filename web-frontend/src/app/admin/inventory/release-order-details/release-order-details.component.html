@@ -9,13 +9,19 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form class="ms-0" [formGroup]="roForm!" (ngSubmit)="onSOFormSubmit()" #formDirective="ngForm">
           <div class="card">
-            <div class="header">
-              <h3>
+            <div class="row">
+              <h3 class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
                 @if (releaseOrderItem.ro_no) {
                   <!-- {{translatedLangText.RELEASE_ORDER}}: -->
                   {{releaseOrderItem.ro_no}}
                 }
               </h3>
+             <h5 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+                 
+                  <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                  {{getRoStatusDescription(releaseOrderItem.status_cv)}}
+                
+             </h5>
             </div>
             <div class="body">
               @if (roDS.loadingSubject | async) {
@@ -26,7 +32,7 @@
               }
               @if (!(roDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <input type="text" matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
@@ -45,13 +51,10 @@
                     } -->
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-                  <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                  {{getRoStatusDescription(releaseOrderItem.status_cv)}}
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+              
+              <!-- </div>
+              <div class="row"> -->
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                     <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker" [min]="startDateRO"
@@ -65,13 +68,13 @@
                     } -->
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.NOTES}}</mat-label>
                     <input matInput formControlName="ro_notes">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.HAULIER}}</mat-label>
                     <input matInput formControlName="haulier">

@@ -57,3 +57,8 @@ label + input[type=radio] + label {
   border-radius: 5px;
   overflow: hidden;
 }
+
+.mat-accordion {
+  padding-left: 2px;
+  padding-right: 2px;
+}
