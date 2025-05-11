@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -605,6 +605,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  onToggleInvoiced(event: MatSlideToggleChange) {
+    this.search();
   }
 
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
@@ -1266,6 +1270,10 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     const dayDiff = timeDiff / (1000 * 3600 * 24);
 
     return Math.round(dayDiff); // or Math.floor() depending on your needs
+  }
+
+  getMaxDate(){
+    return new Date();
   }
 
   allowToInvoiceStorage(sotRow: BillingSOTItem) {

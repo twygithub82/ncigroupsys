@@ -467,7 +467,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   
   
       await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+      await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
   
       // Variable to store the final Y position of the last table
       let lastTableFinalY = 45;

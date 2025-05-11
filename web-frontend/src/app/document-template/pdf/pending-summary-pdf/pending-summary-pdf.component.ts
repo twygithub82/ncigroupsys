@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { ModulePackageService } from 'app/services/module-package.service';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -305,7 +306,9 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
     private snackBar: MatSnackBar,
-    private sanitizer: DomSanitizer) {
+    private sanitizer: DomSanitizer,
+    private modulePackageService: ModulePackageService
+    ){
     super();
     this.translateLangText();
     this.steamDS = new SteamDS(this.apollo);
@@ -839,7 +842,29 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.REPORT_TITLE} - ${this.translatedLangText.SUMMARY}`
+    //return `${this.translatedLangText.REPORT_TITLE} - ${this.translatedLangText.SUMMARY}`
+     return `${this.translatedLangText.PENDING_INVOICE_SUMMARY}`
+  }
+
+  GetReportColumnsHeader(): any{
+    const headerRow: string[] = [
+      this.translatedLangText.NO,
+      this.translatedLangText.CUSTOMER,
+      this.translatedLangText.GATEIO,
+      this.translatedLangText.PREINSPECTION,
+      this.translatedLangText.LOLO,
+      this.translatedLangText.STORAGE,
+      this.translatedLangText.CLEAN
+    ];
+    
+    if (!this.modulePackageService.isStarterPackage()) {
+      headerRow.push(
+        this.translatedLangText.RESIDUE,
+        this.translatedLangText.STEAM
+      );
+    }
+    headerRow.push(this.translatedLangText.REPAIR);
+    return headerRow;
   }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -870,14 +895,19 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.NO,
-      this.translatedLangText.CUSTOMER, this.translatedLangText.PREINSPECTION,
-      this.translatedLangText.LOLO, this.translatedLangText.STORAGE,
-      this.translatedLangText.RESIDUE, this.translatedLangText.STEAM,
-      this.translatedLangText.CLEAN, this.translatedLangText.REPAIR,
-      this.translatedLangText.GATEIO
-    ]];
+
+    // const headers = [[
+    //   this.translatedLangText.NO,
+    //   this.translatedLangText.CUSTOMER,  
+    //   this.translatedLangText.GATEIO,
+    //   this.translatedLangText.PREINSPECTION,
+    //   this.translatedLangText.LOLO, 
+    //   this.translatedLangText.STORAGE, this.translatedLangText.CLEAN, 
+    //   this.translatedLangText.RESIDUE, this.translatedLangText.STEAM,
+    //   this.translatedLangText.REPAIR,
+    // ]];
+
+    const headers = [this.GetReportColumnsHeader()];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
@@ -910,7 +940,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -918,7 +948,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const data: any[][] = []; // Explicitly define data as a 2D array
     // pdf.setFontSize(8);
     // pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:  ${this.cut_off_dt}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,lastTableFinalY + 10,8);
 
@@ -942,16 +972,24 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
       // pdf.setFontSize(8);
       // pdf.setTextColor(0, 0, 0); // Black text
       // pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
-
-
-      data.push([
-        (n + 1).toString(), this.DisplayCustomer(cust) || "", this.DisplayPreinspectionNo(cust) || "", this.DisplayLOLONo(cust) || "",
-        this.DisplayStorageNo(cust) || "", this.DisplayResidueNo(cust), this.DisplaySteamNo(cust) || "",
-        this.DisplayCleanNo(cust) || "", this.DisplayRepairNo(cust) || "", this.DisplayGateIONo(cust) || ""
-
-      ]);
-
-
+      const row = [
+        (n + 1).toString(),
+        this.DisplayCustomer(cust) || "",
+        this.DisplayGateIONo(cust) || "",
+        this.DisplayPreinspectionNo(cust) || "",
+        this.DisplayLOLONo(cust) || "",
+        this.DisplayStorageNo(cust) || "",
+        this.DisplayCleanNo(cust) || ""
+      ];
+      
+      if (!this.modulePackageService.isStarterPackage()) {
+        row.push(
+          this.DisplayResidueNo(cust) || "",
+          this.DisplaySteamNo(cust) || ""
+        );
+      }
+      row.push(this.DisplayRepairNo(cust) || "");
+      data.push(row);
     }
 
     pdf.setDrawColor(0, 0, 0); // red line color

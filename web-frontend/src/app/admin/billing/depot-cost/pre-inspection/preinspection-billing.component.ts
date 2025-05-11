@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -85,12 +85,10 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     'customer',
     'eir_no',
     'eir_dt',
-    //'last_cargo',
-    //'purpose',
     'cost',
-    'tank_status_cv',
     'invoice_no',
     'invoice_date',
+    'tank_status_cv',
     //  'invoiced',
     // 'action'
   ];
@@ -528,6 +526,10 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
 
     this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
+
+   onToggleInvoiced(event: MatSlideToggleChange) {
+      this.search();
+    }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';

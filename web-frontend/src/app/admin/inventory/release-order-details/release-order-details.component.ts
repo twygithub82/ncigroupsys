@@ -159,7 +159,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     FILTER: "COMMON-FORM.FILTER",
     BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
     RELEASE_DATE: "COMMON-FORM.RELEASE-DATE",
-    SCHEDULING_DATE: "COMMON-FORM.SCHEDULE-DATE",
+    SCHEDULED_DATE: "COMMON-FORM.SCHEDULED-DATE",
     TANK_STATUS: "COMMON-FORM.TANK-STATUS"
   }
 
@@ -337,7 +337,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (ro.release_order_sot && ro.release_order_sot.length) {
       this.populateSOT(ro.release_order_sot);
     }
-    if (!this.canEditRO(ro.status_cv)) {
+    if (!this.canEditRO(ro)) {
       this.roForm!.get('release_dt')?.disable();
       this.roForm!.get('ro_notes')?.disable();
       this.roForm!.get('haulier')?.disable();
@@ -754,8 +754,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.roSotDS.canEdit(item.get('status_cv')?.value) && !item.get('actions')?.value!.includes('cancel') && !item.get('actions')?.value!.includes('rollback');
   }
 
-  canEditRO(status: string | undefined) {
-    return this.roSotDS.canEdit(status);
+  canEditRO(ro: ReleaseOrderItem | undefined) {
+    return this.roDS.canAddTank(ro);
   }
 
   translateLangText() {

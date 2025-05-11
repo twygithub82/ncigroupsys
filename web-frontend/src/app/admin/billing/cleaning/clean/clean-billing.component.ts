@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -88,9 +88,9 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     'last_cargo',
     //'purpose',
     'cost',
-    'tank_status_cv',
     'invoice_no',
     'invoice_date',
+    'tank_status_cv',
     //'invoiced',
     //'action'
   ];
@@ -988,6 +988,10 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
         this.search();
       }
     })
+  }
+
+  onToggleInvoiced(event: MatSlideToggleChange) {
+    this.search();
   }
 
   onTabFocused() {

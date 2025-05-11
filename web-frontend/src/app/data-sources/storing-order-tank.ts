@@ -2327,6 +2327,96 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
           tariff_depot_guid
           update_by
           update_dt
+          gin_billing {
+            bill_to_guid
+            create_by
+            create_dt
+            currency_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            update_by
+            update_dt
+          }
+          gout_billing {
+            bill_to_guid
+            create_by
+            create_dt
+            currency_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            update_by
+            update_dt
+          }
+          loff_billing {
+            bill_to_guid
+            create_by
+            create_dt
+            currency_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            update_by
+            update_dt
+          }
+          lon_billing {
+            bill_to_guid
+            create_by
+            create_dt
+            currency_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            update_by
+            update_dt
+          }
+          preinsp_billing {
+            bill_to_guid
+            create_by
+            create_dt
+            currency_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            update_by
+            update_dt
+          }
+          storage_billing {
+            bill_to_guid
+            create_by
+            create_dt
+            currency_guid
+            delete_dt
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            remarks
+            status_cv
+            update_by
+            update_dt
+          }
         }
       }
       pageInfo {

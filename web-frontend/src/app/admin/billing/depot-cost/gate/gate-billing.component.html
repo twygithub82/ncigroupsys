@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="card">
-      <mat-accordion class="body row">
+      <mat-accordion >
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -119,7 +119,9 @@
               </div>
 
               <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 col-xs-12 d-flex align-items-center">
-                <mat-slide-toggle formControlName="invoiced"> {{translatedLangText.INVOICED}}</mat-slide-toggle>
+                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced" (change)="onToggleInvoiced($event)"> 
+                  {{translatedLangText.INVOICED}}
+                </mat-slide-toggle>
               </div>
               <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
@@ -136,15 +138,25 @@
           
         </mat-expansion-panel>
       </mat-accordion>
-      <div class="body row">
+      <div class="row body card-aligned">
         <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
-          <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
+          <!-- <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title [ngClass]="{'pt-1': true}">
               {{translatedLangText.INVOICE_DETAILS}}
             </mat-card-title>
-          </mat-card-header>
+          </mat-card-header> -->
+          <div class="row mt-2 p-l-15">
+            <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="radio-group m-2" (change)="onInvoiceTypeChange($event)">
+                <input type="radio" id="option-one" name="invoice_type" [formControl]="invoiceTypeControl"
+                  value="GATE_IN" checked><label for="option-one">{{translatedLangText.GATE_IN}}</label>
+                <input type="radio" id="option-two" name="invoice_type" [formControl]="invoiceTypeControl"
+                  value="GATE_OUT"><label for="option-two">{{translatedLangText.GATE_OUT}}</label>
+              </div>
+            </div>
+          </div>
           <mat-card-content>
-            <div class="row">
+            <div class="row p-l-4">
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
@@ -198,7 +210,7 @@
                   {{translatedLangText.DELETE}}
                 </button>
               </div>
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <div class="radio-group m-2" (change)="onInvoiceTypeChange($event)">
                     <input type="radio" id="option-one" name="invoice_type" [formControl]="invoiceTypeControl"
@@ -207,7 +219,7 @@
                       value="GATE_OUT"><label for="option-two">{{translatedLangText.GATE_OUT}}</label>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </mat-card-content>
           <mat-card-actions [ngClass]="'empty-card-actions'">
@@ -220,7 +232,7 @@
           <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header class="pt-1 pb-0 d-flex justify-content-between align-items-center">
               <mat-panel-title [ngClass]="'custom-title d-flex align-items-center'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(sotRow) : null"
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(sotRow) : null"
                   [checked]="selection.isSelected(sotRow)" [ngClass]="'tbl-checkbox'"
                   [hidden]="CheckBoxDisable(sotRow)">
                 </mat-checkbox>
@@ -260,7 +272,7 @@
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-start'">
                         <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="isAllSelected()"
-                          [indeterminate]="!isAllSelected()" [ngClass]="'tbl-checkbox'"
+                          [indeterminate]="!isAllSelected()"  [ngClass]="'tbl-checkbox'"
                           [hidden]="!MasterCheckBoxDisable()">
                         </mat-checkbox>
                       </mat-header-cell>
@@ -338,7 +350,9 @@
                 </div>
                 }
                 @else {
-                {{translatedLangText.NO_RESULT}}
+                <div class="no-results">
+                  {{translatedLangText.NO_RESULT}}
+                </div>
                 }
               </mat-card-content>
               <mat-card-actions [ngClass]="'empty-card-actions'">

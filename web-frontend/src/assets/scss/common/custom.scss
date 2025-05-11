@@ -2239,17 +2239,6 @@ mat-step-header.mat-step-header:hover {
   display: none;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  &.text-column {
-    color: mat.get-color-from-palette(custom-theme.$custom-info, 700);
-  }
-}
-
 mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
   line-height: 36px;
 }

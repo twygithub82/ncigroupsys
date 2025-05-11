@@ -30,6 +30,7 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 //import autoTable from 'jspdf-autotable'; // Import autoTable
 import autoTable, { Styles } from 'jspdf-autotable';
+import { ModulePackageService } from 'app/services/module-package.service';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -224,18 +225,18 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     OF: 'COMMON-FORM.OF',
     INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
     CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    LOLO_COST: 'COMMON-FORM.LOLO',
+    STEAM_COST: 'COMMON-FORM.STEAM',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE',
     IN_DATE: 'COMMON-FORM.IN-DATE',
     OUT_DATE: 'COMMON-FORM.OUT-DATE',
     TOTAL: 'COMMON-FORM.TOTAL',
     DAYS: 'COMMON-FORM.DAYS',
-    CLEAN_COST: 'COMMON-FORM.CLEAN-COST-REPORT',
-    REPAIR_COST: 'COMMON-FORM.REPAIR-COST-REPORT',
-    PREINSP_COST: 'COMMON-FORM.PREINSP-COST-REPORT',
-    STORAGE_COST: 'COMMON-FORM.STORAGE-COST-REPORT',
-    REPORT_TITLE: 'COMMON-FORM.PENDING-INVOICE_REPORT',//'COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT',
+    CLEAN_COST: 'COMMON-FORM.TARIFF-CLEANING',
+    REPAIR_COST: 'COMMON-FORM.REPAIR',
+    PREINSP_COST: 'COMMON-FORM.PREINSPECTION',
+    STORAGE_COST: 'COMMON-FORM.STORAGE',
+    REPORT_TITLE: 'COMMON-FORM.PENDING-INVOICE-DETAIL',//'COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     GATEIO_S: 'COMMON-FORM.GATEIO-S',
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
@@ -303,6 +304,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService,
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
@@ -810,7 +812,38 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.REPORT_TITLE} - ${this.translatedLangText.DETAILS}`
+    return `${this.translatedLangText.REPORT_TITLE}`
+  }
+
+  GetReportColumnsHeader(): any{
+    const headerRow: string[] = [
+      this.translatedLangText.NO,
+      this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
+      this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
+      this.translatedLangText.GATEIO_S, this.translatedLangText.PREINSP_COST,
+      this.translatedLangText.LOLO_COST, this.translatedLangText.STORAGE_COST,
+      this.translatedLangText.DAYS,this.translatedLangText.CLEAN_COST, 
+    ];
+
+    // this.translatedLangText.NO,
+    // this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
+    // this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
+    // this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
+    // this.translatedLangText.CLEAN_COST, this.translatedLangText.REPAIR_COST,
+    // this.translatedLangText.PREINSP_COST, this.translatedLangText.LOLO_COST,
+    // this.translatedLangText.DAYS, this.translatedLangText.STORAGE_COST,
+    // this.translatedLangText.GATEIO_S
+    
+    if (!this.modulePackageService.isStarterPackage()) {
+      headerRow.push(
+        this.translatedLangText.RESIDUE_COST,
+        this.translatedLangText.STEAM_COST, 
+      );
+    }
+    headerRow.push(this.translatedLangText.REPAIR_COST);
+    headerRow.push(this.translatedLangText.TOTAL);
+    return headerRow;
   }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -841,17 +874,18 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.NO,
-      this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
-      this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
-      this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
-      this.translatedLangText.CLEAN_COST, this.translatedLangText.REPAIR_COST,
-      this.translatedLangText.PREINSP_COST, this.translatedLangText.LOLO_COST,
-      this.translatedLangText.DAYS, this.translatedLangText.STORAGE_COST,
-      this.translatedLangText.STEAM_COST, this.translatedLangText.RESIDUE_COST,
-      this.translatedLangText.GATEIO_S, this.translatedLangText.TOTAL
-    ]];
+    const headers = [this.GetReportColumnsHeader()];
+    // const headers = [[
+    //   this.translatedLangText.NO,
+    //   this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
+    //   this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
+    //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
+    //   this.translatedLangText.CLEAN_COST, this.translatedLangText.REPAIR_COST,
+    //   this.translatedLangText.PREINSP_COST, this.translatedLangText.LOLO_COST,
+    //   this.translatedLangText.DAYS, this.translatedLangText.STORAGE_COST,
+    //   this.translatedLangText.STEAM_COST, this.translatedLangText.RESIDUE_COST,
+    //   this.translatedLangText.GATEIO_S, this.translatedLangText.TOTAL
+    // ]];
 
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
@@ -872,13 +906,13 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
 
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
 
 
-    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+10,8)
+    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:  ${this.cut_off_dt}`; // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,lastTableFinalY+10,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
@@ -892,7 +926,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
 
       var repPage = pdf.getNumberOfPages();
-   // if(repPage==1)lastTableFinalY=45;
+      // if(repPage==1)lastTableFinalY=45;
 
         if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
           pdf.addPage();
@@ -911,6 +945,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       // }
 
       pdf.setFontSize(8);
+      //pdf.setFont("helvetica", "bold"); // Make it bold
       pdf.setTextColor(0, 0, 0); // Black text
       pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
 
@@ -919,14 +954,33 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
       for (let b = 0; b < cust.items!.length; b++) {
         var itm = cust.items?.[b]!;
-        data.push([
+
+        const row = [
           (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
           itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
-          this.displayCleanCost(itm) || "", this.displayRepairCost(itm) || "", this.displayPreinsCost(itm) || "",
-          this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
-          this.displaySteamCost(itm) || "", this.displayResidueCost(itm) || "", this.displayGateIOCost(itm) || "",
-          (itm.total === "0.00" ? '' : itm.total)
-        ]);
+          this.displayGateIOCost(itm) || "", this.displayPreinsCost(itm) || "",
+          this.displayLOLOCost(itm) || "", this.displayStorageCost(itm) || "", itm.days,
+          this.displayCleanCost(itm) || "", 
+        ];
+
+        if (!this.modulePackageService.isStarterPackage()) {
+          row.push(
+            this.displayResidueCost(itm) || "",
+            this.displaySteamCost(itm) || ""
+          );
+        }
+        row.push(this.displayRepairCost(itm) || "");
+        row.push((itm.total === "0.00" ? '' : itm.total));
+        data.push(row);
+        // data.push([
+        //   (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
+        //   itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
+        //   this.displayCleanCost(itm) || "", this.displayRepairCost(itm) || "", this.displayPreinsCost(itm) || "",
+        //   this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
+        //   this.displaySteamCost(itm) || "", this.displayResidueCost(itm) || "", this.displayGateIOCost(itm) || "",
+        //   (itm.total === "0.00" ? '' : itm.total)
+        // ]);
+
       }
       pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -973,7 +1027,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         didDrawPage: (data: any) => {
           const pageCount = pdf.getNumberOfPages();
 
-          if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+          if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
           // Capture the final Y position of the table
           lastTableFinalY = data.cursor.y;
           var pg = pagePositions.find(p => p.page == pageCount);

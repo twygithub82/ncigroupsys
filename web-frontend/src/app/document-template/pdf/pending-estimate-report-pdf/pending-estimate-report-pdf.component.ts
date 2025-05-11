@@ -42,6 +42,7 @@ import {
   NgApexchartsModule
 } from 'ng-apexcharts';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 export type HorizontalBarOptions = {
   showXAxis?: boolean;
@@ -345,6 +346,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService,
     private sanitizer: DomSanitizer) {
     super();
 
@@ -833,7 +835,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;

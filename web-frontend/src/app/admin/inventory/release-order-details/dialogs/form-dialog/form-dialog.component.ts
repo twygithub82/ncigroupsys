@@ -100,15 +100,12 @@ export class FormDialogComponent {
   schedulingSotDS: SchedulingSotDS;
 
   displayedColumns = [
-    'select',
-    'customer',
+    'tank_no',
     'eir_no',
-    'eir_date',
-    'capacity',
-    'tare_weight',
-    'status',
-    'yard',
-    'actions'
+    'eir_dt',
+    'scheduling_dt',
+    'status_cv',
+    'yard_cv',
   ];
 
   constructor(
@@ -152,7 +149,8 @@ export class FormDialogComponent {
               ...x,
               scheduling_sot: x.scheduling_sot?.filter(ss => ss.storing_order_tank?.tank_no?.toLowerCase().includes(value.toLowerCase()))
             }))
-            .filter(x => x.scheduling_sot && x.scheduling_sot.length > 0); // Ensure we only keep items with filtered scheduling_sot
+            .filter(x => x.scheduling_sot && x.scheduling_sot.length > 0);
+          // .filter(ss => ss?.storing_order_tank?.tank_no?.toLowerCase().includes(value.toLowerCase()))
         } else {
           this.schedulingFilteredList = [...this.schedulingList]; // Restore full list if value is empty
         }
@@ -317,7 +315,7 @@ export class FormDialogComponent {
     this.schedulingDS.searchSchedulingForRO(where)
       .subscribe(data => {
         if (this.schedulingDS.totalCount > 0) {
-          this.schedulingList = data;
+          this.schedulingList = data;//.flatMap(s => s.scheduling_sot);
           this.schedulingList.forEach((scheduling) => scheduling.scheduling_sot = this.sort(scheduling.scheduling_sot!));
           this.schedulingFilteredList = this.schedulingList;
         }

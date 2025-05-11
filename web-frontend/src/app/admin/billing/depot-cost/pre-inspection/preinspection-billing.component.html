@@ -137,7 +137,9 @@
               </div>
 
               <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 col-xs-12 d-flex align-items-center">
-                <mat-slide-toggle formControlName="invoiced"> {{translatedLangText.INVOICED}}</mat-slide-toggle>
+                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced" (change)="onToggleInvoiced($event)"> 
+                  {{translatedLangText.INVOICED}}
+                </mat-slide-toggle>
               </div>
               <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
@@ -153,15 +155,15 @@
           </form>
         </mat-expansion-panel>
       </mat-accordion>
-      <div class="body row">
+      <div class="body row card-aligned">
         <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
-          <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
+          <!-- <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title [ngClass]="{'pt-1': true}">
               {{translatedLangText.INVOICE_DETAILS}}
             </mat-card-title>
-          </mat-card-header>
+          </mat-card-header> -->
           <mat-card-content>
-            <div class="row">
+            <div class="row p-l-3">
               <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
@@ -227,14 +229,14 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
-                <mat-checkbox (change)="$event ? masterToggle() : null"
+                <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"
                   [hidden]="MasterCheckBoxDisable()">
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
                   [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
                 </mat-checkbox>
               </mat-cell>

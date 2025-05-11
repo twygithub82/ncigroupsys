@@ -857,7 +857,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
     Utility.AddTextAtCenterPage(pdf, this.translatedLangText.CUSTOMER_WISE, pageWidth, leftMargin, rightMargin, topMargin + 42, 9);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;

@@ -868,7 +868,7 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
     var gap = 8;
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
     let minHeightHeaderCol = 9;
