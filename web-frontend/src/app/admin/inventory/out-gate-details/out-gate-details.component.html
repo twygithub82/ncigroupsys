@@ -26,18 +26,18 @@
                 <div class="row">
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-2 align-right p-0">
                         <span>{{translatedLangText.RO_NO}}:</span>
                       </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-0 ps-1">
                         <div class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_no}}</div>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                         <span>{{translatedLangText.RO_NOTES}}:</span>
                       </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                         <div class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_notes}}
                         </div>
                       </div>
@@ -45,19 +45,19 @@
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                         <span>{{translatedLangText.CUSTOMER}}:</span>
                       </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                         <div class="contact-detail-info font-bold">
                           {{ccDS.displayName(roSotItem?.release_order?.customer_company)}}</div>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                         <span>{{translatedLangText.BRANCH_NAME}}:</span>
                       </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                         <div class="contact-detail-info font-bold">
                           {{ccDS.displayName(customerBranch) || '-'}}</div>
                       </div>
@@ -65,20 +65,20 @@
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                         <span>{{translatedLangText.RO_DATE}}:</span>
                       </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                         <div class="contact-detail-info font-bold">
                           {{displayDate(roSotItem?.release_order?.release_dt!)}}
                         </div>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                         <span>{{translatedLangText.STATUS}}:</span>
                       </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                         <div class="contact-detail-info font-bold">
                           {{getROSotStatusDescription(roSotItem?.release_order?.status_cv)}}
                         </div>
@@ -112,37 +112,37 @@
                         <div class="row">
                           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
                             <div class="row">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                                 <span>{{translatedLangText.TANK_NO}}:</span>
                               </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                                 <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                                 <span>{{translatedLangText.PURPOSE}}:</span>
                               </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                                 <div class="contact-detail-info font-bold">{{displayTankPurpose()}}</div>
                               </div>
                             </div>
                           </div>
                           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
                             <div class="row">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                                 <span>{{translatedLangText.EIR_NO}}:</span>
                               </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                                 <span
                                   [class]="'font-bold'">{{ogDS.getOutGateItem(storingOrderTankItem?.out_gate)?.eir_no}}</span>
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                                 <span>{{translatedLangText.CLEANING_CONDITIONS}}:</span>
                               </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                                 <div class="contact-detail-info">
                                   <span
                                     [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{storingOrderTankItem?.clean_status_cv

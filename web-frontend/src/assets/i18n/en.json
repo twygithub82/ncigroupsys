@@ -1242,8 +1242,8 @@
     "LOGIN": "Login",
     "CUSTOMERS-SELECTED": "Customers Selected",
     "PROFILES-SELECTED": "Profiles Selected",
-    "BILLED-UNTIL": "Billed Until",
-    "TANK-NOTES": "Tank Notes"
+    "TANK-NOTES": "Tank Notes",
+    "SCHEDULED-DATE": "Scheduled Date"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

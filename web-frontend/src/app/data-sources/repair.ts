@@ -2132,7 +2132,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
         return 'badge badge-solid-green';
       case 'PENDING':
         return 'badge badge-solid-cyan';
-      case 'CANCEL':
+      case 'CANCELED':
       case 'NO_ACTION':
         return 'badge badge-solid-red';
       case 'JOB_IN_PROGRESS':

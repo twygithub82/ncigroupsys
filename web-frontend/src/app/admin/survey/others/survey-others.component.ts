@@ -148,7 +148,8 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    
   }
 
   customerCodeControl = new UntypedFormControl();
@@ -175,6 +176,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
   bookingTypeCvListNewBooking: CodeValuesItem[] = [];
   bookingStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  statusCvList: CodeValuesItem[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   depotCvList: CodeValuesItem[] = [];
 
@@ -187,6 +189,7 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  availableStatuses: string[] = ["CLEANING","STEAM","RESIDUE","REPAIR","STORAGE","RELEASED"];
 
   constructor(
     public httpClient: HttpClient,
@@ -234,7 +237,9 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       survey_dt_start: [''],
       survey_dt_end: [''],
       certificate_cv: [''],
-      depot_status_cv: ['']
+      depot_status_cv: [''],
+      status_cv:['']
+
     });
   }
 
@@ -268,6 +273,10 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+      this.statusCvList= data.filter(s=>this.availableStatuses.includes(s.code_val!));
+      this.statusCvList.sort((a, b) => {
+        return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
+      });
     });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = addDefaultSelectOption(data, 'All');
@@ -519,6 +528,17 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
+    var tnkStatus : string[]=[...this.availableStatuses];
+    if (this.searchForm!.get('status_cv')?.value)
+    {
+      tnkStatus=[...this.searchForm!.get('status_cv')?.value];
+    }
+    if(tnkStatus.includes('STORAGE'))
+    {
+      tnkStatus.push('RO_GENERATED');
+    }
+    where.and.push({tank_status_cv:{in:tnkStatus}});
+
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
   }
 
@@ -765,7 +785,8 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
       survey_dt_start: '',
       survey_dt_end: '',
       certificate_cv: '',
-      depot_status_cv: ''
+      depot_status_cv: '',
+      status_cv:''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

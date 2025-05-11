@@ -201,6 +201,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   hasNextPage = false;
   hasPreviousPage = false;
 
+  availableStatuses: string[] = ["CLEANING","STEAM","RESIDUE","REPAIR","STORAGE","RELEASED"];
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -278,7 +280,12 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       this.bookingStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+
+      var filterList = data.filter(x => this.availableStatuses.includes(x.code_val!));
+      filterList.sort((a, b) => {
+        return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
+      });
+      this.tankStatusCvList = addDefaultSelectOption(filterList, 'All');
     });
     this.search();
   }

@@ -207,7 +207,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       customer: this.customerCodeControl,
       complete_dt_start: [''],
       complete_dt_end: [''],
-      repairOptionCv: ['']
+      repairOptionCv: ''
     });
   }
 
@@ -280,7 +280,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       };
     }
 
-    if (this.filterJobOrderForm!.get('repairOptionCv')?.value?.length) {
+    if (this.filterJobOrderForm!.get('repairOptionCv')?.value?.length>0) {
       where.storing_order_tank = where.storing_order_tank || {};
       where.storing_order_tank.purpose_repair_cv = { in: this.filterJobOrderForm!.get('repairOptionCv')?.value };
     }
@@ -367,7 +367,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       filterJobOrder: '',
       jobStatusCv: ['COMPLETED'],
       filterRepair: '',
-      repairOptionCv: [''],
+      repairOptionCv: '',
       complete_dt_start: '',
       complete_dt_end: ''
     });

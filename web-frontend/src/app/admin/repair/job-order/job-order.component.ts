@@ -713,15 +713,28 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    switch (event.index) {
-
-      case 0:
-        this.onTabFocused(); break;
-      case 1:
-        this.repairJobOrderTask?.onTabFocused(); break;
-      case 2:
-        this.repairJobOrderQC?.onTabFocused(); break;
-
+    var tabLabel=event.tab.textLabel;
+    if(tabLabel===this.translatedLangText.QC)
+    {
+      this.repairJobOrderQC?.onTabFocused();
     }
+    else if (tabLabel===this.translatedLangText.JOB_ORDER_TAB_TITLE)
+    {
+      this.repairJobOrderTask?.onTabFocused();
+    }
+    else if (tabLabel===this.translatedLangText.REPAIR_EST_TAB_TITLE)
+    {
+      this.onTabFocused();
+    }
+    // switch (event.index) {
+
+    //   case 0:
+    //     this.onTabFocused(); break;
+    //   case 1:
+    //     this.repairJobOrderTask?.onTabFocused(); break;
+    //   case 2:
+    //     this.repairJobOrderQC?.onTabFocused(); break;
+
+    // }
   }
 }

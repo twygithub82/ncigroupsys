@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <div class="header">
+          <div class="header p-0">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
             </h2>
@@ -125,7 +125,7 @@
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
-            <div class="header">
+            <div class="header p-0">
               <h2>
                 {{translatedLangText.JOB_DETAILS}}
               </h2>
@@ -148,7 +148,7 @@
                 </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ">
-                  <button mat-flat-button (click)="viewTimeTableDetails($event)" [ngClass]="['m-r-10']">
+                  <button mat-flat-button (click)="viewTimeTableDetails($event)" [ngClass]="['m-r-10 primary-light']">
                     <mat-icon>view_list</mat-icon>
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
@@ -157,7 +157,7 @@
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.PAUSE_JOB : translatedLangText.START_JOB }}
                   </button>
-                  <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)" [ngClass]="'m-r-10'">
+                  <button mat-flat-button color="primary" [disabled]="!canCompleteJob()" (click)="completeJob($event)" [ngClass]="'m-r-10'">
                     <mat-icon>check_box</mat-icon>
                     {{translatedLangText.COMPLETE_JOB}}
                   </button>
@@ -177,7 +177,7 @@
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
-            <div class="header">
+            <div class="header p-0">
               <h2>
                 {{translatedLangText.ESTIMATE_DETAILS}}
               </h2>
@@ -354,7 +354,7 @@
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
-            <div class="header">
+            <div class="header p-0">
               <h2>
                 {{translatedLangText.ESTIMATE_SUMMARY}}
                 <!-- - <span class="font-bold m-r-5">{{repairItem?.estimate_no}}</span>

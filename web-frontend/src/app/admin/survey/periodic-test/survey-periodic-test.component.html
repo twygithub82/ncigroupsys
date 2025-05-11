@@ -53,6 +53,7 @@
                       }
                     </mat-form-field>
                   </div>
+                  
                   <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
@@ -88,6 +89,18 @@
                       <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                       <mat-select formControlName="depot_status_cv">
                         @for (codeValue of depotCvList; track codeValue) {
+                        <mat-option [value]="codeValue.code_val">
+                          {{codeValue.description}}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                      <mat-select multiple formControlName="status_cv">
+                        @for (codeValue of statusCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
