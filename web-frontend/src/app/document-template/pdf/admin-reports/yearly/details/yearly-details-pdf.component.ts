@@ -249,7 +249,8 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     CLEAN_YEARLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE'
+    AVERAGE:'COMMON-FORM.AVERAGE',
+    S_N:'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -340,7 +341,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    this.date= this.data.date;
+    this.date = this.data.date;
     this.repType=this.data.repType;
     this.customer=this.data.customer;
     this.onDownloadClick();
@@ -598,7 +599,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.MONTH,
+      this.translatedLangText.S_N, this.translatedLangText.MONTH,
       this.translatedLangText.NO_OF_TANKS
     ]];
 
@@ -626,7 +627,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 36);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -634,8 +635,8 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
 
     if(this.customer)
       {
@@ -703,7 +704,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
           }
         }
 
@@ -720,8 +721,8 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
     });
 
     this.generatingPdfProgress = 100;

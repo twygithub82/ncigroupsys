@@ -366,6 +366,11 @@ export class RepairYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     }
 
     var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value){
+      date = `${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+  }
+  
+    
     // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
     if (this.searchForm?.get('month_start')?.value) {
       var month = this.searchForm?.get('month_start')?.value;

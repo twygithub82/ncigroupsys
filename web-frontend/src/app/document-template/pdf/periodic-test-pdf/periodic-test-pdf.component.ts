@@ -177,6 +177,8 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
     NO: 'COMMON-FORM.NO',
+    S_N: 'COMMON-FORM.S_N',
+    REPORT: 'COMMON-FORM.REPORT',
     BOTTOM_DIS_COMP__ABB: 'COMMON-FORM.BOTTOM-DIS-COMP--ABB',
     BOTTOM_DIS_VALVE__ABB: 'COMMON-FORM.BOTTOM-DIS-VALVE--ABB',
     TOP_DIS_COMP__ABB: 'COMMON-FORM.TOP-DIS-COMP--ABB',
@@ -247,12 +249,12 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     DAILY_INVENTORY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY',
     CLEAN_CERT_BOOKING: 'COMMON-FORM.CLEAN-CERT-BOOKING',
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
-    PERIODIC_TEST_DUE: 'MENUITEMS.REPORTS.LIST.PERIODIC-TEST-DUE',
+    PERIODIC_TEST_DUE: 'MENUITEMS.REPORTS.LIST.PERIODIC-TEST',
     LAST_PERIODIC_TEST: 'COMMON-FORM.LAST-PERIODIC-TEST',
     NEXT_PERIODIC_TEST: 'COMMON-FORM.NEXT-PERIODIC-TEST',
     TYPE: 'COMMON-FORM.TYPE',
     DUE_DAYS: 'COMMON-FORM.DUE-DAYS',
-    DUE_TYPE: 'COMMON-FORM.DUE-TYPE'
+    DUE_TYPE: 'COMMON-FORM.DUE-TYPE',
   }
 
 
@@ -558,10 +560,10 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     const reportTitle = this.GetReportTitle();
     const headers = [
       [
-        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.IN_DATE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.OWNER, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.LAST_PERIODIC_TEST, colSpan: 3, styles: { halign: 'center' } },
         { content: this.translatedLangText.NEXT_PERIODIC_TEST, colSpan: 2, styles: { halign: 'center' } },
@@ -607,25 +609,25 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     var gap = 8;
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 36);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
     let minHeightHeaderCol = 3;
+    let minHeightBodyCell=4;
     let fontSize = 5;
     const comStyles: any = {
-      0: { halign: 'center', valign: 'middle', cellWidth: 10 },
-      1: { halign: 'left', valign: 'middle', cellWidth: 18 },
-      2: { halign: 'left', valign: 'middle', cellWidth: 18 },
-      3: { halign: 'center', valign: 'middle', cellWidth: 15 },
-      4: { halign: 'center', valign: 'middle', cellWidth: 12 },
-      5: { halign: 'center', valign: 'middle', cellWidth: 17 },
-      6: { halign: 'center', valign: 'middle', cellWidth: 15 },
-      7: { halign: 'center', valign: 'middle', cellWidth: 15 },
-      8: { halign: 'center', valign: 'middle', cellWidth: 17 },
-      9: { halign: 'center', valign: 'middle', cellWidth: 15 },
-      10: { halign: 'center', valign: 'middle', cellWidth: 15 },
-      11: { halign: 'center', valign: 'middle', cellWidth: 15 },
-
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight:minHeightBodyCell},
+      1: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight:minHeightBodyCell },
+      2: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight:minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 15 , minCellHeight:minHeightBodyCell},
+      4: { halign: 'center', valign: 'middle', cellWidth: 12 , minCellHeight:minHeightBodyCell},
+      5: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight:minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight:minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 26, minCellHeight:minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight:minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight:minHeightBodyCell},
+      10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight:minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight:minHeightBodyCell },
     };
 
     //  lastTableFinalY +=8;
@@ -667,9 +669,9 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
 
       //lastTableFinalY+=gap;
       lastTableFinalY += 2;
-      pdf.setFontSize(10);
+      pdf.setFontSize(8);
       pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.CUSTOMER} : ${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      pdf.text(`${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       let startY = 0;
       if ((cust.periodic_test_due?.length || 0) > 0) {
         lastTableFinalY += 3;
@@ -715,12 +717,12 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
             const pageCount = pdf.getNumberOfPages();
 
             lastTableFinalY = data.cursor.y;
-
+            //Next page header title here
             var pg = pagePositions.find(p => p.page == pageCount);
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
               }
             }
           },
@@ -741,7 +743,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 12, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 
@@ -1095,7 +1097,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.PERIODIC_TEST_DUE} ${this.translatedLangText.DETAIL_REPORT}`
+    return `${this.translatedLangText.PERIODIC_TEST_DUE} ${this.translatedLangText.REPORT}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

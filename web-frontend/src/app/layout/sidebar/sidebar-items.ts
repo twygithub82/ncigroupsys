@@ -1307,7 +1307,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: "admin/reports/periodic-test-due",
-        title: "MENUITEMS.REPORTS.LIST.PERIODIC-TEST-DUE",
+        title: "MENUITEMS.REPORTS.LIST.PERIODIC-TEST",
         iconType: "",
         icon: "",
         class: "ml-menu",

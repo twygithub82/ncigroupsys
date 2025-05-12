@@ -167,6 +167,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     FAX: 'COMMON-FORM.FAX',
     EMAIL: 'COMMON-FORM.EMAIL',
     WEB: 'COMMON-FORM.WEB',
+    S_N: 'COMMON-FORM.S_N',
     IN_GATE: 'COMMON-FORM.IN-GATE',
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
@@ -251,6 +252,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     PROCEDURE: 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCESS',
     CLEAN_IN: 'COMMON-FORM.CLEAN-IN',
     CLEANING_INVENTORY: 'MENUITEMS.REPORTS.LIST.CLEANING-INVENTORY',
+    TANK_SURVEY_REPORT: 'MENUITEMS.REPORTS.LIST.TANK-SURVEY-REPORT',
     SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
     SURVEY_PERIOD: 'COMMON-FORM.SURVEY-PERIOD',
     DAILY_TANK_SURVEY: 'COMMON-FORM.DAILY-TANK-SURVEY',
@@ -581,10 +583,11 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         
           const reportTitle = this.GetReportTitle();
           const headers = [[
-            this.translatedLangText.NO,this.translatedLangText.CODE,
+            this.translatedLangText.S_N,this.translatedLangText.CUSTOMER,
             this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
-            this.translatedLangText.SURVEY_TYPE, this.translatedLangText.VISIT,
-            this.translatedLangText.STATUS, this.translatedLangText.SURVEYOR,this.translatedLangText.CLEAN_DATE
+            this.translatedLangText.SURVEY_TYPE, //this.translatedLangText.VISIT,
+            this.translatedLangText.STATUS, this.translatedLangText.SURVEYOR,
+            //this.translatedLangText.CLEAN_DATE
           ]];
         
           // Define headStyles with valid fontStyle
@@ -604,27 +607,27 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           var gap=8;
           
           await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-          await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+          await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+37);
           // Variable to store the final Y position of the last table
           let lastTableFinalY = 45;
           let minHeightHeaderCol=3;
-          let minHeightBodyCell=9;
+          let minHeightBodyCell=5;
           let fontSize=7;
           const comStyles : any={ 
           0: { halign: 'center',valign:'middle' ,cellWidth:10, minCellHeight:minHeightBodyCell},
-          1: { halign: 'center',valign:'middle' ,cellWidth:15 , minCellHeight:minHeightBodyCell},
-          2: { halign: 'left'  ,valign:'middle',cellWidth: 30 , minCellHeight:minHeightBodyCell },
+          1: { halign: 'center',valign:'middle' ,cellWidth:22 , minCellHeight:minHeightBodyCell},
+          2: { halign: 'center',valign:'middle',cellWidth: 30 , minCellHeight:minHeightBodyCell },
           3: { halign: 'center',valign:'middle',cellWidth: 30 , minCellHeight:minHeightBodyCell },
-          4: { halign: 'center',valign:'middle',cellWidth: 30 , minCellHeight:minHeightBodyCell  },
-          5: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell },
-          6: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell },
+          4: { halign: 'center',valign:'middle',cellWidth: 38 , minCellHeight:minHeightBodyCell  },
+          5: { halign: 'center',valign:'middle',cellWidth: 20 , minCellHeight:minHeightBodyCell },
+          6: { halign: 'center',valign:'middle',cellWidth: 38 , minCellHeight:minHeightBodyCell },
           7: { halign: 'center',valign:'middle',cellWidth: 25 , minCellHeight:minHeightBodyCell },
           8: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell },
           };
           
           lastTableFinalY +=8;
           pdf.setFontSize(8);
-          const invDate =`${this.translatedLangText.SURVEY_PERIOD} : ${this.date}`;
+          const invDate =`${this.translatedLangText.SURVEY_PERIOD}:  ${this.date}`;
           Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin+3,lastTableFinalY,9);
     
           var CurrentPage=1;
@@ -655,7 +658,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
               
               pdf.setFontSize(9);
               pdf.setTextColor(0, 0, 0); // Black text
-              pdf.text(`${this.translatedLangText.SURVEY_DATE} : ${cust.survey_dt}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
+              pdf.text(`${this.translatedLangText.SURVEY_DATE}:  ${cust.survey_dt}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
               lastTableFinalY+=3;
               if((cust.tank_survey_summaries?.length||0)>0)
               {
@@ -666,7 +669,9 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
                   var itm = cust.tank_survey_summaries?.[b]!;
                   data.push([
                     (b+1).toString(), itm.customer_code || "",itm.tank_no || "", itm.eir_no || "",
-                   this.DisplaySurveyType(itm.survey_type!)|| "", itm.visit || "", this.DisplaySurveyStatus(itm.status!) || "",itm.surveryor||"",this.DisplayCleanDate(itm)||""
+                   this.DisplaySurveyType(itm.survey_type!)|| "", //itm.visit || "", 
+                   this.DisplaySurveyStatus(itm.status!) || "",itm.surveryor||"",
+                   //this.DisplayCleanDate(itm)||""
                   ]);
                 }
                 pdf.setDrawColor(0, 0, 0); // red line color
@@ -728,7 +733,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           });
         
           this.generatingPdfProgress = 100;
-          Utility.previewPDF(pdf);
+          Utility.previewPDF(pdf, );
    
           this.generatingPdfProgress = 0;
           this.generatingPdfLoadingSubject.next(false);
@@ -947,7 +952,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.DAILY_TANK_SURVEY} ${this.translatedLangText.SUMMARY_REPORT}`
+    return `${this.translatedLangText.TANK_SURVEY_REPORT}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

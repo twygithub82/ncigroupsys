@@ -254,7 +254,8 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     IN_SERVICE:'COMMON-FORM.IN-SERVICE',
     TANK_IN_QTY:"COMMON-FORM.TANK-IN-QTY",
     TANK:"COMMON-FORM.TANK",
-    COST:"COMMON-FORM.COST"
+    COST:"COMMON-FORM.COST",
+    S_N:"COMMON-FORM.S_N"
   }
 
   type?: string | null;
@@ -618,7 +619,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -626,7 +627,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
@@ -678,7 +679,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 36);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -686,8 +687,8 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
 
     if(this.customer)
     {

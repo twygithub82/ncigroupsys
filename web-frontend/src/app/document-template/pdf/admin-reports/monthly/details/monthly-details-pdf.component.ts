@@ -246,9 +246,10 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     RESIDUE_MONTHLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
     REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
     CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
+    S_N:'COMMON-FORM.S_N',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
-     AVERAGE:'COMMON-FORM.AVERAGE'
+    AVERAGE:'COMMON-FORM.AVERAGE'
   }
 
   type?: string | null;
@@ -612,7 +613,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -620,7 +621,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.DATE,
+      this.translatedLangText.S_N, this.translatedLangText.DATE,
       this.translatedLangText.DAY, this.translatedLangText.NO_OF_TANKS
     ]];
 
@@ -649,7 +650,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 36);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -657,8 +658,8 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
 
     if(this.customer)
     {
@@ -675,8 +676,11 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
         ]);
     }
 
-    data.push([this.translatedLangText.TOTAL,"","",this.repData?.total||0]);
-    data.push([this.translatedLangText.AVERAGE,"","",this.repData?.average||0]);
+    //data.push([this.translatedLangText.TOTAL,"","",this.repData?.total||0]);
+    //data.push([this.translatedLangText.AVERAGE,"","",this.repData?.average||0]);
+
+    data.push(["","",this.translatedLangText.TOTAL, this.repData?.total||0]);
+    data.push(["","",this.translatedLangText.AVERAGE, this.repData?.average||0]);
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
     // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
@@ -732,7 +736,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
           }
         }
 
@@ -749,8 +753,8 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 11, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
     });
 
     this.generatingPdfProgress = 100;
