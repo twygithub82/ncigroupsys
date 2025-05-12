@@ -201,7 +201,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   hasNextPage = false;
   hasPreviousPage = false;
 
-  availableStatuses: string[] = ["CLEANING","STEAM","RESIDUE","REPAIR","STORAGE","RELEASED"];
+  availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE", "RELEASED"];
 
   constructor(
     public httpClient: HttpClient,
@@ -665,7 +665,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.savedSuccess) {
-        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+        this.handleSaveSuccess(result.savedSuccess)
         this.performSearch(this.pageSize, 0, this.pageSize);
       }
     });
@@ -698,7 +698,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && result.savedSuccess) {
-        ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+        this.handleSaveSuccess(result.savedSuccess)
         this.performSearch(this.pageSize, 0, this.pageSize);
       }
     });
@@ -792,6 +792,13 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar);
+    }
   }
 
   handleDeleteSuccess(count: any) {

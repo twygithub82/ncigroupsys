@@ -265,6 +265,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   refresh() {
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

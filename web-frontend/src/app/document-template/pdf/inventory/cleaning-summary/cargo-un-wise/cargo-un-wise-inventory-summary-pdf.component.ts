@@ -235,13 +235,14 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
     CLEANING_INVENTORY: 'COMMON-FORM.CLEANING-INVENTORY',
+    CLEANING_ACTIVITY:'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
     CUSTOMER_WISE: 'COMMON-FORM.CUSTOMER-WISE',
     CARGO_WISE: 'COMMON-FORM.CARGO-WISE',
     UN_WISE: 'COMMON-FORM.UN-WISE',
     CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
     CARGO: 'COMMON-FORM.CARGO',
-    UN: 'COMMON-FORM.CARGO-UN-NO'
-
+    UN: 'COMMON-FORM.CARGO-UN-NO',
+    S_N: 'COMMON-FORM.S_N'
 
   }
 
@@ -827,7 +828,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSz = 7;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -835,7 +836,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.getNameTitle(),
+      this.translatedLangText.S_N, this.getNameTitle(),
       this.translatedLangText.NO_OF_TANKS
     ]];
 
@@ -872,10 +873,10 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     const data: any[][] = []; // Explicitly define data as a 2D array
     //  pdf.setFontSize(8);
     //  pdf.setTextColor(0, 0, 0); // Black text
-    const clnDate = `${this.translatedLangText.CLEANING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
+    const clnDate = `${this.translatedLangText.CLEANING_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtRightCornerPage(pdf, clnDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 8);
     const SubTitle = this.GetWiseTitle();
-    Utility.AddTextAtCenterPage(pdf, SubTitle, pageWidth, leftMargin, rightMargin, startY - 12, 9);
+    //Utility.AddTextAtCenterPage(pdf, SubTitle, pageWidth, leftMargin, rightMargin, startY - 12, 9);
     // pdf.text(clnDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
     var idx = 0;
@@ -1295,7 +1296,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_INVENTORY} ${this.translatedLangText.SUMMARY_REPORT}`
+    return `${this.translatedLangText.CLEANING_ACTIVITY} - ${this.GetWiseTitle()}`
   }
 
   GetWiseTitle(): string {

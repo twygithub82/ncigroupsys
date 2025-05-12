@@ -177,6 +177,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
     NO: 'COMMON-FORM.NO',
+    S_N: 'COMMON-FORM.S_N',
     BOTTOM_DIS_COMP__ABB: 'COMMON-FORM.BOTTOM-DIS-COMP--ABB',
     BOTTOM_DIS_VALVE__ABB: 'COMMON-FORM.BOTTOM-DIS-VALVE--ABB',
     TOP_DIS_COMP__ABB: 'COMMON-FORM.TOP-DIS-COMP--ABB',
@@ -233,6 +234,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    CLEAN_END: 'COMMON-FORM.CLEAN-END',
     APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE-S',
     APPROVAL_REFERENCE: 'COMMON-FORM.APPROVAL-REFERENCE-S',
     AV_DATE: 'COMMON-FORM.AV-DATE',
@@ -251,9 +253,9 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     DURATION_DAYS: 'COMMON-FORM.DURATION-DAYS',
     PROCEDURE: 'MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-PROCESS',
     CLEAN_IN: 'COMMON-FORM.CLEAN-IN',
-    CLEANING_INVENTORY: 'MENUITEMS.REPORTS.LIST.CLEANING-INVENTORY'
-
-
+    CLEANING_INVENTORY: 'MENUITEMS.REPORTS.LIST.CLEANING-INVENTORY',
+    CLEANING_ACTIVITY:'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
+    MASTER:'MENUITEMS.MASTER.TEXT'
   }
 
 
@@ -552,7 +554,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSz = 5.5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -560,11 +562,11 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO,
+      this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
-      this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
-      this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
-      this.translatedLangText.PROCEDURE
+      this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_END,
+      this.translatedLangText.DURATION_DAYS, //this.translatedLangText.UN_NO,
+      //this.translatedLangText.PROCEDURE
     ]];
 
     const comStyles: any = {
@@ -596,7 +598,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -605,7 +607,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.CLEAN_DATE}:${this.date}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.translatedLangText.CLEAN_DATE}:  ${this.date}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+5, 8);
 
@@ -637,7 +639,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
         var itm = cust.storing_order_tank?.[i];
         data.push([
           (i + 1).toString(), itm?.tank_no || "", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
-          this.DipslayCleanDuration(itm!) || "", itm?.tariff_cleaning?.un_no || "", this.DisplayCleanMethod(itm!) || ""
+          this.DipslayCleanDuration(itm!) || "" //itm?.tariff_cleaning?.un_no || "", this.DisplayCleanMethod(itm!) || ""
         ]);
       }
 
@@ -1039,7 +1041,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_INVENTORY} ${this.translatedLangText.DETAIL_REPORT}`
+    return `${this.translatedLangText.CLEANING_ACTIVITY} - ${this.translatedLangText.MASTER}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

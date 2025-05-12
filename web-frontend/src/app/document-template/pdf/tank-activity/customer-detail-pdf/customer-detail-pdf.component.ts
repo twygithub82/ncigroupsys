@@ -244,7 +244,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     DAYS: 'COMMON-FORM.DAYS',
     GATEIO: 'COMMON-FORM.GATEIO-S',
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    TANK_ACTIVITY: 'MENUITEMS.REPORTS.LIST.TANK-ACTIVITY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
@@ -264,7 +264,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     CLEAN_CERT_DATE: 'COMMON-FORM.CLEAN-CERT-DATE',
     YARD: 'COMMON-FORM.YARD',
     IN_YARD: 'COMMON-FORM.IN-YARD',
-    RELEASED: 'COMMON-FORM.RELEASED'
+    RELEASED: 'COMMON-FORM.RELEASED',
+    REPORT: 'COMMON-FORM.REPORT'
   }
 
   type?: string | null;
@@ -1345,7 +1346,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var repTitle =`${this.translatedLangText.TANK_ACTIVITY} ${this.translatedLangText.CUSTOMER_REPORT}`;
+    var repTitle =`${this.translatedLangText.TANK_ACTIVITY}`;
     if(this.customerName)
     {
       repTitle+= ` - ${this.customerName}`;

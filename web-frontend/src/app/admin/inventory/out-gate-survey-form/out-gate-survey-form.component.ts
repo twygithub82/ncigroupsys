@@ -99,11 +99,11 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
   ]
 })
 export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  tabIndex = 1;
+  tabIndex = 'out-gate-survey';
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY-FORM'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '1' } },
-    { text: 'MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '1' } }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.INVENTORY.LIST.OUT-GATE-SURVEY', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: this.tabIndex } }
   ]
 
   translatedLangText: any = {};
@@ -2070,12 +2070,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         },
         complete: () => {
           console.log('Upload process completed.');
-          this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: 1 } });
+          this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
         }
       });
     } else {
       this.handleSaveSuccess(1);
-      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: 1 } });
+      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }
 

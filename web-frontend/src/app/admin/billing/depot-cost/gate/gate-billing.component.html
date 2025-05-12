@@ -66,7 +66,7 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
+                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date"  [max]="maxManuDOMDt" formControlName="eir_dt">
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-datepicker #eir_picker></mat-datepicker>
                 </mat-form-field>
@@ -74,7 +74,7 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" formControlName="cutoff_dt">
+                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date"  [max]="maxManuDOMDt"  formControlName="cutoff_dt">
                   <mat-datepicker-toggle matSuffix [for]="cutoff_picker"></mat-datepicker-toggle>
                   <mat-datepicker #cutoff_picker></mat-datepicker>
                 </mat-form-field>
@@ -91,7 +91,7 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="inv_picker">
+                  <mat-date-range-input [rangePicker]="inv_picker"  [max]="maxManuDOMDt" >
                     <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
                     <input matEndDate placeholder="End date" formControlName="inv_dt_end">
                   </mat-date-range-input>

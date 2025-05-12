@@ -152,7 +152,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
-    ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+    ONE_CONDITION_NEEDED: 'COMMON-FORM.ADD-ATLEAST-ONE',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
     OUTSTANDING_DAYS: 'COMMON-FORM.OUTSTANDING-DAYS',
     MAX_DAYS: 'COMMON-FORM.MAX-DAYS',
@@ -772,6 +772,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-
-
+  getMaxDate(){
+    return new Date();
+  }
 }

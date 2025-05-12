@@ -79,7 +79,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  tabIndex = 0;
+  tabIndex = "in-gate";
   displayedColumns = [
     'select',
     'so_no',
@@ -507,7 +507,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-      this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: 0 } });
+      this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }
 

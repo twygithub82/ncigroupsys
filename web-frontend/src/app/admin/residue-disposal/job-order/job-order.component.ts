@@ -245,6 +245,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
       }
     });
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

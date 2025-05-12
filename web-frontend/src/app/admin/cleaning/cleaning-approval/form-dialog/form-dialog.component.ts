@@ -245,11 +245,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     BUFFER_COST: 'COMMON-FORM.BUFFER-COST'
   };
 
-
-
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
-
   constructor(
 
     public dialog: MatDialog,
@@ -272,8 +267,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.jobOrderDS = new JobOrderDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
-    //this.loadData();
-
   }
 
   ngOnInit() {
@@ -332,7 +325,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
-  getToggleTable(): boolean{
+  getToggleTable(): boolean {
     return this.selectedItem.status_cv === "KIV" ? false : true;
   }
 
@@ -364,10 +357,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         });
       })
     ).subscribe();
-
-
   }
-
 
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
     untypedFormControl.setValidators([
@@ -384,10 +374,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       const day = String(date.getDate()).padStart(2, '0');
       const month = date.toLocaleString('en-US', { month: 'short' });
       const year = date.getFullYear();
-
-      // Replace the '/' with '-' to get the required format
-
-
       return `${day}/${month}/${year}`;
     }
     return `-`;
@@ -426,7 +412,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           approve_dt: this.displayDate(inGateClnItem.approve_dt),
           na_dt: this.displayDate(inGateClnItem.na_dt),
           cleaning_cost: inGateClnItem.cleaning_cost,
-          buffer_cost: inGateClnItem.buffer_cost
+          buffer_cost: inGateClnItem.buffer_cost,
+          remarks: inGateClnItem.remarks,
         });
         this.PatchBillingParty(inGateClnItem);
         this.createCleaningChargesItem();
@@ -453,7 +440,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     }
     return valCodeObject;
-
   }
 
 
@@ -760,7 +746,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return retval;
   }
 
-  getMaxDate(){
+  getMaxDate() {
     return new Date();
   }
 }

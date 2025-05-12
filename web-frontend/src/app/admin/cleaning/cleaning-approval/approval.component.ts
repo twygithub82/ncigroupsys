@@ -207,6 +207,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     this.lastCargoControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.last_cargoList)]);
     this.initSearchForm();
     this.initializeValueChanges();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 
@@ -303,20 +304,6 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     if (!savedCriteria && !savedPagination) {
       this.search();
     }
-  }
-
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
   }
 
   // export table data in excel file

@@ -82,7 +82,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
   ]
 })
 export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  tabIndex = 0;
+  tabIndex = 'job-allocation';
   displayedColumns = [
     'seq',
     'subgroup_name_cv',

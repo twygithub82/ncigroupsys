@@ -84,7 +84,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
   ]
 })
 export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  tabIndex = 1;
+  tabIndex = 'job-task';
   displayedColumns = [
     'seq',
     'subgroup_name_cv',

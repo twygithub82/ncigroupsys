@@ -152,12 +152,11 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
-    ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     OVERVIEW_SUMMARY: 'COMMON-FORM.OVERVIEW-SUMMARY',
     DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
-    LOCATION: 'COMMON-FORM.LOCATION'
-
-
+    LOCATION: 'COMMON-FORM.LOCATION',
+    DATE: 'COMMON-FORM.DATE'
   }
 
   invForm?: UntypedFormGroup;
@@ -932,4 +931,7 @@ export class DailyInventoryReportComponent extends UnsubscribeOnDestroyAdapter i
     this.resetForm();
   }
 
-}
+  getMaxDate(){
+    return new Date();
+  }
+} 

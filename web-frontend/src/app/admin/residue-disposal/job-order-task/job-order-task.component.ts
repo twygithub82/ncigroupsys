@@ -200,6 +200,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChanges();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

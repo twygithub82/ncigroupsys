@@ -63,8 +63,10 @@ import { InGateComponent } from './in-gate/in-gate.component';
 export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: 0 } }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: "in-gate" } }
   ]
+
+  readonly tabs = ['in-gate', 'in-gate-survey'];
 
   translatedLangText: any = {};
   langText = {
@@ -90,7 +92,7 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   selectedTabIndex = 0;
-  
+
   @ViewChild('inGateComp') inGateComp?: InGateComponent;
   @ViewChild('inGateSurveyComp') inGateSurveyComp?: InGateSurveyComponent;
   constructor(
@@ -106,20 +108,18 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      const tabIndex = params['tabIndex'];
-      if (tabIndex) {
-        this.selectedTabIndex = tabIndex
-      }
+      const tabName = params['tabIndex'];
+      const index = this.tabs.indexOf(tabName);
+      this.selectedTabIndex = index >= 0 ? index : 0;
     });
   }
 
   onTabChange(index: number) {
-    if (index === 0) {
-      this.inGateComp?.resetForm(); // example: call a method inside InGateComponent
-    } else if (index === 1) {
-      this.inGateSurveyComp?.resetForm();
-    }
-    this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
+    const tabName = this.tabs[index];
+    this.router.navigate([], {
+      queryParams: { tabIndex: tabName },
+      queryParamsHandling: 'merge',
+    });
   }
 
   translateLangText() {
@@ -127,20 +127,4 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       this.translatedLangText = translations;
     });
   }
-
-  //  @ViewChild('inGateSuinGateSurveyComprvey') inGateSurveyComp!: InGateSurveyComponent;
-  //   @ViewChild('inGate') inGate!: InGateComponent;
-       
-         
-    onTabSelected(event: MatTabChangeEvent): void {
-      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-      switch (event.index) {
-       
-       case 0:
-          this.inGateComp?.onTabFocused(); break;
-       case 1:
-           this.inGateSurveyComp?.onTabFocused(); break;
-      
-      }
-    }
 }

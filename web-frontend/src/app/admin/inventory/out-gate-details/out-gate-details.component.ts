@@ -81,6 +81,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
   ]
 })
 export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  tabIndex = "out-gate";
   displayedColumns = [
     'select',
     'so_no',
@@ -92,8 +93,8 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.OUT-GATE-DETAILS'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '0' } },
-    { text: 'MENUITEMS.INVENTORY.LIST.OUT-GATE', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: '0' } }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: this.tabIndex } },
+    { text: 'MENUITEMS.INVENTORY.LIST.OUT-GATE', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: this.tabIndex } }
   ]
 
   translatedLangText: any = {};
@@ -447,7 +448,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     if ((count ?? 0) > 0) {
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: 0 } });
+      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
     }
   }
 

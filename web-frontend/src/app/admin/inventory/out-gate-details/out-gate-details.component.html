@@ -340,7 +340,7 @@
                           <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
                             <button mat-flat-button aria-label="Back to previous page"
                               (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/out-gate-main/']"
-                              [queryParams]=" {tabIndex: '0' }">
+                              [queryParams]=" {tabIndex: tabIndex }">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>

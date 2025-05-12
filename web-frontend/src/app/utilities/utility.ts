@@ -762,13 +762,21 @@ export class Utility {
   static previewPDF(pdf: jsPDF, fileName: string = 'document.pdf') {
     const pdfBlob = pdf.output('blob');
     const blobUrl = URL.createObjectURL(pdfBlob);
-
+    const html = `
+              <html>
+                <head><title>${fileName.replace(/\.pdf$/i, '')}</title></head>
+                <body style="margin:0">
+                  <iframe src="${blobUrl}" width="100%" height="100%" style="border:none;"></iframe>
+                </body>
+              </html>
+            `;
     // Try opening in a new window
     const newWindow = window.open(blobUrl, '_blank');
-
     if (!newWindow) {
       pdf.save(fileName);
     } else {
+      newWindow.document.write(html);
+      newWindow.document.close();
       // Cleanup the URL after some time
       setTimeout(() => {
         URL.revokeObjectURL(blobUrl);
@@ -820,7 +828,7 @@ export class Utility {
     // Add company name
     pdf.setFontSize(18);
     const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    let posX = pageWidth / 1.75;
+    let posX = leftMargin + 25; //pageWidth / 1.75;
     let posY = topMargin + 8;
     pdf.text(customerInfo.companyName, posX, posY);
 
@@ -854,7 +862,7 @@ export class Utility {
     });
 
     // Add the image to the PDF
-    const posX1_img = leftMargin + 5;
+    const posX1_img = pageWidth / 1.5; //leftMargin + 5;
     const posY1_img = topMargin + 10;
     const imgHeight = heightHeader - 21;
     const imgWidth = 60;

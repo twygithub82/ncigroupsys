@@ -217,6 +217,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   ngOnInit() {
     this.initSearchForm();
     this.initializeValueChanges();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

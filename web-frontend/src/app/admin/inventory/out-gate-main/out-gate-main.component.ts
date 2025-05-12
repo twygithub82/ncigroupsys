@@ -42,8 +42,10 @@ import { OutGateComponent } from './out-gate/out-gate.component';
 export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main' }
+    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/out-gate-main', queryParams: { tabIndex: "out-gate" } }
   ]
+
+  readonly tabs = ['out-gate', 'out-gate-survey'];
 
   translatedLangText: any = {};
   langText = {
@@ -86,20 +88,18 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      const tabIndex = params['tabIndex'];
-      if (tabIndex) {
-        this.selectedTabIndex = tabIndex
-      }
+      const tabName = params['tabIndex'];
+      const index = this.tabs.indexOf(tabName);
+      this.selectedTabIndex = index >= 0 ? index : 0;
     });
   }
 
   onTabChange(index: number) {
-    if (index === 0) {
-      this.outGateComp?.resetForm(); // example: call a method inside InGateComponent
-    } else if (index === 1) {
-      this.outGateSurveyComp?.resetForm();
-    }
-    this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
+    const tabName = this.tabs[index];
+    this.router.navigate([], {
+      queryParams: { tabIndex: tabName },
+      queryParamsHandling: 'merge',
+    });
   }
 
   translateLangText() {
@@ -109,34 +109,34 @@ export class OutGateMainComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   onTabSelected(event: MatTabChangeEvent): void {
-      console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-      switch (event.index) {
-        
-        case 0:
-          this.outGateComp?.onTabFocused(); break;
-        case 1:
-            this.outGateSurveyComp?.onTabFocused(); break;
-      
-      }
-    }
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
 
-    tabConfig = [
-      {
-        label: this.translatedLangText.OUT_GATE,
-        component: 'app-out-gate',
-        modulePackage: ['starter', 'growth', 'customized']
-      },
-      {
-        label: this.translatedLangText.OUT_GATE_SURVEY,
-        component: 'app-out-gate-survey',
-        modulePackage: ['starter', 'growth', 'customized']
-      }
-    ];
-  
-    get allowedTabs() {
-      return this.tabConfig.filter(tab =>
-        tab.modulePackage.includes(this.modulePackageService.getModulePackage())
-      );
+      case 0:
+        this.outGateComp?.onTabFocused(); break;
+      case 1:
+        this.outGateSurveyComp?.onTabFocused(); break;
+
     }
-    
+  }
+
+  tabConfig = [
+    {
+      label: this.translatedLangText.OUT_GATE,
+      component: 'app-out-gate',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
+      label: this.translatedLangText.OUT_GATE_SURVEY,
+      component: 'app-out-gate-survey',
+      modulePackage: ['starter', 'growth', 'customized']
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab =>
+      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
+    );
+  }
+
 }

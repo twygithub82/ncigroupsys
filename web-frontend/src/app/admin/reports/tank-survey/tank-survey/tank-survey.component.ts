@@ -150,7 +150,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     YARD: 'COMMON-FORM.YARD',
-    ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+    ONE_CONDITION_NEEDED: 'COMMON-FORM.ADD-ATLEAST-ONE',
     TRANSFER_DATE: 'COMMON-FORM.TRANSFER-DATE',
     REFERENCE: 'COMMON-FORM.REFERENCE',
     SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
@@ -631,6 +631,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-
-
+  getMaxDate(){
+    return new Date();
+  }
 }

@@ -238,6 +238,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 

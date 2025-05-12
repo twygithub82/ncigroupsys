@@ -102,9 +102,9 @@ export class MainPeriodicTestDueComponent extends UnsubscribeOnDestroyAdapter im
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPORTS.LIST.PERIODIC-TEST-DUE'
+  pageTitle = 'MENUITEMS.REPORTS.LIST.PERIODIC-TEST'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/periodic-test-due' },
+    { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/periodic-test' },
   ]
 
   translatedLangText: any = {};
@@ -163,7 +163,7 @@ export class MainPeriodicTestDueComponent extends UnsubscribeOnDestroyAdapter im
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
     TANK_SURVEY:'MENUITEMS.REPORTS.LIST.TANK-SURVEY',
-    PERIODIC_TEST_DUE:'MENUITEMS.REPORTS.LIST.PERIODIC-TEST-DUE'
+    PERIODIC_TEST_DUE:'MENUITEMS.REPORTS.LIST.PERIODIC-TEST'
 
   }
 

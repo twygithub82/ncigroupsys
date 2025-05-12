@@ -232,6 +232,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   ngOnInit() {
     this.initializeValueChanges();
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 
@@ -365,20 +366,6 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     if (!savedCriteria && !savedPagination) {
       this.search();
     }
-  }
-
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
   }
 
   // export table data in excel file
@@ -1273,7 +1260,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     // if (event.checked) {
     //   const currentDateTime = new Date();
     //   console.log('Toggle is ON. Current date/time:', currentDateTime);
-  
+
     //   // Call your function to use the date/time
     //   //this.handleInvoicedToggle(currentDateTime);
     // }

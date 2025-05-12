@@ -233,6 +233,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 
@@ -402,20 +403,6 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     if (!savedCriteria && !savedPagination) {
       this.search();
     }
-  }
-
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
   }
 
   // export table data in excel file

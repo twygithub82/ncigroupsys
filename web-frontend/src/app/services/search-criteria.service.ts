@@ -55,4 +55,12 @@ export class SearchStateService {
   clear(pageKey: string): void {
     delete this.searchStates[pageKey];
   }
+
+  clearOtherPages(currentPageKey: string): void {
+    for (const key in this.searchStates) {
+      if (key !== currentPageKey) {
+        delete this.searchStates[key];
+      }
+    }
+  }
 }

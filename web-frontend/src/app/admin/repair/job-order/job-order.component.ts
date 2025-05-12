@@ -102,8 +102,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
   breadcrumsMiddleList = [
-    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order' },
+    { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order', queryParams: { tabIndex: "job-allocation" } },
   ]
+
+  readonly tabs = ['job-allocation', 'job-task', 'job-qc'];
 
   translatedLangText: any = {};
   langText = {
@@ -260,12 +262,12 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      const tabIndex = params['tabIndex'];
-      if (tabIndex) {
-        this.selectedTabIndex = tabIndex
-      }
+      const tabName = params['tabIndex'];
+      const index = this.tabs.indexOf(tabName);
+      this.selectedTabIndex = index >= 0 ? index : 0;
     });
     this.initializeValueChanges();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
 
@@ -274,7 +276,11 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   onTabChange(index: number) {
-    this.router.navigate([], { queryParams: { tabIndex: index }, queryParamsHandling: 'merge' });
+    const tabName = this.tabs[index];
+    this.router.navigate([], {
+      queryParams: { tabIndex: tabName },
+      queryParamsHandling: 'merge',
+    });
   }
 
   refresh() {
@@ -345,20 +351,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     if (!savedCriteria && !savedPagination) {
       this.onFilterRepair();
     }
-  }
-
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
   }
 
   // export table data in excel file

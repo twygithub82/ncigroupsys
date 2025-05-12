@@ -216,6 +216,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
@@ -534,19 +535,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     if (!savedCriteria && !savedPagination) {
       this.search();
     }
-  }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
   }
 
   // export table data in excel file
