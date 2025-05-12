@@ -1037,6 +1037,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     }
 
+
+    this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,lastTableFinalY+5,
+      minHeightBodyCell,fontSize,pagePositions,reportTitle);
     const totalPages = pdf.getNumberOfPages();
 
 
@@ -1058,6 +1061,74 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
+
+
+  async AddSummaryTable(pdf: jsPDF,pageWidth:number,  
+    leftMargin:number,rightMargin:number,topMargin:number,
+    lastTableFinalY: number, 
+    minHeightBodyCell:any,fontsz:number,pagePositions:any,reportTitle:string)
+  {
+
+
+       const tableWidthTotal = 10 + 60 + 40;
+       const columnStyles:any= {
+          // Set columns 0 to 16 to be center aligned
+          0: { halign: 'center', valign: 'middle',cellWidth: 10, minCellHeight: minHeightBodyCell },
+          1: { halign: 'center', valign: 'middle',cellWidth: 60, minCellHeight: minHeightBodyCell },
+          2: { halign: 'center', valign: 'middle',cellWidth: 40, minCellHeight: minHeightBodyCell },
+          
+        };
+
+          const headStyles: Partial<Styles> = {
+            fillColor: [211, 211, 211], // Background color
+            textColor: 0, // Text color (white)
+            fontStyle: "bold", // Valid fontStyle value
+            halign: 'center', // Centering header text
+            valign: 'middle',
+            lineColor: 201,
+            lineWidth: 0.1
+          };
+
+
+        const headers = [[this.translatedLangText.NO,this.translatedLangText.CUSTOMER,this.translatedLangText.TOTAL_COST]];
+
+        var data:any[]=[];
+         for (let n = 0; n < this.repBillingCustomers.length; n++)
+         {
+          var cust =this.repBillingCustomers[n];
+           data.push([n+1,cust.customer,this.displayTotalCost(cust)]); 
+        }
+        autoTable(pdf, {
+          head: headers,
+          body: data,
+          startY: lastTableFinalY, // Start table at the current startY value
+          theme: 'grid',
+          margin: { left: (pageWidth-tableWidthTotal)/2 },
+          columnStyles: columnStyles,
+          styles: {
+            fontSize: fontsz,
+            minCellHeight: minHeightBodyCell
+          },
+          bodyStyles: {
+            fillColor: [255, 255, 255],
+            halign: 'left', // Left-align content for body by default
+            valign: 'middle', // Vertically align content
+          },
+          headStyles: headStyles, // Custom header styles
+           didDrawPage: (data: any) => {
+          const pageCount = pdf.getNumberOfPages();
+
+          if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+          // Capture the final Y position of the table
+          lastTableFinalY = data.cursor.y;
+          var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);
+          if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+        },
+        })
+
+
+  }
+  
 
   addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number) {
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
@@ -1148,7 +1219,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   }
 
 
-
+  
 
 
   async exportToPDF(fileName: string = 'document.pdf') {
@@ -1317,18 +1388,91 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   displayGateIOCost(item: report_billing_item): string {
     let retval: string = '';
 
+
     retval = (item.gateio_cost === "0.00" || item.gateio_cost === undefined ? '' : `${item.gateio_cost}`)
     return retval;
   }
 
   displayTotalCost(Cust: report_billing_customer): string {
     const total = Cust.items?.reduce((accumulator, item) => {
-      return accumulator + (Number(item.total || 0)); // Add item.total to the accumulator (default to 0 if item.total is undefined)
+     var total = this.GetTotalCost(item);
+      return accumulator + (Number(total || 0)); // Add item.total to the accumulator (default to 0 if item.total is undefined)
     }, 0); // Start with an initial value of 0
 
     // Return the total as a string
 
     return (total || 0).toFixed(2);
   }
+
+  GetTotalCost(item: report_billing_item): number {
+    var retval : number=0;
+
+    retval += item.gateio_cost ? Number(item.gateio_cost) : 0;
+    retval += item.preins_cost ? Number(item.preins_cost) : 0;
+    retval += item.lolo_cost ? Number(item.lolo_cost) : 0;
+    retval += item.storage_cost ? Number(item.storage_cost) : 0;
+    retval += item.clean_cost ? Number(item.clean_cost) : 0;
+   
+    retval += item.repair_cost ? Number(item.repair_cost) : 0;
+    if (!this.modulePackageService.isStarterPackage()) {
+      retval += item.residue_cost ? Number(item.residue_cost) : 0;
+     retval += item.steam_cost ? Number(item.steam_cost) : 0;
+    }
+
+    return retval;
+  }
+
+  //  displayTotalCleanCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.clean_cost === "0.00" || item.clean_cost === undefined ? '' : `${item.clean_cost}`)
+  //   return retval;
+  // }
+  // displayTotalStorageCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.storage_cost === "0.00" || item.storage_cost === undefined ? '' : `${item.storage_cost}`)
+  //   return retval;
+  // }
+  // displayTotalSteamCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.steam_cost === "0.00" || item.steam_cost === undefined ? '' : `${item.steam_cost}`)
+  //   return retval;
+  // }
+  // displayTotalRepairCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.repair_cost === "0.00" || item.repair_cost === undefined ? '' : `${item.repair_cost}`)
+  //   return retval;
+  // }
+
+  // displayTotalResidueCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.residue_cost === "0.00" || item.residue_cost === undefined ? '' : `${item.residue_cost}`)
+  //   return retval;
+  // }
+
+  // displayTotalLOLOCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.lolo_cost === "0.00" || item.lolo_cost === undefined ? '' : `${item.lolo_cost}`)
+  //   return retval;
+  // }
+
+  // displayTotalPreinsCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.preins_cost === "0.00" || item.preins_cost === undefined ? '' : `${item.preins_cost}`)
+  //   return retval;
+  // }
+
+  // displayTotalGateIOCost(item: report_billing_item): string {
+  //   let retval: string = '';
+
+  //   retval = (item.gateio_cost === "0.00" || item.gateio_cost === undefined ? '' : `${item.gateio_cost}`)
+  //   return retval;
+  // }
 
 }

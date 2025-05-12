@@ -1245,7 +1245,8 @@
     "CUSTOMERS-SELECTED": "Customers Selected",
     "PROFILES-SELECTED": "Profiles Selected",
     "TANK-NOTES": "Tank Notes",
-    "SCHEDULED-DATE": "Scheduled Date"
+    "SCHEDULED-DATE": "Scheduled Date",
+    "CLEANING-ACTIVITY":"Cleaning Activity"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

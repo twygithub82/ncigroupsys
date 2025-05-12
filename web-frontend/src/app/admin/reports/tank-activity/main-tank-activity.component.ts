@@ -42,6 +42,7 @@ import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { TankActivitiyCustomerReportComponent } from './customer/customer-report.component';
 import { TankActivitiyYardReportComponent } from './yard/yard-report.component';
+import {TankActivitiyCleaningReportComponent}from'./cleaning/cleaning-activity.component';
 @Component({
   selector: 'app-main-tank-activity',
   standalone: true,
@@ -72,8 +73,9 @@ import { TankActivitiyYardReportComponent } from './yard/yard-report.component';
     MatCardModule,
     MatTabsModule,
     TankActivitiyCustomerReportComponent,
-    TankActivitiyYardReportComponent
-  ]
+    TankActivitiyYardReportComponent,
+    TankActivitiyCleaningReportComponent
+]
 })
 export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   // @ViewChild(BayOverviewComponent) bayOverviewComponent!: BayOverviewComponent;
@@ -165,6 +167,7 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
     RESIDUE_BILLING: "MENUITEMS.BILLING.LIST.RESIDUE-DISPOSAL-BILL",
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
+    CLEANING_ACTIVITY:'COMMON-FORM.CLEANING-ACTIVITY',
 
   }
 
@@ -840,6 +843,11 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
       modulePackage: ['starter', 'growth', 'customized']
     },
     {
+      label: this.translatedLangText.CLEANING_ACTIVITY,
+      component: 'app-cleaning-activity',
+      modulePackage: ['starter', 'growth', 'customized']
+    },
+    {
       label: this.translatedLangText.YARD_REPORT,
       component: 'app-yard-report',
       modulePackage: ['growth', 'customized']
@@ -854,17 +862,31 @@ export class MainTankActivityComponent extends UnsubscribeOnDestroyAdapter imple
 
   @ViewChild('tankActCustomerReport') tankActCustomerReport!: TankActivitiyCustomerReportComponent;
          @ViewChild('tankActYardReport') tankActYardReport!: TankActivitiyYardReportComponent;
+           @ViewChild('tankActCleanReport') tankActCleanReport!: TankActivitiyCleaningReportComponent;
          
            
       onTabSelected(event: MatTabChangeEvent): void {
         console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-        switch (event.index) {
-         
-         case 0:
-            this.tankActCustomerReport?.onTabFocused(); break;
-         case 1:
-             this.tankActYardReport?.onTabFocused(); break;
-      
+
+        if(event.tab.textLabel===this.translatedLangText.CUSTOMER_REPORT)
+        {
+          this.tankActCustomerReport?.onTabFocused();
         }
+        else if(event.tab.textLabel===this.translatedLangText.YARD_REPORT)
+        {
+           this.tankActYardReport?.onTabFocused();
+        }
+        else if(event.tab.textLabel===this.translatedLangText.CLEANING_ACTIVITY)
+        {
+            this.tankActCleanReport?.onTabFocused();
+          }
+        // switch (event.tab.textLabel) {
+         
+        //  case 0:
+        //     this.tankActCustomerReport?.onTabFocused(); break;
+        //  case 1:
+        //      this.tankActYardReport?.onTabFocused(); break;
+      
+        // }
       }
 }

@@ -166,6 +166,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     OWNER: 'COMMON-FORM.OWNER',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
     DELETE: 'COMMON-FORM.DELETE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
 
   }
 
@@ -203,6 +204,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   tankStatusCvList: CodeValuesItem[] = [];
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
+  repairOptionCvList: CodeValuesItem[] = [];
+  
 
   currentStartCursor: string | undefined = undefined;
   currentEndCursor: string | undefined = undefined;
@@ -347,6 +350,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'yardCv', codeValType: 'YARD' },
+      { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
@@ -364,6 +368,9 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
+    });
+     this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
+      this.repairOptionCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
   }
@@ -1294,6 +1301,26 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
 
     });
+  }
+
+  getRepairOptionDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.repairOptionCvList);
+  }
+
+  displayNumber(value: number) {
+    return Utility.formatNumberDisplay(value);
+  }
+
+  getTotalCost(sotRow :StoringOrderTankItem)
+  {
+    var repairs : RepairItem[]=this.filterDeleted(sotRow.repair || []);
+     const totalCost = repairs.reduce((accumulator, s) => {
+      // Add buffer_cost and cleaning_cost of the current item to the accumulator
+      var itm: any = s;
+      return accumulator + itm.total_cost;
+      //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
+    }, 0); // Initialize accumulator to 0
+    return this.displayNumber(totalCost);
   }
 
 }

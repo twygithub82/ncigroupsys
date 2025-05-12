@@ -6,16 +6,19 @@
     </div>
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <app-estimate-pending></app-estimate-pending>
-        <!-- <div class="card">
+        <!-- <app-estimate-pending></app-estimate-pending> -->
+        <div class="card">
           <div class="body overflow-auto">
             <mat-tab-group dynamicHeight (selectedTabChange)="onTabSelected($event)">
                <mat-tab [label]="translatedLangText.PENDING_ESTIMATE">
-                <app-estimate-pending></app-estimate-pending>
+                <app-estimate-pending #estimatePendingReport></app-estimate-pending>
+              </mat-tab>
+               <mat-tab [label]="translatedLangText.PENDING_INVOICES">
+                <app-pending-invoice #pendingInvoiceReport></app-pending-invoice>
               </mat-tab>
             </mat-tab-group>
           </div>
-        </div> -->
+        </div> 
       </div>
     </div>
   </div>

@@ -714,14 +714,15 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         lastTableFinalY += 8;
         pdf.setFontSize(10);
         pdf.setTextColor(0, 0, 0); // Black text
-        pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+        pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       }
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
-        lastTableFinalY += 5;
-        pdf.setFontSize(8);
+       // lastTableFinalY += 5;
+       // pdf.setFontSize(8);
         var subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.IN_YARD}`;
-        pdf.text(subTitle, leftMargin, lastTableFinalY);
+        Utility.AddTextAtRightCornerPage(pdf,subTitle,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+        //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
         startY = lastTableFinalY; // Start table 20mm below the customer name
 

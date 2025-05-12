@@ -1170,7 +1170,7 @@ export const ROUTES: RouteInfo[] = [
         groupTitle: false,
         badge: "",
         badgeClass: "",
-        visible: true,
+        visible: false,
         modulePackage: ['starter', 'growth', 'customized'],
         submenu: [],
       },

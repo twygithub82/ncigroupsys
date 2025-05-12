@@ -449,7 +449,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       where.storing_order = { customer_company: { code: { eq: cust.code } } };
       cond_counter++;
 
-      customerNm = this.ccDS.displayName(cust);
+      customerNm = cust?.name;
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
