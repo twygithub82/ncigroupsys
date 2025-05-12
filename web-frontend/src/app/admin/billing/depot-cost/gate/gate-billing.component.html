@@ -20,7 +20,8 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
          
-          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm" (ngSubmit)="search()" >
+              <button type="submit" style="display: none;">Submit</button>
             <div class="row" >
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
@@ -145,7 +146,7 @@
               {{translatedLangText.INVOICE_DETAILS}}
             </mat-card-title>
           </mat-card-header> -->
-          <div class="row mt-2 p-l-15">
+          <!-- <div class="row mt-2 p-l-15">
             <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
               <div class="radio-group m-2" (change)="onInvoiceTypeChange($event)">
                 <input type="radio" id="option-one" name="invoice_type" [formControl]="invoiceTypeControl"
@@ -154,7 +155,7 @@
                   value="GATE_OUT"><label for="option-two">{{translatedLangText.GATE_OUT}}</label>
               </div>
             </div>
-          </div>
+          </div> -->
           <mat-card-content>
             <div class="row p-l-4">
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -203,7 +204,7 @@
                   {{translatedLangText.CLEAR}}
                 </button>
                 <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5"
-                  (click)="delete($event)" hidden>
+                  (click)="delete($event)">
                   <mat-icon>
                     delete_forever
                   </mat-icon>
@@ -226,7 +227,7 @@
           </mat-card-actions>
         </mat-card>
       </div>
-      <div class="body row overflow-auto p-1">
+      <!-- <div class="body row overflow-auto p-1">
         @for(sotRow of billSotList; track sotRow) {
         <mat-accordion>
           <mat-expansion-panel [expanded]="true">
@@ -361,14 +362,14 @@
           </mat-expansion-panel>
         </mat-accordion>
         }
-        <!-- No result -->
+        
         @if (!(billDS.loading$ | async) && !billSotList.length) {
         <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
-        <!-- Loading spinner -->
+
         @if (billDS.loading$ | async) {
         <div class="tbl-spinner">
           <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
@@ -378,11 +379,14 @@
         <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="0" [pageSize]="10"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
-      </div>
-      <!-- <div class="body overflow-auto">
+      </div> -->
+      <div class="body overflow-auto">
         <div class="responsive_table">
+         
           <table mat-table [dataSource]="billSotList" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header">
+
+             
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
                 <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -392,7 +396,7 @@
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
                   [ngClass]="'tbl-checkbox'" [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'"
                   [hidden]="CheckBoxDisable(row)">
                 </mat-checkbox>
@@ -447,12 +451,20 @@
                   class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank?.tank_status_cv)}}
               </mat-cell>
             </ng-container>
+            <ng-container matColumnDef="bill_type">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{translatedLangText.INVOICE_TYPE}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" class="">
+                  <span class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(row.billing_type)}}
+              </mat-cell>
+            </ng-container>
             <ng-container matColumnDef="cost">
               <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                 {{translatedLangText.COST}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                <span class="mobile-label">{{translatedLangText.COST}}:</span>{{row.total_cost.toFixed(2)}}
+                <span class="mobile-label">{{translatedLangText.COST}}:</span>{{row.gate_cost}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoice_no">
@@ -502,7 +514,9 @@
             <mat-row *matRowDef="let row; columns: displayedColumns;" matRipple>
             </mat-row>
           </table>
-        </div>
+
+         
+       
         
         @if (!(billDS.loading$ | async) && !billSotList.length) {
         <mat-divider></mat-divider>
@@ -518,9 +532,9 @@
         </div>
         }
         <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="0" [pageSize]="10"
-          [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+          [pageSizeOptions]="[6, 10, 26, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
-      </div> -->
+      </div> 
     </div>
   </div>
 </div>

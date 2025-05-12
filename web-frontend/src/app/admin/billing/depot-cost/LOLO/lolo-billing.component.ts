@@ -34,6 +34,7 @@ import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem, Bi
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { OutGateDS } from 'app/data-sources/out-gate';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -151,6 +152,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   igDS: InGateDS;
+  ogDS: OutGateDS;
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
   //clnDS:InGateCleaningDS;
@@ -206,6 +208,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
+    this.ogDS = new OutGateDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     //this.clnDS= new InGateCleaningDS(this.apollo);
@@ -940,14 +943,26 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       if (row.storing_order_tank?.storing_order?.customer_company?.code != this.selectedEstimateItem.storing_order_tank?.storing_order?.customer_company?.code) {
         return true;
       }
-    } else {
-      if (this.processType === "LIFT_ON") {
-        return (row.lon_billing);
-      }
-      else {
-        return (row.loff_billing);
+      const normalizedRowGuid = row.guid?.replace('-1', '').replace('-2', '');
+    
+      for (const item of this.selection.selected) {
+          const normalizedItemGuid = item.guid?.replace('-1', '').replace('-2', '');
+          
+          if (normalizedItemGuid === normalizedRowGuid) {
+              if (item.billing_type !== (row as any).billing_type) {
+                  return true;
+              }
+          }
       }
     }
+    // } else {
+    //   if (this.processType === "LIFT_ON") {
+    //     return (row.lon_billing);
+    //   }
+    //   else {
+    //     return (row.loff_billing);
+    //   }
+    // }
     return false;
   }
 
@@ -1027,6 +1042,37 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
 
 
+      
+      var billing_type:string='';
+      var invoice_no:string='';
+      var invoice_date:Number=0;
+      //if (item.gin_billing)
+      // if(item.lift_on)
+      // {
+      //    transformedList.push({
+      //           ...item,
+      //           guid:`${item.guid}-1`,
+      //           billing_type: "LIFT_ON",
+      //           invoice_no: item.lon_billing?.invoice_no || '',
+      //           invoice_dt: item.lon_billing?.invoice_dt || 0,
+      //           lolo_cost: (item.lon_billing)?this.displayNumber(item.lift_on_cost!):'-'
+      //       });
+      // }
+
+      // //if (item.gout_billing) 
+      //  if(item.lift_off)
+      // {
+      //   transformedList.push({
+      //           ...item,
+      //           guid:`${item.guid}-2`,
+      //           billing_type: "LIFT_OFF",
+      //           invoice_no: item.loff_billing?.invoice_no || '',
+      //           invoice_dt: item.loff_billing?.invoice_dt || 0,
+      //           lolo_cost: (item.loff_billing)?this.displayNumber(item.lift_off_cost!):'-'
+      //       });
+      // }
+
+
       var billing_types: string[] = [];
       if (item.lon_billing) {
         billing_types.push("LIFT_ON");
@@ -1046,7 +1092,28 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     return transformedList;
   }
 
-  DisplayInvoiceNo(billing_type: string, row: any) {
+   DisplayEirNo(billing_type:string,row: any) 
+  {
+    if (billing_type == "LIFT_ON") {
+      return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no
+    }
+    else {
+      return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_no
+    }
+  }
+
+  //DisplayEirDate(billing_type: string, row: any) 
+  DisplayEirDate(billing_type:string, row: any) 
+  {
+    if (billing_type == "LIFT_ON") {
+      return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt
+    }
+    else {
+      return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_dt
+    }
+  }
+
+  DisplayInvoiceNo(billing_type:string, row: any) {
     if (billing_type == "LIFT_ON") {
       if (row.lon_billing) {
         return (row.lon_billing?.invoice_no || '-');
@@ -1060,7 +1127,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       else { return '-'; }
     }
   }
-  DisplayInvoiceDate(billing_type: string, row: any) {
+  DisplayInvoiceDate(billing_type:string, row: any) {
     if (billing_type == "LIFT_ON") {
       if (row.lon_billing) {
         return this.displayDate(row.lon_billing?.invoice_dt);

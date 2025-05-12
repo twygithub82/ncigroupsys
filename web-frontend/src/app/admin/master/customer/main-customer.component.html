@@ -7,7 +7,7 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <div class="body overflow-auto">
+          <div class="body">
             @if (allowedTabs.length > 1) {
               <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)" (selectedTabChange)="onTabSelected($event)">
                 @for (tab of allowedTabs; track tab.label) {

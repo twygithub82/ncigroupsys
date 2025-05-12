@@ -1221,12 +1221,13 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   filterSotBilling(data: BillingSOTItem[]): BillingSOTItem[] {
-    var retval: BillingSOTItem[] = this.filterDeleted(data);
+    var retval: BillingSOTItem[] = this.splitBillingSotStorageDetail(data);
 
-    retval.forEach(r => {
 
-      this.filterDeletedAndSotGuid(r, true);
-    });
+    // retval.forEach(r => {
+
+    //   this.filterDeletedAndSotGuid(r, true);
+    // });
 
     return retval;
 
@@ -1251,6 +1252,44 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     return filtered;
+  }
+
+  splitBillingSotStorageDetail(data: BillingSOTItem[]): any[] {
+    var retval: any[]=[];
+
+     data=this.filterDeleted(data);
+    data.forEach(item => {
+      
+      if(item.storing_order_tank?.storage_detail?.length||0>0){
+
+        item.storing_order_tank?.storage_detail?.forEach(dtl => {
+          retval.push({
+            ...item,
+            invoice_dt:dtl.billing?.invoice_dt,
+            invoice_no:dtl.billing?.invoice_no,
+            storage_cutofff:dtl.end_dt,
+            sot_guid:item.storing_order_tank?.guid,
+          });
+       
+        });
+      }
+      else
+      {
+         retval.push({
+                ...item,
+                 invoice_dt:0,
+                 invoice_no:'',
+                storage_cutofff:0,
+                sot_guid:item.storing_order_tank?.guid
+                });
+      }
+    
+      
+    });
+
+
+    return retval;
+
   }
 
   filterDeleted(resultList: any[] | undefined): any {
