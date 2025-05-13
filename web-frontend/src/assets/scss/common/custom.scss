@@ -2146,8 +2146,10 @@ $grid-breakpoints: (
   font-size: 1.5rem;
 
   .body {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
 
   .mat-icon {

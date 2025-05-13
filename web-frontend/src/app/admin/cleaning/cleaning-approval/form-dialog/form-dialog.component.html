@@ -22,7 +22,7 @@
                     <input matInput formControlName="job_no_input">
                     @if (pcForm.get('job_no_input')?.hasError('required')) {
                     <mat-error>
-                      {{translatedLangText.JOB_NO }} {{translatedLangText.CARGO_REQUIRED }}
+                      <!-- {{translatedLangText.JOB_NO }} {{translatedLangText.CARGO_REQUIRED }} -->
                     </mat-error>
                     }
                   </mat-form-field>
@@ -50,7 +50,7 @@
                     <mat-datepicker #noaction_dt_picker></mat-datepicker>
                     @if (pcForm.get('approved_dt')?.hasError('required')) {
                     <mat-error>
-                      {{translatedLangText.DATE}} {{translatedLangText.CARGO_REQUIRED}}
+                      <!-- {{translatedLangText.DATE}} {{translatedLangText.CARGO_REQUIRED}} -->
                     </mat-error>
                     }
                   </mat-form-field>
@@ -69,9 +69,9 @@
               </div>
             </div>
           </div>
-          <div class="card l-bg-{{this.getBackgroundColorFromNature()}} cargo-nature">
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+          <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1 cargo-nature">
+            <div class="row body">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center text-white font-bold">
                 <mat-icon class="me-2">error</mat-icon>
                 <mat-label class="align-items-center">{{this.getNatureInGateAlert()}}</mat-label>
               </div>
@@ -307,7 +307,9 @@
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
                                     <span></span><span>
-                                      <!-- {{this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'}} -->
+                                      <!-- {{
+                                      this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'
+                                      }} -->
                                       {{
                                         this.pcForm.get('status_cv')?.value === 'KIV' 
                                           ? '-' 
@@ -355,7 +357,7 @@
                                       <!-- {{this.pcForm.get('update_on')?.value!=='-'?this.displayDate(this.pcForm.get('update_on')?.value):'-'}} -->
                                       {{ this.pcForm.get('status_cv')?.value === 'KIV' 
                                         ? '-' 
-                                        : (this.pcForm.get('update_on')?.value || '-')}}
+                                        : (this.displayDate(this.pcForm.get('update_on')?.value) || '-')}}
                                     </span>
                                   </div>
                                 </div>

@@ -79,10 +79,10 @@
               </div>
             </div>
           </div>
-          <div class="card l-bg-{{this.getBackgroundColorFromNature()}} cargo-nature">
-            <div class="row">
+          <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1 cargo-nature">
+            <div class="row body">
               <div
-                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center text-white font-bold">
                 <mat-icon class="">error</mat-icon>
                 <mat-label class="ms-1">{{this.getNatureInGateAlert()}}</mat-label>
               </div>
@@ -293,7 +293,7 @@
                             <div class="row">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.pcForm.get('update_on')?.value!=='-'?this.displayDate(this.pcForm.get('update_on')?.value):'-'}}</span>
+                                  <span></span><span>{{this.selectedItem?.job_order?.update_dt?this.displayDate(this.selectedItem?.job_order?.update_dt):"-"}}</span>
                                 </div>
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">

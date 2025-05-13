@@ -18,9 +18,9 @@ table.advance-table mat-cell {
   border-spacing: 0 6px; // spacing between rows to reveal curves
 }
 
-table.curve-table {
-  border-collapse: separate; /* Important for border-radius to work */
-  border-spacing: 0;
-  border-radius: 15px;
-  overflow: hidden; /* Helps apply the radius to inner content */
-}
+// table.curve-table {
+//   border-collapse: separate; /* Important for border-radius to work */
+//   border-spacing: 0;
+//   border-radius: 15px;
+//   overflow: hidden; /* Helps apply the radius to inner content */
+// }
