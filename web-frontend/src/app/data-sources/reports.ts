@@ -1072,8 +1072,8 @@ export const GET_PERIODIC_TEST_DUE_SUMMARY = gql`
 `
 
 export const GET_TANK_SURVEY_SUMMARY = gql`
-  query queryDailyTankSurveySummary($dailyTankSurveyRequest: DailyTankSurveyRequestInput!,$first:Int) {
-    resultList: queryDailyTankSurveySummary(dailyTankSurveyRequest: $dailyTankSurveyRequest,first:$first) {
+  query queryDailyTankSurveySummary($dailyTankSurveyRequest: DailyTankSurveyRequestInput!, $order: [DailyTankSurveySummarySortInput!], $first:Int) {
+    resultList: queryDailyTankSurveySummary(dailyTankSurveyRequest: $dailyTankSurveyRequest, order:$order, first:$first) {
       nodes {
         clean_dt
         customer_code
@@ -1716,13 +1716,13 @@ export class ReportDS extends BaseDataSource<any> {
       );
   }
 
-  searchTankSurveySummaryReport(dailyTankSurveyRequest:any): Observable<tank_survey_summary[]> {
+  searchTankSurveySummaryReport(dailyTankSurveyRequest:any , order?: any): Observable<tank_survey_summary[]> {
     this.loadingSubject.next(true);
     var first=this.first;
     return this.apollo
       .query<any>({
         query: GET_TANK_SURVEY_SUMMARY,
-        variables: { dailyTankSurveyRequest,first },
+        variables: { dailyTankSurveyRequest, first, order },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

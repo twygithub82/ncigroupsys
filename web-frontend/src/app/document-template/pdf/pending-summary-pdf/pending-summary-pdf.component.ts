@@ -888,7 +888,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSize = 5.5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -1035,7 +1035,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 11, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 

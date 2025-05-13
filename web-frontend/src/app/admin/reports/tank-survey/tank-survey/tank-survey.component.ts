@@ -472,7 +472,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
   performSearch(dailytankSurveyReq: any, date: string) {
-    this.subs.sink = this.repDS.searchTankSurveySummaryReport(dailytankSurveyReq)
+    this.subs.sink = this.repDS.searchTankSurveySummaryReport(dailytankSurveyReq, { survey_dt: 'ASC' })
       .subscribe(data => {
         this.surveyList = data;
         this.ProcessReportTankSurvey(date);

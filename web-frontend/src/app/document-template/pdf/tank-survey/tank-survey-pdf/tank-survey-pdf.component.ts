@@ -707,7 +707,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
                       pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
                       if(pageCount>1)
                       {
-                        Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                        Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+2);
                       }
                     } 
                   },
@@ -719,8 +719,6 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           }
         
           const totalPages = pdf.getNumberOfPages();
-        
-         
           pagePositions.forEach(({ page, x, y }) => {
             pdf.setDrawColor(0, 0, 0); // black line color
             pdf.setLineWidth(0.1);
@@ -728,12 +726,12 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
             pdf.setFontSize(8);
             pdf.setPage(page);
             var lineBuffer=13;
-            pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-            pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+            pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 13, pdf.internal.pageSize.height - 8, { align: 'right' });
+            pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 2), pdf.internal.pageSize.height - lineBuffer);
           });
         
           this.generatingPdfProgress = 100;
-          Utility.previewPDF(pdf, );
+          Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
    
           this.generatingPdfProgress = 0;
           this.generatingPdfLoadingSubject.next(false);

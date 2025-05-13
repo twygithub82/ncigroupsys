@@ -367,9 +367,6 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     let queryType = 1;
     const periodicTestDueReq: any = {};
 
-
-
-
     if (this.searchForm?.get('customer_code')?.value) {
 
       periodicTestDueReq.customer_code = this.searchForm!.get('customer_code')?.value?.code;
@@ -419,6 +416,8 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
+
+  
   performSearch(date: string) {
     this.subs.sink = this.repDS.searchPeriodicTestDueSummaryReport(this.lastSearchCriteria)
       .subscribe(data => {

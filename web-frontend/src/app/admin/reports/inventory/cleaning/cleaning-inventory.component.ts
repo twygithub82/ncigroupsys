@@ -899,4 +899,8 @@ export class CleaningInventoryComponent extends UnsubscribeOnDestroyAdapter impl
     this.resetForm();
   }
 
+  getMaxDate(){
+    return new Date();
+  }
+
 }

@@ -358,7 +358,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   initialize(data: DialogData) {
-    //this.loadData(data)
+    this.loadData(data)
 
   }
 

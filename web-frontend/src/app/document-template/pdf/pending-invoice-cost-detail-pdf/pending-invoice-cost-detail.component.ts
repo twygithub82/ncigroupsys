@@ -867,7 +867,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSize = 5.5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -906,7 +906,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
 
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
 
@@ -983,7 +983,6 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
       }
       pdf.setDrawColor(0, 0, 0); // red line color
-
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0, 0], 0);
       // Add table using autoTable plugin

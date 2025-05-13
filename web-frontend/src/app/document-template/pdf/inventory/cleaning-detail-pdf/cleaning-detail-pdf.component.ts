@@ -633,16 +633,20 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       startY = lastTableFinalY + 3;
       pdf.setFontSize(8);
       pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${cust.cargo}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      //pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${}  ${'Cleaning Process'}: Process 1`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       const data: any[][] = []; // Explicitly define data as a 2D array
+      var unNo;
+      var process;
       for (let i = 0; i < (cust.storing_order_tank?.length || 0); i++) {
         var itm = cust.storing_order_tank?.[i];
         data.push([
           (i + 1).toString(), itm?.tank_no || "", this.DisplayCustomerName(itm!) || "", this.DisplayCleanIn(itm!) || "", this.DisplayCleanDate(itm!) || "",
           this.DipslayCleanDuration(itm!) || "" //itm?.tariff_cleaning?.un_no || "", this.DisplayCleanMethod(itm!) || ""
         ]);
+        unNo = itm?.tariff_cleaning?.un_no || "";
+        process = this.DisplayCleanMethod(itm!);
       }
-
+      pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${unNo}  ${this.translatedLangText.PROCEDURE}:  ${process}`, leftMargin, lastTableFinalY);
       pdf.setDrawColor(0, 0, 0); // red line color
 
       pdf.setLineWidth(0.1);
@@ -675,7 +679,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
           if (!pg) {
             pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
             if (pageCount > 1) {
-              Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+              Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
             }
           }
         },
