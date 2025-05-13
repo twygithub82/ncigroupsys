@@ -1261,6 +1261,7 @@ const GET_STORING_ORDER_TANKS_REPAIR_BILLING = gql`
         tank_no
         so_guid
         tank_status_cv
+        purpose_repair_cv
         customer_company {
             code
             currency_guid

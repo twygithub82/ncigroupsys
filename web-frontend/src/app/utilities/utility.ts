@@ -680,7 +680,9 @@ export class Utility {
     pdf.setFontSize(14); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-
+    if(topPosition<=10){
+      topPosition=11;
+    }
     pdf.text(title, titleX, topPosition); // Position it at the top
 
     pdf.setLineDashPattern([0, 0], 0);

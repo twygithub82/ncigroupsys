@@ -877,77 +877,15 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     const data: any[][] = []; // Explicitly define data as a 2D array
     //  pdf.setFontSize(8);
     //  pdf.setTextColor(0, 0, 0); // Black text
-    const invDate = `${this.translatedLangText.INVENTORY_DATE}:  ${this.date}`; // Replace with your actual cutoff date
+
+      const invDate = `${this.translatedLangText.INVENTORY_DATE}:  ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 10, 8)
-    // pdf.text(invDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
-    var idx = 0;
-    for (let n = 0; n < this.report_inventory.length; n++) {
-
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm = this.report_inventory[n];
-      data.push([
-        (++idx).toString(), itm.code || "", itm.name || "0",
-        this.displayInGate(itm) || "0", this.displayOutGate(itm) || "0"
-      ]);
-    }
-
-    data.push([this.translatedLangText.TOTAL, "", "", this.displayTotalInGate(), this.displayTotalOutGate()]);
-    autoTable(pdf, {
-      head: headers,
-      body: data,
-      startY: startY, // Start table at the current startY value
-      theme: 'grid',
-      styles: {
-        fontSize: fontSz,
-        minCellHeight: minHeightHeaderCol
-
-      },
-      columnStyles: comStyles,
-      headStyles: headStyles, // Custom header styles
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        //halign: 'left', // Left-align content for body by default
-        //valign: 'middle', // Vertically align content
-      },
-      didParseCell: (data: any) => {
-        let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        if (data.row.index === lastRowIndex) {
-          data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          if (data.column.index === 0) {
-            data.cell.colSpan = 3;  // Merge 4 columns into one
-            data.cell.styles.halign = 'right'; // Center text horizontally
-
-
-          }
-        }
-        if (data.row.index === idx && data.column.index > 0 && data.column.index <= 2) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
-      },
-      didDrawPage: (d: any) => {
-        const pageCount = pdf.getNumberOfPages();
-
-        lastTableFinalY = d.cursor.y;
-
-        var pg = pagePositions.find(p => p.page == pageCount);
-        if (!pg) {
-          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-          if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
-          }
-        }
-
-      },
-    });
-
+    
     if (this.report_inventory.length > 0) {
       if ((this.report_inventory[0].opening_balance?.length || 0) > 0) {
 
-        startY = lastTableFinalY + 5;
+        startY = lastTableFinalY + 15;
         const subHeaders = [[
           this.translatedLangText.NO, this.translatedLangText.LOCATION,
           this.translatedLangText.OPENING_BALANCE, this.translatedLangText.IN_GATE,
@@ -1029,6 +967,76 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
       }
     }
+
+    startY = lastTableFinalY + 10; 
+
+  
+    // pdf.text(invDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+
+    var idx = 0;
+    for (let n = 0; n < this.report_inventory.length; n++) {
+
+      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+      let itm = this.report_inventory[n];
+      data.push([
+        (++idx).toString(), itm.code || "", itm.name || "0",
+        this.displayInGate(itm) || "0", this.displayOutGate(itm) || "0"
+      ]);
+    }
+
+    data.push([this.translatedLangText.TOTAL, "", "", this.displayTotalInGate(), this.displayTotalOutGate()]);
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        //halign: 'left', // Left-align content for body by default
+        //valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+        let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        if (data.row.index === lastRowIndex) {
+          data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.valign = 'middle'; // Center text vertically
+          if (data.column.index === 0) {
+            data.cell.colSpan = 3;  // Merge 4 columns into one
+            data.cell.styles.halign = 'right'; // Center text horizontally
+
+
+          }
+        }
+        if (data.row.index === idx && data.column.index > 0 && data.column.index <= 2) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
+        }
+      },
+      didDrawPage: (d: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = d.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
+          }
+        }
+
+      },
+    });
+
+    
 
       pdf.addPage();
 

@@ -41,6 +41,7 @@ import { RepairItem } from 'app/data-sources/repair';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { EstimatePendingComponent } from './estimate/estimate-pending.component';
+import {PendingInvoiceComponent} from './invoice/pending-invoice.component';
 
 @Component({
   selector: 'app-pending-report',
@@ -71,7 +72,8 @@ import { EstimatePendingComponent } from './estimate/estimate-pending.component'
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    EstimatePendingComponent
+    EstimatePendingComponent,
+    PendingInvoiceComponent
   ]
 })
 export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -166,6 +168,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     PENDING_ESTIMATE: "MENUITEMS.REPORTS.LIST.PENDING-ESTIMATE",
+    PENDING_INVOICES:'MENUITEMS.BILLING.LIST.PENDING'
 
   }
 
@@ -837,11 +840,20 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     this.onPageEventClean({ pageIndex: this.pageIndexClean, pageSize: this.pageSizeClean, length: this.pageSizeClean });
   }
 
-  onTabSelected(event: MatTabChangeEvent): void {
-    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-    // if(event.index===1)
-    // {
-    //   this.bayOverviewComponent.RefreshContent();
-    // }
-  }
+ 
+   @ViewChild('estimatePendingReport') estPendingReport!: EstimatePendingComponent;
+   @ViewChild('pendingInvoiceReport') pendingInvReport!: PendingInvoiceComponent;
+         
+           
+      onTabSelected(event: MatTabChangeEvent): void {
+        console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+        switch (event.index) {
+         
+         case 0:
+            this.estPendingReport?.onTabFocused(); break;
+         case 1:
+             this.pendingInvReport?.onTabFocused(); break;
+      
+        }
+      }
 }
