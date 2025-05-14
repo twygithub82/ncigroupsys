@@ -49,6 +49,7 @@ import {
   ApexResponsive,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { E } from '@angular/cdk/keycodes';
 
 
 
@@ -290,6 +291,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     RESIDUE_YEARLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-YEARLY-DETAILS-REPORT',
     REPAIR_YEARLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-YEARLY-DETAILS-REPORT',
     CLEAN_YEARLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
+    YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
     AVERAGE:'COMMON-FORM.AVERAGE',
@@ -989,22 +991,43 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   }
   GetReportTitle(): string {
     var title:string='';
-    switch(this.repType)
-    {
-      case "CLEANING":
-         title = `${this.translatedLangText.CLEAN_YEARLY_DETAILS_REPORT}`
-        break;
-        case "STEAMING":
-          title = `${this.translatedLangText.STEAM_YEARLY_DETAILS_REPORT}`
-        break;
-        case "REPAIR":
-          title = `${this.translatedLangText.REPAIR_YEARLY_DETAILS_REPORT}`
-        break;
-        case "RESIDUE":
-          title = `${this.translatedLangText.RESIDUE_YEARLY_DETAILS_REPORT}`
-        break;
+    if(this.repType === "ALL" || this.repType === ""){
+      `${title}`
     }
-    return `${title}`
+    else{
+         let formatted = this.repType!.charAt(0).toUpperCase() + this.repType!.slice(1).toLowerCase();
+         title = `${this.translatedLangText.YEARLY_SALES_REPORT} - ${formatted}`
+    }
+    return title;
+
+    // switch(this.repType)
+    // {
+    //     case "CLEANING":
+    //      title = `${this.translatedLangText.YEARLY_SALES_REPORT} - ${formatted}`
+    //     break;
+    //     case "STEAMING":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "REPAIR":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "RESIDUE":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //       break;
+    //     case "LOLO":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "GATE":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "PREINSPECTION":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     default:
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    // }
+    // return `${title}`
   }
 
   displayLocation(yard: report_status_yard): string {

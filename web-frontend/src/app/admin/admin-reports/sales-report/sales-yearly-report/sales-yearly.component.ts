@@ -193,7 +193,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   costTypeCvList: CodeValuesItem[] = [];
 
-  processType: string = "STEAMING";
+  processType: string = "";
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
@@ -367,8 +367,9 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
     //let processType=this.processType;
 
-    where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE"];
+    where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE", "GATE"];
     if (this.searchForm?.get('cost_type')?.value.code_val !== 'ALL') {
+      this.processType = this.searchForm?.get('cost_type')?.value.code_val;
       where.report_type = [this.searchForm?.get('cost_type')?.value.code_val];
     }
 

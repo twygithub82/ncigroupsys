@@ -246,6 +246,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     RESIDUE_MONTHLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
     REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
     CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
+    MONTHLY_SALES_REPORT:'COMMON-FORM.MONTHLY-SALES-REPORT',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
     PREINSPECTION:'COMMON-FORM.PREINSPECTION',
@@ -689,7 +690,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 13);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 7, 13);
 
     if(this.customer)
     {
