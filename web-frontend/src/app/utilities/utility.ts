@@ -853,7 +853,7 @@ export class Utility {
     pdf.text(nextLine, posX, posY);
 
     // Load and add company logo
-    const imgUrl = "assets/images/logo.png";
+    const imgUrl = "assets/images/report-logo.png";
     const img = new Image();
 
     // Wait for the image to load
@@ -864,10 +864,10 @@ export class Utility {
     });
 
     // Add the image to the PDF
-    const posX1_img = pageWidth / 1.5; //leftMargin + 5;
-    const posY1_img = topMargin + 10;
-    const imgHeight = heightHeader - 21;
-    const imgWidth = 60;
+    const posX1_img = pageWidth / 1.6; //leftMargin + 5;
+    const posY1_img = topMargin + 0;
+    const imgHeight = heightHeader - 0;
+    const imgWidth = 70;
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
   }
 
@@ -937,7 +937,7 @@ export class Utility {
     pdf.text(nextLine, posX, posY);
 
     // Load and add company logo
-    const imgUrl = "assets/images/logo.png";
+    const imgUrl = "assets/images/report-logo.png";
     const img = new Image();
 
     // Wait for the image to load
@@ -949,9 +949,9 @@ export class Utility {
 
     // Add the image to the PDF
     const posX1_img = leftMargin + 5;
-    const posY1_img = topMargin + 10;
-    const imgHeight = heightHeader - 21;
-    const imgWidth = 60;
+    const posY1_img = topMargin + 0;
+    const imgHeight = heightHeader - 0;
+    const imgWidth = 70;
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
   }
 
