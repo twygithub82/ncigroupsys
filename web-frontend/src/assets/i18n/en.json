@@ -1246,7 +1246,9 @@
     "PROFILES-SELECTED": "Profiles Selected",
     "TANK-NOTES": "Tank Notes",
     "SCHEDULED-DATE": "Scheduled Date",
-    "CLEANING-ACTIVITY":"Cleaning Activity"
+    "CLEANING-ACTIVITY":"Cleaning Activity",
+    "BILLING":"Billing",
+    "DAILY-INVENTORY-SUMMARY":"Daily Inventory Summary"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

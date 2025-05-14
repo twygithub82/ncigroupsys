@@ -7,8 +7,14 @@
             <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
-                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()"
+               <div class="m-l-" [matTooltip]="translatedLangText.DAILY_INVENTORY_SUMMARY">
+                <button mat-mini-fab color="primary" (click)="search(2)" (click)="$event.stopPropagation()"
+                  [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
+                  <mat-icon>view_week</mat-icon>
+                </button>
+              </div>
+              <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
+                <button mat-mini-fab color="primary" (click)="search(1)" (click)="$event.stopPropagation()"
                   [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
                   <mat-icon>assignment</mat-icon>
                 </button>
@@ -70,7 +76,7 @@
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+                  <mat-label>{{translatedLangText.EIR_DATE}} /{{translatedLangText.INVENTORY_DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="eir_picker" [max]="getMaxDate()">
                     <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
                     <input matEndDate placeholder="End date" formControlName="eir_dt_end">

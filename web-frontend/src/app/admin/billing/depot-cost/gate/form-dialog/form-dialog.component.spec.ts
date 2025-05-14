@@ -1,18 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GateBillingComponent } from './gate-billing.component';
+import { FormDialogComponent } from './form-dialog.component';
 
-describe('GateBillingComponent', () => {
-  let component: GateBillingComponent;
-  let fixture: ComponentFixture<GateBillingComponent>;
+describe('FormDialogComponent', () => {
+  let component: FormDialogComponent;
+  let fixture: ComponentFixture<FormDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GateBillingComponent]
-    })
+    imports: [FormDialogComponent]
+})
     .compileComponents();
-    
-    fixture = TestBed.createComponent(GateBillingComponent);
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(FormDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

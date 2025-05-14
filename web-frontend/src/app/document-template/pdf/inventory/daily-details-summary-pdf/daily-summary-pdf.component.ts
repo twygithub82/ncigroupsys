@@ -1925,7 +1925,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '10%',
+          columnWidth: '30%',
           borderRadius: 3,
           dataLabels: {
             position: 'top', // top, center, bottom

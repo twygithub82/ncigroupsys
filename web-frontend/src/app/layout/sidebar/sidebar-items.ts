@@ -1263,7 +1263,7 @@ export const ROUTES: RouteInfo[] = [
         badge: "",
         badgeClass: "",
         submenu: [],
-        visible: true,
+        visible: false,
         modulePackage: ['starter', 'growth', 'customized'],
       },
       {

@@ -44,6 +44,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import {FormDialogComponent}from "./form-dialog/form-dialog.component";
 
 @Component({
   selector: 'app-gate-billing',
@@ -91,7 +92,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     'cost',
     'invoice_no',
     'invoice_date',
-    'bill_type',
+   // 'bill_type',
     'tank_status_cv',
     
     //  'invoiced',
@@ -148,6 +149,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     INVOICE_TYPE: 'COMMON-FORM.INVOICE-TYPE',
     CLEAR: 'COMMON-FORM.CLEAR',
     SAVE: 'COMMON-FORM.SAVE',
+    BILLING:'COMMON-FORM.BILLING',
   }
 
   invForm?: UntypedFormGroup;
@@ -240,10 +242,11 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.invForm = this.fb.group({
       inv_no: [''],
       inv_dt: [''],
-
+      invoice_type:this.invoiceTypeControl
     })
     const today = new Date().toISOString().substring(0, 10);
     this.invoiceDateControl.setValue(today);
+    this.invoiceTypeControl.setValue(this.processType);
   }
   initSearchForm() {
 
@@ -512,8 +515,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
   search() {
     this.constructSearchCriteria();
-    var pgSize=(this.paginator.pageSize||this.pageSize)/2;
-    this.performSearch(pgSize, 0, pgSize, undefined, undefined, undefined);
+   // var pgSize=(this.paginator.pageSize||this.pageSize)/2;
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
@@ -528,7 +531,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = this.billDS.searchBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-        this.billSotList = this.transformBillSotList(data);
+        this.billSotList = data;//this.transformBillSotList(data);
         this.endCursor = this.billDS.pageInfo?.endCursor;
         this.startCursor = this.billDS.pageInfo?.startCursor;
         this.hasNextPage = this.billDS.pageInfo?.hasNextPage ?? false;
@@ -550,28 +553,28 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     let last: number | undefined = undefined;
     let before: string | undefined = undefined;
 
-   const pgSize=pageSize/2;
+   //const pgSize=pageSize/2;
     // Check if the page size has changed
-    if (this.pageSize !== pgSize) {
+    if (this.pageSize !== pageSize) {
       // Reset pagination if page size has changed
       this.pageIndex = 0;
-      first = pgSize;
+      first = pageSize;
       after = undefined;
       last = undefined;
       before = undefined;
     } else {
       if (pageIndex > this.pageIndex && this.hasNextPage) {
         // Navigate forward
-        first = pgSize;
+        first = pageSize;
         after = this.endCursor;
       } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
         // Navigate backward
-        last = pgSize;
+        last = pageSize;
         before = this.startCursor;
       }
     }
 
-    this.performSearch(pgSize, pageIndex, first, after, last, before);
+    this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -768,7 +771,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       billingEstReq.action = "CANCEL";
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = g.guid.replace('-1','').replace('-2','');
-      billingEstReq.process_type =g.billing_type;
+      billingEstReq.process_type =`${this.invoiceTypeControl.value}`;
       billingEstimateRequests.push(billingEstReq);
     })
     // processGuid.forEach(g => {
@@ -899,7 +902,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
         billingEstReq.action = "NEW";
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid.replace('-1', '').replace('-2', '');
-        billingEstReq.process_type = cln.billing_type;
+        billingEstReq.process_type = `${this.invoiceTypeControl.value}`;
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -917,6 +920,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   SaveNewBilling(event: Event) {
     let invoiceDate: Date = new Date(this.invoiceDateControl.value!);
     let invoiceDue: Date = new Date(invoiceDate);
+    
     invoiceDue.setMonth(invoiceDate.getMonth() + 1);
     var newBilling: BillingInputRequest = new BillingInputRequest();
     newBilling.bill_to_guid = this.selectedEstimateItem?.storing_order_tank?.storing_order?.customer_company?.guid;
@@ -932,7 +936,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       billingEstReq.action = "NEW";
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid.replace('-1', '').replace('-2', '');
-      billingEstReq.process_type = c.billing_type;
+      billingEstReq.process_type = `${this.invoiceTypeControl.value}`;
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {
@@ -1181,23 +1185,23 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   //DisplayEirNo(billing_type: string, row: any) 
   DisplayEirNo(row: any) 
   {
-    if (row.billing_type == "GATE_IN") {
+    //if (row.billing_type == "GATE_IN") {
       return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no
-    }
-    else {
-      return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_no
-    }
+    // }
+    // else {
+    //   return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_no
+    // }
   }
 
   //DisplayEirDate(billing_type: string, row: any) 
   DisplayEirDate( row: any) 
   {
-    if (row.billing_type == "GATE_IN") {
+    //if (row.billing_type == "GATE_IN") {
       return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt
-    }
-    else {
-      return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_dt
-    }
+    // }
+    // else {
+    //   return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_dt
+    // }
   }
 
   //DisplayInvoiceNo(billing_type: string, row: any) 
@@ -1237,7 +1241,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
  // DisplayCost(billing_type: string, row: any) 
  DisplayCost(row: any)
  {
-    return row.gate_cost;
+     return this.displayNumber(row.gate_in_cost + row.gate_out_cost);
     // if (row.billing_type == "GATE_IN") {
     //   if (row.gin_billing) {
     //     return this.displayNumber(row.gate_in_cost);
@@ -1306,8 +1310,53 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.calculateTotalCost();
   }
 
+  isGateInInvoice(row: any):boolean{
+
+    var bretval:boolean=false;
+      bretval =row.gin_billing===null?false:true;
+    return bretval;
+  }
+
+
+   isGateOutInvoice(row: any):boolean{
+
+    var bretval:boolean=false;
+    bretval =row.gout_billing===null?false:true;
+
+    return bretval;
+  }
+
   onTabFocused() {
     this.resetForm();
     this.search();
   }
+
+  viewCall(row: BillingSOTItem) {
+      // this.preventDefault(event);  // Prevents the form submission
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      
+
+      const dialogRef = this.dialog.open(FormDialogComponent, {
+        width: '65vw',
+        maxWidth:'800px',
+        //height: '80vh',
+        data: {
+          action: 'view',
+          langText: this.langText,
+          selectedItem: row
+        },
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        // if (result > 0) {
+        //   this.handleSaveSuccess(result);
+        //   // if (this.packRepairItems.length > 1)
+        //   //   this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        // }
+      });
+    }
 }
