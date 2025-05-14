@@ -173,7 +173,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
     THERMOMETER: 'COMMON-FORM.THERMOMETER',
     LADDER: 'COMMON-FORM.LADDER',
-    DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
+    DATA_SCS: 'COMMON-FORM.DATA-SCS',
     TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
     TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
     AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
@@ -562,7 +562,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         tap(() => {
           const valveValue = btmDisValveCvCtrl.value;
           const specValue = btmDisValveSpecCvCtrl.value;
-          
+
           if (this.displayOthers(valveValue)) {
             btmDisValveOthCtrl.setValidators([Validators.required]);
           } else {
@@ -738,7 +738,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           } else {
             topAirlineValveOthCtrl.clearValidators();
           }
-          
+
           if (valveValue?.length || pcsValue || dimValue) {
             topAirlineValveCvCtrl.setValidators([Validators.required]);
             topAirlineValvePcsCtrl.setValidators([Validators.required]);
@@ -1613,7 +1613,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   onDownload() {
     let tempDirection: Direction;
-    
+
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1636,11 +1636,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.fileManagerService.actionLoadingSubject.next(true);
-    dialogRef.updatePosition({
-      top: '-9999px',  // Move far above the screen
-      left: '-9999px'  // Move far to the left of the screen
-    });
-    
+
     this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
       console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
       if (result?.type === 'published') {
@@ -1650,10 +1646,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       } else if (result?.type === 'uploaded') {
         this.eirPdf = result?.eirPdf;
       }
-      
+
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
       this.fileManagerService.actionLoadingSubject.next(false);
     });
 

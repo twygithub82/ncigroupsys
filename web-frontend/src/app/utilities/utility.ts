@@ -243,7 +243,7 @@ export class Utility {
     return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes}`;
   }
 
-  static getToday(): string{
+  static getToday(): string {
     return new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
   }
 
@@ -680,8 +680,8 @@ export class Utility {
     pdf.setFontSize(14); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-    if(topPosition<=10){
-      topPosition=11;
+    if (topPosition <= 10) {
+      topPosition = 11;
     }
     pdf.text(title, titleX, topPosition); // Position it at the top
 
@@ -689,6 +689,23 @@ export class Utility {
     // Draw underline for the title
     pdf.setLineWidth(0.1); // Set line width for underline
     pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+  }
+
+  static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean) {
+    pdf.setFontSize(14); // Title font size 
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+    if (topPosition <= 10) {
+      topPosition = 11;
+    }
+    pdf.text(title, titleX, topPosition); // Position it at the top
+
+    pdf.setLineDashPattern([0, 0], 0);
+    // Draw underline for the title
+    pdf.setLineWidth(0.1); // Set line width for underline
+    if (underline) {
+      pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+    }
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
@@ -828,29 +845,33 @@ export class Utility {
     pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
 
     // Add company name
-    pdf.setFontSize(18);
+    pdf.setFontSize(12);
     const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    let posX = leftMargin + 25; //pageWidth / 1.75;
+    let posX = leftMargin + 36.5; //pageWidth / 1.75;
     let posY = topMargin + 8;
     pdf.text(customerInfo.companyName, posX, posY);
 
     // Add company address
     pdf.setFontSize(10);
-    posX -= 5;
+    posX -= 20.5;
     posY += 7;
     pdf.text(customerInfo.companyAddress, posX, posY);
 
     // Add phone, fax, and website
-    let nextLine = `${translatedLangText.PHONE}:${customerInfo.companyPhone} ${translatedLangText.FAX}:${customerInfo.companyFax} ${translatedLangText.WEB}:${customerInfo.companyWebsite}`;
-    posX -= 20;
+    let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
+    posX += 8.5;
     posY += 5;
     pdf.text(nextLine, posX, posY);
+    nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
+    pdf.text(nextLine, posX + 39, posY);
 
     // Add company UEN
-    nextLine = `${translatedLangText.CRN}:${customerInfo.companyUen}`;
-    posX += 35;
+    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    posX += 0;
     posY += 5;
     pdf.text(nextLine, posX, posY);
+    nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    pdf.text(nextLine, posX + 39, posY);
 
     // Load and add company logo
     const imgUrl = "assets/images/report-logo.png";
@@ -864,10 +885,10 @@ export class Utility {
     });
 
     // Add the image to the PDF
-    const posX1_img = pageWidth / 1.6; //leftMargin + 5;
+    const posX1_img = pageWidth / 1.7; //leftMargin + 5;
     const posY1_img = topMargin + 0;
     const imgHeight = heightHeader - 0;
-    const imgWidth = 70;
+    const imgWidth = 80;
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
   }
 

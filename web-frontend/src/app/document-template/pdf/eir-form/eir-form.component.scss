@@ -122,10 +122,10 @@ tr.th {
 .frame-info-content {
     width: 100%;
     display: flex;
-    flex-direction: column; /* ✅ Stack items vertically */
+    flex-direction: column;
     font-size: 9px;
     font-weight: bold;
-    align-items: center; /* ✅ Center everything horizontally */
+    align-items: center;
 
     .frame-type-info {
         max-width: 100%;
@@ -268,6 +268,8 @@ tr.th {
     display: flex;
     justify-content: space-between;
 }
-// .pt-5px {
-//     padding-top: 5px;
-//   }
+
+
+.eir-mark {
+    padding: 0px 0px 0px 5px;
+}
