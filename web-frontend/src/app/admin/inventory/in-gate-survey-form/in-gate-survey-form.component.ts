@@ -562,7 +562,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         tap(() => {
           const valveValue = btmDisValveCvCtrl.value;
           const specValue = btmDisValveSpecCvCtrl.value;
-
+          
           if (this.displayOthers(valveValue)) {
             btmDisValveOthCtrl.setValidators([Validators.required]);
           } else {
@@ -575,7 +575,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             btmDisValveSpecOthCtrl.clearValidators();
           }
 
-          if (valveValue || specValue) {
+          if (valveValue?.length || specValue?.length) {
             btmDisValveCvCtrl.setValidators([Validators.required]);
             btmDisValveSpecCvCtrl.setValidators([Validators.required]);
           } else {
@@ -692,7 +692,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             topDisValveSpecOthCtrl.clearValidators();
           }
 
-          if (valveValue || specValue) {
+          if (valveValue?.length || specValue?.length) {
             topDisValveCvCtrl.setValidators([Validators.required]);
             topDisValveSpecCvCtrl.setValidators([Validators.required]);
           } else {
@@ -738,8 +738,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           } else {
             topAirlineValveOthCtrl.clearValidators();
           }
-
-          if (valveValue || pcsValue || dimValue) {
+          
+          if (valveValue?.length || pcsValue || dimValue) {
             topAirlineValveCvCtrl.setValidators([Validators.required]);
             topAirlineValvePcsCtrl.setValidators([Validators.required]);
             topAirlineValveDimCtrl.setValidators([Validators.required]);
@@ -792,7 +792,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             topAirlineValveConnSpecOthCtrl.clearValidators();
           }
 
-          if (valveValue || specValue) {
+          if (valveValue?.length || specValue?.length) {
             topAirlineValveConnCvCtrl.setValidators([Validators.required]);
             topAirlineValveConnSpecCvCtrl.setValidators([Validators.required]);
           } else {
@@ -839,7 +839,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
             manlidCoverOthCtrl.clearValidators();
           }
 
-          if (valveValue || pcsValue || dimValue) {
+          if (valveValue?.length || pcsValue || dimValue) {
             manlidCoverCvCtrl.setValidators([Validators.required]);
             manlidCoverPcsCtrl.setValidators([Validators.required]);
             manlidCoverPtsCtrl.setValidators([Validators.required]);
@@ -1233,12 +1233,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       },
       compartment_type: {
         bottomFormGroup: {
-          btm_dis_comp_cv: [ig.in_gate_survey?.btm_dis_comp_cv],
-          btm_dis_valve_cv: [ig.in_gate_survey?.btm_dis_valve_cv],
+          btm_dis_comp_cv: this.patchStringToArrayValue(ig.in_gate_survey?.btm_dis_comp_cv),
+          btm_dis_valve_cv: this.patchStringToArrayValue(ig.in_gate_survey?.btm_dis_valve_cv),
           btm_dis_valve_oth: ig.in_gate_survey?.btm_dis_valve_oth,
-          btm_dis_valve_spec_cv: [ig.in_gate_survey?.btm_dis_valve_spec_cv],
+          btm_dis_valve_spec_cv: this.patchStringToArrayValue(ig.in_gate_survey?.btm_dis_valve_spec_cv),
           btm_dis_valve_spec_oth: ig.in_gate_survey?.btm_dis_valve_spec_oth,
-          foot_valve_cv: [ig.in_gate_survey?.foot_valve_cv],
+          foot_valve_cv: this.patchStringToArrayValue(ig.in_gate_survey?.foot_valve_cv),
           foot_valve_oth: ig.in_gate_survey?.foot_valve_oth,
           btm_valve_brand_cv: ig.in_gate_survey?.btm_valve_brand_cv,
           thermometer: ig.in_gate_survey?.thermometer,
@@ -1247,24 +1247,24 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           data_csc_transportplate: ig.in_gate_survey?.data_csc_transportplate
         },
         topFormGroup: {
-          top_dis_comp_cv: [ig.in_gate_survey?.top_dis_comp_cv],
-          top_dis_valve_cv: [ig.in_gate_survey?.top_dis_valve_cv],
+          top_dis_comp_cv: this.patchStringToArrayValue(ig.in_gate_survey?.top_dis_comp_cv),
+          top_dis_valve_cv: this.patchStringToArrayValue(ig.in_gate_survey?.top_dis_valve_cv),
           top_dis_valve_oth: ig.in_gate_survey?.top_dis_valve_oth,
-          top_dis_valve_spec_cv: [ig.in_gate_survey?.top_dis_valve_spec_cv],
+          top_dis_valve_spec_cv: this.patchStringToArrayValue(ig.in_gate_survey?.top_dis_valve_spec_cv),
           top_dis_valve_spec_oth: ig.in_gate_survey?.top_dis_valve_spec_oth,
           top_valve_brand_cv: ig.in_gate_survey?.top_valve_brand_cv,
-          airline_valve_cv: [ig.in_gate_survey?.airline_valve_cv],
+          airline_valve_cv: this.patchStringToArrayValue(ig.in_gate_survey?.airline_valve_cv),
           airline_valve_oth: ig.in_gate_survey?.airline_valve_oth,
           airline_valve_pcs: ig.in_gate_survey?.airline_valve_pcs,
           airline_valve_dim: ig.in_gate_survey?.airline_valve_dim,
-          airline_valve_conn_cv: [ig.in_gate_survey?.airline_valve_conn_cv],
+          airline_valve_conn_cv: this.patchStringToArrayValue(ig.in_gate_survey?.airline_valve_conn_cv),
           airline_valve_conn_oth: ig.in_gate_survey?.airline_valve_conn_oth,
-          airline_valve_conn_spec_cv: [ig.in_gate_survey?.airline_valve_conn_spec_cv],
+          airline_valve_conn_spec_cv: this.patchStringToArrayValue(ig.in_gate_survey?.airline_valve_conn_spec_cv),
           airline_valve_conn_spec_oth: ig.in_gate_survey?.airline_valve_conn_spec_oth,
         },
         manlidFormGroup: {
-          manlid_comp_cv: [ig.in_gate_survey?.manlid_comp_cv],
-          manlid_cover_cv: [ig.in_gate_survey?.manlid_cover_cv],
+          manlid_comp_cv: this.patchStringToArrayValue(ig.in_gate_survey?.manlid_comp_cv),
+          manlid_cover_cv: this.patchStringToArrayValue(ig.in_gate_survey?.manlid_cover_cv),
           manlid_cover_oth: ig.in_gate_survey?.manlid_cover_oth,
           manlid_cover_pcs: ig.in_gate_survey?.manlid_cover_pcs,
           manlid_cover_pts: ig.in_gate_survey?.manlid_cover_pts,
@@ -1386,8 +1386,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const compartmentTypeFormChecks = [];
 
     const bottomFormGroup = this.getBottomFormGroup();
-    if (!(bottomFormGroup.get('btm_dis_comp_cv')?.value || bottomFormGroup.get('btm_dis_valve_cv')?.value
-      || bottomFormGroup.get('btm_dis_valve_spec_cv')?.value || bottomFormGroup.get('foot_valve_cv')?.value
+    if (!(bottomFormGroup.get('btm_dis_comp_cv')?.value?.length || bottomFormGroup.get('btm_dis_valve_cv')?.value?.length
+      || bottomFormGroup.get('btm_dis_valve_spec_cv')?.value?.length || bottomFormGroup.get('foot_valve_cv')?.value?.length
       || bottomFormGroup.get('btm_valve_brand_cv')?.value || bottomFormGroup.get('thermometer')?.value
       || bottomFormGroup.get('thermometer_cv')?.value || bottomFormGroup.get('ladder')?.value
       || bottomFormGroup.get('data_csc_transportplate')?.value)) {
@@ -1395,16 +1395,16 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     const topFormGroup = this.getTopFormGroup();
-    if (!(topFormGroup.get('top_dis_comp_cv')?.value || topFormGroup.get('top_dis_valve_cv')?.value
-      || topFormGroup.get('top_dis_valve_spec_cv')?.value || topFormGroup.get('top_valve_brand_cv')?.value
-      || topFormGroup.get('airline_valve_cv')?.value || topFormGroup.get('airline_valve_pcs')?.value
-      || topFormGroup.get('airline_valve_dim')?.value || topFormGroup.get('airline_valve_conn_cv')?.value
-      || topFormGroup.get('airline_valve_conn_spec_cv')?.value)) {
+    if (!(topFormGroup.get('top_dis_comp_cv')?.value?.length || topFormGroup.get('top_dis_valve_cv')?.value?.length
+      || topFormGroup.get('top_dis_valve_spec_cv')?.value?.length || topFormGroup.get('top_valve_brand_cv')?.value
+      || topFormGroup.get('airline_valve_cv')?.value?.length || topFormGroup.get('airline_valve_pcs')?.value
+      || topFormGroup.get('airline_valve_dim')?.value || topFormGroup.get('airline_valve_conn_cv')?.value?.length
+      || topFormGroup.get('airline_valve_conn_spec_cv')?.value?.length)) {
       compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_TOP_EMPTY);
     }
 
     const manlidFormGroup = this.getManlidFormGroup();
-    if (!(manlidFormGroup.get('manlid_comp_cv')?.value || manlidFormGroup.get('manlid_cover_cv')?.value
+    if (!(manlidFormGroup.get('manlid_comp_cv')?.value?.length || manlidFormGroup.get('manlid_cover_cv')?.value?.length
       || manlidFormGroup.get('manlid_cover_pcs')?.value || manlidFormGroup.get('manlid_cover_pts')?.value
       || manlidFormGroup.get('manlid_seal_cv')?.value || manlidFormGroup.get('pv_type_cv')?.value
       || manlidFormGroup.get('pv_type_pcs')?.value || manlidFormGroup.get('pv_spec_cv')?.value
@@ -2236,7 +2236,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       const test_type = this.surveyForm!.get('periodic_test.last_test_cv')!.value;
       const test_class = this.surveyForm!.get('periodic_test.test_class_cv')!.value;
       const testDt = Utility.convertDate(this.surveyForm!.get('periodic_test.test_dt')!.value) as number;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + test_class;
     }
     return "";
   }
@@ -2296,5 +2296,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.surveyForm?.get("manlid_cover_oth") ||
       this.surveyForm?.get("airline_valve_conn_oth") ||
       this.surveyForm?.get("airline_valve_conn_oth"));
+  }
+
+  patchStringToArrayValue(arrayVal: string | undefined) {
+    return arrayVal ? [arrayVal] : []
   }
 }

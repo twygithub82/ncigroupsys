@@ -344,7 +344,7 @@
                               <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-0">
                                 <mat-form-field class="example-full-width">
                                   <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                                  <textarea matInput formControlName="remarks"></textarea>
+                                  <textarea matLine="1" matInput formControlName="remarks"></textarea>
                                 </mat-form-field>
                               </div>
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
@@ -479,44 +479,44 @@
                   <mat-card-content>
                     <div class="container pt-2">
                       <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_NAME}}:
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                          {{translatedLangText.CARGO_NAME}}: {{cargoDetails?.cargo ?? "-"}}
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
                           {{cargoDetails?.cargo ?? "-"}}
-                        </div>
+                        </div> -->
                       </div>
                       <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.DESCRIPTION}}:
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                          {{translatedLangText.DESCRIPTION}}: {{cargoDetails?.description ?? "-"}}
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
                           {{cargoDetails?.description ?? "-"}}
-                        </div>
+                        </div> -->
                       </div>
                       <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.ALIAS_NAME}}:
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                          {{translatedLangText.ALIAS_NAME}}: {{cargoDetails?.alias ?? "-"}}
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
                           {{cargoDetails?.alias ?? "-"}}
-                        </div>
+                        </div> -->
                       </div>
                       <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_CLASS}}:
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                          {{translatedLangText.CARGO_CLASS}}: {{cargoDetails?.class_cv ?? "-"}}
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
                           {{cargoDetails?.class_cv ?? "-"}}
-                        </div>
+                        </div> -->
                       </div>
                       <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_UN_NO}}:
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+                          {{translatedLangText.CARGO_UN_NO}}: {{cargoDetails?.un_no ?? "-"}}
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
                           {{cargoDetails?.un_no ?? "-"}}
-                        </div>
+                        </div> -->
                       </div>
                       <div class="row">
                         <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
