@@ -507,7 +507,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
           styles: {
             fontSize: fontSz,
             minCellHeight: minHeightHeaderCol,
-            lineWidth: 0.6, // cell border thickness
+            lineWidth: 0.45, // cell border thickness
             lineColor: [0, 0, 0], // black
             cellPadding: 2 // ← Add some padding
           },
@@ -600,7 +600,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       textContent=`${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
       PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX,8, false, 'helvetica', true, textWrapWidth);
       
-      bufferLabelY+=41;
+      bufferLabelY+=38;
       var gapLabel=(textWrapWidth/2);      
 
       textContent=`${this.translatedLangText.SURVEY_BY}:`;
