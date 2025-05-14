@@ -591,7 +591,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 6.5;
     const pagePositions: { page: number; x: number; y: number }[] = [];

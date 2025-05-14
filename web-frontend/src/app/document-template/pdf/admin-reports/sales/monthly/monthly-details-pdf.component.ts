@@ -616,7 +616,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 6;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -680,7 +680,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -688,8 +688,8 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 13);
 
     if(this.customer)
     {
@@ -932,7 +932,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
   }
   GetReportTitle(): string {
     var title:string='';
-    switch(this.repType)
+    switch(this.repType?.toUpperCase())
     {
       case "CLEANING":
          title = `${this.translatedLangText.CLEAN_MONTHLY_DETAILS_REPORT}`

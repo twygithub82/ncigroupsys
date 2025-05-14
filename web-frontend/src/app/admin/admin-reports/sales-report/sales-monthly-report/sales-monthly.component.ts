@@ -44,6 +44,8 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { A } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-sales-monthly',
@@ -156,7 +158,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     LOCATION: 'COMMON-FORM.LOCATION',
     YEAR: 'COMMON-FORM.YEAR',
     MONTH: 'COMMON-FORM.MONTH',
-    COST_TYPE: 'COMMON-FORM.COST-TYPE'
+    TYPE: 'COMMON-FORM.TYPE'
   }
 
   invForm?: UntypedFormGroup;
@@ -218,7 +220,8 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -297,6 +300,8 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
+      if(this.modulePackageService.isStarterPackage())
+        data = data.filter(c=>c.code_val != "RESIDUE" && c.code_val != "STEAMING")
       this.costTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');
       var allType = this.costTypeCvList.find(c => c.code_val == 'ALL');
       this.searchForm?.patchValue({
