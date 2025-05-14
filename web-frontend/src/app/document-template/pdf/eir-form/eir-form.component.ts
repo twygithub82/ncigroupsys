@@ -568,8 +568,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     textContent = this.displayTankPurpose(this.eirDetails?.in_gate?.tank);
     PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + bufferLabel, 8);
     await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
-    textContent = this.eirDetails?.in_gate?.tank?.remarks || ''
-    PDFUtility.addText(pdf, textContent, startRectY + 8, leftMargin + 2, 8);
+    // textContent = this.eirDetails?.in_gate?.tank?.remarks || ''
+    // PDFUtility.addText(pdf, textContent, startRectY + 8, leftMargin + 2, 8);
     startRectY += rectBoxHeight + 2;
     rectBoxHeight = pageHeight - rectBoxHeight - startRectY + 2;
 
@@ -595,7 +595,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     textContent = `${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
 
-    bufferLabelY += 37;
+    bufferLabelY += 47;
     var gapLabel = (textWrapWidth / 2);
 
     textContent = `${this.translatedLangText.SURVEY_BY}:`;
