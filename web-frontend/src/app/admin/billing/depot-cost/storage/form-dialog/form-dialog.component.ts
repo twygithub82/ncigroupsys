@@ -202,7 +202,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CANNOT_EXCEED: "COMMON-FORM.CANNOT-EXCEED",
     CANNOT_SMALLER: "COMMON-FORM.CANNOT-SMALLER",
     SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
-    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
+    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED',
+    BILLING:'COMMON-FORM.BILLING',
   };
 
 
@@ -479,28 +480,40 @@ EnableValidator(path: string) {
     transformList(item:any):any[]{
   
          var transformedList: any[] = [];
-         if(item.gin_billing)
-      {
-         transformedList.push({
-                guid:`${item.guid}-1`,
-                billing_type: "GATE_IN",
-                invoice_no: item.gin_billing?.invoice_no || '',
-                invoice_dt: item.gin_billing?.invoice_dt || 0,
-                gate_cost: (item.gin_billing)?this.displayNumber(item.gate_in_cost!):'-'
-            });
-      }
 
-      //if (item.gout_billing) 
-       if(item.gout_billing)
-      {
-        transformedList.push({
-                guid:`${item.guid}-2`,
-                billing_type: "GATE_OUT",
-                invoice_no: item.gout_billing?.invoice_no || '',
-                invoice_dt: item.gout_billing?.invoice_dt || 0,
-                gate_cost: (item.gout_billing)?this.displayNumber(item.gate_out_cost!):'-'
-            });
-      }
+         item.storing_order_tank?.storage_detail?.forEach((storageDetail: any) => {
+           
+           transformedList.push({
+               guid:`${item.guid}-${storageDetail.guid}`,
+               billing_type: "STORAGE",
+               invoice_no: storageDetail.billing?.invoice_no || '',
+               invoice_dt: (storageDetail.billing?.invoice_dt) || 0,
+               cut_off_date: storageDetail.end_dt || 0,
+               storage_cost: (storageDetail.total_cost!)||0
+           });
+         })
+      //    if(item.gin_billing)
+      // {
+      //    transformedList.push({
+      //           guid:`${item.guid}-1`,
+      //           billing_type: "GATE_IN",
+      //           invoice_no: item.gin_billing?.invoice_no || '',
+      //           invoice_dt: item.gin_billing?.invoice_dt || 0,
+      //           gate_cost: (item.gin_billing)?this.displayNumber(item.gate_in_cost!):'-'
+      //       });
+      // }
+
+      // //if (item.gout_billing) 
+      //  if(item.gout_billing)
+      // {
+      //   transformedList.push({
+      //           guid:`${item.guid}-2`,
+      //           billing_type: "GATE_OUT",
+      //           invoice_no: item.gout_billing?.invoice_no || '',
+      //           invoice_dt: item.gout_billing?.invoice_dt || 0,
+      //           gate_cost: (item.gout_billing)?this.displayNumber(item.gate_out_cost!):'-'
+      //       });
+      // }
 
       return transformedList;
     }
@@ -527,7 +540,7 @@ EnableValidator(path: string) {
   
   DisplayCost(row: any)
   {
-     return row.gate_cost;
+     return this.displayNumber(row.storage_cost) || "-";
    
   }
 
