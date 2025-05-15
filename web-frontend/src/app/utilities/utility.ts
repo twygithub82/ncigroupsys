@@ -857,7 +857,7 @@ export class Utility {
     posY += 5;
     pdf.text(customerInfo.companyAddress, posX, posY);
 
-    // Add phone, fax, and website
+    // Add phone, fax
     let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
     posX += 8.5;
     posY += 5;
@@ -865,7 +865,7 @@ export class Utility {
     nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
     pdf.text(nextLine, posX + 39, posY);
 
-    // Add company UEN
+    // Add website, company UEN
     nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
     posX += 0;
     posY += 5;
@@ -873,23 +873,24 @@ export class Utility {
     nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
     pdf.text(nextLine, posX + 39, posY);
 
-    // Load and add company logo
-    const imgUrl = "assets/images/report-logo.png";
-    const img = new Image();
+    // // Load and add company logo
+    // const imgUrl = customerInfo.companyReportLogo;
+    // const img = new Image();
 
-    // Wait for the image to load
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = imgUrl;
-    });
+    // // Wait for the image to load
+    // await new Promise<void>((resolve, reject) => {
+    //   img.onload = () => resolve();
+    //   img.onerror = () => reject(new Error('Failed to load image'));
+    //   img.src = imgUrl;
+    // });
+    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
 
     // Add the image to the PDF
     const posX1_img = pageWidth / 1.7; //leftMargin + 5;
     const posY1_img = topMargin + 0;
-    const imgHeight = heightHeader - 0;
-    const imgWidth = 80;
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
+    // const imgHeight = heightHeader - 0;
+    // const imgWidth = 80;
+    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
   }
 
   static async addHeaderWithCompanyLogo_Landscape(
@@ -933,47 +934,102 @@ export class Utility {
     pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
 
     // Add company name
-    pdf.setFontSize(18);
+    pdf.setFontSize(12);
     const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    let posX = pageWidth / 2.4;
+    let posX = pageWidth / 3.5;
     let posY = topMargin + 8;
     pdf.text(customerInfo.companyName, posX, posY);
 
     // Add company address
     pdf.setFontSize(10);
-    posX -= 5;
-    posY += 7;
+    posX -= 20.5;
+    posY += 5;
     pdf.text(customerInfo.companyAddress, posX, posY);
 
-    // Add phone, fax, and website
-    let nextLine = `${translatedLangText.PHONE}:${customerInfo.companyPhone} ${translatedLangText.FAX}:${customerInfo.companyFax} ${translatedLangText.WEB}:${customerInfo.companyWebsite}`;
-    posX -= 20;
+    // Add phone, fax
+    let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
+    posX += 8.5;
     posY += 5;
     pdf.text(nextLine, posX, posY);
+    nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
+    pdf.text(nextLine, posX + 39, posY);
 
-    // Add company UEN
-    nextLine = `${translatedLangText.CRN}:${customerInfo.companyUen}`;
-    posX += 35;
+    // Add website, company UEN
+    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    posX += 0;
     posY += 5;
     pdf.text(nextLine, posX, posY);
+    nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    pdf.text(nextLine, posX + 39, posY);
 
-    // Load and add company logo
-    const imgUrl = "assets/images/report-logo.png";
-    const img = new Image();
+    // // Load and add company logo
+    // const imgUrl = customerInfo.companyReportLogo;
+    // const img = new Image();
 
-    // Wait for the image to load
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = imgUrl;
-    });
+    // // Wait for the image to load
+    // await new Promise<void>((resolve, reject) => {
+    //   img.onload = () => resolve();
+    //   img.onerror = () => reject(new Error('Failed to load image'));
+    //   img.src = imgUrl;
+    // });
+    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
 
     // Add the image to the PDF
-    const posX1_img = leftMargin + 5;
+    const posX1_img = pageWidth - (width + leftMargin);
     const posY1_img = topMargin + 0;
-    const imgHeight = heightHeader - 0;
-    const imgWidth = 70;
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, imgWidth, imgHeight); // (imageElement, format, x, y, width, height)
+    // const imgHeight = heightHeader - 0;
+    // const imgWidth = 70;
+    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+  }
+
+  static async loadPDFImage(
+    imgUrl: string,
+    maxWidth?: number,
+    maxHeight?: number
+  ): Promise<{ img: HTMLImageElement; width: number; height: number }> {
+    const img = new Image();
+
+    return new Promise((resolve, reject) => {
+      img.onload = () => {
+        let { naturalWidth: width, naturalHeight: height } = img;
+
+        if (maxWidth || maxHeight) {
+          const aspectRatio = width / height;
+
+          if (maxWidth && maxHeight) {
+            // Fit within both bounds
+            if (width > maxWidth || height > maxHeight) {
+              if (width / maxWidth > height / maxHeight) {
+                width = maxWidth;
+                height = width / aspectRatio;
+              } else {
+                height = maxHeight;
+                width = height * aspectRatio;
+              }
+            }
+          } else if (maxWidth) {
+            if (width > maxWidth) {
+              width = maxWidth;
+              height = width / aspectRatio;
+            }
+          } else if (maxHeight) {
+            if (height > maxHeight) {
+              height = maxHeight;
+              width = height * aspectRatio;
+            }
+          }
+        }
+
+        resolve({
+          img,
+          width,
+          height,
+        });
+      };
+
+      img.onerror = () => reject(new Error(`Failed to load image from ${imgUrl}`));
+      img.src = imgUrl;
+    });
   }
 
   static removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
