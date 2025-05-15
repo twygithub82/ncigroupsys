@@ -259,7 +259,8 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     LOCATION_TRANSFER: 'COMMON-FORM.LOCATION_TRANSFER',
     STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS',
     EIR: 'COMMON-FORM.EIR',
-    TRANSFER: 'COMMON-FORM.TRANSFER'
+    TRANSFER: 'COMMON-FORM.TRANSFER',
+    S_N:'COMMON-FORM.S_N',
   }
 
 
@@ -575,7 +576,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     const vAlign="bottom";
     const headers = [
       [
-        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.EIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } },

@@ -888,7 +888,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.JOB_NO,
+      this.translatedLangText.S_N, this.translatedLangText.JOB_NO,
       this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
       this.translatedLangText.LAST_CARGO, this.translatedLangText.IN_DATE,
       this.translatedLangText.OUT_DATE, this.translatedLangText.CLEAN_COST,

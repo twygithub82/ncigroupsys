@@ -867,7 +867,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
       
         const reportTitle = this.GetReportTitle();
         const headers = [[
-          this.translatedLangText.NO,this.translatedLangText.TANK_NO, 
+          this.translatedLangText.S_N,this.translatedLangText.TANK_NO, 
           this.translatedLangText.IN_DATE,this.translatedLangText.TAKE_IN_REFERENCE, 
           this.translatedLangText.CAPACITY,this.translatedLangText.TARE_WEIGHT,
           this.translatedLangText.LAST_CARGO,this.translatedLangText.CLEAN_DATE, 

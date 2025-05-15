@@ -299,6 +299,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     LOLO:'COMMON-FORM.LOLO',
     TANK:'COMMON-FORM.TANK',
     COST:'COMMON-FORM.COST',
+    S_N:'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -649,7 +650,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     var vAlign='bottom';
     const reportTitle = this.GetReportTitle();
     const headers =   [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } },

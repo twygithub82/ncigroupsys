@@ -273,6 +273,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     NO_OF_TANKS_BAYS:"COMMON-FORM.NO-OF-TANKS-BAYS",
     NO_OF_TANKS_REQ_TEMP:"COMMON-FORM.NO-OF-TANKS-REQ-TEMP",
     NO_OF_TANKS_STEAM_CARGO:"COMMON-FORM.NO-OF-TANKS-STEAM-CARGO",
+    S_N:'COMMON-FORM.S_N',
 
   }
 
@@ -883,7 +884,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
 
     const reportTitle = this.GetReportTitle();
     const headers : CellInput[][]= [[
-      { content: this.translatedLangText.NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.S_N, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.TANK_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
       { content: this.translatedLangText.EIR_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
       { content: this.translatedLangText.CUSTOMER, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  

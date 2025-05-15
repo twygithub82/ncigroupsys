@@ -258,7 +258,8 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
     MAN_HOUR:'COMMON-FORM.MAN-HOUR',
     MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
-    TOTAL_COST:'COMMON-FORM.TOTAL-COST'
+    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
+    S_N:'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -607,7 +608,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATE_DATE,
       this.translatedLangText.REPAIR_TYPE,this.translatedLangText.MAN_HOUR, this.translatedLangText.MATERIAL_COST,
       this.translatedLangText.TOTAL_COST,this.translatedLangText.QC_BY

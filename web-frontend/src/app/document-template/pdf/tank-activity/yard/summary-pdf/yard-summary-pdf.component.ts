@@ -249,10 +249,9 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     CLEANING:"COMMON-FORM.CLEANING",
     REPAIR:"COMMON-FORM.STORAGE",
     STORAGE:"COMMON-FORM.STORAGE",
-    
     PENDING:"COMMON-FORM.PENDING",
     WITH_RO:"COMMON-FORM.WITH-RO",
-    
+    S_N:'COMMON-FORM.S_N',
 
   }
 
@@ -851,7 +850,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
       
         const reportTitle = this.GetReportTitle();
         const headers = [[
-          this.translatedLangText.NO,this.translatedLangText.CUSTOMER_CODE,
+          this.translatedLangText.S_N,this.translatedLangText.CUSTOMER_CODE,
           this.translatedLangText.CUSTOMER, this.translatedLangText.NO_OF_TANKS
         ]];
   

@@ -303,7 +303,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     CLOSING_BALANCE: 'COMMON-FORM.CLOSING-BALANCE',
     LOCATION: 'COMMON-FORM.LOCATION',
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
-    DAILY_INVENTORY_SUMMARY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY-SUMMARY'
+    DAILY_INVENTORY_SUMMARY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY-SUMMARY',
+    S_N:'COMMON-FORM.S_N',
 
   }
 
@@ -838,7 +839,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.CUSTOMER_CODE,
+      this.translatedLangText.S_N, this.translatedLangText.CUSTOMER_CODE,
       this.translatedLangText.CUSTOMER, this.translatedLangText.IN_GATE,
       this.translatedLangText.OUT_GATE
     ]];
@@ -887,7 +888,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
         startY = lastTableFinalY + 15;
         const subHeaders = [[
-          this.translatedLangText.NO, this.translatedLangText.LOCATION,
+          this.translatedLangText.S_N, this.translatedLangText.LOCATION,
           this.translatedLangText.OPENING_BALANCE, this.translatedLangText.IN_GATE,
           this.translatedLangText.OUT_GATE, this.translatedLangText.CLOSING_BALANCE
         ]];
@@ -1056,7 +1057,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 12, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 

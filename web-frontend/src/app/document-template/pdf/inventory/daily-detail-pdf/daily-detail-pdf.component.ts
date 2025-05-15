@@ -260,7 +260,8 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     CLEAN_CERT_BOOKING: 'COMMON-FORM.CLEAN-CERT-BOOKING',
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
     REFERENCE: 'COMMON-FORM.REFERENCE',
-    OUT_GATE: 'COMMON-FORM.OUT-GATE'
+    OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    S_N:'COMMON-FORM.S_N',
   }
 
 
@@ -561,7 +562,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO,
+      this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
       this.translatedLangText.OWNER, this.translatedLangText.IN_DATE,
       this.translatedLangText.TAKE_IN_REFERENCE, this.translatedLangText.LAST_CARGO,

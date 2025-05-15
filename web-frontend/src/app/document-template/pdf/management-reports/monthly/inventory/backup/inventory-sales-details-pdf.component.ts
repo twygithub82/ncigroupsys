@@ -282,7 +282,8 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     PREINSPECTION:'COMMON-FORM.PREINSPECTION',
     ON_DEPOT:'COMMON-FORM.ON-DEPOT',
     OUT_GATE:'COMMON-FORM.OUT-GATE',
-    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL'
+    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
+    S_N:'COMMON-FORM.S_N',
     
   }
 
@@ -662,7 +663,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.DATE, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.GATE_SURCHARGE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },

@@ -265,7 +265,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     YARD: 'COMMON-FORM.YARD',
     IN_YARD: 'COMMON-FORM.IN-YARD',
     RELEASED: 'COMMON-FORM.RELEASED',
-    REPORT: 'COMMON-FORM.REPORT'
+    REPORT: 'COMMON-FORM.REPORT',
+    S_N: 'COMMON-FORM.S_N'
   }
 
   type?: string | null;
@@ -607,7 +608,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.IN_DATE, this.translatedLangText.TAKE_IN_REFERENCE,
       this.translatedLangText.CAPACITY, this.translatedLangText.TARE_WEIGHT,
       this.translatedLangText.LAST_CARGO, this.translatedLangText.CLEAN_DATE,
@@ -621,7 +622,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     ]];
 
     const comStyles: any = {
-      0: { halign: 'center', cellWidth: 6, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
       1: { halign: 'left', cellWidth: 18, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
@@ -643,7 +644,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       19: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       20: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },
       21: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      22: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell }
+      22: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell }
     };
 
 
@@ -899,7 +900,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 6, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 
@@ -1346,6 +1347,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   GeneratedDate(): string {
     return Utility.convertDateToStr(new Date());
   }
+
   GetReportTitle(): string {
     var repTitle =`${this.translatedLangText.TANK_ACTIVITY}`;
     if(this.customerName)

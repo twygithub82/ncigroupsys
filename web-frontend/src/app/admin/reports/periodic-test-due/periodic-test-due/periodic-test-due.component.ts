@@ -156,7 +156,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     SURVEY_NAME: 'COMMON-FORM.SURVEY-NAME',
     DUE_TYPE: 'COMMON-FORM.DUE-TYPE',
     NEXT_TEST_DUE: 'COMMON-FORM.NEXT-TEST-TYPE-DUE',
-    NORMAL: 'COMMON-FORM.NORMAL',
+    NOT_DUE: 'COMMON-FORM.NOT-DUE',
     DUE: 'COMMON-FORM.DUE'
   }
 
@@ -442,7 +442,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
-      this.dueType = [this.translatedLangText.NORMAL, this.translatedLangText.DUE]
+      this.dueType = [this.translatedLangText.NOT_DUE, this.translatedLangText.DUE]
     });
   }
 

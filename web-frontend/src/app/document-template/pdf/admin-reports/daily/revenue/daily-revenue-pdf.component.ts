@@ -604,7 +604,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATE_DATE,
       this.translatedLangText.REPAIR_TYPE,this.translatedLangText.QC_BY, this.translatedLangText.REPAIR_COST
       

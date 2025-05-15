@@ -245,7 +245,8 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     GATEIO: 'COMMON-FORM.GATEIO',
     REPORT_TITLE: 'COMMON-FORM.PENDING-INVOICE_REPORT',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
-    SUMMARY: 'COMMON-FORM.SUMMARY'
+    SUMMARY: 'COMMON-FORM.SUMMARY',
+    S_N:'COMMON-FORM.S_N',
   }
 
   cut_off_dt: string;
@@ -848,7 +849,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   GetReportColumnsHeader(): any{
     const headerRow: string[] = [
-      this.translatedLangText.NO,
+      this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER,
       this.translatedLangText.GATEIO,
       this.translatedLangText.PREINSPECTION,

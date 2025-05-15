@@ -248,7 +248,8 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     CLEAN_CERT_BOOKING: 'COMMON-FORM.CLEAN-CERT-BOOKING',
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
     LOCATION: 'COMMON-FORM.LOCATION',
-    YARD_DETAIL_REPORT: 'COMMON-FORM.YARD-DETAIL-REPORT'
+    YARD_DETAIL_REPORT: 'COMMON-FORM.YARD-DETAIL-REPORT',
+    S_N:'COMMON-FORM.S_N',
   }
 
 
@@ -644,7 +645,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO,
+      this.translatedLangText.S_N,
       this.translatedLangText.TANK_NO, this.translatedLangText.LOCATION,
       this.translatedLangText.EIR_NO, this.translatedLangText.OWNER,
       this.translatedLangText.IN_DATE, this.translatedLangText.TAKE_IN_REFERENCE,

@@ -286,7 +286,8 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     ON_DEPOT:'COMMON-FORM.ON-DEPOT',
     OUT_GATE:'COMMON-FORM.OUT-GATE',
     PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
-    TEMPERATURE:'COMMON-FORM.TEMPERATURE'
+    TEMPERATURE:'COMMON-FORM.TEMPERATURE',
+    S_N:'COMMON-FORM.S_N',
     
   }
 
@@ -769,7 +770,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     const reportTitle = this.GetReportTitle();
     const vAlign ="bottom"
     const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),

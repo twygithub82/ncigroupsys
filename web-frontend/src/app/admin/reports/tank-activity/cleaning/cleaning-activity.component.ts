@@ -168,7 +168,7 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-
+  maxManuDOMDt: Date = new Date();
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;

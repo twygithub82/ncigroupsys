@@ -1114,4 +1114,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   onTabFocused() {
     this.resetForm();
   }
+
+   getMaxDate(){
+    return new Date();
+  }
+
 }
