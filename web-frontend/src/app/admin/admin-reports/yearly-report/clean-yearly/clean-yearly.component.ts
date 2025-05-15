@@ -157,9 +157,6 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     MONTH: 'COMMON-FORM.MONTH',
     MONTH_START: 'COMMON-FORM.MONTH-START',
     MONTH_END: 'COMMON-FORM.MONTH-END',
-
-
-
   }
 
   invForm?: UntypedFormGroup;

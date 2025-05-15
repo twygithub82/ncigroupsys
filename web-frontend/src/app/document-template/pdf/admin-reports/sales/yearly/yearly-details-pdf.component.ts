@@ -49,6 +49,7 @@ import {
   ApexResponsive,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { E } from '@angular/cdk/keycodes';
 
 
 
@@ -290,6 +291,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     RESIDUE_YEARLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-YEARLY-DETAILS-REPORT',
     REPAIR_YEARLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-YEARLY-DETAILS-REPORT',
     CLEAN_YEARLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
+    YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
     AVERAGE:'COMMON-FORM.AVERAGE',
@@ -638,7 +640,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 6;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -702,7 +704,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -710,8 +712,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
 
     if(this.customer)
     {
@@ -860,8 +862,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 12, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin + 2, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin) -2, pdf.internal.pageSize.height - lineBuffer);
     });
 
     this.generatingPdfProgress = 100;
@@ -989,22 +991,43 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   }
   GetReportTitle(): string {
     var title:string='';
-    switch(this.repType)
-    {
-      case "CLEANING":
-         title = `${this.translatedLangText.CLEAN_YEARLY_DETAILS_REPORT}`
-        break;
-        case "STEAMING":
-          title = `${this.translatedLangText.STEAM_YEARLY_DETAILS_REPORT}`
-        break;
-        case "REPAIR":
-          title = `${this.translatedLangText.REPAIR_YEARLY_DETAILS_REPORT}`
-        break;
-        case "RESIDUE":
-          title = `${this.translatedLangText.RESIDUE_YEARLY_DETAILS_REPORT}`
-        break;
+    if(this.repType === "ALL" || this.repType === ""){
+      `${title}`
     }
-    return `${title}`
+    else{
+         let formatted = this.repType!.charAt(0).toUpperCase() + this.repType!.slice(1).toLowerCase();
+         title = `${this.translatedLangText.YEARLY_SALES_REPORT} - ${formatted}`
+    }
+    return title;
+
+    // switch(this.repType)
+    // {
+    //     case "CLEANING":
+    //      title = `${this.translatedLangText.YEARLY_SALES_REPORT} - ${formatted}`
+    //     break;
+    //     case "STEAMING":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "REPAIR":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "RESIDUE":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //       break;
+    //     case "LOLO":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "GATE":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     case "PREINSPECTION":
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    //     default:
+    //       title = `${this.translatedLangText.YEARLY_SALES_REPORT}`
+    //     break;
+    // }
+    // return `${title}`
   }
 
   displayLocation(yard: report_status_yard): string {

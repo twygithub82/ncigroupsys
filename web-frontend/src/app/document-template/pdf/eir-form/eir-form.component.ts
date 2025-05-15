@@ -114,7 +114,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
     THERMOMETER: 'COMMON-FORM.THERMOMETER',
     LADDER: 'COMMON-FORM.LADDER',
-    DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
+    DATA_SCS: 'COMMON-FORM.DATA-SCS',
     TOP_DIS_COMP: 'COMMON-FORM.TOP-DIS-COMP',
     TOP_DIS_VALVE: 'COMMON-FORM.TOP-DIS-VALVE',
     AIRLINE_VALVE: 'COMMON-FORM.AIRLINE-VALVE',
@@ -196,6 +196,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     FOR: 'COMMON-FORM.FOR',
     DELIVERY_COURIER: 'COMMON-FORM.DELIVERY-COURIER',
     DAMAGED: 'COMMON-FORM.DAMAGED',
+    TYPE: 'COMMON-FORM.TYPE',
   }
   @Output() publishedEir = new EventEmitter<any>();
   // @Input() type?: string | null;
@@ -341,7 +342,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       // }
     }
   }
-  
+
 
   showPDF(): void {
     // const element = document.getElementById('eir-form-template');
@@ -404,421 +405,415 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-  
-    async exportToPDF_r1(fileName: string = 'document.pdf') {
-      const pageWidth = 210; // A4 width in mm (portrait)
-      const pageHeight = 297; // A4 height in mm (portrait)
-      const leftMargin = 10;
-      const rightMargin = 10;
-      const topMargin = 5;
-      const bottomMargin = 5;
-      const contentWidth = pageWidth - leftMargin - rightMargin;
-      const maxContentHeight = pageHeight - topMargin - bottomMargin;
-  
-      this.generatingPdfLoadingSubject.next(true);
-      this.generatingPdfProgress = 0;
-  
-      const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-      //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-      let pageNumber = 1;
-  
-      let reportTitleCompanyLogo = 32;
-      let tableHeaderHeight = 12;
-      let tableRowHeight = 8.5;
-      let minHeightHeaderCol = 3;
-      let minHeightBodyCell = 7;
-      let fontSz = 6.5;
-  
-      const pagePositions: { page: number; x: number; y: number }[] = [];
-      // const progressValue = 100 / cardElements.length;
-  
-      const reportTitle = this.GetReportTitle();
-      
-      // const headers = [[
-      //   this.translatedLangText.NO,
-      //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
-      //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
-      //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
-      //   this.translatedLangText.PROCEDURE
-      // ]];
-  
-      const comStyles: any = {
-        // Set columns 0 to 16 to be center aligned
-        0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,cellWidth: '20%' },
-        1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,cellWidth: '20%' },
-        2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,cellWidth: '30%' },
-        3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,cellWidth: '30%' },
-      };
-  
-      // Define headStyles with valid fontStyle
-      const headStyles: Partial<Styles> = {
-        fillColor: [211, 211, 211], // Background color
-        textColor: 0, // Text color (white)
-        fontStyle: "bold", // Valid fontStyle value
-        halign: 'center', // Centering header text
-        valign: 'middle',
-        lineColor: 201,
-        lineWidth: 0.1
-      };
-  
-      let currentY = topMargin;
-      let scale = this.scale;
-      pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-  
-  
-      await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
-  
-      // Variable to store the final Y position of the last table
-      let lastTableFinalY = 45;
-  
-      let startY = lastTableFinalY+8; // Start table 20mm below the customer name
-  
-      pdf.setFontSize(8);
-      pdf.setTextColor(0, 0, 0); // Black text
-      const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDateTime(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
-      //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-      PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY+5, 8);
-      PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY+5, leftMargin,  8);
-  
-      var data = [
 
-        [ 
-          { content: `${this.translatedLangText.SO_NO}: ${this.eirDetails?.in_gate?.tank?.storing_order?.so_no}` },
-          { content: `${this.translatedLangText.SO_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.tank?.storing_order?.create_dt)}` }, 
-          { content: `${this.translatedLangText.LAST_CARGO}: ${(this.eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 } 
-        ],
-        [`${this.translatedLangText.TANK_NO}: ${this.eirDetails?.in_gate?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.eirDetails?.in_gate?.eir_no}`, 
-          `${this.translatedLangText.TAKE_IN_REFERENCE}: ${this.eirDetails?.in_gate?.tank?.job_no}`,`${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDate(this.eirDetails?.create_dt)}`],
-        [`${this.translatedLangText.OPERATOR}: ${this.eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.eirDetails?.in_gate?.tank?.customer_company?.name}`, 
-          `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.tank?.last_release_dt) ||'-'}`,`${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
-        [`${this.translatedLangText.UNIT_TYPE}: ${this.eirDetails?.in_gate?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}:${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`, 
-          `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`,`${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.eirDetails?.in_gate?.tank?.clean_status_cv)}`],
-        [`${this.translatedLangText.CAPACITY}: ${this.eirDetails?.capacity} L`, `${this.translatedLangText.TARE_WEIGHT}:${this.eirDetails?.tare_weight} KG`, 
-          `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`,`${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
-      ];
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-         autoTable(pdf, {
-          
-          body: data,
-          startY: startY, // Start table at the current startY value
-          theme: 'grid',
-          margin: { left: leftMargin },
-          styles: {
-            fontSize: fontSz,
-            minCellHeight: minHeightHeaderCol,
-            lineWidth: 0.45, // cell border thickness
-            lineColor: [0, 0, 0], // black
-            cellPadding: 2 // ← Add some padding
-          },
-           tableWidth: contentWidth,
-           columnStyles: comStyles,
-          // headStyles: headStyles, // Custom header styles
-          bodyStyles: {
-            fillColor: [255, 255, 255],
-            halign: 'left', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
-            
-          },
-          didDrawPage: (data: any) => {
-            const pageCount = pdf.getNumberOfPages();
-  
-            lastTableFinalY = data.cursor.y;
-  
-            var pg = pagePositions.find(p => p.page == pageCount);
-            if (!pg) {
-              pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-              if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-              }
-            }
-          },
-        });
-   
-        
-     
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
 
-//      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-      startY = lastTableFinalY+2;
-      // Get the element correctly (remove the dot from className)
-      const elements = document.getElementsByClassName('d-flex'); // Note: removed the dot
-        
-      if (!elements || elements.length === 0) {
-        console.error('Element not found');
-        return;
-      }
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
 
-      // Get the first element with the class
-      const element = elements[3];
-      //const contentWidth = pageWidth - leftMargin - rightMargin;
-      const chartContentWidth= contentWidth ;
-      
-      const canvas = await html2canvas(element  as HTMLElement, { scale: scale });
-      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-      const imgHeight = ((canvas.height * chartContentWidth) / canvas.width);
-      
-      pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 7;
+    let fontSz = 6.5;
 
-      var startRectY = startY + imgHeight + 2;
-      var rectBoxHeight=13;
-      var bufferLabel = 16;
-      var textContent=`${this.translatedLangText.REMARKS}:`;
-      await PDFUtility.drawRectangleBox(pdf,leftMargin,startRectY, chartContentWidth, rectBoxHeight);
-      PDFUtility.addText(pdf,textContent,startRectY+5,leftMargin+2,8,true);
-      textContent=this.eirDetails?.comments||'';
-      PDFUtility.addText(pdf,textContent,startRectY+5,leftMargin+bufferLabel,8);
-      startRectY+=rectBoxHeight+2;
-      textContent=`${this.translatedLangText.PURPOSE}:`;
-      PDFUtility.addText(pdf,textContent,startRectY+5,leftMargin+2,8,true);
-      textContent=this.displayTankPurpose(this.eirDetails?.in_gate?.tank);
-      PDFUtility.addText(pdf,textContent,startRectY+5,leftMargin+bufferLabel,8);
-      await PDFUtility.drawRectangleBox(pdf,leftMargin,startRectY, chartContentWidth, rectBoxHeight);
-      textContent=this.eirDetails?.in_gate?.tank?.remarks||''
-      PDFUtility.addText(pdf,textContent,startRectY+8,leftMargin+2,8);
-      startRectY+=rectBoxHeight+2;
-      rectBoxHeight=pageHeight-rectBoxHeight-startRectY+2;
-      
-      await PDFUtility.drawRectangleBox(pdf,leftMargin,startRectY, chartContentWidth, rectBoxHeight);
-      await PDFUtility.drawRectangleBox(pdf,leftMargin,startRectY, chartContentWidth/2, rectBoxHeight);
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
 
-      var textWrapWidth=chartContentWidth/2;
-      var rightRectBoxStartX=leftMargin+(chartContentWidth/2)+2;
-      var leftRectBoxStartX=leftMargin+2;
-      var bufferLabelY=9;
-      textContent=`${this.translatedLangText.FOR} ${customerInfo.companyName}`;
-      PDFUtility.addText(pdf,textContent,startRectY+5,leftRectBoxStartX,8,true);
+    const reportTitle = this.GetReportTitle();
 
-     
-      textContent=`${this.translatedLangText.FOR} ${this.eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}`;
-      PDFUtility.addText(pdf,textContent,startRectY+5,rightRectBoxStartX,8,true);
+    // const headers = [[
+    //   this.translatedLangText.NO,
+    //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
+    //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
+    //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
+    //   this.translatedLangText.PROCEDURE
+    // ]];
 
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '20%' },
+      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '20%' },
+      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+    };
 
-      textContent=`${this.translatedLangText.EIR_COMPANY_DECLARATION}`;
-      PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
-      
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
 
-      textContent=`${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX,8, false, 'helvetica', true, textWrapWidth);
-      
-      bufferLabelY+=38;
-      var gapLabel=(textWrapWidth/2);      
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
-      textContent=`${this.translatedLangText.SURVEY_BY}:`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,leftRectBoxStartX,8);
+    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
 
-      textContent=`${this.translatedLangText.REVIEW_BY}:`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,leftRectBoxStartX+(textWrapWidth/2),8);
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 45;
 
-      
-      gapLabel=(textWrapWidth/3); 
+    let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
 
-      textContent=`${this.translatedLangText.HAULIER}:`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX,8);
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
+    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+    PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
+    PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
 
-      textContent=`${this.translatedLangText.VEHICLE_NO}:`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX+(gapLabel),8);
+    var data = [
+      [
+        { content: `${this.translatedLangText.SO_NO}: ${this.eirDetails?.in_gate?.tank?.storing_order?.so_no}` },
+        { content: `${this.translatedLangText.SO_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.tank?.storing_order?.create_dt)}` },
+        { content: `${this.translatedLangText.LAST_CARGO}: ${(this.eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 }
+      ],
+      [`${this.translatedLangText.TANK_NO}: ${this.eirDetails?.in_gate?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.eirDetails?.in_gate?.eir_no}`,
+      `${this.translatedLangText.TAKE_IN_REFERENCE}: ${this.eirDetails?.in_gate?.tank?.job_no}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
+      [`${this.translatedLangText.OPERATOR}: ${this.eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.eirDetails?.in_gate?.tank?.customer_company?.name}`,
+      `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
+      [`${this.translatedLangText.UNIT_TYPE}: ${this.eirDetails?.in_gate?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}:${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
+      `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.eirDetails?.in_gate?.tank?.clean_status_cv)}`],
+      [`${this.translatedLangText.CAPACITY}: ${this.eirDetails?.capacity} L`, `${this.translatedLangText.TARE_WEIGHT}:${this.eirDetails?.tare_weight} KG`,
+      `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`, `${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
+    ];
 
-      textContent=`${this.translatedLangText.DRIVER_NAME}:`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX+(gapLabel*2),8);
+    autoTable(pdf, {
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: leftMargin },
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol,
+        lineWidth: 0.45, // cell border thickness
+        lineColor: [0, 0, 0], // black
+        cellPadding: 2 // ← Add some padding
+      },
+      tableWidth: contentWidth,
+      columnStyles: comStyles,
+      // headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
 
-      gapLabel=(textWrapWidth/2);
-      bufferLabelY+=4;
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
 
-      textContent=`${this.eirDetails?.create_by}`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,leftRectBoxStartX,8,true);
+        lastTableFinalY = data.cursor.y;
 
-      textContent=`${this.publish_by}`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,leftRectBoxStartX+gapLabel,8,true);
-
-      gapLabel=(textWrapWidth/3); 
-      textContent=`${this.eirDetails?.in_gate?.tank?.storing_order?.haulier}`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX,8,true);
-
-      textContent=`${this.eirDetails?.in_gate?.vehicle_no}`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX+(gapLabel),8,true);
-
-      textContent=`${this.eirDetails?.in_gate?.driver_name}`;
-      PDFUtility.addText(pdf,textContent,startRectY+bufferLabelY,rightRectBoxStartX+(gapLabel*2),8,true);
-
-      lastTableFinalY=startRectY+bufferLabelY;
-      textContent=`${this.translatedLangText.COMPUTER_GENERATED_NOTE}`;
-      PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY+6, 8);
-      //const totalPages = pdf.getNumberOfPages();
-  
-      // pagePositions.forEach(({ page, x, y }) => {
-      //   pdf.setDrawColor(0, 0, 0); // black line color
-      //   pdf.setLineWidth(0.1);
-      //   pdf.setLineDashPattern([0, 0], 0);
-      //   pdf.setFontSize(8);
-      //   pdf.setPage(page);
-      //   var lineBuffer = 13;
-      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-      // });
-  
-      this.generatingPdfProgress = 100;
-      //pdf.save(fileName);
-      this.generatingPdfProgress = 0;
-      this.generatingPdfLoadingSubject.next(false);
-      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-      this.dialogRef.close();
-    }
-    
-    GetReportTitle(): string {
-      return `${this.eirTitle}`
-    }
-
-    getFormattedFootValve(): string {
-      const label = this.translatedLangText?.FOOT_VALVE ?? '';
-    
-      if (!this.eirDetails?.foot_valve_cv) {
-        return label;
-      }
-    
-      const valveList = this.valveBrandCvList
-        ?.map((codeValue) => {
-          const isOther = this.isOthers(codeValue.code_val);
-          if (isOther) {
-            const otherDesc = this.eirDetails?.foot_valve_oth ?? '';
-            return `<span>${otherDesc}</span>`;
-          } else {
-            const isMatch = codeValue.code_val === this.eirDetails.foot_valve_cv;
-            const desc = codeValue.description;
-            return isMatch ? desc : `<span style="text-decoration: line-through;">${desc}</span>`;
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
           }
-        })
-        .join(' / ') ?? '';
-    
-      return `${label} (${valveList})`;
-    }
-    
-    
-    getFormattedDisCompDescription(): string {
-      if (!this.eirDetails?.btm_dis_comp_cv || !this.disCompCvList?.length) {
-        return '';
-      }
-    
-      return this.disCompCvList
-        .map(codeValue => {
-          const isStrikethrough = codeValue.code_val !== this.eirDetails.btm_dis_comp_cv;
-          const desc = codeValue.description;
-          return isStrikethrough ? `<span style="text-decoration: line-through;">${desc}</span>` : desc;
-        })
-        .join(' / ');
-    }
+        }
+      },
+    });
 
-    getFormattedBottomDisValveSection(): string {
-      const label = this.translatedLangText?.BOTTOM_DIS_VALVE__ABB ?? '';
-    
-      if (!this.eirDetails?.btm_dis_valve_cv) {
-        return label;
-      }
-    
-      const valvePart = this.disValveCvList
-        ?.map((codeValue) => {
-          const match = codeValue.code_val === this.eirDetails.btm_dis_valve_cv;
-          const desc = codeValue.description;
-          return match ? desc : `<span style="text-decoration: line-through;">${desc}</span>`;
-        })
-        .join(' / ') ?? '';
-    
-      const specPart = this.disValveSpecCvList
-        ?.map((codeValue) => {
-          const match = codeValue.code_val === this.eirDetails.btm_dis_valve_spec_cv;
-          const desc = codeValue.description;
-          return match ? desc : `<span style="text-decoration: line-through;">${desc}</span>`;
-        })
-        .join(' / ') ?? '';
-    
-      return `${label} (${valvePart}) (${specPart})`;
-    }
-    
-    
-  async generatePDF(): Promise<void> {
-    await this.exportToPDF_r1();
-  /*  
-    const element = document.getElementById('eir-form-body');
-    if (!element) {
-      console.error('Template element not found');
+    //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    startY = lastTableFinalY + 2;
+    // Get the element correctly (remove the dot from className)
+    const elements = document.getElementsByClassName('d-flex'); // Note: removed the dot
+
+    if (!elements || elements.length === 0) {
+      console.error('Element not found');
       return;
     }
 
-    if (this.type === "in") {
-      try {
-        this.generatingPdfLoadingSubject.next(true);
-        this.generatingPdfProgress = 0;
-        // const canvas = await html2canvas(element, {
-        //   scale: this.scale, // Increase resolution
-        // });
+    // Get the first element with the class
+    const element = elements[3];
+    //const contentWidth = pageWidth - leftMargin - rightMargin;
+    const chartContentWidth = contentWidth;
 
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = pdf.internal.pageSize.width; // A4 page width
-        const pageHeight = pdf.internal.pageSize.height; // A4 page height
-        const leftRightMargin = 5; // Fixed left and right margins
-        const topMargin = 5; // Reduced top margin
-        const bottomMargin = 5; // Reduced bottom margin
-        const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
+    const canvas = await html2canvas(element as HTMLElement, { scale: scale });
+    let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+    const imgHeight = ((canvas.height * chartContentWidth) / canvas.width);
 
-        // Calculate natural dimensions for the body content
-        const rect = element.getBoundingClientRect();
-        const imgWidth = rect.width * 0.264583;  // px to mm
-        const imgHeight = rect.height * 0.264583;
-        const aspectRatio = imgWidth / imgHeight;
+    pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
 
-        // Calculate scaled width and height to fit the page without stretching
-        const scaledWidth = pageWidth - leftRightMargin * 2; // Adjusted width with fixed margins
-        const scaledHeight = scaledWidth / aspectRatio;
+    var startRectY = startY + imgHeight + 2;
+    var rectBoxHeight = 13;
+    var bufferLabel = 16;
+    var textContent = `${this.translatedLangText.REMARKS}:`;
+    await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
+    PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + 2, 8, true);
+    textContent = this.eirDetails?.comments || '';
+    PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + bufferLabel, 8);
+    startRectY += rectBoxHeight + 2;
+    textContent = `${this.translatedLangText.PURPOSE}:`;
+    PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + 2, 8, true);
+    textContent = this.displayTankPurpose(this.eirDetails?.in_gate?.tank);
+    PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + bufferLabel, 8);
+    await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
+    // textContent = this.eirDetails?.in_gate?.tank?.remarks || ''
+    // PDFUtility.addText(pdf, textContent, startRectY + 8, leftMargin + 2, 8);
+    startRectY += rectBoxHeight + 2;
+    rectBoxHeight = pageHeight - rectBoxHeight - startRectY + 2;
 
-        let yOffset = 0;
-        let currentPage = 1;
-        const totalPages = Math.ceil(imgHeight / usableHeight);
+    await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
+    await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth / 2, rectBoxHeight);
 
-        while (yOffset < imgHeight) {
-          if (yOffset > 0) pdf.addPage();
+    var textWrapWidth = chartContentWidth / 2;
+    var rightRectBoxStartX = leftMargin + (chartContentWidth / 2) + 2;
+    var leftRectBoxStartX = leftMargin + 2;
+    var bufferLabelY = 9;
+    textContent = `${this.translatedLangText.FOR} ${customerInfo.companyName}`;
+    PDFUtility.addText(pdf, textContent, startRectY + 5, leftRectBoxStartX, 8, true);
 
-          // Add Header and get its height
-          const headerHeight = 28;
-          await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftRightMargin, leftRightMargin, this.translate);
-          this.generatingPdfProgress += 33;
 
-          // Adjust usable height by subtracting header height
-          const adjustedUsableHeight = usableHeight - headerHeight;
+    textContent = `${this.translatedLangText.FOR} ${this.eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}`;
+    PDFUtility.addText(pdf, textContent, startRectY + 5, rightRectBoxStartX, 8, true);
 
-          // Add Body Content
-          const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
-          const canvasChunk = document.createElement('canvas');
-          const context = canvasChunk.getContext('2d');
 
-          // Create a new canvas for the current chunk
-          canvasChunk.width = canvas.width;
-          canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
+    textContent = `${this.translatedLangText.EIR_COMPANY_DECLARATION}`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
 
-          if (context) {
-            context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
-          }
 
-          const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
-          pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
-          this.generatingPdfProgress += 33;
+    textContent = `${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
 
-          // Add Footer
-          await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+    bufferLabelY += 47;
+    var gapLabel = (textWrapWidth / 2);
 
-          yOffset += chunkHeight;
-          currentPage++;
-       // }
-        this.generatingPdfProgress = 100;
-        pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
-        this.generatedPDF = pdf.output('blob');
-        this.onDownloadClick();
-        this.generatingPdfLoadingSubject.next(false);
-        Utility.previewPDF(pdf, `${this.getReportTitle()}`);
-        this.dialogRef.close();
-      } catch (error) {
-        console.error('Error generating PDF:', error);
-      }
+    textContent = `${this.translatedLangText.SURVEY_BY}:`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8);
+
+    textContent = `${this.translatedLangText.REVIEW_BY}:`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX + (textWrapWidth / 2), 8);
+
+
+    gapLabel = (textWrapWidth / 3);
+
+    textContent = `${this.translatedLangText.HAULIER}:`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8);
+
+    textContent = `${this.translatedLangText.VEHICLE_NO}:`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel), 8);
+
+    textContent = `${this.translatedLangText.DRIVER_NAME}:`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8);
+
+    gapLabel = (textWrapWidth / 2);
+    bufferLabelY += 4;
+
+    textContent = `${this.eirDetails?.create_by}`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8, true);
+
+    textContent = `${this.publish_by}`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX + gapLabel, 8, true);
+
+    gapLabel = (textWrapWidth / 3);
+    textContent = `${this.eirDetails?.in_gate?.tank?.storing_order?.haulier}`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, true);
+
+    textContent = `${this.eirDetails?.in_gate?.vehicle_no}`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel), 8, true);
+
+    textContent = `${this.eirDetails?.in_gate?.driver_name}`;
+    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8, true);
+
+    lastTableFinalY = startRectY + bufferLabelY;
+    textContent = `${this.translatedLangText.COMPUTER_GENERATED_NOTE}`;
+    PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, 8);
+    //const totalPages = pdf.getNumberOfPages();
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0, 0], 0);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
+
+  GetReportTitle(): string {
+    return `${this.eirTitle}`
+  }
+
+  getFormattedFootValve(): string {
+    const label = this.translatedLangText?.FOOT_VALVE ?? '';
+
+    if (!this.eirDetails?.foot_valve_cv) {
+      return label;
     }
-    return;*/
+
+    const valveList = this.valveBrandCvList
+      ?.map((codeValue) => {
+        const isOther = this.isOthers(codeValue.code_val);
+        if (isOther) {
+          const otherDesc = this.eirDetails?.foot_valve_oth ?? '';
+          return `<span>${otherDesc}</span>`;
+        } else {
+          const isMatch = codeValue.code_val === this.eirDetails.foot_valve_cv;
+          const desc = codeValue.description;
+          return isMatch ? desc : `<span style="text-decoration: line-through;">${desc}</span>`;
+        }
+      })
+      .join(' / ') ?? '';
+
+    return `${label} (${valveList})`;
+  }
+
+
+  getFormattedDisCompDescription(): string {
+    if (!this.eirDetails?.btm_dis_comp_cv || !this.disCompCvList?.length) {
+      return '';
+    }
+
+    return this.disCompCvList
+      .map(codeValue => {
+        const isStrikethrough = codeValue.code_val !== this.eirDetails.btm_dis_comp_cv;
+        const desc = codeValue.description;
+        return isStrikethrough ? `<span style="text-decoration: line-through;">${desc}</span>` : desc;
+      })
+      .join(' / ');
+  }
+
+  getFormattedBottomDisValveSection(): string {
+    const label = this.translatedLangText?.BOTTOM_DIS_VALVE__ABB ?? '';
+
+    if (!this.eirDetails?.btm_dis_valve_cv) {
+      return label;
+    }
+
+    const valvePart = this.disValveCvList
+      ?.map((codeValue) => {
+        const match = codeValue.code_val === this.eirDetails.btm_dis_valve_cv;
+        const desc = codeValue.description;
+        return match ? desc : `<span style="text-decoration: line-through;">${desc}</span>`;
+      })
+      .join(' / ') ?? '';
+
+    const specPart = this.disValveSpecCvList
+      ?.map((codeValue) => {
+        const match = codeValue.code_val === this.eirDetails.btm_dis_valve_spec_cv;
+        const desc = codeValue.description;
+        return match ? desc : `<span style="text-decoration: line-through;">${desc}</span>`;
+      })
+      .join(' / ') ?? '';
+
+    return `${label} (${valvePart}) (${specPart})`;
+  }
+
+
+  async generatePDF(): Promise<void> {
+    await this.exportToPDF_r1();
+    /*  
+      const element = document.getElementById('eir-form-body');
+      if (!element) {
+        console.error('Template element not found');
+        return;
+      }
+  
+      if (this.type === "in") {
+        try {
+          this.generatingPdfLoadingSubject.next(true);
+          this.generatingPdfProgress = 0;
+          // const canvas = await html2canvas(element, {
+          //   scale: this.scale, // Increase resolution
+          // });
+  
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pageWidth = pdf.internal.pageSize.width; // A4 page width
+          const pageHeight = pdf.internal.pageSize.height; // A4 page height
+          const leftRightMargin = 5; // Fixed left and right margins
+          const topMargin = 5; // Reduced top margin
+          const bottomMargin = 5; // Reduced bottom margin
+          const usableHeight = pageHeight - topMargin - bottomMargin; // Increased usable height
+  
+          // Calculate natural dimensions for the body content
+          const rect = element.getBoundingClientRect();
+          const imgWidth = rect.width * 0.264583;  // px to mm
+          const imgHeight = rect.height * 0.264583;
+          const aspectRatio = imgWidth / imgHeight;
+  
+          // Calculate scaled width and height to fit the page without stretching
+          const scaledWidth = pageWidth - leftRightMargin * 2; // Adjusted width with fixed margins
+          const scaledHeight = scaledWidth / aspectRatio;
+  
+          let yOffset = 0;
+          let currentPage = 1;
+          const totalPages = Math.ceil(imgHeight / usableHeight);
+  
+          while (yOffset < imgHeight) {
+            if (yOffset > 0) pdf.addPage();
+  
+            // Add Header and get its height
+            const headerHeight = 28;
+            await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftRightMargin, leftRightMargin, this.translate);
+            this.generatingPdfProgress += 33;
+  
+            // Adjust usable height by subtracting header height
+            const adjustedUsableHeight = usableHeight - headerHeight;
+  
+            // Add Body Content
+            const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
+            const canvasChunk = document.createElement('canvas');
+            const context = canvasChunk.getContext('2d');
+  
+            // Create a new canvas for the current chunk
+            canvasChunk.width = canvas.width;
+            canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
+  
+            if (context) {
+              context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
+            }
+  
+            const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
+            pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
+            this.generatingPdfProgress += 33;
+  
+            // Add Footer
+            await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
+  
+            yOffset += chunkHeight;
+            currentPage++;
+         // }
+          this.generatingPdfProgress = 100;
+          pdf.save(`EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`);
+          this.generatedPDF = pdf.output('blob');
+          this.onDownloadClick();
+          this.generatingPdfLoadingSubject.next(false);
+          Utility.previewPDF(pdf, `${this.getReportTitle()}`);
+          this.dialogRef.close();
+        } catch (error) {
+          console.error('Error generating PDF:', error);
+        }
+      }
+      return;*/
   }
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
@@ -1981,5 +1976,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   isOthers(formControlValue: any) {
     return BusinessLogicUtil.isOthers(formControlValue);
+  }
+
+  isSelectedOthers(selectedValue: string | undefined, codeVal: string | undefined) {
+    return selectedValue && this.isOthers(selectedValue) && this.isOthers(codeVal)
   }
 }

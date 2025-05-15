@@ -819,8 +819,8 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
     let fontSize = 6;
     let startY = lastTableFinalY + 8;
 
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY, 13);
 
     if(this.customer)
       {
@@ -855,7 +855,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
       }
 
       // Add the image to the PDF
-      pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+      pdf.addImage(imgData1, 'JPEG', leftMargin, startY + 5, chartContentWidth, imgHeight1);
     }
 
 
@@ -900,7 +900,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
         autoTable(pdf, {
           head: headers,
           body: data,
-          startY: startY, // Start table at the current startY value
+          startY: startY + 5, // Start table at the current startY value
           margin: { left: startX },
           theme: 'grid',
           styles: {
@@ -937,7 +937,7 @@ export class MonthlyChartPdfComponent extends UnsubscribeOnDestroyAdapter implem
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 12, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     }
     this.generatingPdfProgress = 100;

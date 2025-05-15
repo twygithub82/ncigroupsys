@@ -39,7 +39,7 @@
               </div>
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.COST_TYPE}}</mat-label>
+                  <mat-label>{{translatedLangText.TYPE}}</mat-label>
                   <input matInput formControlName="cost_type" [matAutocomplete]="costType">
                   <mat-autocomplete #costType="matAutocomplete" [displayWith]="displayCostTypeFn">
                     @for (cs of costTypeCvList; track cs) {

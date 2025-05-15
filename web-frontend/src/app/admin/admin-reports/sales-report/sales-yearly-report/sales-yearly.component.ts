@@ -40,6 +40,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
 import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
 import { YearlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/sales/yearly/yearly-details-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -156,7 +157,9 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     LOCATION: 'COMMON-FORM.LOCATION',
     YEAR: 'COMMON-FORM.YEAR',
     MONTH: 'COMMON-FORM.MONTH',
-    COST_TYPE: 'COMMON-FORM.COST-TYPE'
+    TYPE: 'COMMON-FORM.TYPE',
+    MONTH_START: 'COMMON-FORM.MONTH-START',
+    MONTH_END: 'COMMON-FORM.MONTH-END',
   }
 
   invForm?: UntypedFormGroup;
@@ -190,7 +193,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   costTypeCvList: CodeValuesItem[] = [];
 
-  processType: string = "STEAMING";
+  processType: string = "";
   billingParty: string = "CUSTOMER";
 
   pageIndex = 0;
@@ -218,7 +221,8 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -293,6 +297,8 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
+      if(this.modulePackageService.isStarterPackage())
+        data = data.filter(c=>c.code_val != "RESIDUE" && c.code_val != "STEAMING")
       this.costTypeCvList = addDefaultSelectOption(data, 'All', "ALL");
       var allType = this.costTypeCvList.find(c => c.code_val == 'ALL');
       this.searchForm?.patchValue({
@@ -361,8 +367,9 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
     //let processType=this.processType;
 
-    where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE"];
+    where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE", "GATE"];
     if (this.searchForm?.get('cost_type')?.value.code_val !== 'ALL') {
+      this.processType = this.searchForm?.get('cost_type')?.value.code_val;
       where.report_type = [this.searchForm?.get('cost_type')?.value.code_val];
     }
 
@@ -376,6 +383,10 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+    if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value){
+      date = `${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+    }
+    
     // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
     if (this.searchForm?.get('month_start')?.value) {
       var month = this.searchForm?.get('month_start')?.value;
