@@ -240,7 +240,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     GATEIO_S: 'COMMON-FORM.GATEIO-S',
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
-    TOTAL_COST: "COMMON-FORM.TOTAL-COST",
+    TOTAL_AMOUNT: "COMMON-FORM.TOTAL-AMOUNT",
     DETAILS: 'COMMON-FORM.DETAILS',
     S_N:'COMMON-FORM.S_N',
 
@@ -1090,7 +1090,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           };
 
 
-        const headers = [[this.translatedLangText.S_N,this.translatedLangText.CUSTOMER,this.translatedLangText.TOTAL_COST]];
+        const headers = [[this.translatedLangText.S_N,this.translatedLangText.CUSTOMER,this.translatedLangText.TOTAL_AMOUNT]];
 
         var data:any[]=[];
          for (let n = 0; n < this.repBillingCustomers.length; n++)

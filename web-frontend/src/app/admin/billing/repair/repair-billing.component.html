@@ -225,33 +225,33 @@
           <div class="body overflow-auto">
             @for(sotRow of sotRepList; track sotRow) {
             <mat-accordion>
-              <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel [expanded]="false">
                 <mat-expansion-panel-header class="pt-1 pb-0 d-flex justify-content-between align-items-center">
                   <!-- <mat-panel-title [ngClass]="'custom-title d-flex align-items-center'">
                     <span class="font-bold me-1">{{translatedLangText.TANK_NO}}:</span>
                     {{sotRow.tank_no}}
                   </mat-panel-title> -->
                   <mat-panel-description class="d-flex align-items-center gap-2">
-                    <div class="w-xl-15 w-lg-50">
-                        <span class="font-bold">{{sotRow.tank_no}}</span>
+                    <div class="w-xl-12 w-lg-50">
+                        <span class="font-bold font-small">{{sotRow.tank_no}}</span>
                       </div>
-                      <div class="w-xl-30 w-lg-50">
+                      <div class="w-xl-26 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
                         {{ccDS.displayName(sotRow.storing_order?.customer_company)}}
                       </div>
-                      <div class="w-xl-15 w-lg-50">
+                      <div class="w-xl-14 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                         {{displayDate(igDS.getInGateItem(sotRow.in_gate)?.eir_dt)}}
                       </div>
-                      <div class="w-xl-8 w-lg-50">
+                      <div class="w-xl-16 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                         {{getTankStatusDescription(sotRow.tank_status_cv)}}
                       </div>
-                      <div class="w-xl-13 w-lg-50">
+                      <div class="w-xl-17 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
                         {{getRepairOptionDescription(sotRow.purpose_repair_cv)}}
                       </div>
-                       <div class="">
+                       <div class="w-xl-13 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.TOTAL_COST}}:</span>
                         {{getTotalCost(sotRow)}}
                       </div>

@@ -702,6 +702,7 @@
     "CANNOT-EXCEED": "cannot exceed",
     "CANNOT-SMALLER": "cannot be smaller than",
     "TOTAL-COST": "Total Cost $",
+    "TOTAL-AMOUNT": "Total Amount",
     "LABOUR-DISCOUNT": "Labour Discount",
     "MATERIAL-DISCOUNT": "Material Discount",
     "NET-COST": "Net Cost $",
