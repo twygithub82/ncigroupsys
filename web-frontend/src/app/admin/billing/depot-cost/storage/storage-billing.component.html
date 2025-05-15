@@ -195,7 +195,7 @@
                   </mat-icon>
                   {{translatedLangText.CLEAR}}
                 </button>
-                <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5" hidden>
+                <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5" (click)="delete($event)">
                   <mat-icon>
                     delete_forever
                   </mat-icon>
@@ -438,7 +438,7 @@
                 {{translatedLangText.COST}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                <span class="mobile-label">{{translatedLangText.COST}}:</span>{{row.total_cost.toFixed(2)}}
+                <span class="mobile-label">{{translatedLangText.COST}}:</span>{{displayNumber(row.storage_cost)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoice_no">
@@ -446,14 +446,14 @@
                 {{translatedLangText.INVOICE_NO}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                @if(row.invoiced)
-                {
-                <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span> {{row.storage_billing?.invoice_no}}
-                }
+                <!-- @if(row.invoiced)
+                { -->
+                <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span> {{DisplayInvoiceNo(row.storing_order_tank)}}
+                <!-- }
                 @else
                 {
                 <span class="mobile-label">{{translatedLangText.INVOICE_NO}}: </span> -
-                }
+                } -->
 
               </mat-cell>
             </ng-container>
@@ -462,14 +462,14 @@
                 {{translatedLangText.INVOICE_DATE}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                @if(row.invoiced)
-                {
-                <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{displayDate(row.storage_billing?.invoice_dt)}}
-                }
+                <!-- @if(row.invoiced)
+                { -->
+                <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span> {{DisplayInvoiceDate(row.storing_order_tank)}}
+                <!-- }
                 @else
                 {
                 <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}: </span> -
-                }
+                } -->
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoiced">
@@ -499,8 +499,8 @@
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" matRipple>
-            </mat-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"  class="custom-body-row" (click)="viewCall(row)"
+              [style.cursor]="'pointer'" matRipple/>
           </table>
         </div>
         

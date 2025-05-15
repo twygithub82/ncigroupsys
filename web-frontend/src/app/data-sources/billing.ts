@@ -140,6 +140,7 @@ export class BillingItem extends BillingGo {
   public storage_billing_sot?: BillingSOTItem[];
   public lon_billing_sot?: BillingSOTItem[];
   public loff_billing_sot?: BillingSOTItem[];
+  public storage_detail?: BillingStorageDetail[];
 
   constructor(item: Partial<BillingItem> = {}) {
     super(item);
@@ -154,6 +155,7 @@ export class BillingItem extends BillingGo {
     this.loff_billing_sot = item.loff_billing_sot;
     this.gin_billing_sot = item.gin_billing_sot;
     this.gout_billing_sot = item.gout_billing_sot;
+    this.storage_detail=item.storage_detail;
   }
 }
 
@@ -1199,6 +1201,67 @@ const SEARCH_REPAIR_BILLING_QUERY = gql`
   }
 `;
 
+
+const SEARCH_STORAGE_BILLING_QUERY = gql`
+  query queryBilling($where: billingFilterInput, $order: [billingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+     queryBilling(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+       nodes {
+        storage_detail {
+          billing_guid
+          create_by
+          create_dt
+          delete_dt
+          end_dt
+          guid
+          remaining_free_storage
+          remarks
+          sot_guid
+          start_dt
+          state_cv
+          total_cost
+          update_by
+          update_dt
+        }
+        guid
+        bill_to_guid
+        delete_dt
+        invoice_dt
+        invoice_due
+        invoice_no
+        remarks
+        status_cv
+        currency_guid
+        currency{
+          currency_code
+          currency_name
+          rate
+          delete_dt
+        }
+        customer_company {
+            code
+            currency_guid
+            def_tank_guid
+            def_template_guid
+            delete_dt
+            effective_dt
+            guid
+            main_customer_guid
+            name
+            remarks
+            type_cv
+        }
+      }
+    }
+  }
+`;
+
 const SEARCH_CLEANING_BILLING_QUERY = gql`
   query queryBilling($where: billingFilterInput, $order: [billingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
      queryBilling(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -1379,6 +1442,8 @@ export class BillingDS extends BaseDataSource<BillingItem> {
       );
   }
 
+
+
   searchSteamingBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BillingItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
@@ -1429,6 +1494,30 @@ export class BillingDS extends BaseDataSource<BillingItem> {
       );
   }
 
+   searchStorageBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BillingItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: SEARCH_STORAGE_BILLING_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as InGateCleaningItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.queryBilling || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(retResult.nodes);
+          this.totalCount = retResult.totalCount;
+          this.pageInfo = retResult.pageInfo;
+          return retResult.nodes;
+        })
+      );
+  }
   searchAllBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BillingItem[]> {
     this.loadingSubject.next(true);
     return this.apollo

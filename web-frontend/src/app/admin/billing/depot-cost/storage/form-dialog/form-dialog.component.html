@@ -1,0 +1,109 @@
+<div class="addContainer">
+  <div class="modalHeader_left_align">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4>{{this.translatedLangText.BILLING}} {{this.translatedLangText.STORAGE}}</h4>
+      </div>
+    </div>
+    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button> -->
+  </div>
+  <div mat-dialog-content class="auto-height">
+    <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <div class="card">
+
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row p-2">
+                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                        {{translatedLangText.TANK_NO}}:
+                        <span class="font-bold">
+                          {{DisplayTankNo(this.selectedItem)}}
+                          <!-- {{this.selectedItem.storing_order_tank?.tank_no}} -->
+                        </span>
+                      </div>
+                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    
+                      {{translatedLangText.FREE_STORAGE }}:
+                        <span class="font-bold">
+                          {{(this.selectedItem.free_storage)}}</span>
+                   </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    
+                      {{translatedLangText.EIR_NO }}
+                        <span class="font-bold">
+                          {{DisplayEirNo(this.selectedItem)}}</span>
+                   </div>
+                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                    
+                      {{translatedLangText.EIR_DATE }}
+                        <span class="font-bold">
+                          {{DisplayEirDate(this.selectedItem)}}</span>
+                   </div>
+                    
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="materialTableHeader">
+              </div>
+              <div class="body overflow-auto">
+                <div class="responsive_table">
+                  <table mat-table [dataSource]="billingItems" matSort
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                    <ng-container matColumnDef="fName">
+                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                       *matHeaderCellDef>{{translatedLangText.INVOICE_NO}}</mat-header-cell>
+                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matCellDef="let row">
+                        <span class="mobile-label">{{translatedLangText.INVOICE_NO
+                          }}:</span>{{row.invoice_no}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="lName">
+                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef >{{translatedLangText.INVOICE_DATE
+                        }}</mat-header-cell>
+                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                       *matCellDef="let row">
+                        <span class="mobile-label">{{translatedLangText.INVOICE_DATE
+                          }}:</span>{{displayDate(row.invoice_dt)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="gender">
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CUTOFF_DATE}} </mat-header-cell>
+                      <mat-cell  [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"  *matCellDef="let row">
+                        <span class="mobile-label">{{translatedLangText.CUTOFF_DATE
+                          }}:</span>{{displayDate(row.cut_off_date) }}</mat-cell>
+                    </ng-container>
+                     <ng-container matColumnDef="mobile">
+                      <mat-header-cell *matHeaderCellDef  [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" >{{translatedLangText.TOTAL_COST
+                        }} </mat-header-cell>
+                      <mat-cell   [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matCellDef="let row">
+                        <span class="mobile-label">{{translatedLangText.TOTAL_COST}}:</span>{{DisplayCost(row)}}</mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row" [style.cursor]="'pointer'" matRipple>
+                    </mat-row>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" (click)="save()">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{translatedLangText.UPDATE}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CLOSE}}</button>
+      </div>
+    </form>
+  </div>
+</div>
