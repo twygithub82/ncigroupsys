@@ -107,7 +107,7 @@
         </tbody>
       </table>
     </div>
-    <div class="d-flex">
+    <div class="d-flex align-items-center">
       <div class="frame-info-content mt-1 mb-1">
         <div class="frame-walkway-legend">
 
@@ -265,7 +265,7 @@
         <table class="manlid-info">
           <tbody>
             <tr class="th">
-              <td class="td-col-11" colspan="2">
+              <td class="td-col-12" colspan="2">
                 <b>{{translatedLangText.BOTTOM_DIS_COMP}}</b>
               </td>
               <!-- <td class="td-col-1">
@@ -288,7 +288,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.btm_dis_comp_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -299,11 +299,11 @@
             </tr>
             <tr>
               <td>
-                {{translatedLangText.FOOT_VALVE}}
+                {{translatedLangText.BOTTOM_DIS_VALVE__ABB}}
                 @if (eirDetails?.foot_valve_cv) {
                 (
                 @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.foot_valve_oth) {
+                @if (isSelectedOthers(eirDetails?.foot_valve_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.foot_valve_oth}}
                 </span>
@@ -320,7 +320,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.foot_valve_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -357,11 +357,11 @@
             </tr> -->
             <tr>
               <td>
-                {{translatedLangText.BOTTOM_DIS_VALVE__ABB}}
+                {{translatedLangText.TYPE}}
                 @if (eirDetails?.btm_dis_valve_cv) {
                 (
                 @for (codeValue of disValveCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.btm_dis_valve_cv) {
+                @if (isSelectedOthers(eirDetails?.btm_dis_valve_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.btm_dis_valve_oth}}
                 </span>
@@ -378,7 +378,7 @@
                 )
                 (
                 @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.btm_dis_valve_spec_cv) {
+                @if (isSelectedOthers(eirDetails?.btm_dis_valve_spec_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.btm_dis_valve_spec_oth}}
                 </span>
@@ -396,7 +396,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.btm_dis_valve_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -418,14 +418,14 @@
                 /
                 }
                 }
+                )
 
                 <span class="text-decoration-underline">
                   {{eirDetails?.thermometer}}
                 </span> &deg;C
-                )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.thermometer) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -436,7 +436,7 @@
             </tr>
             <tr>
               <td>{{translatedLangText.LADDER}}</td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.ladder) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -446,8 +446,8 @@
               </td>
             </tr>
             <tr>
-              <td>{{translatedLangText.DATA_SCS_TRANSPORT_PLATE}}</td>
-              <td>
+              <td>{{translatedLangText.DATA_SCS}}</td>
+              <td class="eir-mark">
                 @if (eirDetails?.data_csc_transportplate) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -457,7 +457,7 @@
               </td>
             </tr>
             <tr class="th">
-              <td class="td-col-11" colspan="2">
+              <td class="td-col-12" colspan="2">
                 <b>{{translatedLangText.TOP_DIS_COMP}}</b>
               </td>
               <!-- <td class="td-col-1">
@@ -480,7 +480,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.top_dis_comp_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -495,7 +495,7 @@
                 @if (eirDetails?.top_dis_valve_cv) {
                 (
                 @for (codeValue of disValveCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.top_dis_valve_cv) {
+                @if (isSelectedOthers(eirDetails?.top_dis_valve_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.top_dis_valve_oth}}
                 </span>
@@ -512,7 +512,7 @@
                 )
                 (
                 @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.top_dis_valve_spec_cv) {
+                @if (isSelectedOthers(eirDetails?.top_dis_valve_spec_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.top_dis_valve_spec_oth}}
                 </span>
@@ -530,7 +530,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.top_dis_valve_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -545,7 +545,7 @@
                 @if (eirDetails?.airline_valve_cv) {
                 (
                 @for (codeValue of airlineCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.airline_valve_cv) {
+                @if (isSelectedOthers(eirDetails?.airline_valve_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.airline_valve_oth}}
                 </span>
@@ -566,7 +566,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.airline_valve_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -581,7 +581,7 @@
                 @if (eirDetails?.airline_valve_conn_cv) {
                 (
                 @for (codeValue of airlineConnCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.airline_valve_conn_cv) {
+                @if (isSelectedOthers(eirDetails?.airline_valve_conn_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.airline_valve_conn_oth}}
                 </span>
@@ -610,7 +610,7 @@
                 ) -->
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.airline_valve_conn_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -621,11 +621,11 @@
             </tr>
             <tr>
               <td>
-                {{translatedLangText.BRAND}}
+                {{translatedLangText.TYPE}}
                 @if (eirDetails?.airline_valve_conn_spec_cv) {
                 (
                 @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.airline_valve_conn_spec_cv) {
+                @if (isSelectedOthers(eirDetails?.airline_valve_conn_spec_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.airline_valve_conn_spec_oth}}
                 </span>
@@ -643,7 +643,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.airline_valve_conn_spec_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -680,7 +680,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.manlid_comp_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -691,11 +691,11 @@
             </tr>
             <tr>
               <td>
-                {{translatedLangText.BRAND}}
+                {{translatedLangText.MANLID}}
                 @if (eirDetails?.manlid_cover_cv) {
                 (
                 @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
-                @if (isOthers(codeValue.code_val) && eirDetails?.manlid_cover_cv) {
+                @if (isSelectedOthers(eirDetails?.manlid_cover_cv, codeValue.code_val)) {
                 <span [ngClass]="">
                   {{eirDetails?.manlid_cover_oth}}
                 </span>
@@ -705,7 +705,7 @@
                   {{codeValue.description}}
                 </span>
                 }
-                @if (index + 1 !== manlidCoverCvList.length) {
+                @if (index + 1 !== valveBrandCvList.length) {
                 /
                 }
                 }
@@ -716,7 +716,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.manlid_cover_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -741,7 +741,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.manlid_seal_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -779,7 +779,7 @@
                 <span class="text-decoration-underline">{{eirDetails?.pv_spec_pcs}}</span> pcs
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.pv_type_cv) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -790,7 +790,7 @@
             </tr>
             <tr>
               <td>{{translatedLangText.SAFETY_HANDRAIL}}</td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.safety_handrail) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -808,7 +808,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.buffer_plate) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -826,7 +826,7 @@
                 )
                 }
               </td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.residue) {
                 <mat-icon>checked</mat-icon>
                 }
@@ -837,7 +837,7 @@
             </tr>
             <tr>
               <td>{{translatedLangText.DIPSTICK}}</td>
-              <td>
+              <td class="eir-mark">
                 @if (eirDetails?.dipstick) {
                 <mat-icon>checked</mat-icon>
                 }

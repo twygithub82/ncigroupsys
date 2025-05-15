@@ -456,6 +456,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
       !latest || item.survey_dt! > latest.survey_dt! ? item : latest,
       null as SurveyDetailItem | null
     )?.guid;
+    
     if (isLatestDeleted) {
       let surveyDetail: any = {};
       let periodicTest: any = null;
@@ -475,7 +476,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
         surveyDetail = {
           sot_guid: this.sotItem?.guid,
           status_cv: '',
-          survey_type_cv: '',
+          survey_type_cv: 'PERIODIC_TEST',
           survey_dt: 0,
           test_class_cv: igs?.test_class_cv
         };
@@ -488,14 +489,14 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
       }
 
       this.surveyDS.deleteSurveyDetail(deletedGuid, surveyDetail, periodicTest).subscribe(result => {
-        this.handleDeleteSuccess(result?.data?.handleDeleteSuccess);
+        this.handleDeleteSuccess(result?.data?.deleteSurveyDetail);
         this.refreshPageDetail();
       });
     } else {
       // No need to update tank info
       const surveyDetail = new SurveyDetailItem(row);
       this.surveyDS.deleteSurveyDetail(deletedGuid, surveyDetail, null).subscribe(result => {
-        this.handleDeleteSuccess(result?.data?.handleDeleteSuccess);
+        this.handleDeleteSuccess(result?.data?.deleteSurveyDetail);
         this.refreshPageDetail();
       });
     }
