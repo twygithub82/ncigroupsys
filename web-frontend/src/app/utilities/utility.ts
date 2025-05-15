@@ -854,7 +854,7 @@ export class Utility {
     // Add company address
     pdf.setFontSize(10);
     posX -= 20.5;
-    posY += 7;
+    posY += 5;
     pdf.text(customerInfo.companyAddress, posX, posY);
 
     // Add phone, fax, and website
