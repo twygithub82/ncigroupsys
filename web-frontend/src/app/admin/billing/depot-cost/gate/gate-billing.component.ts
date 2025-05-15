@@ -143,6 +143,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
     COST: 'COMMON-FORM.COST',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
+    CONFIRM_REMOVE_ITEM: 'COMMON-FORM.CONFIRM-REMOVE-ITEMS',
     DELETE: 'COMMON-FORM.DELETE',
     GATE_IN: 'COMMON-FORM.GATE-IN',
     GATE_OUT: 'COMMON-FORM.GATE-OUT',
@@ -748,7 +749,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ITEM,
         action: 'delete',
       },
       direction: tempDirection
@@ -1096,7 +1097,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ITEM,
         action: 'delete',
       },
       direction: tempDirection
@@ -1283,7 +1284,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ITEM,
         action: 'delete',
       },
       direction: tempDirection

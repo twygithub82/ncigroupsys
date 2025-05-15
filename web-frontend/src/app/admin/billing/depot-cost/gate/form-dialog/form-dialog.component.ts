@@ -526,11 +526,18 @@ EnableValidator(path: string) {
   }
   
   DisplayCost(row: any)
- {
+  {
      return row.gate_cost;
    
   }
-   DisplayBillingType(billing_type: string) {
+
+  DisplayTankNo(row: any)
+  {
+     return row.storing_order_tank?.tank_no||"-";
+   
+  }
+
+  DisplayBillingType(billing_type: string) {
     return this.CodeValuesDS?.getCodeDescription(billing_type, this.invoiceTypeCvList);
   }
 }
