@@ -242,7 +242,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
 
-    var autoSearch: boolean = true;
+    var autoSearch: boolean = false;
     if (autoSearch) this.search_detail();
   }
 

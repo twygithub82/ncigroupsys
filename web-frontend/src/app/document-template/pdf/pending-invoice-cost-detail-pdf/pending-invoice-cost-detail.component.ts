@@ -241,7 +241,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     GATEIO_S: 'COMMON-FORM.GATEIO-S',
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
     TOTAL_COST: "COMMON-FORM.TOTAL-COST",
-    DETAILS: 'COMMON-FORM.DETAILS'
+    DETAILS: 'COMMON-FORM.DETAILS',
+    S_N:'COMMON-FORM.S_N',
 
   }
 
@@ -817,7 +818,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
   GetReportColumnsHeader(): any{
     const headerRow: string[] = [
-      this.translatedLangText.NO,
+      this.translatedLangText.S_N,
       this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
       this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
       this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
@@ -1089,7 +1090,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           };
 
 
-        const headers = [[this.translatedLangText.NO,this.translatedLangText.CUSTOMER,this.translatedLangText.TOTAL_COST]];
+        const headers = [[this.translatedLangText.S_N,this.translatedLangText.CUSTOMER,this.translatedLangText.TOTAL_COST]];
 
         var data:any[]=[];
          for (let n = 0; n < this.repBillingCustomers.length; n++)

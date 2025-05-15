@@ -256,7 +256,8 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     QC_DATE:'COMMON-FORM.QC-DATE',
     SIGN:'COMMON-FORM.SIGN',
     VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    APPROVED_DATE:'COMMON-FORM.APPROVED-DATE'
+    APPROVED_DATE:'COMMON-FORM.APPROVED-DATE',
+    S_N:'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -569,7 +570,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO,
       this.translatedLangText.REPAIR_TYPE,this.translatedLangText.REPAIR_COST, this.translatedLangText.STATUS
       

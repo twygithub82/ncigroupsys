@@ -528,7 +528,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     const reportTitle = this.GetReportTitle();
     const headers = [
       [
-        { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },

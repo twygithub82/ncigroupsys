@@ -68,7 +68,7 @@
                   }
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLASS_NO}}</mat-label>
                   <mat-select formControlName="class_no" multiple>
@@ -80,7 +80,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.UN_NO}}</mat-label>
                   <input matInput formControlName="un_no">
@@ -89,7 +89,7 @@
               <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="clean_picker">
+                  <mat-date-range-input [rangePicker]="clean_picker" [max]="maxManuDOMDt">
                     <input matStartDate placeholder="Start date" formControlName="clean_dt_start">
                     <input matEndDate placeholder="End date" formControlName="clean_dt_end">
                   </mat-date-range-input>
@@ -97,13 +97,13 @@
                   <mat-date-range-picker #clean_picker></mat-date-range-picker>
                   @if (searchForm?.get('clean_dt_start')?.hasError('required')
                   ||(searchForm?.get('clean_dt_end')?.hasError('required'))) {
-                  <mat-error>
+                  <!-- <mat-error>
                     {{translatedLangText.CLEAN_DATE }} {{translatedLangText.IS_REQUIRED}}
-                  </mat-error>
+                  </mat-error> -->
                   }
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.REPORT_TYPE}}</mat-label>
                   <mat-select formControlName="report_type">

@@ -286,7 +286,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     ON_DEPOT:'COMMON-FORM.ON-DEPOT',
     OUT_GATE:'COMMON-FORM.OUT-GATE',
     PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
-    TEMPERATURE:'COMMON-FORM.TEMPERATURE'
+    TEMPERATURE:'COMMON-FORM.TEMPERATURE',
+    S_N:'COMMON-FORM.S_N',
     
   }
 
@@ -759,7 +760,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const reportTitle = this.GetReportTitle();
     const vAlign ='bottom';
     const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       ...(showGateSurcharge?
       [{ content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },

@@ -612,7 +612,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,this.translatedLangText.EIR_NO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,this.translatedLangText.EIR_NO,
       this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_DATE,this.translatedLangText.CARGO,
       this.translatedLangText.COMPLETED_ON,this.translatedLangText.COST, this.translatedLangText.CLEANING_PROCESS,
       this.translatedLangText.BAY,this.translatedLangText.CLEANER

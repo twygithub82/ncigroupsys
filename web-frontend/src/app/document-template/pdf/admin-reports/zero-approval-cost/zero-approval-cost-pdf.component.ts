@@ -262,7 +262,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     ZERO_APPROVAL_COST:'COMMON-FORM.ZERO-APPROVAL-COST',
     ESTIMATED:"COMMON-FORM.ESTIMATED",
     COMPLETED_DATE:"COMMON-FORM.COMPLETED-DATE",
-    
+    S_N:'COMMON-FORM.S_N',
     
   }
 
@@ -588,7 +588,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE,
       this.translatedLangText.COMPLETED_DATE,this.translatedLangText.APPROVED_DATE, 
       this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATED

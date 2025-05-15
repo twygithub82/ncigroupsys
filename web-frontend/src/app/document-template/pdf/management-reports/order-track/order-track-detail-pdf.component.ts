@@ -234,7 +234,8 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     CANCEL_REMARK:'COMMON-FORM.CANCEL-REMARK',
     STORING_ORDER_TRACKING_REPORT:'COMMON-FORM.STORING-ORDER-TRACKING-REPORT',
     RELEASE_ORDER_TRACKING_REPORT:'COMMON-FORM.RELEASE-ORDER-TRACKING-REPORT',
-    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE'
+    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
+    S_N:'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -587,7 +588,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.TANK_NO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE,this.translatedLangText.RELEASE_DATE,
       this.translatedLangText.LAST_CARGO,this.translatedLangText.PURPOSE, this.translatedLangText.ORDER_NO,
       this.translatedLangText.ORDER_DATE,this.translatedLangText.CANCEL_DATE,

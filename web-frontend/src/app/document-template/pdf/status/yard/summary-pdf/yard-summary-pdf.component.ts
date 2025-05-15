@@ -250,7 +250,8 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     STORAGE: 'COMMON-FORM.STORAGE',
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
-    LOCATION: 'COMMON-FORM.LOCATION'
+    LOCATION: 'COMMON-FORM.LOCATION',
+    S_N:'COMMON-FORM.S_N',
 
   }
 
@@ -858,7 +859,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.NO, this.translatedLangText.CUSTOMER_CODE,
+      this.translatedLangText.S_N, this.translatedLangText.CUSTOMER_CODE,
       this.translatedLangText.CUSTOMER, this.translatedLangText.LOCATION,
       this.translatedLangText.STEAM, this.translatedLangText.CLEANING,
       this.translatedLangText.REPAIR, this.translatedLangText.STORAGE,

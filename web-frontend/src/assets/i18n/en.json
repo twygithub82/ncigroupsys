@@ -1069,7 +1069,7 @@
     "COMPARTMENT-TYPE-TOP-EMPTY": "Compartment Type (Top) is empty",
     "COMPARTMENT-TYPE-MANLID-EMPTY": "Compartment Type (Manlid) is empty",
     "ARE-YOU-SURE-TO-SUBMIT": "Are you sure to submit?",
-    "NORMAL": "Normal",
+    "NOT-DUE": "Not Due",
     "DUE": "Due",
     "NEXT-TEST-DUE": "Next Test Due",
     "TARIFF-CARGO-ASSIGNED": "The Tariff Cargo was assigned to storing order tanks",

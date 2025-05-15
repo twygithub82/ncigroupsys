@@ -297,7 +297,8 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     APPROVED_HOUR:'COMMON-FORM.APPROVED-HOUR',
     COMPLETED_HOUR:'COMMON-FORM.COMPLETED-HOUR',
     DIFFERENCE:'COMMON-FORM.DIFFERENCE',
-    MONTHLY_INVENTORY_REPORT:'COMMON-FORM.MONTHLY-INVENTORY-REPORT'
+    MONTHLY_INVENTORY_REPORT:'COMMON-FORM.MONTHLY-INVENTORY-REPORT',
+    S_N:'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -762,7 +763,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     const vAlign="bottom";
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      { content: this.translatedLangText.NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.DATE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.DAY, rowSpan: 2, styles: { halign: 'center', valign: vAlign} },
      // ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }]:[]),

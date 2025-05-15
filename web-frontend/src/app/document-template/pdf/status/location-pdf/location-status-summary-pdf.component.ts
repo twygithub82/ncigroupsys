@@ -231,8 +231,8 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
-    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS'
-
+    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
+    S_N:'COMMON-FORM.S_N',
 
   }
 
@@ -829,7 +829,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     };
 
     const headers = [[
-      this.translatedLangText.NO,
+      this.translatedLangText.S_N,
       this.translatedLangText.CUSTOMER_CODE, this.translatedLangText.CUSTOMER
     ]];
 
