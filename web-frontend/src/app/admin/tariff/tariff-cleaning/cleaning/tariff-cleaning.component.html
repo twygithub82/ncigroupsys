@@ -8,19 +8,18 @@
             </mat-panel-title>
             <mat-panel-description>
               <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                <button mat-mini-fab color="primary" (click)="search()" 
-                  (click)="$event.stopPropagation()">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
                   <mat-icon>search</mat-icon>
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                  (click)="$event.stopPropagation()">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
-                <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
+                <button mat-mini-fab class="primary-light" color=""
+                  [routerLink]="['/admin/tariff/tariff-cleaning/new']">
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
@@ -150,7 +149,7 @@
       <div class="body">
         <div class="responsive_table">
           <table mat-table [dataSource]="tcList" matSort
-            class="mat-cell advance-table striped-rows hover-highlight dark-header">
+            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- ID Column -->
             <ng-container matColumnDef="id">
               <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
