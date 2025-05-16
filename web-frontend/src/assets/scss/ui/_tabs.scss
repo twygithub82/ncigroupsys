@@ -27,10 +27,3 @@
   padding: 15px;
   position: relative;
 }
-
-table.curve-table {
-  border-collapse: separate; /* Important for border-radius to work */
-  border-spacing: 0;
-  border-radius: 5px;
-  overflow: hidden; /* Helps apply the radius to inner content */
-}

@@ -11,7 +11,7 @@ import { catchError } from "rxjs/operators";
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private authenticationService: AuthService) {}
+  constructor(private authenticationService: AuthService) { }
 
   intercept(
     request: HttpRequest<any>,
@@ -25,8 +25,8 @@ export class ErrorInterceptor implements HttpInterceptor {
           // location.reload();
         }
 
-        const error = err.message || err.statusText;
-        return throwError(error);
+        //const error = err.message || err.statusText;
+        return throwError(() => err);
       })
     );
   }
