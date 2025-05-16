@@ -166,7 +166,7 @@
                   <input matInput [formControl]="invoiceNoControl">
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+              <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
                   <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date" [min]="minManuDOMDt"
@@ -175,13 +175,13 @@
                   <mat-datepicker #invoice_date_picker></mat-datepicker>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
                   <input matInput [formControl]="invoiceTotalCostControl" readonly>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
                 <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5"
                   (click)="save($event)">
                   <mat-icon>
@@ -368,7 +368,7 @@
       <div class="body overflow-auto">
         <div class="responsive_table">
           <table mat-table [dataSource]="billSotList" matSort
-            class="mat-cell advance-table striped-rows hover-highlight dark-header">
+            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
                 <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"

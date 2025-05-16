@@ -230,7 +230,7 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="repList" matSort
-                    class="mat-cell advance-table hover-highlight dark-header" multiTemplateDataRows>
+                    class="mat-cell advance-table hover-highlight dark-header curve-table" multiTemplateDataRows>
                     <ng-container matColumnDef="group_name_cv">
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -532,7 +532,7 @@
                   <div class="row p-l-5 p-r-10">
                     <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border div-bg-blue">
                           <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
@@ -562,7 +562,7 @@
                     </div>
                     <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.RATE}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -798,10 +798,10 @@
                     }
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.LABOUR}}</span>
                         </div>
-                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.TOTAL}}</span>
                         </div>
                       </div>
@@ -900,7 +900,7 @@
                 </div>
               </div>
               }
-              <div class="row m-t-5">
+              <div class="row m-t-10">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
                     (click)="$event.preventDefault();" [routerLink]="['/admin/repair/approval']">

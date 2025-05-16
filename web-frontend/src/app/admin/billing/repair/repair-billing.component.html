@@ -299,7 +299,7 @@
                     @if ((filterDeleted(sotRow.repair || [])?.length ?? 0) > 0) {
                     <div class="responsive_table">
                       <table mat-table [dataSource]="filterDeleted(sotRow.repair || [])" matSort
-                        class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                        class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="select">
                           <mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-start'">
