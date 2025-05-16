@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { JwtPayload } from '@core/models/JwtPayload';
-import { api_full_endpoints, jwt_mapping } from 'app/api-endpoints';
+import { jwt_mapping } from 'app/api-endpoints';
 import { decodeToken } from 'app/utilities/jwt-util';
 import { BehaviorSubject, Observable, Subject, catchError, map, of, throwError } from 'rxjs';
 import { User, UserToken } from '../models/user';
+import { AuthApiService } from './auth-api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,7 @@ export class AuthService {
   userLoggedIn = new Subject<void>();
   userLoggedOut = new Subject<void>();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private authApiService: AuthApiService) {
     this.currentUserSubject = new BehaviorSubject<User>(
       JSON.parse(localStorage.getItem(this.userKey) || '{}')
     );
@@ -41,96 +42,198 @@ export class AuthService {
     return !!this.currentUserSubject.value?.isStaff;
   }
 
+  // login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  //   const endpoint = isStaff ? api_full_endpoints.staff_auth : api_full_endpoints.user_auth;
+  //   const url = `${endpoint}`
+  //   const body = { username, password };
+  //   if (rememberMe) {
+  //     localStorage.setItem(this.rememberMyKey, 'true');
+  //     localStorage.setItem(this.usernameKey, body.username);
+  //   } else {
+  //     localStorage.removeItem(this.rememberMyKey);
+  //     localStorage.removeItem(this.usernameKey);
+  //   }
+  //   return this.http.post<any>(url, body, { headers })
+  //     .pipe(
+  //       map(user => {
+  //         if (user && user.token) {
+  //           const decodedToken = decodeToken(user.token);
+  //           var usr = new User;
+  //           usr.name = decodedToken[jwt_mapping.name.key]
+  //           usr.email = decodedToken[jwt_mapping.email.key]
+  //           usr.groupsid = decodedToken[jwt_mapping.groupsid.key]
+  //           usr.role = decodedToken[jwt_mapping.role.key]
+  //           usr.roles = [decodedToken[jwt_mapping.role.key]]
+  //           usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key]
+  //           usr.token = decodedToken;
+  //           usr.plainToken = user.token;
+  //           usr.expiration = user.expiration;
+  //           usr.refreshToken = user.refreshToken;
+  //           usr.isStaff = isStaff;
+
+  //           const userToken = new UserToken;
+  //           userToken.token = usr.plainToken;
+  //           userToken.expiration = usr.expiration;
+  //           userToken.refreshToken = usr.refreshToken;
+
+  //           localStorage.setItem(this.userKey, JSON.stringify(usr));
+  //           localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
+  //           this.currentUserSubject.next(usr);
+  //           this.tokenRefreshed.next();
+  //           this.userLoggedIn.next();
+  //         }
+  //         return user;
+  //       }),
+  //       catchError(error => {
+  //         this.logout();
+  //         return throwError(() => error);
+  //       })
+  //     );
+  // }
+
   login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const endpoint = isStaff ? api_full_endpoints.staff_auth : api_full_endpoints.user_auth;
-    const url = `${endpoint}`
-    const body = { username, password };
     if (rememberMe) {
       localStorage.setItem(this.rememberMyKey, 'true');
-      localStorage.setItem(this.usernameKey, body.username);
+      localStorage.setItem(this.usernameKey, username);
     } else {
       localStorage.removeItem(this.rememberMyKey);
       localStorage.removeItem(this.usernameKey);
     }
-    return this.http.post<any>(url, body, { headers })
-      .pipe(
-        map(user => {
-          if (user && user.token) {
-            const decodedToken = decodeToken(user.token);
-            var usr = new User;
-            usr.name = decodedToken[jwt_mapping.name.key]
-            usr.email = decodedToken[jwt_mapping.email.key]
-            usr.groupsid = decodedToken[jwt_mapping.groupsid.key]
-            usr.role = decodedToken[jwt_mapping.role.key]
-            usr.roles = [decodedToken[jwt_mapping.role.key]]
-            usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key]
-            usr.token = decodedToken;
-            usr.plainToken = user.token;
-            usr.expiration = user.expiration;
-            usr.refreshToken = user.refreshToken;
-            usr.isStaff = isStaff;
 
-            const userToken = new UserToken;
-            userToken.token = usr.plainToken;
-            userToken.expiration = usr.expiration;
-            userToken.refreshToken = usr.refreshToken;
+    const authRequest$ = this.authApiService.login(username, password, isStaff);
 
-            localStorage.setItem(this.userKey, JSON.stringify(usr));
-            localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
-            this.currentUserSubject.next(usr);
-            this.tokenRefreshed.next();
-            this.userLoggedIn.next();
-          }
-          return user;
-        }),
-        catchError(error => {
-          this.logout();
-          return throwError(() => error);
-        })
-      );
+    return authRequest$.pipe(
+      map(user => {
+        if (user && user.token) {
+          const decodedToken = decodeToken(user.token);
+
+          const usr = new User();
+          usr.name = decodedToken[jwt_mapping.name.key];
+          usr.email = decodedToken[jwt_mapping.email.key];
+          usr.groupsid = decodedToken[jwt_mapping.groupsid.key];
+          usr.role = decodedToken[jwt_mapping.role.key];
+          usr.roles = [usr.role];
+          usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key];
+          usr.token = decodedToken;
+          usr.plainToken = user.token;
+          usr.expiration = user.expiration;
+          usr.refreshToken = user.refreshToken;
+          usr.isStaff = isStaff;
+
+          const userToken = new UserToken();
+          userToken.token = usr.plainToken;
+          userToken.expiration = usr.expiration;
+          userToken.refreshToken = usr.refreshToken;
+
+          localStorage.setItem(this.userKey, JSON.stringify(usr));
+          localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
+
+          this.currentUserSubject.next(usr);
+          this.tokenRefreshed.next();
+          this.userLoggedIn.next();
+        }
+
+        return user;
+      }),
+      catchError(error => {
+        this.logout();
+        return throwError(() => error);
+      })
+    );
   }
+
+  // refreshToken(): Observable<UserToken | null> {
+  //   const currentRefreshToken = this.getRefreshToken();
+  //   if (!currentRefreshToken) {
+  //     this.logout();
+  //     return of(null);;
+  //   }
+
+  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  //   const endpoint = this.currentUserIsStaff ? api_full_endpoints.staff_refresh_token : api_full_endpoints.user_refresh_token;
+  //   const url = `${endpoint}`
+  //   const body = { refreshToken: currentRefreshToken };
+  //   console.log('refreshToken body: ', body)
+  //   return this.http.post<any>(url, body, { headers })
+  //     .pipe(
+  //       map(response => {
+  //         const expTime = new Date(response.expiration).getTime();
+  //         const now = Date.now();
+
+  //         console.log('refreshToken body: ', body)
+  //         // Reject if new token is about to expire in < 5 min
+  //         // if (expTime - now < 5 * 60 * 1000) {
+  //         //   throw new Error('Received a near-expired token, aborting');
+  //         // }
+
+  //         const userToken = new UserToken();
+  //         userToken.token = response.token;
+  //         userToken.expiration = response.expiration;
+  //         userToken.refreshToken = response.refreshToken;
+
+  //         localStorage.setItem('userToken', JSON.stringify(userToken));
+  //         this.tokenRefreshed.next();
+  //         console.log('token is refreshed: ', userToken);
+
+  //         return userToken;
+  //       }),
+  //       catchError(error => {
+  //         this.logout();
+  //         return throwError(() => error);
+  //       })
+  //     );
+  // }
 
   refreshToken(): Observable<UserToken | null> {
     const currentRefreshToken = this.getRefreshToken();
     if (!currentRefreshToken) {
       this.logout();
-      return of(null);;
+      return of(null);
     }
 
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const endpoint = this.currentUserIsStaff ? api_full_endpoints.staff_refresh_token : api_full_endpoints.user_refresh_token;
-    const url = `${endpoint}`
-    const body = { refreshToken: currentRefreshToken };
-    console.log('refreshToken body: ', body)
-    return this.http.post<any>(url, body, { headers })
-      .pipe(
-        map(response => {
-          const expTime = new Date(response.expiration).getTime();
-          const now = Date.now();
+    const refreshRequest$ = this.authApiService.refreshToken(currentRefreshToken, this.currentUserIsStaff)
 
-          console.log('refreshToken body: ', body)
-          // Reject if new token is about to expire in < 5 min
-          // if (expTime - now < 5 * 60 * 1000) {
-          //   throw new Error('Received a near-expired token, aborting');
-          // }
+    return refreshRequest$.pipe(
+      map(response => {
+        const expTime = new Date(response.expiration).getTime();
+        const now = Date.now();
 
-          const userToken = new UserToken();
-          userToken.token = response.token;
-          userToken.expiration = response.expiration;
-          userToken.refreshToken = response.refreshToken;
+        // Optional: uncomment to reject short-lived token
+        // if (expTime - now < 5 * 60 * 1000) {
+        //   throw new Error('Received a near-expired token, aborting');
+        // }
 
-          localStorage.setItem('userToken', JSON.stringify(userToken));
-          this.tokenRefreshed.next();
-          console.log('token is refreshed: ', userToken);
+        const userToken = new UserToken();
+        userToken.token = response.token;
+        userToken.expiration = response.expiration;
+        userToken.refreshToken = response.refreshToken;
 
-          return userToken;
-        }),
-        catchError(error => {
-          this.logout();
-          return throwError(() => error);
-        })
-      );
+        localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
+        this.tokenRefreshed.next();
+
+        return userToken;
+      }),
+      catchError(error => {
+        this.logout();
+        return throwError(() => error);
+      })
+    );
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.authApiService.forgotPassword(email).pipe(
+      map(response => response),
+      catchError((error: HttpErrorResponse) => {
+        const msg = error.error?.message?.[0];
+
+        if (error.status === 400 && msg === 'The email is not yet registered') {
+          return throwError(() => new Error('EMAIL_NOT_FOUND'));
+        }
+
+        return throwError(() => new Error('GENERIC_ERROR'));
+      })
+    );
   }
 
   ok(body?: {
