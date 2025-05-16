@@ -31,6 +31,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 //import autoTable from 'jspdf-autotable'; // Import autoTable
 import autoTable, { Styles } from 'jspdf-autotable';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -945,10 +946,11 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       //   lastTableFinalY = topMargin; // Reset Y position for the new page
       // }
 
-      pdf.setFontSize(8);
-      //pdf.setFont("helvetica", "bold"); // Make it bold
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
+      PDFUtility.addText(pdf, `${cust.customer}`, lastTableFinalY + 10, leftMargin,8 ,true);
+      // pdf.setFontSize(8);
+      // //pdf.setFont("helvetica", "bold"); // Make it bold
+      // pdf.setTextColor(0, 0, 0); // Black text
+      // pdf.text(`${cust.customer}`, leftMargin, lastTableFinalY + 10); // Add customer name 10mm below the last table
 
 
       let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
@@ -1118,7 +1120,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
            didDrawPage: (data: any) => {
           const pageCount = pdf.getNumberOfPages();
 
-          if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+          if (pageCount > 1) PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
           // Capture the final Y position of the table
           lastTableFinalY = data.cursor.y;
           var pg = pagePositions.find((p: { page: number; x: number; y: number }) => p.page == pageCount);

@@ -630,7 +630,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
         CurrentPage = repPage;
       }
       lastTableFinalY += 5;
-      startY = lastTableFinalY + 3;
+      startY = lastTableFinalY + 8;
       pdf.setFontSize(8);
       pdf.setTextColor(0, 0, 0); // Black text
       //pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${}  ${'Cleaning Process'}: Process 1`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
@@ -646,7 +646,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
         unNo = itm?.tariff_cleaning?.un_no || "";
         process = this.DisplayCleanMethod(itm!);
       }
-      pdf.text(`${cust.cargo}  ${this.translatedLangText.UN_NO}:  ${unNo}  ${this.translatedLangText.PROCEDURE}:  ${process}`, leftMargin, lastTableFinalY);
+      pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin, lastTableFinalY+5);
       pdf.setDrawColor(0, 0, 0); // red line color
 
       pdf.setLineWidth(0.1);

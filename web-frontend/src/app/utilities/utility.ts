@@ -5,6 +5,7 @@ import { jsPDF } from 'jspdf';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
+import { PDFUtility } from "./pdf-utility";
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -813,84 +814,85 @@ export class Utility {
     translateService: TranslateService // Inject TranslateService
   ): Promise<void> {
 
-    const translatedLangText: any = {};
-    const langText = {
-      PHONE: 'COMMON-FORM.PHONE',
-      FAX: 'COMMON-FORM.FAX',
-      WEB: 'COMMON-FORM.WEB',
-      CRN: 'COMMON-FORM.CRN',
-    };
+   await  PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+    // const translatedLangText: any = {};
+    // const langText = {
+    //   PHONE: 'COMMON-FORM.PHONE',
+    //   FAX: 'COMMON-FORM.FAX',
+    //   WEB: 'COMMON-FORM.WEB',
+    //   CRN: 'COMMON-FORM.CRN',
+    // };
 
-    // Translate each key in langText
-    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
-      try {
-        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
-      } catch (error) {
-        console.error(`Error translating key "${key}":`, error);
-        translatedLangText[key] = langText[key]; // Fallback to the original key
-      }
-    }
+    // // Translate each key in langText
+    // for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+    //   try {
+    //     translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+    //   } catch (error) {
+    //     console.error(`Error translating key "${key}":`, error);
+    //     translatedLangText[key] = langText[key]; // Fallback to the original key
+    //   }
+    // }
 
-    pdf.setLineWidth(0.1);
-    // Set dashed line pattern
-    pdf.setLineDashPattern([1, 1], 0.5);
+    // pdf.setLineWidth(0.1);
+    // // Set dashed line pattern
+    // pdf.setLineDashPattern([1, 1], 0.5);
 
-    // Draw top line
-    pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
+    // // Draw top line
+    // pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
 
-    // Define header height
-    const heightHeader: number = 28;
+    // // Define header height
+    // const heightHeader: number = 28;
 
-    // Draw bottom line
-    pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
+    // // Draw bottom line
+    // pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
 
-    // Add company name
-    pdf.setFontSize(12);
-    const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    let posX = leftMargin + 36.5; //pageWidth / 1.75;
-    let posY = topMargin + 8;
-    pdf.text(customerInfo.companyName, posX, posY);
+    // // Add company name
+    // pdf.setFontSize(12);
+    // const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
+    // let posX = leftMargin + 36.5; //pageWidth / 1.75;
+    // let posY = topMargin + 8;
+    // pdf.text(customerInfo.companyName, posX, posY);
 
-    // Add company address
-    pdf.setFontSize(10);
-    posX -= 20.5;
-    posY += 5;
-    pdf.text(customerInfo.companyAddress, posX, posY);
+    // // Add company address
+    // pdf.setFontSize(10);
+    // posX -= 20.5;
+    // posY += 5;
+    // pdf.text(customerInfo.companyAddress, posX, posY);
 
-    // Add phone, fax
-    let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    posX += 8.5;
-    posY += 5;
-    pdf.text(nextLine, posX, posY);
-    nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
-    pdf.text(nextLine, posX + 39, posY);
+    // // Add phone, fax
+    // let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
+    // posX += 8.5;
+    // posY += 5;
+    // pdf.text(nextLine, posX, posY);
+    // nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
+    // pdf.text(nextLine, posX + 39, posY);
 
-    // Add website, company UEN
-    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    posX += 0;
-    posY += 5;
-    pdf.text(nextLine, posX, posY);
-    nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    pdf.text(nextLine, posX + 39, posY);
+    // // Add website, company UEN
+    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    // posX += 0;
+    // posY += 5;
+    // pdf.text(nextLine, posX, posY);
+    // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    // pdf.text(nextLine, posX + 39, posY);
 
-    // // Load and add company logo
-    // const imgUrl = customerInfo.companyReportLogo;
-    // const img = new Image();
+    // // // Load and add company logo
+    // // const imgUrl = customerInfo.companyReportLogo;
+    // // const img = new Image();
 
-    // // Wait for the image to load
-    // await new Promise<void>((resolve, reject) => {
-    //   img.onload = () => resolve();
-    //   img.onerror = () => reject(new Error('Failed to load image'));
-    //   img.src = imgUrl;
-    // });
-    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
+    // // // Wait for the image to load
+    // // await new Promise<void>((resolve, reject) => {
+    // //   img.onload = () => resolve();
+    // //   img.onerror = () => reject(new Error('Failed to load image'));
+    // //   img.src = imgUrl;
+    // // });
+    // const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
 
-    // Add the image to the PDF
-    const posX1_img = pageWidth / 1.7; //leftMargin + 5;
-    const posY1_img = topMargin + 0;
-    // const imgHeight = heightHeader - 0;
-    // const imgWidth = 80;
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+    // // Add the image to the PDF
+    // const posX1_img = pageWidth / 1.7; //leftMargin + 5;
+    // const posY1_img = topMargin + 0;
+    // // const imgHeight = heightHeader - 0;
+    // // const imgWidth = 80;
+    // pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
   }
 
   static async addHeaderWithCompanyLogo_Landscape(
@@ -903,83 +905,85 @@ export class Utility {
     translateService: TranslateService // Inject TranslateService
   ): Promise<void> {
 
-    const translatedLangText: any = {};
-    const langText = {
-      PHONE: 'COMMON-FORM.PHONE',
-      FAX: 'COMMON-FORM.FAX',
-      WEB: 'COMMON-FORM.WEB',
-      CRN: 'COMMON-FORM.CRN',
-    };
+    await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+    // const translatedLangText: any = {};
 
-    // Translate each key in langText
-    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
-      try {
-        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
-      } catch (error) {
-        console.error(`Error translating key "${key}":`, error);
-        translatedLangText[key] = langText[key]; // Fallback to the original key
-      }
-    }
-    pdf.setLineWidth(0.1);
-    // Set dashed line pattern
-    pdf.setLineDashPattern([1, 1], 0.5);
+    // const langText = {
+    //   PHONE: 'COMMON-FORM.PHONE',
+    //   FAX: 'COMMON-FORM.FAX',
+    //   WEB: 'COMMON-FORM.WEB',
+    //   CRN: 'COMMON-FORM.CRN',
+    // };
 
-    // Draw top line
-    pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
+    // // Translate each key in langText
+    // for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+    //   try {
+    //     translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+    //   } catch (error) {
+    //     console.error(`Error translating key "${key}":`, error);
+    //     translatedLangText[key] = langText[key]; // Fallback to the original key
+    //   }
+    // }
+    // pdf.setLineWidth(0.1);
+    // // Set dashed line pattern
+    // pdf.setLineDashPattern([1, 1], 0.5);
 
-    // Define header height
-    const heightHeader: number = 28;
+    // // Draw top line
+    // pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
 
-    // Draw bottom line
-    pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
+    // // Define header height
+    // const heightHeader: number = 28;
 
-    // Add company name
-    pdf.setFontSize(12);
-    const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    let posX = pageWidth / 3.5;
-    let posY = topMargin + 8;
-    pdf.text(customerInfo.companyName, posX, posY);
+    // // Draw bottom line
+    // pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
 
-    // Add company address
-    pdf.setFontSize(10);
-    posX -= 20.5;
-    posY += 5;
-    pdf.text(customerInfo.companyAddress, posX, posY);
+    // // Add company name
+    // pdf.setFontSize(12);
+    // const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
+    // let posX = pageWidth / 3.5;
+    // let posY = topMargin + 8;
+    // pdf.text(customerInfo.companyName, posX, posY);
 
-    // Add phone, fax
-    let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    posX += 8.5;
-    posY += 5;
-    pdf.text(nextLine, posX, posY);
-    nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
-    pdf.text(nextLine, posX + 39, posY);
+    // // Add company address
+    // pdf.setFontSize(10);
+    // posX -= 20.5;
+    // posY += 5;
+    // pdf.text(customerInfo.companyAddress, posX, posY);
 
-    // Add website, company UEN
-    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    posX += 0;
-    posY += 5;
-    pdf.text(nextLine, posX, posY);
-    nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    pdf.text(nextLine, posX + 39, posY);
+    // // Add phone, fax
+    // let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
+    // posX += 8.5;
+    // posY += 5;
+    // pdf.text(nextLine, posX, posY);
+    // nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
+    // pdf.text(nextLine, posX + 39, posY);
 
-    // // Load and add company logo
-    // const imgUrl = customerInfo.companyReportLogo;
-    // const img = new Image();
+    // // Add website, company UEN
+    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    // posX += 0;
+    // posY += 5;
+    // pdf.text(nextLine, posX, posY);
+    // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    // pdf.text(nextLine, posX + 39, posY);
 
-    // // Wait for the image to load
-    // await new Promise<void>((resolve, reject) => {
-    //   img.onload = () => resolve();
-    //   img.onerror = () => reject(new Error('Failed to load image'));
-    //   img.src = imgUrl;
-    // });
-    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
+    // // // Load and add company logo
+    // // const imgUrl = customerInfo.companyReportLogo;
+    // // const img = new Image();
 
-    // Add the image to the PDF
-    const posX1_img = pageWidth - (width + leftMargin);
-    const posY1_img = topMargin + 0;
-    // const imgHeight = heightHeader - 0;
-    // const imgWidth = 70;
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+    // // // Wait for the image to load
+    // // await new Promise<void>((resolve, reject) => {
+    // //   img.onload = () => resolve();
+    // //   img.onerror = () => reject(new Error('Failed to load image'));
+    // //   img.src = imgUrl;
+    // // });
+    // const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
+
+    // // Add the image to the PDF
+    // const posX1_img = pageWidth - (width + leftMargin);
+    // const posY1_img = topMargin + 0;
+    // // const imgHeight = heightHeader - 0;
+    // // const imgWidth = 70;
+    // pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
   }
 
   static async loadPDFImage(
