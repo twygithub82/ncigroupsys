@@ -61,7 +61,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
       console.log('Token:', this.token);
       console.log('Email:', this.email);
     });
-    
+
     this.authForm = this.formBuilder.group({
       email: [
         '',
@@ -99,5 +99,9 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
           });
       }
     }
+  }
+
+  onVerifyTokenEmail(token: string, email: string) {
+
   }
 }

@@ -1252,7 +1252,8 @@
     "BILLING": "Billing",
     "DAILY-INVENTORY-SUMMARY": "Daily Inventory Summary",
     "EMAIL-NOT-FOUND": "Email not found",
-    "SOMETHING-WENT-WRONG-TRY-AGAIN-LATER": "Something went wrong. Please try again later."
+    "SOMETHING-WENT-WRONG-TRY-AGAIN-LATER": "Something went wrong. Please try again later.",
+    "RESET-EMAIL-SENT": "Reset email sent"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
