@@ -224,8 +224,8 @@
                 </ng-container>
                 <ng-container matColumnDef="hour">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-1_5-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
                     (contextmenu)="onContextMenu($event, row.tariff_repair)">
                     <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
                     {{row.tariff_repair?.labour_hour || "-"}}</mat-cell>
@@ -243,8 +243,8 @@
                 </ng-container>
                 <ng-container matColumnDef="last_date">
                   <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row.tariff_repair)}}
                   </mat-cell>

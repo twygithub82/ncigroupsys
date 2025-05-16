@@ -10,9 +10,9 @@ import { Utility } from 'app/utilities/utility';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { AuthService } from '@core/service/auth.service';
 @Component({
-  selector: 'app-forgot-password',
-  templateUrl: './forgot-password.component.html',
-  styleUrls: ['./forgot-password.component.scss'],
+  selector: 'app-reset-password',
+  templateUrl: './reset-password.component.html',
+  styleUrls: ['./reset-password.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -24,7 +24,7 @@ import { AuthService } from '@core/service/auth.service';
     RouterLink,
   ],
 })
-export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     RESET_PASSWORD: 'COMMON-FORM.RESET-PASSWORD',
@@ -40,6 +40,8 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
 
   authForm!: UntypedFormGroup;
   returnUrl!: string;
+  token: string = '';
+  email: string = '';
   constructor(
     private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
@@ -51,14 +53,21 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     this.translateLangText();
   }
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.token = params['token'];
+      this.email = params['email'];
+
+      // Optionally validate or trigger password reset logic here
+      console.log('Token:', this.token);
+      console.log('Email:', this.email);
+    });
+    
     this.authForm = this.formBuilder.group({
       email: [
         '',
         [Validators.required, Validators.email, Validators.minLength(5)],
       ],
     });
-    // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   translateLangText() {

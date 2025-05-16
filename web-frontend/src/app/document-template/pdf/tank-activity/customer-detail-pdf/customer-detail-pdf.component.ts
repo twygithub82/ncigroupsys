@@ -34,7 +34,7 @@ import autoTable, { Styles } from 'jspdf-autotable';
 export interface DialogData {
   report_customer_tank_activity: report_customer_tank_activity[],
   type: string,
-  customerName:string
+  customerName: string
 
   // repair_guid: string;
   // customer_company_guid: string;
@@ -318,8 +318,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   date: string = '';
   invType: string = '';
   queryType: number = 1;
-  customerName:string='';
-
+  customerName: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<CustomerDetailPdfComponent>,
@@ -337,7 +336,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    
+
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -349,7 +348,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     await this.getCodeValuesData();
     this.report_customer_tank_activity = this.data.report_customer_tank_activity;
     this.invType = this.data.type;
-    this.customerName=   this.data.customerName;
+    this.customerName = this.data.customerName;
     this.onDownloadClick();
   }
 
@@ -710,8 +709,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
 
 
-      if(this.customerName==='')
-      {
+      if (this.customerName === '') {
         lastTableFinalY += 8;
         pdf.setFontSize(10);
         pdf.setTextColor(0, 0, 0); // Black text
@@ -719,10 +717,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
-       // lastTableFinalY += 5;
-       // pdf.setFontSize(8);
+        // lastTableFinalY += 5;
+        // pdf.setFontSize(8);
         var subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.IN_YARD}`;
-        Utility.AddTextAtRightCornerPage(pdf,subTitle,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, lastTableFinalY, 8);
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
         startY = lastTableFinalY; // Start table 20mm below the customer name
@@ -1349,10 +1347,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   GetReportTitle(): string {
-    var repTitle =`${this.translatedLangText.TANK_ACTIVITY}`;
-    if(this.customerName)
-    {
-      repTitle+= ` - ${this.customerName}`;
+    var repTitle = `${this.translatedLangText.TANK_ACTIVITY}`;
+    if (this.customerName) {
+      repTitle += ` - ${this.customerName}`;
     }
     return repTitle;
   }

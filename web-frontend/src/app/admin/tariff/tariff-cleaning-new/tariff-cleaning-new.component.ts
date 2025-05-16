@@ -31,7 +31,7 @@ import { MessageDialogComponent } from '@shared/components/message-dialog/messag
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { ClassNoItem, TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
@@ -958,8 +958,5 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   isLoadingSdsFile(): Boolean {
     return this.sdsFileLoading;
   }
-}
-function addDefaultSelectOption(data: CodeValuesItem[], arg1: string): CodeValuesItem[] {
-  throw new Error('Function not implemented.');
 }
 

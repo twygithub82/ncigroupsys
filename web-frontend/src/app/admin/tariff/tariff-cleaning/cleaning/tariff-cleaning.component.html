@@ -8,19 +8,18 @@
             </mat-panel-title>
             <mat-panel-description>
               <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                <button mat-mini-fab color="primary" (click)="search()" 
-                  (click)="$event.stopPropagation()">
+                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
                   <mat-icon>search</mat-icon>
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                  (click)="$event.stopPropagation()">
+                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
-                <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
+                <button mat-mini-fab class="primary-light" color=""
+                  [routerLink]="['/admin/tariff/tariff-cleaning/new']">
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
@@ -150,7 +149,7 @@
       <div class="body">
         <div class="responsive_table">
           <table mat-table [dataSource]="tcList" matSort
-            class="mat-cell advance-table striped-rows hover-highlight dark-header">
+            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- ID Column -->
             <ng-container matColumnDef="id">
               <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
@@ -171,10 +170,10 @@
             </ng-container>
             <ng-container matColumnDef="class">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 mat-sort-header>{{translatedLangText.CARGO_CLASS}}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{translatedLangText.CARGO_CLASS }}:</span>
                 {{row.tariff_cleaning?.class_cv}}
@@ -204,10 +203,10 @@
 
             <ng-container matColumnDef="ban_type">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 mat-sort-header>{{translatedLangText.CARGO_BAN_TYPE}}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{translatedLangText.CARGO_BAN_TYPE }}:</span>
                 {{getbanTypeDescription(row.tariff_cleaning?.ban_type_cv)}}
