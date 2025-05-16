@@ -44,7 +44,7 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-gate-billing-form-dialog',
+  selector: 'app-lolo-billing-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
