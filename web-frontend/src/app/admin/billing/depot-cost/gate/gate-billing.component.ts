@@ -982,7 +982,17 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
       var itm: any = s;
-       return accumulator + s.gate_in_cost;
+      var cost:number =s.gate_in_cost;
+
+        if (this.processType === "GATE_OUT") {
+
+          cost =s.gate_out_cost;
+
+        }
+        
+
+
+       return accumulator + cost;
       // if (this.processType === "GATE_IN") {
       //   if (s.gin_billing) {
       //     invalidItm.push(s);
