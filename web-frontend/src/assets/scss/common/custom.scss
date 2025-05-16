@@ -2282,3 +2282,11 @@ table.curve-table {
   overflow: hidden;
   /* Helps apply the radius to inner content */
 }
+
+.text-danger-bright {
+  color: #ff0000
+}
+
+mat-form-field.textarea-line-1 textarea.mdc-text-field__input {
+  line-height: 0.8 !important;
+}

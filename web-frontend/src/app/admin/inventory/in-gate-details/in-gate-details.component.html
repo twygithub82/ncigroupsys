@@ -79,7 +79,7 @@
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.BRANCH_NAME}}:</span>
                             <span class="contact-detail-info font-bold">{{ccDS.displayName(customerBranch) ||
-                              'N.A.'}}</span>
+                              '-'}}</span>
                           </div>
                           <!-- <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 m-b-5">
                         <div class="contact-detail-info font-bold">
@@ -139,8 +139,7 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.TANK_NO}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</span>
+                            <span class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</span>
                           </div>
                           <!-- <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
                             <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
@@ -342,9 +341,9 @@
                             </div>
                             <div class="row">
                               <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 m-b-0">
-                                <mat-form-field class="example-full-width">
+                                <mat-form-field class="example-full-width textarea-line-1">
                                   <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                                  <textarea matLine="1" matInput formControlName="remarks"></textarea>
+                                  <textarea matInput formControlName="remarks"></textarea>
                                 </mat-form-field>
                               </div>
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-0">
@@ -478,109 +477,132 @@
                   @if (!(sotDS.loading$ | async)) {
                   <mat-card-content>
                     <div class="container pt-2">
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                          {{translatedLangText.CARGO_NAME}}: {{cargoDetails?.cargo ?? "-"}}
-                        </div>
-                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.cargo ?? "-"}}
-                        </div> -->
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                          {{translatedLangText.DESCRIPTION}}: {{cargoDetails?.description ?? "-"}}
-                        </div>
-                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.description ?? "-"}}
-                        </div> -->
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                          {{translatedLangText.ALIAS_NAME}}: {{cargoDetails?.alias ?? "-"}}
-                        </div>
-                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.alias ?? "-"}}
-                        </div> -->
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                          {{translatedLangText.CARGO_CLASS}}: {{cargoDetails?.class_cv ?? "-"}}
-                        </div>
-                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.class_cv ?? "-"}}
-                        </div> -->
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
-                          {{translatedLangText.CARGO_UN_NO}}: {{cargoDetails?.un_no ?? "-"}}
-                        </div>
-                        <!-- <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.un_no ?? "-"}}
-                        </div> -->
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_FLASH_POINT}}:
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CARGO_NAME}}:</span>
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.flash_point ?? "-"}}
+                          <span class="value-display-info">
+                            {{cargoDetails?.cargo ?? "-"}}
+                          </span>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_HAZARD_LEVEL}}:
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.DESCRIPTION}}:</span>
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{getHazardLevelDescription(cargoDetails?.hazard_level_cv) ?? "-"}}
+                          <span class="value-display-info">
+                            {{cargoDetails?.description ?? "-"}}
+                          </span>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_BAN_TYPE}}:
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.ALIAS_NAME}}:</span>
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{getBanTypeDescription(cargoDetails?.ban_type_cv) ?? "-"}}
+                          <span class="value-display-info">
+                            {{cargoDetails?.alias ?? "-"}}
+                          </span>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CARGO_NATURE}}:
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CARGO_CLASS}}:</span>
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{getNatureTypeDescription(cargoDetails?.nature_cv) ?? "-"}}
+                          <span class="value-display-info">
+                            {{cargoDetails?.class_cv ?? "-"}}
+                          </span>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.CLEANING_CATEGORY}}:
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CARGO_UN_NO}}:</span>
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.cleaning_category?.name ?? "-"}}
+                          <span class="value-display-info">
+                            {{cargoDetails?.un_no ?? "-"}}
+                          </span>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.TOTAL_CLEANED}}:
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CARGO_FLASH_POINT}}:</span>
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          {{cargoDetails?.cargo ?? "-"}}
+                          <span class="value-display-info">
+                            {{cargoDetails?.flash_point ?? "-"}}
+                          </span>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.IN_GATE_ALERT}}:
-                        </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2 text-uppercase">
-                          <b class="text-danger">{{cargoDetails?.in_gate_alert ?? "-"}}</b>
-                          <!-- <b class="text-border-danger"> <i class="fas fa-exclamation-triangle"></i>{{cargoDetails?.in_gate_alert ?? "-"}}</b> -->
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2 align-right">
-                          {{translatedLangText.MSDS}}:
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CARGO_HAZARD_LEVEL}}:</span>
                         </div>
                         <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
-                          <span class="text-decoration-underline cursor-pointer"
+                          <span class="value-display-info">
+                            {{getHazardLevelDescription(cargoDetails?.hazard_level_cv) ?? "-"}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CARGO_BAN_TYPE}}:</span>
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          <span class="value-display-info">
+                            {{getBanTypeDescription(cargoDetails?.ban_type_cv) ?? "-"}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CARGO_NATURE}}:</span>
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          <span class="value-display-info">
+                            {{getNatureTypeDescription(cargoDetails?.nature_cv) ?? "-"}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.CLEANING_CATEGORY}}:</span>
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          <span class="value-display-info">
+                            {{cargoDetails?.cleaning_category?.name ?? "-"}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.TOTAL_CLEANED}}:</span>
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          <span class="value-display-info">
+                            {{cargoDetails?.cargo ?? "-"}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.IN_GATE_ALERT}}:</span>
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          <span class="value-display-info text-danger-bright">
+                            {{cargoDetails?.in_gate_alert ?? "-"}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row right-align-display">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                          <span class="label-display-info">{{translatedLangText.MSDS}}:</span>
+                        </div>
+                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                          <span class="value-display-info text-decoration-underline cursor-pointer"
                             (click)="onDownloadClick()">{{sdsPdf?.description ? cargoDetails?.cargo + ".pdf" :
                             ""}}</span>
                         </div>

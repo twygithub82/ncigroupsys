@@ -9,6 +9,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { Utility } from 'app/utilities/utility';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { AuthService } from '@core/service/auth.service';
+import { finalize } from 'rxjs';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
@@ -35,21 +38,25 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     SUBMIT: 'COMMON-FORM.SUBMIT',
     LOGIN: 'COMMON-FORM.LOGIN',
     EMAIL_NOT_FOUND: 'COMMON-FORM.EMAIL-NOT-FOUND',
-    SOMETHING_WENT_WRONG_TRY_AGAIN_LATER: 'COMMON-FORM.SOMETHING-WENT-WRONG-TRY-AGAIN-LATER'
+    SOMETHING_WENT_WRONG_TRY_AGAIN_LATER: 'COMMON-FORM.SOMETHING-WENT-WRONG-TRY-AGAIN-LATER',
+    RESET_EMAIL_SENT: 'COMMON-FORM.RESET-EMAIL-SENT'
   }
 
   authForm!: UntypedFormGroup;
   returnUrl!: string;
+  loading: boolean = false;
   constructor(
     private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
   ) {
     super();
     this.translateLangText();
   }
+
   ngOnInit() {
     this.authForm = this.formBuilder.group({
       email: [
@@ -67,6 +74,11 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
+  handleResetSuccess() {
+    let successMsg = this.translatedLangText.RESET_EMAIL_SENT;
+    ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
+  }
+
   onSubmit() {
     // stop here if form is invalid
     if (this.authForm.invalid) {
@@ -74,11 +86,17 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     } else {
       const emailForm = this.authForm.get('email');
       if (emailForm) {
+        this.loading = true;
         this.subs.sink = this.authService
           .forgotPassword(emailForm.value)
-          .subscribe({
+          .pipe(
+            finalize(() => {
+              this.loading = false; // always run after success or error
+            })
+          ).subscribe({
             next: (res) => {
               console.log(res)
+              this.handleResetSuccess();
             },
             error: (error) => {
               if (error.message === 'EMAIL_NOT_FOUND') {
@@ -86,7 +104,7 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
               } else {
                 emailForm.setErrors({ commonError: true })
               }
-            },
+            }
           });
       }
     }
