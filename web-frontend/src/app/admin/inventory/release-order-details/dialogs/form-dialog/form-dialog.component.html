@@ -121,12 +121,6 @@
                   <span class="card-detail-value">
                     {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}
                   </span>
-
-                  <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
-                  <span class="card-detail-value">
-                    {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
-                  </span>
-
                   <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
                   <span class="card-detail-value">
                     {{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
@@ -139,6 +133,10 @@
                   <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
                   <span [class]="{'text-danger': false}" class="card-detail-value">
                     {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
+                  </span>
+                  <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
+                  <span class="card-detail-value">
+                    {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
                   </span>
                 </div>
               </div>
@@ -164,7 +162,7 @@
       }
     </div>
   </div>
-  <div mat-dialog-actions class="mb-3 align-right">
+  <div mat-dialog-actions class="mb-3 p-r-20 align-right">
     <button mat-flat-button color="primary" (click)="submit()">{{data.translatedLangText.ADD | translate}}</button>
     <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CLOSE}}</button>
   </div>

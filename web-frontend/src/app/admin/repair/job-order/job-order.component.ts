@@ -398,7 +398,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
             ]
           }
         },
-        // { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } }
+        { estimate_no: { contains: tankNo } }
+        //{ repair: { estimate_no: { contains: this.filterRepairForm!.get('filterRepair')?.value } } } 
       ];
     }
 
