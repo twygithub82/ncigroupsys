@@ -26,13 +26,8 @@ export class AuthApiService {
     return this.api.post<any>(endpoint, {});
   }
 
-  resetPasswordPost(password: string, confirmPassword: string, email: string, token: string): Observable<any> {
+  resetPassword(password: string, confirmPassword: string, email: string, token: string): Observable<any> {
     const endpoint = api_endpoints.user_post_reset_password;
     return this.api.post<any>(endpoint, { password: password, confirmPassword: confirmPassword, email: email, token: token });
-  }
-
-  resetPasswordGet(token: string, email: string): Observable<any> {
-    const endpoint = api_endpoints.user_get_reset_password;
-    return this.api.get<any>(endpoint, { token: token, email: email });
   }
 }

@@ -30,7 +30,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
-    RESET_PASSWORD: 'COMMON-FORM.RESET-PASSWORD',
+    FORGOT_PASSWORD: 'COMMON-FORM.FORGOT-PASSWORD',
     LET_US_HELP_YOU: 'COMMON-FORM.LET-US-HELP-YOU',
     ENTER_EMAIL: 'COMMON-FORM.ENTER-EMAIL',
     EMAIL: 'COMMON-FORM.EMAIL',
@@ -39,7 +39,7 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     LOGIN: 'COMMON-FORM.LOGIN',
     EMAIL_NOT_FOUND: 'COMMON-FORM.EMAIL-NOT-FOUND',
     SOMETHING_WENT_WRONG_TRY_AGAIN_LATER: 'COMMON-FORM.SOMETHING-WENT-WRONG-TRY-AGAIN-LATER',
-    RESET_EMAIL_SENT: 'COMMON-FORM.RESET-EMAIL-SENT'
+    EMAIL_SENT: 'COMMON-FORM.EMAIL-SENT'
   }
 
   authForm!: UntypedFormGroup;
@@ -75,7 +75,7 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   handleResetSuccess() {
-    let successMsg = this.translatedLangText.RESET_EMAIL_SENT;
+    let successMsg = this.translatedLangText.EMAIL_SENT;
     ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
   }
 
