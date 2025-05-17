@@ -1262,7 +1262,9 @@
     "DOES-NOT-MATCH": "Does not match",
     "NEW-PASSWORD": "New Password",
     "INVALID-TOKEN": "Invalid Token",
-    "FAILED-TO-CHANGE-PASSWORD": "Failed to change password"
+    "FAILED-TO-CHANGE-PASSWORD": "Failed to change password",
+    "KG": "KG",
+    "LITERS": "Liters"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
