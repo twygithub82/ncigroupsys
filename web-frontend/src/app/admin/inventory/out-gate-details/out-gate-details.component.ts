@@ -44,6 +44,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-out-gate-details',
@@ -173,9 +174,11 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   ccDS: CustomerCompanyDS;
   tcDS: TariffCleaningDS;
   ogDS: OutGateDS;
+  igDS: InGateDS;
   roSotDS: ReleaseOrderSotDS;
 
   sot_guid?: string | null;
+  eir_no?: string | null;
 
   soStatusCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
@@ -206,6 +209,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.ogDS = new OutGateDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
     this.roSotDS = new ReleaseOrderSotDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -254,6 +258,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       this.subs.sink = this.roSotDS.getReleaseOrderSotForOutGate(this.sot_guid).subscribe(data => {
         if (data.length > 0) {
           this.roSotItem = data.find(x => x.status_cv === 'WAITING');
+          this.eir_no = this.igDS.getInGateItem(this.roSotItem?.storing_order_tank?.in_gate)?.eir_no
           console.log(this.roSotItem);
           this.storingOrderTankItem = this.roSotItem?.storing_order_tank;
           this.populateOutGateForm(this.storingOrderTankItem, this.roSotItem);

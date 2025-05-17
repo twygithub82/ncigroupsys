@@ -90,7 +90,7 @@
           {{translatedLangText.EIR_NO}}
         </mat-header-cell>
         <mat-cell mat-cell *matCellDef="let row" class="">
-          <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{ogDS.getOutGateItem(row?.out_gate)?.eir_no}}
+          <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row?.in_gate)?.eir_no}}
         </mat-cell>
       </ng-container>
       <ng-container matColumnDef="eir_dt">
