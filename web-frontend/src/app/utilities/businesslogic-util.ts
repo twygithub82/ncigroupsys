@@ -41,4 +41,10 @@ export class BusinessLogicUtil {
     static getModulePackage() {
         return modulePackage;
     }
+
+    static getNatureInGateAlert(nature: string | undefined, in_gate_alert: string | undefined) {
+        if (nature && in_gate_alert)
+            return `${nature} - ${in_gate_alert}`;
+        return '';
+    }
 }

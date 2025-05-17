@@ -16,12 +16,14 @@
                   {{releaseOrderItem.ro_no}}
                 }
               </h3>
-             <h5 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
-                 
-                  <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+              <!-- <div class = "col-xl-9 col-lg-9"></div> -->
+             <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 mt-2 align-right">
+              @if (releaseOrderItem.status_cv){
+                <span class="badge badge-sm badge-solid-blue" >
                   {{getRoStatusDescription(releaseOrderItem.status_cv)}}
-                
-             </h5>
+                </span>
+              }
+             </div>
             </div>
             <div class="body">
               @if (roDS.loadingSubject | async) {
@@ -93,10 +95,9 @@
                           <!-- <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="roSotSelection.isSelected(row)"
                             class="card-checkbox" (click)="$event.stopPropagation()">
                           </mat-checkbox> -->
-                          {{row.get('tank_no')?.value}}
+                          <u>{{row.get('tank_no')?.value}}</u>
                           <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.get('actions')?.value)) + ' ms-1'">
-                            {{
-                            getLastAction(row.get('actions')?.value) | uppercase }}
+                              {{getLastAction(row.get('actions')?.value) | uppercase }}     
                           </div>
                         </mat-card-title>
                       </mat-card-header>
@@ -122,12 +123,8 @@
                                 {{row.get('eir_no')?.value}}
                               </div>
                               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
-                                {{row.get('eir_dt')?.value}}
-                              </div>
-                              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.YARD}}:</span>
-                                {{getYardDescription(row.get('yard_cv')?.value)}}
+                                <span class="font-bold">{{translatedLangText.SCHEDULED_DATE}}:</span>
+                                {{row.get('schedule_dt')?.value}}
                               </div>
                               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.TANK_STATUS}}:</span>
@@ -136,20 +133,30 @@
                             </div>
                             <div class="row">
                               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.SCHEDULED_DATE}}:</span>
-                                {{row.get('schedule_dt')?.value}}
-                              </div>
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
-                                <span class="font-bold">{{translatedLangText.REMARKS}}:</span>
-                                {{row.get('remarks')?.value}}
+                                <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
+                                {{row.get('eir_dt')?.value}}
                               </div>
                               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                                 {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
                               </div>
+                              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                                <span class="font-bold">{{translatedLangText.YARD}}:</span>
+                                {{getYardDescription(row.get('yard_cv')?.value)}}
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+                                <span class="font-bold">{{translatedLangText.REMARKS}}:</span>
+                                {{row.get('remarks')?.value}}
+                              </div>
+                              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+                                <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                                {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
+                              </div> -->
                             </div>
                           </div>
-                          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-1">
+                          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                               <input matInput formControlName="release_job_no" required>

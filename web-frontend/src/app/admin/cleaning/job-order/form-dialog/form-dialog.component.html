@@ -79,15 +79,16 @@
               </div>
             </div>
           </div>
+          @if (this.getBackgroundColorFromNature() && this.getNatureInGateAlert()) {
           <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1 cargo-nature">
             <div class="row body">
-              <div
-                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center text-white font-bold">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 d-flex align-items-center text-white font-bold">
                 <mat-icon class="">error</mat-icon>
                 <mat-label class="ms-1">{{this.getNatureInGateAlert()}}</mat-label>
               </div>
             </div>
           </div>
+          }
           <div class="card">
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">

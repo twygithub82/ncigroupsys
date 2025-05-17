@@ -7,18 +7,15 @@
           <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12">
             <h5>{{data.langText.TANK_NO}}: {{jobItm.storing_order_tank?.tank_no}}</h5>
           </div>
-          <!-- <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.langText.REMARKS}}</mat-label>
-            <textarea matInput formControlName="remarks"></textarea>
-            @if (pcForm.get('remarks')?.hasError('required')) {
-            <mat-error>
-              {{data.langText.REMARKS}} {{data.langText.SO_REQUIRED}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div> -->
-        </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.langText.REMARKS}}</mat-label>
+                <textarea matInput formControlName="remarks"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+      </div> 
       </mat-card-content>
       <mat-card-actions [ngClass]="'empty-card-actions'">
       </mat-card-actions>

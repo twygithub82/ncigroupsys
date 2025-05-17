@@ -384,6 +384,12 @@ const GET_STORING_ORDER_TANKS_OUT_GATE = gql`
           eir_dt
           guid
         }
+        in_gate {
+          eir_no
+          eir_dt
+          delete_dt
+          guid
+        }
       }
       pageInfo {
         endCursor

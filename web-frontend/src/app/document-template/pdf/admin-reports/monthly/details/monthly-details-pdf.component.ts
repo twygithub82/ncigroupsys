@@ -804,7 +804,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 11, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
     });
 

@@ -440,7 +440,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
     } else {
-      where.tank_status_cv = { in: this.tankStatusInYard };
+      where.tank_status_cv = { in: this.availableProcessStatus };
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {

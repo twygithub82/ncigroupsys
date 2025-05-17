@@ -281,6 +281,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
+  natureTypeCvList: CodeValuesItem[] = [];
   packageBufferList?: PackageBufferItem[];
 
   unit_typeList: TankItem[] = []
@@ -1015,6 +1016,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       { alias: 'valveBrandCv', codeValType: 'VALVE_BRAND' },
       { alias: 'tankSideCv', codeValType: 'TANK_SIDE' },
       { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -1125,6 +1127,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data || [];
+      this.detectChanges();
+    });
+    this.cvDS.connectAlias('natureTypeCv').subscribe(data => {
+      this.natureTypeCvList = data || [];
       this.detectChanges();
     });
     this.subs.sink = this.tDS.loadItems().subscribe(data => {
@@ -2263,8 +2269,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return this.cvDS.getCodeDescription(codeValType, this.tankSideCvList);
   }
 
+  getNatureTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.natureTypeCvList);
+  }
+
   getNatureInGateAlert() {
-    return `${this.in_gate?.tank?.tariff_cleaning?.nature_cv} - ${this.in_gate?.tank?.tariff_cleaning?.in_gate_alert}`;
+    return BusinessLogicUtil.getNatureInGateAlert(this.getNatureTypeDescription(this.in_gate?.tank?.tariff_cleaning?.nature_cv), this.in_gate?.tank?.tariff_cleaning?.in_gate_alert)
   }
 
   getBackgroundColorFromNature() {

@@ -305,7 +305,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
             ]
           }
         },
-        // { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterJobOrder')?.value } } } } }
+        { repair_part: { some: { repair: { estimate_no: { contains: tankNo } } } } }
+        //{ estimate_no: { contains: tankNo } }
       ];
     }
 

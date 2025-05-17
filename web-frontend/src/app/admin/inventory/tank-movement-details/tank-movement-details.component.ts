@@ -198,6 +198,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     DETAILS: 'COMMON-FORM.DETAILS',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
+    RO_NO: 'COMMON-FORM.RO-NO',
     SO_RO: 'COMMON-FORM.SO/RO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
@@ -450,7 +451,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
     APPLY_ALL: 'COMMON-FORM.APPLY-ALL',
-    DURATION: 'COMMON-FORM.DURATION'
+    DURATION: 'COMMON-FORM.DURATION',
+    KG: 'COMMON-FORM.KG',
+    LITERS: 'COMMON-FORM.LITERS'
   }
 
   sot_guid: string | null | undefined;
@@ -1958,13 +1961,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canRemovePurpose(purpose: string) {
     if (this.sot) {
-      if (purpose === 'steaming') {
-        return !this.steamItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
-      } else if (purpose === 'cleaning') {
-        return !this.cleaningItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && !this.residueItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
-      } else if (purpose === 'repair') {
-        return !this.repairItem.length || !this.repairItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+      if (this.allowAddPurposeTankStatuses.includes(this.sot.tank_status_cv || '')) {
+        if (purpose === 'steaming') {
+          return !this.steamItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        } else if (purpose === 'cleaning') {
+          return !this.cleaningItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && !this.residueItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        } else if (purpose === 'repair') {
+          return !this.repairItem.length || !this.repairItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        }
       }
+      return false;
     }
     return true;
   }

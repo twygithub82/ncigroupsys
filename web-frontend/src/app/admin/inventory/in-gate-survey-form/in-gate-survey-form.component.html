@@ -5,7 +5,7 @@
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList"
         [active_item]="langText.SURVEY_FORM"></app-breadcrumb>
     </div>
-    @if (this.getBackgroundColorFromNature()) {
+    @if (this.getBackgroundColorFromNature() && this.getNatureInGateAlert()) {
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1 cargo-nature">
@@ -47,7 +47,7 @@
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -57,7 +57,7 @@
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -79,7 +79,7 @@
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -89,7 +89,7 @@
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -100,7 +100,7 @@
                 </div>
                 <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
                     </div>
                     <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -110,7 +110,7 @@
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.CLEAN_STATUS}}:</span>
                     </div>
                     <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
@@ -120,7 +120,7 @@
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right pe-0">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                       <span class="label-display-info">{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
                     <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">

@@ -63,247 +63,134 @@
                       }
                     </div>
                     }
-                    <!-- <div class="row justify-content-center">
-                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-152 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.TANK_NO}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">{{sot?.tank_no}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.CUSTOMER}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{ccDS.displayName(sot?.storing_order?.customer_company)}}</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                              {{ccDS.displayName(sot?.storing_order?.customer_company)}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.LAST_CARGO}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">{{sot?.tariff_cleaning?.cargo}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.OWNER}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                              {{ccDS.displayName(sot?.customer_company)}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.PURPOSE}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                              {{displayTankPurpose(sot!)}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.CURRENT_STATUS}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">{{getTankStatusDescription(sot?.tank_status_cv)}}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.EIR_NO}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                              {{igDS.getInGateItem(sot?.in_gate)?.eir_no || "-"}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.EIR_DATE}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                              {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt) || "-"}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.LAST_TEST}}:</span>
-                            <span class="contact-detail-info font-bold">{{last_test_desc || '-'}}</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                              {{last_test_desc || '-'}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.NEXT_TEST}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">{{next_test_desc || '-'}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.CLEAN_STATUS}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">
-                              {{getCleanStatusDescription(sot?.clean_status_cv)}}
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.YARD}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                            <div class="contact-detail-info font-bold">{{getYardDescription(tiItem?.yard_cv)}}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div> -->
                     <div class="row justify-content-center">
                       <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.TANK_NO}}:</span>
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                            <span class="value-display-info">
+                              {{sot?.tank_no}}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                           </div>
                           <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                            <div class="contact-detail-info font-bold">{{sot?.tank_no}}
-                            </div>
+                            <span class="value-display-info">
+                              {{ccDS.displayName(sot?.storing_order?.customer_company)}}
+                            </span>
                           </div>
                         </div>
-                        
-                        <div class="row">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.CUSTOMER}}:</span>
+
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
                           </div>
                           <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                            <div class="contact-detail-info font-bold">{{ccDS.displayName(sot?.storing_order?.customer_company)}}
-                            </div>
+                            <span class="value-display-info">
+                              {{sot?.tariff_cleaning?.cargo}}
+                            </span>
                           </div>
                         </div>
-                        <div class="row">
-                          
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.LAST_CARGO}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{sot?.tariff_cleaning?.cargo}}
-                              </div>
-                            </div>
-                          
-                        </div>
-                        <div class="row">
-                          
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.OWNER}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{ccDS.displayName(sot?.customer_company)}}
-                              </div>
-                            </div>
-                          
-                        </div>
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.PURPOSE}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{displayTankPurpose(sot!)}}
-                              </div>
+
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{ccDS.displayName(sot?.customer_company)}}
+                            </span>
                           </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.CURRENT_STATUS}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{getTankStatusDescription(sot?.tank_status_cv)}}
-                              </div>
+
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{displayTankPurpose(sot!)}}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CURRENT_STATUS}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{getTankStatusDescription(sot?.tank_status_cv)}}
+                            </span>
                           </div>
                         </div>
                       </div>
                       <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.EIR_NO}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{igDS.getInGateItem(sot?.in_gate)?.eir_no ||"-"}}
-                              </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                <span>{{translatedLangText.EIR_DATE}}:</span>
-                              </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                                <div class="contact-detail-info font-bold">{{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt)|| "-"}}
-                                </div>
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{igDS.getInGateItem(sot?.in_gate)?.eir_no ||"-"}}
+                            </span>
                           </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.LAST_TEST}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{last_test_desc || '-'}}
-                              </div>
-                            </div>
-                            <!-- <span class="contact-detail-label">{{translatedLangText.LAST_TEST}}:</span>
-                            <span class="contact-detail-info font-bold">{{last_test_desc || '-'}}</span> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt)|| "-"}}
+                            </span>
+                          </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.NEXT_TEST}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{next_test_desc || '-'}}
-                              </div>
-                            </div>
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{last_test_desc || '-'}}
+                            </span>
+                          </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.CLEAN_STATUS}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{getCleanStatusDescription(sot?.clean_status_cv)}}
-                              </div>
-                            </div>
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{next_test_desc || '-'}}
+                            </span>
+                          </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.YARD}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                              <div class="contact-detail-info font-bold">{{getYardDescription(tiItem?.yard_cv)}}
-                              </div>
-                            </div>
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CLEAN_STATUS}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{getCleanStatusDescription(sot?.clean_status_cv)}}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="row right-align-display">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.YARD}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                            <span class="value-display-info">
+                              {{getYardDescription(tiItem?.yard_cv)}}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -349,71 +236,66 @@
                     <mat-card-content>
                       <div class="row justify-content-center">
                         <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.UNIT_TYPE}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.UNIT_TYPE}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{sot?.tank?.unit_type}}
-                              </div>
+                              <span class="value-display-info">
+                                {{sot?.tank?.unit_type}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.CLADDING}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.CLADDING}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{getCladdingDescription(igs?.cladding_cv) ||
-                                "-"}}
-                              </div>
+                              <span class="value-display-info">
+                                {{getCladdingDescription(igs?.cladding_cv) || "-"}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.TARE_WEIGHT}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.TARE_WEIGHT}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{igs?.tare_weight || "-"}} KG
-                              </div>
+                              <span class="value-display-info">
+                                {{igs?.tare_weight || "-"}} {{translatedLangText.KG}}
+                              </span>
                             </div>
                           </div>
-                          <!-- <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                              <span>{{translatedLangText.LAST_TEST}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{last_test_desc || '-'}}
-                              </div>
-                            </div>
-                          </div> -->
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{getDisCompDescription(igs?.btm_dis_comp_cv)
-                                || "-"}}
-                              </div>
+                              <span class="value-display-info">
+                                {{getDisCompDescription(igs?.btm_dis_comp_cv) || "-"}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.NOTES}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.NOTES}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="contact-detail-info font-bold d-flex align-items-center">
-                                <span class="me-2">{{sot?.tank_note || "-"}}</span>
+                              <div class="d-flex align-items-center">
+                                <span class="value-display-info me-2">
+                                  {{sot?.tank_note || "-"}}
+                                </span>
                                 <mat-icon color="primary" class="cursor-pointer"
                                   (click)="editTankNotes($event)">mode_edit</mat-icon>
                               </div>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.RELEASE_NOTES}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.RELEASE_NOTES}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="contact-detail-info font-bold d-flex align-items-center">
+                              <div class="d-flex align-items-center">
                                 <span class="me-2">{{sot?.release_note || "-"}}</span>
                                 <mat-icon color="primary" class="cursor-pointer"
                                   (click)="editTankNotes($event)">mode_edit</mat-icon>
@@ -422,61 +304,54 @@
                           </div>
                         </div>
                         <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.MANUFACTURER_DOM}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.MANUFACTURER_DOM}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{igs?.manufacturer_cv || "-"}}
-                                {{displayDate(igs?.dom_dt)}}
-                              </div>
+                              <span class="value-display-info">
+                                {{igs?.manufacturer_cv || "-"}} {{displayDate(igs?.dom_dt)}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.CAPACITY}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.CAPACITY}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{igs?.capacity || "-"}} Liters
-                              </div>
+                              <span class="value-display-info">
+                                {{igs?.capacity || "-"}} {{translatedLangText.LITERS}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.MAX_GROSS_WEIGHT}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.MAX_GROSS_WEIGHT}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">
+                              <span class="value-display-info">
                                 {{getMaxGrossWeightDescription(igs?.max_weight_cv) || "-"}}
-                              </div>
+                              </span>
                             </div>
                           </div>
-                          <!-- <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                              <span>{{translatedLangText.NEXT_TEST}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.COMPARTMENT_TYPE}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{next_test_desc || '-'}}
-                              </div>
-                            </div>
-                          </div> -->
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.COMPARTMENT_TYPE}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{igs?.tariff_buffer?.buffer_type || "-"}}
-                              </div>
+                              <span class="value-display-info">
+                                {{igs?.tariff_buffer?.buffer_type || "-"}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.WALKWAY}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.WALKWAY}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{getWalkwayDescription(igs?.walkway_cv) ||
-                                "-"}}
-                              </div>
+                              <span class="value-display-info">
+                                {{getWalkwayDescription(igs?.walkway_cv) || "-"}}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -513,158 +388,148 @@
                       <div class="row justify-content-center">
                         <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                           <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
+                            <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                               <span></span>
+                            </div> -->
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
+                              <span
+                                class="contact-detail-info font-bold text-decoration-underline me-5 pe-5">{{translatedLangText.IN_GATE}}
+                              </span>
+                            </div>
+                          </div>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.SO_NO}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold underline-border">{{translatedLangText.IN_GATE}}
-                              </div>
+                              <span class="value-display-info"> {{sot?.storing_order?.so_no || "-"}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.SO_RO}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.JOB_NO}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{sot?.storing_order?.so_no || "-"}}
-                              </div>
+                              <span class="value-display-info"> {{sot?.job_no || "-"}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.JOB_NO}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.DATE}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{sot?.job_no || "-"}}
-                              </div>
+                              <span class="value-display-info">{{displayDateTime(ig?.eir_dt) || "-"}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.TRANSACTION_DATE}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.HAULIER}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">{{displayDateTime(ig?.create_dt) || "-"}}
-                              </div>
+                              <span class="value-display-info">{{ig?.haulier || "-"}}</span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.HAULIER}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.VEHICLE_NO}}:</span>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="contact-detail-info font-bold d-flex align-items-center">
-                                <span class="me-2">{{ig?.haulier || "-"}}</span>
-                              </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <span class="value-display-info">{{ig?.vehicle_no || "-"}}</span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.VEHICLE_NO}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.DRIVER_NAME}}:</span>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="contact-detail-info font-bold d-flex align-items-center">
-                                <span class="me-2"> {{ig?.vehicle_no || "-"}}</span>
-                              </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <span class="value-display-info">{{ig?.driver_name || "-"}}</span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.DRIVER_NAME}}:</span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.REMARKS}}:</span>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="contact-detail-info font-bold d-flex align-items-center">
-                                <span class="me-2"> {{ig?.driver_name || "-"}}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.REMARKS}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="contact-detail-info font-bold d-flex align-items-center">
-                                <span class="me-2"> {{ig?.remarks || "-"}}</span>
-                              </div>
+                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                              <span class="value-display-info">{{ig?.remarks || "-"}}</span>
                             </div>
                           </div>
                         </div>
-                         <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                           <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
+                            <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                               <span></span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold underline-border">{{translatedLangText.OUT_GATE}}
-                              </div>
+                            </div> -->
+                            <div
+                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
+                              <span
+                                class="contact-detail-info font-bold text-decoration-underline me-5 pe-5">{{translatedLangText.OUT_GATE}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span></span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.RO_NO}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}
-                              </div>
+                              <span class="value-display-info">
+                                {{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}
+                              </span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span></span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.JOB_NO}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold">
-                                {{sot?.release_job_no || "-"}}
-                              </div>
+                              <span class="value-display-info">{{sot?.release_job_no || "-"}}</span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span></span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.DATE}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{displayDateTime(og?.create_dt) || "-"}}
-                              </div>
+                              <span class="value-display-info">{{displayDateTime(og?.eir_dt) || "-"}}</span>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span></span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.HAULIER}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{og?.haulier || "-"}}
-                              </div>
+                              <span class="value-display-info">{{og?.haulier || "-"}}</span>
                             </div>
                           </div>
-                           <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span></span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.VEHICLE_NO}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{og?.vehicle_no || "-"}}
-                              </div>
+                              <span class="value-display-info">{{og?.vehicle_no || "-"}}</span>
                             </div>
                           </div>
-                           <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span></span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.DRIVER_NAME}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{og?.driver_name || "-"}}
-                              </div>
+                              <span class="value-display-info">{{og?.driver_name || "-"}}</span>
                             </div>
                           </div>
-                           <div class="row">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span></span>
+                          <div class="row right-align-display">
+                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span class="label-display-info">{{translatedLangText.REMARKS}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <div class="contact-detail-info font-bold"> {{og?.remarks || "-"}}
-                              </div>
+                              <span class="value-display-info">{{og?.remarks || "-"}}</span>
                             </div>
                           </div>
                         </div>
-                     </div>
+                      </div>
                     </mat-card-content>
                     }
                   </div>
@@ -707,77 +572,70 @@
                               async)) {
                               @if (sot?.purpose_storage) {
                               <div class="position-relative">
-                                <div class="row justify-content-center pt-5">
+                                <div class="row justify-content-center pt-3">
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.BEGIN_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.BEGIN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.STORAGE_DAYS}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.STORAGE_DAYS}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">{{pdDS.getStorageDays(sot!, pdItem!)
-                                          ||
-                                          "-"}}
-                                        </div>
+                                        <span class="value-display-info">
+                                          {{pdDS.getStorageDays(sot!, pdItem!) || "-"}}
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.AVAILABLE_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.AVAILABLE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">{{getAvailableDate(sot!) || "-"}}
-                                        </div>
+                                        <span class="value-display-info">
+                                          {{getAvailableDate(sot!) || "-"}}
+                                        </span>
                                       </div>
                                     </div>
-                                    <!-- <div class="row">
-                                        <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                          <span>{{translatedLangText.ETR_DATE}}:</span>
-                                        </div>
-                                        <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                          <div class="contact-detail-info font-bold">{{convertDisplayDate(sot?.etr_dt) ||
-                                            "-"}}
-                                          </div>
-                                        </div>
-                                      </div> -->
                                   </div>
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.RELEASE_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.RELEASE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.FREE_STORAGE_DAYS}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span
+                                          class="label-display-info">{{translatedLangText.FREE_STORAGE_DAYS}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">{{pdItem?.free_storage || "-"}}
-                                        </div>
+                                        <span class="value-display-info">
+                                          {{pdItem?.free_storage || "-"}}
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.STORAGE_CALCULATE_BY}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span
+                                          class="label-display-info">{{translatedLangText.STORAGE_CALCULATE_BY}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{getStorageCalDescription(pdItem?.storage_cal_cv) ?? "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
@@ -827,28 +685,29 @@
                                   <mat-icon>cancel</mat-icon>
                                 </button>
                                 }
-                                <div class="row justify-content-center pt-5">
+                                <div class="row justify-content-center pt-3">
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.STEAM_BEGIN_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.STEAM_BEGIN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDateTime(steamDS.getSteamBeginDate(steamItem)) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.STEAM_COMPLETE_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span
+                                          class="label-display-info">{{translatedLangText.STEAM_COMPLETE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDateTime(steamDS.getSteamCompleteDate(steamItem)) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
@@ -1049,117 +908,41 @@
                               @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$
                               | async)) {
                               @if (sot?.purpose_cleaning) {
-                              <div class="row justify-content-center pt-5">
+                              <div class="row justify-content-center pt-3">
                                 <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                  <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.RESIDUE_BEGIN_DATE}}:</span>
+                                  <div class="row right-align-display">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                      <span class="label-display-info">{{translatedLangText.RESIDUE_BEGIN_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
+                                      <span class="value-display-info">
                                         {{displayDateTime(residueDS.getResidueBeginDate(residueItem)) || "-"}}
-                                      </div>
+                                      </span>
                                     </div>
                                   </div>
-                                  <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.COMPLETED_DATE}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{displayDate(cleaningItem[0].job_order?.start_dt) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div> -->
-                                  <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.DEPOT_REFERENCE}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{cleaningItem[0].job_no || "-"}}
-                                        </div>
-                                      </div>
-                                    </div> -->
-                                  <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.JOB_STATUS}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{getProcessStatusDescription(cleaningItem[0].status_cv) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div> -->
                                 </div>
                                 <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                  <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.RESIDUE_COMPLETE_DATE}}:</span>
+                                  <div class="row right-align-display">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                      <span
+                                        class="label-display-info">{{translatedLangText.RESIDUE_COMPLETE_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
+                                      <span class="value-display-info">
                                         {{displayDateTime(residueDS.getResidueCompleteDate(residueItem)) || "-"}}
-                                      </div>
+                                      </span>
                                     </div>
                                   </div>
-                                  <div class="row">
-                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.PROCESSING_DAYS}}:</span>
+                                  <div class="row right-align-display">
+                                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                      <span class="label-display-info">{{translatedLangText.PROCESSING_DAYS}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                      <div class="contact-detail-info font-bold">
+                                      <span class="value-display-info">
                                         {{residueDS.getResidueProcessingDays(repairItem) || "-"}}
-                                      </div>
+                                      </span>
                                     </div>
                                   </div>
-                                  <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.APPROVED_DATE}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{displayDate(cleaningItem[0].approve_dt) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div> -->
-                                  <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.RESIDUE_QUANTITY}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div> -->
-                                  <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.CUSTOMER_REFERENCE}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div> -->
-                                  <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.BILL}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold d-flex align-items-center">
-                                          @if (false) {
-                                          <mat-icon
-                                            class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
-                                          }
-                                          @else {
-                                          <mat-icon
-                                            class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
-                                          }
-                                        </div>
-                                      </div>
-                                    </div> -->
                                 </div>
                               </div>
                               <div class="row">
@@ -1317,7 +1100,7 @@
                                 || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()) {
                                 <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
-                                  class="link-button position-absolute top-0 end-0 p-0">
+                                  class="link-button position-absolute purpose-absolute-menu">
                                   <mat-icon>edit</mat-icon>
                                 </button>
 
@@ -1340,54 +1123,54 @@
                                   }
                                 </mat-menu>
                                 }
-                                <div class="row justify-content-center pt-5">
+                                <div class="row justify-content-center pt-3">
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.GATE_IN_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.GATE_IN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDate(cleaningItem?.[0]?.create_dt) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.APPROVED_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.APPROVED_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDate(cleaningItem?.[0]?.approve_dt) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.JOB_STATUS}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.JOB_STATUS}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{getProcessStatusDescription(cleaningItem?.[0]?.status_cv) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.JOB_NO}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.JOB_NO}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{cleaningItem?.[0]?.job_no || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.BILL}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.BILL}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold d-flex align-items-center">
+                                        <span class="value-display-info align-items-center">
                                           @if (cleaningItem?.[0]?.customer_billing_guid) {
                                           <mat-icon
                                             class="material-icons-two-tone col-green font-bold m-l-0">check</mat-icon>
@@ -1396,69 +1179,60 @@
                                           <mat-icon
                                             class="material-icons-two-tone col-red font-bold m-l-0">close</mat-icon>
                                           }
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.PROCESS}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.PROCESS}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{sot?.tariff_cleaning?.cleaning_method?.name || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <!-- <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.PROCESSING_DAYS}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.CLEANING_BAY}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
-                                          {{cleaningDS.getProcessingDate(cleaningItem?.[0]) || "-"}}
-                                        </div>
-                                      </div>
-                                    </div> -->
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.CLEANING_BAY}}:</span>
-                                      </div>
-                                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{cleaningItem?.[0]?.job_order?.team?.description || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.BEGIN_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.BEGIN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDateTime(cleaningItem?.[0]?.job_order?.start_dt) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.COMPLETED_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.COMPLETED_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDateTime(cleaningItem?.[0]?.job_order?.complete_dt) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.DURATION_DAY_HR_MIN}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span
+                                          class="label-display-info">{{translatedLangText.DURATION_DAY_HR_MIN}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{joDS.getJobOrderDuration(cleaningItem?.[0]?.job_order) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
@@ -1482,6 +1256,7 @@
                               }
                               }
                             </mat-tab>
+
                             <mat-tab>
                               <ng-template mat-tab-label>
                                 <span [ngClass]="'m-r-10 d-flex align-items-center'">
@@ -1491,11 +1266,11 @@
                               @if (!(repairDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
                               async)) {
                               @if (sot?.purpose_repair_cv) {
-                              <div class="position-relative">
+                              <div class="position-relative mt-2">
                                 @if (canRemoveRepairPurpose()) {
                                 <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
-                                  class="link-button position-absolute top-0 end-0 p-0">
+                                  class="link-button position-absolute purpose-absolute-menu">
                                   <mat-icon>edit</mat-icon>
                                 </button>
 
@@ -1513,48 +1288,48 @@
                                   <mat-icon>cancel</mat-icon>
                                 </button>
                                 } -->
-                                <div class="row justify-content-center pt-5">
+                                <div class="row justify-content-center pt-3">
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5 ">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.BEGIN_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.BEGIN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDateTime(repairDS.getRepairBeginDate(repairItem)) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.REPAIR_TYPE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.REPAIR_TYPE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{getPurposeOptionDescription(sot!.purpose_repair_cv) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.COMPLETED_DATE}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.COMPLETED_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{displayDateTime(repairDS.getRepairCompleteDate(repairItem)) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
-                                    <div class="row">
-                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.DURATION}}:</span>
+                                    <div class="row right-align-display">
+                                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                        <span class="label-display-info">{{translatedLangText.DURATION}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                        <div class="contact-detail-info font-bold">
+                                        <span class="value-display-info">
                                           {{repairDS.getRepairProcessingDays(repairItem) || "-"}}
-                                        </div>
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
@@ -1766,62 +1541,61 @@
                             <div class="row justify-content-center">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                 <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <h6>{{translatedLangText.STORAGE_BILLING_DETAILS}}</h6>
+                                  <div
+                                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
+                                    <h6 class="font-bold text-decoration-underline">
+                                      {{translatedLangText.STORAGE_BILLING_DETAILS}}
+                                    </h6>
                                   </div>
                                 </div>
-                                <div class="row">
-                                  <div
-                                    class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-0 p-t-5 p-b-5 align-right">
-                                    <span>{{translatedLangText.BILLING_PROFILE}}:</span>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.BILLING_PROFILE}}:</span>
                                   </div>
-                                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-0 p-t-5 p-b-5">
-                                    <span
-                                      class="contact-detail-info font-bold">{{pdItem?.tariff_depot?.description}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div
-                                    class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-0 p-t-5 p-b-5 align-right">
-                                    <span>{{translatedLangText.STORAGE_CALCULATE_BY}}:</span>
-                                  </div>
-                                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-0 p-t-5 p-b-5">
-                                    <span
-                                      class="contact-detail-info font-bold">{{getStorageCalDescription(pdItem?.storage_cal_cv)
-                                      ?? "-"}}</span>
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="value-display-info">
+                                      {{pdItem?.tariff_depot?.description}}
+                                    </span>
                                   </div>
                                 </div>
-                                <div class="row">
-                                  <div
-                                    class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-0 p-t-5 p-b-5 align-right">
-                                    <span>{{translatedLangText.FREE_STORAGE_DAYS}}:</span>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.STORAGE_CALCULATE_BY}}:</span>
                                   </div>
-                                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-0 p-t-5 p-b-5">
-                                    <span class="contact-detail-info font-bold">{{pdItem?.free_storage || "-"}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div
-                                    class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-0 p-t-5 p-b-5 align-right">
-                                    <span>{{translatedLangText.BEGIN_DATE}}:</span>
-                                  </div>
-                                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-0 p-t-5 p-b-5">
-                                    <span
-                                      class="contact-detail-info font-bold">{{displayDate(pdDS.getStorageBeginDate(sot!,
-                                      pdItem!)) ||
-                                      "-"}}</span>
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="value-display-info">
+                                      {{getStorageCalDescription(pdItem?.storage_cal_cv) ?? "-"}}
+                                    </span>
                                   </div>
                                 </div>
-                                <div class="row">
-                                  <div
-                                    class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-0 p-t-5 p-b-5 align-right">
-                                    <span>{{translatedLangText.BILLED_UNTIL}}:</span>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.FREE_STORAGE_DAYS}}:</span>
                                   </div>
-                                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-0 p-t-5 p-b-5">
-                                    <span
-                                      class="contact-detail-info font-bold">{{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt)
-                                      ||
-                                      "-"}}</span>
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="value-display-info">
+                                      {{pdItem?.free_storage || "-"}}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.BEGIN_DATE}}:</span>
+                                  </div>
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="value-display-info">
+                                      {{displayDate(pdDS.getStorageBeginDate(sot!, pdItem!)) || "-"}}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.BILLED_UNTIL}}:</span>
+                                  </div>
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
+                                    <span class="value-display-info">
+                                      {{displayDate(ogDS.getOutGateItem(sot?.out_gate)?.create_dt) || "-"}}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -1897,7 +1671,7 @@
                                       {{row.invoice_no}}
                                       }
                                       @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
+                                      {{"-"}}
                                       }
                                     </span>
                                   </mat-cell>
@@ -1933,274 +1707,6 @@
                               </mat-progress-spinner>
                             </div>
                             }
-                            <!-- <div class="row justify-content-center">
-                              <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <h5 class="text-column">{{translatedLangText.DESCRIPTION}}</h5>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{translatedLangText.PRE_INSPECTION}}:</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{translatedLangText.LIFT_OFF}}:</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{translatedLangText.LIFT_ON}}:</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{translatedLangText.GATE_IN}}:</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{translatedLangText.GATE_OUT}}:</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <h5 class="text-column">{{translatedLangText.JOB_NO}}</h5>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span class="contact-detail-info font-bold">{{sot?.preinspect_job_no || "-"}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span class="contact-detail-info font-bold">{{sot?.liftoff_job_no || "-"}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span class="contact-detail-info font-bold">{{sot?.lifton_job_no || "-"}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span class="contact-detail-info font-bold">{{sot?.job_no || "-"}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span class="contact-detail-info font-bold">{{sot?.release_job_no || "-"}}</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <h5 class="text-column">{{translatedLangText.INVOICE}}</h5>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-1 p-b-0">
-                                    <span>
-                                      @if (sot?.billing_sot?.preinsp_billing_guid) {
-                                      <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                      }
-                                      @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
-                                      }
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-1 p-b-0">
-                                    <span>
-                                      @if (sot?.billing_sot?.loff_billing_guid) {
-                                      <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                      }
-                                      @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
-                                      }
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-1 p-b-0">
-                                    <span>
-                                      @if (sot?.billing_sot?.lon_billing_guid){
-                                      <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                      }
-                                      @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
-                                      }
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-1 p-b-0">
-                                    <span>
-                                      @if (sot?.billing_sot?.gin_billing_guid) {
-                                      <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                      }
-                                      @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
-                                      }
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-1 p-b-0">
-                                    <span>
-                                      @if (sot?.billing_sot?.gout_billing_guid) {
-                                      <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                      }
-                                      @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
-                                      }
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                                    <h5 class="text-column">{{translatedLangText.COST}}</h5>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{parse2Decimal(sot?.billing_sot?.preinspection_cost!) || '-'}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{parse2Decimal(sot?.billing_sot?.lift_off_cost!) || '-'}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{parse2Decimal(sot?.billing_sot?.lift_on_cost!) || '-'}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{parse2Decimal(sot?.billing_sot?.gate_in_cost!) || '-'}}</span>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 p-t-5 p-b-5">
-                                    <span>{{parse2Decimal(sot?.billing_sot?.gate_out_cost!) || '-'}}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div> -->
-                            <!-- <table class="table table-striped table-hover m-b-0">
-                              <thead>
-                                <tr>
-                                  <th class="table-col-1">{{translatedLangText.NO_DOT}}</th>
-                                  <th class="table-col-4">{{translatedLangText.DESCRIPTION}}</th>
-                                  <th class="table-col-3">{{translatedLangText.JOB_NO}}</th>
-                                  <th class="table-col-2">{{translatedLangText.INVOICE}}</th>
-                                  <th class="table-col-2">{{translatedLangText.COST}}</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td class="table-col-1">1.</td>
-                                  <td class="table-col-4">{{translatedLangText.PRE_INSPECTION}}</td>
-                                  <td class="table-col-3">{{sot?.preinspect_job_no || "-"}}</td>
-                                  <td class="table-col-2 p-t-0 p-b-0">
-                                    @if (sot?.billing_sot?.preinsp_billing_guid) {
-                                    <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                    }
-                                    @else {
-                                    <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                    }
-                                  </td>
-                                  <td class="table-col-2">
-                                    <span class="cost-label">
-                                      <span>{{parse2Decimal(sot?.billing_sot?.preinspection_cost!)}}</span>
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="table-col-1">2.</td>
-                                  <td class="table-col-4">{{translatedLangText.LIFT_OFF}}</td>
-                                  <td class="table-col-3">{{sot?.liftoff_job_no || "-"}}</td>
-                                  <td class="table-col-2 p-t-0 p-b-0">
-                                    @if (sot?.billing_sot?.loff_billing_guid) {
-                                    <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                    }
-                                    @else {
-                                    <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                    }
-                                  </td>
-                                  <td class="table-col-2">
-                                    <span class="cost-label">
-                                      <span>{{parse2Decimal(sot?.billing_sot?.lift_off_cost!)}}</span>
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="table-col-1">3.</td>
-                                  <td class="table-col-4">{{translatedLangText.LIFT_ON}}</td>
-                                  <td class="table-col-3">{{sot?.lifton_job_no || "-"}}</td>
-                                  <td class="table-col-2 p-t-0 p-b-0">
-                                    @if (sot?.billing_sot?.lon_billing_guid){
-                                    <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                    }
-                                    @else {
-                                    <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                    }
-                                  </td>
-                                  <td class="table-col-2">
-                                    <span class="cost-label">
-                                      <span>{{parse2Decimal(sot?.billing_sot?.lift_on_cost!)}}</span>
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="table-col-1">4.</td>
-                                  <td class="table-col-4">{{translatedLangText.TAKE_IN_REFERENCE}}</td>
-                                  <td class="table-col-3">{{sot?.job_no || "-"}}</td>
-                                  <td class="table-col-2 p-t-0 p-b-0">
-                                    @if (sot?.billing_sot?.gin_billing_guid) {
-                                    <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                    }
-                                    @else {
-                                    <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                    }
-                                  </td>
-                                  <td class="table-col-2">
-                                    <span class="cost-label">
-                                      <span>{{parse2Decimal(sot?.billing_sot?.gate_in_cost!)}}</span>
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="table-col-1">5.</td>
-                                  <td class="table-col-4">{{translatedLangText.RELEASE_REFERENCE}}</td>
-                                  <td class="table-col-3">{{sot?.release_job_no || "-"}}</td>
-                                  <td class="table-col-2 p-t-0 p-b-0">
-                                    @if (sot?.billing_sot?.gout_billing_guid) {
-                                    <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon>
-                                    }
-                                    @else {
-                                    <mat-icon class="material-icons-two-tone col-red m-l-0">close</mat-icon>
-                                    }
-                                  </td>
-                                  <td class="table-col-2 text-justify">
-                                    <span class="cost-label">
-                                      <span>{{parse2Decimal(sot?.billing_sot?.gate_out_cost!)}}</span>
-                                    </span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table> -->
                           </div>
                         </div>
                       </div>

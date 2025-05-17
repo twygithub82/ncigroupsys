@@ -200,7 +200,7 @@
                       <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
                         class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
                       </mat-checkbox>
-                      <div class="w-xl-18 w-lg-33">
+                      <div class="w-xl-16 w-lg-33">
                         <span class="font-bold">{{row.tank_no}}</span>
                         @if (checkBooking(filterDeleted(row.booking || []))){
                         <div [ngClass]="'badge badge-solid-green ms-1'"><span>
@@ -211,7 +211,7 @@
                           {{filterDeleted(row.scheduling_sot || [])?.length}}</div>
                         }
                       </div>
-                      <div class="w-xl-25 w-lg-33">
+                      <div class="w-xl-27 w-lg-33">
                         <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
                         {{ccDS.displayName(row.storing_order?.customer_company)}}
                       </div>

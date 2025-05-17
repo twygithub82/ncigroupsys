@@ -263,7 +263,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
             ]
           }
         },
-        // { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } } }
+        { repair_part: { some: { repair: { estimate_no: { contains: this.filterJobOrderForm!.get('filterRepair')?.value } } } } }
       ];
     }
 

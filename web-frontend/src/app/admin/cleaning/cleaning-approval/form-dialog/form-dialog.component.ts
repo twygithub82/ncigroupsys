@@ -37,6 +37,7 @@ import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from '../dialogs/confirm-form-dialog/confirm-form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export interface DialogData {
   action?: string;
@@ -44,6 +45,7 @@ export interface DialogData {
   // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageDepotItem[];
+  viewOnly?: boolean;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -101,12 +103,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
+  viewOnly?: boolean;
 
   packageDepotItems?: PackageDepotItem[] = [];
   packageDepotDS?: PackageDepotDS;
   CodeValuesDS?: CodeValuesDS;
 
   storageCalCvList: CodeValuesItem[] = [];
+  natureTypeCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -266,18 +270,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.jobOrderDS = new JobOrderDS(this.apollo);
     this.action = data.action!;
+    this.viewOnly = data.viewOnly;
     this.translateLangText();
   }
 
   ngOnInit() {
-
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
     if (this.AllowChangingCost()) this.initializeValueChanges();
   }
 
   createCleaningChargesItem() {
-
     this.igCleanItems = [
       {
         description: this.getDescription(),
@@ -388,6 +391,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   loadData() {
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+      { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
@@ -413,12 +417,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           na_dt: this.displayDate(inGateClnItem.na_dt),
           cleaning_cost: inGateClnItem.cleaning_cost,
           buffer_cost: inGateClnItem.buffer_cost,
-          remarks: inGateClnItem.remarks,
+          remarks: this.viewOnly? inGateClnItem.remarks : "",
         });
         this.PatchBillingParty(inGateClnItem);
         this.createCleaningChargesItem();
       }
     });
+    this.CodeValuesDS?.connectAlias('natureTypeCv').subscribe(data => {
+      this.natureTypeCvList = data;
+    });
+  }
+
+  getNatureTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.CodeValuesDS?.getCodeDescription(codeVal, this.natureTypeCvList)
   }
 
   displayCustomerName(cc?: CustomerCompanyItem): string {
@@ -429,7 +440,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (input === null) return "-";
     return Utility.convertEpochToDateStr(input);
   }
-
 
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
@@ -629,7 +639,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getNatureInGateAlert() {
-    return `${this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv} - ${this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert}`;
+    return BusinessLogicUtil.getNatureInGateAlert(this.getNatureTypeDescription(this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv), this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert)
   }
 
   getBackgroundColorFromNature() {

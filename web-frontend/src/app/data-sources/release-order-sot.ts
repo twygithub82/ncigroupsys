@@ -178,6 +178,11 @@ export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
           unit_type_guid
           update_by
           update_dt
+          in_gate {
+            eir_no
+            eir_dt
+            delete_dt
+          }
           out_gate {
             create_by
             create_dt
