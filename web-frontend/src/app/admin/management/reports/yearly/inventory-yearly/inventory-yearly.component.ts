@@ -433,12 +433,12 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   ZeroTransaction(data: ManagementReportYearlyInventory): boolean {
     var retval: boolean = true;
     if (data) {
-      retval = (data.cleaning_yearly_inventory?.average_count == 0) ||
-        (data.depot_yearly_inventory?.average_count == 0) ||
-        (data.gate_in_inventory?.average_count == 0) ||
-        (data.gate_out_inventory?.average_count == 0) ||
-        (data.repair_yearly_inventory?.average_count == 0) ||
-        (data.steaming_yearly_inventory?.average_count == 0)
+      retval = ((data.cleaning_yearly_inventory?.average_count||0) == 0) &&
+        ((data.depot_yearly_inventory?.average_count||0) == 0) &&
+        ((data.gate_in_inventory?.average_count||0) == 0) &&
+        ((data.gate_out_inventory?.average_count||0) == 0) &&
+        ((data.repair_yearly_inventory?.average_count||0) == 0) &&
+        ((data.steaming_yearly_inventory?.average_count||0) == 0)
     }
     return retval;
   }

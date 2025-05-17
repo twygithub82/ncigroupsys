@@ -4,9 +4,19 @@
 <div #pdfTable id="pdfTable" mat-dialog-content>
   
 
-  <div id="pdf-form-body" class="pdf-container pdf-body" hidden>
+  <div id="pdf-form-body" class="pdf-container pdf-body" >
     <!-- @for (bCust of report_customer_tank_activity; track bCust) { -->
-  <div class="card">
+     <div class="card">
+        <div class="body">
+          <div style="width: 40vw">
+            <apx-chart [series]="lineChart2Options.series!" [chart]="lineChart2Options.chart!"
+            [dataLabels]="lineChart2Options.dataLabels!" [plotOptions]="lineChart2Options.plotOptions!"
+            [grid]="lineChart2Options.grid!" [yaxis]="lineChart2Options.yaxis!" [xaxis]="lineChart2Options.xaxis!"
+            [fill]="lineChart2Options.fill!" [title]="lineChart2Options.title!" [legend]="lineChart2Options.legend!"></apx-chart>
+          </div>
+        </div>
+      </div>
+  <div class="card" hidden>
      
       <div class="pdf-body">
         <table  id="table_customer_info" class="table_customer_info">

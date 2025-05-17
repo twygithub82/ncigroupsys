@@ -36,7 +36,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
-import { ManagementReportDS } from 'app/data-sources/reports-management';
+import { ManagementReportDS,ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { RevenueMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/revenue/revenue-sales-details-pdf.component';
 import { Utility } from 'app/utilities/utility';
@@ -517,13 +517,24 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
   }
 
-  ProcessReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string, invTypes: string[]) {
+  ProcessReport(repData: any, date: string, report_type: number, customerName: string, invTypes: string[]) {
 
 
 
     if (repData) {
+
+      if (!this.ZeroTransaction(repData)) {
+
+      //this.onExportDetail(repData, date, customerName, report_type, invTypes);
+       this.onExportChart_r1(repData, date, customerName, invTypes);
+
+        }
+        else {
+          this.repData = [];
+          this.isGeneratingReport = false;
+        }
       //if (report_type == 1) {
-      this.onExportChart_r1(repData, date, customerName, invTypes);
+      
       //}
     }
     else {
@@ -648,5 +659,19 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
     this.resetForm();
 
   }
+  ZeroTransaction(data: ManagementReportMonthlyRevenueItem): boolean {
+         var retval: boolean = true;
+         if (data) {
+           retval = ((data.cleaning_monthly_revenue?.average_cost||0) == 0) &&
+             ((data.gate_monthly_revenue?.average_cost||0) == 0) &&
+             ((data.lolo_monthly_revenue?.average_cost||0) == 0) &&
+             ((data.preinspection_monthly_revenue?.average_cost||0) == 0) &&
+             ((data.repair_monthly_revenue?.average_cost||0) == 0) &&
+             ((data.residue_monthly_revenue?.average_cost||0) == 0) &&
+             ((data.steam_monthly_revenue?.average_cost||0) == 0) &&
+             ((data.storage_monthly_revenue?.average_cost||0) == 0)
+         }
+         return retval;
+       }
 
 }

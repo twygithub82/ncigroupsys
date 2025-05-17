@@ -600,8 +600,8 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
+      const pageWidth = 297; // A4 width in mm (landscape)
+    const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 10;
     const rightMargin = 10;
     const topMargin = 5;
@@ -612,7 +612,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    const pdf = new jsPDF('l', 'mm', 'a4'); // Changed orientation to portrait
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
 
@@ -650,7 +650,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -678,7 +678,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 36);
 
     // Variable to store the final Y position of the last table

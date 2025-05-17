@@ -838,7 +838,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
     // Variable to store the final Y position of the last table
@@ -848,7 +848,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
 
     if(this.customer)
     {
@@ -882,7 +882,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       average_counter++;
       data.push([
         (++idx).toString(),monthData.key,
-        ...(showPreinspectSurcharge?[ monthData.gate?.count||'',Utility.formatNumberDisplay(monthData.gate?.cost)]:[]),
+        ...(showPreinspectSurcharge?[ monthData.preinspection?.count||'',Utility.formatNumberDisplay(monthData.preinspection?.cost)]:[]),
         ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
         ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
         ...(showGateSurcharge?[ monthData.gate?.count||'',Utility.formatNumberDisplay(monthData.gate?.cost)]:[]),

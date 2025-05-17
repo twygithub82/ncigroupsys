@@ -11,12 +11,19 @@
     <div class="card">
       <div class="body">
         <div style="width: 50vw">
-          <apx-chart [series]="barChartOptions.series!" [chart]="barChartOptions.chart!"
+          <div >
+              <div class="chart-wrapper">
+                <div class="y-axis-label">{{getYAxisLabel()}}</div>
+                <canvas baseChart  [data]="lineChartData" [options]="lineChartOpts"
+                  type="line"></canvas>
+              </div>
+            </div>
+          <!-- <apx-chart [series]="barChartOptions.series!" [chart]="barChartOptions.chart!"
           [dataLabels]="barChartOptions.dataLabels!" [plotOptions]="barChartOptions.plotOptions!"
           [yaxis]="barChartOptions.yaxis!" [legend]="barChartOptions.legend!" [fill]="barChartOptions.fill!"
           [stroke]="barChartOptions.stroke!" [tooltip]="barChartOptions.tooltip!" [grid]="barChartOptions.grid!"
           [xaxis]="barChartOptions.xaxis!">
-        </apx-chart>
+        </apx-chart> -->
         </div>
       </div>
     </div>

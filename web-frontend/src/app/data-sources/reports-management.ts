@@ -558,7 +558,7 @@ export class InventoryAnalyzer {
       { name: 'gate', data: data.gate_yearly_revenue?.revenue_per_month },
       { name: 'steaming', data: data.steam_yearly_revenue?.revenue_per_month },
       { name: 'repair', data: data.repair_yearly_revenue?.revenue_per_month },
-      { name: 'storage', data: data.steam_yearly_revenue?.revenue_per_month },
+      { name: 'storage', data: data.storage_yearly_revenue?.revenue_per_month },
       { name: 'lolo', data: data.lolo_yearly_revenue?.revenue_per_month },
       { name: 'preinspection', data: data.preinspection_yearly_revenue?.revenue_per_month },
     ];

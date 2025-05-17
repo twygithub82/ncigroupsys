@@ -790,6 +790,11 @@ export class Utility {
                 </body>
               </html>
             `;
+    // const a = document.createElement('a');
+    // a.href = blobUrl;
+    // a.download = `${fileName.replace(/\.pdf$/i, '')}`; // 👈 This sets the filename
+    // a.target = '_blank';
+    // a.click();
     // Try opening in a new window
     const newWindow = window.open(blobUrl, '_blank');
     if (!newWindow) {

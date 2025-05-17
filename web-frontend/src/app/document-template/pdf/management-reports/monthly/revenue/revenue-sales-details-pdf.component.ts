@@ -294,7 +294,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     APPROVED_HOUR:'COMMON-FORM.APPROVED-HOUR',
     COMPLETED_HOUR:'COMMON-FORM.COMPLETED-HOUR',
     DIFFERENCE:'COMMON-FORM.DIFFERENCE',
-    MONTHLY_INVENTORY_REPORT:'COMMON-FORM.MONTHLY-INVENTORY-REPORT',
+    MONTHLY_REVENUE_REPORT:'COMMON-FORM.MONTHLY-REVENUE-REPORT',
     S_N:'COMMON-FORM.S_N',
   }
 
@@ -775,17 +775,18 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
 
-    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY , 11);
 
     if(this.customer)
     {
       const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+      Utility.addText(pdf, customer,startY  , leftMargin+4, 9);
     }
+    startY+=3;
     var idx = 0;
 
     var grpData= InventoryAnalyzer.groupRevenueMonthlyByDate(this.repData!);
@@ -869,15 +870,15 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
         }
         switch (p)
         {
-          // case this.translatedLangText.PREINSPECTION:
-          //  if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
-          // break;
-          // case this.translatedLangText.LOLO:
-          //   if(showLoloSurcharge) s.data.push(monthData.lolo?.cost||0);
-          // break;
-          // case this.translatedLangText.STORAGE:
-          //   if(showStorageSurcharge) s.data.push(monthData.storage?.cost||0);
-          // break;
+          case this.translatedLangText.PREINSPECTION:
+           if(showPreinspectSurcharge) s.data.push(entry.preinspection?.cost||0);
+          break;
+          case this.translatedLangText.LOLO:
+            if(showLoloSurcharge) s.data.push(entry.lolo?.cost||0);
+          break;
+          case this.translatedLangText.STORAGE:
+            if(showStorageSurcharge) s.data.push(entry.storage?.cost||0);
+          break;
           case this.translatedLangText.STEAM:
             if(showSteamSurcharge) s.data.push(entry.steaming?.completed_count||0);
           break;
@@ -887,9 +888,9 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
           case this.translatedLangText.REPAIR:
             if(showRepairSurcharge)  s.data.push(entry.repair?.completed_hour||0);
           break;
-          // case this.translatedLangText.RESIDUE:
-          //   if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
-          // break;
+          case this.translatedLangText.RESIDUE:
+            if(showResidueSurcharge) s.data.push(entry.residue?.cost||0);
+          break;
           case this.translatedLangText.GATE_IN:
             if(showGateSurcharge) 
               { 
@@ -1130,9 +1131,9 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     this.lineChartOptions.colors=[ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
       "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
 
-   // if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
-   // if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
-   // if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
+    if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
+    if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
+    if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
     if(!showGateSurcharge){
       this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate In"].includes(s.name));
       this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate Out"].includes(s.name));
@@ -1156,7 +1157,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
   let chartContentWidth = pageWidth - leftMargin - rightMargin;
   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
   for (var i = 0; i < cardElements.length; i++) {
-    if (i > 0) {
+    {
       pdf.addPage();
       Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
       pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
@@ -1207,7 +1208,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
 
-  },100);
+  },500);
 
    // this.dialogRef.close();
   }
@@ -1318,7 +1319,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
   }
   GetReportTitle(): string {
     var title:string='';
-         title = `${this.translatedLangText.MONTHLY_INVENTORY_REPORT}`;
+         title = `${this.translatedLangText.MONTHLY_REVENUE_REPORT}`;
     return `${title}`
   }
 
@@ -1394,21 +1395,31 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     this.lineChartOptions = {
       colors:this.colors,
       chart: {
-        height: 350,
+        height: 380,
         type: 'line',
-        toolbar: {
-          show: false,
-        },
         animations: {
-          enabled: false, // <-- disables all animations
+          enabled: false, // disables animations
+        },
+        dropShadow: {
+          enabled: false,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2,
         },
         foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+         
+        },
       },
       dataLabels: {
         enabled: true,
       },
       stroke: {
         curve: 'smooth',
+       width: 2,
       },
       series: [
         {
@@ -1428,7 +1439,8 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
         strokeDashArray: 1,
       },
       markers: {
-        size: 6,
+        size: 3, // ✅ shows a visible dot
+        strokeWidth: 0,
       },
       xaxis: {
         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],

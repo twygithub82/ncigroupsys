@@ -45,6 +45,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { ManagementReportDS,ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
 import { A } from '@angular/cdk/keycodes';
 
 @Component({
@@ -175,7 +176,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   tcDS: TariffCleaningDS;
 
 
-  reportDS: ReportDS;
+  reportDS:ManagementReportDS; //ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -213,6 +214,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
+  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
 
   constructor(
     public httpClient: HttpClient,
@@ -233,7 +235,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     this.tcDS = new TariffCleaningDS(this.apollo);
 
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS = new ReportDS(this.apollo);
+    this.reportDS = new ManagementReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -297,11 +299,15 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
       // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
       { alias: 'salesCostTypeCv', codeValType: 'SALES_COST_TYPE' },
+      { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-    this.cvDS.connectAlias('salesCostTypeCv').subscribe(data => {
+    this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
       if(this.modulePackageService.isStarterPackage())
+      {
         data = data.filter(c=>c.code_val != "RESIDUE" && c.code_val != "STEAMING")
+        this.invTypes =this.invTypes.filter(c=>c != "RESIDUE" && c != "STEAMING");
+      }
       this.costTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');
       var allType = this.costTypeCvList.find(c => c.code_val == 'ALL');
       this.searchForm?.patchValue({
@@ -364,6 +370,12 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   search(report_type: number) {
     if (this.searchForm?.invalid) return;
     this.isGeneratingReport = true;
+    // var cond_counter = 0;
+    // let queryType = 1;
+    // const where: any = {};
+    //let processType=this.processType;
+
+this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
@@ -371,12 +383,14 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
 
 
-    where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE"];
-    if (this.searchForm?.get('cost_type')?.value.code_val !== 'ALL') {
-      where.report_type = [this.searchForm?.get('cost_type')?.value.code_val];
+    var customerName: string = "";
+    var invTypes = this.invTypes.filter(v => v !== "ALL");
+    where.revenue_type = invTypes;
+    if (this.searchForm?.get('cost_type')?.value.code_val != "ALL") {
+      where.revenue_type = [this.searchForm?.get('cost_type')?.value.code_val];
+      invTypes = [this.searchForm?.get('cost_type')?.value.code_val];
     }
 
-    var customerName = "";
     if (this.searchForm?.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
       where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
@@ -392,6 +406,10 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
       where.month = (monthIndex + 1);
     }
 
+    // if (this.searchForm?.get('inventory_type')?.value) {
+    //   where.inventory_type = this.searchForm?.get('inventory_type')?.value;
+    // }
+
     if (this.searchForm?.get('year')?.value) {
       where.year = Number(this.searchForm?.get('year')?.value);
     }
@@ -401,18 +419,61 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
 
     this.lastSearchCriteria = where;
-    this.performSearch(report_type, date, customerName);
+    this.performSearch(report_type, date, customerName, invTypes);
+
+    // where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE"];
+    // if (this.searchForm?.get('cost_type')?.value.code_val !== 'ALL') {
+    //   where.report_type = [this.searchForm?.get('cost_type')?.value.code_val];
+    // }
+
+    // var customerName = "";
+    // if (this.searchForm?.get('customer_code')?.value) {
+    //   // if(!where.storing_order_tank) where.storing_order_tank={};
+    //   where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+    //   customerName = `${this.searchForm!.get('customer_code')?.value.name}`;
+    //   cond_counter++;
+    // }
+
+    // var date: string = `${this.searchForm?.get('month')?.value} ${this.searchForm?.get('year')?.value}`;
+    // // if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
+    // if (this.searchForm?.get('month')?.value) {
+    //   var month = this.searchForm?.get('month')?.value;
+    //   const monthIndex = this.monthList.findIndex(m => month === m);
+    //   where.month = (monthIndex + 1);
+    // }
+
+    // if (this.searchForm?.get('year')?.value) {
+    //   where.year = Number(this.searchForm?.get('year')?.value);
+    // }
+
+    // cond_counter++;
+    // //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
+
+
+    // this.lastSearchCriteria = where;
+    // this.performSearch(report_type, date, customerName);
   }
 
-
-
-
-  performSearch(reportType?: number, date?: string, customerName?: string) {
+ performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[]) {
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchAdminReportMonthlySales(this.lastSearchCriteria)
+    this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
       .subscribe(data => {
+        this.repData = data;
+        this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!, invTypes!);
+      });
+
+  }
+
+
+  performSearch1(reportType?: number, date?: string, customerName?: string) {
+
+    var reportDS:any= this.reportDS;
+    // if(queryType==1)
+    // {
+    this.subs.sink = reportDS.searchAdminReportMonthlySales(this.lastSearchCriteria)
+      .subscribe((data:any) => {
         this.repData = data;
         this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!);
         // this.endCursor = this.stmDS.pageInfo?.endCursor;
@@ -519,31 +580,43 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
   }
 
-  ProcessMonthlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
+  ProcessMonthlyReport(repData: any, date: string, report_type: number, customerName: string, invTypes?: string[]) {
 
 
+    
+    if (!this.ZeroTransaction(repData)) {
 
-    if (repData) {
-      if (report_type == 1) {
-        this.onExportChart_r1(repData, date, customerName);
-      }
-      else if (report_type == 2) {
-        this.onExportSummary(repData, date, customerName);
-      }
-      else if (report_type == 3) {
-        this.onExportDetail(repData, date, customerName);
-      }
+      //this.onExportDetail(repData, date, customerName, report_type, invTypes);
+       this.onExportDetail(repData, date, customerName,invTypes);
 
     }
     else {
-      this.sotList = [];
+      this.repData = [];
       this.isGeneratingReport = false;
     }
+    
+
+    // if (repData) {
+    //   if (report_type == 1) {
+    //     this.onExportChart_r1(repData, date, customerName);
+    //   }
+    //   else if (report_type == 2) {
+    //     this.onExportSummary(repData, date, customerName);
+    //   }
+    //   else if (report_type == 3) {
+    //     this.onExportDetail(repData, date, customerName,invTypes);
+    //   }
+
+    // }
+    // else {
+    //   this.sotList = [];
+    //   this.isGeneratingReport = false;
+    // }
 
 
   }
 
-  onExportDetail(repData: AdminReportMonthlyReport, date: string, customerName: string) {
+  onExportDetail(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -564,6 +637,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
         date: date,
         repType: this.processType,
         customer: customerName,
+        inventory_type: invTypes
 
       },
 
@@ -680,4 +754,19 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   onTabFocused() {
     this.resetForm();
   }
+
+   ZeroTransaction(data: ManagementReportMonthlyRevenueItem): boolean {
+        var retval: boolean = true;
+        if (data) {
+          retval = ((data.cleaning_monthly_revenue?.average_cost||0) == 0) &&
+            ((data.gate_monthly_revenue?.average_cost||0) == 0) &&
+            ((data.lolo_monthly_revenue?.average_cost||0) == 0) &&
+            ((data.preinspection_monthly_revenue?.average_cost||0) == 0) &&
+            ((data.repair_monthly_revenue?.average_cost||0) == 0) &&
+            ((data.residue_monthly_revenue?.average_cost||0) == 0) &&
+            ((data.steam_monthly_revenue?.average_cost||0) == 0) &&
+            ((data.storage_monthly_revenue?.average_cost||0) == 0)
+        }
+        return retval;
+      }
 }

@@ -43,9 +43,12 @@
                   <input matInput formControlName="cost_type" [matAutocomplete]="costType">
                   <mat-autocomplete #costType="matAutocomplete" [displayWith]="displayCostTypeFn">
                     @for (cs of costTypeCvList; track cs) {
-                    <mat-option [value]="cs">
-                      {{cs.description}}
-                    </mat-option>
+                      @if(invTypes.includes(cs.code_val!))
+                      {
+                        <mat-option [value]="cs">
+                          {{cs.description}}
+                        </mat-option>
+                       }
                     }
                   </mat-autocomplete>
                 </mat-form-field>

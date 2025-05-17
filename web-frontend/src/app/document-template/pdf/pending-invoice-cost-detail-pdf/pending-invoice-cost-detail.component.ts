@@ -1070,8 +1070,10 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     lastTableFinalY: number, 
     minHeightBodyCell:any,fontsz:number,pagePositions:any,reportTitle:string)
   {
+       pdf.addPage();
 
-
+       lastTableFinalY=15;
+       PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
        const tableWidthTotal = 10 + 60 + 40;
        const columnStyles:any= {
           // Set columns 0 to 16 to be center aligned

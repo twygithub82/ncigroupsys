@@ -451,20 +451,21 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   }
 
-  ZeroTransaction(data: ManagementReportYearlyRevenueItem): boolean {
-    var retval: boolean = true;
-    if (data) {
-      retval = (data.cleaning_yearly_revenue?.average_count == 0) ||
-        (data.gate_yearly_revenue?.average_count == 0) ||
-        (data.lolo_yearly_revenue?.average_count == 0) ||
-        (data.preinspection_yearly_revenue?.average_count == 0) ||
-        (data.repair_yearly_revenue?.average_count == 0) ||
-        (data.residue_yearly_revenue?.average_count == 0) ||
-        (data.steam_yearly_revenue?.average_count == 0) ||
-        (data.storage_yearly_revenue?.average_count == 0)
+  
+   ZeroTransaction(data: ManagementReportYearlyRevenueItem): boolean {
+      var retval: boolean = true;
+      if (data) {
+        retval = ((data.cleaning_yearly_revenue?.average_count||0) == 0) &&
+          ((data.gate_yearly_revenue?.average_count||0) == 0) &&
+          ((data.lolo_yearly_revenue?.average_count||0) == 0) &&
+          ((data.preinspection_yearly_revenue?.average_count||0) == 0) &&
+          ((data.repair_yearly_revenue?.average_count||0) == 0) &&
+          ((data.residue_yearly_revenue?.average_count||0) == 0) &&
+          ((data.steam_yearly_revenue?.average_count||0) == 0) &&
+          ((data.storage_yearly_revenue?.average_count||0) == 0)
+      }
+      return retval;
     }
-    return retval;
-  }
 
 
   onPageEvent(event: PageEvent) {

@@ -37,7 +37,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { ManagementReportDS } from 'app/data-sources/reports-management';
+import { ManagementReportDS,ManagementReportMonthlyInventory } from 'app/data-sources/reports-management';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { InventoryMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/inventory/inventory-sales-details-pdf.component';
 import { Utility } from 'app/utilities/utility';
@@ -236,6 +236,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.reportDS = new ManagementReportDS(this.apollo);
+    
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -365,6 +366,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
 
     var customerName: string = "";
+
     var invTypes = this.invTypes.filter(v => v !== "ALL");
     where.inventory_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
@@ -517,13 +519,19 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
   }
 
-  ProcessReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string, invTypes: string[]) {
+  ProcessReport(repData: any, date: string, report_type: number, customerName: string, invTypes: string[]) {
 
 
 
     if (repData) {
       //if (report_type == 1) {
-      this.onExportChart_r1(repData, date, customerName, invTypes);
+      if(!this.ZeroTransaction(repData)){
+        this.onExportChart_r1(repData, date, customerName, invTypes);
+      }else {
+      this.sotList = [];
+      this.isGeneratingReport = false;
+    }
+      
       //}
     }
     else {
@@ -648,5 +656,17 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     this.resetForm();
 
   }
+
+  ZeroTransaction(data: ManagementReportMonthlyInventory): boolean {
+      var retval: boolean = false;
+      if (data) {
+        retval = ((data.cleaning_inventory?.length||0) == 0) &&
+          ((data.gate_in_out_inventory?.gate_inventory?.length||0) == 0) &&
+          ((data.gate_in_out_inventory?.lolo_inventory?.length||0) == 0) &&
+          ((data.repair_inventory?.length||0) == 0) &&
+          ((data.steaming_inventory?.length||0) == 0) 
+      }
+      return retval;
+    }
 
 }

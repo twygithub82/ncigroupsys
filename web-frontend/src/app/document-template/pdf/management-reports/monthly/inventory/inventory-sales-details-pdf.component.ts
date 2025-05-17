@@ -847,7 +847,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY -3, 9);
 
     if(this.customer)
     {

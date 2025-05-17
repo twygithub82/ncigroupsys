@@ -10,7 +10,7 @@
               <div class="m-l-" [matTooltip]="translatedLangText.OVERVIEW_SUMMARY">
                 <button mat-mini-fab color="primary" (click)="search_overview_summary()"
                   (click)="$event.stopPropagation()"
-                  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()">
+                  [disabled]="(reportDS.loading$ | async) || (sotDS.loading$ | async) || isGeneratingReport || !AllowToSearch()" hidden>
                   <mat-icon>show_chart</mat-icon>
                 </button>
               </div>
