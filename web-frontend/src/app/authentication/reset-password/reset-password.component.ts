@@ -43,7 +43,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
     SOMETHING_WENT_WRONG_TRY_AGAIN_LATER: 'COMMON-FORM.SOMETHING-WENT-WRONG-TRY-AGAIN-LATER',
     ENTER_NEW_PASSWORD_FOR: 'COMMON-FORM.ENTER-NEW-PASSWORD-FOR',
     DOES_NOT_MATCH: 'COMMON-FORM.DOES-NOT-MATCH',
-    SAVE_SUCCESSFULLY: 'COMMON-FORM.SAVE-SUCCESSFULLY',
+    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     FAILED_TO_CHANGE_PASSWORD: 'COMMON-FORM.FAILED-TO-CHANGE-PASSWORD'
   }
 
@@ -154,7 +154,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   handleChangePasswordSuccess() {
-    let successMsg = this.translatedLangText.SAVE_SUCCESSFULLY;
+    let successMsg = this.translatedLangText.SAVE_SUCCESS;
     ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
   }
 
