@@ -1,76 +1,87 @@
 <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
-  <div class="row">
-    <div class="col-xl-3 col-lg- col-md-12 col-sm-12 mb-2 pt-3">
-      <mat-form-field class="example-full-width" appearance="fill">
-        <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
-        <mat-label>
-          {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
-        </mat-label>
-        <input matInput formControlName="filterJobOrder">
-      </mat-form-field>
-    </div>
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
-      <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-        <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
-        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-          @for (cc of customer_companyList; track cc) {
-          <mat-option [value]="cc">
-            {{ccDS.displayName(cc)}}
-          </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-    </div>
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
-      <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>{{translatedLangText.APPROVE_DATE}}</mat-label>
-        <mat-date-range-input [rangePicker]="allocate_picker">
-          <input matStartDate placeholder="Start date" formControlName="allocate_dt_start">
-          <input matEndDate placeholder="End date" formControlName="allocate_dt_end">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="allocate_picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #allocate_picker></mat-date-range-picker>
-      </mat-form-field>
-    </div>
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
-      <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>{{translatedLangText.STATUS}}</mat-label>
-        <mat-select multiple formControlName="jobStatusCv">
-          @for (codeValue of jobStatusCvList; track codeValue) {
-          @if (availableJobStatus.includes(codeValue.code_val ?? '')){
-          <mat-option [value]="codeValue.code_val">
-            {{codeValue.description}}
-          </mat-option>
-          }
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-    @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2 pt-3">
-      <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>{{translatedLangText.TEAM}}</mat-label>
-        <mat-select multiple formControlName="teamList">
-          @for (team of teamList; track team) {
-          <mat-option [value]="team">
-            {{team.description}}
-          </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-    }
-    <div class="col-xl col-lg col-md-12 col-sm-12 col-xs-12 mt-0 mb-2 d-flex align-items-center ms-auto justify-content-end">
-      <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" matTooltip={{translatedLangText.SEARCH}}>
-        <mat-icon>search</mat-icon>
-      </button>
-      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-        matTooltip={{translatedLangText.CLEAR_ALL}}>
-        <mat-icon>clear_all</mat-icon>
-      </button>
-    </div>
-  </div>
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+        </mat-panel-title>
+        <mat-panel-description>
+          <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+            <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" (click)="$event.stopPropagation()">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
+          <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+            <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+              <mat-icon>clear_all</mat-icon>
+            </button>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="row">
+        <div class="col-xl-3 col-lg- col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
+            <mat-label>
+              {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
+            </mat-label>
+            <input matInput formControlName="filterJobOrder">
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+            <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
+            <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+              @for (cc of customer_companyList; track cc) {
+              <mat-option [value]="cc">
+                {{ccDS.displayName(cc)}}
+              </mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{translatedLangText.APPROVE_DATE}}</mat-label>
+            <mat-date-range-input [rangePicker]="allocate_picker">
+              <input matStartDate placeholder="Start date" formControlName="allocate_dt_start">
+              <input matEndDate placeholder="End date" formControlName="allocate_dt_end">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="allocate_picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #allocate_picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{translatedLangText.STATUS}}</mat-label>
+            <mat-select multiple formControlName="jobStatusCv">
+              @for (codeValue of jobStatusCvList; track codeValue) {
+              @if (availableJobStatus.includes(codeValue.code_val ?? '')){
+              <mat-option [value]="codeValue.code_val">
+                {{codeValue.description}}
+              </mat-option>
+              }
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{translatedLangText.TEAM}}</mat-label>
+            <mat-select multiple formControlName="teamList">
+              @for (team of teamList; track team) {
+              <mat-option [value]="team">
+                {{team.description}}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        }
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
 </form>
 <div class="responsive_table">
   <table mat-table [dataSource]="jobOrderList" matSort
@@ -80,22 +91,20 @@
       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
     </ng-container>
     <ng-container matColumnDef="tank_no">
-      <mat-header-cell mat-header-cell *matHeaderCellDef 
+      <mat-header-cell mat-header-cell *matHeaderCellDef
         [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.TANK_NO}}
       </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row" 
+      <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="customer">
-      <mat-header-cell mat-header-cell *matHeaderCellDef 
-        [ngClass]="''">
+      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
         {{translatedLangText.CUSTOMER}}
       </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row" 
-        [ngClass]="''">
+      <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
         <span
           class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
       </mat-cell>

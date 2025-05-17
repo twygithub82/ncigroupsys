@@ -202,6 +202,12 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   currentEndCursor: string | undefined = undefined;
   lastCursorDirection: string | undefined = undefined;
 
+  filterRECheck: any = {
+    est_dt_start: undefined,
+    est_dt_end: undefined,
+    status_cv: this.availableProcessStatus
+  }
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -483,6 +489,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   constructSearchCriteria(): boolean {
     if (this.searchForm?.invalid) return false;
+    this.clearFilterRE();
 
     const where: any = {
       tank_status_cv: { in: ['REPAIR', 'STORAGE'] },
@@ -546,15 +553,20 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       // }
 
       if (this.searchForm!.get('est_dt')?.value) {
-        const estDtStart = this.searchForm?.get('est_dt')?.value?.clone();
+        const estDt = this.searchForm?.get('est_dt')?.value?.clone();
+        const estDtStart = Utility.convertDate(estDt) as number;
+        const estDtEnd = Utility.convertDate(estDt, true) as number;
         reSome.create_dt = {
-          gte: Utility.convertDate(estDtStart),
-          lte: Utility.convertDate(estDtStart, true),
+          gte: estDtStart,
+          lte: estDtEnd,
         };
+        this.filterRECheck.est_dt_start = estDtStart;
+        this.filterRECheck.est_dt_end = estDtEnd;
       }
 
       if (this.searchForm!.get('est_status_cv')?.value?.length) {
         reSome.status_cv = { in: this.searchForm!.get('est_status_cv')?.value }
+        this.filterRECheck.status_cv = this.searchForm!.get('est_status_cv')?.value;
       }
       where.repair = { some: reSome };
     }
@@ -587,9 +599,20 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.subs.sink = this.sotDS.searchStoringOrderTanksRepair(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data.map(sot => {
-          sot.repair = sot.repair?.map(rep => {
-            return { ...rep, net_cost: this.calculateNetCost(rep) }
-          })
+          sot.repair = sot.repair
+            ?.filter(rep => {
+              let shouldInclude = true;
+              if (this.filterRECheck.est_dt_start && this.filterRECheck.est_dt_end) {
+                shouldInclude = shouldInclude && (rep.create_dt || 0) >= this.filterRECheck.est_dt_start && (rep.create_dt || 0) <= this.filterRECheck.est_dt_end;
+              }
+              if (this.filterRECheck.status_cv.length) {
+                shouldInclude = shouldInclude && this.filterRECheck.status_cv.includes(rep.status_cv || '');
+              }
+              return shouldInclude;
+            })
+            ?.map(rep => {
+              return { ...rep, net_cost: this.calculateNetCost(rep) }
+            })
           return sot;
         });
         this.endCursor = this.sotDS.pageInfo?.endCursor;
@@ -817,5 +840,11 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
+  }
+
+  clearFilterRE() {
+    this.filterRECheck.est_dt_start = undefined;
+    this.filterRECheck.est_dt_end = undefined;
+    this.filterRECheck.status_cv = this.availableProcessStatus;
   }
 }

@@ -1961,13 +1961,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canRemovePurpose(purpose: string) {
     if (this.sot) {
-      if (purpose === 'steaming') {
-        return !this.steamItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
-      } else if (purpose === 'cleaning') {
-        return !this.cleaningItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && !this.residueItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
-      } else if (purpose === 'repair') {
-        return !this.repairItem.length || !this.repairItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+      if (this.allowAddPurposeTankStatuses.includes(this.sot.tank_status_cv || '')) {
+        if (purpose === 'steaming') {
+          return !this.steamItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        } else if (purpose === 'cleaning') {
+          return !this.cleaningItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && !this.residueItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        } else if (purpose === 'repair') {
+          return !this.repairItem.length || !this.repairItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+        }
       }
+      return false;
     }
     return true;
   }

@@ -37,6 +37,7 @@ import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { ConfirmationDialogComponent } from '../dialogs/confirm-form-dialog/confirm-form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export interface DialogData {
   action?: string;
@@ -109,6 +110,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   CodeValuesDS?: CodeValuesDS;
 
   storageCalCvList: CodeValuesItem[] = [];
+  natureTypeCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -273,14 +275,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   ngOnInit() {
-
     // this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
     this.loadData();
     if (this.AllowChangingCost()) this.initializeValueChanges();
   }
 
   createCleaningChargesItem() {
-
     this.igCleanItems = [
       {
         description: this.getDescription(),
@@ -391,6 +391,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   loadData() {
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+      { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
@@ -422,6 +423,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         this.createCleaningChargesItem();
       }
     });
+    this.CodeValuesDS?.connectAlias('natureTypeCv').subscribe(data => {
+      this.natureTypeCvList = data;
+    });
+  }
+
+  getNatureTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.CodeValuesDS?.getCodeDescription(codeVal, this.natureTypeCvList)
   }
 
   displayCustomerName(cc?: CustomerCompanyItem): string {
@@ -432,7 +440,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (input === null) return "-";
     return Utility.convertEpochToDateStr(input);
   }
-
 
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
@@ -632,7 +639,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getNatureInGateAlert() {
-    return `${this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv} - ${this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert}`;
+    return BusinessLogicUtil.getNatureInGateAlert(this.getNatureTypeDescription(this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv), this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert)
   }
 
   getBackgroundColorFromNature() {
