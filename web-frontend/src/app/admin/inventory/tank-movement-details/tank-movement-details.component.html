@@ -541,7 +541,7 @@
                           </div>
                           <div class="row">
                             <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                              <span>{{translatedLangText.TRANSACTION_DATE}}:</span>
+                              <span>{{translatedLangText.DATE}}:</span>
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                               <div class="contact-detail-info font-bold">{{displayDateTime(ig?.create_dt) || "-"}}
@@ -831,7 +831,7 @@
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.STEAM_BEGIN_DATE}}:</span>
+                                        <span>{{translatedLangText.BEGIN_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
@@ -843,7 +843,7 @@
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.STEAM_COMPLETE_DATE}}:</span>
+                                        <span>{{translatedLangText.COMPLETE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
@@ -1053,7 +1053,7 @@
                                 <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.RESIDUE_BEGIN_DATE}}:</span>
+                                      <span>{{translatedLangText.BEGIN_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
@@ -1095,7 +1095,7 @@
                                 <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                      <span>{{translatedLangText.RESIDUE_COMPLETE_DATE}}:</span>
+                                      <span>{{translatedLangText.COMPLETE_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <div class="contact-detail-info font-bold">
@@ -1443,7 +1443,7 @@
                                     </div>
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                                        <span>{{translatedLangText.COMPLETED_DATE}}:</span>
+                                        <span>{{translatedLangText.COMPLETE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
@@ -1482,6 +1482,7 @@
                               }
                               }
                             </mat-tab>
+
                             <mat-tab>
                               <ng-template mat-tab-label>
                                 <span [ngClass]="'m-r-10 d-flex align-items-center'">
@@ -1491,7 +1492,7 @@
                               @if (!(repairDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$ |
                               async)) {
                               @if (sot?.purpose_repair_cv) {
-                              <div class="position-relative">
+                              <div class="position-relative mt-2">
                                 @if (canRemoveRepairPurpose()) {
                                 <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
@@ -1539,7 +1540,7 @@
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right p-0">
-                                        <span>{{translatedLangText.COMPLETED_DATE}}:</span>
+                                        <span>{{translatedLangText.COMPLETE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <div class="contact-detail-info font-bold">
@@ -1897,7 +1898,7 @@
                                       {{row.invoice_no}}
                                       }
                                       @else {
-                                      <mat-icon class="material-icons-two-tone col-red m-l-0">-</mat-icon>
+                                      <mat-icon class="material-icons-two-tone m-l-0">-</mat-icon>
                                       }
                                     </span>
                                   </mat-cell>

@@ -518,29 +518,29 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   ApproveTank(row: InGateCleaningItem) {
-    this.popupDialogForm(row, "approve");
+    this.popupDialogForm(row, "approve", false);
   }
 
   NoActionTank(row: InGateCleaningItem) {
-    this.popupDialogForm(row, "no_action");
+    this.popupDialogForm(row, "no_action" , false);
   }
 
   KIVTank(row: InGateCleaningItem) {
-    this.popupDialogForm(row, "kiv");
+    this.popupDialogForm(row, "kiv", false);
   }
 
   AdjustCost(row: InGateCleaningItem) {
-    this.popupDialogForm(row, "cost");
+    this.popupDialogForm(row, "cost", false);
   }
 
   ViewTank(row: InGateCleaningItem) {
     if(row.status_cv == "KIV")
-      this.popupDialogForm(row, "kiv");
+      this.popupDialogForm(row, "kiv", true);
     else
-      this.popupDialogForm(row, "view");
+      this.popupDialogForm(row, "view", true);
   }
 
-  popupDialogForm(row: InGateItem, action: string) {
+  popupDialogForm(row: InGateItem, action: string, viewOnly: boolean) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -549,6 +549,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     }
     var rows: InGateCleaningItem[] = [];
     rows.push(row);
+    // if(!viewOnly)
+    //   rows.find(r => r.remarks)!.remarks = '';
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50vw',
       data: {
@@ -557,7 +559,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
         selectedItems: rows
       },
       position: {
-        top: '50px'
+        top: '10px'
       }
     });
 
