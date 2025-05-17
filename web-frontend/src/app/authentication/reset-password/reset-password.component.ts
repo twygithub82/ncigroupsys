@@ -11,7 +11,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { AuthService } from '@core/service/auth.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { merge } from 'rxjs';
+import { finalize, merge } from 'rxjs';
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
@@ -51,6 +51,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
   returnUrl!: string;
   token: string = '';
   email: string = '';
+  loading: boolean = false;
   hidePsw = true;
   hideCPsw = true;
   cpasswordFirstCheck = true;
@@ -123,13 +124,18 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
     if (this.authForm.invalid) {
       return;
     } else {
+      this.loading = true;
       const emailForm = this.email;
       const newPasswordForm = this.authForm.get('npassword');
       const confirmPasswordForm = this.authForm.get('cpassword');
       if (emailForm) {
         this.subs.sink = this.authService
           .resetPassword(newPasswordForm?.value, confirmPasswordForm?.value, emailForm, this.token)
-          .subscribe({
+          .pipe(
+            finalize(() => {
+              this.loading = false; // always run after success or error
+            })
+          ).subscribe({
             next: (res) => {
               console.log(res)
               if (res.status == "Success") {
