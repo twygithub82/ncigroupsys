@@ -534,10 +534,10 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     {
       tnkStatus=[...this.searchForm!.get('status_cv')?.value];
     }
-    if(tnkStatus.includes('STORAGE'))
-    {
-      tnkStatus.push('RO_GENERATED');
-    }
+    // if(tnkStatus.includes('STORAGE'))
+    // {
+    //   tnkStatus.push('RO_GENERATED');
+    // }
     where.and.push({tank_status_cv:{in:tnkStatus}});
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);

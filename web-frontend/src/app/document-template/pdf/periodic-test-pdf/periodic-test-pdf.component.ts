@@ -609,13 +609,13 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     var gap = 8;
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 36);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell=4;
     let fontSize = 5;
-    const comStyles: any = {
+    const comStyles: any = {  
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight:minHeightBodyCell},
       1: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight:minHeightBodyCell },
       2: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight:minHeightBodyCell },

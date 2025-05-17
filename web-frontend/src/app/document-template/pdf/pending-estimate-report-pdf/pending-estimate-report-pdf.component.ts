@@ -917,8 +917,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 16, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 6), pdf.internal.pageSize.height - lineBuffer);
     });
 
     this.generatingPdfProgress = 100;
