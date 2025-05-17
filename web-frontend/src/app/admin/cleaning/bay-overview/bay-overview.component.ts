@@ -460,9 +460,10 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     const dt = new Date(Number(jobOrderItem.start_dt) * 1000);
 
     const formatted =
-      dt.getFullYear() + '-' +
+      //dt.getFullYear() + '-' +
+      String(dt.getDate()).padStart(2, '0') + '-' +
       String(dt.getMonth() + 1).padStart(2, '0') + '-' +
-      String(dt.getDate()).padStart(2, '0') + ' ' +
+      String(dt.getFullYear()) + ' ' +
       String(dt.getHours()).padStart(2, '0') + ':' +
       String(dt.getMinutes()).padStart(2, '0');
 

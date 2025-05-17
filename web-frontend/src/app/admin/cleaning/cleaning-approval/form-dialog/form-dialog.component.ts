@@ -44,6 +44,7 @@ export interface DialogData {
   // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageDepotItem[];
+  viewOnly?: boolean;
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -101,6 +102,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
+  viewOnly?: boolean;
 
   packageDepotItems?: PackageDepotItem[] = [];
   packageDepotDS?: PackageDepotDS;
@@ -266,6 +268,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.jobOrderDS = new JobOrderDS(this.apollo);
     this.action = data.action!;
+    this.viewOnly = data.viewOnly;
     this.translateLangText();
   }
 
@@ -413,7 +416,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           na_dt: this.displayDate(inGateClnItem.na_dt),
           cleaning_cost: inGateClnItem.cleaning_cost,
           buffer_cost: inGateClnItem.buffer_cost,
-          remarks:  inGateClnItem.remarks,
+          remarks: this.viewOnly? inGateClnItem.remarks : "",
         });
         this.PatchBillingParty(inGateClnItem);
         this.createCleaningChargesItem();

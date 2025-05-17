@@ -299,7 +299,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
@@ -313,7 +313,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>

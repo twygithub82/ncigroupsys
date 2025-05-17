@@ -549,14 +549,13 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     }
     var rows: InGateCleaningItem[] = [];
     rows.push(row);
-    // if(!viewOnly)
-    //   rows.find(r => r.remarks)!.remarks = '';
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50vw',
       data: {
         action: action,
         langText: this.langText,
-        selectedItems: rows
+        selectedItems: rows,
+        viewOnly: viewOnly
       },
       position: {
         top: '10px'
