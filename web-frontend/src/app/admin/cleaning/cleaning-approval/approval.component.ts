@@ -85,7 +85,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'last_cargo',
     'method',
     'purpose',
-    'tank_status_cv',
+    'status_cv',
+    // 'tank_status_cv',
     'actions'
   ];
 
@@ -534,7 +535,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   ViewTank(row: InGateCleaningItem) {
-    if(row.status_cv == "KIV")
+    if (row.status_cv == "KIV")
       this.popupDialogForm(row, "kiv", true);
     else
       this.popupDialogForm(row, "view", true);
@@ -585,15 +586,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }
 
-  displayTankStatus(status: string): string {
-    var retval: string = "-";
-
-    retval = this.processStatusCvList!
-      .filter(item => item.code_val === status)
-      .map(item => item.description)[0]!; // Returns the description of the first match
-
-    if (retval === "") retval = "-"
-    return retval;
+  getStatusDescription(codeValType: string): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.processStatusCvList);
   }
 
   MenuButtonHidden(row: InGateCleaningItem) {

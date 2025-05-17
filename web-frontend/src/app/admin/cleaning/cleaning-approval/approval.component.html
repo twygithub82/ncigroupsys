@@ -7,26 +7,26 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <mat-accordion>
-            <mat-expansion-panel [expanded]="true">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                      <mat-icon>search</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                      (click)="$event.stopPropagation()">
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
-                  </div>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+            <mat-accordion>
+              <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                      <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                        <mat-icon>search</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                      <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                        (click)="$event.stopPropagation()">
+                        <mat-icon>clear_all</mat-icon>
+                      </button>
+                    </div>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
                 <div class="row">
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
@@ -98,9 +98,9 @@
                     </button>
                   </div> -->
                 </div>
-              </form>
-            </mat-expansion-panel>
-          </mat-accordion>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </form>
           <div class="body overflow-auto">
             <div class="responsive_table">
               <table mat-table [dataSource]="inGateList" matSort
@@ -184,14 +184,26 @@
                       class="mobile-label">{{translatedLangText.PURPOSE}}:</span>{{displayTankPurpose(row.storing_order_tank)}}
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="tank_status_cv">
+                <ng-container matColumnDef="status_cv">
                   <mat-header-cell mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>{{displayTankStatus(row.status_cv)}}
+                    <span
+                      class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row.status_cv)}}
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="tank_status_cv">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    {{translatedLangText.TANK_STATUS}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row"
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <span
+                      class="mobile-label">{{translatedLangText.STATUS}}:</span>{{row.storing_order_tank?.tank_status_cv}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="actions">
