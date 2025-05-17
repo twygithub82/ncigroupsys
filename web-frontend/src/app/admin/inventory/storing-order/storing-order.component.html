@@ -165,7 +165,7 @@
                 </ng-container>
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_no">
@@ -180,11 +180,9 @@
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
                   <mat-header-cell *matHeaderCellDef mat-sort-header>
-
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
-
                     <span
                       class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
                   </mat-cell>
@@ -212,11 +210,11 @@
                 </ng-container>
                 <ng-container matColumnDef="so_notes">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
-                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.SO_NOTES}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     <span class="mobile-label">{{translatedLangText.SO_NOTES}}:</span>
                     {{row.so_notes}}</mat-cell>
                 </ng-container>

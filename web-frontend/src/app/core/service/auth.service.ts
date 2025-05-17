@@ -236,6 +236,21 @@ export class AuthService {
     );
   }
 
+  resetPassword(password: string, confirmPassword: string, email: string, token: string): Observable<any> {
+    return this.authApiService.resetPassword(password, confirmPassword, email, token).pipe(
+      map(response => response),
+      catchError((error: HttpErrorResponse) => {
+        const msg = error.error?.message?.[0];
+
+        if (error.status === 400) {
+          return throwError(() => new Error('INVALID_TOKEN'));
+        }
+
+        return throwError(() => new Error('GENERIC_ERROR'));
+      })
+    );
+  }
+
   ok(body?: {
     id: number;
     img: string;

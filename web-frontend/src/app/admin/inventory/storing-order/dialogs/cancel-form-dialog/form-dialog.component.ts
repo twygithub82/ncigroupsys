@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
+import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 
 export interface DialogData {
   action?: string;
@@ -99,5 +100,10 @@ export class CancelFormDialogComponent {
   }
   getStoringOrderTanksArray(so: AbstractControl<any, any>): UntypedFormArray {
     return so.get('storing_order_tank') as UntypedFormArray;
+  }
+  displayTargetedSot(sotList: UntypedFormArray) {
+    return sotList.controls.filter(sot => sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER')
+      .map(sot => sot.get('tank_no')?.value)
+      .join(', ')
   }
 }

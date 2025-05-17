@@ -1239,6 +1239,8 @@
     "REPAIR-ESITMATE-DETAILS": "Repair Estimate Details",
     "ACCOUNT": "Account",
     "RESET-PASSWORD": "Reset Password",
+    "FORGOT-PASSWORD": "Forgot Password",
+    "CHANGE-PASSWORD": "Change Password",
     "LET-US-HELP-YOU": "Let Us Help You",
     "ENTER-EMAIL": "Enter Email",
     "INVALID-EMAIL": "Invalid Email",
@@ -1253,7 +1255,14 @@
     "DAILY-INVENTORY-SUMMARY": "Daily Inventory Summary",
     "EMAIL-NOT-FOUND": "Email not found",
     "SOMETHING-WENT-WRONG-TRY-AGAIN-LATER": "Something went wrong. Please try again later.",
-    "RESET-EMAIL-SENT": "Reset email sent"
+    "EMAIL-SENT": "Email Sent",
+    "CONFIRM-PASSWORD": "Confirm Password",
+    "PASSWORD": "Password",
+    "ENTER-NEW-PASSWORD-FOR": "Enter new password for",
+    "DOES-NOT-MATCH": "Does not match",
+    "NEW-PASSWORD": "New Password",
+    "INVALID-TOKEN": "Invalid Token",
+    "FAILED-TO-CHANGE-PASSWORD": "Failed to change password"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
