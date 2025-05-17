@@ -28,6 +28,23 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import {
+   ApexAxisChartSeries, ApexChart,
+  ApexDataLabels,
+  ApexFill,
+  ApexGrid,
+  ApexLegend,
+  ApexMarkers, ApexNonAxisChartSeries,
+  ApexPlotOptions,
+  ApexResponsive,
+  ApexStroke,
+  ApexTitleSubtitle,
+  ApexTooltip,
+  ApexXAxis,
+  ApexYAxis,
+  NgApexchartsModule,
+} from 'ng-apexcharts';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -36,6 +53,27 @@ export interface DialogData {
   repType:string,
   customer:string
 }
+
+export type ChartOptions = {
+  series?: ApexAxisChartSeries;
+  series2?: ApexNonAxisChartSeries;
+  chart?: ApexChart;
+  dataLabels?: ApexDataLabels;
+  plotOptions?: ApexPlotOptions;
+  yaxis?: ApexYAxis;
+  xaxis?: ApexXAxis;
+  fill?: ApexFill;
+  tooltip?: ApexTooltip;
+  stroke?: ApexStroke;
+  legend?: ApexLegend;
+  title?: ApexTitleSubtitle;
+  colors?: string[];
+  grid?: ApexGrid;
+  markers?: ApexMarkers;
+  labels: string[];
+  responsive: ApexResponsive[];
+};
+
 @Component({
   selector: 'app-monthly-report-details-pdf',
   templateUrl: './monthly-details-pdf.component.html',
@@ -48,7 +86,9 @@ export interface DialogData {
     CommonModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    NgApexchartsModule,
+    BarChartModule,
   ],
 })
 export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -249,8 +289,12 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     S_N:'COMMON-FORM.S_N',
     DAY:'COMMON-FORM.DAY',
     MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE'
+    AVERAGE:'COMMON-FORM.AVERAGE',
+    TOTAL_TANK:'COMMON-FORM.TOTAL-TANK',
+    
   }
+
+  public lineChart2Options!: Partial<ChartOptions>;
 
   type?: string | null;
   steamDS: SteamDS;
@@ -318,6 +362,8 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
+    this.InitialDefaultData();
+    this.processTankStatus(data.repData);
     this.steamDS = new SteamDS(this.apollo);
     this.steamPartDS = new SteamPartDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -743,7 +789,12 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
       },
     });
 
-    const totalPages = pdf.getNumberOfPages();
+    const pageCount = pdf.getNumberOfPages();
+    lastTableFinalY=15;
+    await this.AddCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
+
+    setTimeout(() => {
+       const totalPages = pdf.getNumberOfPages();
 
 
     pagePositions.forEach(({ page, x, y }) => {
@@ -763,9 +814,102 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     this.generatingPdfLoadingSubject.next(false);
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
+    },100);
+   
   }
 
  
+   async AddCleaningOverviewChart(pdf: jsPDF, reportTitle:string, pageWidth: number, 
+    leftMargin: number,rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
+     
+    pdf.addPage();
+     var pageNumber=pdf.getNumberOfPages();
+    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+     const card = cardElements[0];
+     const contentWidth=pageWidth - leftMargin - rightMargin;
+
+      // Convert card to image (JPEG format)
+      const canvas = await html2canvas(card, { scale: this.scale });
+      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+
+      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+
+      // Add the report title at the top of every page, centered
+      const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
+      const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
+
+      const pos = 15;
+      pdf.text(reportTitle, titleX, pos); // Position it at the top
+
+      // Draw underline for the title
+      pdf.setLineWidth(0.5); // Set line width for underline
+      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+
+      pdf.addImage(imgData, 'JPEG', leftMargin, pos+5, contentWidth, imgHeight); // Adjust y position to leave space for the title
+
+
+       let minHeightBodyCell = 9;
+    let fontSz = 6.5;
+    const headers = [[
+          this.translatedLangText.DESCRIPTION,
+          this.translatedLangText.NO_OF_TANKS
+        ]];
+    
+        // Define headStyles with valid fontStyle
+        const headStyles: Partial<Styles> = {
+          fillColor: [211, 211, 211], // Background color
+          textColor: 0, // Text color (white)
+          fontStyle: "bold", // Valid fontStyle value
+          halign: 'center', // Centering header text
+          valign: 'middle',
+          lineColor: 201,
+          lineWidth: 0.1
+        };
+
+    const comStyles: any = {
+      0: { halign: 'center', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
+    };
+
+    let lastTableFinalY = pos+5;
+    let startY = pos+5;
+    let minHeightHeaderCol=8;
+    const data: any[][] = [];
+    data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
+    data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
+   
+        let tablewidth=55;
+        startY = lastTableFinalY + 10;
+        let startX = pageWidth - rightMargin - tablewidth+6;
+        //Add table using autoTable plugin
+    
+        // pdf.setFontSize(8);
+        // pdf.setTextColor(0, 0, 0); // Black text
+        // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+        // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+    
+        autoTable(pdf, {
+          head: headers,
+          body: data,
+          startY: startY + 5, // Start table at the current startY value
+          margin: { left: startX },
+          theme: 'grid',
+          styles: {
+            fontSize: fontSz,
+            minCellHeight: minHeightHeaderCol
+    
+          },
+          columnStyles: comStyles,
+          headStyles: headStyles, // Custom header styles
+          bodyStyles: {
+            fillColor: [255, 255, 255],
+            halign: 'center', // Left-align content for body by default
+            valign: 'middle', // Vertically align content
+          }
+         
+        });
+
+   }
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -921,6 +1065,137 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
     return retval;
 
+  }
+
+   processTankStatus(repStatus: AdminReportMonthlyReport) {
+
+    
+    var maxYAxisValue=12;
+    var days = repStatus.result_per_day?.map((i,index)=>(index+1));
+    const counts: number[] = repStatus.result_per_day
+  ?.map(i => i.count) // Extract the count property
+  .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
+  maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
+  maxYAxisValue = maxYAxisValue*1.2;
+    this.lineChart2Options.yaxis = {
+      max: maxYAxisValue,
+      min: 0,
+      title: {
+        text: `${this.translatedLangText.NO_OF_TANKS}`,
+      },
+      labels: {
+        align: 'right', // Align labels to the right
+        minWidth: 50,   // Set a minimum width for the labels
+        maxWidth: 100,  // Set a maximum width for the labels
+        offsetX: 10,    // Add horizontal offset to the labels
+        formatter: (value: number) => {
+          return value.toFixed(2); // Format the label to reduce its length
+        }
+      }
+    }
+    this.lineChart2Options.series=[
+      {
+        name: 'days',
+        data: counts,
+      },
+    ]
+    this.lineChart2Options.xaxis= {
+      type: 'category',
+      categories:days,
+      labels: {
+        style: {
+          colors: '#9aa0ac',
+        },
+      },
+    }
+
+    // this.lineChart2Options.chart!.events = {
+    //     animationEnd: () => {
+    //       this.onChartRendered();
+    //     }
+     //  }
+   
+  }
+
+   InitialDefaultData() {
+    this.lineChart2Options = {
+      series: [
+        {
+          name: 'Bill Amount',
+          data: [113, 120, 130, 120, 125, 119, 126],
+        },
+      ],
+      chart: {
+        height: 380,
+        type: 'line',
+        animations: {
+          enabled: false, // disables animations
+        },
+        dropShadow: {
+          enabled: false,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2,
+        },
+        foreColor: '#9aa0ac',
+        toolbar: {
+          show: false,
+         
+        },
+      },
+      colors: ['#6777EF'],
+      dataLabels: {
+        enabled: true,
+      },
+      stroke: {
+        curve: 'smooth',
+        width:2
+      },
+      markers: {
+        size: 3, // ✅ shows a visible dot
+        strokeWidth: 0,
+        colors: ['#6777EF'],
+      },
+      xaxis: {
+        categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        title: {
+          text: 'Weekday',
+        },
+      },
+      yaxis: {
+        title: {
+          text: 'Bill Amount($)',
+        },
+      },
+      grid: {
+        show: true,
+        borderColor: '#9aa0ac',
+        strokeDashArray: 1,
+      },
+      tooltip: {
+        theme: 'dark',
+        marker: {
+          show: true,
+        },
+        x: {
+          show: true,
+        },
+      },
+    
+    };
+  }
+
+  onChartRendered() {
+   // if (this.chartAnimatedCounter == 3) 
+    {
+      //this.onDownloadClick();
+      // var timeout = 3000;
+      // setTimeout(() => {
+      //   this.onDownloadClick();
+      // }, timeout);
+    }
   }
  
 }
