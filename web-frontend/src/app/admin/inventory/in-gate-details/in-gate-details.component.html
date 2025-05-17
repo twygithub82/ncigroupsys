@@ -5,7 +5,7 @@
       <app-breadcrumb [title]="pageTitleNew" [items]="breadcrumsMiddleList"
         [active_item]="langText.DETAILS"></app-breadcrumb>
     </div>
-    @if (this.getBackgroundColorFromNature()) {
+    @if (this.getBackgroundColorFromNature() && this.getNatureInGateAlert()) {
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card l-bg-{{this.getBackgroundColorFromNature()}} pt-1 pb-1 cargo-nature">

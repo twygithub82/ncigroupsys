@@ -37,6 +37,7 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { ConfirmationDialogComponent } from '../../bay-overview/dialogs/confirm-form-dialog/confirm-form-dialog.component';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export interface DialogData {
   action?: string;
@@ -108,6 +109,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   teamList?: any[];
 
   storageCalCvList: CodeValuesItem[] = [];
+  natureTypeCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -244,8 +246,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   igCleanItems: any = [];
   totalCost_depot: number = 0;
   totalCost_customer: number = 0;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -273,7 +273,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   createCleaningChargesItem() {
-
     this.igCleanItems = [
       {
         description: this.getDescription(),
@@ -392,12 +391,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     bRetval = tnk?.length! > 0;
     return bRetval;
   }
-  loadData() {
-    //this.queryDepotCost();
 
+  loadData() {
     this.subs.sink = this.teamDS.getTeamListByDepartment(["STEAM"]).subscribe(data => {
       if (data?.length) {
-
         this.teamList = data.map((row, index) => ({
           ...row,
           index: index,
@@ -413,19 +410,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-
+      { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
       this.storageCalCvList = data;
-
-
       if (this.selectedItems.length == 1) {
         this.selectedItem = this.selectedItems[0]
         var steamItem = this.selectedItem;
         this.pcForm.patchValue({
-
-
           tank_no: steamItem.storing_order_tank?.tank_no,
           customer: this.displayCustomerName(steamItem.storing_order_tank?.storing_order?.customer_company),
           eir_no: steamItem.storing_order_tank?.in_gate[0]?.eir_no,
@@ -443,15 +436,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           na_dt: this.displayDateFromEpoch(steamItem.na_dt),
           remarks: steamItem.remarks,
         });
-
         this.createCleaningChargesItem();
-        //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
-
       }
     });
-
-
-
+    this.CodeValuesDS?.connectAlias('natureTypeCv').subscribe(data => {
+      this.natureTypeCvList = data || [];
+    });
   }
 
   displayCustomerName(cc?: CustomerCompanyItem): string {
@@ -777,8 +767,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return `${this.translatedLangText.CLEANING_COST_FOR} ${this.pcForm?.value["cargo"]}`;
   }
 
+  getNatureTypeDescription(codeValType: string | undefined): string | undefined {
+    return this.CodeValuesDS?.getCodeDescription(codeValType, this.natureTypeCvList);
+  }
+
   getNatureInGateAlert() {
-    return `${this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv} - ${this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert}`;
+    return BusinessLogicUtil.getNatureInGateAlert(this.getNatureTypeDescription(this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv), this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert)
   }
 
   getBackgroundColorFromNature() {

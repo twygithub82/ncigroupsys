@@ -25,6 +25,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { JobOrderItem } from 'app/data-sources/job-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -90,6 +91,7 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
   testTypeCvList: CodeValuesItem[] = [];
   purposeOptionCvList: CodeValuesItem[] = [];
   testClassCvList: CodeValuesItem[] = [];
+  natureTypeCvList: CodeValuesItem[] = [];
   sotItem?: StoringOrderTankItem;
   cvDS: CodeValuesDS;
   constructor(
@@ -124,6 +126,7 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
       { alias: 'testClassCv', codeValType: 'TEST_CLASS' },
+      { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -135,14 +138,15 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = data;
     });
+    this.cvDS.connectAlias('natureTypeCv').subscribe(data => {
+      this.natureTypeCvList = data;
+    });
     if (this.sotItem) {
       this.sotDS.getStoringOrderTanksForOtherSurveyByID(this.sotItem.guid).subscribe(result => {
-
         if (result.length > 0) {
           result[0].tariff_cleaning = this.sotItem?.tariff_cleaning;
           this.sotItem = result[0];
         }
-
       });
     }
   }
@@ -217,6 +221,9 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
   }
 
+  getNatureTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.natureTypeCvList)
+  }
 
   displayTankPurpose(sot: StoringOrderTankItem) {
     return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
@@ -227,7 +234,7 @@ export class TankInfoFormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getNatureInGateAlert() {
-    return `${this.sotItem?.tariff_cleaning?.nature_cv} - ${this.sotItem?.tariff_cleaning?.in_gate_alert}`;
+    return BusinessLogicUtil.getNatureInGateAlert(this.getNatureTypeDescription(this.sotItem?.tariff_cleaning?.nature_cv), this.sotItem?.tariff_cleaning?.in_gate_alert)
   }
 
   getBackgroundColorFromNature() {

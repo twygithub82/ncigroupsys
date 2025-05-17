@@ -39,6 +39,7 @@ import { provideNgxMask } from 'ngx-mask';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ConfirmationDialogComponent } from '../dialogs/confirm-form-dialog/confirm-form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export interface DialogData {
   action?: string;
@@ -109,6 +110,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   teamList?: any[];
 
   storageCalCvList: CodeValuesItem[] = [];
+  natureTypeCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -269,11 +271,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
-
   }
 
   createCleaningChargesItem() {
-
     this.igCleanItems = [
       {
         description: this.getDescription(),
@@ -359,7 +359,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       if (data?.length) {
         data.forEach(d => {
           this.teamList?.forEach(team => {
-            if (team.guid === d.team?.guid && d.cleaning?.length||0>0) {
+            if (team.guid === d.team?.guid && d.cleaning?.length || 0 > 0) {
               // If the team GUID matches, update isOccupied to true
               team.isOccupied = true;
               team.tank_no = d.storing_order_tank?.tank_no;
@@ -398,8 +398,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return bRetval;
   }
   loadData() {
-    //this.queryDepotCost();
-
     this.subs.sink = this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
       if (data?.length) {
 
@@ -418,19 +416,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-
+      { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
       this.storageCalCvList = data;
-
-
       if (this.selectedItems.length == 1) {
         this.selectedItem = this.selectedItems[0]
         var inGateClnItem = this.selectedItem;
         this.pcForm.patchValue({
-
-
           tank_no: inGateClnItem.storing_order_tank?.tank_no,
           customer: this.displayCustomerName(inGateClnItem.storing_order_tank?.storing_order?.customer_company),
           eir_no: inGateClnItem.storing_order_tank?.in_gate[0]?.eir_no,
@@ -448,35 +442,25 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           na_dt: this.displayDate(inGateClnItem.na_dt),
           remarks: inGateClnItem.remarks,
         });
-
         this.createCleaningChargesItem();
-        //  this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(pckDepotItm.storage_cal_cv));
-
       }
     });
-
-
-
+    this.CodeValuesDS?.connectAlias('natureTypeCv').subscribe(data => {
+      this.natureTypeCvList = data;
+    });
   }
 
   displayCustomerName(cc?: CustomerCompanyItem): string {
     return String(cc?.code ? `${cc.code} (${cc.name})` : '');
   }
 
-
-
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
       valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
-
-      // If no match is found, description will be undefined, so you can handle it accordingly
-
     }
     return valCodeObject;
-
   }
-
 
   canEdit() {
     if (this.action != "view") {
@@ -508,8 +492,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     else {
       return false;
     }
-
-
   }
 
   canAbort(): boolean {
@@ -527,13 +509,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // }
     //return retval;
   }
-  abort(event: Event) {
 
+  abort(event: Event) {
     event.preventDefault();
     var selItem = this.selectedItems[0];
     if (selItem.status_cv != "JOB_IN_PROGRESS") return;
-
-
     const distinctJobOrders: any[] = [];
     const jobOrder: JobOrderGO = new JobOrderGO(this.selectedItems[0].job_order);
     distinctJobOrders.push(jobOrder);
@@ -553,9 +533,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
-
     if (!this.pcForm?.valid) return;
-
     var selItem = this.selectedItems[0];
     var newJobOrderReq: JobOrderRequest = new JobOrderRequest();
     let job_type = "CLEANING";
@@ -593,24 +571,16 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         cleanItem.remarks = selItem.remarks;
         this.igCleanDS.updateInGateCleaning(cleanItem).subscribe(result => {
           if (result.data.updateCleaning > 0) {
-
             this.startCleaningJobOrder(selItem.guid);
-
           }
-
         });
-
-
       }
     });
-
-
   }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
-
 
   onAbort(event: Event) {
     this.preventDefault(event);
@@ -654,20 +624,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   updateJobProcessStatus(cleaningGuid: string, job_type: string, process_status: string) {
-
     var updateJobProcess: JobProcessRequest = new JobProcessRequest();
     updateJobProcess.guid = cleaningGuid;
     updateJobProcess.job_type_cv = job_type;
     updateJobProcess.process_status = process_status;
-
     this.jobOrderDS?.updateJobProcessStatus(updateJobProcess).subscribe(result => {
       if (result.data.updateJobProcessStatus > 0) {
         this.handleSaveSuccess(result.data.updateJobProcessStatus);
       }
-
     });
-
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -680,6 +645,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
@@ -713,9 +679,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var validActions: string[] = ["no_action"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
-
     return false;
-
   }
 
   ShowApproveDtView() {
@@ -724,9 +688,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var validActions: string[] = ["approve"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
-
     return false;
-
   }
 
   ShowRemarksView() {
@@ -735,9 +697,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       var validActions: string[] = ["kiv", "no_action"];
       return validActions.includes(status_cv.toLocaleLowerCase());
     }
-
     return false;
-
   }
 
   ShowStatusView() {
@@ -769,8 +729,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return `${this.translatedLangText.CLEANING_COST_FOR} ${this.pcForm?.value["cargo"]}`;
   }
 
+  getNatureTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.CodeValuesDS?.getCodeDescription(codeVal, this.natureTypeCvList)
+  }
+
   getNatureInGateAlert() {
-    return `${this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv} - ${this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert}`;
+    return BusinessLogicUtil.getNatureInGateAlert(this.getNatureTypeDescription(this.selectedItem.storing_order_tank?.tariff_cleaning?.nature_cv), this.selectedItem.storing_order_tank?.tariff_cleaning?.in_gate_alert)
   }
 
   getBackgroundColorFromNature() {
@@ -812,10 +776,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       return numA - numB;
     });
   }
+
   getTariffCleaningRemarks() {
     return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks ? this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks : "-";
   }
-
 
   startCleaningJobOrder(clean_guid: string) {
     if (clean_guid) {
@@ -833,7 +797,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             this.toggleJobState(jobOrderList[0]);
           }
         });
-
     }
   }
 

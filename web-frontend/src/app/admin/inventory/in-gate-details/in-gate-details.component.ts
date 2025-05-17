@@ -38,6 +38,7 @@ import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -595,6 +596,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   getNatureInGateAlert() {
-    return `${this.storingOrderTankItem?.tariff_cleaning?.nature_cv} - ${this.storingOrderTankItem?.tariff_cleaning?.in_gate_alert}`;
+    return BusinessLogicUtil.getNatureInGateAlert(this.getNatureTypeDescription(this.storingOrderTankItem?.tariff_cleaning?.nature_cv), this.storingOrderTankItem?.tariff_cleaning?.in_gate_alert)
   }
 }
