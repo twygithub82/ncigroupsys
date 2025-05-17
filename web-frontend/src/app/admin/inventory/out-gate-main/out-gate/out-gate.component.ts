@@ -17,7 +17,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -33,6 +33,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
+import { InGateDS } from 'app/data-sources/in-gate';
 
 @Component({
   selector: 'app-out-gate',
@@ -111,6 +112,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   ccDS: CustomerCompanyDS;
   roSotDS: ReleaseOrderSotDS;
   ogDS: OutGateDS;
+  igDS: InGateDS;
 
   sotList: StoringOrderTankItem[] = [];
 
@@ -139,6 +141,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.roSotDS = new ReleaseOrderSotDS(this.apollo);
     this.ogDS = new OutGateDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
