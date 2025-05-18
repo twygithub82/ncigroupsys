@@ -46,6 +46,7 @@ namespace IDMS.Customer.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var result = context.customer_company
+                                                    .AsSplitQuery()
                                                     .Where(cc => cc.delete_dt == null)
                                                     .Select(cc => new CustomerCompanyResult
                                                     {
