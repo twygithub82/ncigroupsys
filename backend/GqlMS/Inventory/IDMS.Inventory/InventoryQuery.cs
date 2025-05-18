@@ -144,17 +144,6 @@ namespace IDMS.Inventory.GqlTypes
                 var result = await query.Select(x => x.SurveyDetail).Take(rowCount).ToListAsync();
                 return result;
 
-                //var specificResult = await query.Select(x => new
-                //{
-                //    //last_test_cv = x.TankInfo.last_test_cv,
-                //    survey_detail = x.SurveyDetail,
-                //}).Take(rowCount).ToListAsync();
-
-                //List<survey_detail> result = specificResult
-                //    .Select(item => item.survey_detail)
-                //    .ToList();
-
-
             }
             catch (Exception ex)
             {

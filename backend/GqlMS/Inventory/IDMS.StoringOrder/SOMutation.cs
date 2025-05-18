@@ -167,7 +167,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         existingTank.status_cv = SOTankStatus.CANCELED;
                         isSendNotification = true;
 
-                        ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime);
+                        ResolvekAnyPreOrdrTank(context, tnk.tank_no, user, currentDateTime, existingTank.guid);
                         continue;
                     }
 
@@ -436,10 +436,10 @@ namespace IDMS.StoringOrder.GqlTypes
             return res;
         }
 
-        private void ResolvekAnyPreOrdrTank(ApplicationInventoryDBContext context, string tankNo, string user, long currentDate)
+        private void ResolvekAnyPreOrdrTank(ApplicationInventoryDBContext context, string tankNo, string user, long currentDate, string currentSOTGuid)
         {
-            var sot = context.storing_order_tank.Where(s => s.tank_no == tankNo && (s.status_cv == SOTankStatus.PREORDER) &&
-                (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefault();
+            var sot = context.storing_order_tank.Where(s => s.tank_no == tankNo && (s.status_cv == SOTankStatus.PREORDER) 
+                                && s.guid != currentSOTGuid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefault();
 
             if (sot != null)
             {
