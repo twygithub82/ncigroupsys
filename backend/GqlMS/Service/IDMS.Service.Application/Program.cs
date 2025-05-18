@@ -12,6 +12,7 @@ using IDMS.Steaming.GqlTypes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 
 namespace IDMS.ServiceMS
 {
@@ -32,7 +33,13 @@ namespace IDMS.ServiceMS
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationServiceDBContext>(o =>
             {
-                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                            mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                                          maxRetryCount: 5,
+                                          maxRetryDelay: TimeSpan.FromSeconds(10),
+                                          errorNumbersToAdd: null)
+                            .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
+                            ).LogTo(Console.WriteLine);
             });
 
 

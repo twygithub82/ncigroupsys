@@ -97,6 +97,8 @@ namespace IDMS.Cleaning.GqlTypes
                         updateCleaning.cleaning_cost = cleaning.cleaning_cost;
 
                         await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.APPROVE, processGuid: cleaning.guid);
+                        tankMovementCheck = true;
+                        
                         break;
                     case ObjectAction.KIV:
                         updateCleaning.status_cv = CurrentServiceStatus.KIV;
@@ -336,9 +338,14 @@ namespace IDMS.Cleaning.GqlTypes
                         var jobOrder = new job_order() { guid = jobId };
                         context.Attach(jobOrder);
                         jobOrder.team_guid = null;
+                        jobOrder.start_dt = null;
+                        //if need set to null using EF-Core, must manually add below
+                        context.Entry(jobOrder).Property(j => j.team_guid).IsModified = true;
+                        context.Entry(jobOrder).Property(j=> j.start_dt).IsModified = true;
                         jobOrder.status_cv = JobStatus.PENDING;
                         if (!string.IsNullOrEmpty(jobRemark))
                             jobOrder.remarks = jobRemark;
+
                         jobOrder.update_dt = currentDateTime;
                         jobOrder.update_by = user;
                     }
