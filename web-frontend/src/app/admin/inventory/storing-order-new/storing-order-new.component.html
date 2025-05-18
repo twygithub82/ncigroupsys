@@ -83,7 +83,7 @@
                       </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef >Id</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="tank_no">
@@ -106,7 +106,7 @@
                       <ng-container matColumnDef="tank_no_validity">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           <i class="fas fa-ellipsis-h"></i>
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -131,7 +131,7 @@
                       <ng-container matColumnDef="last_cargo">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="''"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.LAST_CARGO}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -145,7 +145,7 @@
                       <ng-container matColumnDef="job_no">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.JOB_NO}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -157,7 +157,7 @@
                       <ng-container matColumnDef="purpose_storage">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.STORAGE}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -178,7 +178,7 @@
                       <ng-container matColumnDef="purpose_cleaning">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.CLEANING}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -199,7 +199,7 @@
                       <ng-container matColumnDef="purpose_steam">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.STEAM}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -220,7 +220,7 @@
                       <ng-container matColumnDef="purpose_repair_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -232,7 +232,7 @@
                       <ng-container matColumnDef="status_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.PROCESS}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -245,7 +245,7 @@
                       <ng-container matColumnDef="certificate_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.CERTIFICATE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"

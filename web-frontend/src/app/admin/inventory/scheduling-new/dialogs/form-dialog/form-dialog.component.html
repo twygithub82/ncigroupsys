@@ -16,7 +16,7 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
               <div class="booking-tbl responsive_table">
-                <table mat-table [dataSource]="this.dataSource" formArrayName="schedulingSot" matSort
+                <table mat-table [dataSource]="dataSource" formArrayName="schedulingSot" matSort
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="tank_no">
                     <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
@@ -37,7 +37,7 @@
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="eir_no">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl'">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
                       {{data.translatedLangText.EIR_NO}}
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">

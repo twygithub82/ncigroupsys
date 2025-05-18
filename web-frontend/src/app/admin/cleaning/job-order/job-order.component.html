@@ -88,7 +88,7 @@
                   <table mat-table [dataSource]="clnEstList" matSort
                     class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="tank_no">
@@ -138,7 +138,7 @@
                     </ng-container>
 
                     <ng-container matColumnDef="last_cargo">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header 
+                      <mat-header-cell *matHeaderCellDef  
                         [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.LAST_CARGO}}
                       </mat-header-cell>

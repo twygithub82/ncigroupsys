@@ -105,8 +105,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     { text: 'MENUITEMS.REPAIR.TEXT', route: '/admin/repair/job-order', queryParams: { tabIndex: "job-allocation" } },
   ]
 
-  readonly tabs = ['job-allocation', 'job-task', 'job-qc'];
-
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -262,8 +260,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      const tabName = params['tabIndex'];
-      const index = this.tabs.indexOf(tabName);
+      const tabComponent = params['tabIndex'];
+      const index = this.allowedTabs.findIndex(t => t.component === tabComponent);
       this.selectedTabIndex = index >= 0 ? index : 0;
     });
     this.initializeValueChanges();
@@ -275,12 +273,14 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.jobOrderSubscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  onTabChange(index: number) {
-    const tabName = this.tabs[index];
-    this.router.navigate([], {
-      queryParams: { tabIndex: tabName },
-      queryParamsHandling: 'merge',
-    });
+  onTabChange(index: number): void {
+    const tabComponent = this.allowedTabs[index]?.component;
+    if (tabComponent) {
+      this.router.navigate([], {
+        queryParams: { tabIndex: tabComponent },
+        queryParamsHandling: 'merge'
+      });
+    }
   }
 
   refresh() {

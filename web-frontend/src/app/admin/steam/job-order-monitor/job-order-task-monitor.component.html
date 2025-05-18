@@ -301,7 +301,7 @@
                       class="mat-cell advance-table striped-rows hover-highlight dark-header">
                       <!-- ID Column -->
                       <ng-container matColumnDef="seq">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header
+                        <mat-header-cell *matHeaderCellDef 
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           #
                         </mat-header-cell>
@@ -354,7 +354,7 @@
                       <ng-container matColumnDef="action">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'"
-                          mat-sort-header>
+                          >
                           <mat-icon class="me-3">more_vert</mat-icon>
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"

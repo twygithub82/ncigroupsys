@@ -302,7 +302,7 @@
                   class="mat-cell advance-table striped-rows hover-highlight dark-header">
                   <!-- ID Column -->
                   <ng-container matColumnDef="seq">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header
+                    <mat-header-cell *matHeaderCellDef 
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
@@ -417,7 +417,7 @@
                   <ng-container matColumnDef="approve_part">
                     <mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      mat-sort-header>
+                      >
                       <mat-icon>more_vert</mat-icon>
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"

@@ -234,7 +234,7 @@
                       <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
                         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                           <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="estimate_no">
@@ -251,11 +251,9 @@
                         <ng-container matColumnDef="estimate_date">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.ESTIMATE_DATE}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let repairRow"
-                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-tab-label">{{translatedLangText.ESTIMATE_DATE}}:</span>{{this.displayDate(repairRow.create_dt)}}
@@ -272,7 +270,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="net_cost">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header
+                          <mat-header-cell *matHeaderCellDef 
                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.NET_COST}}
                           </mat-header-cell>

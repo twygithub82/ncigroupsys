@@ -27,7 +27,7 @@ import { report_customer_tank_activity } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import autoTable, { Styles } from 'jspdf-autotable';
+import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -109,6 +109,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
     LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
+    MAINTENANCE_DETAILS: 'COMMON-FORM.MAINTENANCE-DETAILS',
+    RELEASE_DETAILS: 'COMMON-FORM.RELEASE-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
     MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
     CLADDING: 'COMMON-FORM.CLADDING',
@@ -512,73 +514,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-  // async exportToPDF_r2(fileName: string = 'document.pdf') {
-  //   const pageWidth = 297; // A4 width in mm (landscape)
-  //   const pageHeight = 210; // A4 height in mm (landscape)
-  //   const leftMargin = 10; // Left margin
-  //   const rightMargin = 10; // Right margin
-  //   const topMargin = 20; // Top margin for header
-  //   const bottomMargin = 20; // Bottom margin for footer
-  //   const contentWidth = pageWidth - leftMargin - rightMargin; // Usable width
-  //   const maxContentHeight = pageHeight - topMargin - bottomMargin; // Usable height
-
-  //   this.generatingPdfLoadingSubject.next(true);
-  //   this.generatingPdfProgress = 0;
-
-  //   const pdf = new jsPDF('l', 'mm', 'a4');
-  //   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  //   let pageNumber = 1;
-  //   let totalPages = 1;
-
-  //   let tableHeaderHeight = 12;
-  //   let tableRowHeight = 7;
-  //   // Store page positions for later text update
-  //   const pagePositions: { page: number; x: number; y: number }[] = [];
-  //   const progressValue = 100 / cardElements.length;
-
-  //   const reportTitle = this.GetReportTitle(); // Set your report title here
-
-  //   // Add header to the first page
-  //   this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-
-  //   let currentY = topMargin; // Start Y position after the header
-
-  //   for (let i = 0; i < cardElements.length; i++) {
-  //     const card = cardElements[i];
-
-  //     // Convert card to image (JPEG format)
-  //     const canvas = await html2canvas(card, { scale: this.scale });
-
-  //     const tableHeaderHeight_canvas = (tableHeaderHeight * canvas.width) / contentWidth;;
-  //     const tableRowHeight_canvas = (tableRowHeight * canvas.width) / contentWidth;;
-  //     const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-  //     const canvasEachRow = await this.CopyCanvas(canvas, 0, tableHeaderHeight_canvas, canvas.width, tableRowHeight_canvas);
-  //     const imgHeaderHeight = tableHeaderHeight;//(canvasTHeader.height * contentWidth) / canvasTHeader.width; 
-  //     const imgRowHeight = tableRowHeight //(canvasEachRow.height * contentWidth) / canvasEachRow.width; 
-  //     const imgHeight = (canvasTHeader.height * contentWidth) / canvasTHeader.width;
-  //     var imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-  //     pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeaderHeight);
-  //     currentY += imgHeight + 15;
-  //     imgData = canvasEachRow.toDataURL('image/jpeg', this.imageQuality);
-  //     pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgRowHeight);
-  //     pdf.addPage();
-
-  //   }
-
-  //   // Add page numbers in a second pass
-  //   pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 2 }); // Add last page number
-  //   pagePositions.forEach(({ page, x, y }) => {
-  //     pdf.setPage(page);
-  //     pdf.setFontSize(10);
-  //     pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-  //   });
-
-  //   // Save the PDF
-  //   this.generatingPdfProgress = 100;
-  //   pdf.save(fileName);
-  //   this.generatingPdfProgress = 0;
-  //   this.generatingPdfLoadingSubject.next(false);
-  // }
+  
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -605,45 +541,93 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
+    const vAlign="bottom";
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.IN_DATE, this.translatedLangText.TAKE_IN_REFERENCE,
-      this.translatedLangText.CAPACITY, this.translatedLangText.TARE_WEIGHT,
-      this.translatedLangText.LAST_CARGO, this.translatedLangText.CLEAN_DATE,
-      this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATE_DATE,
-      this.translatedLangText.APPROVAL_DATE, this.translatedLangText.APPROVAL_REFERENCE,
-      this.translatedLangText.AV_DATE, this.translatedLangText.LAST_TEST,
-      this.translatedLangText.NEXT_TEST, this.translatedLangText.CLEAN_CERT_DATE,
-      this.translatedLangText.RELEASE_BOOKING, this.translatedLangText.RELEASE_DATE,
-      this.translatedLangText.RELEASE_REFERENCE, this.translatedLangText.CURRENT_STATUS,
-      this.translatedLangText.REMARKS, this.translatedLangText.PURPOSE, this.translatedLangText.YARD
-    ]];
-
+    const headers: RowInput[] = [
+  [
+    { 
+      content: this.translatedLangText.S_N, 
+      rowSpan: 2, 
+      styles: { halign: 'center', valign: vAlign } 
+    },
+    { 
+      content: this.translatedLangText.TANK_DETAILS,
+      colSpan: 6,
+      styles: { halign: 'center', valign: vAlign }
+    },
+    { 
+      content: this.translatedLangText.MAINTENANCE_DETAILS, 
+      colSpan: 6, 
+      styles: { halign: 'center', valign: vAlign }
+    },
+    { 
+      content: this.translatedLangText.RELEASE_DETAILS, // Changed from duplicate MAINTENANCE_DETAILS
+      colSpan: 4, 
+      styles: { halign: 'center', valign: vAlign }
+    },
+    { 
+      content: this.translatedLangText.CURRENT_STATUS, 
+      rowSpan: 2, 
+      styles: { halign: 'center', valign: vAlign }
+    },
+    { 
+      content: this.translatedLangText.YARD, 
+      rowSpan: 2, 
+      styles: { halign: 'center', valign: vAlign }
+    }
+  ],
+  [
+    // Tank Details (6 columns)
+    { content: this.translatedLangText.TANK_NO, styles: { valign: vAlign } },
+    { content: this.translatedLangText.IN_DATE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.TAKE_IN_REFERENCE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.CAPACITY, styles: { valign: vAlign } },
+    { content: this.translatedLangText.TARE_WEIGHT, styles: { valign: vAlign } },
+    { content: this.translatedLangText.LAST_CARGO, styles: { valign: vAlign } },
+    
+    // Maintenance Details (6 columns)
+    { content: this.translatedLangText.CLEAN_DATE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.ESTIMATE_NO, styles: { valign: vAlign } },
+    { content: this.translatedLangText.ESTIMATE_DATE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.APPROVAL_DATE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.APPROVAL_REFERENCE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.AV_DATE, styles: { valign: vAlign } },
+    
+    // Release Details (4 columns)
+    { content: this.translatedLangText.CLEAN_CERT_DATE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.RELEASE_BOOKING, styles: { valign: vAlign } },
+    { content: this.translatedLangText.RELEASE_DATE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.RELEASE_REFERENCE, styles: { valign: vAlign } },
+    
+    // Empty cells for rowSpan columns
+    '', // for CURRENT_STATUS
+    ''  // for YARD
+  ]
+];
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      6: { halign: 'left', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      14: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      15: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      16: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      17: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 19, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      6: { halign: 'left', cellWidth: 35, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      12: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      13: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      14: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      15: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      16: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      17: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       18: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      19: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      20: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      21: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      22: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell }
+      // 19: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      // 20: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      // 21: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      // 22: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell }
     };
 
 
@@ -668,7 +652,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
     let minHeightHeaderCol = 3;
-    let fontSize = 5;
+    let fontSize = 6;
 
     lastTableFinalY += 8;
     // pdf.setFontSize(8);
@@ -687,15 +671,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       var subTitleHeight = 20; // Height required for customer name
       var tableHeight = ((cust.in_yard_storing_order_tank?.length || 0) * tableRowHeight + tableHeaderHeight); // Approximate table height
 
-      // // Check if there is enough space on the current page
-      // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-      //   // Add a new page if there isn't enough space
-      //   pdf.addPage();
-      //   pageNumber++;
-      //   lastTableFinalY = topMargin; // Reset Y position for the new page
-      //   if (n>0) lastTableFinalY+=8;
-      // }
-
+    
 
       var repPage = pdf.getNumberOfPages();
       //if(repPage==1)lastTableFinalY=45;
@@ -724,17 +700,21 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
         startY = lastTableFinalY; // Start table 20mm below the customer name
-
+        var fontSz=6.5;
         for (let b = 0; b < (cust.in_yard_storing_order_tank?.length || 0); b++) {
           var itm = cust.in_yard_storing_order_tank?.[b]!;
           data.push([
-            (b + 1).toString(), itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
+            (b + 1).toString(), 
+            itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
             this.DisplayCapacity(itm) || "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
+
             this.DisplayCleanDate(itm) || "", this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
-            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", this.DisplayLastTest(itm) || "",
-            this.DisplayNextTest(itm) || "", this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
+            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", 
+            //this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "", 
+            this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
             this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus(itm) || "",
-            this.DisplayRemarks(itm) || "", this.displayTankPurpose(itm) || "", this.DisplayYard(itm) || ""
+            //this.DisplayRemarks(itm) || "", this.displayTankPurpose(itm) || "",
+             this.DisplayYard(itm) || ""
           ]);
 
           if (itm.repair) {
@@ -743,12 +723,37 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                 var rp = itm.repair?.[r]!;
                 data.push([
                   "", "", "", "", "", "", "", "",
-                  rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "",
-                  "", "", "", "", "", "", "", "", this.DisplayCurrentStatus(itm) || "", "", "", this.DisplayYard(itm) || ""
+                  rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "","", "", 
+                  //"", "", 
+                  "", "", "", "", this.DisplayCurrentStatus(itm) || "", 
+                  //"", "", 
+                  this.DisplayYard(itm) || ""
                 ]);
               }
             }
           }
+
+
+          data.push([ 
+            { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+             { content: this.DisplayTankOwner(itm), colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
+          ]);
+          data.push([ 
+            { content: this.translatedLangText.LAST_TEST, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+             { content: this.DisplayLastTest(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
+          ]);
+          data.push([ 
+            { content: this.translatedLangText.NEXT_TEST, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+            { content: this.DisplayNextTest(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
+          ]);
+          data.push([ 
+            { content: this.translatedLangText.PURPOSE, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+            { content: this.displayTankPurpose(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
+          ]);
+          data.push([ 
+            { content: this.translatedLangText.REMARKS, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+            { content: this.DisplayRemarks(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
+          ]);
         }
         pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -846,6 +851,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
           }
 
+
+
         }
         autoTable(pdf, {
           head: headers,
@@ -918,133 +925,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
 
-  async exportToPDF_r4(fileName: string = 'document.pdf') {
-    const pageWidth = 297; // A4 width in mm (landscape)
-    const pageHeight = 220; // A4 height in mm (landscape)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 20;
-    const bottomMargin = 20;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('l', 'mm', 'a4');
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-
-    let tableHeaderHeight = 10.6153;
-    let tableRowHeight = 5.8974;
-
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle();
-
-    this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-    for (let i = 0; i < cardElements.length; i++) {
-      const card = cardElements[i];
-      console.log("card : " + i);
-
-      const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-      const imgHeight = (canvas.height * contentWidth) / canvas.width;
-
-      if (currentY + imgHeight > maxContentHeight) {
-        let currentY_canvas = 0;
-        let nextPage = false;
-        const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
-        let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
-
-        const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-        const pageTHeaderHeight = tableHeaderHeight;
-
-        do {
-          nextPage = false;
-
-          if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
-            imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
-            currentY += pageTHeaderHeight;
-            currentY_canvas += tableHeaderHeight_canvas;
-
-            const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
-            const remainingTableHeight_canvas = canvas.height - currentY_canvas;
-            const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
-            let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
-            let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
-
-            const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
-            imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
-
-            currentY_canvas += cpImgHeight_canvas;
-            currentY += cpImgHeight;
-
-            nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
-          } else {
-            if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-              pdf.addPage();
-              pageNumber++;
-              this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-              pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-              currentY = topMargin;
-            }
-
-            nextPage = (currentY + imgHeight > maxContentHeight);
-            if (!nextPage) {
-              pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-              currentY += imgHeight + 5;
-            }
-          }
-
-          if (nextPage) {
-            pdf.addPage();
-            currentY = topMargin;
-            pageNumber++;
-            this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            currentY_canvas -= tableHeaderHeight_canvas;
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-          } else {
-            currentY += 5;
-          }
-
-        } while (nextPage);
-
-      } else {
-        if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-          pdf.addPage();
-          pageNumber++;
-          this.addHeader(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-          currentY = topMargin;
-        }
-
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-        currentY += imgHeight + 5;
-      }
-
-      this.generatingPdfProgress += progressValue;
-    }
-
-    const totalPages = pdf.getNumberOfPages();
-
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setPage(page);
-      pdf.setFontSize(10);
-      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
-
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-  }
+  
 
   async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
 
@@ -1438,75 +1319,12 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     var lastTest: string = '';
 
     lastTest = Utility.DisplayLastTest(sot);
-    // this.removeDeletedInGateAndOutGate(sot);
-
-    // if (sot.in_gate?.[0]?.in_gate_survey) {
-    //   var last_test_dt: Date = new Date();
-    //   if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
-    //     last_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
-    //   }
-
-    //   lastTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv || "";
-    //   lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`;//` ${Utility.convertDateToStr(last_test_dt)}`;
-    //   if (sot.in_gate?.[0]?.in_gate_survey?.last_test_cv) {
-    //     lastTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
-    //   }
-    //   //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    // }
-
-    // if (sot.out_gate?.[0]?.out_gate_survey) {
-    //   var last_test_dt: Date = new Date();
-    //   if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
-    //     last_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
-    //   }
-
-    //   lastTest = sot.out_gate?.[0]?.out_gate_survey?.test_class_cv || "";
-    //   lastTest += ` ${Utility.convertDateToStr_MonthYear(last_test_dt)}`; //` ${Utility.convertDateToStr(last_test_dt)}`;
-    //   if (sot.out_gate?.[0]?.out_gate_survey?.last_test_cv) {
-    //     lastTest += ` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
-    //   }
-    // }
-    // if (this.queryType == 1) {
-    //   //lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    // }
-    // else {
-    //   lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    // }
     return lastTest;
   }
 
   DisplayNextTest(sot: StoringOrderTankItem): string {
     var nextTest: string = '';
     nextTest = Utility.DisplayNextTest(sot);
-    // var yearsToAdd = 2.5;
-    // var next_test_dt: Date = new Date();
-    // this.removeDeletedInGateAndOutGate(sot);
-    // if (sot.in_gate?.[0]?.in_gate_survey) {
-    //   if (sot.in_gate?.[0]?.in_gate_survey?.test_dt) {
-    //     next_test_dt = Utility.convertDate(sot.in_gate?.[0]?.in_gate_survey?.test_dt) as Date || new Date();
-    //   }
-
-    //   next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-    //   // nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-    //   nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;//` ${Utility.convertDateToStr(next_test_dt)}`;
-    //   if (sot.in_gate?.[0]?.in_gate_survey?.last_test_cv) {
-    //     nextTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv == "2.5" ? "(A)" : "(H)")}`;
-    //   }
-    //   //nextTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv, this.testTypeCvList) || '';
-    // }
-
-    // if (sot.out_gate?.[0]?.out_gate_survey) {
-    //   nextTest = "";
-    //   if (sot.out_gate?.[0]?.out_gate_survey?.test_dt) {
-    //     next_test_dt = Utility.convertDate(sot.out_gate?.[0]?.out_gate_survey?.test_dt) as Date || new Date();
-    //   }
-    //   next_test_dt.setMonth(next_test_dt.getMonth() + (yearsToAdd * 12));
-    //   //nextTest = sot.in_gate?.[0]?.in_gate_survey?.test_class_cv||"";
-    //   nextTest += ` ${Utility.convertDateToStr_MonthYear(next_test_dt)}`;
-    //   if (sot.out_gate?.[0]?.out_gate_survey?.last_test_cv) {
-    //     nextTest += ` ${(sot.in_gate?.[0]?.in_gate_survey?.next_test_cv == "2.5" ? "(A)" : "(H)")}`;
-    //   }
-    // }
     return nextTest;
   }
 
@@ -1534,6 +1352,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   DisplayCustomerName(repCustomer: report_customer_tank_activity) {
     return `${repCustomer.code}(${repCustomer.customer})`
+  }
+
+  DisplayTankOwner(sot: StoringOrderTankItem) {
+    return this.ccDS.displayName(sot.storing_order?.customer_company);
   }
 
 

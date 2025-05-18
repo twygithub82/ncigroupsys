@@ -455,10 +455,12 @@ export class FormDialogComponent {
   }
 
   removeSot(event: Event, index: number): void {
-    event.stopPropagation(); // optional: prevent ripple or row click
+    event.stopPropagation();
+
     const formArray = this.getSchedulingArray();
     if (formArray && formArray.length > index) {
       formArray.removeAt(index);
+      this.dataSource = [...formArray.controls]; // 🔥 this is the key line
     }
   }
 
