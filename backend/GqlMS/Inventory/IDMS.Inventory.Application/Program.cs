@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using IDMS.Inventory.Application;
+using Pomelo.EntityFrameworkCore.MySql.Internal;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 
 namespace IDMS.Inventory
 {
@@ -36,7 +38,13 @@ namespace IDMS.Inventory
             //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
             builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(o =>
             {
-                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+                o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                                  maxRetryCount: 5,
+                                  maxRetryDelay: TimeSpan.FromSeconds(10),
+                                  errorNumbersToAdd: null)
+                     .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
+                    ).LogTo(Console.WriteLine);
                 o.EnableSensitiveDataLogging(false);
             });
 
