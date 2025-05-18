@@ -800,7 +800,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
 
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -809,7 +809,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 11);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, 11);
 
     if(this.customer)
     {
@@ -1274,7 +1274,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     const totalPages = pdf.getNumberOfPages();
 
-
+    let lineOffset = 8;
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
@@ -1282,8 +1282,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin + lineOffset, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - lineOffset), pdf.internal.pageSize.height - lineBuffer);
     });
 
   //  this.generatingPdfProgress = 100;

@@ -766,7 +766,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -775,12 +775,12 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY , 11);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 4, 11);
 
     if(this.customer)
     {
       const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY  , leftMargin+4, 11);
+      Utility.addText(pdf, customer, startY, leftMargin+4, 11);
     }
     var idx = 0;
 
@@ -1172,8 +1172,8 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin + 9, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 9), pdf.internal.pageSize.height - lineBuffer);
     });
 
   //  this.generatingPdfProgress = 100;
