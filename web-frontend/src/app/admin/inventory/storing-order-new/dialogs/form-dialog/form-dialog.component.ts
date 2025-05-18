@@ -124,6 +124,10 @@ export class FormDialogComponent {
       last_cargo: this.lastCargoControl,
       last_cargo_guid: [{ value: this.storingOrderTank.last_cargo_guid, disabled: !this.canEdit() }, [Validators.required]],
       job_no: [{ value: this.storingOrderTank.job_no, disabled: !this.canEdit() }, [Validators.required]],
+      preinspect_job_no: [this.storingOrderTank.preinspect_job_no || this.storingOrderTank.job_no],
+      liftoff_job_no: [this.storingOrderTank.liftoff_job_no || this.storingOrderTank.job_no],
+      lifton_job_no: [this.storingOrderTank.lifton_job_no || this.storingOrderTank.job_no],
+      release_job_no: [this.storingOrderTank.release_job_no || this.storingOrderTank.job_no],
       eta_dt: [{ value: Utility.convertDate(this.storingOrderTank.eta_dt), disabled: !this.canEdit() }],
       purpose: [''],
       purpose_storage: [{ value: this.storingOrderTank.purpose_storage, disabled: !this.canEdit() }],
@@ -172,6 +176,10 @@ export class FormDialogComponent {
           last_cargo_guid: this.storingOrderTankForm.get('last_cargo_guid')?.value,
           tariff_cleaning: this.lastCargoControl.value,
           job_no: this.storingOrderTankForm.get('job_no')?.value,
+          preinspect_job_no: this.storingOrderTankForm.get('preinspect_job_no')?.value,
+          liftoff_job_no: this.storingOrderTankForm.get('liftoff_job_no')?.value,
+          lifton_job_no: this.storingOrderTankForm.get('lifton_job_no')?.value,
+          release_job_no: this.storingOrderTankForm.get('release_job_no')?.value,
           eta_dt: Utility.convertDate(this.storingOrderTankForm.get('eta_dt')?.value),
           purpose_storage: this.storingOrderTankForm.get('purpose_storage')?.value,
           purpose_steam: this.storingOrderTankForm.get('purpose_steam')?.value,
@@ -331,7 +339,7 @@ export class FormDialogComponent {
       ]);
       this.storingOrderTankForm.get('etr_dt')?.updateValueAndValidity();
     });
-  
+
     this.storingOrderTankForm.get('etr_dt')?.valueChanges.subscribe((etr) => {
       this.storingOrderTankForm.get('eta_dt')?.setValidators([
         this.dateBefore(etr)
@@ -469,7 +477,7 @@ export class FormDialogComponent {
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
-  
+
   dateAfter(minDate: Date): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       return control.value && minDate && control.value < minDate
@@ -477,7 +485,7 @@ export class FormDialogComponent {
         : null;
     };
   }
-  
+
   // Custom validator: ETA before ETR
   dateBefore(maxDate: Date): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
