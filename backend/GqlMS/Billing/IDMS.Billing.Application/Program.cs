@@ -5,6 +5,7 @@ using IDMS.Models.DB;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 using System.Text;
 
 namespace IDMS.Billing.Applicaton
@@ -26,6 +27,11 @@ namespace IDMS.Billing.Applicaton
                 o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
                 {
                     options.EnableStringComparisonTranslations();
+                    options.EnableRetryOnFailure(
+                          maxRetryCount: 5,
+                          maxRetryDelay: TimeSpan.FromSeconds(10),
+                          errorNumbersToAdd: null)
+                            .ExecutionStrategy(c => new MySqlExecutionStrategy(c));
                 })
                 .LogTo(Console.WriteLine);
                 o.EnableSensitiveDataLogging(false);

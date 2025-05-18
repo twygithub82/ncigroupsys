@@ -60,7 +60,9 @@ namespace IDMS.Billing.GqlTypes
                                  cleaner_name = r.complete_by,
                                  method = cm.name,
                                  bay = t.description
-                             }).AsQueryable();
+                             })
+                             //.AsSplitQuery()
+                             .AsQueryable();
 
                 if (!string.IsNullOrEmpty(cleanerPerformanceRequest.customer_code))
                 {
@@ -141,7 +143,8 @@ namespace IDMS.Billing.GqlTypes
                                  last_cargo = tc.cargo,
                                  cost = r.total_cost,
                                  bay = t.description
-                             }).AsQueryable();
+                             })
+                             .AsQueryable();
 
                 if (!string.IsNullOrEmpty(steamPerformanceRequest.customer_code))
                 {
@@ -1252,6 +1255,24 @@ namespace IDMS.Billing.GqlTypes
                              {
                                  sot_guid = result.sot_guid,
                                  cost = ((s.lift_on == true ? 1.0 : 0.0) * s.lift_on_cost ?? 0.0) + ((s.lift_off == true ? 1.0 : 0.0) * s.lift_off_cost ?? 0.0),
+                                 code = result.code,
+                                 cc_name = result.cc_name,
+                                 date = (long)ig.eir_dt
+                             }).AsQueryable();
+
+                }
+                else if (processType.EqualsIgnore(ProcessType.GATE))
+                {
+                    query = (from result in query
+                             join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                             join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
+                             from ig in igJoin.DefaultIfEmpty()  // Left Join
+                             where (s.gate_in == true || s.gate_out == true) && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                                 && s.delete_dt == null
+                             select new TempReport
+                             {
+                                 sot_guid = result.sot_guid,
+                                 cost = ((s.gate_in == true ? 1.0 : 0.0) * s.gate_in_cost ?? 0.0) + ((s.gate_out == true ? 1.0 : 0.0) * s.gate_out_cost ?? 0.0),
                                  code = result.code,
                                  cc_name = result.cc_name,
                                  date = (long)ig.eir_dt

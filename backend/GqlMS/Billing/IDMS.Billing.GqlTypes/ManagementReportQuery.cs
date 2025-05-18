@@ -67,28 +67,6 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "repair", startEpoch, endEpoch, reportFormat);
 
-                        //IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
-                        //if (reportFormat.EqualsIgnore("customer_wise")) {
-                        //    approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
-                        //}
-                        //else
-                        //    approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-
-                        //(var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
-
-                        //var repairInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                        //{
-                        //    key = g.key,
-                        //    name = g.name,
-                        //    count = g.count,
-                        //    percentage = CalculatePercentage(g.count, total_count)
-                        //}).ToList();
-
-                        //// Handle repairResult as needed
-                        //YearlyInventory yearlyInventory = new YearlyInventory();
-                        //yearlyInventory.inventory_per_month = repairInventory;
-                        //yearlyInventory.total_count = total_count;
-                        //yearlyInventory.average_count = average_count;
                         var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth);
                         yearlyInventoryResult.repair_yearly_inventory = yearlyInventory;
                     }
@@ -96,31 +74,6 @@ namespace IDMS.Billing.GqlTypes
                     if (item.EqualsIgnore("steaming") || item.EqualsIgnore("all"))
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "steaming", startEpoch, endEpoch, reportFormat);
-
-                        //IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
-                        //if (reportFormat.EqualsIgnore("customer_wise"))
-                        //{
-                        //    approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
-                        //}
-                        //else
-                        //    approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-
-                        //(var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
-
-                        //// Handle steamingResult as needed
-                        //var steamingInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                        //{
-                        //    key = g.key,
-                        //    name = g.name,
-                        //    count = g.count,
-                        //    percentage = CalculatePercentage(g.count, total_count)
-                        //}).ToList();
-
-                        // Handle repairResult as needed
-                        //YearlyInventory yearlyInventory = new YearlyInventory();
-                        //yearlyInventory.inventory_per_month = steamingInventory;
-                        //yearlyInventory.total_count = total_count;
-                        //yearlyInventory.average_count = average_count;
 
                         var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth);
                         yearlyInventoryResult.steaming_yearly_inventory = yearlyInventory;
@@ -130,29 +83,6 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "cleaning", startEpoch, endEpoch, reportFormat);
 
-                        //IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
-                        //if (reportFormat.EqualsIgnore("customer_wise"))
-                        //{
-                        //    approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
-                        //}
-                        //else
-                        //    approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-                        //(var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
-
-                        //// Handle cleaningResult as needed
-                        //var cleaningInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                        //{
-                        //    key = g.key,
-                        //    name = g.name,
-                        //    count = g.count,
-                        //    percentage = CalculatePercentage(g.count, total_count)
-                        //}).ToList();
-
-                        //YearlyInventory yearlyInventory = new YearlyInventory();
-                        //yearlyInventory.inventory_per_month = cleaningInventory;
-                        //yearlyInventory.total_count = total_count;
-                        //yearlyInventory.average_count = average_count;
-
                         var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth);
                         yearlyInventoryResult.cleaning_yearly_inventory = yearlyInventory;
                     }
@@ -160,29 +90,6 @@ namespace IDMS.Billing.GqlTypes
                     if (item.EqualsIgnore("depot") || item.EqualsIgnore("all"))
                     {
                         var (approvedResult, completedResult) = await ProcessInventoryResults(context, query, "depot", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
-                        //IList<InventoryPerMonth> approveResultPerMonth = new List<InventoryPerMonth>();
-                        //if (reportFormat.EqualsIgnore("customer_wise"))
-                        //{
-                        //    approveResultPerMonth = await GetInventoryPerCustomer(approvedResult, startOfMonth, endOfMonth);
-                        //}
-                        //else
-                        //    approveResultPerMonth = await GetInventoryPerMonth(approvedResult, startOfMonth, endOfMonth);
-
-                        //(var total_count, var average_count) = CalculateTotalAverage(approveResultPerMonth);
-
-                        //// Handle cleaningResult as needed
-                        //var depotInventory = approveResultPerMonth.Select(g => new InventoryPerMonth
-                        //{
-                        //    key = g.key,
-                        //    count = g.count,
-                        //    name = g.name
-                        //    //percentage = CalculatePercentage(g.count, total_count)
-                        //}).ToList();
-
-                        //YearlyInventory yearlyInventory = new YearlyInventory();
-                        //yearlyInventory.inventory_per_month = depotInventory;
-                        //yearlyInventory.total_count = total_count;
-                        //yearlyInventory.average_count = average_count;
 
                         var yearlyInventory = await GenerateYearlyInventoryResult(approvedResult, reportFormat, startOfMonth, endOfMonth);
                         yearlyInventoryResult.depot_yearly_inventory = yearlyInventory;
@@ -192,54 +99,8 @@ namespace IDMS.Billing.GqlTypes
                     {
                         var (gateInResult, gateOutResult) = await ProcessInventoryResults(context, query, "gate", startEpoch, endEpoch, reportFormat);
 
-                        //IList<InventoryPerMonth> gateInResultPerMonth = new List<InventoryPerMonth>();
-                        //if (reportFormat.EqualsIgnore("customer_wise"))
-                        //{
-                        //    gateInResultPerMonth = await GetInventoryPerCustomer(gateInResult, startOfMonth, endOfMonth);
-                        //}
-                        //else
-                        //    gateInResultPerMonth = await GetInventoryPerMonth(gateInResult, startOfMonth, endOfMonth);
-                        //(var total_count, var average_count) = CalculateTotalAverage(gateInResultPerMonth);
-
-                        //var gInInventoryResult = gateInResultPerMonth.Select(g => new InventoryPerMonth
-                        //{
-                        //    key = g.key,
-                        //    count = g.count,
-                        //    name = g.name,
-                        //    percentage = CalculatePercentage(g.count, total_count)
-                        //}).ToList();
-
-                        //YearlyInventory yearlyGateInInventory = new YearlyInventory();
-                        //yearlyGateInInventory.inventory_per_month = gInInventoryResult;
-                        //yearlyGateInInventory.total_count = total_count;
-                        //yearlyGateInInventory.average_count = average_count;
                         var yearlyInventory = await GenerateYearlyInventoryResult(gateInResult, reportFormat, startOfMonth, endOfMonth);
                         yearlyInventoryResult.gate_in_inventory = yearlyInventory;
-
-                        //IList<InventoryPerMonth> gateOutResultPerMonth = new List<InventoryPerMonth>();
-                        //if (reportFormat.EqualsIgnore("customer_wise"))
-                        //{
-                        //    gateOutResultPerMonth = await GetInventoryPerCustomer(gateOutResult, startOfMonth, endOfMonth);
-                        //}
-                        //else
-                        //    gateOutResultPerMonth = await GetInventoryPerMonth(gateOutResult, startOfMonth, endOfMonth);
-
-                        ////total_count = gateOutResultPerMonth.Sum(g => g.count);
-                        ////average_count = total_count / 12;
-                        //(var total_count_out, var average_count_out) = CalculateTotalAverage(gateOutResultPerMonth);
-
-                        //var gOutInventoryResult = gateOutResultPerMonth.Select(g => new InventoryPerMonth
-                        //{
-                        //    key = g.key,
-                        //    count = g.count,
-                        //    name = g.name,
-                        //    percentage = CalculatePercentage(g.count, total_count_out)
-                        //}).ToList();
-
-                        //YearlyInventory yearlyGateOutInventory = new YearlyInventory();
-                        //yearlyGateOutInventory.inventory_per_month = gOutInventoryResult;
-                        //yearlyGateOutInventory.total_count = total_count_out;
-                        //yearlyGateOutInventory.average_count = average_count_out;
 
                         var yearlyGateOutInventory = await GenerateYearlyInventoryResult(gateOutResult, reportFormat, startOfMonth, endOfMonth);
                         yearlyInventoryResult.gate_out_inventory = yearlyGateOutInventory;
@@ -660,30 +521,6 @@ namespace IDMS.Billing.GqlTypes
         }
         private async Task<List<InventoryPerMonth>> GetInventoryPerCustomer(List<TempInventoryResult> resultList, DateTime startOfMonth, DateTime endOfMonth)
         {
-            //foreach (var item in resultList)
-            //{
-            //    // Convert epoch timestamp to DateTimeOffset (local time zone)
-            //    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)item.appv_date).ToLocalTime();
-            //    // Format the date as yyyy-MM-dd and replace the code with date
-            //    item.date = dateTimeOffset.ToString("MMMM");
-            //}
-
-
-
-            //salesByCustomer = resultList
-            //    .GroupBy(n => n.code)  // Group by formatted date
-            //    .Select(g => new CustomerSales
-            //    {
-            //        code = g.Key,
-            //        name = g.Select(n => n.cc_name).FirstOrDefault(),
-            //        clean_count = g.Count(),
-            //        clean_cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
-            //    })
-            //    .OrderBy(g => g.code) // Sort by date
-            //    .ToList();
-
-
-
             // Group nodes by FormattedDate and count the number of SotGuids for each group
             var groupedNodes = resultList
                 .GroupBy(n => n.code)  // Group by formatted date
@@ -696,24 +533,6 @@ namespace IDMS.Billing.GqlTypes
                 })
                 .OrderBy(g => g.key) // Sort by date
                 .ToList();
-
-            //List<string> allMonthInYear = new List<string>();
-            //for (DateTime date = startOfMonth; date <= endOfMonth; date = date.AddMonths(1))
-            //{
-            //    allMonthInYear.Add(date.ToString("MMMM"));
-            //}
-
-            //// Fill missing dates with count = 0 if not present
-            //var completeGroupedNodes = allMonthInYear
-            //    .Select(date => new InventoryPerMonth
-            //    {
-            //        month = date,
-            //        //day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-            //        count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
-            //        //cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
-            //    })
-            //    //.OrderBy(g => g.date) // Sort by date
-            //    .ToList();
 
             return groupedNodes;
         }
@@ -1533,8 +1352,10 @@ namespace IDMS.Billing.GqlTypes
                     return from result in query
                                //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
                            join s in context.billing_sot on result.sot_guid equals s.sot_guid
-                           join b in context.Set<billing>() on s.lolo_billing_guid equals b.guid
-                           where (s.lift_off == true || s.lift_on == true) && s.lolo_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           join b in context.Set<billing>() on s.loff_billing_guid equals b.guid
+                           //where (s.lift_off == true || s.lift_on == true) && s.loff_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           where (s.lift_off == true && s.loff_billing_guid != null) || (s.lift_on == true && s.lon_billing_guid != null)
+                           && s.delete_dt == null && b.delete_dt == null
                            && b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
                            select new TempRevenueResult
                            {
@@ -1548,8 +1369,10 @@ namespace IDMS.Billing.GqlTypes
                     return from result in query
                                //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
                            join s in context.billing_sot on result.sot_guid equals s.sot_guid
-                           join b in context.Set<billing>() on s.gateio_billing_guid equals b.guid
-                           where (s.gate_in == true || s.gate_out == true) && s.gateio_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           join b in context.Set<billing>() on s.gin_billing_guid equals b.guid
+                           //where (s.gate_in == true || s.gate_out == true) && s.gin_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           where (s.gate_in == true && s.gin_billing_guid != null) || (s.gate_out == true && s.gout_billing_guid != null)  
+                           && s.delete_dt == null && b.delete_dt == null
                            && b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
                            select new TempRevenueResult
                            {

@@ -41,7 +41,8 @@ namespace IDMS.Billing.GqlTypes
         public const string PREINSPECTION = "PREINSPECTION";
         public const string STORAGE = "STORAGE";
 
-        public static List<string> ProcessList = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.RESIDUE}", $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
+        public static List<string> ProcessList = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.RESIDUE}", $"{ProcessType.GATE}",
+                            $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
     }
 
     public class ReportType
