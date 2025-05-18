@@ -174,9 +174,7 @@
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-
                       <input matInput formControlName="eir_dt" readonly="true">
-
                     </mat-form-field>
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-11 mb-1">
@@ -359,7 +357,7 @@
                                     <!-- {{this.pcForm.get('update_on')?.value!=='-'?this.displayDate(this.pcForm.get('update_on')?.value):'-'}} -->
                                     {{ this.pcForm.get('status_cv')?.value === 'KIV'
                                     ? '-'
-                                    : (this.displayDate(this.pcForm.get('update_on')?.value) || '-')}}
+                                    : (this.pcForm.get('update_on')?.value || '-')}}
                                   </span>
                                 </div>
                               </div>
