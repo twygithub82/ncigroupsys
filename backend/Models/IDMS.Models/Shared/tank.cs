@@ -26,6 +26,7 @@ namespace IDMS.Models.Shared
         public bool? gate_in { get; set; }
         public bool? gate_out { get; set; }
         public bool? iso_format { get; set; }
+        public bool? flat_rate { get; set; }
         public tariff_depot? tariff_depot { get; set; }
         public IEnumerable<storing_order_tank>? sot { get; set; }
 
