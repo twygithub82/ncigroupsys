@@ -79,10 +79,11 @@ export class PDFUtility {
 
   static previewPDF(pdf: jsPDF, fileName: string = 'document.pdf') {
     const pdfBlob = pdf.output('blob');
-    const blobUrl = URL.createObjectURL(pdfBlob);
 
+    const blobUrl = URL.createObjectURL(pdfBlob);
     // Try opening in a new window
     const newWindow = window.open(blobUrl, '_blank');
+    //const newWindow = window.open(blobUrl, fileName);
 
     if (!newWindow) {
       pdf.save(fileName);
@@ -92,6 +93,42 @@ export class PDFUtility {
         URL.revokeObjectURL(blobUrl);
       }, 10000); // Increased delay to ensure the PDF loads
     }
+  }
+
+
+    static previewPDF_new(pdf: jsPDF, fileName: string = 'document.pdf') {
+    // 🧾 Set metadata
+      pdf.setProperties({
+        title: 'My Custom PDF',
+        subject: 'Demo of jsPDF metadata',
+        author: 'Your Name or Company',
+        keywords: 'jsPDF, Angular, demo',
+        creator: 'Angular App'
+      });
+
+    const pdfBlob = pdf.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    // Try opening in a new window
+    //const newWindow = window.open(blobUrl, '_blank');
+    const newWindow = window.open(blobUrl);
+    // Optionally download
+    setTimeout(() => {
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = 'my-file.pdf'; // Set the desired filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, 1000); // Delay to avoid immediate doubl
+
+    // if (!newWindow) {
+    //   pdf.save(fileName);
+    // } else {
+    //   // Cleanup the URL after some time
+    //   setTimeout(() => {
+    //     URL.revokeObjectURL(blobUrl);
+    //   }, 10000); // Increased delay to ensure the PDF loads
+    // }
   }
 
  static async addHeaderWithCompanyLogo_Portriat(
