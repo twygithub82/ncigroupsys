@@ -32,88 +32,90 @@ namespace IDMS.Survey.GqlTypes
             List<string> retGuids = new List<string>();
             Record record = new();
 
-            try
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
-
-                //ingate_survey handling
-                in_gate_survey ingateSurvey = new();
-                mapper.Map(inGateSurveyRequest, ingateSurvey);
-
-                ingateSurvey.guid = Util.GenerateGUID();
-                ingateSurvey.create_by = user;
-                ingateSurvey.create_dt = currentDateTime;
-                await context.in_gate_survey.AddAsync(ingateSurvey);
-
-                //ingate handling
-                var ingate = await context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefaultAsync();
-                if (ingate != null)
+                try
                 {
-                    ingate.remarks = inGateRequest.remarks;
-                    ingate.vehicle_no = inGateRequest.vehicle_no;
-                    ingate.driver_name = inGateRequest.driver_name;
-                    ingate.haulier = inGateRequest.haulier;
-                    //yet to survey --> pending
-                    ingate.eir_status_cv = EirStatus.PENDING;
-                    ingate.update_by = user;
-                    ingate.update_dt = currentDateTime;
+                    var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    long currentDateTime = DateTime.Now.ToEpochTime();
+
+                    //ingate_survey handling
+                    in_gate_survey ingateSurvey = new();
+                    mapper.Map(inGateSurveyRequest, ingateSurvey);
+
+                    ingateSurvey.guid = Util.GenerateGUID();
+                    ingateSurvey.create_by = user;
+                    ingateSurvey.create_dt = currentDateTime;
+                    await context.in_gate_survey.AddAsync(ingateSurvey);
+
+                    //ingate handling
+                    var ingate = await context.in_gate.Where(i => i.guid == inGateRequest.guid).FirstOrDefaultAsync();
+                    if (ingate != null)
+                    {
+                        ingate.remarks = inGateRequest.remarks;
+                        ingate.vehicle_no = inGateRequest.vehicle_no;
+                        ingate.driver_name = inGateRequest.driver_name;
+                        ingate.haulier = inGateRequest.haulier;
+                        //yet to survey --> pending
+                        ingate.eir_status_cv = EirStatus.PENDING;
+                        ingate.update_by = user;
+                        ingate.update_dt = currentDateTime;
+                    }
+
+                    if (inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
+                        throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
+
+                    //Tank handling
+                    var tank = inGateRequest.tank;
+                    storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
+                        .Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+
+                    if (sot == null || string.IsNullOrEmpty(sot.tank_no))
+                        throw new GraphQLException(new Error("Storing order tank not found.", "NOT FOUND"));
+
+                    sot.unit_type_guid = tank.unit_type_guid;
+                    sot.owner_guid = tank.owner_guid;
+                    sot.last_release_dt = tank.last_release_dt;
+                    sot.update_by = user;
+                    sot.update_dt = currentDateTime;
+
+                    //Add the newly created guid into list for return
+                    retGuids.Add(ingateSurvey.guid);
+
+                    ////Add steaming by auto
+                    //if (tank.purpose_steam ?? false)
+                    //    await AddSteaming(context, sot, ingate.create_dt);
+
+                    ////Add cleaning by auto
+                    //if (tank.purpose_cleaning ?? false)
+                    //    await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
+
+                    retval = await context.SaveChangesAsync();
+                    //TODO
+                    string evtId = EventId.NEW_INGATE;
+                    string evtName = EventName.NEW_INGATE;
+                    GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+
+
+                    //Tank info handling
+                    await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
+
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
+
+                    //Bundle the retVal and retGuid return as record object
+                    record = new Record() { affected = retval, guid = retGuids };
                 }
+                catch (Exception ex)
+                {
+                    // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
 
-                if (inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
-                    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
-
-                //Tank handling
-                var tank = inGateRequest.tank;
-                storing_order_tank? sot = await context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
-                    .Where(t => t.guid == tank.guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-
-                if (sot == null || string.IsNullOrEmpty(sot.tank_no))
-                    throw new GraphQLException(new Error("Storing order tank not found.", "NOT FOUND"));
-
-                sot.unit_type_guid = tank.unit_type_guid;
-                sot.owner_guid = tank.owner_guid;
-                sot.last_release_dt = tank.last_release_dt;
-                sot.update_by = user;
-                sot.update_dt = currentDateTime;
-
-                //if (tank.purpose_steam ?? false)
-                //    sot.tank_status_cv = TankMovementStatus.STEAM;
-                //else if (tank.purpose_cleaning ?? false)
-                //    sot.tank_status_cv = TankMovementStatus.CLEANING;
-                //else if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
-                //    sot.tank_status_cv = TankMovementStatus.REPAIR;
-                //else
-                //    sot.tank_status_cv = TankMovementStatus.STORAGE;
-
-                //Add the newly created guid into list for return
-                retGuids.Add(ingateSurvey.guid);
-
-                ////Add steaming by auto
-                //if (tank.purpose_steam ?? false)
-                //    await AddSteaming(context, sot, ingate.create_dt);
-
-                ////Add cleaning by auto
-                //if (tank.purpose_cleaning ?? false)
-                //    await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
-
-                retval = await context.SaveChangesAsync();
-                //TODO
-                string evtId = EventId.NEW_INGATE;
-                string evtName = EventName.NEW_INGATE;
-                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-
-
-                //Tank info handling
-                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
-
-                //Bundle the retVal and retGuid return as record object
-                record = new Record() { affected = retval, guid = retGuids };
+                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                }
             }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
+
             return record;
         }
 
@@ -234,36 +236,36 @@ namespace IDMS.Survey.GqlTypes
         }
 
 
-        private async Task<int> PublishIngateSurveyOld(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-                [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
-        {
-            int retval = 0;
-            try
-            {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                //string user = "admin";
-                long currentDateTime = DateTime.Now.ToEpochTime();
+        //private async Task<int> PublishIngateSurveyOld(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        //        [Service] IHttpContextAccessor httpContextAccessor, string InGate_guid)
+        //{
+        //    int retval = 0;
+        //    try
+        //    {
+        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        //string user = "admin";
+        //        long currentDateTime = DateTime.Now.ToEpochTime();
 
 
-                var ingate = new in_gate() { guid = InGate_guid };
-                context.Attach(ingate);
+        //        var ingate = new in_gate() { guid = InGate_guid };
+        //        context.Attach(ingate);
 
-                ingate.eir_status_cv = EirStatus.PUBLISHED;
-                ingate.update_by = user;
-                ingate.publish_by = user;
-                ingate.update_dt = currentDateTime;
-                ingate.publish_dt = currentDateTime;
+        //        ingate.eir_status_cv = EirStatus.PUBLISHED;
+        //        ingate.update_by = user;
+        //        ingate.publish_by = user;
+        //        ingate.update_dt = currentDateTime;
+        //        ingate.publish_dt = currentDateTime;
 
-                retval = await context.SaveChangesAsync(true);
+        //        retval = await context.SaveChangesAsync(true);
 
-                //TODO: Pending implementation of publish pdf -------------------------------
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
-            return retval;
-        }
+        //        //TODO: Pending implementation of publish pdf -------------------------------
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+        //    }
+        //    return retval;
+        //}
 
         public async Task<int> PublishIngateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, in_gate inGateRequest)
