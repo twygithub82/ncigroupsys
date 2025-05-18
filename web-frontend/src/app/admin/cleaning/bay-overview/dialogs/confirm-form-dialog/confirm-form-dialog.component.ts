@@ -15,9 +15,9 @@ export interface DialogData {
   action: string;
   item: JobOrderItem;
   langText?: any;
-  confirmStatement?:string;
+  confirmStatement?: string;
   index: number;
-  remarks:string;
+  remarks: string;
 }
 
 @Component({
@@ -44,14 +44,14 @@ export class ConfirmationDialogComponent {
   jobItm: JobOrderItem;
   index: number;
   pcForm: UntypedFormGroup;
-  confirmStatement?:string;
+  confirmStatement?: string;
   constructor(
     public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
   ) {
     // Set the defaults
-    this.confirmStatement=data.confirmStatement;
+    this.confirmStatement = data.confirmStatement;
     this.jobItm = data.item;
     this.index = data.index;
     this.pcForm = this.createPackageCleaning();
@@ -64,14 +64,14 @@ export class ConfirmationDialogComponent {
       action: 'confirmed',
       item: this.jobItm,
       index: this.index,
-      // remarks: this.pcForm.value["remarks"]
+      remarks: ''
     }
     this.dialogRef.close(returnDialog);
   }
 
-   createPackageCleaning(): UntypedFormGroup {
-      return this.fb.group({
-        // remarks:['']
-      });
-    }
+  createPackageCleaning(): UntypedFormGroup {
+    return this.fb.group({
+      remarks: ['']
+    });
+  }
 }

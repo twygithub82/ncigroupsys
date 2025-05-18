@@ -1098,7 +1098,8 @@
                               | async)) {
                               @if (sot?.purpose_cleaning) {
                               <div class="position-relative">
-                                @if (canOverwriteCleaningApproval() || canRollbackCleaningCompleted(cleaningItem?.[0])
+                                @if ((canOverwriteCleaningApproval() && allowPerformAction()) ||
+                                canRollbackCleaningCompleted(cleaningItem?.[0])
                                 || canRollbackCleaning(cleaningItem?.[0]) || canRemoveCleanPurpose()) {
                                 <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                                   [disabled]="(cleaningDS.loading$ | async)"
