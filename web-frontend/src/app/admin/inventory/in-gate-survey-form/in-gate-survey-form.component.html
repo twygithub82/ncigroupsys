@@ -553,22 +553,17 @@
                           <div class="row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
-                                  <span>{{translatedLangText.LAST_UPDATE_BY}}:</span>
-                                </div>
-                                <div class="col-xl-3 col-lg-3 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
-                                  <div class="contact-detail-info font-bold">{{in_gate?.update_by}}</div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 align-left">
+                                  <span class="me-2">{{translatedLangText.LAST_UPDATE_BY}}:</span>
+                                  <span class="contact-detail-info font-bold">{{in_gate?.update_by || in_gate?.create_by}}</span>
                                 </div>
                               </div>
                             </div>
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-5 col-xs-5 m-b-5 align-lef">
-                                  <span>{{translatedLangText.LAST_UPDATE_ON}}:</span>
-                                </div>
-                                <div class="col-xl-3 col-lg-3 col-md-7 col-sm-7 col-xs-7 m-b-5 align-lef">
-                                  <div class="contact-detail-info font-bold">{{displayDateTime(in_gate?.update_dt)}}
-                                  </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 align-left">
+                                  <span class="me-2">{{translatedLangText.LAST_UPDATE_ON}}:</span>
+                                  <span class="contact-detail-info font-bold">{{displayDateTime(in_gate?.update_dt) || displayDateTime(in_gate?.create_dt)}}</span>
                                 </div>
                               </div>
                             </div>

@@ -368,7 +368,7 @@
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ORDER_DETAILS}}
                   </button>
                   }
-                  @if (isAnyItemEdited()) {
+                  @if (soDS.canAdd(storingOrderItem)) {
                   <button mat-flat-button color="primary" [disabled]="(soDS.actionLoading$ | async)">
                     <mat-icon>
                       @if (!(soDS.actionLoading$ | async)) {

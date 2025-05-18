@@ -338,6 +338,12 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     if (so.storing_order_tank) {
       this.populateSOT(so.storing_order_tank);
     }
+
+    if (!this.soDS.canAdd(this.storingOrderItem)) {
+      this.soForm?.get('customer_code')?.disable();
+      this.soForm?.get('so_notes')?.disable();
+      this.soForm?.get('haulier')?.disable();
+    }
   }
 
   populateSOT(sot: StoringOrderTankItem[]) {

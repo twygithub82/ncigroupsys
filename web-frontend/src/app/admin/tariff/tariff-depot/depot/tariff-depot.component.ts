@@ -628,7 +628,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '400px',
       data: {
-        headerText: this.translatedLangText.CONFIRM_DELETE,
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
         act: "warn"
       },
       direction: tempDirection

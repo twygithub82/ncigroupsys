@@ -296,7 +296,7 @@
                             </div>
                             <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
                               <div class="d-flex align-items-center">
-                                <span class="me-2">{{sot?.release_note || "-"}}</span>
+                                <span class="value-display-info me-2">{{sot?.release_note || "-"}}</span>
                                 <mat-icon color="primary" class="cursor-pointer"
                                   (click)="editTankNotes($event)">mode_edit</mat-icon>
                               </div>
@@ -393,7 +393,8 @@
                             </div> -->
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
-                              <span class="contact-detail-info font-bold text-decoration-underline me-5 pe-5 cursor-pointer"
+                              <span
+                                class="contact-detail-info font-bold text-decoration-underline me-5 pe-5 cursor-pointer"
                                 (click)="onDownload()">
                                 {{translatedLangText.IN_GATE}}
                               </span>
