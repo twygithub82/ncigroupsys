@@ -307,10 +307,9 @@
                         <ng-container matColumnDef="actions">
                           <mat-header-cell
                             [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                             *matHeaderCellDef></mat-header-cell>
                           <mat-cell *matCellDef="let repairRow; let i=index;"
-                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                             <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                               <mat-icon>more_vert</mat-icon>
                             </button>
