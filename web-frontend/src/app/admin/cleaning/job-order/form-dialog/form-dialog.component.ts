@@ -400,7 +400,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   loadData() {
     this.subs.sink = this.teamDS.getTeamListByDepartment(["CLEANING"]).subscribe(data => {
       if (data?.length) {
-
         this.teamList = data.map((row, index) => ({
           ...row,
           index: index,
