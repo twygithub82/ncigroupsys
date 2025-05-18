@@ -108,40 +108,55 @@
           <mat-card-content class="pt-1 pb-1">
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
-                <div class="card-detail-item">
+                <div class="card-detail-item d-flex align-items-center">
                   <mat-checkbox (change)="$event ? toggleRow(row!) : null"
                     [checked]="schedulingSotSelection.isSelected(row!)" class="card-checkbox"
                     (click)="$event.stopPropagation()" [disabled]="checkDisable(row!)">
                   </mat-checkbox>
-                  <span [class]="{'text-danger': false, 'card-detail-value': true}">
-                    {{row.storing_order_tank!.tank_no}}
-                  </span>
+                  <div class="w-xl-12 w-lg-33">
+                    <span [class]="{'text-danger': false, 'card-detail-value': true}">
+                      {{row.storing_order_tank!.tank_no}}
+                    </span>
+                  </div>
 
-                  <span class="font-bold">{{data.translatedLangText.EIR_NO}}: </span>
-                  <span class="card-detail-value">
-                    {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}
-                  </span>
-                  <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
-                  <span class="card-detail-value">
-                    {{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
-                  </span>
+                  <div class="w-xl-18 w-lg-33">
+                    <span class="font-bold">{{data.translatedLangText.EIR_NO}}: </span>
+                    <span class="card-detail-value">
+                      {{igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_no}}
+                    </span>
+                  </div>
 
-                  <span class="font-bold">{{data.translatedLangText.SCHEDULED_DATE}}:</span>
-                  <span [class]="{'text-danger': false}" class="card-detail-value">
-                    {{displayDate(row.scheduling_dt)}}
-                  </span>
-                  <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
-                  <span [class]="{'text-danger': false}" class="card-detail-value">
-                    {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
-                  </span>
-                  <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
-                  <span class="card-detail-value">
-                    {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
-                  </span>
+                  <div class="w-xl-15 w-lg-33">
+                    <span class="font-bold">{{data.translatedLangText.EIR_DATE}}:</span>
+                    <span class="card-detail-value">
+                      {{displayDate(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.eir_dt)}}
+                    </span>
+                  </div>
+
+                  <div class="w-xl-19 w-lg-33">
+                    <span class="font-bold">{{data.translatedLangText.SCHEDULE_DATE}}:</span>
+                    <span [class]="{'text-danger': false}" class="card-detail-value">
+                      {{displayDate(row.scheduling_dt)}}
+                    </span>
+                  </div>
+
+                  <div class="w-xl-18 w-lg-33">
+                    <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
+                    <span [class]="{'text-danger': false}" class="card-detail-value">
+                      {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
+                    </span>
+                  </div>
+
+                  <div class="">
+                    <span class="font-bold">{{data.translatedLangText.YARD}}:</span>
+                    <span class="card-detail-value">
+                      {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
+                    </span>
+                  </div>
                 </div>
               </div>
-             </div> 
-           
+            </div>
+
           </mat-card-content>
           <!-- <mat-card-actions class="empty-card-actions"></mat-card-actions> -->
         </mat-card>
