@@ -420,6 +420,8 @@
     "ALIAS-NAME": "Alias Name",
     "SO-DATE": "SO Date",
     "TANK-DETAILS": "Tank Details",
+    "MAINTENANCE-DETAILS": "Maintenance Details",
+    "RELEASE-DETAILS": "Release Details",
     "EIR-NO": "EIR No",
     "CLEANING-CONDITIONS": "Cleaning Conditions",
     "ROLLBACK-STATUS": "Reinstate Status",
