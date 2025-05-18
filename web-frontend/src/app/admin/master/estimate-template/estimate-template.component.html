@@ -19,7 +19,8 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
                       <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
@@ -110,31 +111,30 @@
           <div class="body overflow-auto">
             <div class="responsive_table">
               <table mat-table [dataSource]="masterTemplateItem" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="customer">
-                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER
+                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.CUSTOMER
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER
                       }}:</span>{{row.template_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="template">
-                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.TEMPLATE
+                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.TEMPLATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.TEMPLATE
                       }}:</span>{{row.template_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="type">
-                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.TYPE
+                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.TYPE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.TYPE
                       }}:</span>{{this.displayTemplateType(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_update_dt">
-                  <mat-header-cell *matHeaderCellDef
-                    >{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>

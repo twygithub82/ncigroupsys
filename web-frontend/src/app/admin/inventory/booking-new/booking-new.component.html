@@ -233,94 +233,92 @@
                       </div>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
-                  <mat-card-content>
-                    @if ((filterDeleted(row.booking || [])?.length ?? 0) > 0) {
-                    <div class="responsive_table">
-                      <table mat-table [dataSource]="filterDeleted(row.booking || [])" matSort
-                        class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                        <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
-                          <mat-cell *matCellDef="let bookingRow">{{row.guid}}</mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="booking_dt">
-                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            {{translatedLangText.BOOKING_DATE}}
-                          </mat-header-cell>
-                          <mat-cell mat-cell *matCellDef="let bookingRow"
-                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span
-                              class="mobile-label">{{translatedLangText.BOOKING_DATE}}:</span>{{displayDate(bookingRow.booking_dt)}}
-                          </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="book_type_cv">
-                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            {{translatedLangText.BOOKING_TYPE}}
-                          </mat-header-cell>
-                          <mat-cell mat-cell *matCellDef="let bookingRow"
-                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span
-                              class="mobile-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookTypeDescription(bookingRow?.book_type_cv)}}
-                          </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="reference">
-                          <mat-header-cell *matHeaderCellDef >
-                            {{translatedLangText.REFERENCE}}
-                          </mat-header-cell>
-                          <mat-cell *matCellDef="let bookingRow">
-                            <span class="mobile-label">{{translatedLangText.REFERENCE}}:</span>{{bookingRow?.reference}}
-                          </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="surveyor">
-                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            {{translatedLangText.SURVEYOR}}
-                          </mat-header-cell>
-                          <mat-cell mat-cell *matCellDef="let bookingRow"
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span
-                              class="mobile-label">{{translatedLangText.SURVEYOR}}:</span>{{bookingRow?.test_class_cv}}
-                          </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="status_cv">
-                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            {{translatedLangText.STATUS}}
-                          </mat-header-cell>
-                          <mat-cell mat-cell *matCellDef="let bookingRow"
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span
-                              class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(bookingRow?.status_cv)}}
-                          </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="actions">
-                          <mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0'"></mat-header-cell>
-                          <mat-cell *matCellDef="let bookingRow; let i=index;"
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
-                            @if (bookingDS.canCancel(bookingRow)) {
-                            <button mat-icon-button color="warn" class="tbl-action-btn p-2"
-                              (click)="cancelItem(row, bookingRow, $event)" [disabled]="checkDisable(row)">
-                              <mat-icon>cancel</mat-icon>
-                            </button>
-                            }
-                            @else {
-                            <span class="me-3">NA</span>
-                            }
-                          </mat-cell>
-                        </ng-container>
-                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                        <mat-row *matRowDef="let bookingRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                          (click)="editBookingDetails(row, bookingRow, $event)" matRipple>
-                        </mat-row>
-                      </table>
-                    </div>
-                    }
-                    @else {
-                    {{translatedLangText.NO_RESULT}}
-                    }
-                  </mat-card-content>
+                  @if ((filterDeleted(row.booking || [])?.length ?? 0) > 0) {
+                  <div class="responsive_table">
+                    <table mat-table [dataSource]="filterDeleted(row.booking || [])" matSort
+                      class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                      <ng-container matColumnDef="id">
+                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef="let bookingRow">{{row.guid}}</mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="booking_dt">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.BOOKING_DATE}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let bookingRow"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span
+                            class="mobile-label">{{translatedLangText.BOOKING_DATE}}:</span>{{displayDate(bookingRow.booking_dt)}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="book_type_cv">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.BOOKING_TYPE}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let bookingRow"
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span
+                            class="mobile-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookTypeDescription(bookingRow?.book_type_cv)}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="reference">
+                        <mat-header-cell *matHeaderCellDef>
+                          {{translatedLangText.REFERENCE}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let bookingRow">
+                          <span class="mobile-label">{{translatedLangText.REFERENCE}}:</span>{{bookingRow?.reference}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="surveyor">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.SURVEYOR}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let bookingRow"
+                          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span
+                            class="mobile-label">{{translatedLangText.SURVEYOR}}:</span>{{bookingRow?.test_class_cv}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="status_cv">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.STATUS}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let bookingRow"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <span
+                            class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(bookingRow?.status_cv)}}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="actions">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0'"></mat-header-cell>
+                        <mat-cell *matCellDef="let bookingRow; let i=index;"
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
+                          @if (bookingDS.canCancel(bookingRow)) {
+                          <button mat-icon-button color="warn" class="tbl-action-btn p-2"
+                            (click)="cancelItem(row, bookingRow, $event)" [disabled]="checkDisable(row)">
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                          }
+                          @else {
+                          <span class="me-3">NA</span>
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let bookingRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                        (click)="editBookingDetails(row, bookingRow, $event)" matRipple>
+                      </mat-row>
+                    </table>
+                  </div>
+                  }
+                  @else {
+                  {{translatedLangText.NO_RESULT}}
+                  }
                 </mat-expansion-panel>
               </mat-accordion>
               <!-- <mat-card-header class="pt-2 pe-2 pb-0" (click)="toggleRow(row)">
