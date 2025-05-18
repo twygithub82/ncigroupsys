@@ -228,7 +228,7 @@
                   <table mat-table [dataSource]="filterDeleted(row.steaming || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                       <mat-cell *matCellDef="let steamRow">{{steamRow.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="estimate_no">
@@ -240,7 +240,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="net_cost">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <mat-header-cell *matHeaderCellDef >
                         {{translatedLangText.NET_COST}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let steamRow">

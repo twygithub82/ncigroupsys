@@ -87,7 +87,7 @@
   <table mat-table [dataSource]="jobOrderList" matSort
     class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
     <ng-container matColumnDef="id">
-      <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+      <mat-header-cell *matHeaderCellDef ></mat-header-cell>
       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
     </ng-container>
     <ng-container matColumnDef="tank_no">
@@ -121,7 +121,7 @@
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="allocate_dt">
-      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header
+      <mat-header-cell mat-header-cell *matHeaderCellDef 
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.APPROVE_DATE}}
       </mat-header-cell>
@@ -132,7 +132,7 @@
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="team">
-      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header
+      <mat-header-cell mat-header-cell *matHeaderCellDef 
         [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         {{translatedLangText.TEAM}}
       </mat-header-cell>

@@ -242,7 +242,7 @@
                       <table mat-table [dataSource]="filterDeleted(row.scheduling_sot || [])" matSort
                         class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                           <mat-cell *matCellDef="let schedulingSotRow">{{schedulingSotRow.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="scheduling_dt">
@@ -264,7 +264,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="reference">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          <mat-header-cell *matHeaderCellDef >
                             {{translatedLangText.REFERENCE}}
                           </mat-header-cell>
                           <mat-cell *matCellDef="let schedulingSotRow">
@@ -357,7 +357,7 @@
                   <table mat-table [dataSource]="filterDeleted(row.scheduling_sot || [])" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                       <mat-cell *matCellDef="let schedulingSotRow">{{schedulingSotRow.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="scheduling_dt">
@@ -379,7 +379,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="reference">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <mat-header-cell *matHeaderCellDef >
                         {{translatedLangText.REFERENCE}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let schedulingSotRow">

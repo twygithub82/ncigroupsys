@@ -87,7 +87,7 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_name">
@@ -99,7 +99,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_description">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{langText.DESCRIPTION | translate}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -107,7 +107,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_cost">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{langText.CATEGORY_COST | translate}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -115,7 +115,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="update_date">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{langText.LAST_UPDATED | translate}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

@@ -215,7 +215,7 @@
             </ng-container>
             <!-- ID Column -->
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoice_no">
@@ -262,7 +262,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_cargo">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-header-cell *matHeaderCellDef >
                 {{translatedLangText.LAST_CARGO}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

@@ -210,7 +210,7 @@
                               <table mat-table [dataSource]="transferList" matSort
                                 class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
                                 <ng-container matColumnDef="id">
-                                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                                  <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="transfer_out_dt">

@@ -106,53 +106,53 @@
               </mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="customerCode">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_CODE
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="companyName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER
                   }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="minTemp">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.MIN_TEMP
                   }}:</span>{{row.tariff_steaming?.temp_min}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="maxTemp">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.MAX_TEMP
                   }}:</span>{{displayTempMax(row.tariff_steaming?.temp_max)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}</span>
                 {{row.cost?.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.HOURLY_RATE
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.HOURLY_RATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE}}</span>
                 {{row.labour?.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="qty">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.QTY}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.QTY}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.QTY}}:</span> {{row.qty }}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastUpdate">
               <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                >{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>

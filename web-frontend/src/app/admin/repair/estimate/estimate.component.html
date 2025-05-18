@@ -234,7 +234,7 @@
                       <table mat-table [dataSource]="filterDeleted(row.repair || [])" matSort
                         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                           <mat-cell *matCellDef="let repairRow">{{repairRow.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="estimate_no">
@@ -270,7 +270,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="net_cost">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header
+                          <mat-header-cell *matHeaderCellDef 
                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.NET_COST}}
                           </mat-header-cell>

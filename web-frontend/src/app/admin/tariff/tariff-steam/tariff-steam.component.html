@@ -84,7 +84,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="minTemp">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MIN_TEMP
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MIN_TEMP
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
                     <span class="mobile-label">{{this.translatedLangText.MIN_TEMP
@@ -93,7 +93,7 @@
                     row.tariff_steaming?.temp_min === 9999) ? "-" : roundUpToDecimal(row.tariff_steaming?.temp_min,2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="maxTemp">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.MAX_TEMP
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MAX_TEMP
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
                     <span class="mobile-label">{{this.translatedLangText.MAX_TEMP
@@ -102,27 +102,27 @@
                     row.tariff_steaming?.temp_max === 9999) ? "-" : roundUpToDecimal(row.tariff_steaming?.temp_max,2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="cost">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
                     <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}:</span>
                     {{row.tariff_steaming?.cost?.toFixed(2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="labour">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.HOURLY_RATE
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.HOURLY_RATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
                     <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE }}:</span>
                     {{row.tariff_steaming?.labour?.toFixed(2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="qty">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.QTY}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.QTY}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
                     <span class="mobile-label">{{this.translatedLangText.QTY}}:</span> {{row.tariff_steaming?.qty }}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                    >{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row.tariff_steaming)}}</mat-cell>

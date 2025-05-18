@@ -28,7 +28,7 @@
               <table mat-table [dataSource]="selectedItems" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table curve-table">
                 <ng-container matColumnDef="customer_code">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CUSTOMER_CODE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row"
@@ -37,21 +37,21 @@
                       }}:</span>{{row.customer_company.code}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_name">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
+                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                       }}:</span>{{row.customer_company.name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="profile_name">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.PROFILE_NAME
+                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.PROFILE_NAME
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <span class="mobile-label">{{translatedLangText.PROFILE_NAME
                       }}:</span>{{row.tariff_depot?.profile_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="storage_cost">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.STORAGE_COST
+                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.STORAGE_COST
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <span class="mobile-label">{{translatedLangText.STORAGE_COST

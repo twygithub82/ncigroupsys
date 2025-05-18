@@ -112,21 +112,21 @@
               <table mat-table [dataSource]="masterTemplateItem" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <ng-container matColumnDef="customer">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER
+                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER
                       }}:</span>{{row.template_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="template">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TEMPLATE
+                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.TEMPLATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.TEMPLATE
                       }}:</span>{{row.template_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="type">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TYPE
+                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.TYPE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.TYPE
@@ -134,7 +134,7 @@
                 </ng-container>
                 <ng-container matColumnDef="last_update_dt">
                   <mat-header-cell *matHeaderCellDef
-                    mat-sort-header>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                    >{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>

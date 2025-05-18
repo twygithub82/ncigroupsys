@@ -161,11 +161,11 @@
                       <table mat-table [dataSource]="surveyDetailItem" matSort
                         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="survey_type_cv">
-                          <mat-header-cell mat-header-cell mat-sort-header *matHeaderCellDef
+                          <mat-header-cell mat-header-cell  *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.SURVEY_TYPE}}
                           </mat-header-cell>
@@ -176,7 +176,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="surveyor">
-                          <mat-header-cell mat-header-cell mat-sort-header *matHeaderCellDef
+                          <mat-header-cell mat-header-cell  *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.SURVEYOR}}
                           </mat-header-cell>
@@ -187,7 +187,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="survey_dt">
-                          <mat-header-cell mat-header-cell mat-sort-header *matHeaderCellDef
+                          <mat-header-cell mat-header-cell  *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.SURVEY_DATE}}
                           </mat-header-cell>
@@ -198,7 +198,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="status_cv">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header
+                          <mat-header-cell *matHeaderCellDef 
                             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.STATUS}}
                           </mat-header-cell>

@@ -17,7 +17,7 @@
             <table mat-table [dataSource]="dataSource" formArrayName="sotList" matSort
               class="mat-cell advance-table striped-rows hover-highlight dark-header">
               <ng-container matColumnDef="id">
-                <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="tank_no">
@@ -38,7 +38,7 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="eir_no">
-                <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-1_5-xl'">
+                <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-1_5-xl'">
                   {{data.translatedLangText.EIR_NO}}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">

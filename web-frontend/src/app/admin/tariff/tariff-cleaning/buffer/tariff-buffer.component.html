@@ -75,21 +75,21 @@
           <table mat-table [dataSource]="tariffBufferItems" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DESCRIPTION
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.DESCRIPTION
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
                   }}:</span>{{row.tariff_buffer?.buffer_type}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.COST }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.COST }}</mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.COST
                   }}:</span>{{row.tariff_buffer?.cost}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="email">
               <mat-header-cell *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                >{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
               <mat-cell *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                 {{this.displayLastUpdated(row.tariff_buffer)}}</mat-cell>

@@ -102,28 +102,28 @@
                   <table mat-table [dataSource]="selectedItems" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header">
                     <ng-container matColumnDef="cust_code">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
+                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                           }}:</span>{{row.customer_company.code}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cust_name">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
+                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                           }}:</span>{{row.customer_company.name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="inv_no">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.INVOICE_NO
+                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.INVOICE_NO
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.INVOICE_NO
                           }}:</span>{{row.invoice_no}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="inv_dt">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.INVOICE_DATE
+                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.INVOICE_DATE
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.INVOICE_DATE
