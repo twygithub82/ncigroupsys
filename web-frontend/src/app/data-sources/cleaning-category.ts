@@ -56,12 +56,11 @@ export const SEARCH_CLEANING_CATEGORY_QUERY = gql`
   }
 `;
 
-
 export const GET_CLEANING_CATEGORY_QUERY = gql`
-  query queryCleaningCategory($where: cleaning_categoryFilterInput , $order:[cleaning_categorySortInput!]){
-      queryCleaningCategory(where: $where , order: $order){
-    nodes {
-       cost
+  query queryCleaningCategory($where: cleaning_categoryFilterInput, $order:[cleaning_categorySortInput!], $first: Int) {
+    queryCleaningCategory(where: $where, order: $order, first: $first) {
+      nodes {
+        cost
         create_by
         create_dt
         delete_dt
@@ -71,13 +70,13 @@ export const GET_CLEANING_CATEGORY_QUERY = gql`
         name
         update_by
         update_dt
-        tariff_cleanings{
-            class_cv
-            guid
-            cargo
-            delete_dt
-          }
-    }
+        tariff_cleanings {
+          class_cv
+          guid
+          cargo
+          delete_dt
+        }
+      }
       totalCount
       pageInfo {
         endCursor
@@ -85,11 +84,9 @@ export const GET_CLEANING_CATEGORY_QUERY = gql`
         hasPreviousPage
         startCursor
       }
-
-
-}
-}
-  `;
+    }
+  }
+`;
 export class CleaningCategoryItem {
   public guid?: string;
   public name?: string;
@@ -116,8 +113,6 @@ export class CleaningCategoryItem {
     this.delete_dt = item.delete_dt;
     this.tariff_cleanings = item.tariff_cleanings;
   }
-
-
 }
 
 
@@ -155,12 +150,12 @@ export class CleaningCategoryDS extends BaseDataSource<CleaningCategoryItem> {
       );
   }
 
-  loadItems(where?: any, order?: any): Observable<CleaningCategoryItem[]> {
+  loadItems(where?: any, order?: any, first?: any): Observable<CleaningCategoryItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_CLEANING_CATEGORY_QUERY,
-        variables: { where, order },
+        variables: { where, order, first },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

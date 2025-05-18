@@ -412,7 +412,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
       width: '80vw',
-      //height: '80vh',
+      // height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
@@ -1070,61 +1070,60 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       }
     });
   }
-  
-  itemSelected(row: CustomerCompanyItem):boolean{
-    var retval:boolean=false;
+
+  itemSelected(row: CustomerCompanyItem): boolean {
+    var retval: boolean = false;
     const index = this.selectedCustomers.findIndex(c => c.code === row.code);
     retval = (index >= 0);
     return retval;
   }
 
-  
-
-  
-getSelectedCustomersDisplay():string{
-  var retval:string = "";
-  if(this.selectedCustomers?.length>1){
-    retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
-  }
-  else if(this.selectedCustomers?.length==1){
-    retval =`${this.selectedCustomers[0].name}`
-  }
-  return retval;
-}
-
-removeAllSelectedCustomers(): void {
- this.selectedCustomers=[];
-}
 
 
-selected(event: MatAutocompleteSelectedEvent): void {
-  const customer = event.option.value;
-  const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
-  if (!(index >= 0)) {
-    this.selectedCustomers.push(customer);
-    this.search();
-  }
-  else
-  {
-    this.selectedCustomers.splice(index, 1);
-    this.search();
+
+  getSelectedCustomersDisplay(): string {
+    var retval: string = "";
+    if (this.selectedCustomers?.length > 1) {
+      retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+    }
+    else if (this.selectedCustomers?.length == 1) {
+      retval = `${this.selectedCustomers[0].name}`
+    }
+    return retval;
   }
 
-  if (this.custInput) {
-    this.searchCustomerCompanyList('');
-    this.custInput.nativeElement.value = '';
+  removeAllSelectedCustomers(): void {
+    this.selectedCustomers = [];
+  }
+
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const customer = event.option.value;
+    const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
+    if (!(index >= 0)) {
+      this.selectedCustomers.push(customer);
+      this.search();
+    }
+    else {
+      this.selectedCustomers.splice(index, 1);
+      this.search();
+    }
+
+    if (this.custInput) {
+      this.searchCustomerCompanyList('');
+      this.custInput.nativeElement.value = '';
+
+    }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  onCheckboxClicked(row: CustomerCompanyItem) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
 
   }
-  // this.updateFormControl();
-  //this.customerCodeControl.setValue(null);
-  //this.pcForm?.patchValue({ customer_code: null });
-}
-
-onCheckboxClicked(row: CustomerCompanyItem) {
-const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-this.selected(fakeEvent);
-
-}
 
 }
 // export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
