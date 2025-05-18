@@ -24,95 +24,96 @@
             <mat-card-content>
               <div class="row">
                 <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.TANK_NO}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{out_gate?.tank?.tank_no}}</div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">{{out_gate?.tank?.tank_no}}</span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CUSTOMER}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{ccDS.displayName(out_gate?.tank?.storing_order?.customer_company)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.OWNER}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{ccDS.displayName(out_gate?.tank?.customer_company)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_NO}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{out_gate?.eir_no}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_DATE}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{displayDateTime(out_gate?.eir_dt)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_CARGO}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{out_gate?.tank?.tariff_cleaning?.cargo}}
-                      </div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
+                        {{out_gate?.tank?.tariff_cleaning?.cargo}}
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.PURPOSE}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{displayTankPurpose(out_gate?.tank!)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CLEAN_STATUS}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CLEAN_STATUS}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{getCleanStatusDescription(out_gate?.tank?.clean_status_cv)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CURRENT_STATUS}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{getTankStatusDescription(out_gate?.tank?.tank_status_cv)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1575,34 +1576,57 @@
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.BOTTOM_DIS_COMP}}:</mat-label>
                                 </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-radio-group formControlName="btm_dis_comp_cv">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                  <!-- <mat-radio-group formControlName="btm_dis_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
                                     </mat-radio-button>
                                     }
-                                  </mat-radio-group>
+                                  </mat-radio-group> -->
+                                  <mat-button-toggle-group formControlName="btm_dis_comp_cv" class="m-r-10"
+                                    [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                    exclusiveToggle>
+                                    @for (codeValue of disCompCvList; track codeValue) {
+                                    <mat-button-toggle
+                                      [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                    }
+                                  </mat-button-toggle-group>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.FOOT_VALVE}}:</mat-label>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-radio-group formControlName="foot_valve_cv">
-                                    @for (codeValue of footValveCvList; track codeValue) {
-                                    <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
-                                      {{codeValue.description}}
-                                    </mat-radio-button>
-                                    }
-                                  </mat-radio-group>
+                                </div> -->
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.FOOT_VALVE}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="foot_valve_cv">
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="foot_valve_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getBottomFormGroup().get('foot_valve_cv')?.value)) {
                                 <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="foot_valve_oth" (input)="onAlphaOnly($event)"/>
+                                    <input matInput formControlName="foot_valve_oth" (input)="onAlphaOnly($event)" />
                                     <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
@@ -1612,7 +1636,7 @@
                                 </div>
                                 }
                               </div>
-                              <div class="row">
+                              <!-- <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                                 </div>
@@ -1625,29 +1649,38 @@
                                     }
                                   </mat-radio-group>
                                 </div>
-                              </div>
+                              </div> -->
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.BOTTOM_DIS_VALVE}}</mat-label>
-                                    <mat-select formControlName="btm_dis_valve_cv">
-                                      @for (codeValue of disValveCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.BOTTOM_DIS_VALVE}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.BOTTOM_DIS_VALVE}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="btm_dis_valve_cv">
+                                        @for (codeValue of disValveCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="btm_dis_valve_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of disValveCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getBottomFormGroup().get('btm_dis_valve_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="btm_dis_valve_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_oth')?.hasError('required')) {
+                                    <input matInput formControlName="btm_dis_valve_oth" (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -1657,29 +1690,38 @@
                                 }
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.BOTTOM_DIS_VALVE}}
-                                      {{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="btm_dis_valve_spec_cv">
-                                      @for (codeValue of disValveSpecCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_spec_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.BOTTOM_DIS_VALVE}} {{translatedLangText.SPECIFICATION}}
-                                      {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.BOTTOM_DIS_VALVE}}
+                                        {{translatedLangText.SPECIFICATION}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="btm_dis_valve_spec_cv">
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="btm_dis_valve_spec_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getBottomFormGroup().get('btm_dis_valve_spec_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="btm_dis_valve_spec_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getBottomFormGroup().get('btm_dis_valve_spec_oth')?.hasError('required')) {
+                                    <input matInput formControlName="btm_dis_valve_spec_oth"
+                                      (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -1689,10 +1731,10 @@
                                 }
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.THERMOMETER}}</mat-label>
-                                    <input matInput formControlName="thermometer" type="number" 
+                                    <input matInput formControlName="thermometer" type="number"
                                       (wheel)="preventDefault($event)">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
                                     <!-- @if (getBottomFormGroup().get('thermometer')?.hasError('required')) {
@@ -1702,33 +1744,50 @@
                                     } -->
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="thermometer_cv">
                                       @for (codeValue of thermometerCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getBottomFormGroup().get('thermometer_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.SPECIFICATION}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="btm_dis_valve_spec_cv">
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="thermometer_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of thermometerCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-checkbox formControlName="ladder" class="m-r-5" color="primary">
                                     {{translatedLangText.LADDER}}
                                   </mat-checkbox>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-checkbox formControlName="data_csc_transportplate" class="m-r-5" color="primary">
-                                    {{translatedLangText.DATA_SCS_TRANSPORT_PLATE}}
+                                    {{translatedLangText.DATA_SCS}}
                                   </mat-checkbox>
                                 </div>
                               </div>
@@ -1749,38 +1808,56 @@
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.TOP_DIS_COMP}}:</mat-label>
-                                  <mat-radio-group formControlName="top_dis_comp_cv">
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                  <!-- <mat-radio-group formControlName="top_dis_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
                                     </mat-radio-button>
                                     }
-                                  </mat-radio-group>
+                                  </mat-radio-group> -->
+                                  <mat-button-toggle-group formControlName="top_dis_comp_cv" class="m-r-10"
+                                    [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                    exclusiveToggle>
+                                    @for (codeValue of disCompCvList; track codeValue) {
+                                    <mat-button-toggle
+                                      [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                    }
+                                  </mat-button-toggle-group>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.TOP_DIS_VALVE}}</mat-label>
-                                    <mat-select formControlName="top_dis_valve_cv">
-                                      @for (codeValue of disValveCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getTopFormGroup().get('top_dis_valve_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.TOP_DIS_TOP_DIS_VALVECOMP}}
-                                      {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.TOP_DIS_VALVE}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="top_dis_valve_cv">
+                                        @for (codeValue of disValveCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="top_dis_valve_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of disValveCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('top_dis_valve_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="top_dis_valve_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getTopFormGroup().get('top_dis_valve_oth')?.hasError('required')) {
+                                    <input matInput formControlName="top_dis_valve_oth" (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -1790,28 +1867,38 @@
                                 }
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.TOP_DIS_VALVE}}
-                                      {{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="top_dis_valve_spec_cv">
-                                      @for (codeValue of disValveSpecCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getTopFormGroup().get('top_dis_valve_spec_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.TOP_DIS_VALVE}}
+                                        {{translatedLangText.SPECIFICATION}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="top_dis_valve_spec_cv">
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="top_dis_valve_spec_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('top_dis_valve_spec_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="top_dis_valve_spec_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getTopFormGroup().get('top_dis_valve_spec_oth')?.hasError('required')) {
+                                    <input matInput formControlName="top_dis_valve_spec_oth"
+                                      (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -1820,7 +1907,7 @@
                                 </div>
                                 }
                               </div>
-                              <div class="row">
+                              <!-- <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.BRAND}}:</mat-label>
                                 </div>
@@ -1833,29 +1920,38 @@
                                     }
                                   </mat-radio-group>
                                 </div>
-                              </div>
+                              </div> -->
                               <div class="row">
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.AIRLINE_VALVE}}</mat-label>
-                                    <mat-select formControlName="airline_valve_cv">
-                                      @for (codeValue of airlineCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getTopFormGroup().get('airline_valve_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.AIRLINE_VALVE}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.AIRLINE_VALVE}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="airline_valve_cv">
+                                        @for (codeValue of airlineCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="airline_valve_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of airlineCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('airline_valve_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getTopFormGroup().get('airline_valve_oth')?.hasError('required')) {
+                                    <input matInput formControlName="airline_valve_oth" (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -1865,12 +1961,12 @@
                                 }
                               </div>
                               <div class="row">
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="airline_valve_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>Pcs</h6>
                                     <!-- @if (getTopFormGroup().get('airline_valve_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -1878,12 +1974,12 @@
                                     } -->
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.DIAMITER}}</mat-label>
                                     <input matInput formControlName="airline_valve_dim" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>inch</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>Inch</h6>
                                     <!-- @if (getTopFormGroup().get('airline_valve_dim')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.DIAMITER}} {{translatedLangText.SO_REQUIRED}}
@@ -1893,28 +1989,37 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}</mat-label>
-                                    <mat-select formControlName="airline_valve_conn_cv">
-                                      @for (codeValue of airlineConnCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}
-                                      {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="airline_valve_conn_cv">
+                                        @for (codeValue of airlineConnCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="airline_valve_conn_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of airlineConnCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('airline_valve_conn_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_oth')?.hasError('required')) {
+                                    <input matInput formControlName="airline_valve_conn_oth"
+                                      (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -1924,27 +2029,37 @@
                                 }
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
-                                    <mat-select formControlName="airline_valve_conn_spec_cv">
-                                      @for (codeValue of manlidCoverCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_spec_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.BRAND}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="airline_valve_conn_spec_cv">
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="airline_valve_conn_spec_cv"
+                                        [hideMultipleSelectionIndicator]="true" class="m-r-10" color="primary"
+                                        appearance="standard" exclusiveToggle>
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getTopFormGroup().get('airline_valve_conn_spec_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="airline_valve_conn_spec_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getTopFormGroup().get('airline_valve_conn_spec_oth')?.hasError('required')) {
+                                    <input matInput formControlName="airline_valve_conn_spec_oth"
+                                      (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -1975,37 +2090,56 @@
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-label>{{translatedLangText.MANLID_COMPARTMENT}}:</mat-label>
-                                  <mat-radio-group formControlName="manlid_comp_cv">
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                  <!-- <mat-radio-group formControlName="manlid_comp_cv">
                                     @for (codeValue of disCompCvList; track codeValue) {
                                     <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
                                       {{codeValue.description}}
                                     </mat-radio-button>
                                     }
-                                  </mat-radio-group>
+                                  </mat-radio-group> -->
+                                  <mat-button-toggle-group formControlName="manlid_comp_cv" class="m-r-10"
+                                    [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                    exclusiveToggle>
+                                    @for (codeValue of disCompCvList; track codeValue) {
+                                    <mat-button-toggle
+                                      [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                    }
+                                  </mat-button-toggle-group>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.MANLID_COVER}}</mat-label>
-                                    <mat-select formControlName="manlid_cover_cv">
-                                      @for (codeValue of manlidCoverCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('manlid_cover_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.MANLID_COVER}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.BRAND}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="manlid_cover_cv">
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="manlid_cover_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of valveBrandCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 @if (displayOthers(getManlidFormGroup().get('manlid_cover_cv')?.value)) {
-                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.OTHERS}}</mat-label>
-                                    <input matInput formControlName="manlid_cover_oth" (input)="onAlphaOnly($event)"/>
-                                    <!-- @if (getManlidFormGroup().get('manlid_cover_oth')?.hasError('required')) {
+                                    <input matInput formControlName="manlid_cover_oth" (input)="onAlphaOnly($event)" />
+                                    <!-- @if (getBottomFormGroup().get('foot_valve_oth')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.OTHERS}} {{translatedLangText.SO_REQUIRED}}
                                     </mat-error>
@@ -2020,7 +2154,7 @@
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="manlid_cover_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>Pcs</h6>
                                     <!-- @if (getManlidFormGroup().get('manlid_cover_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -2033,7 +2167,7 @@
                                     <mat-label>{{translatedLangText.VOLUME}}</mat-label>
                                     <input matInput formControlName="manlid_cover_pts" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>pts</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>Pts</h6>
                                     <!-- @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.VOLUME}} {{translatedLangText.SO_REQUIRED}}
@@ -2043,44 +2177,64 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
+                                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.MANLID_SEAL}}</mat-label>
                                     <mat-select formControlName="manlid_seal_cv">
                                       @for (codeValue of manlidSealCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('manlid_seal_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.MANLID_SEAL}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.MANLID_SEAL}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <mat-button-toggle-group formControlName="manlid_seal_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of manlidSealCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
-                                  <mat-form-field class="example-full-width">
+                                <div class="col-xl-2-5 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PV}}</mat-label>
                                     <mat-select formControlName="pv_type_cv">
                                       @for (codeValue of pvTypeCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('pv_type_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.PV}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.PV}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <mat-button-toggle-group formControlName="pv_type_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of pvTypeCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="pv_type_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>Pcs</h6>
                                     <!-- @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -2088,27 +2242,37 @@
                                     } -->
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
-                                  <mat-form-field class="example-full-width">
+                                <div class="col-xl-2-5 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="pv_spec_cv">
                                       @for (codeValue of pvSpecCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('pv_spec_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.SPECIFICATION}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <mat-button-toggle-group formControlName="pv_spec_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of pvSpecCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="pv_spec_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>Pcs</h6>
                                     <!-- @if (getManlidFormGroup().get('pv_spec_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -2118,19 +2282,19 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-checkbox formControlName="safety_handrail" class="m-r-5" color="primary">
                                     {{translatedLangText.SAFETY_HANDRAIL}}
                                   </mat-checkbox>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.BUFFER_PLATE}}</mat-label>
                                     <input matInput formControlName="buffer_plate" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>pcs</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>Pcs</h6>
                                     <!-- @if (getManlidFormGroup().get('buffer_plate')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.BUFFER_PLATE}} {{translatedLangText.SO_REQUIRED}}
@@ -2140,7 +2304,7 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.RESIDUE}}</mat-label>
                                     <input matInput formControlName="residue" type="number"
@@ -2155,7 +2319,7 @@
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 m-b-0">
+                                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-checkbox formControlName="dipstick" class="m-r-5" color="primary">
                                     {{translatedLangText.DIPSTICK}}
                                   </mat-checkbox>

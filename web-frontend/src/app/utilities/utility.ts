@@ -819,7 +819,7 @@ export class Utility {
     translateService: TranslateService // Inject TranslateService
   ): Promise<void> {
 
-   await  PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+    await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
     // const translatedLangText: any = {};
     // const langText = {
     //   PHONE: 'COMMON-FORM.PHONE',
@@ -1208,6 +1208,10 @@ export class Utility {
 
   static isTankReleased(tank_status_cv?: string) {
     return TANK_STATUS_POST_IN_YARD.includes(tank_status_cv || '');
+  }
+
+  static patchStringToArrayValue(arrayVal: string | undefined) {
+    return arrayVal ? [arrayVal] : []
   }
 }
 

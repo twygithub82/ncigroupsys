@@ -7,6 +7,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnIn
 import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -44,6 +45,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS } from 'app/data-sources/tank-info';
+import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
@@ -56,8 +58,6 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
-import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
 
 @Component({
   selector: 'app-in-gate',
@@ -2305,6 +2305,6 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   patchStringToArrayValue(arrayVal: string | undefined) {
-    return arrayVal ? [arrayVal] : []
+    return Utility.patchStringToArrayValue(arrayVal)
   }
 }
