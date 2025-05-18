@@ -15,10 +15,12 @@ namespace IDMS.User.Authentication.Service.Services
     {
         private readonly string _fromEmail = "weaiyep2002@gmail.com";
         private readonly string _appPassword = "appq mofh skmp pkqn"; // from Google App Passwords
-
         private readonly EmailConfiguration _emailConfig;
 
-        public EmailService(EmailConfiguration emailConfiguration) => _emailConfig = emailConfiguration;
+        public EmailService(EmailConfiguration emailConfiguration)
+        {
+            _emailConfig = emailConfiguration;
+        }
         void IEmailService.SendMail(Message message)
         {
             var emailMessage = CreateEmailMessage(message);
@@ -57,25 +59,41 @@ namespace IDMS.User.Authentication.Service.Services
             }
         }
 
-        public async void SendEmailAsync(string toEmail, string subject, string htmlBody)
+        public async Task<bool> SendResetLinkAsync(string toEmail, string subject, string htmlBody)
         {
-            var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_fromEmail));
-            email.To.Add(MailboxAddress.Parse(toEmail));
-            email.Subject = subject;
-
-            var builder = new BodyBuilder
+            try
             {
-                HtmlBody = htmlBody
-            };
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(_emailConfig.from));
+                email.To.Add(MailboxAddress.Parse(toEmail));
+                email.Subject = subject;
 
-            email.Body = builder.ToMessageBody();
+                var builder = new BodyBuilder
+                {
+                    HtmlBody = htmlBody
+                };
 
-            using var smtp = new SmtpClient();
-            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(_fromEmail, _appPassword);
-            await smtp.SendAsync(email);
-            await smtp.DisconnectAsync(true);
+                email.Body = builder.ToMessageBody();
+
+                //using var smtp = new SmtpClient();
+                //await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                //await smtp.AuthenticateAsync(_fromEmail, _appPassword);
+                //await smtp.SendAsync(email);
+                //await smtp.DisconnectAsync(true);
+
+
+                using var smtp = new SmtpClient();
+                await smtp.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);
+                await smtp.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
+                await smtp.SendAsync(email);
+                await smtp.DisconnectAsync(true);
+
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                throw ex;
+            }
         }
     }
 }

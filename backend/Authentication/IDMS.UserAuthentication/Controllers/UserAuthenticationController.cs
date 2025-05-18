@@ -35,8 +35,10 @@ namespace IDMS.UserAuthentication.Controllers
         private readonly JwtTokenService _jwtTokenService;
         private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ApplicationDbContext _dbContext;
+        private readonly string _companyName;
+        private readonly string _resetUrl;
 
-        public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, 
+        public UserAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService,
             IRefreshTokenStore refreshTokenStore, ApplicationDbContext context)
         {
@@ -49,9 +51,11 @@ namespace IDMS.UserAuthentication.Controllers
             _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore = refreshTokenStore;
 
+            _companyName = _configuration["EmailConfiguration:CompanyName"] ?? "IDMS Support Team";
+            _resetUrl = _configuration["ResetLinkConfiguration:Url"] ?? "http://localhost:4200/#/authentication/reset-password";
         }
 
-        
+
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
         {
@@ -64,7 +68,7 @@ namespace IDMS.UserAuthentication.Controllers
             {
                 return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
             }
-            
+
             var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -76,10 +80,10 @@ namespace IDMS.UserAuthentication.Controllers
 
             if (result.Succeeded)
             {
-                return Ok( new Response() { Status = "OK", Message = new string[] { "Password changed successfully." } });
+                return Ok(new Response() { Status = "OK", Message = new string[] { "Password changed successfully." } });
             }
 
-            return BadRequest(new Response(){ Status="Error" , Message = result.Errors.Select(e => e.Description) });
+            return BadRequest(new Response() { Status = "Error", Message = result.Errors.Select(e => e.Description) });
         }
 
         [HttpPost("UserLogin")]
@@ -89,13 +93,13 @@ namespace IDMS.UserAuthentication.Controllers
             //checking the user
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
 
-            
+
 
             //validate the user password
 
             if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
             {
-                if(!user.EmailConfirmed)
+                if (!user.EmailConfirmed)
                 {
                     return StatusCode(StatusCodes.Status401Unauthorized, new Response() { Status = "Error", Message = new string[] { "The user account is not yet activated. Please activate the account with the link sent previously" } });
                 }
@@ -122,9 +126,9 @@ namespace IDMS.UserAuthentication.Controllers
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
                 _refreshTokenStore.AddToken(refreshToken);
-               // _refreshTokens[user.UserName] = refreshToken;
+                // _refreshTokens[user.UserName] = refreshToken;
                 //returning the token
-                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo,refreshToken = refreshToken.Token });
+                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
             }
 
             return Unauthorized();
@@ -187,7 +191,7 @@ namespace IDMS.UserAuthentication.Controllers
 
                 }
 
-                    ApplicationUser user = new()
+                ApplicationUser user = new()
                 {
                     UserName = registerUser.Email,
                     Email = registerUser.Email,
@@ -226,7 +230,7 @@ namespace IDMS.UserAuthentication.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
-            
+
             return Unauthorized();
 
         }
@@ -253,48 +257,69 @@ namespace IDMS.UserAuthentication.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([Required] string mail)
         {
-            var user = await _userManager.FindByEmailAsync(mail);
-            if (user != null)
+            try
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                //var resetPasswordLink = Url.Action(nameof(ResetPassword), "UserAuthentication", new { token, email = user.Email }, Request.Scheme);
-                //var message = new Message(new string[] { user.Email! }, "Reset Password link", resetPasswordLink);
-                //_emailService.SendMail(message);
+                var user = await _userManager.FindByEmailAsync(mail);
+                if (user != null)
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var encodedToken = WebUtility.UrlEncode(token); // or Uri.EscapeDataString(token)
+                    var resetPasswordLink = $"{_resetUrl}?token={encodedToken}&email={user.Email}";
 
-                var encodedToken = WebUtility.UrlEncode(token); // or Uri.EscapeDataString(token)
+                    //var message = new Message(new string[] { user.Email! }, "Reset Password Link", resetPasswordLink);
 
-                var resetPasswordLink = $"https://yourfrontend.com/reset-password?token={encodedToken}&email={user.Email}";
+                    var messageBody = ResetLinkBody.MessageBody1;
+                    // Replace placeholders
+                    messageBody = messageBody.Replace("{{UserName}}", WebUtility.HtmlEncode(user.NormalizedUserName));
+                    messageBody = messageBody.Replace("{{ResetLink}}", WebUtility.HtmlEncode(resetPasswordLink));
+                    messageBody = messageBody.Replace("{{CompanyName}}", WebUtility.HtmlEncode(_companyName));
 
-                var message = new Message(new string[] { user.Email! }, "Reset Password Link", resetPasswordLink);
+
+                    var res = await _emailService.SendResetLinkAsync(user.Email, "Reset Password", messageBody);
+                    if (res)
+                        return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password reset request is sent on Email {user.Email}" } });
+                    else
+                        return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "Password reset request fail" } });
 
 
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });
 
-                _emailService.SendEmailAsync("weishun.dev@gmail.com", "Reset Password", resetPasswordLink);
-                return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password reset request is sent on Email {user.Email}" } });
             }
-            return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { ex.Message } });
+            }
+
         }
 
         [HttpPost("reset-password")]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
         {
-            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
-            if (user != null)
+            try
             {
-                var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
-                if (!resetPassResult.Succeeded)
+                var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+                if (user != null)
                 {
-                    foreach (var error in resetPassResult.Errors)
+                    var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
+                    if (!resetPassResult.Succeeded)
                     {
-                        ModelState.AddModelError(error.Code, error.Description);
+                        foreach (var error in resetPassResult.Errors)
+                        {
+                            ModelState.AddModelError(error.Code, error.Description);
+                        }
+                        return Ok(ModelState);
                     }
-                    return Ok(ModelState);
-                }
 
-                return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password has been changed" } });
+                    return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = new string[] { $"Password has been changed" } });
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });
             }
-            return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });
+            catch (Exception ex) 
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { ex.Message } });
+            }
         }
 
 

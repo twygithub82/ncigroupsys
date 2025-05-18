@@ -10,13 +10,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 string connectionString = builder.Configuration.GetConnectionString("default");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21))));
+builder.Services.AddDbContext<ApplicationDbContext>(o =>
+
+    //options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
+    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: null)
+                    .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
+                ).LogTo(Console.WriteLine)
+);
 
 //For Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()

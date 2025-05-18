@@ -23,4 +23,6 @@ namespace IDMS.User.Authentication.Service.Models
             Content = content;
         }
     }
+
+
 }

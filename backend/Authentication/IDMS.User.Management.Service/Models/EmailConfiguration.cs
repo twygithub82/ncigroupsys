@@ -16,5 +16,7 @@ namespace IDMS.User.Authentication.Service.Models
         public string UserName { get; set; } = null!;
 
         public string Password { get; set; } = null!;
+
+        public string CompanyName { get; set; } = "IDMS Support Team";
     }
 }

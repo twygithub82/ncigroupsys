@@ -10,7 +10,7 @@ namespace IDMS.User.Authentication.Service.Services
     {
         private readonly string _fromEmail = "weaiyep2002@gmail.com";
         private readonly string _appPassword = "appq mofh skmp pkqn"; // from Google App Passwords
-
+       
 
         public async void SendEmailAsync(string toEmail, string subject, string htmlBody)
         {
