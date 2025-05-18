@@ -64,40 +64,40 @@
         <div class="body overflow-auto">
           <div class="responsive_table">
             <table mat-table [dataSource]="selectedItems" matSort
-              class="mat-cell advance-table striped-rows hover-highlight dark-header">
+              class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
               <ng-container matColumnDef="fName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
+                <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
                   }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                     }}:</span>{{row.customer_company.code}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="lName">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
+                <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
                   }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                     }}:</span>{{row.customer_company.name}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="email">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MIN_TEMP }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{translatedLangText.MIN_TEMP }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.MIN_TEMP
                     }}:</span>{{row.tariff_steaming?.temp_min}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="gender">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MAX_TEMP }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{translatedLangText.MAX_TEMP }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.MAX_TEMP
                     }}:</span>{{row.tariff_steaming?.temp_max}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="cost">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.COST }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{translatedLangText.COST }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="labour">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.LABOUR }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef >{{translatedLangText.LABOUR }}</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                   <span class="mobile-label">{{translatedLangText.LABOUR }}:</span>{{row.labour.toFixed(2)}}</mat-cell>
               </ng-container>

@@ -62,9 +62,9 @@ query {
 }`;
 
 export const GET_COMPANY_CATEGORY_QUERY = gql`
-  query  queryPackageCleaning($where: customer_company_cleaning_categoryFilterInput, $order: [customer_company_cleaning_categorySortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+  query queryPackageCleaning($where: customer_company_cleaning_categoryFilterInput, $order: [customer_company_cleaning_categorySortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
     companycategoryList:  queryPackageCleaning(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-       totalCount
+      totalCount
       pageInfo {
         endCursor
         hasNextPage
@@ -73,77 +73,77 @@ export const GET_COMPANY_CATEGORY_QUERY = gql`
       }
       nodes {
         adjusted_price
-      cleaning_category_guid
-      create_by
-      create_dt
-      customer_company_guid
-      delete_dt
-      guid
-      initial_price
-      remarks
-      update_by
-      update_dt
-        cleaning_category {
-        cost
+        cleaning_category_guid
         create_by
         create_dt
+        customer_company_guid
         delete_dt
-        description
         guid
-        name
-        sequence
+        initial_price
+        remarks
         update_by
         update_dt
-        tariff_cleanings {
-          alias
-          ban_type_cv
-          cargo
-          class_cv
-          cleaning_category_guid
-          cleaning_method_guid
+          cleaning_category {
+          cost
           create_by
           create_dt
           delete_dt
-          depot_note
           description
-          flash_point
           guid
-          hazard_level_cv
-          in_gate_alert
-          msds_guid
-          nature_cv
-          open_on_gate_cv
-          remarks
-          un_no
+          name
+          sequence
           update_by
           update_dt
-        }
-      }
-        customer_company {
-            address_line1
-            address_line2
-            agreement_due_dt
-            city
-            code
-            country
+          tariff_cleanings {
+            alias
+            ban_type_cv
+            cargo
+            class_cv
+            cleaning_category_guid
+            cleaning_method_guid
             create_by
             create_dt
             delete_dt
-            effective_dt
-            email
+            depot_note
+            description
+            flash_point
             guid
-            name
-            phone
-            postal
-            type_cv
+            hazard_level_cv
+            in_gate_alert
+            msds_guid
+            nature_cv
+            open_on_gate_cv
+            remarks
+            un_no
             update_by
             update_dt
-            website
-            remarks
-            main_customer_guid
+          }
+        }
+        customer_company {
+          address_line1
+          address_line2
+          agreement_due_dt
+          city
+          code
+          country
+          create_by
+          create_dt
+          delete_dt
+          effective_dt
+          email
+          guid
+          name
+          phone
+          postal
+          type_cv
+          update_by
+          update_dt
+          website
+          remarks
+          main_customer_guid
         }
       }
-    totalCount
+      totalCount
     }
   }
 `;

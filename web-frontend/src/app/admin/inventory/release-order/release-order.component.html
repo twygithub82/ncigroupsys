@@ -176,11 +176,11 @@
                 </ng-container>
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="ro_no">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.RO_NO}}
                   </mat-header-cell>
@@ -190,7 +190,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
@@ -199,7 +199,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="ro_dt">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.RO_DATE}}
                   </mat-header-cell>
@@ -209,7 +209,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.NO_OF_TANKS}}
                   </mat-header-cell>
@@ -220,7 +220,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
@@ -228,21 +228,21 @@
                     {{getSchedulingStatusDescription(row.status_cv)}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="accept_status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{translatedLangText.ACCEPTED}} {{translatedLangText.TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getAccepetedStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="waiting_status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{translatedLangText.WAITING}} {{translatedLangText.TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
                     <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getWaitingStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="cancel_status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{translatedLangText.CANCELED}} {{translatedLangText.TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">

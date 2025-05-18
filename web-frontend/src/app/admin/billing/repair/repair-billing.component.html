@@ -318,13 +318,13 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                           <mat-cell
                             *matCellDef="let repairRow">{{repairRow.guid}}{{repairRow.storing_order_tank?.storing_order?.customer_company?.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="customer">
                           <mat-header-cell *matHeaderCellDef
-                            mat-sort-header>{{translatedLangText.CUSTOMER}}</mat-header-cell>
+                            >{{translatedLangText.CUSTOMER}}</mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let repairRow" class="">
                             <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span
                               class="customer-text"
@@ -333,7 +333,7 @@
                         </ng-container>
                         <ng-container matColumnDef="customer_type">
                           <mat-header-cell *matHeaderCellDef
-                            mat-sort-header>{{translatedLangText.CUSTOMER_TYPE}}</mat-header-cell>
+                            >{{translatedLangText.CUSTOMER_TYPE}}</mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let repairRow" class="">
                             <span
                               class="mobile-label">{{translatedLangText.CUSTOMER_TYPE}}:</span>{{DisplayCustomerType(repairRow)}}
@@ -357,7 +357,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="net_cost">
-                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          <mat-header-cell *matHeaderCellDef >
                             {{translatedLangText.NET_COST}}
                           </mat-header-cell>
                           <mat-cell *matCellDef="let repairRow">

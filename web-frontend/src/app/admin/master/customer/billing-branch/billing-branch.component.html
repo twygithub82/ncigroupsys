@@ -107,7 +107,7 @@
           <table mat-table [dataSource]="customer_companyList" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
+              <mat-header-cell *matHeaderCellDef 
                 [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.MAIN_CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -116,7 +116,7 @@
                   }}:</span>{{this.getMainCustomerCode(row)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
+              <mat-header-cell *matHeaderCellDef 
                 [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -124,31 +124,31 @@
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{row.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.name}}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'" mat-sort-header>{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'" >{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{row.phone}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="gender">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.FAX_NO }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FAX_NO }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.fax}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="email">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.EMAIL }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.EMAIL }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.EMAIL}}:</span> {{row.email}}</mat-cell>
             </ng-container> -->
 
             <ng-container matColumnDef="category">
               <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'" *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.DEFAULT_PROFILE
+                >{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-2-xl'" *matCellDef="let row"
                 (contextmenu)="onContextMenu($event, row)">
@@ -158,7 +158,7 @@
 
             <ng-container matColumnDef="bDate">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2-xl'"
-                mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+                >{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl'"
                 (contextmenu)="onContextMenu($event, row)">

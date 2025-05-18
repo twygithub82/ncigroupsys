@@ -513,7 +513,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     //   where.adjusted_price = { ngte: maxCost }
     // }
 
-    this.lastSearchCriteria = where;
+    this.lastSearchCriteria = this.custCompClnCatDS.addDeleteDtCriteria(where);
     this.subs.sink = this.custCompClnCatDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.custCompClnCatItems = data;
       this.previous_endCursor = undefined;
@@ -630,7 +630,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       this.customer_companyList1 = data
     });
 
-    this.clnCatDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+    this.clnCatDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }, 100).subscribe(data => {
       if (this.clnCatDS.totalCount > 0) {
         this.cleaning_categoryList = data;
       }
@@ -640,7 +640,6 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       if (data.length > 0) {
         this.classNoList = data;
       }
-
     });
 
     const queries = [
@@ -652,12 +651,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
       this.handledItemCvList = data;
     });
-
     this.CodeValuesDS?.connectAlias('hazardLevel').subscribe(data => {
       this.hazardLevelCvList = data;
     });
-
-
   }
   showNotification(
     colorName: string,
@@ -768,8 +764,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       this.selectedCustomers.push(customer);
       this.search();
     }
-    else
-    {
+    else {
       this.selectedCustomers.splice(index, 1);
       this.search();
     }
@@ -844,26 +839,26 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
-  itemSelected(row: CustomerCompanyItem):boolean{
-      var retval:boolean=false;
-      const index = this.selectedCustomers.findIndex(c => c.code === row.code);
-      retval = (index >= 0);
-      return retval;
-    }
+  itemSelected(row: CustomerCompanyItem): boolean {
+    var retval: boolean = false;
+    const index = this.selectedCustomers.findIndex(c => c.code === row.code);
+    retval = (index >= 0);
+    return retval;
+  }
 
-  getSelectedCustomersDisplay():string{
-    var retval:string = "";
-    if(this.selectedCustomers?.length>1){
+  getSelectedCustomersDisplay(): string {
+    var retval: string = "";
+    if (this.selectedCustomers?.length > 1) {
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
-    else if(this.selectedCustomers?.length==1){
-      retval =`${this.selectedCustomers[0].name}`
+    else if (this.selectedCustomers?.length == 1) {
+      retval = `${this.selectedCustomers[0].name}`
     }
     return retval;
   }
-  
+
   removeAllSelectedCustomers(): void {
-   this.selectedCustomers=[];
+    this.selectedCustomers = [];
   }
 
   onCheckboxClicked(row: CustomerCompanyItem) {

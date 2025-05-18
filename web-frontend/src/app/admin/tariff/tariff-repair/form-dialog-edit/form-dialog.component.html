@@ -219,13 +219,13 @@
             <div class="card">
               <div class="materialTableHeader">
               </div>
-              <div class="body overflow-auto">
+              <div class="body">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="selectedItems" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="fName">
                       <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-3_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME
+                      *matHeaderCellDef >{{translatedLangText.PART_NAME
                         }}</mat-header-cell>
                       <mat-cell [ngClass]="'pr-0 tbl-col-width-per-3_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                        *matCellDef="let row">
@@ -233,7 +233,7 @@
                     </ng-container>
                     <ng-container matColumnDef="lName">
                       <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                       *matHeaderCellDef mat-sort-header>{{translatedLangText.GROUP_NAME
+                       *matHeaderCellDef >{{translatedLangText.GROUP_NAME
                         }}</mat-header-cell>
                       <mat-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                        *matCellDef="let row">
@@ -242,7 +242,7 @@
                     </ng-container>
                     <ng-container matColumnDef="email">
                       <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      *matHeaderCellDef mat-sort-header>{{translatedLangText.SUB_GROUP_NAME
+                      *matHeaderCellDef >{{translatedLangText.SUB_GROUP_NAME
                         }}</mat-header-cell>
                       <mat-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                        *matCellDef="let row">
@@ -250,14 +250,14 @@
                         {{this.getSubGroupNameCodeValue(row.subgroup_name_cv)?.description}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="gender">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.LABOUR_HOUR
+                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.LABOUR_HOUR
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.LABOUR_HOUR }}:</span>
                         {{row.labour_hour}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="bDate">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MATERIAL_COST
+                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.MATERIAL_COST
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.MATERIAL_COST }} :</span>

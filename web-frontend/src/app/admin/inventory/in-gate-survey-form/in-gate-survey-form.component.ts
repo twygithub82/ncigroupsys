@@ -644,7 +644,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           // const valveValue = btmThermoCtrl.value;
           const specValue = btmThermoSpecCvCtrl.value;
 
-          if (specValue) {
+          if (specValue?.length) {
             btmThermoCtrl.setValidators([Validators.required]);
             btmThermoSpecCvCtrl.setValidators([Validators.required]);
           } else {
@@ -885,7 +885,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           const pvSpecValue = pvSpecCvCtrl.value;
           const pvSpecPcsValue = pvSpecPcsCtrl.value;
 
-          if (pvTypeValue || pvTypePcsValue || pvSpecValue || pvSpecPcsValue) {
+          if (pvTypeValue?.length || pvTypePcsValue || pvSpecValue?.length || pvSpecPcsValue) {
             pvTypeCvCtrl.setValidators([Validators.required]);
             pvTypePcsCtrl.setValidators([Validators.required]);
             pvSpecCvCtrl.setValidators([Validators.required]);
@@ -1101,19 +1101,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.detectChanges();
     });
     this.cvDS.connectAlias('manlidSealCv').subscribe(data => {
-      this.manlidSealCvList = addDefaultSelectOption(data, "--Select--");
+      this.manlidSealCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('pvSpecCv').subscribe(data => {
-      this.pvSpecCvList = addDefaultSelectOption(data, "--Select--");
+      this.pvSpecCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('pvTypeCv').subscribe(data => {
-      this.pvTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.pvTypeCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('thermometerCv').subscribe(data => {
-      this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
+      // this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
+      this.thermometerCvList = data;
       this.detectChanges();
     });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
@@ -1248,7 +1249,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           foot_valve_oth: ig.in_gate_survey?.foot_valve_oth,
           btm_valve_brand_cv: ig.in_gate_survey?.btm_valve_brand_cv,
           thermometer: ig.in_gate_survey?.thermometer,
-          thermometer_cv: ig.in_gate_survey?.thermometer_cv,
+          thermometer_cv: this.patchStringToArrayValue(ig.in_gate_survey?.thermometer_cv),
           ladder: ig.in_gate_survey?.ladder,
           data_csc_transportplate: ig.in_gate_survey?.data_csc_transportplate
         },
@@ -1274,10 +1275,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           manlid_cover_oth: ig.in_gate_survey?.manlid_cover_oth,
           manlid_cover_pcs: ig.in_gate_survey?.manlid_cover_pcs,
           manlid_cover_pts: ig.in_gate_survey?.manlid_cover_pts,
-          manlid_seal_cv: ig.in_gate_survey?.manlid_seal_cv,
-          pv_type_cv: ig.in_gate_survey?.pv_type_cv,
+          manlid_seal_cv: this.patchStringToArrayValue(ig.in_gate_survey?.manlid_seal_cv),
+          pv_type_cv: this.patchStringToArrayValue(ig.in_gate_survey?.pv_type_cv),
           pv_type_pcs: ig.in_gate_survey?.pv_type_pcs,
-          pv_spec_cv: ig.in_gate_survey?.pv_spec_cv,
+          pv_spec_cv: this.patchStringToArrayValue(ig.in_gate_survey?.pv_spec_cv),
           pv_spec_pcs: ig.in_gate_survey?.pv_spec_pcs,
           safety_handrail: ig.in_gate_survey?.safety_handrail,
           buffer_plate: ig.in_gate_survey?.buffer_plate,
@@ -1395,7 +1396,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if (!(bottomFormGroup.get('btm_dis_comp_cv')?.value?.length || bottomFormGroup.get('btm_dis_valve_cv')?.value?.length
       || bottomFormGroup.get('btm_dis_valve_spec_cv')?.value?.length || bottomFormGroup.get('foot_valve_cv')?.value?.length
       || bottomFormGroup.get('btm_valve_brand_cv')?.value || bottomFormGroup.get('thermometer')?.value
-      || bottomFormGroup.get('thermometer_cv')?.value || bottomFormGroup.get('ladder')?.value
+      || bottomFormGroup.get('thermometer_cv')?.value?.length || bottomFormGroup.get('ladder')?.value
       || bottomFormGroup.get('data_csc_transportplate')?.value)) {
       compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_BTM_EMPTY);
     }
@@ -1412,8 +1413,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     const manlidFormGroup = this.getManlidFormGroup();
     if (!(manlidFormGroup.get('manlid_comp_cv')?.value?.length || manlidFormGroup.get('manlid_cover_cv')?.value?.length
       || manlidFormGroup.get('manlid_cover_pcs')?.value || manlidFormGroup.get('manlid_cover_pts')?.value
-      || manlidFormGroup.get('manlid_seal_cv')?.value || manlidFormGroup.get('pv_type_cv')?.value
-      || manlidFormGroup.get('pv_type_pcs')?.value || manlidFormGroup.get('pv_spec_cv')?.value
+      || manlidFormGroup.get('manlid_seal_cv')?.value?.length || manlidFormGroup.get('pv_type_cv')?.value?.length
+      || manlidFormGroup.get('pv_type_pcs')?.value || manlidFormGroup.get('pv_spec_cv')?.value?.length
       || manlidFormGroup.get('pv_spec_pcs')?.value || manlidFormGroup.get('safety_handrail')?.value
       || manlidFormGroup.get('buffer_plate')?.value || manlidFormGroup.get('residue')?.value
       || manlidFormGroup.get('dipstick')?.value)) {
@@ -1501,7 +1502,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.foot_valve_oth = bottomFormGroup.get('foot_valve_oth')?.value;
       // igs.btm_valve_brand_cv = bottomFormGroup.get('btm_valve_brand_cv')?.value?.[0];
       igs.thermometer = bottomFormGroup.get('thermometer')?.value;
-      igs.thermometer_cv = bottomFormGroup.get('thermometer_cv')?.value;
+      igs.thermometer_cv = bottomFormGroup.get('thermometer_cv')?.value?.[0];
       igs.ladder = bottomFormGroup.get('ladder')?.value;
       igs.data_csc_transportplate = bottomFormGroup.get('data_csc_transportplate')?.value;
 
@@ -1527,10 +1528,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.manlid_cover_oth = manlidFormGroup.get('manlid_cover_oth')?.value;
       igs.manlid_cover_pcs = manlidFormGroup.get('manlid_cover_pcs')?.value;
       igs.manlid_cover_pts = manlidFormGroup.get('manlid_cover_pts')?.value;
-      igs.manlid_seal_cv = manlidFormGroup.get('manlid_seal_cv')?.value;
-      igs.pv_type_cv = manlidFormGroup.get('pv_type_cv')?.value;
+      igs.manlid_seal_cv = manlidFormGroup.get('manlid_seal_cv')?.value?.[0];
+      igs.pv_type_cv = manlidFormGroup.get('pv_type_cv')?.value?.[0];
       igs.pv_type_pcs = manlidFormGroup.get('pv_type_pcs')?.value;
-      igs.pv_spec_cv = manlidFormGroup.get('pv_spec_cv')?.value;
+      igs.pv_spec_cv = manlidFormGroup.get('pv_spec_cv')?.value?.[0];
       igs.pv_spec_pcs = manlidFormGroup.get('pv_spec_pcs')?.value;
       igs.safety_handrail = manlidFormGroup.get('safety_handrail')?.value;
       igs.buffer_plate = manlidFormGroup.get('buffer_plate')?.value;

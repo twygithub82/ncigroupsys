@@ -158,23 +158,12 @@
                   @if (!(igDS.loading$ | async)) {
                   <mat-card-content>
                     <div class="row">
-                      <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 align-right">
-                          </div>
-                          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-5 col-xs-5 m-b-5">
-                          </div>
-                        </div>
-                      </div> -->
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.DATE_OF_INSPECTION}}:</span>
                             <span class="contact-detail-info font-bold">{{displayDate(dateOfInspection)}}</span>
                           </div>
-                          <!-- <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                            <div class="contact-detail-info font-bold">{{displayDate(dateOfInspection)}}</div>
-                          </div> -->
                         </div>
                       </div>
                     </div>
@@ -1761,19 +1750,36 @@
                                   </mat-form-field>
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="thermometer_cv">
                                       @for (codeValue of thermometerCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getBottomFormGroup().get('thermometer_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.SPECIFICATION}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <!-- <mat-radio-group formControlName="btm_dis_valve_spec_cv">
+                                        @for (codeValue of disValveSpecCvList; track codeValue) {
+                                        <mat-radio-button [value]="codeValue.code_val" color="primary" ngClass="m-r-25">
+                                          {{codeValue.description}}
+                                        </mat-radio-button>
+                                        }
+                                      </mat-radio-group> -->
+                                      <mat-button-toggle-group formControlName="thermometer_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of thermometerCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                               <div class="row">
@@ -2177,36 +2183,56 @@
                               </div>
                               <div class="row">
                                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                  <mat-form-field class="example-full-width">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.MANLID_SEAL}}</mat-label>
                                     <mat-select formControlName="manlid_seal_cv">
                                       @for (codeValue of manlidSealCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('manlid_seal_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.MANLID_SEAL}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.MANLID_SEAL}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <mat-button-toggle-group formControlName="manlid_seal_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of manlidSealCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                               <div class="row">
-                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
-                                  <mat-form-field class="example-full-width">
+                                <div class="col-xl-2-5 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.PV}}</mat-label>
                                     <mat-select formControlName="pv_type_cv">
                                       @for (codeValue of pvTypeCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('pv_type_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.PV}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.PV}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <mat-button-toggle-group formControlName="pv_type_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of pvTypeCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">
@@ -2221,20 +2247,30 @@
                                     } -->
                                   </mat-form-field>
                                 </div>
-                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
-                                  <mat-form-field class="example-full-width">
+                                <div class="col-xl-2-5 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
+                                  <!-- <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.SPECIFICATION}}</mat-label>
                                     <mat-select formControlName="pv_spec_cv">
                                       @for (codeValue of pvSpecCvList; track codeValue) {
                                       <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
                                       }
                                     </mat-select>
-                                    <!-- @if (getManlidFormGroup().get('pv_spec_cv')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.SPECIFICATION}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
-                                  </mat-form-field>
+                                  </mat-form-field> -->
+                                  <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                      <mat-label>{{translatedLangText.SPECIFICATION}}:</mat-label>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                      <mat-button-toggle-group formControlName="pv_spec_cv" class="m-r-10"
+                                        [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard"
+                                        exclusiveToggle>
+                                        @for (codeValue of pvSpecCvList; track codeValue) {
+                                        <mat-button-toggle
+                                          [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                                        }
+                                      </mat-button-toggle-group>
+                                    </div>
+                                  </div>
                                 </div>
                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-l-1">
                                   <mat-form-field class="example-full-width">

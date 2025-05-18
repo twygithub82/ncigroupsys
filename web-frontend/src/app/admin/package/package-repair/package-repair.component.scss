@@ -1,45 +1,50 @@
 .custom-select {
-    width: 300px; /* Adjust the width as needed */
-  }
-  
-  ::ng-deep .cdk-overlay-pane .mat-select-panel {
-    max-height: 200px; /* Adjust the height as needed */
-  }
-  mat-form-field {
-    width:100%;
-    margin-top: 3px;
-    margin-left: 10px ;
-    
-  }
+  width: 300px;
+  /* Adjust the width as needed */
+}
+
+::ng-deep .cdk-overlay-pane .mat-select-panel {
+  max-height: 200px;
+  /* Adjust the height as needed */
+}
+
+mat-form-field {
+  width: 100%;
+  margin-top: 3px;
+  margin-left: 10px;
+
+}
 
 
-  .auto-height {
-    height: auto;
-    max-height: none; /* Ensures there's no max-height limiting the container */
-    overflow: auto;   /* Ensures scrollbars appear if content exceeds container size */
-  }
+.auto-height {
+  height: auto;
+  max-height: none;
+  /* Ensures there's no max-height limiting the container */
+  overflow: auto;
+  /* Ensures scrollbars appear if content exceeds container size */
+}
 
-  mat-chip-row[color="primary"] {
-    background: transparent !important;
-    background-color: transparent !important;
-    border-radius: 6px;
-    // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
-    //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
-    padding: 2px 5px;
-    font-weight: 500;
-    color: #333;
-    transform: translateZ(0);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  /* Optional: Ensure the remove button icon is also white */
-  mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
-    color: red !important;
-  }
+mat-chip-row[color="primary"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: 6px;
+  // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
+  //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
+  padding: 2px 5px;
+  font-weight: 500;
+  color: #333;
+  transform: translateZ(0);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-  // table.curve-table {
-  //   border-collapse: separate; /* Important for border-radius to work */
-  //   border-spacing: 0;
-  //   border-radius: 15px;
-  //   overflow: hidden; /* Helps apply the radius to inner content */
-  // }
+/* Optional: Ensure the remove button icon is also white */
+mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
+  color: red !important;
+}
+
+// table.curve-table {
+//   border-collapse: separate; /* Important for border-radius to work */
+//   border-spacing: 0;
+//   border-radius: 15px;
+//   overflow: hidden; /* Helps apply the radius to inner content */
+// }

@@ -286,13 +286,13 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                       <mat-cell
                         *matCellDef="let storageDetRow">{{sotRow.guid}}{{sotRow.storing_order_tank?.storing_order?.customer_company?.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="customer">
                       <mat-header-cell *matHeaderCellDef
-                        mat-sort-header>{{translatedLangText.CUSTOMER}}</mat-header-cell>
+                        >{{translatedLangText.CUSTOMER}}</mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let detailRow" class="">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
                           matTooltip={{sotRow.storing_order_tank?.storing_order?.customer_company?.name}}>{{sotRow.storing_order_tank?.storing_order?.customer_company?.code}}</span>
@@ -300,7 +300,7 @@
                     </ng-container>
                     <ng-container matColumnDef="invoice_dt">
                       <mat-header-cell *matHeaderCellDef
-                        mat-sort-header>{{translatedLangText.INVOICE_DATE}}</mat-header-cell>
+                        >{{translatedLangText.INVOICE_DATE}}</mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let billType" class="">
                         <span
                           class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>{{DisplayInvoiceDate(billType,sotRow)}}
@@ -308,7 +308,7 @@
                     </ng-container>
                     <ng-container matColumnDef="invoice_no">
                       <mat-header-cell *matHeaderCellDef
-                        mat-sort-header>{{translatedLangText.INVOICE_NO}}</mat-header-cell>
+                        >{{translatedLangText.INVOICE_NO}}</mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let billType" class="">
                         <span
                           class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span>{{DisplayInvoiceNo(billType,sotRow)}}
@@ -316,7 +316,7 @@
                     </ng-container>
                     <ng-container matColumnDef="bill_type">
                       <mat-header-cell *matHeaderCellDef
-                        mat-sort-header>{{translatedLangText.INVOICE_TYPE}}</mat-header-cell>
+                        >{{translatedLangText.INVOICE_TYPE}}</mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let billType" class="">
                         <span
                           class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(billType)}}
@@ -324,7 +324,7 @@
                     </ng-container>
                     <ng-container matColumnDef="total_cost">
                       <mat-header-cell *matHeaderCellDef
-                        mat-sort-header>{{translatedLangText.TOTAL_COST}}</mat-header-cell>
+                        >{{translatedLangText.TOTAL_COST}}</mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let billType" class="">
                         <span
                           class="mobile-label">{{translatedLangText.TOTAL_COST}}:</span>{{DisplayCost(billType,sotRow)}}
@@ -404,7 +404,7 @@
             </ng-container>
             
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">

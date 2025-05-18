@@ -13,123 +13,127 @@
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-          <div class="card">
-
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <div class="row">
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{getMaterialCostLabel()}}</mat-label>
-                      <input matInput formControlName="material_cost" type="number" min="0"
-                        [required]="this.selectedItems.length===1">
-                      <!-- @if (pcForm.get('material_cost')?.hasError('required')) {
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{getMaterialCostLabel()}}</mat-label>
+                    <input matInput formControlName="material_cost" type="number" min="0"
+                      [required]="this.selectedItems.length===1">
+                    <!-- @if (pcForm.get('material_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.MATERIAL_COST }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
                       } -->
-                      @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('min')){
-                      <mat-error>
-                        {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
-                      </mat-error>
+                    @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('min')){
+                    <mat-error>
+                      {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                    </mat-error>
                     }
                     @if((this.selectedItems.length>1)&&pcForm.get('material_cost')?.hasError('max')){
-                      <mat-error>
-                        {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
-                      </mat-error>
+                    <mat-error>
+                      {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                    </mat-error>
                     }
-                    </mat-form-field>
-                  
-                  </div>
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{getLabourHourLabel() }}</mat-label>
-                      <input matInput formControlName="labour_hour" type="text">
-                      <!-- @if (pcForm.get('labour_hour')?.hasError('required')) {
+                  </mat-form-field>
+
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{getLabourHourLabel() }}</mat-label>
+                    <input matInput formControlName="labour_hour" type="text">
+                    <!-- @if (pcForm.get('labour_hour')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.LABOUR_HOUR }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
                       } -->
-                      @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('min')){
-                      <mat-error>
-                        {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
-                      </mat-error>
+                    @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('min')){
+                    <mat-error>
+                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                    </mat-error>
                     }
                     @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('max')){
-                      <mat-error >
-                        {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
-                      </mat-error>
+                    <mat-error>
+                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                    </mat-error>
                     }
-                    </mat-form-field>
-                  </div>
+                  </mat-form-field>
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                  <input matInput formControlName="remarks" type="text">
-                </mat-form-field>
-              </div>
-            </div>
-            <div class="row">
-              <div class="materialTableHeader">
-              </div>
-              <div class="body overflow-auto">
-                <div class="responsive_table">
-                  <table mat-table [dataSource]="selectedItems" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                    <ng-container matColumnDef="fName">
-                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                       *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_CODE
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                        *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
-                          }}:</span>{{row.customer_company.code}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="lName">
-                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      *matHeaderCellDef mat-sort-header>{{translatedLangText.CUSTOMER_COMPANY_NAME
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                       *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
-                          }}:</span>{{row.customer_company.name}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="email">
-                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                       *matHeaderCellDef mat-sort-header>{{translatedLangText.PART_NAME
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                       *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.PART_NAME
-                          }}:</span>{{row.tariff_repair?.part_name}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="gender">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.MATERIAL_COST
-                        }} $</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.MATERIAL_COST
-                          }}:</span>{{row.material_cost.toFixed(2)}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="mobile">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TARIFF_COST
-                        }} $</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.TARIFF_COST
-                          }}:</span>{{row.tariff_repair.material_cost.toFixed(2)}}</mat-cell>
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row" [style.cursor]="'pointer'" matRipple>
-                    </mat-row>
-                  </table>
-                </div>
-              </div>
-            </div>
-
           </div>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="remarks" type="text">
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="materialTableHeader">
+            </div>
+            <div class="body overflow-auto">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="selectedItems" matSort
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                  <ng-container matColumnDef="fName">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
+                      }}</mat-header-cell>
+                    <mat-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
+                        }}:</span>{{row.customer_company.code}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="lName">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
+                      }}</mat-header-cell>
+                    <mat-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
+                        }}:</span>{{row.customer_company.name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="email">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef >{{translatedLangText.PART_NAME
+                      }}</mat-header-cell>
+                    <mat-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.PART_NAME
+                        }}:</span>{{row.tariff_repair?.part_name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="gender">
+                    <mat-header-cell *matHeaderCellDef >{{translatedLangText.MATERIAL_COST
+                      }} $</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.MATERIAL_COST
+                        }}:</span>{{row.material_cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="mobile">
+                    <mat-header-cell *matHeaderCellDef >{{translatedLangText.TARIFF_COST
+                      }} $</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.TARIFF_COST
+                        }}:</span>{{row.tariff_repair.material_cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row"
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">

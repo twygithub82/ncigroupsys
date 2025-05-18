@@ -156,19 +156,19 @@
                       <ng-container matColumnDef="seq">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>No.</mat-header-cell>
+                          >No.</mat-header-cell>
                         <mat-cell *matCellDef="let row;"
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{row.index
                           + 1}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="id">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef >Id</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.SUBGROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -180,7 +180,7 @@
                       <ng-container matColumnDef="damange">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.DAMAGE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -197,7 +197,7 @@
                       <ng-container matColumnDef="repair">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -212,7 +212,7 @@
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -224,7 +224,7 @@
                       <ng-container matColumnDef="approve_part">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           <mat-icon>more_vert</mat-icon>
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -247,7 +247,7 @@
                       <ng-container matColumnDef="approve_qty">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.QTY}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -259,7 +259,7 @@
                       <ng-container matColumnDef="approve_hour">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.HOUR}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -271,7 +271,7 @@
                       <ng-container matColumnDef="team">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          mat-sort-header>
+                          >
                           {{translatedLangText.TEAM}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"

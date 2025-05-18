@@ -106,37 +106,37 @@
               <table mat-table [dataSource]="customer_companyList" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <ng-container matColumnDef="fName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.USERNAME }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-1'">
                     <span class="mobile-label">{{this.translatedLangText.USERNAME }}:</span>{{row.code}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.NAME }}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.NAME }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.NAME }}:</span>{{row.name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="mobile">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-2'">
                     <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span> {{row.phone}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="gender">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DID }}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.DID }}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                       <span class="mobile-label">{{this.translatedLangText.DID}}:</span> {{row.did}}</mat-cell>
                   </ng-container> -->
                 <ng-container matColumnDef="bDate">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.EMAIL
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.EMAIL
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="email">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.LAST_UPDATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>

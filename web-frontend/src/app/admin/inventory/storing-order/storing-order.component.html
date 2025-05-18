@@ -144,7 +144,7 @@
               </mat-expansion-panel>
             </mat-accordion>
           </form>
-          <div class="body overflow-auto">
+          <div class="body">
             <div class="responsive_table">
               <table mat-table [dataSource]="soList" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
@@ -170,7 +170,7 @@
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_no">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.SO_NO}}
                   </mat-header-cell>
@@ -180,7 +180,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <mat-header-cell *matHeaderCellDef >
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
@@ -189,7 +189,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.NO_OF_TANKS}}
                   </mat-header-cell>
@@ -200,7 +200,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
@@ -210,7 +210,7 @@
                     {{getSoStatusDescription(row.status_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="so_notes">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.SO_NOTES}}
                   </mat-header-cell>
@@ -220,7 +220,7 @@
                     {{row.so_notes}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="accept_status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.ACCEPTED}}
                   </mat-header-cell>
@@ -230,7 +230,7 @@
                     {{soDS.getAccepetedStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="waiting_status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.OUTSTANDING}}
                   </mat-header-cell>
@@ -240,7 +240,7 @@
                     {{soDS.getWaitingStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="cancel_status">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef 
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                     {{translatedLangText.CANCELED}}
                   </mat-header-cell>
