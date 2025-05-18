@@ -393,8 +393,9 @@
                             </div> -->
                             <div
                               class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
-                              <span
-                                class="contact-detail-info font-bold text-decoration-underline me-5 pe-5">{{translatedLangText.IN_GATE}}
+                              <span class="contact-detail-info font-bold text-decoration-underline me-5 pe-5 cursor-pointer"
+                                (click)="onDownload()">
+                                {{translatedLangText.IN_GATE}}
                               </span>
                             </div>
                           </div>
@@ -718,7 +719,7 @@
                                       <table mat-table [dataSource]="steamItem" matSort
                                         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header ">
                                         <ng-container matColumnDef="id">
-                                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                          <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_no">
@@ -951,7 +952,7 @@
                                     <table mat-table [dataSource]="residueItem" matSort
                                       class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                       <ng-container matColumnDef="id">
-                                        <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                         <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                       </ng-container>
                                       <ng-container matColumnDef="estimate_no">
@@ -1340,7 +1341,7 @@
                                       <table mat-table [dataSource]="repairItem" matSort
                                         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                         <ng-container matColumnDef="id">
-                                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                          <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_no">
@@ -1755,7 +1756,7 @@
                                 <table mat-table [dataSource]="bookingList" matSort
                                   class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                   <ng-container matColumnDef="id">
-                                    <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="book_type_cv">
@@ -1848,7 +1849,7 @@
                                 <table mat-table [dataSource]="schedulingList" matSort
                                   class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                   <ng-container matColumnDef="id">
-                                    <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="book_type_cv">
@@ -1929,7 +1930,7 @@
                             <table mat-table [dataSource]="bookingList" matSort
                               class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
-                                <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="book_type_cv">
@@ -2015,7 +2016,7 @@
                             <table mat-table [dataSource]="schedulingList" matSort
                               class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
-                                <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="book_type_cv">
@@ -2124,7 +2125,7 @@
                             <table mat-table [dataSource]="surveyList" matSort
                               class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
-                                <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="survey_type">
@@ -2263,7 +2264,7 @@
                             <table mat-table [dataSource]="transferList" matSort
                               class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
-                                <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="transfer_out_dt">

@@ -536,15 +536,15 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     startY = lastTableFinalY + 2;
     // Get the element correctly (remove the dot from className)
-    const elements = document.getElementsByClassName('d-flex'); // Note: removed the dot
-
+    const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
+    
     if (!elements || elements.length === 0) {
       console.error('Element not found');
       return;
     }
 
     // Get the first element with the class
-    const element = elements[3];
+    const element = elements[0];
     //const contentWidth = pageWidth - leftMargin - rightMargin;
     const chartContentWidth = contentWidth;
 
@@ -655,7 +655,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    // Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.downloadFile(pdf.output('blob'), this.getReportTitle())
     this.dialogRef.close();
   }
 
