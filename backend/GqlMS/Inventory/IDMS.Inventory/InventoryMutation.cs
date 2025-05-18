@@ -420,6 +420,7 @@ namespace IDMS.Inventory.GqlTypes
                 tank.gate_in = updateTank.gate_in;
                 tank.gate_out = updateTank.gate_out;
                 tank.iso_format = updateTank.iso_format;
+                tank.flat_rate = updateTank.flat_rate;
 
                 var res = await context.SaveChangesAsync();
                 return res;

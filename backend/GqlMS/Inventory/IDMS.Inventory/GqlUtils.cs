@@ -362,68 +362,79 @@ namespace IDMS.Inventory.GqlTypes
         {
             int retval = 0;
 
-            try
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-                if (TankMovementStatus.validTankStatus.Contains(sot?.tank_status_cv))
+                try
                 {
-                    var cleaning = await context.cleaning.Where(c => c.sot_guid == sot.guid && c.delete_dt == null).FirstOrDefaultAsync();
-                    if (cleaning == null)
+                    if (TankMovementStatus.validTankStatus.Contains(sot?.tank_status_cv))
                     {
-                        var ingateCleaning = new cleaning();
-                        ingateCleaning.guid = Util.GenerateGUID();
-                        ingateCleaning.create_by = "system";
-                        ingateCleaning.create_dt = currentDateTime;
-                        ingateCleaning.sot_guid = sot.guid;
-                        ingateCleaning.approve_dt = currentDateTime; //Change to this after daniel request //ingate_date;
-                        ingateCleaning.approve_by = "system";
-                        ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
-                        ingateCleaning.job_no = newJob_no; //sot?.job_no;
-                        var customerGuid = sot?.storing_order?.customer_company_guid;
-                        ingateCleaning.bill_to_guid = customerGuid;
+                        var cleaning = await context.cleaning.Where(c => c.sot_guid == sot.guid && c.delete_dt == null).FirstOrDefaultAsync();
+                        if (cleaning == null)
+                        {
+                            var ingateCleaning = new cleaning();
+                            ingateCleaning.guid = Util.GenerateGUID();
+                            ingateCleaning.create_by = "system";
+                            ingateCleaning.create_dt = currentDateTime;
+                            ingateCleaning.sot_guid = sot.guid;
+                            ingateCleaning.approve_dt = currentDateTime; //Change to this after daniel request //ingate_date;
+                            ingateCleaning.approve_by = "system";
+                            ingateCleaning.status_cv = CurrentServiceStatus.APPROVED;
+                            ingateCleaning.job_no = newJob_no; //sot?.job_no;
+                            var customerGuid = sot?.storing_order?.customer_company_guid;
+                            ingateCleaning.bill_to_guid = customerGuid;
 
-                        var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
-                        var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
-                                       .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
-                        ingateCleaning.cleaning_cost = adjustedPrice;
+                            var categoryGuid = sot?.tariff_cleaning?.cleaning_category_guid;
+                            var adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
+                                           .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
+                            ingateCleaning.cleaning_cost = adjustedPrice;
 
-                        var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
-                                                           .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
-                        ingateCleaning.buffer_cost = bufferPrice;
-                        ingateCleaning.est_buffer_cost = bufferPrice;
-                        ingateCleaning.est_cleaning_cost = adjustedPrice;
+                            var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
+                                                               .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
+                            ingateCleaning.buffer_cost = bufferPrice;
+                            ingateCleaning.est_buffer_cost = bufferPrice;
+                            ingateCleaning.est_cleaning_cost = adjustedPrice;
 
-                        await context.AddAsync(ingateCleaning);
+                            await context.AddAsync(ingateCleaning);
+                        }
+                        else
+                        {
+                            cleaning.status_cv = CurrentServiceStatus.APPROVED;
+                            cleaning.update_by = user;
+                            cleaning.update_dt = currentDateTime;
+                        }
+                        retval = await context.SaveChangesAsync();
                     }
-                    else
-                    {
-                        cleaning.status_cv = CurrentServiceStatus.APPROVED;
-                        cleaning.update_by = user;
-                        cleaning.update_dt = currentDateTime;
-                    }
+
+                    //Tank handling
+                    string curTankStatus;
+                    var tank = new storing_order_tank() { guid = sot.guid };
+                    context.storing_order_tank.Attach(tank);
+                    tank.update_by = user;
+                    tank.update_dt = currentDateTime;
+                    tank.cleaning_remarks = sot.cleaning_remarks;
+                    tank.purpose_cleaning = true;
+                    //if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
+                    //{
+                    //    tank.tank_status_cv = TankMovementStatus.CLEANING;
+                    //    curTankStatus = tank.tank_status_cv;
+                    //}
+                    //else
+                    //    curTankStatus = sot.tank_status_cv;
+                    curTankStatus = await TankMovementConditionCheck1(context, tank);
+                    retval = retval + await context.SaveChangesAsync();
+
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
+
+                    await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
                 }
-
-                //Tank handling
-                string curTankStatus;
-                var tank = new storing_order_tank() { guid = sot.guid };
-                context.storing_order_tank.Attach(tank);
-                tank.update_by = user;
-                tank.update_dt = currentDateTime;
-                tank.cleaning_remarks = sot.cleaning_remarks;
-                tank.purpose_cleaning = true;
-                if (sot.tank_status_cv.EqualsIgnore(TankMovementStatus.STORAGE))
+                catch (Exception ex)
                 {
-                    tank.tank_status_cv = TankMovementStatus.CLEANING;
-                    curTankStatus = tank.tank_status_cv;
-                }
-                else
-                    curTankStatus = sot.tank_status_cv;
+                    // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
 
-                retval = await context.SaveChangesAsync();
-                await NotificationHandling(config, PurposeType.CLEAN, sot.guid, curTankStatus);
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                }
             }
             return retval;
         }

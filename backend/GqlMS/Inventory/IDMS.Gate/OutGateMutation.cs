@@ -26,86 +26,92 @@ namespace IDMS.Gate.GqlTypes
             int retval = 0;
             Record record = new();
 
-            try
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                if (OutGate.tank == null || string.IsNullOrEmpty(OutGate.so_tank_guid))
-                    throw new GraphQLException(new Error("Storing order tank cannot be null", "Error"));
-
-                var currentDate = DateTime.Now.ToEpochTime();
-                var newGuid = (string.IsNullOrEmpty(OutGate.guid) ? Util.GenerateGUID() : OutGate.guid);
-
-                //Outgate handling-------------------------------
-                out_gate newOutGate = new()
+                try
                 {
-                    guid = newGuid,
-                    create_by = user,
-                    create_dt = currentDate,
-                    yard_cv = OutGate.yard_cv,
-                    eir_dt = currentDate,
-                    driver_name = OutGate.driver_name,
-                    //Trigger auto generated
-                    //eir_status_cv = "YET_TO_SURVEY",
-                    eir_no = string.IsNullOrEmpty(OutGate.eir_no) ? ReleaseOrder.ro_no : OutGate.eir_no,
-                    so_tank_guid = OutGate.so_tank_guid,
-                    vehicle_no = OutGate.vehicle_no,
-                    remarks = OutGate.remarks,
-                };
-                await context.out_gate.AddAsync(newOutGate);
+                    var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    if (OutGate.tank == null || string.IsNullOrEmpty(OutGate.so_tank_guid))
+                        throw new GraphQLException(new Error("Storing order tank cannot be null", "Error"));
 
-                //SOT Handling -------------------------------------
-                var soTank = new storing_order_tank() { guid = OutGate.so_tank_guid };
-                context.Attach(soTank);
-                soTank.tank_status_cv = hasOutSurvey ? TankMovementStatus.OUTGATE_SURVEY : TankMovementStatus.RELEASED;
-                soTank.update_by = user;
-                soTank.update_dt = currentDate;
+                    var currentDate = DateTime.Now.ToEpochTime();
+                    var newGuid = (string.IsNullOrEmpty(OutGate.guid) ? Util.GenerateGUID() : OutGate.guid);
 
-                if (!hasOutSurvey)
-                    await SurveyHandling(context, user, currentDate, OutGate.tank);
-
-
-                if (ReleaseOrder?.release_order_sot != null)
-                {
-                    foreach (var item in ReleaseOrder?.release_order_sot)
+                    //Outgate handling-------------------------------
+                    out_gate newOutGate = new()
                     {
-                        var roSOT = new release_order_sot() { guid = item.guid };
-                        context.release_order_sot.Attach(roSOT);
-                        roSOT.status_cv = SOTankStatus.ACCEPTED;
-                        roSOT.update_by = user;
-                        roSOT.update_dt = currentDate;
+                        guid = newGuid,
+                        create_by = user,
+                        create_dt = currentDate,
+                        yard_cv = OutGate.yard_cv,
+                        eir_dt = currentDate,
+                        driver_name = OutGate.driver_name,
+                        //Trigger auto generated
+                        //eir_status_cv = "YET_TO_SURVEY",
+                        eir_no = string.IsNullOrEmpty(OutGate.eir_no) ? ReleaseOrder.ro_no : OutGate.eir_no,
+                        so_tank_guid = OutGate.so_tank_guid,
+                        vehicle_no = OutGate.vehicle_no,
+                        remarks = OutGate.remarks,
+                    };
+                    await context.out_gate.AddAsync(newOutGate);
+
+                    //SOT Handling -------------------------------------
+                    var soTank = new storing_order_tank() { guid = OutGate.so_tank_guid };
+                    context.Attach(soTank);
+                    soTank.tank_status_cv = hasOutSurvey ? TankMovementStatus.OUTGATE_SURVEY : TankMovementStatus.RELEASED;
+                    soTank.update_by = user;
+                    soTank.update_dt = currentDate;
+
+                    if (!hasOutSurvey)
+                        await SurveyHandling(context, user, currentDate, OutGate.tank);
+
+
+                    if (ReleaseOrder?.release_order_sot != null)
+                    {
+                        foreach (var item in ReleaseOrder?.release_order_sot)
+                        {
+                            var roSOT = new release_order_sot() { guid = item.guid };
+                            context.release_order_sot.Attach(roSOT);
+                            roSOT.status_cv = SOTankStatus.ACCEPTED;
+                            roSOT.update_by = user;
+                            roSOT.update_dt = currentDate;
+                        }
+                    }
+                    //save change before check RO status based on roSOT
+                    retval = await context.SaveChangesAsync();
+
+                    var RO = new release_order() { guid = ReleaseOrder.guid };
+                    context.Attach(RO);
+                    RO.status_cv = await CheckAndUpdateROStatus(context, ReleaseOrder.guid);
+                    RO.update_by = user;
+                    RO.update_dt = currentDate;
+                    if (!string.IsNullOrEmpty(OutGate.haulier))
+                        RO.haulier = OutGate.haulier;
+                    _ = await context.SaveChangesAsync();
+
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
+                    record = new Record() { affected = retval, guid = new List<string>() { newGuid } };
+
+                    if (config != null)
+                    {
+                        string evtId = EventId.NEW_OUTGATE;
+                        string evtName = EventName.NEW_OUTGATE;
+
+                        int count = context.out_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
+                                    .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0).Count();
+                        GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
+                        string notification_uid = $"out-gate-{newOutGate.eir_no}";
+                        GqlUtils.AddAndTriggerStaffNotification(config, 3, "out-gate", "new out-gate was check-out", notification_uid);
                     }
                 }
-                //save change before check RO status based on roSOT
-                retval = await context.SaveChangesAsync();
-
-                var RO = new release_order() { guid = ReleaseOrder.guid };
-                context.Attach(RO);
-                RO.status_cv = await CheckAndUpdateROStatus(context, ReleaseOrder.guid);
-                RO.update_by = user;
-                RO.update_dt = currentDate;
-                if (!string.IsNullOrEmpty(OutGate.haulier))
-                    RO.haulier = OutGate.haulier;
-                _ = await context.SaveChangesAsync();
-
-                record = new Record() { affected = retval, guid = new List<string>() { newGuid } };
-
-                if (config != null)
+                catch (Exception ex)
                 {
-                    string evtId = EventId.NEW_OUTGATE;
-                    string evtName = EventName.NEW_OUTGATE;
-
-                    int count = context.out_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                                .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0).Count();
-                    GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
-                    string notification_uid = $"out-gate-{newOutGate.eir_no}";
-                    GqlUtils.AddAndTriggerStaffNotification(config, 3, "out-gate", "new out-gate was check-out", notification_uid);
+                    // Rollback the transaction if any errors occur
+                    await transaction.RollbackAsync();
+                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
                 }
             }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
-
             return record;
         }
 
@@ -148,7 +154,7 @@ namespace IDMS.Gate.GqlTypes
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
