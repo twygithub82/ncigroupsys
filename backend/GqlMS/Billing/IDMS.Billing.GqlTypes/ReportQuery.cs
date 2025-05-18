@@ -178,7 +178,7 @@ namespace IDMS.Billing.GqlTypes
                                                                next_test_type = tf.next_test_cv == "2.5" ? "2.5 Year (Air)" :
                                                                             tf.next_test_cv == "5" ? "5 Year (Hydro)" : null,
                                                                next_test_dt = tf.test_dt + nextTestThreshold,
-                                                               due_type = (tf.test_dt + nextTestThreshold) < currentDateTime ? "Due" : "Normal",
+                                                               due_type = (tf.test_dt + nextTestThreshold) < currentDateTime ? "Due" : "Not Due",
                                                                due_days = (tf.test_dt + nextTestThreshold) < currentDateTime ?
                                                                            Math.Round((double)((currentDateTime - (tf.test_dt + nextTestThreshold)) / secInDay)).ToString() :
                                                                            ""
@@ -209,7 +209,8 @@ namespace IDMS.Billing.GqlTypes
 
                 if (!string.IsNullOrEmpty(periodicTestDueRequest.due_type))
                 {
-                    result = result.Where(i => i.due_type.EqualsIgnore(periodicTestDueRequest.due_type)).ToList();
+                    //query = query.Where(i => i.due_type.EqualsIgnore(periodicTestDueRequest.due_type));
+                    query = query.Where(i => String.Equals(i.due_type, periodicTestDueRequest.due_type, StringComparison.OrdinalIgnoreCase));
                 }
 
                 result = await query.OrderBy(i => i.customer_code).ToListAsync();
