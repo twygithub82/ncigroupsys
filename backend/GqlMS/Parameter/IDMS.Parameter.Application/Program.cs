@@ -6,6 +6,7 @@ using IDMS.Models.Parameter.GqlTypes;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using HotChocolate.Execution;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration.GetConnectionString("default");
@@ -16,7 +17,13 @@ var JWT_secretKey = await dbWrapper.GetJWTKey(connectionString);
 
 builder.Services.AddPooledDbContextFactory<ApplicationParameterDBContext>(o =>
 {
-    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                  maxRetryCount: 5,
+                  maxRetryDelay: TimeSpan.FromSeconds(10),
+                  errorNumbersToAdd: null)
+     .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
+    ).LogTo(Console.WriteLine);
     o.EnableSensitiveDataLogging(false);
 });
 

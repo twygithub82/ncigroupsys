@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.DB;
 using IDMS.Models.Package.GqlTypes;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,14 +22,15 @@ string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Val
 
 builder.Services.AddPooledDbContextFactory<ApplicationPackageDBContext>(o =>
 {
-    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+              mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                            maxRetryCount: 5,
+                            maxRetryDelay: TimeSpan.FromSeconds(10),
+                            errorNumbersToAdd: null)
+              .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
+              ).LogTo(Console.WriteLine);
     o.EnableSensitiveDataLogging(false);
 });
-
-//builder.Services.AddDbContextPool<ApplicationPackageDBContext>(options =>
-//    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-// new MySqlServerVersion(new Version(8, 0, 21))).LogTo(Console.WriteLine)
-//);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
