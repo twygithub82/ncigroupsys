@@ -5,9 +5,6 @@ using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using System;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace IDMS.Models.Tariff.GqlTypes
 {
@@ -151,7 +148,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         {
             int retval = 0;
             var currentDateTime = GqlUtils.GetNowEpochInSec();
-
+            
             using (var transaction = await context.Database.BeginTransactionAsync())
             {
                 try

@@ -260,6 +260,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                                                                             && !invalidStatus.Contains(rp.residue.status_cv)
                                                                             && rp.delete_dt == null)
                                      })
+                                     .AsSplitQuery()
                                      .AsQueryable();
                 return result;
             }
@@ -293,6 +294,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                                                                              && !invalidStatus.Contains(rp.steaming.status_cv)
                                                                              && rp.delete_dt == null)
                                      })
+                                     .AsSplitQuery()
                                      .AsQueryable();
                 return result;
             }
@@ -325,6 +327,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                                                                           && !invalidStatus.Contains(rp.repair.status_cv)
                                                                           && rp.delete_dt == null)
                                      })
+                                     .AsSplitQuery()
                                      .AsQueryable();
                 return result;
             }

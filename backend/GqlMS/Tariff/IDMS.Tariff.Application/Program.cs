@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
 using IDMS.Models.Tariff.GqlTypes;
+using Pomelo.EntityFrameworkCore.MySql.Storage.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,17 @@ string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Val
 
 builder.Services.AddPooledDbContextFactory<ApplicationTariffDBContext>(o =>
 {
-    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
+    o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+                  maxRetryCount: 5,
+                  maxRetryDelay: TimeSpan.FromSeconds(10),
+                  errorNumbersToAdd: null)
+    .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
+    ).LogTo(Console.WriteLine);
+
+
+
+    //o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine);
     o.EnableSensitiveDataLogging(false);
 });
 
