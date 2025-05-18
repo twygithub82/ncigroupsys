@@ -1266,7 +1266,9 @@
     "INVALID-TOKEN": "Invalid Token",
     "FAILED-TO-CHANGE-PASSWORD": "Failed to change password",
     "KG": "KG",
-    "LITERS": "Liters"
+    "LITERS": "Liters",
+    "EXPAND-ALL": "Expand All",
+    "COLLAPSE-ALL": "Collapse All"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

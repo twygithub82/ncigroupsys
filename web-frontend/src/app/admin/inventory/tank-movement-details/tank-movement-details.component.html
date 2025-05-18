@@ -219,7 +219,7 @@
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.tank_details)"
-                          matTooltip="Expand All Sections">
+                          [matTooltip]="!isAllExpand() ? translatedLangText.EXPAND_ALL : translatedLangText.COLLAPSE_ALL">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -370,7 +370,7 @@
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.gate_details)"
-                          matTooltip="Expand All Sections">
+                          [matTooltip]="!isAllExpand() ? translatedLangText.EXPAND_ALL : translatedLangText.COLLAPSE_ALL">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -546,7 +546,7 @@
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.purpose_details)"
-                          matTooltip="Expand All Sections">
+                          [matTooltip]="!isAllExpand() ? translatedLangText.EXPAND_ALL : translatedLangText.COLLAPSE_ALL">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -1501,7 +1501,7 @@
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.depot_cost_details)"
-                          matTooltip="Expand All Sections">
+                          [matTooltip]="!isAllExpand() ? translatedLangText.EXPAND_ALL : translatedLangText.COLLAPSE_ALL">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -1726,7 +1726,7 @@
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.booking_details)"
-                          matTooltip="Expand All Sections">
+                          [matTooltip]="!isAllExpand() ? translatedLangText.EXPAND_ALL : translatedLangText.COLLAPSE_ALL">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -2105,7 +2105,7 @@
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.survey_details)"
-                          matTooltip="Expand All Sections">
+                          [matTooltip]="!isAllExpand() ? translatedLangText.EXPAND_ALL : translatedLangText.COLLAPSE_ALL">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>
@@ -2244,7 +2244,7 @@
                           </h2>
                         </div>
                         <button mat-icon-button (click)="expandAll($event, accordionSections.transfer_details)"
-                          matTooltip="Expand All Sections">
+                          [matTooltip]="!isAllExpand() ? translatedLangText.EXPAND_ALL : translatedLangText.COLLAPSE_ALL">
                           <mat-icon>unfold_more</mat-icon>
                         </button>
                       </div>

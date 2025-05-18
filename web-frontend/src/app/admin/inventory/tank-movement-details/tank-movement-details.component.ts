@@ -454,7 +454,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     APPLY_ALL: 'COMMON-FORM.APPLY-ALL',
     DURATION: 'COMMON-FORM.DURATION',
     KG: 'COMMON-FORM.KG',
-    LITERS: 'COMMON-FORM.LITERS'
+    LITERS: 'COMMON-FORM.LITERS',
+    EXPAND_ALL: 'COMMON-FORM.EXPAND-ALL',
+    COLLAPSE_ALL: 'COMMON-FORM.COLLAPSE-ALL'
   }
 
   sot_guid: string | null | undefined;
@@ -613,6 +615,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     transfer_details: "transfer_details"
   }
   section = [this.accordionSections.tank_details];
+  referenceFullSections: any = []
 
   private _formBuilder = inject(FormBuilder);
 
@@ -674,6 +677,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.stepperOrientation = breakpointObserver
       .observe('(min-width: 800px)')
       .pipe(map(({ matches }) => (matches ? 'vertical' : 'vertical')));
+    this.referenceFullSections = Object.values(this.accordionSections);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -1834,21 +1838,22 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   expandAll(event: MouseEvent, currentSection: string): void {
-    // const isExpanded = this.verifySection(currentSection);
-
-    // // Stop propagation ONLY if panel is currently expanded to prevent it from collapsing
-    // if (isExpanded) {
-    //   event.stopPropagation();
-    // }
     event.stopPropagation();
 
-    // Delay section update so that Angular finishes handling expansion toggle first
-    const allSections = Object.values(this.accordionSections);
-    allSections.forEach(x => {
-      if (!this.verifySection(x)) {
-        this.section.push(x);
-      }
-    })
+    if (!this.isAllExpand()) {
+      const allSections = Object.values(this.accordionSections);
+      allSections.forEach(x => {
+        if (!this.verifySection(x)) {
+          this.section.push(x);
+        }
+      })
+    } else {
+      this.section = [];
+    }
+  }
+
+  isAllExpand() {
+    return this.section.length === this.referenceFullSections.length
   }
 
   private subscribeToPurposeChangeEvent(
