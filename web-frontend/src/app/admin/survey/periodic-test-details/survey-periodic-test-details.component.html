@@ -23,154 +23,107 @@
             @if (!(igDS.loading$ | async)) {
             <mat-card-content>
               <div class="row d-flex justify-content-center align-items-center">
-                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.TANK_NO}}:</span>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sotItem?.tank_no}}</div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">{{sotItem?.tank_no}}</span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CUSTOMER}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_CARGO}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sotItem?.tariff_cleaning?.cargo}}
-                      </div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
+                        {{sotItem?.tariff_cleaning?.cargo}}
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.OWNER}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{ccDS.displayName(sotItem?.customer_company)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CLEAN_STATUS}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CLEAN_STATUS}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{getCleanStatusDescription(sotItem?.clean_status_cv)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_NO}}:</span>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_DATE}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{displayDate(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.PURPOSE}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{displayTankPurpose(sotItem)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_TEST}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{last_test_desc}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CURRENT_STATUS}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(sotItem?.tank_status_cv)}}
-                      </div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
+                        {{last_test_desc}}
+                      </span>
                     </div>
                   </div>
-                </div>
-                 <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row" hidden>
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_NO}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CURRENT_STATUS}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
-                      </div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
+                        {{getTankStatusDescription(sotItem?.tank_status_cv)}}
+                      </span>
                     </div>
                   </div>
-                  <!-- <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_DATE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{displayDate(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.PURPOSE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{displayTankPurpose(sotItem)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_TEST}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{last_test_desc}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CURRENT_STATUS}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{getTankStatusDescription(sotItem?.tank_status_cv)}}
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
               </div>
             </mat-card-content>
@@ -212,11 +165,11 @@
                       <table mat-table [dataSource]="surveyDetailItem" matSort
                         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                         <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef></mat-header-cell>
                           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="surveyor">
-                          <mat-header-cell mat-header-cell  *matHeaderCellDef
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.SURVEYOR}}
                           </mat-header-cell>
@@ -227,7 +180,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="survey_type">
-                          <mat-header-cell mat-header-cell  *matHeaderCellDef
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.TEST_TYPE}}
                           </mat-header-cell>
@@ -238,7 +191,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="survey_dt">
-                          <mat-header-cell mat-header-cell  *matHeaderCellDef
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.SURVEY_DATE}}
                           </mat-header-cell>
@@ -249,7 +202,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="status_cv">
-                          <mat-header-cell *matHeaderCellDef 
+                          <mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.STATUS}}
                           </mat-header-cell>
@@ -276,8 +229,8 @@
                           <mat-cell mat-cell *matCellDef="let row"
                             [ngClass]="'tbl-col-width-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             @if (surveyDS.canDelete(row)) {
-                            <button mat-icon-button color="warn"
-                              (click)="deleteSurveyDialog($event, row)" [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                            <button mat-icon-button color="warn" (click)="deleteSurveyDialog($event, row)"
+                              [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
                               <mat-icon>cancel</mat-icon>
                             </button>
                             }

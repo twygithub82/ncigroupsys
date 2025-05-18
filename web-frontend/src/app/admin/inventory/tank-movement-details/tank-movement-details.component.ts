@@ -78,6 +78,7 @@ import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialo
 import { OverwriteLastCargoFormDialogComponent } from './overwrite-last-cargo-form-dialog/overwrite-last-cargo-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
+import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -2572,5 +2573,33 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         },
       ]
     }
+  }
+
+  onDownload() {
+    let tempDirection: Direction;
+
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(EirFormComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: "in",
+        in_gate_survey_guid: this.igs?.guid,
+        eir_no: this.ig?.eir_no,
+        igsDS: this.igsDS,
+        cvDS: this.cvDS
+      },
+      direction: tempDirection
+    });
+    this.fileManagerService.actionLoadingSubject.next(true);
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.fileManagerService.actionLoadingSubject.next(false);
+    });
   }
 }
