@@ -209,7 +209,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     TEMP_RANGE_ERROR: 'COMMON-FORM.TEMP-RANGE-ERROR',
     TEMP_RANGE_OVERLAPS_ERROR: 'COMMON-FORM.TEMP-RANGE-OVERLAPS-ERROR',
     TARIFF_STEAM: 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM',
-    EXCLUSIVE_STEAM: 'MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING'
+    EXCLUSIVE_STEAM: 'MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING',
+    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
+    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
   };
   unit_type_control = new UntypedFormControl();
 
@@ -246,11 +248,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       action: "edit",
       min_temp: row.temp_min,
       max_temp: row.temp_max === 9999 ? "" : row.temp_max,
-      labour: row.package_steaming?.labour,
+      labour: this.displayNumber(row.package_steaming?.labour),
       last_cargo: [row.tariff_cleaning],
       customer_code: row.package_steaming?.customer_company,
       // qty:[''],
-      cost: row.package_steaming?.cost?.toFixed(2),
+      cost: this.displayNumber(row.package_steaming?.cost),
       remarks: row.remarks
     });
   }
@@ -575,4 +577,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     inputElement.value = inputElement.value.split('.')[0];
     this.pcForm.get('min_temp')?.setValue(Number(inputElement.value));
   }
+
+   displayNumber(input: number | string | undefined) {
+      return Utility.formatNumberDisplay(input);
+    }
 }

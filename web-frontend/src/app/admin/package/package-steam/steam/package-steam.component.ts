@@ -808,4 +808,9 @@ const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
 this.selected(fakeEvent);
 
 }
+
+displayNumber(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
+
+}
