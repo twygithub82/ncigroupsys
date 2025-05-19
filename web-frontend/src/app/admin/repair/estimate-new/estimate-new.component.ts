@@ -50,9 +50,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -791,71 +791,27 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '1000px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        item: row,
-        langText: this.langText,
-        index: index
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        if (result.item.guid) {
+        if (row.guid) {
           const data: any[] = [...this.repList];
           const updatedItem = {
-            ...result.item,
+            ...row,
             delete_dt: Utility.getDeleteDtEpoch(),
             action: 'cancel'
           };
-          data[result.index] = updatedItem;
+          data[index] = updatedItem;
           this.updateData(data); // Refresh the data source
         } else {
           const data = [...this.repList];
           data.splice(index, 1);
           this.updateData(data); // Refresh the data source
         }
-      }
-    });
-  }
-
-  cancelSelectedRows(row: RepairPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: "cancel",
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairPartItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          // If the item is found, update the properties
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'cancel'])]
-                : ['cancel']
-            };
-          }
-        });
-        this.updateData(data);
       }
     });
   }
