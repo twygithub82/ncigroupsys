@@ -168,13 +168,22 @@ namespace IDMS.Steaming.GqlTypes
                 updateSteaming.update_by = user;
                 updateSteaming.update_dt = currentDateTime;
                 updateSteaming.job_no = steaming.job_no;
-                updateSteaming.est_cost = steaming.est_cost;
-                updateSteaming.total_cost = steaming.total_cost;
-                updateSteaming.remarks = steaming.remarks;
                 updateSteaming.bill_to_guid = steaming.bill_to_guid;
-                updateSteaming.total_labour_cost = steaming.total_labour_cost;
-                updateSteaming.total_material_cost = steaming.total_material_cost;  
 
+                //For Overwrite
+                if (steaming.action != null && steaming.action.EqualsIgnore(ObjectAction.OVERWRITE))
+                {
+                    updateSteaming.overwrite_remarks = steaming.overwrite_remarks; 
+                    updateSteaming.total_cost = steaming.total_cost;
+                }
+                else
+                {   //For normal update
+                    updateSteaming.est_cost = steaming.est_cost;
+                    updateSteaming.total_cost = steaming.total_cost;
+                    updateSteaming.remarks = steaming.remarks;
+                    updateSteaming.total_labour_cost = steaming.total_labour_cost;
+                    updateSteaming.total_material_cost = steaming.total_material_cost;
+                }
                 //Handling For steaming_part
                 foreach (var item in steaming.steaming_part)
                 {
@@ -209,6 +218,18 @@ namespace IDMS.Steaming.GqlTypes
                         part.update_by = user;
                         part.update_dt = currentDateTime;
                         part.delete_dt = currentDateTime;
+                    }
+                    else if (ObjectAction.OVERWRITE.EqualsIgnore(item.action)) 
+                    {
+                        var part = new steaming_part() { guid = item.guid };
+                        context.steaming_part.Attach(part);
+
+                        part.update_by = user;
+                        part.update_dt = currentDateTime;
+                        part.approve_part = item.approve_part;
+                        part.approve_qty = item.approve_qty;
+                        part.approve_cost  = item.approve_cost; 
+                        part.approve_labour = item.approve_labour;
                     }
                 }
 
