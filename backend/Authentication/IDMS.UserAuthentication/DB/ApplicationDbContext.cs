@@ -16,10 +16,12 @@ namespace IDMS.UserAuthentication.DB
 
         public DbSet<functions> functions { get; set; }
         public DbSet<role_function> role_function { get; set; }
-
         public DbSet<team> team { get; set; }
-        
         public DbSet<team_user> team_user { get; set; }
+        public DbSet<functions_new> functions_new { get; set; } 
+        public DbSet<role_functions_new> role_functions_new { get; set; }
+        public DbSet<role> role { get; set; }
+        public DbSet<user_role> user_role { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

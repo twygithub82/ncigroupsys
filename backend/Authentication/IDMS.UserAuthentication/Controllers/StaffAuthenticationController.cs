@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,6 +27,8 @@ namespace IDMS.User.Authentication.API.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
+    //[ApiVersion("1.0")]
+    //[Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class StaffAuthenticationController : ControllerBase
     {
@@ -39,7 +42,7 @@ namespace IDMS.User.Authentication.API.Controllers
         private readonly IRefreshTokenStore _refreshTokenStore;
         private readonly ApplicationDbContext _dbContext;
 
-        public StaffAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, 
+        public StaffAuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IEmailService emailService,
             IRefreshTokenStore refreshTokenStore, ApplicationDbContext context)
         {
@@ -50,7 +53,7 @@ namespace IDMS.User.Authentication.API.Controllers
             _signInManager = signInManager;
             _dbContext = context;
             _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
-            _refreshTokenStore= refreshTokenStore;
+            _refreshTokenStore = refreshTokenStore;
 
             //InitDB();
         }
@@ -62,13 +65,32 @@ namespace IDMS.User.Authentication.API.Controllers
             return "Hello World";
         }
 
-        [HttpPost("Hello")]
+        [HttpPost("GetUserClaims")]
         [AllowAnonymous]
-        public async Task<IActionResult> HelloWorld_Post([FromBody] LoginStaffModel staffModel)
+        public async Task<IActionResult> GetUserClaims([FromBody] UserClaimModel userClaimModel)
         {
-            staffModel.Username = "Hello";
-            staffModel.Password = "OK";
-            return Ok(staffModel);
+            try
+            {
+                if (!string.IsNullOrEmpty(userClaimModel.UserId))
+                {
+                    //To be replace
+                    JArray functionNamesArray = utils.GetFunctionsByUser(_dbContext, userClaimModel.UserId);
+                    JArray roleNameArray = utils.GetRolesByUser(_dbContext, userClaimModel.UserId);
+
+                    JObject userClaims = new JObject();
+                    userClaims["roles"] = roleNameArray;
+                    userClaims["functions"] = functionNamesArray;
+
+                    return Ok(userClaims.ToString());
+
+                }
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+
         }
 
         [HttpPost("StaffLogin")]
@@ -78,17 +100,12 @@ namespace IDMS.User.Authentication.API.Controllers
             //checking the staff
             var staff = await _userManager.FindByNameAsync(staffModel.Username);
 
-            
-
             //validate the user password
 
             if (staff != null && await _userManager.CheckPasswordAsync(staff, staffModel.Password))
             {
-               
-             
-
                 var staffRoles = await _userManager.GetRolesAsync(staff);
-          
+
                 //generate the token with the claims
                 //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
                 var jwtToken = _jwtTokenService.GetToken(2, staff.UserName, staff.Email, staffRoles, staff.Id); //Utilities.utils.GetToken(_configuration,authClaims);
@@ -96,7 +113,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
                 _refreshTokenStore.AddToken(refreshToken);
                 //returning the token
-                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken= refreshToken.Token });
+                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
             }
 
             return Unauthorized();
@@ -130,11 +147,11 @@ namespace IDMS.User.Authentication.API.Controllers
                 {
                     return result;
                 }
-                
-                    return StatusCode(StatusCodes.Status200OK,
-                       new Response { Status = "Success", Message = new string[] { $"Staff roles and teams  successfully assigned - {Username}  !" } });
 
-                }
+                return StatusCode(StatusCodes.Status200OK,
+                   new Response { Status = "Success", Message = new string[] { $"Staff roles and teams  successfully assigned - {Username}  !" } });
+
+            }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
@@ -153,15 +170,15 @@ namespace IDMS.User.Authentication.API.Controllers
             {
                 var primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
 
-                if(primarygroupSid!="a1")
+                if (primarygroupSid != "a1")
                 {
-                    return Unauthorized(new Response(){Status="Error",Message=new string[] { "Only administrators are allowed to create staff credential" } });
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
                 }
 
                 var staffExist = await _userManager.FindByIdAsync(registerStaff.Username!);
                 if (staffExist != null)
                 {
-                   // if (userExist.EmailConfirmed)
+                    // if (userExist.EmailConfirmed)
                     {
                         return StatusCode(StatusCodes.Status302Found, new Response() { Status = "Error", Message = new string[] { "The email had been registered previously" } });
 
@@ -176,12 +193,10 @@ namespace IDMS.User.Authentication.API.Controllers
                     SecurityStamp = Guid.NewGuid().ToString(),
                     CorporateID = registerStaff.CorporateId.Value,
                     isStaff = true,
-                    EmailConfirmed=true
+                    EmailConfirmed = true
                 };
 
-            
 
-                
                 var result = await _userManager.CreateAsync(staff, registerStaff.Password);
                 if (!result.Succeeded)
                 {
@@ -189,16 +204,16 @@ namespace IDMS.User.Authentication.API.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError,
                         new Response { Status = "Error", Message = Errors });
                 }
-                
+
                 var userGuid = staff.Id;
 
-                var rst= await AssignRolesTeams(userGuid, registerStaff.Roles, registerStaff.Teams);
+                var rst = await AssignRolesTeams(userGuid, registerStaff.Roles, registerStaff.Teams);
                 if (!(rst is ObjectResult objectResult && objectResult.StatusCode == StatusCodes.Status200OK
                                    || rst is StatusCodeResult statusCodeResult && statusCodeResult.StatusCode == StatusCodes.Status200OK))
                     return rst;
 
-                    return StatusCode(StatusCodes.Status200OK,
-                       new Response { Status = "Success", Message = new string[] { $"Staff created  successfully - {staff.UserName}  !" } });
+                return StatusCode(StatusCodes.Status200OK,
+                   new Response { Status = "Success", Message = new string[] { $"Staff created  successfully - {staff.UserName}  !" } });
 
             }
             catch (Exception ex)
@@ -244,9 +259,9 @@ namespace IDMS.User.Authentication.API.Controllers
                         }
 
                         _dbContext.SaveChanges();
-                    } 
+                    }
 
-                    
+
                 }
 
                 return StatusCode(StatusCodes.Status200OK, new Response() { Status = "Error", Message = new string[] { "The user has been removed successfully" } });
@@ -303,7 +318,7 @@ namespace IDMS.User.Authentication.API.Controllers
                         Username = usr.UserName,
                     };
 
-                    var roles =await _userManager.GetRolesAsync(usr);
+                    var roles = await _userManager.GetRolesAsync(usr);
                     s.Roles = roles?.ToList();
 
                     var userTeams = from tu in _dbContext.team_user
@@ -328,7 +343,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
                 if (!string.IsNullOrEmpty(staff.TeamDescription))
                 {
-                    result = result.Where(r => r.Teams != null && r.Teams.Any(t=>t.Description==staff.TeamDescription)).ToList();
+                    result = result.Where(r => r.Teams != null && r.Teams.Any(t => t.Description == staff.TeamDescription)).ToList();
                 }
 
                 return StatusCode(StatusCodes.Status200OK, result);
@@ -343,7 +358,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
         }
 
-        private async Task<IActionResult> AssignRolesTeams(string userGuid, List<string> roles ,List<Team>teams)
+        private async Task<IActionResult> AssignRolesTeams(string userGuid, List<string> roles, List<Team> teams)
         {
             try
             {
@@ -369,14 +384,15 @@ namespace IDMS.User.Authentication.API.Controllers
         }
         private async Task<IActionResult> AssignUserToRoles(string userGuid, List<string> roles)
         {
-            
+
 
             try
             {
                 //var roles = registerStaff.Roles;
                 ApplicationUser user = await _userManager.FindByIdAsync(userGuid);
                 var userRoles = await _userManager.GetRolesAsync(user);
-                if (user == null) {
+                if (user == null)
+                {
                     return StatusCode(StatusCodes.Status403Forbidden,
                           new Response { Status = "Error", Message = new string[] { "This staff not found!" } });
                 }
@@ -425,19 +441,19 @@ namespace IDMS.User.Authentication.API.Controllers
 
 
 
-        private async Task<IActionResult> AssignUserToTeams(string userGuid,  List<Team> teams)
+        private async Task<IActionResult> AssignUserToTeams(string userGuid, List<Team> teams)
         {
-            
+
             try
             {
                 var UserName_action = User.Identity.Name;
-                
+
 
                 var userTeams = from tu in _dbContext.team_user
-                            join t in _dbContext.team
-                            on tu.team_guid equals t.guid
-                            where (from u in _dbContext.Users where u.Id == userGuid select u.Id).Contains(tu.userId) && tu.delete_dt == null
-                                select new { team_user_guid=tu.guid, team_guid=t.guid, userId=tu.userId,  t.description,department= t.department_cv };
+                                join t in _dbContext.team
+                                on tu.team_guid equals t.guid
+                                where (from u in _dbContext.Users where u.Id == userGuid select u.Id).Contains(tu.userId) && tu.delete_dt == null
+                                select new { team_user_guid = tu.guid, team_guid = t.guid, userId = tu.userId, t.description, department = t.department_cv };
 
                 var teamList = teams.ToList();
                 var newTeamIds = _dbContext.team
@@ -449,7 +465,7 @@ namespace IDMS.User.Authentication.API.Controllers
                 var removedUserTeams = _dbContext.team_user
                    .Where(tu => tu.userId == userGuid && tu.delete_dt == null && !newTeamIds.Contains(tu.team_guid))
                    .ToList();
-                
+
                 List<team_user> assignedUserTeams = new List<team_user>();
                 List<team> newTeams = new List<team>();
                 foreach (var team in teams)
@@ -476,9 +492,9 @@ namespace IDMS.User.Authentication.API.Controllers
                             create_dt = Utilities.utils.GetNowEpochInSec()
                         };
                     }
-                    else 
+                    else
                     {
-                        var team_guid= newTeam?.First().guid;
+                        var team_guid = newTeam?.First().guid;
                         var tus = from u in userTeams where (u.userId == userGuid && u.team_guid == team_guid) select u;
 
                         if (!tus.Any())
@@ -490,12 +506,12 @@ namespace IDMS.User.Authentication.API.Controllers
                             tu.create_by = UserName_action;
                             tu.create_dt = Utilities.utils.GetNowEpochInSec();
                         }
-                        
+
 
 
                     }
-                    if(tu!=null)assignedUserTeams.Add(tu);
-                    
+                    if (tu != null) assignedUserTeams.Add(tu);
+
                 }
                 // Add discrepancies (teams not in 'teams' input) to the removedUserTeams
                 foreach (var t in removedUserTeams)
@@ -514,7 +530,7 @@ namespace IDMS.User.Authentication.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                      new Response { Status = "Success", Message = new string[] { $"{ex.Message}" } }); 
+                      new Response { Status = "Success", Message = new string[] { $"{ex.Message}" } });
             }
 
             return StatusCode(StatusCodes.Status200OK,
@@ -523,7 +539,7 @@ namespace IDMS.User.Authentication.API.Controllers
         private async Task<int> CreateRole(string roleName)
         {
             int retval = 0;
-           // if (!_roleManager.RoleExistsAsync(roleName))
+            // if (!_roleManager.RoleExistsAsync(roleName))
             {
                 var role = new IdentityRole(roleName);
                 var result = await _roleManager.CreateAsync(role);
@@ -576,7 +592,7 @@ namespace IDMS.User.Authentication.API.Controllers
         {
 
 
-           // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
+            // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
             var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
 
             var refreshTokenKey = _refreshTokenStore.GetToken(userName);
@@ -602,6 +618,6 @@ namespace IDMS.User.Authentication.API.Controllers
                 refreshToken = newRefreshToken
             });
         }
-       
+
     }
 }
