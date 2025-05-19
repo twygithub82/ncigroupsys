@@ -132,7 +132,7 @@ namespace IDMS.Inventory.GqlTypes
                             from sd in storingOrderSurveys.DefaultIfEmpty()
                             where ti.tank_no.Equals(tankNo) && sd.survey_type_cv.ToUpper().Equals(testType)
                             && sd.status_cv.Equals(status) && sd.delete_dt == null
-                            orderby sd.survey_dt descending
+                            orderby sd.survey_dt descending, sd.create_dt descending
                             select new
                             {
                                 TankInfo = ti,
