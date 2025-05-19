@@ -282,67 +282,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-        public async Task<int> RollbackRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<RepairRequest> repair)
-        {
-            try
-            {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
-
-                foreach (var item in repair)
-                {
-                    if (item != null && !string.IsNullOrEmpty(item.guid))
-                    {
-                        var rollbackRepair = new repair() { guid = item.guid };
-                        context.repair.Attach(rollbackRepair);
-
-                        rollbackRepair.update_by = user;
-                        rollbackRepair.update_dt = currentDateTime;
-                        rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
-                        rollbackRepair.remarks = item.remarks;
-
-                        if (string.IsNullOrEmpty(item.customer_guid))
-                            throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
-
-                        var customerGuid = item.customer_guid;
-                        var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
-
-                        if (item.is_approved)//if the repair already approved, rollback the approval
-                        {
-                            foreach (var part in repairPart)
-                            {
-                                part.update_by = user;
-                                part.update_dt = currentDateTime;
-                                part.approve_part = null;
-                                part.approve_cost = part.material_cost;
-                                part.approve_hour = part.hour;
-                                part.approve_qty = part.quantity;
-                            }
-                        }
-                        else//if the repair still pending, rollback the repair
-                        {
-                            var partsTarifRepairGuids = repairPart.Select(x => x.tariff_repair_guid).ToArray();
-                            var packageRepair = await context.package_repair.Where(r => partsTarifRepairGuids.Contains(r.tariff_repair_guid) &&
-                                                r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
-                            foreach (var part in repairPart)
-                            {
-                                part.update_by = user;
-                                part.update_dt = currentDateTime;
-                                part.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
-                            }
-                        }
-                    }
-                }
-
-                var res = await context.SaveChangesAsync();
-                return res;
-            }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-            }
-        }
         public async Task<int> AbortRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, RepJobOrderRequest repJobOrder)
         {
@@ -509,6 +448,79 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+        public async Task<int> RollbackRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<RepairRequest> repair)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+                bool needTankMovementCheck = false;
+                string linkSotGuid = "";
+
+                foreach (var item in repair)
+                {
+                    if (item != null && !string.IsNullOrEmpty(item.guid))
+                    {
+                        //var rollbackRepair = new repair() { guid = item.guid };
+                        //context.repair.Attach(rollbackRepair);
+
+                        var rollbackRepair = await context.repair.FindAsync(item.guid);
+                        if (rollbackRepair == null)
+                            throw new GraphQLException(new Error($"Reapir estimate not found", "ERROR"));
+
+                        rollbackRepair.update_by = user;
+                        rollbackRepair.update_dt = currentDateTime;
+                        rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
+                        rollbackRepair.remarks = item.remarks;
+
+                        needTankMovementCheck = true;
+                        linkSotGuid = rollbackRepair.sot_guid;
+
+                        if (string.IsNullOrEmpty(item.customer_guid))
+                            throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
+
+                        var customerGuid = item.customer_guid;
+                        var repairPart = await context.repair_part.Where(r => r.repair_guid == item.guid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+
+                        if (item.is_approved)//if the repair already approved, rollback the approval
+                        {
+                            foreach (var part in repairPart)
+                            {
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                                part.approve_part = null;
+                                part.approve_cost = part.material_cost;
+                                part.approve_hour = part.hour;
+                                part.approve_qty = part.quantity;
+                            }
+                        }
+                        else//if the repair still pending, rollback the repair
+                        {
+                            var partsTarifRepairGuids = repairPart.Select(x => x.tariff_repair_guid).ToArray();
+                            var packageRepair = await context.package_repair.Where(r => partsTarifRepairGuids.Contains(r.tariff_repair_guid) &&
+                                                r.customer_company_guid == customerGuid && (r.delete_dt == null || r.delete_dt == 0)).ToListAsync();
+                            foreach (var part in repairPart)
+                            {
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                                part.material_cost = packageRepair.Where(r => r.tariff_repair_guid == part.tariff_repair_guid).Select(r => r.material_cost).First();
+                            }
+                        }
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+
+                await GqlUtils.TankMovementConditionCheck(context, user, currentDateTime, linkSotGuid, "");
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
         public async Task<int> RollbackQCRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<RepJobOrderRequest> repJobOrder)
         {
@@ -669,7 +681,7 @@ namespace IDMS.Repair.GqlTypes
                 else
                 {
                     var jobOrders = await context.job_order.Where(j => j.sot_guid == sotGuid & j.job_type_cv == JobType.REPAIR).ToListAsync();
-                    if (!jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
+                    if (jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
                         sot.tank_status_cv = TankMovementStatus.REPAIR;
                 }
 
@@ -744,7 +756,6 @@ namespace IDMS.Repair.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
-
         public async Task<int> RollbackAssignedRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
             [Service] IConfiguration config, List<string>? repairGuid)
         {
