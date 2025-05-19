@@ -1637,82 +1637,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         eir_no: this.in_gate?.eir_no,
         igsDS: this.igsDS,
         cvDS: this.cvDS,
-        eirPdf: this.eirPdf
       },
-      panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.fileManagerService.actionLoadingSubject.next(true);
-
-    this.subs.sink = dialogRef.componentInstance.publishedEir.subscribe((result) => {
-      console.log(`Event received from MatDialog: publishedEir type = ${result?.type}`);
-      if (result?.type === 'published') {
-        if (this.in_gate) {
-          this.in_gate.eir_status_cv = 'PUBLISHED';
-        }
-      } else if (result?.type === 'uploaded') {
-        this.eirPdf = result?.eirPdf;
-      }
-
-    });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
     });
-
-    // this.container.clear();
-
-    // const componentRef = this.container.createComponent(EirFormComponent);
-
-    // const instance = componentRef.instance;
-    // instance.type = "in";
-    // instance.in_gate_survey_guid = this.in_gate?.in_gate_survey?.guid;
-    // instance.igsDS = this.igsDS;
-    // instance.cvDS = this.cvDS;
-
-    // instance.populateCodeValues = {
-    //   purposeOptionCvList: this.purposeOptionCvList,
-    //   cleanStatusCvList: this.cleanStatusCvList,
-    //   testTypeCvList: this.testTypeCvList,
-    //   testClassCvList: this.testClassCvList,
-    //   manufacturerCvList: this.manufacturerCvList,
-    //   claddingCvList: this.claddingCvList,
-    //   maxGrossWeightCvList: this.maxGrossWeightCvList,
-    //   tankHeightCvList: this.tankHeightCvList,
-    //   walkwayCvList: this.walkwayCvList,
-    //   airlineCvList: this.airlineCvList,
-    //   airlineConnCvList: this.airlineConnCvList,
-    //   disCompCvList: this.disCompCvList,
-    //   disValveCvList: this.disValveCvList,
-    //   disValveSpecCvList: this.disValveSpecCvList,
-    //   disTypeCvList: this.disTypeCvList,
-    //   footValveCvList: this.footValveCvList,
-    //   manlidCoverCvList: this.manlidCoverCvList,
-    //   manlidSealCvList: this.manlidSealCvList,
-    //   pvSpecCvList: this.pvSpecCvList,
-    //   pvTypeCvList: this.pvTypeCvList,
-    //   thermometerCvList: this.thermometerCvList,
-    //   tankCompTypeCvList: this.tankCompTypeCvList,
-    //   valveBrandCvList: this.valveBrandCvList,
-    //   tankSideCvList: this.tankSideCvList,
-    //   tankStatusCvList: this.tankStatusCvList,
-    //   packageBufferList: this.packageBufferList,
-    // }
-
-    // instance.generatePDF().then((data) => {
-    //   console.log(data)
-    //   componentRef.destroy();
-
-    //   const dialogRef = this.dialog.open(PreviewPdfDialogComponent, {
-    //     width: '80vw',
-    //     height: '80vh',
-    //     data: {
-    //       pdfBlob: data,
-    //     },
-    //     direction: tempDirection
-    //   });
-    //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   });
-    // });
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup | undefined): void {

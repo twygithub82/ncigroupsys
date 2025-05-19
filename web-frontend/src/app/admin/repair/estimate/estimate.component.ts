@@ -154,12 +154,12 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   availableProcessStatus: string[] = [
-    'APPROVED',
+    // 'APPROVED',
     'JOB_IN_PROGRESS',
     'PENDING',
     // 'COMPLETED',
     // 'NO_ACTION',
-    // 'ASSIGNED',
+    'ASSIGNED',
     // 'PARTIAL_ASSIGNED',
   ]
 

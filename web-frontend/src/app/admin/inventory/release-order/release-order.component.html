@@ -7,48 +7,48 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <mat-accordion>
-            <mat-expansion-panel [expanded]="true">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                      <mat-icon>search</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                      (click)="$event.stopPropagation()">
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
-                    <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/release-order/new']">
-                      <mat-icon class="col-white">add</mat-icon>
-                    </button>
-                  </div>
-                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+            <mat-accordion>
+              <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                      <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                        <mat-icon>search</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                      <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                        (click)="$event.stopPropagation()">
+                        <mat-icon>clear_all</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
+                      <button mat-mini-fab color="primary" [routerLink]="['/admin/inventory/release-order/new']">
+                        <mat-icon class="col-white">add</mat-icon>
+                      </button>
+                    </div>
+                    <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                     <button mat-mini-fab color="primary" (click)="refresh()" (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">refresh</mat-icon>
                     </button>
                   </div> -->
-                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                    <!-- <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
                     <button mat-mini-fab color="warn" (click)="cancelSelectedRows(roSelection.selected)"
                       [disabled]="canCancelSelectedRows()">
                       <mat-icon class="col-white">cancel</mat-icon>
                     </button>
                   </div> -->
-                  @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-                  <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                    <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                      (click)="$event.stopPropagation()" />
-                  </div>
-                  }
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+                    @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
+                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                        (click)="$event.stopPropagation()" />
+                    </div>
+                    }
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
                 <div class="row">
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
@@ -151,9 +151,9 @@
                     </button>
                   </div> -->
                 </div>
-              </form>
-            </mat-expansion-panel>
-          </mat-accordion>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </form>
           <div class="body overflow-auto">
             <div class="responsive_table">
               <table mat-table [dataSource]="roList" matSort
@@ -176,11 +176,11 @@
                 </ng-container>
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="ro_no">
-                  <mat-header-cell *matHeaderCellDef 
+                  <mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.RO_NO}}
                   </mat-header-cell>
@@ -190,7 +190,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="customer_code">
-                  <mat-header-cell *matHeaderCellDef >
+                  <mat-header-cell *matHeaderCellDef>
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
@@ -199,7 +199,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="ro_dt">
-                  <mat-header-cell *matHeaderCellDef 
+                  <mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.RO_DATE}}
                   </mat-header-cell>
@@ -209,7 +209,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef 
+                  <mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.NO_OF_TANKS}}
                   </mat-header-cell>
@@ -220,7 +220,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="status">
-                  <mat-header-cell *matHeaderCellDef >
+                  <mat-header-cell *matHeaderCellDef>
                     {{translatedLangText.STATUS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row">
