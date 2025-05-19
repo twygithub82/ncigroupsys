@@ -638,6 +638,10 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     return Utility.formatNumberDisplay(net_cost);
   }
 
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
+
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }

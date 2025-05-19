@@ -1002,4 +1002,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
 }

@@ -120,6 +120,11 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       queryParams: { tabIndex: tabName },
       queryParamsHandling: 'merge',
     });
+    if (tabName === 'in-gate') {
+      this.inGateComp?.onTabFocused();
+    } else if (tabName === 'in-gate-survey') {
+      this.inGateSurveyComp?.onTabFocused();
+    }
   }
 
   translateLangText() {
