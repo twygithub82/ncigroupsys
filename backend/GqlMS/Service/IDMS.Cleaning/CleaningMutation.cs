@@ -277,7 +277,7 @@ namespace IDMS.Cleaning.GqlTypes
                 else
                 {
                     var jobOrders = await context.job_order.Where(j => j.sot_guid == cleaningJobOrder.sot_guid & j.job_type_cv == JobType.CLEANING).ToListAsync();
-                    if (!jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
+                    if (jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
                         sot.tank_status_cv = TankMovementStatus.CLEANING;
                 }
 
