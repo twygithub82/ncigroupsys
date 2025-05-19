@@ -1,17 +1,13 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
-import { UserItem } from './user';
-import { CustomerCompanyItem } from './customer-company';
-import { ResiduePartItem } from './residue-part';
-import { SteamPartItem } from './steam-part';
-import { JobOrderItem } from './job-order';
 import { BillingItem } from './billing';
+import { CustomerCompanyItem } from './customer-company';
+import { JobOrderItem } from './job-order';
+import { SteamPartItem } from './steam-part';
+import { StoringOrderTankItem } from './storing-order-tank';
 
 export class SteamGO {
   public estimate_no?: string;
@@ -44,10 +40,11 @@ export class SteamGO {
   public update_by?: string;
   public delete_dt?: number;
 
-   public est_cost?:number;
-   public total_material_cost?:number;
-   public total_labour_cost?:number;
-   
+  public est_cost?: number;
+  public total_material_cost?: number;
+  public total_labour_cost?: number;
+  public overwrite_remarks?: string;
+
   // public aspnetusers_guid?: string;
   // public estimate_no?: string;
   // public labour_cost_discount?: number;
@@ -75,6 +72,9 @@ export class SteamGO {
     this.begin_dt = item.begin_dt;
     this.na_dt = item.na_dt;
     this.est_cost = item.est_cost;
+    this.total_material_cost = item.total_material_cost;
+    this.total_labour_cost = item.total_labour_cost;
+    this.overwrite_remarks = item.overwrite_remarks;
     this.total_cost = item.total_cost;
     this.bill_to_guid = item.bill_to_guid;
     this.job_no = item.job_no;
@@ -916,7 +916,7 @@ export const ROLLBACK_STEAM_EST = gql`
     rollbackSteaming(steaming: $steam)
   }
 `
-export const ROLLBACK_ASSIGNED_STEAM= gql`
+export const ROLLBACK_ASSIGNED_STEAM = gql`
   mutation rollbackAssignedSteaming($steamingGuid: [String!]) {
     rollbackAssignedSteaming(steamingGuid: $steamingGuid)
   }
@@ -1185,10 +1185,10 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canSave(re: SteamItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
-    var allowSave : boolean=validStatus.includes(re?.status_cv!);
-  
+    var allowSave: boolean = validStatus.includes(re?.status_cv!);
+
     return allowSave;
-    
+
   }
 
   canApprove(re: SteamItem): boolean {
