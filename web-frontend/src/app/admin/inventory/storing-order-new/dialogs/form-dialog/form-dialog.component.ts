@@ -454,7 +454,7 @@ export class FormDialogComponent {
       isValid = false; // required_temp must be filled if purpose_steam is checked
       this.storingOrderTankForm.get('required_temp')?.setErrors({ required: true });
     } else if (requiredTemp && flashPoint) {
-      if (requiredTemp > flashPoint) {
+      if (requiredTemp >= flashPoint) {
         isValid = false;
         this.storingOrderTankForm.get('required_temp')?.setErrors({ max: true });
       }
