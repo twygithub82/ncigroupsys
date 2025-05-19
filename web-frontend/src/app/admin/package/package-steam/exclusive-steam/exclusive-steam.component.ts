@@ -869,6 +869,10 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   this.selected(fakeEvent);
   
   
-}
+ }
+
+ displayNumber(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
+}
 

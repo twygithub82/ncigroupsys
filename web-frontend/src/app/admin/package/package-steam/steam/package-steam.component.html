@@ -135,14 +135,14 @@
               <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}</span>
-                {{row.cost?.toFixed(2)}}</mat-cell>
+                {{displayNumber(row.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
               <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.HOURLY_RATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE}}</span>
-                {{row.labour?.toFixed(2)}}</mat-cell>
+                {{displayNumber(row.labour)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="qty">
               <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.QTY}}</mat-header-cell>
