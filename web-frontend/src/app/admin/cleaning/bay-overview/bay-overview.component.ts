@@ -467,7 +467,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       String(dt.getHours()).padStart(2, '0') + ':' +
       String(dt.getMinutes()).padStart(2, '0');
 
-      return formatted;
+    return formatted;
   }
 
   completeJob(event: Event, jobOrderItem: JobOrderItem) {
@@ -658,8 +658,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         console.log(data)
         data.forEach(d => {
           this.teamList?.forEach(team => {
-            if (team.guid === d.team?.guid && d.job_type_cv === 'CLEANING'&& d.cleaning?.length||0>0) {
-              const foundIncomplete = d.storing_order_tank?.cleaning?.filter(x => ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED', ''].includes(x.status_cv || ''));
+            if (team.guid === d.team?.guid && d.job_type_cv === 'CLEANING' && d.cleaning?.length || 0 > 0) {
+              const foundIncomplete = d.storing_order_tank?.residue?.filter(x => ['PENDING', 'APPROVED', 'JOB_IN_PROGRESS', 'PARTIAL_ASSIGNED', 'ASSIGNED', ''].includes(x.status_cv || ''));
               team.jobOrderItem = d;
               team.isOccupied = true;
               team.isEditable = false;
