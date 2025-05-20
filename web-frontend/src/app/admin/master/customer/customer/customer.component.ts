@@ -285,12 +285,12 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
         }
-        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.custCompDS.getOwnerLessee({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyFilterList = data
         });
       })
