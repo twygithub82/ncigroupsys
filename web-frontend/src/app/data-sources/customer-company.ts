@@ -413,6 +413,35 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
       );
   }
 
+  getOwnerLessee(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
+    this.loadingSubject.next(true);
+    where = { ...where, type_cv: { in: [...(where?.type_cv?.in || []), "LEESSEE", "OWNER", "BRANCH"] } };
+    where = this.addDeleteDtCriteria(where)
+    return this.apollo
+      .query<any>({
+        query: SEARCH_COMPANY_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const list = result.companyList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
+  }
+
   getOwnerList(owner_guid?: string): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
     const where = {
