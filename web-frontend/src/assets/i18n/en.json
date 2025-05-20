@@ -1268,7 +1268,8 @@
     "KG": "KG",
     "LITERS": "Liters",
     "EXPAND-ALL": "Expand All",
-    "COLLAPSE-ALL": "Collapse All"
+    "COLLAPSE-ALL": "Collapse All",
+    "REPAIR-ESTIMATE": "Repair Estimate"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

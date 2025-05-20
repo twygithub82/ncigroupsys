@@ -248,6 +248,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   repairEstimatePdf: any;
   isDuplicate = false;
   isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
+  isExportingPDF:boolean=false;
+  
+  
 
   constructor(
     public httpClient: HttpClient,
@@ -883,6 +886,11 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
+    this.isExportingPDF=true;
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
     this.subs.sink = dialogRef.componentInstance.repairEstimateEvent.subscribe((result) => {
       console.log(`Event received from MatDialog: repairEstimateEvent type = ${result?.type}`);
       if (result?.type === 'uploaded') {
@@ -890,6 +898,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       }
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF=false;
     });
   }
 

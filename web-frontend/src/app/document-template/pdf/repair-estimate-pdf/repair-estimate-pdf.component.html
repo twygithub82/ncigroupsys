@@ -1,7 +1,7 @@
-<div mat-dialog-title class="ms-3 mt-3">
+<div mat-dialog-title class="ms-3 mt-3" hidden>
   <h4>{{translatedLangText.PREVIEW_PDF}} ({{estimate_no}})</h4>
 </div>
-<div mat-dialog-content>
+<div mat-dialog-content hidden>
   <div id="pdf-form-header" class="pdf-container pdf-header">
     <div class="header-content">
       <table>
@@ -383,7 +383,7 @@
     </div>
   </div>
 </div>
-<div mat-dialog-actions class="m-2 align-right">
+<div mat-dialog-actions class="m-2 align-right" hidden>
   @if (this.repairEstimatePdf?.length) {
   <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(repairDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
