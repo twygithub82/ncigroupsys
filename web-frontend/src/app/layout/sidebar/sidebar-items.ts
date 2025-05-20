@@ -1268,7 +1268,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: "admin/reports/pending",
-        title: "MENUITEMS.REPORTS.LIST.PENDING",
+        title: "MENUITEMS.REPORTS.LIST.ESTIMATE-INVOICES",
         iconType: "",
         icon: "",
         class: "ml-menu",

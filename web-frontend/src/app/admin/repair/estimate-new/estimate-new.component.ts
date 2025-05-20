@@ -293,7 +293,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.repairForm = this.fb.group({
       guid: [''],
       est_template: [''],
-      is_default_template: [''],
+      is_default_template: [false],
       remarks: [''],
       surveyor_id: [''],
       labour_cost_discount: [0],
@@ -648,13 +648,14 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           if (def_guid) {
             this.repairForm?.get('is_default_template')?.setValue(true);
           }
-
+          
           const def_template = this.templateList.find(x =>
             def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
           );
 
-          if (def_guid !== def_template?.guid) {
-            this.getCustomer()!.def_template_guid = def_guid;
+          if (def_guid && def_guid !== def_template?.guid) {
+            const a = this.getCustomer();
+            a!.def_template_guid = def_guid;
             this.repairForm?.get('is_default_template')?.setValue(true);
           }
 

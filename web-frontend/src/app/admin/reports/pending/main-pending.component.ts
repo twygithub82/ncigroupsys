@@ -106,7 +106,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     'status_cv'
   ];
 
-  pageTitle = 'MENUITEMS.REPORTS.LIST.PENDING'
+  pageTitle = 'MENUITEMS.REPORTS.LIST.ESTIMATE-INVOICES'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.REPORTS.TEXT', route: '/admin/reports/pending' }
   ]
@@ -167,7 +167,7 @@ export class MainPendingComponent extends UnsubscribeOnDestroyAdapter implements
     CUSTOMER_REPORT: 'COMMON-FORM.CUSTOMER-REPORT',
     YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
-    PENDING_ESTIMATE: "MENUITEMS.REPORTS.LIST.PENDING",
+    PENDING_ESTIMATE: "MENUITEMS.REPORTS.LIST.PENDING-ESTIMATE",
     PENDING_INVOICES:'MENUITEMS.BILLING.LIST.PENDING'
 
   }

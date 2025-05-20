@@ -50,6 +50,7 @@ import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { SteamPartGO } from 'app/data-sources/steam-part';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -72,6 +73,7 @@ import { map } from 'rxjs/operators';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
 import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
+import { OverwriteSteamingApprovalFormDialogComponent } from './overwrite-steam-appr-form-dialog/overwrite-steam-appr-form-dialog.component';
 import { OverwriteCleanStatusFormDialogComponent } from './overwrite-clean-status-form-dialog/overwrite-clean-status-form-dialog.component';
 import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
 import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialog/overwrite-job-no-form-dialog.component';
@@ -79,6 +81,7 @@ import { OverwriteLastCargoFormDialogComponent } from './overwrite-last-cargo-fo
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -255,7 +258,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
     COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
     BACK: 'COMMON-FORM.BACK',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE',
+    SAVE: 'COMMON-FORM.SAVE',
     BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
     FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
     BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
@@ -456,7 +459,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     KG: 'COMMON-FORM.KG',
     LITERS: 'COMMON-FORM.LITERS',
     EXPAND_ALL: 'COMMON-FORM.EXPAND-ALL',
-    COLLAPSE_ALL: 'COMMON-FORM.COLLAPSE-ALL'
+    COLLAPSE_ALL: 'COMMON-FORM.COLLAPSE-ALL',
+    QTY: 'COMMON-FORM.QTY',
+    HOUR: 'COMMON-FORM.HOUR',
+    UNIT_PRICE: 'COMMON-FORM.UNIT-PRICE',
+    LABOUR: 'COMMON-FORM.LABOUR',
+    BILLING_TO: 'COMMON-FORM.BILLING-TO',
+    BILLING_BRANCH: 'COMMON-FORM.BILING-BRANCH',
+    OVERWRITE_DATA: 'COMMON-FORM.OVERWRITE-DATA'
   }
 
   sot_guid: string | null | undefined;
@@ -517,6 +527,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   tcDS: TariffCleaningDS;
   tdDS: TariffDepotDS;
   billDS: BillingDS;
+  plDS: PackageLabourDS;
 
   customerCodeControl = new UntypedFormControl();
   ownerControl = new UntypedFormControl();
@@ -558,7 +569,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   tariffDepotList: TariffDepotItem[] = [];
   packageBufferList?: PackageBufferItem[];
+  packageLabourItem?: PackageLabourItem;
   sotDepotCostDetails: any = []
+  billingBranchList: CustomerCompanyItem[] = [];
 
   last_test_desc?: string = "";
   next_test_desc?: string = "";
@@ -672,6 +685,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.tdDS = new TariffDepotDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
+    this.plDS = new PackageLabourDS(this.apollo);
 
     const breakpointObserver = inject(BreakpointObserver);
     this.stepperOrientation = breakpointObserver
@@ -877,6 +891,19 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (data?.length > 0) {
         console.log(`getCustomerPackageCost: `, data)
         this.packageBufferList = data;
+      }
+    });
+  }
+
+  getCustomerLabourPackage(customer_company_guid: string) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    }
+    this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data?.length > 0) {
+        this.packageLabourItem = data[0];
       }
     });
   }
@@ -1193,6 +1220,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   steamHeatingLogDialog(event: Event, steam: SteamItem) {
     this.preventDefault(event);
+    return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1545,13 +1573,68 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(newIgs)
         this.cleaningDS.updateInGateCleaning(newSot, newIgs).subscribe(result => {
           console.log(result)
-          this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {
-            if (data.length > 0) {
-              console.log(`reload cleaning: `, data)
-              this.cleaningItem = data;
-            }
-          });
-          this.handleSaveSuccess(result?.data?.updateCleaning);
+          if (this.sot_guid) {
+            this.loadDataHandling_cleaning(this.sot_guid)
+            this.handleSaveSuccess(result?.data?.updateCleaning);
+          }
+        });
+      }
+    });
+  }
+
+  overwriteSteamingApprovalDialog(event: Event, row: SteamItem) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteSteamingApprovalFormDialogComponent, {
+      width: '80vw',
+      height: '90vh',
+      data: {
+        sot: this.sot,
+        steamItem: row,
+        ig: this.ig,
+        igs: this.igs,
+        tcDS: this.tcDS,
+        ccDS: this.ccDS,
+        packageLabourItem: this.packageLabourItem,
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          packageBufferList: this.packageBufferList,
+          processStatusCvList: this.processStatusCvList,
+          billingBranchList: this.billingBranchList,
+          last_test_desc: this.last_test_desc,
+          next_test_desc: this.next_test_desc,
+          sot_purpose: this.displayTankPurpose(this.sot!)
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        const newSteam: any = new SteamItem(row);
+        newSteam.job_no = result.job_no;
+        newSteam.bill_to_guid = result.billing_to;
+        newSteam.overwrite_remarks = result.overwrite_remarks;
+        newSteam.steaming_part = result.steaming_part?.map((x: any) => {
+          const obj = new SteamPartGO({ ...x });
+          obj['action'] = 'overwrite';
+          return obj;
+        }) ?? [];
+        newSteam.action = "overwrite";
+
+        console.log(newSteam)
+        this.steamDS.updateSteam(newSteam).subscribe(result => {
+          console.log(result)
+          if (this.sot_guid) {
+            this.loadDataHandling_steam(this.sot_guid)
+            this.handleSaveSuccess(result?.data?.updateSteaming);
+          }
         });
       }
     });
@@ -2063,7 +2146,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canOverwriteCleaningApproval() {
     const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
-    return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '');
+    return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '') && !this.cleaningItem?.[0]?.customer_billing_guid;
+  }
+
+  canOverwriteSteamingApproval(row: SteamItem) {
+    const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
+    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
@@ -2402,6 +2490,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sot = data[0];
         this.loadSotDepotCost();
         this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
+        this.getCustomerLabourPackage(this.sot?.storing_order?.customer_company?.guid!);
         // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
         this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
           console.log(`packageDepot: `, data)
@@ -2413,6 +2502,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.last_test_desc = this.getLastTest();
           this.next_test_desc = this.getNextTest();
         });
+        this.loadDataHandling_branch();
         // if (this.sot?.in_gate?.length) {
         //   this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
         // }
@@ -2535,6 +2625,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(`tariffDepot: `, data)
         this.tariffDepotList = data;
       }
+    });
+  }
+
+  loadDataHandling_branch() {
+    this.ccDS.getCustomerAndBranch(this.sot?.storing_order?.customer_company?.guid!).subscribe(cc => {
+      this.billingBranchList = cc;
     });
   }
 

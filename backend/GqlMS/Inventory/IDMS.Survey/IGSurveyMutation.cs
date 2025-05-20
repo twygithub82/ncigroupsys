@@ -371,7 +371,7 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
-        private async Task<int>AddSteaming(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date)
+        private async Task<int> AddSteaming(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date)
         {
             int retval = 0;
             try
@@ -384,6 +384,10 @@ namespace IDMS.Survey.GqlTypes
                 var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
                 var description = $"Steaming/Heating cost of ({last_cargo})";
                 var repTemp = sot?.required_temp;
+
+                //Added for later use
+                var unit_type_guid = sot?.unit_type_guid;
+                var isFlatRate = await context.Set<tank>().Where(t => t.guid == unit_type_guid).Select(t => t.flat_rate).FirstOrDefaultAsync();
 
                 bool isExclusive = false;
                 //First check whether have exclusive package cost
@@ -420,8 +424,8 @@ namespace IDMS.Survey.GqlTypes
                     throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
 
                 var defQty = 1;
-                var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
-
+                //var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
+ 
                 //steaming handling
                 var newSteam = new steaming();
                 newSteam.guid = Util.GenerateGUID();
@@ -431,12 +435,33 @@ namespace IDMS.Survey.GqlTypes
                 newSteam.status_cv = CurrentServiceStatus.APPROVED;
                 newSteam.bill_to_guid = customerGuid;
                 newSteam.job_no = sot?.job_no;
-                newSteam.est_cost = totalCost;
-                newSteam.total_cost = totalCost;
+
                 newSteam.approve_dt = ingate_date;
                 newSteam.approve_by = user;
                 newSteam.estimate_by = user;
                 newSteam.estimate_dt = ingate_date;
+
+                var cost = 0.0;
+                var rate = 0.0;
+                if (isFlatRate ?? false)
+                {
+                    cost = result?.cost ?? 0.0;
+                    rate = result?.cost ?? 0.0;
+                    newSteam.total_hour = 1.0;
+                    newSteam.est_hour = 1.0;
+                }
+                else
+                {
+                    cost = result?.labour ?? 0.0;
+                    rate = result?.labour ?? 0.0;
+                    newSteam.est_hour = 1.0;
+                    //if hourly_rate --> total_hour updated after completed
+                }
+                //Added for later use
+                newSteam.rate = rate;
+                newSteam.est_cost = cost;
+                newSteam.total_cost = cost;
+                newSteam.flat_rate = isFlatRate;
                 await context.AddAsync(newSteam);
 
                 //steaming_part handling

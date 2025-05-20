@@ -279,7 +279,7 @@
         "TANK-ACTIVITY-REPORT": "Tank Activity Report",
         "INVENTORY": "Inventory",
         "DAILY-INVENTORY": "Daily Inventory",
-        "DAILY-INVENTORY-SUMMARY": "Daily Inventory Summary",
+        "INVENTORY-SUMMARY": "Inventory Summary",
         "YARD-STATUS": "Yard Status",
         "CLEANING-INVENTORY": "Cleaning Inventory",
         "CLEANING-ACTIVITY": "Cleaning Activity",
@@ -287,8 +287,8 @@
         "TANK-SURVEY": "Tank Survey",
         "TANK-SURVEY-REPORT": "Tank Survey Report",
         "PERIODIC-TEST": "Periodic Test",
-        "PENDING-ESTIMATE": "Estimate Pending",
-        "PENDING": "Pending Estimate"
+        "PENDING-ESTIMATE": "Pending Estimate",
+        "ESTIMATE-INVOICES": "Estimate/Invoices"
       }
     },
     "ADMIN-REPORTS": {
@@ -415,7 +415,7 @@
     "REFRESH": "Refresh",
     "EXPORT": "Export",
     "SELECT-ATLEAST-ONE": "Please select at least one.",
-    "ADD-ATLEAST-ONE": "One Or More Required",
+    "ADD-ATLEAST-ONE": "One or more required",
     "CUSTOMER": "Customer",
     "ALIAS-NAME": "Alias Name",
     "SO-DATE": "SO Date",
@@ -1063,8 +1063,8 @@
     "TO_YARD": "To Yard",
     "FROM": "From",
     "TO": "To",
-    "OPENING-BALANCE": "Opening Balance",
-    "CLOSING-BALANCE": "Closing Balance",
+    "OPENING-BALANCE": "Opening Quantity",
+    "CLOSING-BALANCE": "Closing Quantity",
     "DUE-TYPE": "Due Type",
     "NEXT-TEST-TYPE-DUE": "Next Test Type",
     "OTHERS": "Others",
@@ -1269,7 +1269,8 @@
     "LITERS": "Liters",
     "EXPAND-ALL": "Expand All",
     "COLLAPSE-ALL": "Collapse All",
-    "REPAIR-ESTIMATE": "Repair Estimate"
+    "REPAIR-ESTIMATE": "Repair Estimate",
+    "OVERWRITE-DATA": "Overwrite Data"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

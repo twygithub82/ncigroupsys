@@ -303,7 +303,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     CLOSING_BALANCE: 'COMMON-FORM.CLOSING-BALANCE',
     LOCATION: 'COMMON-FORM.LOCATION',
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
-    DAILY_INVENTORY_SUMMARY: 'MENUITEMS.REPORTS.LIST.DAILY-INVENTORY-SUMMARY',
+    DAILY_INVENTORY_SUMMARY: 'MENUITEMS.REPORTS.LIST.INVENTORY-SUMMARY',
     S_N:'COMMON-FORM.S_N',
 
   }
@@ -846,11 +846,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 35,  minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -870,7 +870,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -879,8 +879,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     //  pdf.setFontSize(8);
     //  pdf.setTextColor(0, 0, 0); // Black text
 
-      const invDate = `${this.translatedLangText.INVENTORY_DATE}:  ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 10, 8)
+  const invDate = `${this.translatedLangText.INVENTORY_DATE}:  ${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 8, 8)
 
     
     if (this.report_inventory.length > 0) {
@@ -918,7 +918,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         autoTable(pdf, {
           head: subHeaders,
           body: subData,
-          startY: startY, // Start table at the current startY value
+          startY: startY - 5, // Start table at the current startY value
           
           theme: 'grid',
           styles: {
@@ -941,8 +941,6 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
               if (data.column.index === 0) {
                 data.cell.colSpan = 2;  // Merge 4 columns into one
                 data.cell.styles.halign = 'right'; // Center text horizontally
-
-
               }
             }
             if (data.row.index === idx && data.column.index > 0 && data.column.index < 2) {
@@ -1057,7 +1055,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 12, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
     });
 

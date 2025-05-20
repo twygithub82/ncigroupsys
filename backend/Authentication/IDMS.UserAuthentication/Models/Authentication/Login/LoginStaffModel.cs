@@ -10,4 +10,13 @@ namespace IDMS.UserAuthentication.Models.Authentication.Login
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
     }
+
+    public class UserClaimModel
+    {
+        [Required(ErrorMessage = "UserId is required")]
+        public string? UserId { get; set; }
+
+        //[Required(ErrorMessage = "Password is required")]
+        //public string? Password { get; set; }
+    }
 }

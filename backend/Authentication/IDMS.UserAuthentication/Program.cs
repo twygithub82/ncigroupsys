@@ -93,6 +93,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "IDMS Authentication API", Version = "v1" });
@@ -106,11 +107,6 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "JWT Authorization header using the Bearer scheme."
-        //Reference = new OpenApiReference
-        //{
-        //    Id = JwtBearerDefaults.AuthenticationScheme,
-        //    Type = ReferenceType.SecurityScheme
-        //}
     };
 
     c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);

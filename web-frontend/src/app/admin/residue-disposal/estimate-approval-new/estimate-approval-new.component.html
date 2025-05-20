@@ -504,12 +504,12 @@
             }
           </div>
           <div class="row m-t-3">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-5">
               <button mat-flat-button type="button" aria-label="Back to previous page" (click)="GoBackPrevious($event)">
                 <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
               </button>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+            <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 align-right">
               @if (canExport()) {
               <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
                 (click)="onExport($event)">
@@ -535,7 +535,7 @@
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.SAVE_AND_SUBMIT}}
+                {{translatedLangText.SAVE}}
               </button>
               }
               }

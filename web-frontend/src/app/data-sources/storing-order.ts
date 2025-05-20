@@ -330,7 +330,7 @@ export class StoringOrderDS extends BaseDataSource<StoringOrderItem> {
   }
 
   canAdd(so: StoringOrderItem): boolean {
-    return !so.status_cv || so.status_cv === 'PENDING' || so.status_cv === 'PROCESSING';
+    return !so.status_cv || so.status_cv === 'PENDING';
   }
 
   getAccepetedStatusCount(so: StoringOrderItem): number {
