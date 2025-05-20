@@ -522,6 +522,18 @@ export class Utility {
     return await response.blob();
   }
 
+  static downloadFile(blob: Blob, fileName: string) {
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(url);
+  }
+
   static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
     if (input === undefined || input === null || input === '') {
       return '';

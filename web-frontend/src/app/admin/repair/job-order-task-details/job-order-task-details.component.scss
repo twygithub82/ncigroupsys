@@ -1,10 +1,10 @@
 ::ng-deep {
   .multiline-tooltip {
-      white-space: pre-line;
+    white-space: pre-line;
 
-      .mdc-tooltip__surface {
-        max-width: unset;
-      }
+    .mdc-tooltip__surface {
+      max-width: unset;
+    }
   }
 }
 
@@ -12,6 +12,6 @@
   border: 1px solid #ccc;
 }
 
-.div-bg-blue{
+.div-bg-blue {
   background-color: #b8cdf3;
 }

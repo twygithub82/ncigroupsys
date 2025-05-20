@@ -1346,12 +1346,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   parse2Decimal(figure: number | string) {
-    if (typeof (figure) === 'string') {
-      return parseFloat(figure).toFixed(2);
-    } else if (typeof (figure) === 'number') {
-      return figure.toFixed(2);
-    }
-    return "";
+    return Utility.formatNumberDisplay(figure)
   }
 
   calculateCost() {

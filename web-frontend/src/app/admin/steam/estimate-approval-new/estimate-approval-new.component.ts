@@ -1457,11 +1457,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/steam/estimate-approval'], {
         state: this.historyState
-
-      }
-      );
-
-
+      });
     }
   }
 
@@ -1547,8 +1543,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   undeleteItem(event: Event, row: SteamItem, index: number) {
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1579,7 +1573,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         this.resetSelectedItemForUpdating();
       }
     });
-
   }
 
   isPartValid(): Boolean {
@@ -1665,7 +1658,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
 
     return calResCost;
-
   }
 
   IsAbleToApprove() {
@@ -1677,11 +1669,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     event.stopPropagation(); // Prevents click event from bubbling up
     if (this.isDisabled()) return;
     stm.approve_part = stm.approve_part != null ? !stm.approve_part : false;
-    // if(stm?.action==='' || stm?.action===null)
-    //   {
     stm.action = 'EDIT';
-
-    // }
   }
 
   IsApprovePart(stm: SteamPartItem) {
@@ -1693,7 +1681,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   canApprove() {
-
     return this.checkApprovePart() && this.steamDS.canApprove(this.steamItem!) && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
   }
 
@@ -1738,9 +1725,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
           this.handleCancelSuccess(result?.data?.updateSteamingStatus);
         });
-        // this.residueDS.cancelResidue(reList).subscribe(result => {
-        //   this.handleCancelSuccess(result?.data?.cancelResidue)
-        // });
       }
     });
   }
