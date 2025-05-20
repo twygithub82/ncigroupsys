@@ -125,7 +125,7 @@
         @if (!(repDS.loading$ | async) && this.noCond) {
         <mat-divider></mat-divider>
         <div class="m-l-20 pt-3" color="warm" [style.display]="surveyList.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
+          <h5 class="m-b-15 col-red"><i>{{translatedLangText.ONE_CONDITION_NEEDED}}</i></h5>
         </div>
         }
         <!-- Loading spinner -->
