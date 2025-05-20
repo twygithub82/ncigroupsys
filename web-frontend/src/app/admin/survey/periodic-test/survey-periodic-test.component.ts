@@ -432,6 +432,9 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
                   },
                   approve_part: {
                     neq: false
+                  },
+                  delete_dt: {
+                    eq: null
                   }
                 }
               }
