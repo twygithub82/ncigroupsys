@@ -85,7 +85,8 @@
             <mat-label>{{data.translatedLangText.LOCATION}}</mat-label>
             <mat-select formControlName="location_cv">
               @for (codeValue of data.populateData.partLocationCvList; track codeValue) {
-              <mat-option [value]="codeValue.code_val"  (onSelectionChange)="onOptionClicked($event, codeValue.code_val,'location_cv');" >{{codeValue.description}}</mat-option>
+              <mat-option [value]="codeValue.code_val"
+                (onSelectionChange)="onOptionClicked($event, codeValue.code_val,'location_cv');">{{codeValue.description}}</mat-option>
               }
             </mat-select>
             <!-- @if (repairPartForm.get('location_cv')?.hasError('required')) {
@@ -151,20 +152,19 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.HOUR}}</mat-label>
-            <input matInput formControlName="hour" type="number" min="0" required>
+            <input matInput formControlName="hour" type="number" min="0" [allowDecimal]="true" required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.MATERIAL_COST}}</mat-label>
-            <input matInput formControlName="material_cost" type="number"  min="0" required>
+            <input matInput formControlName="material_cost" type="number" min="0" [allowDecimal]="true" required>
           </mat-form-field>
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if(!isEdit()) {
-        <button mat-flat-button color="accent" [disabled]="!this.repairPart.tariff_repair_guid"
-          (click)="submit(true)">
+        <button mat-flat-button color="accent" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(true)">
           <mat-icon>
             add
           </mat-icon>
