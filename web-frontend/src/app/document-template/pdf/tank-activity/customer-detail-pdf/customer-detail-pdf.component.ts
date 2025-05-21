@@ -536,7 +536,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
@@ -609,21 +609,21 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       1: { halign: 'center', cellWidth: 19, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      6: { halign: 'left', cellWidth: 35, minCellHeight: minHeightBodyCell },
+      6: { halign: 'left', cellWidth: 39, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       11: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      12: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       14: { halign: 'center', cellWidth: 13, minCellHeight: minHeightBodyCell },
       15: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       16: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       17: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      18: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      18: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
       // 19: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       // 20: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },
       // 21: { halign: 'left', cellWidth: 12, minCellHeight: minHeightBodyCell },

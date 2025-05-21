@@ -181,7 +181,7 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
                     <table mat-table [dataSource]="repList" matSort
-                      class="mat-cell advance-table hover-highlight dark-header" multiTemplateDataRows>
+                      class="mat-cell advance-table hover-highlight dark-header curve-table" multiTemplateDataRows>
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -215,12 +215,12 @@
                       </ng-container>
                       <ng-container matColumnDef="damange">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           >
                           {{translatedLangText.DAMAGE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="truncate-text">
                             <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
                             <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
@@ -232,12 +232,12 @@
                       </ng-container>
                       <ng-container matColumnDef="repair">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           >
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
                           <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
                             matTooltipClass="multiline-tooltip">
@@ -247,12 +247,12 @@
                       </ng-container>
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           >
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
                           {{row.description}}
                         </mat-cell>
@@ -291,7 +291,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
@@ -305,7 +305,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
