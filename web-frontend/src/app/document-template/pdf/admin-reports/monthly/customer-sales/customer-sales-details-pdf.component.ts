@@ -605,7 +605,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
   GetReportColumnsHeader(): any{
     const headerRow: any[] = [
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-      { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 1, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
     ];
 
@@ -734,7 +734,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
       let itm = this.repData?.customer_sales?.[n];
         data.push([
           (++idx).toString(), 
-          (itm?.name || '') + ' ' + (itm?.code || ''), 
+          (itm?.code || '') + ' (' + (itm?.name || '') + ')', 
           (itm?.tank_in_count),
           (itm?.steam_count)||"",
           Utility.formatNumberDisplay(itm?.steam_cost),
