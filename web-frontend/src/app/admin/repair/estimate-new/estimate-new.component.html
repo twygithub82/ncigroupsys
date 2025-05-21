@@ -820,11 +820,11 @@
                   modulePackageService.isCustomizedPackage()) {
                   @if (canExport()) {
                   <button mat-flat-button color="accent"
-                    [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async)" class="m-r-5"
+                    [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async) || (isExportingPDF)" class="m-r-5"
                     (click)="onExport($event)">
-                    @if (!(repairDS.loading$ | async) && !(isFileActionLoading$ | async)) {
+                    @if (!(repairDS.loading$ | async) && !(isFileActionLoading$ | async) && !(isExportingPDF)) {
                     <i class="fas fa-file-export"></i>
-                    } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)) {
+                    } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)||(isExportingPDF))  {
                     <mat-icon>
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                     </mat-icon>

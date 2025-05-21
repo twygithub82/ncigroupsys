@@ -6,7 +6,7 @@ import { Utility } from "./utility";
 
 export class PDFUtility {
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
-    bold :boolean=false,fontFamily: string = 'helvetica',wrap:boolean=false,maxWidth:number=0) {
+    bold :boolean=false,fontFamily: string = 'helvetica',wrap:boolean=false,maxWidth:number=0, underline: boolean = false) {
 
     pdf.saveGraphicsState();
     const fontStyle = bold ? 'bold' : 'normal';
@@ -20,14 +20,23 @@ export class PDFUtility {
       pdf.setFontSize(fontSize); // Title font size 
       pdf.text(content, leftPost, topPos);
     }
+
+    if (underline) {
+    const textWidth = pdf.getStringUnitWidth(content) * fontSize / pdf.internal.scaleFactor;
+    const underlineY = topPos + 0.8; // Adjust as needed for spacing under text
+    pdf.setLineWidth(0.1);
+    pdf.line(leftPost, underlineY, leftPost + textWidth, underlineY);
+   }
+
+   
     // pdf.setFont(fontFamily, fontStyle);
     // pdf.setFontSize(fontSize); // Title font size 
     // pdf.text(content, leftPost, topPos); // Position it at the top
     pdf.restoreGraphicsState();
   }
 
-  static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number) {
-    pdf.setFontSize(14); // Title font size 
+  static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number=14) {
+    pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
 

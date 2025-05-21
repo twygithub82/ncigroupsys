@@ -1,60 +1,52 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
-import { RepairItem } from './repair';
-//import { REPDamageRepairItem } from './rep-damage-repair';
-import { TariffResidueItem } from './tariff-residue';
 import { JobOrderItem } from './job-order';
-import { TariffSteamingItem } from './tariff-steam';
 import { SteamItem } from './steam';
+import { TariffSteamingItem } from './tariff-steam';
 
 export class SteamPartGO {
-  
+
   public guid?: string;
-  public steaming_guid?:string;
-  public tariff_steaming_guid?:string;
-  public steaming_exclusive_guid?:string;
-  public job_order_guid?:string;
+  public steaming_guid?: string;
+  public tariff_steaming_guid?: string;
+  public steaming_exclusive_guid?: string;
+  public job_order_guid?: string;
   public description?: string;
   public quantity?: number;
-  public labour?:number;
-  public cost?:number;
+  public labour?: number;
+  public cost?: number;
 
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public complete_dt?:number;
+  public complete_dt?: number;
 
 
   public approve_qty?: number;
-  public approve_labour?:number;
+  public approve_labour?: number;
   public approve_cost?: number;
   public approve_part?: boolean;
 
-  public action?:string;
-  
-  
-  
- 
+  public action?: string;
+
+
+
+
   //public residue_guid?: string;
-  
+
   //public team_guid?:string;
-  
+
 
 
   constructor(item: Partial<SteamPartGO> = {}) {
-    this.guid = item.guid?item.guid:'';
-    
+    this.guid = item.guid ? item.guid : '';
+
     this.steaming_guid = item.steaming_guid;
     this.tariff_steaming_guid = item.tariff_steaming_guid;
-    this.steaming_exclusive_guid=item.steaming_exclusive_guid;
+    this.steaming_exclusive_guid = item.steaming_exclusive_guid;
     this.job_order_guid = item.job_order_guid;
     this.description = item.description;
     this.quantity = Number(item.quantity);
@@ -66,9 +58,9 @@ export class SteamPartGO {
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
     this.complete_dt = item.complete_dt;
-    this.approve_qty = (item.approve_qty?Number(item.approve_qty):item.approve_qty);
-    this.approve_labour = (item.approve_labour?Number(item.approve_labour):item.approve_labour);
-    this.approve_cost = (item.approve_cost?Number(item.approve_cost):item.approve_cost);
+    this.approve_qty = (item.approve_qty ? Number(item.approve_qty) : item.approve_qty);
+    this.approve_labour = (item.approve_labour ? Number(item.approve_labour) : item.approve_labour);
+    this.approve_cost = (item.approve_cost ? Number(item.approve_cost) : item.approve_cost);
     this.approve_part = item.approve_part;
     this.action = item.action;
   }
@@ -76,17 +68,17 @@ export class SteamPartGO {
 
 export class SteamPartItem extends SteamPartGO {
   public tariff_steaming?: TariffSteamingItem;
-  public steaming_exclusive?:TariffSteamingItem;
+  public steaming_exclusive?: TariffSteamingItem;
   public job_order?: JobOrderItem;
-  public steaming?:SteamItem;
-  
+  public steaming?: SteamItem;
+
   constructor(item: Partial<SteamPartItem> = {}) {
     super(item)
     this.tariff_steaming = item.tariff_steaming;
-    this.steaming_exclusive=item.steaming_exclusive;
-    this.job_order=item.job_order;
-    this.steaming=item.steaming;
-    
+    this.steaming_exclusive = item.steaming_exclusive;
+    this.job_order = item.job_order;
+    this.steaming = item.steaming;
+
   }
 }
 
@@ -173,7 +165,7 @@ export const GET_SCHEDULING_SOT = gql`
 `;
 
 export class SteamPartDS extends BaseDataSource<SteamPartItem> {
-  
+
 
   constructor(private apollo: Apollo) {
     super();

@@ -1269,6 +1269,7 @@
     "LITERS": "Liters",
     "EXPAND-ALL": "Expand All",
     "COLLAPSE-ALL": "Collapse All",
+    "REPAIR-ESTIMATE": "Repair Estimate",
     "OVERWRITE-DATA": "Overwrite Data"
   },
   "CLEAN-PROCEDURES": {

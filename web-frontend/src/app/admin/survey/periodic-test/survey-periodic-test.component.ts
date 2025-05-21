@@ -186,7 +186,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  availableStatuses: string[] = ["CLEANING","STEAM","RESIDUE","REPAIR","STORAGE","RELEASED"];
+  availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE", "RELEASED"];
 
   constructor(
     public httpClient: HttpClient,
@@ -236,7 +236,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       survey_dt_end: [''],
       certificate_cv: [''],
       depot_status_cv: [''],
-      status_cv:['']
+      status_cv: ['']
     });
   }
 
@@ -270,7 +270,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
-      this.statusCvList= data.filter(s=>this.availableStatuses.includes(s.code_val!));
+      this.statusCvList = data.filter(s => this.availableStatuses.includes(s.code_val!));
       this.statusCvList.sort((a, b) => {
         return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
       });
@@ -429,6 +429,12 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
                     group_name_cv: {
                       eq: "PERIODIC_TEST"
                     }
+                  },
+                  approve_part: {
+                    neq: false
+                  },
+                  delete_dt: {
+                    eq: null
                   }
                 }
               }
@@ -540,16 +546,14 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       where.in_gate = { some: igSearch };
     }
 
-    var tnkStatus : string[]=[...this.availableStatuses];
-    if (this.searchForm!.get('status_cv')?.value?.length>0)
-    {
-      tnkStatus=[...this.searchForm!.get('status_cv')?.value];
+    var tnkStatus: string[] = [...this.availableStatuses];
+    if (this.searchForm!.get('status_cv')?.value?.length > 0) {
+      tnkStatus = [...this.searchForm!.get('status_cv')?.value];
     }
-    if(tnkStatus.includes('STORAGE'))
-    {
+    if (tnkStatus.includes('STORAGE')) {
       tnkStatus.push('RO_GENERATED');
     }
-    where.and.push({tank_status_cv:{in:tnkStatus}});
+    where.and.push({ tank_status_cv: { in: tnkStatus } });
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
   }
@@ -799,7 +803,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       survey_dt_end: '',
       certificate_cv: '',
       depot_status_cv: '',
-      status_cv:''
+      status_cv: ''
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');

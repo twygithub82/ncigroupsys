@@ -353,11 +353,11 @@
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         >
-                        {{translatedLangText.MATERIAL}} $
+                        {{translatedLangText.MATERIAL}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
+                        <span class="mobile-label">{{translatedLangText.MATERIAL}}:</span>
                         <div class="cost-label">
                           <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
                         </div>
@@ -611,7 +611,7 @@
                     @if (isOwner) {
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.OWNER}}</span>
                         </div>
                       </div>
@@ -704,7 +704,7 @@
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.LESSEE}}</span>
                         </div>
                       </div>
