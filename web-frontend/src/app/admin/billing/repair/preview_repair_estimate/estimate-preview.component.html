@@ -231,7 +231,7 @@
                       </ng-container>
                       <ng-container matColumnDef="repair">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           >
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
@@ -246,7 +246,7 @@
                       </ng-container>
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           >
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
@@ -287,7 +287,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
@@ -300,7 +300,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
