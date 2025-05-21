@@ -1270,7 +1270,8 @@
     "EXPAND-ALL": "Expand All",
     "COLLAPSE-ALL": "Collapse All",
     "REPAIR-ESTIMATE": "Repair Estimate",
-    "OVERWRITE-DATA": "Overwrite Data"
+    "OVERWRITE-DATA": "Overwrite Data",
+    "TEAM-UNASSIGN-SUCCESS": "Team Unassigned Successfully"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

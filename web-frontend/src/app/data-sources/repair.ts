@@ -1496,6 +1496,12 @@ export const ROLLBACK_REPAIR_STATUS = gql`
   }
 `
 
+export const ROLLBACK_ASSIGNED_REPAIR = gql`
+  mutation rollbackAssignedRepair($repairGuid: [String!]) {
+    rollbackAssignedRepair(repairGuid: $repairGuid)
+  }
+`
+
 export const APPROVE_REPAIR = gql`
   mutation ApproveRepair($repair: repairInput!) {
     approveRepair(repair: $repair)
@@ -1814,6 +1820,15 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   //   });
   // }
 
+  rollbackAssignedRepair(repairGuid: string[]): Observable<any> {
+    return this.apollo.mutate({
+      mutation: ROLLBACK_ASSIGNED_REPAIR,
+      variables: {
+        repairGuid
+      }
+    });
+  }
+
   rollbackRepairApproval(repair: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
@@ -1929,7 +1944,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAssign(re: RepairItem | undefined): boolean {
-    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'ASSIGNED' ||  re?.status_cv === 'JOB_IN_PROGRESS';
+    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
   }
 
   canQCComplete(re: RepairItem | undefined): boolean {
