@@ -13,10 +13,10 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <div class="export-button m-l-" [matTooltip]="translatedLangText.EXPORT">
+                  <!-- <div class="export-button m-l-" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
-                  </div>
+                  </div> -->
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
@@ -226,7 +226,7 @@
                 @if ((filterDeleted(row.steaming || [])?.length ?? 0) > 0) {
                 <div class="responsive_table">
                   <table mat-table [dataSource]="filterDeleted(row.steaming || [])" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef ></mat-header-cell>
                       <mat-cell *matCellDef="let steamRow">{{steamRow.guid}}</mat-cell>

@@ -679,7 +679,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     // });
     // const finalJobOrder = Array.from(jobOrderMap.values());
     console.log(finalJobOrder);
-    const without4x = this.repList.filter(part =>
+    const without4xPartsNotAssign = this.repList.filter(part =>
       !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair) && this.repairPartDS.isApproved(part)
     );
     this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
@@ -691,8 +691,16 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
         });
       }
 
-      const action = without4x?.length ? "PARTIAL_ASSIGN" : "ASSIGN";
-      console.log(without4x?.length ? "some parts are not assigned" : "all parts are assigned");
+      let action = "PARTIAL_ASSIGN";
+      if (!without4xPartsNotAssign?.length) {
+        action = "ASSIGN";
+        const allJobInProgress = finalJobOrder.every(x => x.status_cv == 'JOB_IN_PROGRESS');
+        if (allJobInProgress) {
+          action = "IN_PROGRESS";
+        }
+      }
+
+      console.log(without4xPartsNotAssign?.length ? "some parts are not assigned" : "all parts are assigned");
 
       const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
         guid: this.repairItem!.guid,

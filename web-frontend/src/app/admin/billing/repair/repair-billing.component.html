@@ -235,9 +235,13 @@
                     <div class="w-xl-12 w-lg-50">
                         <span class="font-bold font-small">{{sotRow.tank_no}}</span>
                       </div>
-                      <div class="w-xl-26 w-lg-50 font-small">
+                      <div class="w-xl-28 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
                         {{ccDS.displayName(sotRow.storing_order?.customer_company)}}
+                      </div>
+                      <div class="w-xl-15 w-lg-50 font-small">
+                        <span class="font-bold">{{translatedLangText.TOTAL_COST}}:</span>
+                        {{getTotalCost(sotRow)}}
                       </div>
                       <div class="w-xl-14 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
@@ -250,10 +254,6 @@
                       <div class="w-xl-17 w-lg-50 font-small">
                         <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
                         {{getRepairOptionDescription(sotRow.purpose_repair_cv)}}
-                      </div>
-                       <div class="w-xl-13 w-lg-50 font-small">
-                        <span class="font-bold">{{translatedLangText.TOTAL_COST}}:</span>
-                        {{getTotalCost(sotRow)}}
                       </div>
                     <!-- <div class="w-40">
                       <span class="font-bold me-1">{{translatedLangText.TANK_NO}}:</span>

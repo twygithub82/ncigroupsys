@@ -12,7 +12,7 @@
               <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
                 @for (tab of allowedTabs; track tab.label) {
                   @if (tab.component == 'app-customer-report') {
-                    <mat-tab [label]="translatedLangText.CUSTOMER_REPORT">
+                    <mat-tab [label]="translatedLangText.TANK_ACTIVITY">
                       <app-customer-report #tankActCustomerReport></app-customer-report>
                     </mat-tab>
                   }
