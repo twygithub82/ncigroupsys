@@ -21,7 +21,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
@@ -49,6 +49,8 @@ import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { JobOrderQCComponent } from "../../repair/job-order-qc/job-order-qc.component";
 import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-task.component";
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ComponentUtil } from 'app/utilities/component-util';
 
 @Component({
   selector: 'app-job-order',
@@ -97,7 +99,8 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     'customer',
     'estimate_no',
     'allocate_dt',
-    'status_cv'
+    'status_cv',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.JOB-ORDER'
@@ -154,6 +157,9 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     SEARCH: 'COMMON-FORM.SEARCH',
+    UNASSIGN: 'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
+    TEAM_UNASSIGNED_SUCCESS: 'COMMON-FORM.TEAM-UNASSIGN-SUCCESS'
   }
 
   selectedTabIndex = 0;
@@ -298,7 +304,21 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedPagination) {
+      this.pageIndexRepair = savedPagination.pageIndex;
+      this.pageSizeRepair = savedPagination.pageSize;
+
+      this.performSearchRepair(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
   }
 
   public loadData() {
@@ -369,18 +389,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     //   }));
 
     // TableExportUtil.exportToExcel(exportData, 'excel');
-  }
-
-  // context menu
-  onContextMenu(event: MouseEvent, item: StoringOrderItem) {
-    event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    if (this.contextMenu !== undefined && this.contextMenu.menu !== null) {
-      this.contextMenu.menuData = { item: item };
-      this.contextMenu.menu.focusFirstItem('mouse');
-      this.contextMenu.openMenu();
-    }
   }
 
   constructSearchCriteria() {
@@ -555,6 +563,42 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.jobOrderSubscriptions.push(subscription);
   }
 
+  canUnassignTeam(row: RepairItem) {
+    return row.status_cv === 'ASSIGNED' || row.status_cv === 'PARTIAL_ASSIGNED';
+  }
+
+  onUnassignTeam(event: Event, repairGuid: string) {
+    this.stopEventTrigger(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.unassignTeam(repairGuid);
+      }
+    });
+  }
+
+  unassignTeam(repairGuid: string) {
+    this.repairDS.rollbackAssignedRepair([repairGuid]).subscribe(result => {
+      console.log(result)
+      this.handleSaveSuccess(result?.data?.rollbackAssignedRepair);
+      this.refreshTable();
+    });
+  }
+
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -689,6 +733,13 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
     return this.joDS.canStartJob(jobOrderItem)
+  }
+
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      let successMsg = this.translatedLangText.SAVE_SUCCESS;
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
+    }
   }
 
   onCountChange(count: number) {
