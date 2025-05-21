@@ -76,13 +76,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
     //  'select',
     // 'img',
-    'fName',
-    'lName',
+    'invoiceno',
+    'invoicedate',
     //'email',
-    'gender',
+    'cutoffdate',
     // 'bDate',
-    'mobile',
-    // 'actions',
+    'cost',
+    'storage',
   ];
 
   action: string;
