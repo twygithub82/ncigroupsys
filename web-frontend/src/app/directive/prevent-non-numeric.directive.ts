@@ -6,27 +6,68 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 })
 export class PreventNonNumericDirective {
   @Input() restrictNonNumeric = true;
+  @Input() allowDecimal = false;
+  @Input() decimalLimit: number | null = 2;
   @Input() disableScroll = true;
 
   constructor(private el: ElementRef) { }
 
   @HostListener('keypress', ['$event'])
   onKeyPress(event: KeyboardEvent) {
-    if (this.restrictNonNumeric && !/[\d]/.test(event.key)) {
+    if (!this.restrictNonNumeric) return;
+
+    const input = this.el.nativeElement as HTMLInputElement;
+    const currentValue = input.value;
+    const key = event.key;
+
+    const allowed = this.allowDecimal ? /[\d.]$/ : /[\d]$/;
+    const isDot = key === '.';
+    const hasDecimal = currentValue.includes('.');
+
+    // Prevent invalid characters
+    if (!allowed.test(key)) {
       event.preventDefault();
+      return;
+    }
+
+    // Prevent multiple decimals
+    if (isDot && hasDecimal) {
+      event.preventDefault();
+      return;
+    }
+
+    // Predict new value after keypress
+    const selectionStart = input.selectionStart ?? currentValue.length;
+    const selectionEnd = input.selectionEnd ?? currentValue.length;
+    const nextValue =
+      currentValue.substring(0, selectionStart) +
+      key +
+      currentValue.substring(selectionEnd);
+
+    // Check future decimal precision
+    if (this.allowDecimal && this.decimalLimit !== null && nextValue.includes('.')) {
+      const decimalPart = nextValue.split('.')[1] ?? '';
+      if (decimalPart.length > this.decimalLimit) {
+        event.preventDefault();
+      }
     }
   }
-  // onKeyPress(event: KeyboardEvent) {
-  //   if (this.restrictNonNumeric && (event.key === 'e' || event.key === 'E')) {
-  //     event.preventDefault();
-  //   }
-  // }
 
   @HostListener('paste', ['$event'])
   onPaste(event: ClipboardEvent) {
-    if (this.restrictNonNumeric) {
-      const clipboardData = event.clipboardData?.getData('text');
-      if (clipboardData && /[eE]/.test(clipboardData)) {
+    if (!this.restrictNonNumeric) return;
+
+    const pasted = event.clipboardData?.getData('text') || '';
+    const decimalRegex = this.allowDecimal ? /^[0-9]*\.?[0-9]*$/ : /^[0-9]*$/;
+
+    if (!decimalRegex.test(pasted)) {
+      event.preventDefault();
+      return;
+    }
+
+    if (this.allowDecimal && this.decimalLimit !== null && pasted.includes('.')) {
+      const decimalPart = pasted.split('.')[1] ?? '';
+      if (decimalPart.length > this.decimalLimit) {
         event.preventDefault();
       }
     }
