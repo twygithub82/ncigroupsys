@@ -365,9 +365,9 @@ export class CleanYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
 
 
-    var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+    var date: string = `${this.searchForm?.get('month_start')?.value} - ${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
     if (this.searchForm?.get('month_start')?.value === this.searchForm?.get('month_end')?.value){
-        date = `${this.searchForm?.get('month_end')?.value}  ${this.searchForm?.get('year')?.value}`;
+        date = `${this.searchForm?.get('month_end')?.value} ${this.searchForm?.get('year')?.value}`;
     }
     
     if (this.searchForm?.get('month_start')?.value) {

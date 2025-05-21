@@ -28,6 +28,8 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -321,6 +323,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService,
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
@@ -599,8 +602,28 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
+  GetReportColumnsHeader(): any{
+    const headerRow: any[] = [
+      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+    ];
+
+    if (!this.modulePackageService.isStarterPackage()) {
+      headerRow.push(
+        { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+        { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
+      );
+    }
+    headerRow.push( { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } });
+    headerRow.push({ content: this.translatedLangText.IN_SERVICE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } });
+    headerRow.push( { content: this.translatedLangText.OFFHIRE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } });
+    return headerRow;
+  }
+
+
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-      const pageWidth = 297; // A4 width in mm (landscape)
+    const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 10;
     const rightMargin = 10;
@@ -626,16 +649,26 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-      { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-      { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-      { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
-      { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
-      { content: this.translatedLangText.IN_SERVICE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.OFFHIRE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }
-    ],
+    // const headers = [[
+    //   { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+    //   { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+    //   { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+    //   { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+    //   { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
+    //   { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
+    //   { content: this.translatedLangText.IN_SERVICE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+    //   { content: this.translatedLangText.OFFHIRE, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }
+    // ],
+    // [
+    //   // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
+    //   this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for LAST_PERIODIC_TEST
+    //   this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+    //   this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+    //   this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+    //   this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+    // ]];
+
+    const headers = [this.GetReportColumnsHeader(),
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
       this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for LAST_PERIODIC_TEST
@@ -648,9 +681,9 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -697,12 +730,15 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     }
     var idx = 0;
     for (let n = 0; n < (this.repData?.customer_sales?.length||0); n++) {
-
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.repData?.customer_sales?.[n];
         data.push([
-          (++idx).toString(), itm?.code || "", itm?.name || "",(itm?.tank_in_count),
-          (itm?.steam_count)||"",Utility.formatNumberDisplay(itm?.steam_cost),
+          (++idx).toString(), 
+          (itm?.name || '') + ' ' + (itm?.code || ''), 
+          (itm?.tank_in_count),
+          (itm?.steam_count)||"",
+          Utility.formatNumberDisplay(itm?.steam_cost),
+          (itm?.residue_count)||"",Utility.formatNumberDisplay(itm?.residue_cost),
           (itm?.clean_count)||"",Utility.formatNumberDisplay(itm?.clean_cost),
           (itm?.in_service_count)||"",Utility.formatNumberDisplay(itm?.in_service_cost),
           (itm?.offhire_count)||"",Utility.formatNumberDisplay(itm?.offhire_cost)
@@ -711,6 +747,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     data.push([this.translatedLangText.TOTAL,"","",(this.repData?.total_tank_in),
       (this.repData?.total_steam_count)||"",Utility.formatNumberDisplay(this.repData?.total_steam_cost),
+      (this.repData?.total_residue_count)||"",Utility.formatNumberDisplay(this.repData?.total_residue_cost),
       (this.repData?.total_clean_count)||"",Utility.formatNumberDisplay(this.repData?.total_clean_cost),
       (this.repData?.total_in_service_count)||"",Utility.formatNumberDisplay(this.repData?.total_in_service_cost),
       (this.repData?.total_offhire_count)||"",Utility.formatNumberDisplay(this.repData?.total_offhire_cost)
