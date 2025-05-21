@@ -1270,7 +1270,9 @@
     "EXPAND-ALL": "Expand All",
     "COLLAPSE-ALL": "Collapse All",
     "REPAIR-ESTIMATE": "Repair Estimate",
-    "OVERWRITE-DATA": "Overwrite Data"
+    "RESIDUE-ESTIMATE": "Residue Disposal Estimate",
+    "OVERWRITE-DATA": "Overwrite Data",
+    "LABOUR-COST": "Labour Cost"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

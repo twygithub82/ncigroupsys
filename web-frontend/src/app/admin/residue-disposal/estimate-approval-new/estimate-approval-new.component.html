@@ -511,11 +511,11 @@
             </div>
             <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 align-right">
               @if (canExport()) {
-              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="onExport($event)">
-                @if (!(residueDS.loading$ | async)) {
+                @if (!(residueDS.loading$ | async)&&!(isExportingPDF)) {
                 <i class="fas fa-file-export"></i>
-                } @else if ((residueDS.loading$ | async)) {
+                } @else if ((residueDS.loading$ | async)||(isExportingPDF)) {
                 <mat-icon>
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                 </mat-icon>
@@ -526,7 +526,7 @@
               @if (residueDS.canAmend(this.residueItem!)||this.isDuplicate) {
               @if(isAllowToSaveSubmit())
               {
-              <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="onFormSubmit()">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
@@ -540,7 +540,7 @@
               }
               }
               @if (canApprove()) {
-              <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async) ||(!IsAbleToApprove())"
+              <button mat-flat-button color="basic" [disabled]="(residueDS.loading$ | async) ||(!IsAbleToApprove())||(isExportingPDF)"
                 class="m-r-5 bg-green" (click)="approveRow($event)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
@@ -553,7 +553,7 @@
               </button>
               }
               @if (residueDS.canRollback(this.residueItem!)) {
-              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="rollbackRow($event)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
@@ -566,7 +566,7 @@
               </button>
               }
               @if (residueDS.canCancel(residueItem!)) {
-              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="onCancel($event)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
@@ -579,7 +579,7 @@
               </button>
               }
               @if (residueDS.canNoAction(residueItem!)) {
-              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="onNoAction($event,residueItem!)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {

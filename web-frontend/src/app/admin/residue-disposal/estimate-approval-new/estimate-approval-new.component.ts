@@ -274,6 +274,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   historyState: any = {};
   updateSelectedItem: any = undefined;
+  isExportingPDF:boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -1001,7 +1002,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     } else {
       tempDirection = 'ltr';
     }
-
+    this.isExportingPDF=true;
     const dialogRef = this.dialog.open(ResidueDisposalPdfComponent, {
       width: '794px',
       height: '80vh',
@@ -1012,7 +1013,12 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF=false;
     });
   }
 

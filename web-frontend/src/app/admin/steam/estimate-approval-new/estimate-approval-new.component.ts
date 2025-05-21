@@ -57,7 +57,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
-
+import {SteamEstimatePdfComponent} from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -276,6 +276,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   historyState: any = {};
   updateSelectedItem: any = undefined;
+  isExportingPDF: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -1728,4 +1729,33 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       }
     });
   }
+
+   onExport(event: Event) {
+      this.preventDefault(event);
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      this.isExportingPDF=true;
+      const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
+        width: '794px',
+        height: '80vh',
+        data: {
+          steam_guid: this.steamItem?.guid,
+          estimate_no: this.steamItem?.estimate_no,
+          packageLabourCost: this.packageLabourItem?.cost
+        },
+        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+        direction: tempDirection
+      });
+      dialogRef.updatePosition({
+        top: '-9999px',  // Move far above the screen
+        left: '-9999px'  // Move far to the left of the screen
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        this.isExportingPDF=false;
+      });
+    }
 }

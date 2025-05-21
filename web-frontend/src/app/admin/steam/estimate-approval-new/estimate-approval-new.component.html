@@ -523,7 +523,7 @@
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
               @if (canExport()) {
-              <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)" class="m-r-5">
+              <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)" class="m-r-5" (click)="onExport($event)">
                 @if (!(steamDS.loading$ | async)) {
                 <i class="fas fa-file-export"></i>
                 } @else if ((steamDS.loading$ | async)) {
@@ -537,7 +537,7 @@
               @if (steamDS.canAmend(this.steamItem!)||this.isDuplicate) {
               @if(isAllowToSaveSubmit())
               {
-              <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="onFormSubmit()">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)) {
@@ -551,12 +551,12 @@
               }
               }
               @if (canApprove()) {
-              <button mat-flat-button color="basic" [disabled]="(steamDS.loading$ | async) ||(!IsAbleToApprove())"
+              <button mat-flat-button color="basic" [disabled]="(steamDS.loading$ | async) ||(!IsAbleToApprove())||(isExportingPDF)"
                 class="m-r-5 bg-green" (click)="approveRow($event)">
                 <mat-icon>
-                  @if (!(steamDS.loading$ | async)) {
+                  @if (!(steamDS.loading$ | async)&&!(isExportingPDF)) {
                   check
-                  } @else if ((steamDS.loading$ | async)) {
+                  } @else if ((steamDS.loading$ | async)||(isExportingPDF)) {
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
@@ -564,7 +564,7 @@
               </button>
               }
               @if (steamDS.canRollbackEstimate(this.steamItem!)) {
-              <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="rollbackRow($event)">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)) {
@@ -577,7 +577,7 @@
               </button>
               }
               @if (steamDS.canCancel(steamItem!)) {
-              <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="onCancel($event)">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)) {
@@ -590,7 +590,7 @@
               </button>
               }
               @if (steamDS.canNoAction(steamItem!)) {
-              <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)" class="m-r-5"
+              <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
                 (click)="onNoAction($event)">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)) {

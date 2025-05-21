@@ -27,24 +27,27 @@ import { ResiduePartDS, ResiduePartItem } from 'app/data-sources/residue-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+import {SteamDS} from 'app/data-sources/steam';
+import { SteamPartDS, SteamPartItem } from 'app/data-sources/steam-part';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
-  residue_guid: string;
+  steam_guid: string;
   customer_company_guid: string;
   sotDS: StoringOrderTankDS;
-  residueDS: ResidueDS;
+  steamDS: SteamDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   existingPdf?: any;
   estimate_no?: string;
   retrieveFile: boolean;
+  packageLabourCost:number;
 }
 
 @Component({
-  selector: 'app-residue-disposal-pdf',
-  templateUrl: './residue-disposal-pdf.component.html',
-  styleUrls: ['./residue-disposal-pdf.component.scss'],
+  selector: 'app-steam-estimate-pdf',
+  templateUrl: './steam-estimate-pdf.component.html',
+  styleUrls: ['./steam-estimate-pdf.component.scss'],
   standalone: true,
   imports: [
     FormsModule,
@@ -56,7 +59,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -162,27 +165,29 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     PRICE: 'COMMON-FORM.PRICE',
     TOTAL_SGD: 'COMMON-FORM.TOTAL-SGD',
     RESIDUE_ESTIMATE:'COMMON-FORM.RESIDUE-ESTIMATE',
+    HOUR:'COMMON-FORM.HOUR',
+    LABOUR_COST:'COMMON-FORM.LABOUR-COST'
   }
 
   type?: string | null;
-  residueDS: ResidueDS;
-  residuePartDS: ResiduePartDS;
+  steamDS: SteamDS;
+  steamPartDS: SteamPartDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  residue_guid?: string | null;
+  steam_guid?: string | null;
   customer_company_guid?: string | null;
   estimate_no?: string | null;
 
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
-  residueItem: any;
+  steamItem: any;
 
   last_test_desc?: string = ""
 
   repairCost?: RepairCostTableItem;
-  residuePartList?: any[] = [];
+  steamPartList?: any[] = [];
   yesnoCvList: CodeValuesItem[] = [];
   soTankStatusCvList: CodeValuesItem[] = [];
   totalCost?: number;
@@ -200,9 +205,12 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
+  packageLabourCost:number=0;
+  total_hours:number=0;
+
 
   constructor(
-    public dialogRef: MatDialogRef<ResidueDisposalPdfComponent>,
+    public dialogRef: MatDialogRef<SteamEstimatePdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private apollo: Apollo,
     private translate: TranslateService,
@@ -212,13 +220,14 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
-    this.residueDS = new ResidueDS(this.apollo);
-    this.residuePartDS = new ResiduePartDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
+    this.steamPartDS = new SteamPartDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    this.residue_guid = data.residue_guid;
+    this.steam_guid = data.steam_guid;
     this.customer_company_guid = data.customer_company_guid;
+    this.packageLabourCost=data.packageLabourCost;
     this.estimate_no = data.estimate_no;
     this.existingPdf = data.existingPdf;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
@@ -232,123 +241,27 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
-      this.getResidueData(),
+      this.getSteamData(),
       // this.data.retrieveFile ? this.getSteamPdf() : Promise.resolve(null)
       Promise.resolve(null)
     ]);
      if (data?.length > 0) {
-       this.residueItem = data[0];
+       this.steamItem = data[0];
        await this.getCodeValuesData();
-       console.log(this.residueItem)
-       this.updateData(this.residueItem?.residue_part);
+       console.log(this.steamItem)
+       this.updateData(this.steamItem?.steaming_part);
 
        this.cdr.detectChanges();
      }
 
-    // this.existingPdf = pdfData ?? this.existingPdf;
-    // if (!this.existingPdf?.length) {
+    
       this.generatePDF();
-    // }
-    // else {
-    //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
-    //   const pdfUrl = URL.createObjectURL(eirBlob);
-    //   this.existingPdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-    // }
+   
   }
 
   async generatePDF(): Promise<void> {
     this.exportToPDF_r1();
-    // const bodyElement = document.getElementById('pdf-form-body');
-
-    // if (!bodyElement) {
-    //   console.error('Body or Signature element not found');
-    //   return;
-    // }
-
-    // try {
-    //   console.log('Start generate', new Date());
-    //   this.generatingPdfLoadingSubject.next(true);
-    //   this.generatingPdfProgress = 0;
-
-    //   const canvas = await html2canvas(bodyElement, { scale: this.scale });
-
-    //   const pdf = new jsPDF('p', 'mm', 'a4');
-    //   const pageWidth = pdf.internal.pageSize.width; // A4 page width
-    //   const pageHeight = pdf.internal.pageSize.height; // A4 page height
-    //   const leftRightMargin = 5; // Fixed margins
-    //   const topMargin = 5;
-    //   const bottomMargin = 5;
-
-    //   // Add Header & Footer
-    //   const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-    //   const footerHeight = await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, 1, 1);
-    //   const usableHeight = pageHeight - topMargin - bottomMargin - footerHeight;
-
-    //   console.log('Header Height:', headerHeight);
-    //   console.log('Footer Height:', footerHeight);
-    //   console.log('Usable Height:', usableHeight);
-
-    //   // Convert dimensions from px to mm
-    //   const imgWidth = canvas.width * 0.264583;
-    //   const imgHeight = canvas.height * 0.264583;
-    //   const aspectRatio = imgWidth / imgHeight;
-
-    //   // Adjust for footer
-    //   const signYOffset = pageHeight - bottomMargin - footerHeight;
-
-    //   // Calculate pagination
-    //   const scaledWidth = pageWidth - leftRightMargin * 2;
-    //   const scaledHeight = scaledWidth / aspectRatio;
-    //   let yOffset = 0;
-    //   let currentPage = 1;
-    //   const totalPages = Math.ceil(imgHeight / usableHeight);
-
-    //   while (yOffset < imgHeight) {
-    //     if (yOffset > 0) pdf.addPage();
-
-    //     // Add Header
-    //     const headerHeight = await this.addHeader(pdf, pageWidth, leftRightMargin, topMargin);
-    //     this.generatingPdfProgress += 33;
-
-    //     // Adjust usable height
-    //     const adjustedUsableHeight = usableHeight - headerHeight;
-
-    //     // Add Body Content
-    //     const chunkHeight = Math.min(imgHeight - yOffset, adjustedUsableHeight);
-    //     const canvasChunk = document.createElement('canvas');
-    //     const context = canvasChunk.getContext('2d');
-
-    //     // Create new canvas for the current chunk
-    //     canvasChunk.width = canvas.width;
-    //     canvasChunk.height = (chunkHeight * canvas.height) / imgHeight;
-
-    //     if (context) {
-    //       context.drawImage(canvas, 0, -yOffset * (canvas.height / imgHeight));
-    //     }
-
-    //     const chunkImgData = canvasChunk.toDataURL('image/jpeg', this.imageQuality);
-    //     pdf.addImage(chunkImgData, 'JPEG', leftRightMargin, topMargin + headerHeight + 2, scaledWidth, scaledHeight);
-    //     this.generatingPdfProgress += 33;
-
-    //     // Add Footer
-    //     await this.addFooter(pdf, pageWidth, pageHeight, leftRightMargin, bottomMargin, currentPage, totalPages);
-
-    //     yOffset += chunkHeight;
-    //     currentPage++;
-    //   }
-
-    //   this.generatingPdfProgress = 100;
-
-    //   // Save PDF
-    //   pdf.save(`RESIDUE_DISPOSAL-${this.estimate_no}.pdf`);
-    //   this.generatedPDF = pdf.output('blob');
-    //   // this.uploadPdf(this.steamItem?.job_order?.guid, this.generatedPDF);
-    //   this.generatingPdfLoadingSubject.next(false);
-    //   console.log('End generate', new Date());
-    // } catch (error) {
-    //   console.error('Error generating PDF:', error);
-    //   this.generatingPdfLoadingSubject.next(false);
-    // }
+   
   }
 
   async addHeader(pdf: jsPDF, pageWidth: number, leftRightMargin: number, topMargin: number): Promise<number> {
@@ -418,9 +331,9 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     }
   }
 
-  getResidueData(): Promise<any[]> {
+  getSteamData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.residueDS.getResidueByIDForPdf(this.residue_guid!).subscribe({
+      this.subs.sink = this.steamDS.getSteamByIDForPdf(this.steam_guid!).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -429,7 +342,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
   getSteamPdf(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.residue_guid!]).subscribe({
+      this.subs.sink = this.fileManagerService.getFileUrlByGroupGuid([this.steam_guid!]).subscribe({
         next: (data) => resolve(data),
         error: (err) => reject(err),
       });
@@ -474,17 +387,18 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     return chunks;
   }
 
-  updateData(newData: ResiduePartItem[] | undefined): void {
+  updateData(newData: SteamPartItem[] | undefined): void {
     if (newData?.length) {
-      this.residuePartList = newData.map((row, index) => ({
+      this.steamPartList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-      this.totalCost = this.residuePartList.reduce((sum, row) => sum + ((row.cost || 0) * (row.quantity || 0)), 0);
-      this.approvedCost = this.residuePartList.reduce((sum, row) => sum + (row.approve_cost || 0), 0);
-      console.log(this.residuePartList);
+      this.totalCost = this.steamPartList.reduce((sum, row) => sum + ( (row.cost || 0) * (row.quantity || 0)), 0);
+      this.approvedCost = this.steamPartList.reduce((sum, row) => sum + ( (row.approve_part)?(row.approve_cost || 0) * (row.approve_qty || 0):0), 0);
+      this.total_hours=this.steamPartList.reduce((sum, row) => sum + ( (row.approve_part)?(row.approve_labour || 0):0), 0);
+      console.log(this.steamPartList);
     } else {
-      this.residuePartList = [];
+      this.steamPartList = [];
     }
   }
 
@@ -681,7 +595,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         //PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
         //PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
        // const data: any[][] = [];
-        var item = this.residueItem;
+        var item = this.steamItem;
         var data: any[][] = [
           [
             { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
@@ -703,7 +617,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
           ],
           [
             { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-            { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
+            { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo||''}` },
             { content: `${this.translatedLangText.ESTIMATE_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
             { content: `${this.displayDate(item?.create_dt)}` }
           ]
@@ -752,7 +666,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   
         startY = lastTableFinalY + 3;
         
-        this.createResidueEstimateDetail(pdf,startY,leftMargin,rightMargin,pageWidth);
+        this.createSteamEstimateDetail(pdf,startY,leftMargin,rightMargin,pageWidth);
         // PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,9);
         // startY+=3;
         // this.createOffhireEstimate(pdf,startY,leftMargin,rightMargin,pageWidth);
@@ -771,9 +685,9 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   
   
   
-      createResidueEstimateDetail(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
+      createSteamEstimateDetail(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
       {
-        const fontSz=8;
+        const fontSz=7.5;
         const vAlign="bottom";
         const headers: RowInput[] = [
         [
@@ -786,6 +700,11 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
             content: this.translatedLangText.DESCRIPTION,
             
             styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:220, lineWidth: 0.1,cellPadding: 2  }
+          },
+           { 
+            content: this.translatedLangText.HOUR,
+            
+            styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
           },
            { 
             content: this.translatedLangText.QTY,
@@ -806,18 +725,26 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
             content: this.translatedLangText.APPROVED_COST,
             
             styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+          },
+           { 
+            content: '',
+            
+            styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
           }
         
         ]
       ];
   
        var repData:RowInput[]=[];
-       var items = this.residuePartList;
+       var items = this.steamPartList;
        const grpFontSz=7;
         items?.forEach((item, index) => {
+          item.approve_cost = item.approve_part?item.cost:0;
+          var app = item.approve_part?"O":"X";
           repData.push([
-            item.index + 1,item.description,`${item.quantity} ${item.qty_unit_type_cv}`, this.parse2Decimal(item.cost),
-            this.parse2Decimal(item.quantity * item.cost),this.parse2Decimal(item.approve_cost)]);
+            item.index + 1,item.description,`${item.labour}`,`${item.quantity}`, this.parse2Decimal(item.cost),
+            this.parse2Decimal(item.quantity * item.cost),this.parse2Decimal( item.approve_cost),app
+          ]);
         });
   
   
@@ -842,24 +769,43 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         columnStyles: {
           0: { cellWidth: 10,halign: 'center', valign: 'middle' },
           1: { cellWidth: 70,halign: 'left', valign: 'middle'},
-          2: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          3: { cellWidth: 28,halign: 'right', valign: 'middle'},
-          4: { cellWidth: 28,halign: 'right', valign: 'middle'},
-          5: { cellWidth: 28,halign: 'right', valign: 'middle'},
+          2: { cellWidth: 15,halign: 'center', valign: 'middle'},
+          3: { cellWidth: 15,halign: 'center', valign: 'middle'},
+          4: { cellWidth: 25,halign: 'right', valign: 'middle'},
+          5: { cellWidth: 25,halign: 'right', valign: 'middle'},
+          6: { cellWidth: 25,halign: 'right', valign: 'middle'},
+          7: { cellWidth: 12,halign: 'center', valign: 'middle'},
         },
         didDrawPage: (data: any) => {
           startY = data.cursor.y;
         }
         });
         
+        var totalLabourCostLabel=`${this.translatedLangText.LABOUR_COST}:`;
+        var totalLabourCostValue=this.packageLabourCost*this.total_hours;
+        var totalHour=`${this.translatedLangText.LABOUR}($${this.packageLabourCost}):`
          var totalSGD=`${this.translatedLangText.TOTAL_SGD}:`;
         var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
         startY+=2;
          var estData:RowInput[]=[];
          estData.push([
-           '','','',
-            { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-            { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+           '',
+           { content: `${totalHour}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+            { content: `${this.total_hours}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+            '',//{ content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+            '',//{ content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+           { content: `${totalLabourCostLabel}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+            { content: `${this.parse2Decimal(totalLabourCostValue)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+           ''
+         ])
+          estData.push([
+           '',
+          '',
+            '',
+            '',//{ content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+            '',//{ content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+           { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+            { content: `${this.parse2Decimal(totalLabourCostValue+(this.totalCost||0))}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
            ''
          ])
 
@@ -883,14 +829,16 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         columnStyles: {
           0: { cellWidth: 10,halign: 'center', valign: 'middle' },
           1: { cellWidth: 70,halign: 'left', valign: 'middle'},
-          2: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          3: { cellWidth: 28,halign: 'right', valign: 'middle'},
-          4: { cellWidth: 28,halign: 'right', valign: 'middle'},
-          5: { cellWidth: 28,halign: 'right', valign: 'middle'},
+          2: { cellWidth: 15,halign: 'center', valign: 'middle'},
+          3: { cellWidth: 15,halign: 'center', valign: 'middle'},
+          4: { cellWidth: 25,halign: 'right', valign: 'middle'},
+          5: { cellWidth: 25,halign: 'right', valign: 'middle'},
+          6: { cellWidth: 25,halign: 'right', valign: 'middle'},
+          7: { cellWidth: 12,halign: 'center', valign: 'middle'},
         },
          didDrawCell: function (data) {
             const doc = data.doc;
-            if(data.column.index === 4){
+            if(data.column.index === 6){
             doc.line(
             data.cell.x,
             data.cell.y + data.cell.height,
@@ -906,11 +854,11 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         }
         });
 
-        var AppCostLabel=`${this.translatedLangText.APPROVED_COST}:`;
-        var AppCostValue=`${this.parse2Decimal(this.approvedCost)}`;
-        startY+=7;
-        PDFUtility.addText(pdf, AppCostLabel, startY , leftMargin, fontSz,true);
-        PDFUtility.addText(pdf, AppCostValue, startY , leftMargin+28, fontSz);
+        // var AppCostLabel=`${this.translatedLangText.APPROVED_COST}:`;
+        // var AppCostValue=`${this.parse2Decimal(this.approvedCost)}`;
+        // startY+=7;
+        // PDFUtility.addText(pdf, AppCostLabel, startY , leftMargin, fontSz,true);
+        // PDFUtility.addText(pdf, AppCostValue, startY , leftMargin+28, fontSz);
   
       }
   
@@ -989,4 +937,6 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
       {
         return this.translatedLangText.RESIDUE_CARGO_DISPOSAL;
       }
+
+     
 }
