@@ -732,26 +732,39 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     for (let n = 0; n < (this.repData?.customer_sales?.length||0); n++) {
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.repData?.customer_sales?.[n];
-        data.push([
+
+        const row = [          
           (++idx).toString(), 
           (itm?.code || '') + ' (' + (itm?.name || '') + ')', 
-          (itm?.tank_in_count),
-          (itm?.steam_count)||"",
-          Utility.formatNumberDisplay(itm?.steam_cost),
-          (itm?.residue_count)||"",Utility.formatNumberDisplay(itm?.residue_cost),
+          (itm?.tank_in_count),];
+
+        if(!this.modulePackageService.isStarterPackage()){
+          row.push(
+            (itm?.steam_count)||"",Utility.formatNumberDisplay(itm?.steam_cost),
+            (itm?.residue_count)||"",Utility.formatNumberDisplay(itm?.residue_cost),
+          )
+        }  
+        row.push(
           (itm?.clean_count)||"",Utility.formatNumberDisplay(itm?.clean_cost),
           (itm?.in_service_count)||"",Utility.formatNumberDisplay(itm?.in_service_cost),
           (itm?.offhire_count)||"",Utility.formatNumberDisplay(itm?.offhire_cost)
-        ]);
-    }
+        )
+        data.push(row);
+    };
 
-    data.push([this.translatedLangText.TOTAL,"","",(this.repData?.total_tank_in),
+    const lastRow = [this.translatedLangText.TOTAL,"",(this.repData?.total_tank_in),]
+    if(!this.modulePackageService.isStarterPackage()){
+      lastRow.push(
       (this.repData?.total_steam_count)||"",Utility.formatNumberDisplay(this.repData?.total_steam_cost),
       (this.repData?.total_residue_count)||"",Utility.formatNumberDisplay(this.repData?.total_residue_cost),
+      )
+    };
+    lastRow.push(
       (this.repData?.total_clean_count)||"",Utility.formatNumberDisplay(this.repData?.total_clean_cost),
       (this.repData?.total_in_service_count)||"",Utility.formatNumberDisplay(this.repData?.total_in_service_cost),
       (this.repData?.total_offhire_count)||"",Utility.formatNumberDisplay(this.repData?.total_offhire_cost)
-    ]);
+    )
+    data.push(lastRow);
     
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
@@ -782,7 +795,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
       didParseCell: (data: any) => {
         let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        let colSpan=3;
+        let colSpan=2;
         //let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
         
         

@@ -255,6 +255,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     TYPE: 'COMMON-FORM.TYPE',
     DUE_DAYS: 'COMMON-FORM.DUE-DAYS',
     DUE_TYPE: 'COMMON-FORM.DUE-TYPE',
+    DUES: 'COMMON-FORM.DUES',
   }
 
 
@@ -567,7 +568,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
         { content: this.translatedLangText.OWNER, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.LAST_PERIODIC_TEST, colSpan: 3, styles: { halign: 'center' } },
         { content: this.translatedLangText.NEXT_PERIODIC_TEST, colSpan: 2, styles: { halign: 'center' } },
-        { content: this.translatedLangText.DUE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.DUES, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.DUE_TYPE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       ],
       [
@@ -577,20 +578,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
         '', '' // Empty cells for DUE_DAYS and DUE_TYPE (they are spanned by rowSpan: 2)
       ]
     ];
-    //  const headers =  [[
-    //   { content:this.translatedLangText.NO,rowSpan: 2, styles: { halign: 'center' } }, 
-    //    {content:this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center' } }, 
-    //    {content:this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center' } }, 
-    //    {content:this.translatedLangText.EIR_DATE,rowSpan: 2, styles: { halign: 'center' } },  
-    //    {content:this.translatedLangText.OWNER, rowSpan: 2, styles: { halign: 'center' } }, 
-    //   { content: this.translatedLangText.LAST_PERIODIC_TEST, colSpan: 3, styles: { halign: 'center' } }, 
-    //   { content: this.translatedLangText.NEXT_PERIODIC_TEST, colSpan: 2, styles: { halign: 'center' } }, 
-    //   {content:this.translatedLangText.DUE_DAYS, rowSpan: 2, styles: { halign: 'center' } },
-    //   {content:this.translatedLangText.DUE_TYPE, rowSpan: 2, styles: { halign: 'center' } },
-    // ], [
-    //   '', '', '', '', '', this.translatedLangText.TYPE, this.translatedLangText.DATE,this.translatedLangText.CLASS
-    //   , this.translatedLangText.TYPE, this.translatedLangText.DATE, '', ''
-    // ]];
+  
 
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
