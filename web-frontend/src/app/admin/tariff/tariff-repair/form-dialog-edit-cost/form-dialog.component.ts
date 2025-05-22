@@ -244,7 +244,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
     EXCEED: "COMMON-FORM.EXCEEDED",
     ONE_CONDITION: "COMMON-FORM.ENTER-ATLEAST-ONE-CONDITION",
-    NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE"
+    NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE",
+    MARKED_UP_OVER: 'COMMON-FORM.MARKED-UP-OVER'
   };
   unit_type_control = new UntypedFormControl();
   selectedItems: TariffRepairItem[];

@@ -109,7 +109,7 @@
                       {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                     </mat-error>
                     <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('max')">
-                      {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                      {{translatedLangText.MATERIAL_COST}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
                     </mat-error>
                   </mat-form-field>
                 </div>
@@ -124,7 +124,7 @@
                       {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                     </mat-error>
                     <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('max')">
-                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
                     </mat-error>
                   </mat-form-field>
                 </div>
@@ -138,8 +138,8 @@
           @if (canEdit()) {
           <button mat-flat-button color="primary" (click)="update()">
             <ng-container *ngIf="!(this.UpdateInProgress); else loading">
-              <!-- <mat-icon>save</mat-icon> -->
-              {{ translatedLangText.SAVE_AND_SUBMIT }}
+              <mat-icon>save</mat-icon>
+              {{ translatedLangText.UPDATE }}
             </ng-container>
             <ng-template #loading>
               <mat-icon class="spinner">autorenew</mat-icon>

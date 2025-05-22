@@ -111,6 +111,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
+    NEW: 'COMMON-FORM.NEW',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
@@ -648,6 +649,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       }
     });
   }
+
+  onNumericOnly(event: Event, controlName: string): void {
+    Utility.onNumericOnly(event, this.searchForm!?.get(controlName)!);
+  }
+
+
 
   async TariffCleaningAssigned(tariffCleaningGuid: string): Promise<boolean> {
     let retval: boolean = false;

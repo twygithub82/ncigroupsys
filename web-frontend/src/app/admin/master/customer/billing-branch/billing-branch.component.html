@@ -17,9 +17,9 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.ADD">
+              <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
                 <button mat-mini-fab color="primary" (click)="addBillingBranch($event)"
-                  matTooltip={{translatedLangText.ADD}} (click)="$event.stopPropagation()">
+                  (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
               </div>

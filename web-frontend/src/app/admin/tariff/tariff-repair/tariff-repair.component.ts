@@ -229,6 +229,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SEARCH: 'COMMON-FORM.SEARCH',
     ADD: 'COMMON-FORM.ADD',
+    GROUP_ADJUSTMENT:  'COMMON-FORM.GROUP-ADJUSTMENT',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
   }
 
   constructor(

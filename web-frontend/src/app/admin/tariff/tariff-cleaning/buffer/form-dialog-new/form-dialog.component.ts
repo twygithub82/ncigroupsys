@@ -252,7 +252,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
   GetTitle() {
 
-    return this.translatedLangText.NEW + " " + this.translatedLangText.BUFFER_CLEANING;
+    return this.translatedLangText.NEW + " " + this.translatedLangText.BUFFER_TYPE;
 
   }
 

@@ -151,7 +151,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     REMARKS: 'COMMON-FORM.REMARKS',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
   }
 
   availableProcessStatus: string[] = [

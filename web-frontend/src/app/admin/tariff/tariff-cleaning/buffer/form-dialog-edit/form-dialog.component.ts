@@ -264,7 +264,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
   GetTitle() {
 
-    return this.translatedLangText.EDIT + " " + this.translatedLangText.BUFFER_CLEANING;
+    return this.translatedLangText.EDIT + " " + this.translatedLangText.BUFFER_TYPE;
 
   }
 
