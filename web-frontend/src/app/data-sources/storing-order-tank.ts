@@ -1172,6 +1172,24 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
         tank_status_cv
         update_by
         update_dt
+        tank {
+          create_by
+          create_dt
+          delete_dt
+          description
+          flat_rate
+          gate_in
+          gate_out
+          guid
+          iso_format
+          lift_off
+          lift_on
+          preinspect
+          tariff_depot_guid
+          unit_type
+          update_by
+          update_dt
+        }
         tariff_cleaning {
           guid
           open_on_gate_cv

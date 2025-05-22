@@ -33,6 +33,7 @@ export class SteamGO {
   public na_dt?: number;
 
   public total_cost?: number;
+  public total_hour?: number;
 
   public create_dt?: number;
   public create_by?: string;
@@ -41,6 +42,11 @@ export class SteamGO {
   public delete_dt?: number;
 
   public est_cost?: number;
+  public est_hour?:number;
+
+  public rate?:number;
+  public flat_rate?:boolean;
+  
   public total_material_cost?: number;
   public total_labour_cost?: number;
   public overwrite_remarks?: string;
@@ -72,6 +78,10 @@ export class SteamGO {
     this.begin_dt = item.begin_dt;
     this.na_dt = item.na_dt;
     this.est_cost = item.est_cost;
+    this.est_hour = item.est_hour;
+    this.rate = item.rate;  
+    this.total_cost = item.total_cost;
+    this.total_hour = item.total_hour;
     this.total_material_cost = item.total_material_cost;
     this.total_labour_cost = item.total_labour_cost;
     this.overwrite_remarks = item.overwrite_remarks;

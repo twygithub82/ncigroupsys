@@ -888,9 +888,9 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     if (cardElements.length > 0) {
       const card = cardElements[0];
       const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+      let imgData = canvas.toDataURL('image/png', this.imageQuality);
       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', leftMargin, startY, chartContentWidth, imgHeight);
     }
 
     const totalPages = pdf.getNumberOfPages();

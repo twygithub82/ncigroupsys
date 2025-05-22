@@ -825,6 +825,13 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     this.generatingPdfProgress = 0;
 
     const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    // const pdf = new jsPDF({
+    //   orientation: 'portrait',
+    //   unit: 'pt',
+    //   format: 'a4',
+    //   putOnlyUsedFonts: true,
+    //   compress: true
+    // });
     
     let pageNumber = 1;
 
@@ -1162,9 +1169,9 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     if (cardElements.length > 0) {
       const card = cardElements[0];
       const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+      let imgData = canvas.toDataURL('image/png', this.imageQuality);
       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPEG', leftMargin+5, startY, chartContentWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', leftMargin+5, startY, chartContentWidth, imgHeight);
     }
 
   }

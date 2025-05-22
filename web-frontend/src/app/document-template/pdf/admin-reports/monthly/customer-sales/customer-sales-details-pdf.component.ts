@@ -894,7 +894,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
           const sectionImgData = sectionCanvas.toDataURL('image/jpeg', this.imageQuality); // Convert section to JPEG
 
-          pdf.addImage(sectionImgData, 'JPEG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
+          pdf.addImage(sectionImgData, 'PNG', leftMargin, 20, contentWidth, (sectionCanvas.height * contentWidth) / canvas.width); // Adjust y position to leave space for the title
 
           // Store page position for page numbering
           pagePositions.push({ page: pageNumber, x: 200, y: 287 });
