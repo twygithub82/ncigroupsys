@@ -933,6 +933,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     );
   }
 
+  onUNNumericOnly(event: Event, controlName: string): void {
+    Utility.onUNNumericOnly(event, this.tcForm!!?.get(controlName)!);
+  }
+
   ShowDuplicateCargoMessage() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {

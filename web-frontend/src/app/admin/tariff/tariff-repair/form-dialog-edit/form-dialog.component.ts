@@ -137,6 +137,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     STEAM: 'COMMON-FORM.STEAM',
     CLEANING: 'COMMON-FORM.CLEANING',
     REPAIR: 'COMMON-FORM.REPAIR',
+    ITEM: 'COMMON-FORM.ITEM',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
     CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
@@ -323,7 +324,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   GetTitle() {
-    return this.translatedLangText.EDIT + " " + this.translatedLangText.REPAIR;
+    return this.translatedLangText.EDIT + " " + this.translatedLangText.REPAIR + " " + this.translatedLangText.ITEM;
   }
 
   translateLangText() {

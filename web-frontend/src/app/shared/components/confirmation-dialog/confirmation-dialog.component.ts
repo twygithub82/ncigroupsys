@@ -40,6 +40,7 @@ export class ConfirmationDialogComponent {
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE'
   }
 
   constructor(

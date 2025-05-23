@@ -624,6 +624,19 @@ export class Utility {
     }
   }
 
+  static onNumericOnly(event: Event, form: any): void {
+  const input = event.target as HTMLInputElement;
+  input.value = input.value.replace(/[^0-9]/g, '');
+  form?.setValue(input.value, { emitEvent: false });
+}
+
+static onUNNumericOnly(event: Event, form: any): void {
+  const input = event.target as HTMLInputElement;
+  // Allow digits (0-9), U, and N only
+  input.value = input.value.replace(/[^0-9UN]/g, '');
+  form?.setValue(input.value, { emitEvent: false });
+}
+
   static onAlphaOnly(event: Event, form: any): void {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^a-zA-Z\s]/g, '');

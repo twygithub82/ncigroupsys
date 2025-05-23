@@ -702,6 +702,7 @@
     "SUBGROUP-NAME": "Subgroup Name",
     "ESTIMATE-DETAILS": "Estimate Details",
     "ESTIMATE-SUMMARY": "Estimate Summary",
+    "MARKED-UP-OVER": "marked up over",
     "CANNOT-EXCEED": "cannot exceed",
     "CANNOT-SMALLER": "cannot be smaller than",
     "TOTAL-COST": "Total Cost $",
@@ -1268,13 +1269,14 @@
     "FAILED-TO-CHANGE-PASSWORD": "Failed to change password",
     "KG": "KG",
     "LITERS": "Liters",
+    "MULTIPLE": "Multiple",
     "EXPAND-ALL": "Expand All",
     "COLLAPSE-ALL": "Collapse All",
     "REPAIR-ESTIMATE": "Repair Estimate",
     "RESIDUE-ESTIMATE": "Residue Disposal Estimate",
     "OVERWRITE-DATA": "Overwrite Data",
     "LABOUR-COST": "Labour Cost",
-    
+    "GROUP-ADJUSTMENT": "Group Adjustment",
     "TEAM-UNASSIGN-SUCCESS": "Team Unassigned Successfully"
   },
   "CLEAN-PROCEDURES": {
