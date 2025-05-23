@@ -53,6 +53,7 @@ import { Observable, Subscription } from 'rxjs';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import {SteamGO} from 'app/data-sources/steam';
 @Component({
   selector: 'job-order-task-monitor',
   standalone: true,
@@ -1183,7 +1184,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
           this.resetSelectedItemForUpdating();
         }
         else {
-          if (ReqTemp <= steamTemp.meter_temp!) {
+          if (this.RequiredShowConfirmation(ReqTemp, steamTemp)) {
             let tempStatus: number = this.CheckAndGetTempStatus();
             this.completeSteamJob(event!, false, tempStatus);
           }
@@ -1197,6 +1198,12 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
+  RequiredShowConfirmation(reqTemp: number,steamTemp: SteamTemp):boolean {
+    var bRetval :boolean =false;
+
+    bRetval = (reqTemp <= steamTemp.meter_temp!||reqTemp<=steamTemp.top_temp!||reqTemp<=steamTemp.bottom_temp!);
+    return bRetval;
+  }
   QuerySteamTemp() {
     this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp => {
       if (temp?.length) {
@@ -1266,7 +1273,26 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
           updJobOrderReq.complete_dt = Math.floor(Date.now() / 1000);
           var updJobOrderReqs: UpdateJobOrderRequest[] = [];
           updJobOrderReqs.push(updJobOrderReq);
-          this.joDS.completeJobOrder(updJobOrderReqs).subscribe(result => {
+          var steaming:any=undefined;
+          if(!this.steamItem?.storing_order_tank?.tank?.flat_rate){
+           const minItem = this.deList.reduce((minItem, item) =>
+              item.create_dt < minItem.create_dt ? item : minItem
+            );
+            steaming = new SteamGO(this.steamItem);
+            steaming.action="EDIT";
+            var startTime = minItem?.create_dt||0;
+            var endTime = Math.floor(Date.now() / 1000);
+            // Calculate time difference in seconds
+            const timeDiffSeconds = endTime - startTime;
+
+            // Convert to hours (decimal)
+            const decimalHours = timeDiffSeconds / 3600;
+
+            // Round to nearest 0.25 increment
+            const roundedHours = Math.round(decimalHours * 4) / 4;
+            steaming.total_hour = roundedHours;
+          }
+          this.joDS.completeJobOrder(updJobOrderReqs,steaming).subscribe(result => {
             console.log(result);
             if (result.data.completeJobOrder > 0) {
               let stmStatus: SteamStatusRequest = new SteamStatusRequest();

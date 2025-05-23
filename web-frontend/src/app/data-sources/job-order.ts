@@ -7,7 +7,7 @@ import { BaseDataSource } from './base-ds';
 import { InGateCleaningItem } from './in-gate-cleaning';
 import { RepairPartItem } from './repair-part';
 import { ResiduePartItem } from './residue-part';
-import { SteamTemp } from './steam';
+import { SteamGO, SteamTemp } from './steam';
 import { SteamPartItem } from './steam-part';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { TeamItem } from './teams';
@@ -766,8 +766,8 @@ const COMPLETE_JOB_ITEM = gql`
 `
 
 const COMPLETE_JOB_ORDER = gql`
-  mutation completeJobOrder($jobOrderRequest: [UpdateJobOrderRequestInput!]!) {
-    completeJobOrder(jobOrderRequest: $jobOrderRequest)
+  mutation completeJobOrder($jobOrderRequest: [UpdateJobOrderRequestInput!]! , $steaming:steamingInput) {
+    completeJobOrder(jobOrderRequest: $jobOrderRequest , steaming: $steaming)
   }
 `
 
@@ -1031,12 +1031,13 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     );
   }
 
-  completeJobOrder(jobOrderRequest: UpdateJobOrderRequest[]): Observable<any> {
+  completeJobOrder(jobOrderRequest: UpdateJobOrderRequest[],steaming?:any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: COMPLETE_JOB_ORDER,
       variables: {
-        jobOrderRequest
+        jobOrderRequest,
+        steaming
       }
     }).pipe(
       finalize(() => {

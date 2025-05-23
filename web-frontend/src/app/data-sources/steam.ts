@@ -206,6 +206,9 @@ export const GET_STEAM_BILLING_EST = gql`
         }
         est_cost
         total_cost
+        total_hour
+        rate
+        flat_rate
         total_material_cost
         total_labour_cost
         complete_by

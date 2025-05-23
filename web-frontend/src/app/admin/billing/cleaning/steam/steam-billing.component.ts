@@ -905,7 +905,16 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
       //var cost:number = this.selectedEstimateLabourCost||0;
       var itm: any = s;
-      return accumulator + itm.total_cost;
+      var isSteamingEst = this.isSteamingEstimate(s);
+      var totalCost=0;
+      if(isSteamingEst){
+        totalCost = (itm.total_hour||1)*(itm.rate||0);
+      }
+      else
+      {
+         totalCost = ((itm.total_hour||1)*(itm.rate||0))+(itm.total_cost||0);
+      }
+      return accumulator + totalCost;
       //return accumulator+ Number(stmItm.net_cost||0);
     }, 0); // Initialize accumulator to 0
     this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
@@ -1063,6 +1072,27 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   onTabFocused() {
     this.resetForm();
     this.search();
+  }
+
+   isSteamingEstimate(steam: SteamItem | undefined) {
+    var retval
+    retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
+    return retval;
+  }
+
+  CalculateCost(itm:SteamItem):number
+  {
+    var cost:number=0;
+    var isEst=this.isSteamingEstimate(itm);
+     if(isEst){
+        cost = (itm.total_hour||1)*(itm.rate||0);
+      }
+      else
+      {
+         cost = ((itm.total_hour||1)*(itm.rate||0))+(itm.total_cost||0);
+      }
+
+    return cost;
   }
 
 }
