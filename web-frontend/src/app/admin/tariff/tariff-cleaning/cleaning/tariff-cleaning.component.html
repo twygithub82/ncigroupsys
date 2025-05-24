@@ -156,24 +156,28 @@
               <mat-cell *matCellDef="let row">{{row.tariff_cleaning?.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cargo">
-              <mat-header-cell *matHeaderCellDef >{{translatedLangText.NAME }}</mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  {{translatedLangText.NAME }}</mat-header-cell>
+              <mat-cell mat-cell [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                *matCellDef="let row">
                 <span class="mobile-label">{{translatedLangText.NAME }}:</span>{{row.tariff_cleaning?.cargo}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="desc">
-              <mat-header-cell *matHeaderCellDef >{{translatedLangText.DESCRIPTION}}</mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                {{translatedLangText.DESCRIPTION}}</mat-header-cell>
+              <mat-cell mat-cell [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                *matCellDef="let row">
                 <span
                   class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.tariff_cleaning?.description}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="class">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                 >{{translatedLangText.CARGO_CLASS}}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{translatedLangText.CARGO_CLASS }}:</span>
                 {{row.tariff_cleaning?.class_cv}}
@@ -215,10 +219,10 @@
 
             <ng-container matColumnDef="method">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 >{{translatedLangText.CARGO_METHOD}}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{translatedLangText.CARGO_METHOD }}:</span>
                 {{row.tariff_cleaning?.cleaning_method?.name}}
@@ -226,10 +230,10 @@
             </ng-container>
             <ng-container matColumnDef="flash_point">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                 >{{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{translatedLangText.CARGO_FLASH_POINT}}:</span>
                 {{row.tariff_cleaning?.flash_point}}</mat-cell>

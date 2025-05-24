@@ -211,13 +211,13 @@
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
+                    <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                       [checked]="selection.hasValue() && isAllSelected()"
                       [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                    <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
                       [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
