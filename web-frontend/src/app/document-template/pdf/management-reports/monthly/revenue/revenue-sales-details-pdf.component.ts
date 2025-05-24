@@ -770,7 +770,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
 
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 45;
@@ -993,7 +993,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0, 0], 0);
+    pdf.setLineDashPattern([0.001, 0.001], 0);
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,
@@ -1166,25 +1166,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     const card1 = cardElements[i];
     const canvas1 = await html2canvas(card1, { scale: scale });
     Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
-    // const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-    // // Calculate aspect ratio
-    // const aspectRatio = canvas1.,width / canvas1.height;
-
-    // // Calculate scaled height based on available width
-    // let imgHeight1 = chartContentWidth / aspectRatio;
-
-    // // Check if the scaled height exceeds the available page height
-    // const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-    // if (imgHeight1 > maxPageHeight) {
-    //   // Adjust height to fit within the page
-    //   imgHeight1 = maxPageHeight;
-    //   // Recalculate width to maintain aspect ratio
-    //   chartContentWidth = imgHeight1 * aspectRatio;
-    // }
-
-    // // Add the image to the PDF
-    // pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+  
   }
 
     const totalPages = pdf.getNumberOfPages();
@@ -1193,7 +1175,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setLineDashPattern([0.001, 0.001], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;

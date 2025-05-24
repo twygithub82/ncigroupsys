@@ -702,19 +702,21 @@ static onUNNumericOnly(event: Event, form: any): void {
     pdf.text(content, leftPost, topPos); // Position it at the top
   }
 
-  static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number) {
-    pdf.setFontSize(14); // Title font size 
-    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-    if (topPosition <= 10) {
-      topPosition = 11;
-    }
-    pdf.text(title, titleX, topPosition); // Position it at the top
+   static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number,fontSize: number=14) {
+    // pdf.setFontSize(14); // Title font size 
+    // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+    // if (topPosition <= 10) {
+    //   topPosition = 11;
+    // }
+    // pdf.text(title, titleX, topPosition); // Position it at the top
 
-    pdf.setLineDashPattern([0, 0], 0);
-    // Draw underline for the title
-    pdf.setLineWidth(0.1); // Set line width for underline
-    pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
+    // // Draw underline for the title
+    // pdf.setLineWidth(0.1); // Set line width for underline
+    // pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+
+    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize);
   }
 
   static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean) {
@@ -726,7 +728,7 @@ static onUNNumericOnly(event: Event, form: any): void {
     }
     pdf.text(title, titleX, topPosition); // Position it at the top
 
-    pdf.setLineDashPattern([0, 0], 0);
+    pdf.setLineDashPattern([0.001, 0.001], 0);
     // Draw underline for the title
     pdf.setLineWidth(0.1); // Set line width for underline
     if (underline) {
@@ -735,13 +737,14 @@ static onUNNumericOnly(event: Event, form: any): void {
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+   pdf.saveGraphicsState();
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
-    // pdf.setLineDashPattern([0, 0], 0);
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
     // Draw underline for the title
     // pdf.setLineWidth(0.1); // Set line width for underline
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
@@ -754,7 +757,7 @@ static onUNNumericOnly(event: Event, form: any): void {
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
-    // pdf.setLineDashPattern([0, 0], 0);
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
     // Draw underline for the title
     // pdf.setLineWidth(0.1); // Set line width for underline
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
@@ -786,7 +789,7 @@ static onUNNumericOnly(event: Event, form: any): void {
     pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
 
 
-    // pdf.setLineDashPattern([0, 0], 0);
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
     // Draw underline for the title
     // pdf.setLineWidth(0.1); // Set line width for underline
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title

@@ -888,9 +888,9 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     if (cardElements.length > 0) {
       const card = cardElements[0];
       const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/png', this.imageQuality);
+      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'PNG', leftMargin, startY, chartContentWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
     }
 
     const totalPages = pdf.getNumberOfPages();
@@ -899,7 +899,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setLineDashPattern([0.001, 0.001], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;

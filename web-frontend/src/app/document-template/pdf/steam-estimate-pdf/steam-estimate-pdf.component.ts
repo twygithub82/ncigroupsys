@@ -585,7 +585,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
 
         pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0, 0], 0);
+        pdf.setLineDashPattern([0.001, 0.001], 0);
         
         // pdf.setFontSize(8);
         // pdf.setTextColor(0, 0, 0); // Black text

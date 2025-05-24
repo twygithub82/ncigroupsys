@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -516,6 +517,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   
 
+  
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
@@ -758,7 +760,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         pdf.setDrawColor(0, 0, 0); // red line color
 
         pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0, 0], 0);
+        pdf.setLineDashPattern([0.001, 0.001], 0);
         // Add table using autoTable plugin
         autoTable(pdf, {
           head: headers,
@@ -828,13 +830,17 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         for (let b = 0; b < cust.released_storing_order_tank!.length; b++) {
           var itm = cust.released_storing_order_tank?.[b]!;
           repData.push([
-            (b + 1).toString(), itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
+            (b + 1).toString(), 
+            itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
             this.DisplayCapacity(itm) || "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
+
             this.DisplayCleanDate(itm) || "", this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
-            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", this.DisplayLastTest(itm) || "",
-            this.DisplayNextTest(itm) || "", this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
+            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", 
+            //this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "", 
+            this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
             this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus(itm) || "",
-            this.DisplayRemarks(itm) || "", this.displayTankPurpose(itm) || "", this.DisplayYard(itm) || ""
+            //this.DisplayRemarks(itm) || "", this.displayTankPurpose(itm) || "",
+             this.DisplayYard(itm) || ""
           ]);
 
           startY = lastTableFinalY; // Start table 20mm below the customer name
@@ -843,10 +849,13 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             for (let r = 1; r < itm.repair!.length; r++) {
               var rp = itm.repair?.[r]!;
               repData.push([
-                "", "", "", "", "", "", "", "",
-                rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "",
-                "", "", "", "", "", "", "", "", this.DisplayCurrentStatus(itm) || "", "", "", this.DisplayYard(itm) || ""
-              ]);
+                  "", "", "", "", "", "", "", "",
+                  rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "","", "", 
+                  //"", "", 
+                  "", "", "", "", this.DisplayCurrentStatus(itm) || "", 
+                  //"", "", 
+                  this.DisplayYard(itm) || ""
+                ]);
             }
 
           }
@@ -901,7 +910,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0, 0], 0);
+      pdf.setLineDashPattern([0.001, 0.001], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
@@ -923,7 +932,6 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.generatingPdfLoadingSubject.next(false);
     this.dialogRef.close();
   }
-
 
   
 
