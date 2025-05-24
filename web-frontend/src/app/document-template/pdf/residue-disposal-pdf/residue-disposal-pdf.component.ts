@@ -27,6 +27,7 @@ import { ResiduePartDS, ResiduePartItem } from 'app/data-sources/residue-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -39,6 +40,7 @@ export interface DialogData {
   existingPdf?: any;
   estimate_no?: string;
   retrieveFile: boolean;
+
 }
 
 @Component({
@@ -169,6 +171,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   residuePartDS: ResiduePartDS;
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  
   cvDS: CodeValuesDS;
   residue_guid?: string | null;
   customer_company_guid?: string | null;
@@ -671,7 +674,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
 
         pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0, 0], 0);
+        pdf.setLineDashPattern([0.001, 0.001], 0);
         
         // pdf.setFontSize(8);
         // pdf.setTextColor(0, 0, 0); // Black text

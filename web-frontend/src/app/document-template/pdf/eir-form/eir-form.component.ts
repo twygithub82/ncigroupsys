@@ -643,7 +643,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color
     //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0, 0], 0);
+    //   pdf.setLineDashPattern([0.001, 0.001], 0);
     //   pdf.setFontSize(8);
     //   pdf.setPage(page);
     //   var lineBuffer = 13;

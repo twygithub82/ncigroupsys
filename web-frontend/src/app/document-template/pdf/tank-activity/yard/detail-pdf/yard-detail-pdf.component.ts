@@ -29,6 +29,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -919,7 +920,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         var gap=8;
         
         await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-        await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
+        await PDFUtility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
         // Variable to store the final Y position of the last table
         let lastTableFinalY = 45;
         let minHeightHeaderCol=3;
@@ -962,6 +963,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           {
             pdf.addPage();
             lastTableFinalY=5+topMargin;
+            
           }
           else
           {
@@ -1013,7 +1015,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
               pdf.setDrawColor(0, 0, 0); // red line color
         
               pdf.setLineWidth(0.1);
-              pdf.setLineDashPattern([0, 0], 0);
+              pdf.setLineDashPattern([0.01, 0.01], 0);
               // Add table using autoTable plugin
               autoTable(pdf, {
                 head: headers,
@@ -1043,7 +1045,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
                     pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
                     if(pageCount>1)
                     {
-                      Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
+                      PDFUtility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
                     }
                   } 
                   },
@@ -1059,7 +1061,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         pagePositions.forEach(({ page, x, y }) => {
           pdf.setDrawColor(0, 0, 0); // black line color
           pdf.setLineWidth(0.1);
-          pdf.setLineDashPattern([0, 0], 0);
+          pdf.setLineDashPattern([0.001, 0.001], 0);
           pdf.setFontSize(8);
           pdf.setPage(page);
           var lineBuffer=13;

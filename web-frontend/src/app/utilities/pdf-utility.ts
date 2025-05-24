@@ -42,9 +42,13 @@ export class PDFUtility {
 
     pdf.text(title, titleX, topPosition); // Position it at the top
 
-    pdf.setLineDashPattern([0, 0], 0);
-    // Draw underline for the title
-    pdf.setLineWidth(0.1); // Set line width for underline
+    // pdf.setLineDashPattern([0, 0], 0);
+   
+    // pdf.setLineWidth(0.1); // Set line width for underline
+
+     pdf.setLineWidth(0.1);
+    // Set dashed line pattern
+    pdf.setLineDashPattern([0.001, 0.001], 0);
     pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
   }
 
@@ -520,4 +524,79 @@ export class PDFUtility {
       img.src = imgUrl;
     });
   }
+
+  static convertMmToPt(pdf: jsPDF): jsPDF {
+  // Verify the source document is in mm
+  var doc : any =pdf;
+
+  // Conversion factor: 1mm = 2.83464567pt
+  const mmToPtFactor = 2.83464567;
+
+  // Create new document with pt units
+  const newDoc = new jsPDF({
+    unit: 'pt',
+    compress: true,
+    orientation: doc.internal.pageSize.width > doc.internal.pageSize.height ? 'landscape' : 'portrait'
+  });
+
+  // Copy document properties
+  if (doc.internal.getDocumentProperties) {
+    newDoc.setProperties(doc.internal.getDocumentProperties());
+  }
+
+  // Process all pages
+  const totalPages = doc.getNumberOfPages();
+
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    doc.setPage(pageNum);
+    
+    // Convert page dimensions
+    const mmWidth = doc.internal.pageSize.getWidth();
+    const mmHeight = doc.internal.pageSize.getHeight();
+    const ptWidth = mmWidth * mmToPtFactor;
+    const ptHeight = mmHeight * mmToPtFactor;
+    
+    // Add new page if needed
+    if (pageNum > 1) {
+      newDoc.addPage([ptWidth, ptHeight]);
+    } else {
+      // Resize first page
+      newDoc.internal.pageSize.width = ptWidth;
+      newDoc.internal.pageSize.height = ptHeight;
+    }
+    
+    // Copy all content (this is a simplified approach)
+    // Note: In current jsPDF versions, you need to track content yourself
+    // For text:
+    if (doc.internal.pages[pageNum]?.texts) {
+      doc.internal.pages[pageNum].texts.forEach((text: any) => {
+        newDoc.text(
+          text.text,
+          text.x * mmToPtFactor,
+          text.y * mmToPtFactor,
+          {
+            angle: text.angle || 0,
+            align: text.align || 'left',
+            baseline: text.baseline || 'top'
+          }
+        );
+      });
+    }
+    
+    // For lines:
+    if (doc.internal.pages[pageNum]?.lines) {
+      doc.internal.pages[pageNum].lines.forEach((line: any) => {
+        newDoc.line(
+          line.x1 * mmToPtFactor,
+          line.y1 * mmToPtFactor,
+          line.x2 * mmToPtFactor,
+          line.y2 * mmToPtFactor,
+          line.style
+        );
+      });
+    }
+  }
+
+  return newDoc;
+}
 }
