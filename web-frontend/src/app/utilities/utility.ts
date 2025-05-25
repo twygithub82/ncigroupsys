@@ -624,7 +624,7 @@ export class Utility {
     }
   }
 
-  static onNumericOnly(event: Event, form: any): void {
+static onNumericOnly(event: Event, form: any): void {
   const input = event.target as HTMLInputElement;
   input.value = input.value.replace(/[^0-9]/g, '');
   form?.setValue(input.value, { emitEvent: false });

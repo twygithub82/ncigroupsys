@@ -17,8 +17,8 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
-                <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
+              <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' + translatedLangText.EDIT">
+                <button mat-mini-fab class="primary-light" (click)="adjustCost()" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">edit</mat-icon>
                 </button>
               </div>
@@ -42,7 +42,7 @@
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-2">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <mat-chip-grid #chipGrid>
@@ -63,9 +63,10 @@
                     <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
-                        <mat-checkbox color="primary" style="padding: 0 12px;"  (click)="onCheckboxClicked(cc);$event.stopPropagation()"
+                        <mat-checkbox color="primary" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
                           [checked]="itemSelected(cc) || false"></mat-checkbox>
-                        {{ccDS.displayName(cc)}}
+                            <!-- {{ccDS.displayName(cc)}} -->
+                            {{displayCustomerCompanyFn(cc)}}
                       </mat-option>
                       }
                     </mat-autocomplete>
@@ -93,14 +94,14 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
-                <mat-checkbox (change)="$event ? masterToggle() : null"
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
+                <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                 </mat-checkbox>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
                   [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                 </mat-checkbox>
               </mat-cell>
@@ -113,34 +114,33 @@
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="companyName">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
-                  }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">
+                <!-- <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="minTemp">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef  [ngClass]="'justify-content-center'">{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.MIN_TEMP
                   }}:</span>{{row.tariff_steaming?.temp_min}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="maxTemp">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.MAX_TEMP
                   }}:</span>{{displayTempMax(row.tariff_steaming?.temp_max)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}</span>
                 {{displayNumber(row.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.HOURLY_RATE
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{this.translatedLangText.HOURLY_RATE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE}}</span>
                 {{displayNumber(row.labour)}}</mat-cell>
             </ng-container>

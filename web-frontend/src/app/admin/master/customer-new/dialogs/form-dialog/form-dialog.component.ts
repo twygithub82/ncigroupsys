@@ -132,7 +132,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       job_title: [this.contactPerson.job_title],
       customer_guid: [this.contactPerson.customer_guid],
       did: [this.contactPerson.did,
-      [Validators.required]
+      //[Validators.required]
       ],
       phone: [this.contactPerson.phone, [
         Validators.required,

@@ -96,7 +96,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.PART_NAME}}</mat-label>
             <mat-select formControlName="part_name" required>
@@ -106,7 +106,7 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-1 col-lg-1 col-md-12 col-sm-12 mb-1 align-right">
           <button mat-mini-fab color="primary" [disabled]="!this.repairPartForm.get('part_name')?.value"
             (click)="searchPart()">
             <mat-icon>search</mat-icon>

@@ -323,8 +323,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         'lifton',
         'liftoff',
         'preinspect',
-        'flatRate',
         'isoformat',
+        'flatRate',
         'lastUpdate',
         'actions'
       ];

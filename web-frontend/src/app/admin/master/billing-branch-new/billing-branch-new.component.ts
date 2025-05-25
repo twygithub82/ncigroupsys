@@ -1384,6 +1384,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onAlphaOnly(event: Event): void {
-    Utility.onAlphaOnly(event, this.ccForm?.get("branch_code")!);
+    Utility.onAlphaOnly(event, this.ccForm?.get("phone")!);
+  }
+
+    onNumericOnly(event: Event): void {
+    Utility.onNumericOnly(event, this.ccForm?.get("customer_code")!);
   }
 }

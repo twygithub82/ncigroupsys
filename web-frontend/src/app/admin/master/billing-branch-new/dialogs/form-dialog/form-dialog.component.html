@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader">
+  <div class="modalHeader ps-0">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h4>{{dialogTitle}}</h4>
@@ -77,13 +77,11 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.DID}}</mat-label>
-            <input matInput formControlName="did" required>
-            <mat-error *ngIf="this.contactPersonForm?.get('did')?.invalid &&this.contactPersonForm?.get('did')?.touched">
+            <input matInput formControlName="did">
+            <!-- <mat-error *ngIf="this.contactPersonForm?.get('did')?.invalid &&this.contactPersonForm?.get('did')?.touched">
               <span *ngIf="this.contactPersonForm?.get('did')?.errors?.['required']">
-                <!-- {{data.translatedLangText.DID}} {{data.translatedLangText.SO_REQUIRED}} -->
               </span>
-             
-            </mat-error>
+            </mat-error> -->
           </mat-form-field>
         </div>
       </div>

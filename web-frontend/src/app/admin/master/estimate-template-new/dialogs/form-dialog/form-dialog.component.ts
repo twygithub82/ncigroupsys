@@ -116,10 +116,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
     if (this.action === 'edit') {
-      this.dialogTitle = `${data.translatedLangText.EDIT} ${data.translatedLangText.ESTIMATE_DETAILS}`;
+      this.dialogTitle = `EDIT ${data.translatedLangText.EDIT} ${data.translatedLangText.DETAILS}`;
       this.buttonContent = `${data.translatedLangText.UPDATE}`;
     } else {
-      this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
+      this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.DETAILS}`;
       this.buttonContent = `${data.translatedLangText.SAVE}`;
     }
     this.currentParts = data.populateData.currentParts ? data.populateData.currentParts : [];

@@ -218,6 +218,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE'
   }
 
   @ViewChild('custInput', { static: true })
@@ -269,7 +270,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   refresh() {

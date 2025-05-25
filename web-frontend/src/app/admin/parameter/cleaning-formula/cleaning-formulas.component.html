@@ -25,7 +25,7 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                    <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()">
+                    <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
                       <mat-icon class="col-white">add</mat-icon>
                     </button>
                   </div>
@@ -101,18 +101,22 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_description">
-                  <mat-header-cell *matHeaderCellDef >
+                  <mat-header-cell *matHeaderCellDef 
+                    [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.DESCRIPTION }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                     [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_duration">
-                  <mat-header-cell *matHeaderCellDef >
+                  <mat-header-cell *matHeaderCellDef 
+                    [ngClass]="'justify-content-center'">
                     {{translatedLangText.DURATION }}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" 
+                    [ngClass]="'justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.DURATION}}:</span>{{row.duration}}
                   </mat-cell>
                 </ng-container>
