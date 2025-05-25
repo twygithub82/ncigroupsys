@@ -286,6 +286,9 @@ export class FormDialogComponent {
 
     var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
     var remarks = this.pcForm!.value["remarks"];
+    if (remarks == null) {
+      remarks = "";
+    }
 
     this.custCompClnCatDS.updatePackageCleanings(pc_guids, remarks, adjusted_price).subscribe(result => {
       console.log(result)

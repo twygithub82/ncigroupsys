@@ -18,8 +18,8 @@
                 </button>
               </div>
               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-              <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
-                <button mat-mini-fab color="primary" (click)="adjustCost()" (click)="$event.stopPropagation()">
+              <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' + translatedLangText.EDIT">
+                <button mat-mini-fab class="primary-light" (click)="adjustCost()" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">edit</mat-icon>
                 </button>
               </div>
@@ -53,9 +53,9 @@
                       <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
-                          <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) || false"
+                          <mat-checkbox color="primary" [checked]="itemSelected(cc) || false"
                             (click)="onCheckboxClicked(cc);$event.stopPropagation()"></mat-checkbox>
-                          {{ccDS.displayName(cc)}}
+                          {{ccDS.displayCodeDashName(cc)}}
                         </mat-option>
                         }
                       </mat-autocomplete>
@@ -102,14 +102,14 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
-                <mat-checkbox (change)="$event ? masterToggle() : null"
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
+                <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" hidden>
                 </mat-checkbox>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="toggleEstimate(row)"
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="toggleEstimate(row)"
                   [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="HideCheckBox(row)">
                 </mat-checkbox>
               </mat-cell>
@@ -131,11 +131,10 @@
             </ng-container> -->
 
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
-                  }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3'">
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
+                </span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="email">
@@ -146,15 +145,14 @@
                 {{row.cleaning_category.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_cost">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER_COST
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef  [ngClass]="'justify-content-center'">{{this.translatedLangText.CUSTOMER_COST}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span>
                 {{row.adjusted_price.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tariff_cost">
-              <mat-header-cell *matHeaderCellDef >{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}}$ :</span>
                 {{row.cleaning_category.cost.toFixed(2)}}</mat-cell>
             </ng-container>

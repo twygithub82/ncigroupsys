@@ -23,7 +23,7 @@
                 </div>
               </div>
             </div> -->
-          <div class="body overflow-auto mb-2">
+          <div class="body overflow-auto mb-4">
             <div class="responsive_table">
               <table mat-table [dataSource]="selectedItems" matSort
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table curve-table">
@@ -130,7 +130,7 @@
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.GATE_IN_COST}}</mat-label>
+                    <mat-label>{{translatedLangText.GATE_IN}}</mat-label>
                     <input matInput formControlName="gate_in_cost_cust" type="number" min="0"
                       [required]="this.selectedItems.length===1">
                     <!-- @if (pcForm.get('gate_in_cost_cust')?.hasError('required')) {
@@ -142,7 +142,7 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.GATE_OUT_COST}}</mat-label>
+                    <mat-label>{{translatedLangText.GATE_OUT}}</mat-label>
                     <input matInput formControlName="gate_out_cost_cust" type="number" min="0"
                       [required]="this.selectedItems.length===1">
                     <!-- @if (pcForm.get('gate_out_cost_cust')?.hasError('required')) {
@@ -169,18 +169,12 @@
                     <mat-label>{{translatedLangText.STORAGE_COST}}</mat-label>
                     <input matInput formControlName="storage_cost_cust" type="number" min="0"
                       [required]="this.selectedItems.length===1">
-                    <!-- @if (pcForm.get('storage_cost_cust')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.STORAGE_COST }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
-                      } -->
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.FREE_STORAGE}}</mat-label>
                     <input matInput formControlName="free_storage_days" type="number" min="0">
-
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
@@ -217,8 +211,8 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <mat-form-field class="example-full-width" style="height: 72px;">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.STORAGE_CALCULATE_BY}}</mat-label>
                 <mat-select formControlName="storage_cal_cv">
                   <!-- <mat-option [value]="null">None</mat-option> -->
@@ -228,23 +222,21 @@
                 </mat-select>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row" hidden>
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-              <mat-form-field class="example-full-width">
-                <mat-label>{{translatedLangText.FREE_STORAGE}}</mat-label>
-                <input matInput formControlName="free_storage_days" type="number" min="0">
-              </mat-form-field>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                 <input matInput formControlName="remarks" type="text">
               </mat-form-field>
             </div>
           </div>
+          <!-- <div class="row" hidden>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.FREE_STORAGE}}</mat-label>
+                <input matInput formControlName="free_storage_days" type="number" min="0">
+              </mat-form-field>
+            </div>
+          </div> -->
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">

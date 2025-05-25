@@ -242,6 +242,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     REFRESH: 'COMMON-FORM.REFRESH',
     SEARCH: 'COMMON-FORM.SEARCH',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
   }
 
   @ViewChild('custInput', { static: true })
