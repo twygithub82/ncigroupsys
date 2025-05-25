@@ -944,7 +944,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           repCust.guid = b.storing_order?.customer_company?.guid;
           repCust.items = [];
         }
-        repCust.customer = this.ccDS.displayName(b.storing_order?.customer_company);
+        repCust.customer = b.storing_order?.customer_company?.name;
+        //this.ccDS.displayName(b.storing_order?.customer_company);
         //  if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
         //     repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
         //  }

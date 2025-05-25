@@ -916,7 +916,7 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      4: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -944,12 +944,12 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
     // pdf.setFontSize(8);
     // pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:  ${this.cut_off_dt}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,lastTableFinalY + 10,8);
 

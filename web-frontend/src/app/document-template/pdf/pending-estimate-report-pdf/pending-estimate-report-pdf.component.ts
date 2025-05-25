@@ -804,16 +804,16 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell }
+      0: { halign: 'center', valign: 'middle', cellWidth: 11, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 27, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 34, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 26, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      
     };
 
     // Define headStyles with valid fontStyle
@@ -838,7 +838,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
     let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
@@ -878,6 +878,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       head: headers,
       body: data,
       startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
