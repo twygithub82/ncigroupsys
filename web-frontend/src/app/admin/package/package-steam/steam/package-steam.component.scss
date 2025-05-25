@@ -1,31 +1,41 @@
 td div {
-    //display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
-    justify-content: center;
-    align-items: center;
-    height: 95%;
-    //overflow: hidden;
-  }
+  //display: flex;
+  flex-wrap: nowrap;
+  /* Prevent wrapping */
+  justify-content: center;
+  align-items: center;
+  height: 95%;
+  //overflow: hidden;
+}
 
-  .adjust-button {
-    position: relative;
-    top: 8px; /* Move the button down by 20px */
-  }
+.adjust-button {
+  position: relative;
+  top: 8px;
+  /* Move the button down by 20px */
+}
 
-  mat-chip-row[color="primary"] {
-    background: transparent !important;
-    background-color: transparent !important;
-    border-radius: 6px;
-    // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
-    //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
-    padding: 2px 5px;
-    font-weight: 500;
-    color: #333;
-    transform: translateZ(0);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  /* Optional: Ensure the remove button icon is also white */
-  mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
-    color: red !important;
-  }
+.mdc-evolution-chip-set .mdc-evolution-chip {
+  margin: 0% !important;
+}
+
+// .mat-mdc-form-field-infix {
+//     padding: 0% !important;
+// }
+
+mat-chip-row[color="primary"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: 6px;
+  // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
+  //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
+  padding: 2px 5px;
+  font-weight: 500;
+  color: #333;
+  transform: translateZ(0);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Optional: Ensure the remove button icon is also white */
+mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
+  color: red !important;
+}

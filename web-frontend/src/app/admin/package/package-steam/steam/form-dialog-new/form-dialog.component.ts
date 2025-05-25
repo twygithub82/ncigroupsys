@@ -201,6 +201,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     COST: 'COMMON-FORM.COST',
+    COST_NO_$: 'COMMON-FORM.COST-NO-$',
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     BUFFER_TYPE: "COMMON-FORM.BUFFER-TYPE",
     TARIFF_RESIDUE: 'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE',
@@ -316,9 +317,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   GetTitle() {
 
     if (this.action === "new") {
-      return `${this.translatedLangText.NEW} ${this.translatedLangText.TARIFF_STEAM}`;
+      return `${this.translatedLangText.NEW} ${this.translatedLangText.TARIFF_STEAM} ${this.translatedLangText.COST_NO_$}`;
     }
-    return `${this.translatedLangText.EDIT} ${this.translatedLangText.TARIFF_STEAM}`;
+    return `${this.translatedLangText.EDIT} ${this.translatedLangText.TARIFF_STEAM} ${this.translatedLangText.COST_NO_$}`;
     //  return this.action==="new"?this.translatedLangText.NEW:this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_STEAM;      
 
   }

@@ -82,7 +82,7 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="seq">
-                        <mat-header-cell *matHeaderCellDef >No.</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef >S/N</mat-header-cell>
                         <mat-cell *matCellDef="let row;">{{row.index+1}}</mat-cell>
                       </ng-container>
                       <!-- ID Column -->
@@ -192,7 +192,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.tariff_repair.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.tariff_repair.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
@@ -206,7 +206,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
                           <div class="cost-label">
-                            <span>$</span><span>{{parse2Decimal(row.quantity * row.tariff_repair.material_cost)}}</span>
+                            <span>{{parse2Decimal(row.quantity * row.tariff_repair.material_cost)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
@@ -466,13 +466,13 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span style="color: #af0404;">{{tempForm!.get('labour_discount_amount')?.value | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('labour_discount_amount')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span style="color:  #af0404;">{{tempForm!.get('material_discount_amount')?.value | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('material_discount_amount')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div

@@ -18,7 +18,7 @@
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                <button mat-mini-fab color="primary" (click)="addCall()" (click)="$event.stopPropagation()">
+                <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
               </div>
@@ -118,40 +118,40 @@
                   }}:</span>{{row.package_steaming?.customer_company?.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="companyName">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER
                   }}:</span>{{ccDS.displayName(row.package_steaming?.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastCargo">
               <mat-header-cell *matHeaderCellDef 
-                [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.LAST_CARGO }}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-2_75'">{{this.translatedLangText.LAST_CARGO }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-2'">
+                [ngClass]="'tbl-col-width-per-2_75'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_CARGO
                   }}:</span>{{row.tariff_cleaning?.cargo}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="minTemp">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-center'">{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1 justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.MIN_TEMP }}:</span>{{row.temp_min}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="maxTemp">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-center'">{{this.translatedLangText.MAX_TEMP }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1 justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.MAX_TEMP
                   }}:</span>{{displayTempMax(row.temp_max)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.COST}}:</span>
                 {{displayNumber(row.package_steaming?.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.LABOUR }}:</span>
                 {{displayNumber(row.package_steaming?.labour)}}</mat-cell>
             </ng-container>
@@ -162,24 +162,19 @@
                     </mat-cell>
                   </ng-container> -->
             <ng-container matColumnDef="lastUpdate">
-              <mat-header-cell *matHeaderCellDef
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'"
                 >{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-1_25'">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>
             </ng-container>
             <!-- actions -->
             <ng-container matColumnDef="actions">
-              <mat-header-cell class="pr-0" *matHeaderCellDef></mat-header-cell>
-              <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="addCall()"
-                        class="tbl-action-btn">
-                        <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
-                      </button> -->
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-end'"></mat-header-cell>
+              <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75 justify-content-end'">
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="deleteItem($event,row)"
                   class="tbl-action-btn text-custom-danger">
                   <mat-icon>delete_forever</mat-icon>
-                  <!-- <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons> -->
                 </button>
               </mat-cell>
             </ng-container>

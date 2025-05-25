@@ -19,7 +19,8 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
                       <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
@@ -149,20 +150,6 @@
                     }
                   </mat-cell>
                 </ng-container>
-                <ng-container matColumnDef="flatRate">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.FLAT_RATE_ONLY}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.FLAT_RATE_ONLY}}:</span>
-                    @if(row.flat_rate){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
                 <ng-container matColumnDef="isoformat">
                   <mat-header-cell *matHeaderCellDef
                     [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.ISO_FORMAT}}</mat-header-cell>
@@ -170,6 +157,20 @@
                     [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.ISO_FORMAT}}:</span>
                     @if(row.iso_format){
+                    <mat-icon class="col-green font-bold">check</mat-icon>
+                    }
+                    @else {
+                    <mat-icon class="col-red font-bold">close</mat-icon>
+                    }
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="flatRate">
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.FLAT_RATE_ONLY}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
+                    <span class="mobile-label">{{this.translatedLangText.FLAT_RATE_ONLY}}:</span>
+                    @if(row.flat_rate){
                     <mat-icon class="col-green font-bold">check</mat-icon>
                     }
                     @else {
