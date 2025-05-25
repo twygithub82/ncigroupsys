@@ -719,21 +719,22 @@ static onUNNumericOnly(event: Event, form: any): void {
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize);
   }
 
-  static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean) {
-    pdf.setFontSize(14); // Title font size 
-    const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-    if (topPosition <= 10) {
-      topPosition = 11;
-    }
-    pdf.text(title, titleX, topPosition); // Position it at the top
+  static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean,fontSize: number=14) {
+    // pdf.setFontSize(14); // Title font size 
+    // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+    // if (topPosition <= 10) {
+    //   topPosition = 11;
+    // }
+    // pdf.text(title, titleX, topPosition); // Position it at the top
 
-    pdf.setLineDashPattern([0.001, 0.001], 0);
-    // Draw underline for the title
-    pdf.setLineWidth(0.1); // Set line width for underline
-    if (underline) {
-      pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
-    }
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
+    // // Draw underline for the title
+    // pdf.setLineWidth(0.1); // Set line width for underline
+    // if (underline) {
+    //   pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+    // }
+    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize,underline);
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {

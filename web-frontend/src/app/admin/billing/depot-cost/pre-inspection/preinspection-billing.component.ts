@@ -790,7 +790,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     updateBilling.status_cv = billingItem.status_cv;
     updateBilling.invoice_no = `${this.invoiceNoControl.value}`;
 
-    let billingEstimateRequests: any = billingItem.residue?.map(cln => {
+    let billingEstimateRequests: any = billingItem.preinsp_billing_sot?.map(cln => {
       var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
       billingEstReq.action = "";
       billingEstReq.billing_party = this.billingParty;

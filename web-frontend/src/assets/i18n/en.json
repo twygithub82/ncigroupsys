@@ -1277,7 +1277,9 @@
     "OVERWRITE-DATA": "Overwrite Data",
     "LABOUR-COST": "Labour Cost",
     "GROUP-ADJUSTMENT": "Group Adjustment",
-    "TEAM-UNASSIGN-SUCCESS": "Team Unassigned Successfully"
+    "TEAM-UNASSIGN-SUCCESS": "Team Unassigned Successfully",
+    "APPROVAL-REF": "Approval Ref",
+    "RELEASE-REF": "Release Ref"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

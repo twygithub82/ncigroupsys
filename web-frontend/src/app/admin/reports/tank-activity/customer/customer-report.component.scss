@@ -7,3 +7,24 @@
     white-space: normal; /* Allows text wrapping */
     max-width: 100%; /* Adjust width as needed */
   }
+
+ .custom-fill .mat-form-field-flex {
+  background-color: transparent !important; /* remove grey background */
+  border-radius: 0 !important;              /* remove rounded corners */
+  box-shadow: none !important;
+}
+
+.custom-fill .mat-form-field-outline,
+.custom-fill .mat-form-field-outline-start,
+.custom-fill .mat-form-field-outline-end {
+  display: none !important;                 /* hide the box outline */
+}
+
+.custom-fill .mat-form-field-appearance-fill .mat-form-field-underline {
+  height: 2px;
+  background-color: rgba(0, 0, 0, 0.42);    /* underline color */
+}
+
+.custom-fill .mat-form-field-appearance-fill.mat-focused .mat-form-field-underline {
+  background-color: #3f51b5; /* focus underline color (example: indigo) */
+}

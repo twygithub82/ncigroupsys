@@ -255,6 +255,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     CLEAN_IN: 'COMMON-FORM.CLEAN-IN',
     CLEANING_INVENTORY: 'MENUITEMS.REPORTS.LIST.CLEANING-INVENTORY',
     CLEANING_ACTIVITY:'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
+    CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
     MASTER:'MENUITEMS.MASTER.TEXT'
   }
 
@@ -572,7 +573,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -601,15 +602,15 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.CLEAN_DATE}:  ${this.date}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+5, 8);
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
 
     var buffer = 25;
     var CurrentPage = 1;
@@ -629,7 +630,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       else {
         CurrentPage = repPage;
       }
-      lastTableFinalY += 5;
+      lastTableFinalY += 7;
       startY = lastTableFinalY + 8;
       pdf.setFontSize(8);
       pdf.setTextColor(0, 0, 0); // Black text
@@ -967,7 +968,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_ACTIVITY} - ${this.translatedLangText.MASTER}`
+    return `${this.translatedLangText.CLEANING_ACTIVITY}: ${this.translatedLangText.MASTER}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

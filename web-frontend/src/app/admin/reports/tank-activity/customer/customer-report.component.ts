@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import {DailyDetailSummaryPdfComponent} from 'app/document-template/pdf/inventory/daily-details-summary-pdf/daily-summary-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-customer-report',
   standalone: true,
@@ -156,6 +157,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     [
       '',
       'CLEANING',
+      'STEAMING',
+      'RESIDUE',
       'REPAIR',
       'STORAGE'
     ]
@@ -218,7 +221,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -233,6 +237,10 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.plDS = new PackageLabourDS(this.apollo);
     this.billDS = new BillingDS(this.apollo);
     this.reportDS=new ReportDS(this.apollo);
+    if(modulePackageService.isStarterPackage())
+    {
+      this.availableProcessStatus=  this.availableProcessStatus.filter(c=>c != "RESIDUE" && c != "STEAMING");
+    }
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -349,8 +357,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
+      
       this.tankStatusCvListDisplay = data;
-      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
+       var filterList = data.filter(x => this.availableProcessStatus.includes(x.code_val!));
+      filterList.sort((a, b) => {
+        return this.availableProcessStatus.indexOf(a.code_val!) - this.availableProcessStatus.indexOf(b.code_val!);
+      });
+      this.tankStatusCvList = addDefaultSelectOption(filterList, 'All');
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
@@ -413,7 +426,8 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.selectedEstimateLabourCost = 0;
     this.stmEstList = [];
     this.selection.clear();
-
+    this.customerCodeControl.setErrors({'required': false});
+    this.customerCodeControl.markAsUntouched();
     // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
 
     // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
@@ -581,6 +595,13 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     if(repType===1)
     {
+      if(!this.customerCodeControl.value)
+      {
+        this.isGeneratingReport = false;
+        this.customerCodeControl.setErrors({'required': true});
+        this.customerCodeControl.markAsTouched(); // <-- Add this line
+        return;
+      }
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, customerNm);
     }
     else
@@ -1067,6 +1088,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
        var startdt = new Date(this.searchForm!.value['eir_dt_start']);
       var enddt = new Date(this.searchForm!.value['eir_dt_end']);
+      date=`${Utility.convertDateToStr(startdt)} - ${Utility.convertDateToStr(enddt)}`
       var start_dt: any = Utility.convertDate(startdt) || Utility.convertDate(new Date());
       var end_dt: any = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
 
@@ -1078,8 +1100,9 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       cond_counter++;
     }
     else {
-      var startdt = new Date(2000, 1, 1, 0, 0, 0, 0);
+      var startdt = new Date(2024, 8, 1, 0, 0, 0, 0);
       var enddt = new Date();
+      date=`${Utility.convertDateToStr(startdt)} - ${Utility.convertDateToStr(enddt)}`
       dailyInvReq.start_date = Utility.convertDate(startdt) || Utility.convertDate(new Date());
       dailyInvReq.end_date = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
       // cond_counter++;
