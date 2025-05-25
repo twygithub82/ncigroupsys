@@ -65,7 +65,8 @@
                       <mat-option [value]="cc">
                         <mat-checkbox color="primary" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
                           [checked]="itemSelected(cc) || false"></mat-checkbox>
-                        {{ccDS.displayName(cc)}}
+                            <!-- {{ccDS.displayName(cc)}} -->
+                            {{displayCustomerCompanyFn(cc)}}
                       </mat-option>
                       }
                     </mat-autocomplete>
@@ -113,11 +114,10 @@
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="companyName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">{{this.translatedLangText.CUSTOMER
-                }}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
-                  }}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell>
+                <!-- <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="minTemp">
               <mat-header-cell *matHeaderCellDef  [ngClass]="'justify-content-center'">{{this.translatedLangText.MIN_TEMP }}</mat-header-cell>

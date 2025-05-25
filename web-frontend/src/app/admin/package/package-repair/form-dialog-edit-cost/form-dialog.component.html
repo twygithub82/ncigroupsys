@@ -114,13 +114,13 @@
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} (%)</mat-label>
                   <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost"
                     [max]="maxMaterialCost">
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
-                    {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}}
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text" >
+                    {{translatedLangText.MATERIAL_COST}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('max')">
-                    {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}}
-                    {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('max')" class="italic-text">
+                    {{translatedLangText.MATERIAL_COST}}
+                    {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
                   </mat-error>
                 </mat-form-field>
               </div>
@@ -131,14 +131,14 @@
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
                   <input matInput formControlName="labour_hour_percentage" type="number" [min]="minMaterialCost"
                     [max]="maxMaterialCost">
-                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')">
-                    {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}}
+                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')" class="italic-text">
+                    {{translatedLangText.LABOUR_HOUR}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
 
-                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('max')">
-                    {{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}}
-                    {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('max')" class="italic-text">
+                    {{translatedLangText.LABOUR_HOUR}}
+                    {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
                   </mat-error>
                 </mat-form-field>
               </div>
@@ -148,12 +148,12 @@
       </div>
 
       <div class="row">
-        <div mat-dialog-actions class="mb-1 align-right pt-3">
+        <div mat-dialog-actions class="mb-1 align-right mt-2">
           @if (canEdit()) {
           <button mat-flat-button color="primary" (click)="update()">
             <ng-container *ngIf="!(this.UpdateInProgress); else loading">
               <mat-icon>save</mat-icon>
-              {{translatedLangText.SAVE_AND_SUBMIT}}
+              {{translatedLangText.UPDATE}}
             </ng-container>
             <ng-template #loading>
               <mat-icon class="spinner">autorenew</mat-icon>

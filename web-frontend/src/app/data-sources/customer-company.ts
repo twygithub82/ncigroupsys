@@ -670,6 +670,10 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
     return cc?.code ? (cc?.name ? `${cc.code} (${cc.name})` : `${cc.code}`) : '';
   }
 
+  displayCodeDashName(cc?: CustomerCompanyItem): string {
+    return cc?.code ? (cc?.name ? `${cc.code} - ${cc.name}` : `${cc.code}`) : '';
+  }
+
   AddCustomerCompany(customer: any, contactPersons: any, billingBranches: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ADD_CUSTOMER_COMPANY,
