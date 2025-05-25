@@ -853,7 +853,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 10;
     const rightMargin = 10;
-    const topMargin = 8;
+    const topMargin = 5;
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
@@ -910,10 +910,10 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
 
-    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:  ${this.cut_off_dt}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
     Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,lastTableFinalY+10,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
@@ -973,7 +973,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           );
         }
         row.push(this.displayRepairCost(itm) || "");
-        row.push((itm.total === "0.00" ? '' : itm.total));
+        row.push((itm.total === "0.00" ? '' : this.displaySubTotalCost(itm)));
         data.push(row);
         // data.push([
         //   (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
@@ -1346,46 +1346,46 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   displayCleanCost(item: report_billing_item): string {
     let retval: string = '';
 
-    retval = (item.clean_cost === "0.00" || item.clean_cost === undefined ? '' : `${item.clean_cost}`)
+    retval = (item.clean_cost === "0.00" || item.clean_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.clean_cost)}`)
     return retval;
   }
   displayStorageCost(item: report_billing_item): string {
     let retval: string = '';
 
-    retval = (item.storage_cost === "0.00" || item.storage_cost === undefined ? '' : `${item.storage_cost}`)
+    retval = (item.storage_cost === "0.00" || item.storage_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.storage_cost)}`) //`${item.storage_cost}`)
     return retval;
   }
   displaySteamCost(item: report_billing_item): string {
     let retval: string = '';
 
-    retval = (item.steam_cost === "0.00" || item.steam_cost === undefined ? '' : `${item.steam_cost}`)
+    retval = (item.steam_cost === "0.00" || item.steam_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.steam_cost)}`) //`${item.steam_cost}`)
     return retval;
   }
   displayRepairCost(item: report_billing_item): string {
     let retval: string = '';
 
-    retval = (item.repair_cost === "0.00" || item.repair_cost === undefined ? '' : `${item.repair_cost}`)
+    retval = (item.repair_cost === "0.00" || item.repair_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.repair_cost)}`) //`${item.repair_cost}`)
     return retval;
   }
 
   displayResidueCost(item: report_billing_item): string {
     let retval: string = '';
 
-    retval = (item.residue_cost === "0.00" || item.residue_cost === undefined ? '' : `${item.residue_cost}`)
+    retval = (item.residue_cost === "0.00" || item.residue_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.residue_cost)}`) //`${item.residue_cost}`)
     return retval;
   }
 
   displayLOLOCost(item: report_billing_item): string {
     let retval: string = '';
 
-    retval = (item.lolo_cost === "0.00" || item.lolo_cost === undefined ? '' : `${item.lolo_cost}`)
+    retval = (item.lolo_cost === "0.00" || item.lolo_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.lolo_cost)}`) //`${item.lolo_cost}`)
     return retval;
   }
 
   displayPreinsCost(item: report_billing_item): string {
     let retval: string = '';
 
-    retval = (item.preins_cost === "0.00" || item.preins_cost === undefined ? '' : `${item.preins_cost}`)
+    retval = (item.preins_cost === "0.00" || item.preins_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.preins_cost)}`) //`${item.preins_cost}`)
     return retval;
   }
 
@@ -1393,7 +1393,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let retval: string = '';
 
 
-    retval = (item.gateio_cost === "0.00" || item.gateio_cost === undefined ? '' : `${item.gateio_cost}`)
+    retval = (item.gateio_cost === "0.00" || item.gateio_cost === undefined ? '' : `${Utility.formatNumberDisplay(item.gateio_cost)}`) //`${item.gateio_cost}`)
     return retval;
   }
 
@@ -1404,10 +1404,30 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     }, 0); // Start with an initial value of 0
 
     // Return the total as a string
-
-    return (total || 0).toFixed(2);
+    var retval=Utility.formatNumberDisplay(total || 0);
+    return retval;
   }
 
+  
+
+  displaySubTotalCost(item: report_billing_item): string {
+    var retval : number=0;
+
+    retval += item.gateio_cost ? Number(item.gateio_cost) : 0;
+    retval += item.preins_cost ? Number(item.preins_cost) : 0;
+    retval += item.lolo_cost ? Number(item.lolo_cost) : 0;
+    retval += item.storage_cost ? Number(item.storage_cost) : 0;
+    retval += item.clean_cost ? Number(item.clean_cost) : 0;
+   
+    retval += item.repair_cost ? Number(item.repair_cost) : 0;
+    if (!this.modulePackageService.isStarterPackage()) {
+      retval += item.residue_cost ? Number(item.residue_cost) : 0;
+     retval += item.steam_cost ? Number(item.steam_cost) : 0;
+    }
+
+    var ret=Utility.formatNumberDisplay(retval || 0);
+    return ret;
+  }
   GetTotalCost(item: report_billing_item): number {
     var retval : number=0;
 

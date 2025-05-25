@@ -104,10 +104,7 @@ export const SEARCH_CLEANING_METHOD_QUERY = gql`
         tariff_cleanings{
           guid
           description
-          storing_order_tank(where:{delete_dt:{eq:null}}){
-            guid
-            tank_no
-          }
+          
         }
       }
       totalCount

@@ -58,7 +58,7 @@
             <td class="text-center">{{displaySteamCost(itm)}}</td> 
             <td class="text-center">{{ displayResidueCost(itm)}}</td> 
             <td class="text-center">{{ displayGateIOCost(itm)}}</td> 
-            <td class="text-center">{{ (itm.total==="0.00"?'':itm.total) }}</td> 
+            <td class="text-center">{{ displaySubTotalCost(itm) }}</td> 
           </tr>
         }
         <!-- <tr>

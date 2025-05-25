@@ -539,7 +539,7 @@ export class DailyDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapte
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 5;
     const rightMargin = 5;
-    const topMargin = 8;
+    const topMargin = 5;
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;

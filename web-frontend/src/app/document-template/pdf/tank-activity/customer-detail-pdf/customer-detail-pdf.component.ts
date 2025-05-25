@@ -269,7 +269,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     IN_YARD: 'COMMON-FORM.IN-YARD',
     RELEASED: 'COMMON-FORM.RELEASED',
     REPORT: 'COMMON-FORM.REPORT',
-    S_N: 'COMMON-FORM.S_N'
+    S_N: 'COMMON-FORM.S_N',
+    APPROVAL_REF:'COMMON-FORM.APPROVAL-REF',
+    RELEASE_REF:'COMMON-FORM.RELEASE-REF',
   }
 
   type?: string | null;
@@ -523,7 +525,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 5;
     const rightMargin = 5;
-    const topMargin = 8;
+    const topMargin = 5;
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
     const maxContentHeight = pageHeight - topMargin - bottomMargin;
@@ -592,28 +594,29 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     { content: this.translatedLangText.ESTIMATE_NO, styles: { valign: vAlign } },
     { content: this.translatedLangText.ESTIMATE_DATE, styles: { valign: vAlign } },
     { content: this.translatedLangText.APPROVAL_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.APPROVAL_REFERENCE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.APPROVAL_REF, styles: { valign: vAlign } },
     { content: this.translatedLangText.AV_DATE, styles: { valign: vAlign } },
     
     // Release Details (4 columns)
     { content: this.translatedLangText.CLEAN_CERT_DATE, styles: { valign: vAlign } },
     { content: this.translatedLangText.RELEASE_BOOKING, styles: { valign: vAlign } },
     { content: this.translatedLangText.RELEASE_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.RELEASE_REFERENCE, styles: { valign: vAlign } },
+    { content: this.translatedLangText.RELEASE_REF, styles: { valign: vAlign } },
     
     // Empty cells for rowSpan columns
     '', // for CURRENT_STATUS
     ''  // for YARD
   ]
 ];
+    
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', cellWidth: 19, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      6: { halign: 'left', cellWidth: 39, minCellHeight: minHeightBodyCell },
+      6: { halign: 'left', cellWidth: 40, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
@@ -641,7 +644,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
-      lineWidth: 0.1
+      lineWidth: 0.1,
+      cellPadding:1,
     };
 
     let currentY = topMargin;
@@ -737,24 +741,16 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
 
           data.push([ 
-            { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-             { content: this.DisplayTankOwner(itm), colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
-          ]);
-          data.push([ 
-            { content: this.translatedLangText.LAST_TEST, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-             { content: this.DisplayLastTest(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
-          ]);
-          data.push([ 
-            { content: this.translatedLangText.NEXT_TEST, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-            { content: this.DisplayNextTest(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
-          ]);
-          data.push([ 
-            { content: this.translatedLangText.PURPOSE, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-            { content: this.displayTankPurpose(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
-          ]);
-          data.push([ 
-            { content: this.translatedLangText.REMARKS, colSpan: 2, styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-            { content: this.DisplayRemarks(itm) || "", colSpan: 5, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
+            { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+             { content: this.DisplayTankOwner(itm), colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
+            { content: this.translatedLangText.LAST_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+             { content: this.DisplayLastTest(itm) || "", colSpan: 1, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
+            { content: this.translatedLangText.NEXT_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+            { content: this.DisplayNextTest(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
+            { content: this.translatedLangText.PURPOSE, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+            { content: this.displayTankPurpose(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
+            { content: this.translatedLangText.REMARKS, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+            { content: this.DisplayRemarks(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
           ]);
         }
         pdf.setDrawColor(0, 0, 0); // red line color
@@ -779,6 +775,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             fillColor: [255, 255, 255],
             halign: 'left', // Left-align content for body by default
             valign: 'middle', // Vertically align content
+            
           },
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();

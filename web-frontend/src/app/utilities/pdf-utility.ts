@@ -35,10 +35,18 @@ export class PDFUtility {
     pdf.restoreGraphicsState();
   }
 
-  static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number=14) {
+  static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number=14,underline: boolean = true) {
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+
+    if (topPosition <= 10) {
+      topPosition = 11; // sequence page report title
+    }
+    else if(topPosition>=40 &&topPosition<=50)
+    {
+      topPosition=40;
+    }
 
     pdf.text(title, titleX, topPosition); // Position it at the top
 
@@ -46,10 +54,12 @@ export class PDFUtility {
    
     // pdf.setLineWidth(0.1); // Set line width for underline
 
+    if(underline){
      pdf.setLineWidth(0.1);
-    // Set dashed line pattern
-    pdf.setLineDashPattern([0.001, 0.001], 0);
-    pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+      // Set dashed line pattern
+      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+    }
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {

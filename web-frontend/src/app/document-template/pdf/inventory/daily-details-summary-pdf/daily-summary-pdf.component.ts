@@ -305,6 +305,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
     DAILY_INVENTORY_SUMMARY: 'MENUITEMS.REPORTS.LIST.INVENTORY-SUMMARY',
     S_N:'COMMON-FORM.S_N',
+    
 
   }
 
@@ -880,13 +881,13 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
     let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
     //  pdf.setFontSize(8);
     //  pdf.setTextColor(0, 0, 0); // Black text
 
-  const invDate = `${this.translatedLangText.INVENTORY_DATE}:  ${this.date}`; // Replace with your actual cutoff date
+  const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 8, 8)
 
     
@@ -1084,12 +1085,12 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     const tablewidth=10;
     const fontSz=6;
     const contentWidth = pageWidth - leftMargin - rightMargin;
-    const chartContentWidth= contentWidth - tablewidth - 2;
+    const chartContentWidth= contentWidth ;
     const reportTitle = this.GetReportTitle();
-    const headers = [[
-      this.translatedLangText.DESCRIPTION,
-      this.translatedLangText.NO_OF_TANKS
-    ]];
+    // const headers = [[
+    //   this.translatedLangText.DESCRIPTION,
+    //   this.translatedLangText.NO_OF_TANKS
+    // ]];
 
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     // Define headStyles with valid fontStyle
@@ -1109,40 +1110,37 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
-    // Variable to store the final Y position of the last table
     let lastTableFinalY = 15;
 
+    let startY = lastTableFinalY + 5;
+    let startX = pageWidth - rightMargin - tablewidth;
 
+   
+    //Add table using autoTable plugin
+
+    const headers = [[
+      this.translatedLangText.OPENING_BALANCE, this.translatedLangText.IN_GATE,
+      this.translatedLangText.OUT_GATE, this.translatedLangText.CLOSING_BALANCE,
+    ]];
+
+    var cWidth =contentWidth/4;
     const comStyles: any = {
-      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: 35, minCellHeight: minHeightBodyCell },
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: cWidth,minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: cWidth,minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: cWidth,minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: cWidth, minCellHeight: minHeightBodyCell },
     };
 
     const data: any[][] = [];
-    data.push([this.translatedLangText.OPENING_BALANCE, this.displayOpeningBalance()]);
-    data.push([this.translatedLangText.IN_GATE, this.displayTotalInGate()]);
-    data.push([this.translatedLangText.OUT_GATE, this.displayTotalOutGate()]);
-    data.push([this.translatedLangText.CLOSING_BALANCE, this.displayClosingBalance()]);
-
-
-    let startY = lastTableFinalY + 8;
-    let startX = pageWidth - rightMargin - tablewidth;
-    //Add table using autoTable plugin
-
-    // pdf.setFontSize(8);
-    // pdf.setTextColor(0, 0, 0); // Black text
-    // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
-
-    var bufferY :number=105;
+    data.push([this.displayOpeningBalance(),this.displayTotalInGate(),this.displayTotalOutGate(),this.displayClosingBalance()]);
+    
     var bufferX:number =65;
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY +bufferY, // Start table at the current startY value
-      margin: { left: leftMargin+bufferX },
+      startY: startY , // Start table at the current startY value
+      margin: { left: leftMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1166,146 +1164,21 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
       },
     });
-    if (cardElements.length > 0) {
+
+
+    var bufferY :number=20;
+     if (cardElements.length > 0) {
       const card = cardElements[0];
       const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/png', this.imageQuality);
+      let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'PNG', leftMargin+5, startY, chartContentWidth, imgHeight);
+      pdf.addImage(imgData, 'JPG', leftMargin, startY+bufferY, chartContentWidth, imgHeight);
     }
+    
 
   }
 
 
-  async exportToPDF_r3(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 20;
-    const bottomMargin = 20;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
-
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
-
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-    let pageNumber = 1;
-
-    let tableHeaderHeight = 7.6153;
-    let tableRowHeight = 5.8974;
-
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle();
-
-    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-
-    var CurrentPage = 1;
-    var buffer = 20;
-    for (let i = 0; i < cardElements.length; i++) {
-      const card = cardElements[i];
-
-      const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-      const imgHeight = (canvas.height * contentWidth) / canvas.width;
-
-      if (currentY + imgHeight > maxContentHeight) {
-        let currentY_canvas = 0;
-        let nextPage = false;
-        const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
-        let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
-
-        const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-        const pageTHeaderHeight = tableHeaderHeight;
-
-        do {
-          nextPage = false;
-
-          if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
-            imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
-            currentY += pageTHeaderHeight;
-            currentY_canvas += tableHeaderHeight_canvas;
-
-            const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
-            const remainingTableHeight_canvas = canvas.height - currentY_canvas;
-            const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
-            let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
-            let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
-
-            const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
-            imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
-
-            currentY_canvas += cpImgHeight_canvas;
-            currentY += cpImgHeight;
-
-            nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
-          } else {
-            if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-              pdf.addPage();
-              pageNumber++;
-              this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-              pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-              currentY = topMargin;
-            }
-
-            nextPage = (currentY + imgHeight > maxContentHeight);
-            if (!nextPage) {
-              pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-              currentY += imgHeight + 5;
-            }
-          }
-
-          if (nextPage) {
-            pdf.addPage();
-            currentY = topMargin;
-            pageNumber++;
-            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-            currentY_canvas -= tableHeaderHeight_canvas;
-            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-          } else {
-            currentY += 5;
-          }
-
-        } while (nextPage);
-
-      } else {
-        if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-          pdf.addPage();
-          pageNumber++;
-          this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-          currentY = topMargin;
-        }
-
-        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-        currentY += imgHeight + 5;
-      }
-
-      this.generatingPdfProgress += progressValue;
-    }
-
-    const totalPages = pdf.getNumberOfPages();
-
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setPage(page);
-      pdf.setFontSize(10);
-      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
-    });
-
-    this.generatingPdfProgress = 100;
-    pdf.save(fileName);
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-  }
 
   async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
 
@@ -1968,10 +1841,18 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           },
         },
       },
-      yaxis: {
+     yaxis: {
         title: {
           text: '$ (thousands)',
         },
+        labels: {
+          formatter: function (val: number) {
+            return Number.isInteger(val) ? val.toString() : '';
+          },
+        },
+        forceNiceScale: true,
+        tickAmount: 5, // Adjust based on your data range
+        decimalsInFloat: 0
       },
       grid: {
         show: true,
@@ -2126,9 +2007,12 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           maxWidth: 100,  // Set a maximum width for the labels
           offsetX: 10,    // Add horizontal offset to the labels
           formatter: (value: number) => {
-            return value.toFixed(2); // Format the label to reduce its length
-          }
-        }
+           return Math.round(value).toString(); // Return string, not number
+          },
+        },
+        forceNiceScale: true,
+        tickAmount: 5, // Adjust based on your data range
+        decimalsInFloat: 0
       }
       // if(series.length==1)
       //    if(series[0].data.length==1)

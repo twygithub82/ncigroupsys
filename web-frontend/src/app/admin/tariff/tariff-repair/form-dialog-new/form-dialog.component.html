@@ -2,7 +2,7 @@
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h4>{{GetTitle()}}</h4>
+        <h3>{{GetTitle()}}</h3>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -50,11 +50,11 @@
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
               <input matInput formControlName="part_name" type="text" required>
-               @if (pcForm.get('part_name')?.hasError('required')) {
+              <!-- @if (pcForm.get('part_name')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
-              } 
+              } -->
               @if (pcForm.get('part_name')?.hasError('existed')) {
               <mat-error>
                 {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
