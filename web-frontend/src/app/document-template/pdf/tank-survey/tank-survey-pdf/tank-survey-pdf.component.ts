@@ -609,7 +609,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
           await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
           // Variable to store the final Y position of the last table
-          let lastTableFinalY = 45;
+          let lastTableFinalY = 40;
           let minHeightHeaderCol=3;
           let minHeightBodyCell=5;
           let fontSize=7;
@@ -627,7 +627,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
           
           lastTableFinalY +=8;
           pdf.setFontSize(8);
-          const invDate =`${this.translatedLangText.SURVEY_PERIOD}:  ${this.date}`;
+          const invDate =`${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`;
           Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin+3,lastTableFinalY,9);
     
           var CurrentPage=1;
@@ -658,7 +658,7 @@ export class TankSurveyPdfComponent extends UnsubscribeOnDestroyAdapter implemen
               
               pdf.setFontSize(9);
               pdf.setTextColor(0, 0, 0); // Black text
-              pdf.text(`${this.translatedLangText.SURVEY_DATE}:  ${cust.survey_dt}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
+              pdf.text(`${this.translatedLangText.SURVEY_DATE}: ${cust.survey_dt}`, leftMargin, lastTableFinalY ); // Add customer name 10mm below the last table
               lastTableFinalY+=3;
               if((cust.tank_survey_summaries?.length||0)>0)
               {
