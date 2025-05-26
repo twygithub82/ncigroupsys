@@ -42,7 +42,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyFilterList; track cc) {
                       <mat-option [value]="cc">
-                        {{ccDS.displayName(cc)}}
+                        {{ccDS.displayCodeDashName(cc)}}
                       </mat-option>
                       }
                     </mat-autocomplete>
@@ -91,12 +91,12 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef 
-                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
-                }}</mat-header-cell>
+                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg'">
                 <span class="mobile-label">{{this.translatedLangText.CODE
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
+
             <ng-container matColumnDef="customer_name">
               <mat-header-cell [ngClass]="''" *matHeaderCellDef
                 >{{this.translatedLangText.CUSTOMER_COMPANY_NAME

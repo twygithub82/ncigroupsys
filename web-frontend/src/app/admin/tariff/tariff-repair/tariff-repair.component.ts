@@ -426,7 +426,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
-      width: '65vw',
+      width: '80vw',
       //height: '90vh',
       data: {
         action: 'new',
