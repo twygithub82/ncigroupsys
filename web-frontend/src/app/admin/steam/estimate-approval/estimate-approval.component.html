@@ -32,13 +32,13 @@
                   </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="row">
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                       <input matInput formControlName="tank_no">
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                       <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -52,7 +52,7 @@
                       </mat-autocomplete>
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                       <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -71,7 +71,7 @@
                       }
                     </mat-form-field>
                   </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="eir_picker">
@@ -112,7 +112,7 @@
                       <input matInput formControlName="job_no">
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
                       <input matInput formControlName="est_dt" [matDatepicker]="est_dt_picker">
@@ -138,7 +138,7 @@
                       <mat-date-range-picker #approval_picker></mat-date-range-picker>
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_STATUS}}</mat-label>
                       <mat-select multiple formControlName="est_status_cv">
