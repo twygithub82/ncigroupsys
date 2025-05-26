@@ -24,18 +24,18 @@
                       <mat-icon>add</mat-icon>
                     </button>
                   </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                      (click)="$event.stopPropagation()">
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
-                  </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.SELECT_ALL">
                     <mat-checkbox class="card-checkbox ms-1" (change)="masterToggle()"
                       (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
                       [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
                       {{translatedLangText.SELECT_ALL}}
                     </mat-checkbox>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>

@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div class="card">
+    <div class="card p-0">
       <mat-accordion>
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
@@ -133,9 +133,9 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="customer">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="''">
                 {{this.translatedLangText.CUSTOMER}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
                 <!-- </span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
                 </span>{{row.customer_company.name}}</mat-cell>

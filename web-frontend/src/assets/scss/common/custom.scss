@@ -10,8 +10,17 @@
 }
 
 .left-img {
+  display: flex;
+  flex-direction: column;
+
   img {
-    max-width: 80vh;
+    max-width: 80%;
+  }
+
+  .caption {
+    margin-top: 15px;
+    color: $theme-gold-purple-active-color;
+    font-weight: bold;
   }
 }
 
@@ -2220,8 +2229,8 @@ table.advance-table mat-cell {
 }
 
 .card .body {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 mat-step-header.mat-step-header,

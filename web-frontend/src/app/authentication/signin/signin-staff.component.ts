@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { environment } from 'environments/environment';
 @Component({
   selector: 'app-signin-staff',
   templateUrl: './signin-staff.component.html',
@@ -44,6 +45,7 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
   REMEMBER = 'LANDING-SIGNIN.REMEMBER'
   FORGOTPASSWORD = 'LANDING-SIGNIN.FORGOTPASSWORD'
   LOGIN = 'LANDING-SIGNIN.LOGIN'
+  AUTH_CAPTION = 'LANDING-SIGNIN.AUTH-CAPTION'
 
   PROCEDURE_REQUIRED = 'COMMON-FORM.IS-REQUIRED'
 
@@ -78,9 +80,11 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     }
     this.dialog.closeAll();
   }
+
   get f() {
     return this.authForm.controls;
   }
+
   onSubmit() {
     this.submitted = true;
     this.loading = true;
@@ -114,5 +118,9 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
           },
         });
     }
+  }
+
+  get caption() {
+    return environment.companyNameShort;
   }
 }
