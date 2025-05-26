@@ -63,10 +63,10 @@
                   </ng-container>
                   <ng-container matColumnDef="customerCost">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CUSTOMER_COST
-                      }}</mat-header-cell>
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      {{translatedLangText.CUSTOMER_COST}}</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <span class="mobile-label">{{translatedLangText.COST
                         }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
                   </ng-container>

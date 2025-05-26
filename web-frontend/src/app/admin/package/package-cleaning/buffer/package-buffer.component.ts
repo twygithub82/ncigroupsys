@@ -231,6 +231,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
     ALL: 'COMMON-FORM.ALL',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
   }
 
   @ViewChild('custInput', { static: true })

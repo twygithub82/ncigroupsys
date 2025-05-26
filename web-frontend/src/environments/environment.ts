@@ -1,7 +1,8 @@
 export const environment = {
   production: true,
   title: 'Home',
-  companyName: 'DMS Global Pte Ltd',
+  companyNameShort: 'DMS Global',
+  companyName: 'DMS GLOBAL PTE LTD',
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
@@ -37,6 +38,6 @@ export const reportPreviewWindowDimension = {
 
 export const refreshTokenWithin: number = 1200000;
 
-export const modulePackage: string = "starter";
+export const modulePackage: string = "customized";
 
 export const maxTankCount: number = 5;

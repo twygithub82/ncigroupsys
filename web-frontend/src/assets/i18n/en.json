@@ -322,7 +322,8 @@
     "CONFIRM-PASSWORD": "Confirm Password",
     "REMEMBER": "Remember me",
     "FORGOTPASSWORD": "Forgot password?",
-    "LOGIN": "Login"
+    "LOGIN": "Login",
+    "AUTH-CAPTION": "Software Platform by"
   },
   "COMMON-FORM": {
     "TARIFF-CLEANING": "Cleaning",
@@ -828,8 +829,8 @@
     "ORDER-DATE": "Order Date",
     "TRANSACTION-DATE": "Transaction Date",
     "UPDATE-STATUS": "Update Status",
-    "TEMP-RANGE-ERROR": "Maximum temperature must be greater than minimum temperature.",
-    "TEMP-RANGE-OVERLAPS-ERROR": "The new steam temperature must not exceed or match the existing one.",
+    "TEMP-RANGE-ERROR": "Max temperature must exceed min",
+    "TEMP-RANGE-OVERLAPS-ERROR": "New steam temperature must not match or exceeding existing",
     "STORAGE-BEGIN-DATE": "Storage Begin Date",
     "STORAGE-DAYS": "Storage Days",
     "AV-DATE": "AV Date",
@@ -904,6 +905,7 @@
     "BAY-OVERVIEW": "Bay Overview",
     "SURVEY-TYPE": "Survey Type",
     "SURVEY-NAME": "Survey Name",
+    "RANGE": "Range",
     "REMOVE": "Remove",
     "OVERWRITE": "Overwrite",
     "OVERWRITE-QC": "Overwrite QC",

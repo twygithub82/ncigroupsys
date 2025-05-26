@@ -42,10 +42,10 @@
                   <table mat-table [dataSource]="selectedItems" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="fName">
-                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
+                      <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-1_75'">{{translatedLangText.CUSTOMER_CODE
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75'">
+                        <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE 
                           }}:</span>{{row.customer_company.code}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="lName">
@@ -56,24 +56,23 @@
                           }}:</span>{{row.customer_company.name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="customerCost">
-                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COST
-                        }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2 justify-content-center'">
+                        {{translatedLangText.CUSTOMER_COST}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2 justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.COST }}:</span> {{row.cost.toFixed(2)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="tariffCost">
-                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.TARIFF_COST}}
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">{{translatedLangText.TARIFF_COST}}
                         $</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.TARIFF_COST}}$ </span>
                         {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="profile">
-                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.PROFILE_NAME
-                        }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.PROFILE_NAME }}:</span>
+                      <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-2'">{{translatedLangText.TYPE}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row"  [ngClass]="'tbl-col-width-per-2'">
+                        <span class="mobile-label">{{translatedLangText.TYPE}}:</span>
                         {{row.tariff_buffer.buffer_type}}</mat-cell>
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

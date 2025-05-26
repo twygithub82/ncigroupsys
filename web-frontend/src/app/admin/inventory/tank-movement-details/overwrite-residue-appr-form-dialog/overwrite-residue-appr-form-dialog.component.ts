@@ -18,12 +18,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
+import { CodeValuesDS } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { PackageLabourItem } from 'app/data-sources/package-labour';
-import { SteamItem } from 'app/data-sources/steam';
-import { SteamPartItem } from 'app/data-sources/steam-part';
+import { ResidueItem } from 'app/data-sources/residue';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
@@ -36,20 +37,21 @@ export interface DialogData {
   action?: string;
   translatedLangText?: any;
   sot?: StoringOrderTankItem;
-  steamItem?: SteamItem;
+  residueItem?: ResidueItem;
   packageLabourItem?: PackageLabourItem;
   ig?: InGateItem;
   igs?: InGateSurveyItem;
   tcDS: TariffCleaningDS;
   ccDS: CustomerCompanyDS;
+  cvDS: CodeValuesDS;
   igDS: InGateDS;
   populateData: any;
 }
 
 @Component({
-  selector: 'app-overwrite-steam-appr-form-dialog',
-  templateUrl: './overwrite-steam-appr-form-dialog.component.html',
-  styleUrls: ['./overwrite-steam-appr-form-dialog.component.scss'],
+  selector: 'app-overwrite-residue-appr-form-dialog',
+  templateUrl: './overwrite-residue-appr-form-dialog.component.html',
+  styleUrls: ['./overwrite-residue-appr-form-dialog.component.scss'],
   providers: [provideNgxMask()],
   standalone: true,
   imports: [
@@ -76,58 +78,60 @@ export interface DialogData {
     PreventNonNumericDirective
   ],
 })
-export class OverwriteSteamingApprovalFormDialogComponent {
+export class OverwriteResidueApprovalFormDialogComponent {
   displayedColumns = [
     'seq',
     'desc',
     'qty',
+    'qty_unit',
     'unit_price',
-    'hour',
+    'approve_part',
     'cost',
-    'approve_part'
   ];
 
   sot: StoringOrderTankItem;
-  steamItem: SteamItem;
+  residueItem: ResidueItem;
   packageLabourItem: PackageLabourItem;
-  spList: any[] = [];
+  rdList: any[] = [];
   igItem: InGateItem;
   igsItem: InGateSurveyItem;
   last_cargoList?: TariffCleaningItem[];
   tcDS: TariffCleaningDS;
   ccDS: CustomerCompanyDS;
+  cvDS: CodeValuesDS;
   igDS: InGateDS;
   dialogTitle: string;
   overwriteForm: UntypedFormGroup;
   lastCargoControl: UntypedFormControl;
   valueChangesDisabled: boolean = false;
   constructor(
-    public dialogRef: MatDialogRef<OverwriteSteamingApprovalFormDialogComponent>,
+    public dialogRef: MatDialogRef<OverwriteResidueApprovalFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
   ) {
     // Set the defaults
     this.dialogTitle = data.translatedLangText?.OVERWRITE_APPROVAL;
     this.sot = data.sot!;
-    this.steamItem = data.steamItem!;
-    this.spList = this.steamItem.steaming_part?.map(x => ({ ...x })) ?? [];
+    this.residueItem = data.residueItem!;
     this.packageLabourItem = data.packageLabourItem!;
     this.igItem = data.ig!;
     this.igsItem = data.igs!;
     this.tcDS = data.tcDS;
     this.ccDS = data.ccDS;
+    this.cvDS = data.cvDS;
     this.igDS = data.igDS;
+    this.rdList = this.residueItem.residue_part?.map(x => ({ ...x, qty_unit_type: this.cvDS.getCodeObject(x.qty_unit_type_cv, data.populateData.unitTypeCvList) })) ?? [];
     this.lastCargoControl = new UntypedFormControl('', [Validators.required]);
     this.overwriteForm = this.createForm();
     this.initializeValueChange();
   }
 
   createForm(): UntypedFormGroup {
-    const getBillingCustomer = this.data.populateData.billingBranchList?.find((x: any) => x.guid === this.steamItem.bill_to_guid)
+    const getBillingCustomer = this.data.populateData.billingBranchList?.find((x: any) => x.guid === this.residueItem.bill_to_guid)
     const formGroup = this.fb.group({
-      job_no: [{ value: this.steamItem.job_no, disabled: !this.canEdit() }],
+      job_no: [{ value: this.residueItem.job_no, disabled: !this.canEdit() }],
       billing_to: [{ value: getBillingCustomer, disabled: !this.canEdit() }],
-      overwrite_remarks: [{ value: this.steamItem.overwrite_remarks, disabled: !this.canEdit() }]
+      overwrite_remarks: [{ value: this.residueItem.overwrite_remarks, disabled: !this.canEdit() }]
     });
     return formGroup;
   }
@@ -141,7 +145,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
         billing_to: this.overwriteForm.get('billing_to')?.value?.guid,
         job_no: this.overwriteForm.get('job_no')?.value,
         overwrite_remarks: this.overwriteForm.get('overwrite_remarks')?.value,
-        steaming_part: this.spList.map(x => ({ ...x, action: 'overwrite' })),
+        residue_part: this.rdList.map(x => ({ ...x, qty_unit_type_cv: x.qty_unit_type.code_val, action: 'overwrite' })),
         total_cost: this.getTotalCost(),
       }
       this.dialogRef.close(returnDialog);
@@ -176,13 +180,13 @@ export class OverwriteSteamingApprovalFormDialogComponent {
   }
 
   canEdit(): boolean {
-    return !this.steamItem?.customer_billing_guid;
+    return !this.residueItem?.customer_billing_guid;
   }
 
   isDisabled(): boolean {
     return false;
     const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
-    return validStatus.includes(this.steamItem?.status_cv!) || this.isAutoApproveSteaming(this.steamItem);
+    return validStatus.includes(this.residueItem?.status_cv!) || this.isAutoApproveSteaming(this.residueItem);
   }
 
   isAutoApproveSteaming(row: any) {
@@ -191,7 +195,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
 
   isApproved() {
     const validStatus = ['JOB_IN_PROGRESS', 'APPROVED', 'COMPLETED', 'QC_COMPLETED']
-    return validStatus.includes(this.steamItem?.status_cv!);
+    return validStatus.includes(this.residueItem?.status_cv!);
   }
 
   selectText(event: FocusEvent) {
@@ -202,9 +206,9 @@ export class OverwriteSteamingApprovalFormDialogComponent {
     return Utility.convertEpochToDateStr(input);
   }
 
-  updateAction(steamPart: any) {
-    if (steamPart?.action === '' || steamPart?.action === null || steamPart?.action === undefined) {
-      steamPart.action = 'EDIT';
+  updateAction(residuePart: any) {
+    if (residuePart?.action === '' || residuePart?.action === null || residuePart?.action === undefined) {
+      residuePart.action = 'EDIT';
     }
   }
 
@@ -216,52 +220,12 @@ export class OverwriteSteamingApprovalFormDialogComponent {
     return Utility.formatNumberDisplay(input);
   }
 
-  getProcessStatusBadgeClass(status_cv: string | undefined) {
-    return Utility.getProcessStatusBadgeClass(status_cv);
-  }
-
-  getProcessStatusDescription(codeValType: string | undefined): string | undefined {
-    return BusinessLogicUtil.getCodeDescription(codeValType, this.data.populateData?.processStatusCvList);
-  }
-
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
 
-  getTotalLabourHours(): string {
-    let ret = 0;
-    if (this.spList.length > 0) {
-      this.spList.map(d => {
-        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)) {
-          if (this.isApproved()) {
-            ret += d.approve_labour;
-          } else {
-            ret += d.labour;
-          }
-        }
-      });
-    }
-    return String(ret);
-  }
-
-  getTotalLabourCost(): string {
-    let ret = 0;
-    if (this.spList.length > 0) {
-      this.spList.map(d => {
-        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)) {
-          if (this.isApproved()) {
-            ret += (d.approve_labour * this.packageLabourItem?.cost!);
-          } else {
-            ret += (d.labour * this.packageLabourItem?.cost!);
-          }
-        }
-      });
-    }
-    return ret.toFixed(2);
-  }
-
   getTotalCost(): number {
-    return this.spList.reduce((acc, row) => {
+    return this.rdList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.isApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0) + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0)));
@@ -273,7 +237,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
     }, 0);
   }
 
-  calculateSteamItemCost(steamPart: SteamPartItem): number {
+  calculateResidueItemCost(steamPart: ResiduePartItem): number {
     let calResCost: number = 0;
 
     if (this.isApproved()) {
@@ -286,14 +250,18 @@ export class OverwriteSteamingApprovalFormDialogComponent {
     return calResCost;
   }
 
-  isApprovePart(stm: SteamPartItem) {
+  isApprovePart(stm: ResiduePartItem) {
     return stm.approve_part;
   }
 
-  toggleApprovePart(event: Event, stm: SteamPartItem) {
+  toggleApprovePart(event: Event, stm: ResiduePartItem) {
     event.stopPropagation(); // Prevents click event from bubbling up
     if (this.isDisabled()) return;
     stm.approve_part = stm.approve_part != null ? !stm.approve_part : false;
     stm.action = 'EDIT';
+  }
+
+  displayUnitTypeFn(cc: any): string {
+    return cc?.description!;
   }
 }

@@ -45,11 +45,11 @@
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table curve-table">
                     <ng-container matColumnDef="fName">
                       <mat-header-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
                         }}</mat-header-cell>
                       <mat-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                           }}:</span>{{row.customer_company.code}}</mat-cell>
@@ -73,16 +73,16 @@
                         {{row.cleaning_category.name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="gender">
-                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COST
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{translatedLangText.CUSTOMER_COST
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_COST }}:</span>
                         {{row.adjusted_price.toFixed(2)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cost">
-                      <mat-header-cell *matHeaderCellDef >{{translatedLangText.TARIFF_COST}} $
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{translatedLangText.TARIFF_COST}} $
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.TARIFF_COST}} $</span>
                         {{row.cleaning_category.cost.toFixed(2)}}</mat-cell>
                     </ng-container>

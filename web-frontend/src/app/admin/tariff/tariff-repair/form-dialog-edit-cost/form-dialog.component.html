@@ -14,120 +14,116 @@
   }
   <div mat-dialog-content class="auto-height">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
-      <div class="row">
-        <div class="row">
-          <div class="card info-card col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
-            <div class="info-box8">
-              <i class="material-icons bg-purple card1-icon fas fa-search"></i>
-              <!-- <h5 class="col-purple font-b-500"> Condition</h5> -->
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-                    <mat-select formControlName="group_name_cv" [required]="isFieldRequired()">
-                      <mat-option *ngFor="let t of groupNameCvList" [value]="t">
-                        {{ t.description }}
-                      </mat-option>
-                    </mat-select>
-                    <!-- @if (pcForm.get('group_name_cv')?.hasError('required')) {
+      <div class="row justify-content-center">
+        <div class="card info-card col-xl-5-75 col-lg-12 col-md-12 col-sm-11 mb-1 p-0 pt-5 me-1">
+          <div class="info-box8">
+            <i class="material-icons bg-purple card1-icon fas fa-search"></i>
+            <!-- <h5 class="col-purple font-b-500"> Condition</h5> -->
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
+                  <mat-select formControlName="group_name_cv" [required]="isFieldRequired()">
+                    <mat-option *ngFor="let t of groupNameCvList" [value]="t">
+                      {{ t.description }}
+                    </mat-option>
+                  </mat-select>
+                  <!-- @if (pcForm.get('group_name_cv')?.hasError('required')) {
                     <mat-error>
                       {{translatedLangText.GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
                     </mat-error>
                     } -->
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-                    <mat-select formControlName="sub_group_name_cv" [required]="isFieldRequired()">
-                      <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
-                        {{ t.description }}
-                      </mat-option>
-                    </mat-select>
-                    <!-- @if (pcForm.get('group_name_cv')?.hasError('required')) {
+                </mat-form-field>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
+                  <mat-select formControlName="sub_group_name_cv" [required]="isFieldRequired()">
+                    <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
+                      {{ t.description }}
+                    </mat-option>
+                  </mat-select>
+                  <!-- @if (pcForm.get('group_name_cv')?.hasError('required')) {
                     <mat-error>
                       {{translatedLangText.SUB_GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
                     </mat-error>
                     } -->
-                  </mat-form-field>
-                </div>
+                </mat-form-field>
               </div>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                    <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
-                      formControlName="part_name">
-                    <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
-                      @for (name of partNameFilteredList; track name) {
-                      <mat-option [value]="name">
-                        {{name}}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                  <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
+                    formControlName="part_name">
+                  <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
+                    @for (name of partNameFilteredList; track name) {
+                    <mat-option [value]="name">
+                      {{name}}
+                    </mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
               </div>
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{this.translatedLangText.DIMENSION}}</mat-label>
-                    <mat-select formControlName="dimension">
-                      @for (dim of dimensionList; track dim) {
-                      <mat-option [value]="dim">{{dim}}</mat-option>
-                      }
-                    </mat-select>
+            </div>
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{this.translatedLangText.DIMENSION}}</mat-label>
+                  <mat-select formControlName="dimension">
+                    @for (dim of dimensionList; track dim) {
+                    <mat-option [value]="dim">{{dim}}</mat-option>
+                    }
+                  </mat-select>
 
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{this.translatedLangText.LENGTH}}</mat-label>
-                    <mat-select formControlName="length">
-                      @for (length of lengthList; track length) {
-                      <mat-option [value]="length.length">{{length.ToString()}}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{this.translatedLangText.LENGTH}}</mat-label>
+                  <mat-select formControlName="length">
+                    @for (length of lengthList; track length) {
+                    <mat-option [value]="length.length">{{length.ToString()}}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="card info-card col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
-            <div class="info-box8">
-              <i class="material-icons bg-purple card1-icon fas fa-edit"></i>
-              <!-- <h5 class="col-purple font-b-500"> Update</h5> -->
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                    <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost"
-                      [max]="maxMaterialCost">
-                    <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
-                      {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
-                    </mat-error>
-                    <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('max')">
-                      {{translatedLangText.MATERIAL_COST}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
-                    </mat-error>
-                  </mat-form-field>
-                </div>
+        <div class="card info-card col-xl-5-75 col-lg-12 col-md-12 col-sm-11 mb-1 p-0 pt-5">
+          <div class="info-box8">
+            <i class="material-icons bg-purple card1-icon fas fa-edit"></i>
+            <!-- <h5 class="col-purple font-b-500"> Update</h5> -->
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
+                  <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost"
+                    [max]="maxMaterialCost">
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
+                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                  </mat-error>
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('max')">
+                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
+                  </mat-error>
+                </mat-form-field>
               </div>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
-                    <input matInput formControlName="labour_hour_percentage" type="number" [min]="minMaterialCost"
-                      [max]="maxMaterialCost">
-                    <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')">
-                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
-                    </mat-error>
-                    <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('max')">
-                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
-                    </mat-error>
-                  </mat-form-field>
-                </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
+                  <input matInput formControlName="labour_hour_percentage" type="number" [min]="minMaterialCost"
+                    [max]="maxMaterialCost">
+                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')">
+                    {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                  </mat-error>
+                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('max')">
+                    {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
+                  </mat-error>
+                </mat-form-field>
               </div>
             </div>
           </div>

@@ -107,10 +107,10 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_cost">
-                  <mat-header-cell *matHeaderCellDef >
+                  <mat-header-cell *matHeaderCellDef ngClass="'justify-content-center'">
                     {{langText.CATEGORY_COST | translate}}
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" ngClass="'justify-content-center'">
                     <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.cost.toFixed(2)}}
                   </mat-cell>
                 </ng-container>

@@ -231,6 +231,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
     PROFILES_SELECTED: 'COMMON-FORM.PROFILES-SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
   }
 
 
@@ -320,9 +321,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
         'select',
         'customer',
         'profile',
+        'gate_surcharge',
         'preinspection_cost',
         'lolo_cost',
-        'gate_surcharge',
         'storage_cost',
         'free_days',
         'last_update',
@@ -331,9 +332,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       this.displayedColumns = [
         'customer',
         'profile',
+        'gate_surcharge',
         'preinspection_cost',
         'lolo_cost',
-        'gate_surcharge',
         'storage_cost',
         'free_days',
         'last_update',

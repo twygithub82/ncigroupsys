@@ -348,20 +348,10 @@
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                          <!-- <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                            <mat-icon>more_vert</mat-icon>
-                          </button> -->
-                          <!-- <mat-menu #menu="matMenu"> -->
-
                             <button mat-icon-button  (click)="handleDelete($event, row, i)"
                             [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
                             <mat-icon>delete_forever</mat-icon>
                           </button>
-                            <!-- <button  (click)="handleDelete($event, row, i)">
-                              <mat-icon >delete_forever</mat-icon>
-                              <span>{{translatedLangText.DELETE}}</span>
-                            </button> -->
-                          <!-- </mat-menu> -->
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

@@ -42,6 +42,7 @@ export class RepairGO {
   public delete_dt?: number;
   public customer_billing_guid?: string;
   public owner_billing_guid?: string;
+  public overwrite_remarks?: string;
 
   constructor(item: Partial<RepairGO> = {}) {
     this.guid = item.guid;
@@ -74,6 +75,7 @@ export class RepairGO {
     this.delete_dt = item.delete_dt;
     this.customer_billing_guid = item.customer_billing_guid;
     this.owner_billing_guid = item.owner_billing_guid;
+    this.overwrite_remarks = item.overwrite_remarks;
   }
 }
 
@@ -1151,6 +1153,7 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
         allocate_dt
         allocate_by
         complete_dt
+        job_no
         repair_part(where: { delete_dt: { eq: null } }) {
           action
           create_by
@@ -1924,6 +1927,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   canApprove(re: RepairItem | undefined): boolean {
     return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
     // return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
+  }
+
+  canApproveOverwrite(re: RepairItem | undefined): boolean {
+    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'COMPLETED' || re?.status_cv === 'QC_COMPLETED');
   }
 
   canCancel(re: RepairItem | undefined): boolean {

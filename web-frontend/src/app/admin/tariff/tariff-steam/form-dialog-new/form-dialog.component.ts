@@ -214,6 +214,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     TARIFF_STEAM: 'MENUITEMS.TARIFF.LIST.TARIFF-STEAM',
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
     HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
+    RANGE: 'COMMON-FORM.RANGE',
   };
   unit_type_control = new UntypedFormControl();
 
@@ -320,9 +321,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   GetTitle() {
 
     if (this.action === "new") {
-      return `${this.translatedLangText.NEW} ${this.translatedLangText.TARIFF_STEAM}`;
+      return `${this.translatedLangText.NEW} ${this.translatedLangText.TARIFF_STEAM} ${this.translatedLangText.RANGE}`;
     }
-    return `${this.translatedLangText.EDIT} ${this.translatedLangText.TARIFF_STEAM}`;
+    return `${this.translatedLangText.EDIT} ${this.translatedLangText.TARIFF_STEAM} ${this.translatedLangText.RANGE}`;
     //  return this.action==="new"?this.translatedLangText.NEW:this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_STEAM;      
 
   }

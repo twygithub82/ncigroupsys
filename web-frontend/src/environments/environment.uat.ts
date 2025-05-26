@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   title: 'IDMS',
+  companyNameShort: 'DMS Global',
   companyName: 'DMS GLOBAL PTE LTD',
   apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',

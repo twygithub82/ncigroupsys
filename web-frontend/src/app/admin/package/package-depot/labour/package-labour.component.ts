@@ -218,6 +218,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     EXPORT: 'COMMON-FORM.EXPORT',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE',
   }
 
 

@@ -74,6 +74,7 @@ import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-pur
 import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
 import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
 import { OverwriteSteamingApprovalFormDialogComponent } from './overwrite-steam-appr-form-dialog/overwrite-steam-appr-form-dialog.component';
+import { OverwriteResidueApprovalFormDialogComponent } from './overwrite-residue-appr-form-dialog/overwrite-residue-appr-form-dialog.component';
 import { OverwriteCleanStatusFormDialogComponent } from './overwrite-clean-status-form-dialog/overwrite-clean-status-form-dialog.component';
 import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
 import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialog/overwrite-job-no-form-dialog.component';
@@ -82,6 +83,10 @@ import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-tem
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { ResidueEstPartGO } from 'app/data-sources/residue-part';
+import { OverwriteRepairApprovalFormDialogComponent } from './overwrite-repair-appr-form-dialog/overwrite-repair-appr-form-dialog.component';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
+import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -466,7 +471,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     LABOUR: 'COMMON-FORM.LABOUR',
     BILLING_TO: 'COMMON-FORM.BILLING-TO',
     BILLING_BRANCH: 'COMMON-FORM.BILING-BRANCH',
-    OVERWRITE_DATA: 'COMMON-FORM.OVERWRITE-DATA'
+    OVERWRITE_DATA: 'COMMON-FORM.OVERWRITE-DATA',
+    PRICE: 'COMMON-FORM.PRICE',
+    MATERIAL: 'COMMON-FORM.MATERIAL',
+    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
+    LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
+    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
+    RATE: 'COMMON-FORM.RATE',
+    NET_COST: 'COMMON-FORM.NET-COST',
+    LESSEE: 'COMMON-FORM.LESSEE'
   }
 
   sot_guid: string | null | undefined;
@@ -519,6 +532,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   cleaningDS: InGateCleaningDS;
   joDS: JobOrderDS;
   repairDS: RepairDS;
+  repairPartDS: RepairPartDS;
   bkDS: BookingDS;
   schedulingDS: SchedulingDS;
   surveyDS: SurveyDetailDS;
@@ -557,6 +571,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   valveBrandCvList: CodeValuesItem[] = [];
   tankSideCvList: CodeValuesItem[] = [];
   surveyTypeCvList: CodeValuesItem[] = [];
+  unitTypeCvList: CodeValuesItem[] = []
+  groupNameCvList: CodeValuesItem[] = []
+  subgroupNameCvList: CodeValuesItem[] = []
+  damageCodeCvList: CodeValuesItem[] = []
+  repairCodeCvList: CodeValuesItem[] = []
 
   storageCalCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
@@ -677,6 +696,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cleaningDS = new InGateCleaningDS(this.apollo);
     this.joDS = new JobOrderDS(this.apollo);
     this.repairDS = new RepairDS(this.apollo);
+    this.repairPartDS = new RepairPartDS(this.apollo);
     this.bkDS = new BookingDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
     this.surveyDS = new SurveyDetailDS(this.apollo);
@@ -754,6 +774,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       { alias: 'yardCv', codeValType: 'YARD' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'surveyTypeCv', codeValType: 'SURVEY_TYPE' },
+      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
+      { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
+      { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
@@ -857,6 +881,37 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('surveyTypeCv').subscribe(data => {
       this.surveyTypeCvList = data;
+    });
+    this.cvDS.connectAlias('unitTypeCv').subscribe(data => {
+      this.unitTypeCvList = data;
+    });
+    this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
+      this.damageCodeCvList = data;
+    });
+    this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
+      this.repairCodeCvList = data;
+    });
+
+    this.cvDS.connectAlias('groupNameCv').subscribe(data => {
+      this.groupNameCvList = data;
+      const subqueries: any[] = [];
+      data.map(d => {
+        if (d.child_code) {
+          let q = { alias: d.child_code, codeValType: d.child_code };
+          const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
+          if (!hasMatch) {
+            subqueries.push(q);
+          }
+        }
+      });
+      if (subqueries.length > 0) {
+        this.cvDS?.getCodeValuesByType(subqueries);
+        subqueries.map(s => {
+          this.cvDS?.connectAlias(s.alias).subscribe(data => {
+            this.subgroupNameCvList.push(...data);
+          });
+        });
+      }
     });
 
     this.sot_guid = this.route.snapshot.paramMap.get('id');
@@ -1621,6 +1676,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         newSteam.job_no = result.job_no;
         newSteam.bill_to_guid = result.billing_to;
         newSteam.overwrite_remarks = result.overwrite_remarks;
+        newSteam.total_cost = result.total_cost;
         newSteam.steaming_part = result.steaming_part?.map((x: any) => {
           const obj = new SteamPartGO({ ...x });
           obj['action'] = 'overwrite';
@@ -1634,6 +1690,149 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           if (this.sot_guid) {
             this.loadDataHandling_steam(this.sot_guid)
             this.handleSaveSuccess(result?.data?.updateSteaming);
+          }
+        });
+      }
+    });
+  }
+
+  overwriteResidueApprovalDialog(event: Event, row: ResidueItem) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteResidueApprovalFormDialogComponent, {
+      width: '80vw',
+      height: '90vh',
+      data: {
+        sot: this.sot,
+        residueItem: row,
+        ig: this.ig,
+        igs: this.igs,
+        tcDS: this.tcDS,
+        ccDS: this.ccDS,
+        cvDS: this.cvDS,
+        packageLabourItem: this.packageLabourItem,
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          packageBufferList: this.packageBufferList,
+          billingBranchList: this.billingBranchList,
+          unitTypeCvList: this.unitTypeCvList,
+          last_test_desc: this.last_test_desc,
+          next_test_desc: this.next_test_desc,
+          sot_purpose: this.displayTankPurpose(this.sot!)
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        const newResidue: any = new ResidueItem(row);
+        newResidue.job_no = result.job_no;
+        newResidue.bill_to_guid = result.billing_to;
+        newResidue.overwrite_remarks = result.overwrite_remarks;
+        newResidue.total_cost = result.total_cost;
+        newResidue.residue_part = result.residue_part?.map((x: any) => {
+          const obj = new ResidueEstPartGO({ ...x });
+          obj['action'] = 'overwrite';
+          return obj;
+        }) ?? [];
+        newResidue.action = "overwrite";
+
+        console.log(newResidue)
+        this.residueDS.updateResidue(newResidue).subscribe(result => {
+          console.log(result)
+          if (this.sot_guid) {
+            this.loadDataHandling_residue(this.sot_guid)
+            this.handleSaveSuccess(result?.data?.updateResidue);
+          }
+        });
+      }
+    });
+  }
+
+  overwriteRepairApprovalDialog(event: Event, row: RepairItem) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteRepairApprovalFormDialogComponent, {
+      width: '80vw',
+      height: '90vh',
+      data: {
+        sot: this.sot,
+        repairItem: row,
+        ig: this.ig,
+        igs: this.igs,
+        sotDS: this.sotDS,
+        tcDS: this.tcDS,
+        ccDS: this.ccDS,
+        cvDS: this.cvDS,
+        repairDS: this.repairDS,
+        repairPartDS: this.repairPartDS,
+        packageLabourItem: this.packageLabourItem,
+        translatedLangText: this.translatedLangText,
+        populateData: {
+          packageBufferList: this.packageBufferList,
+          billingBranchList: this.billingBranchList,
+          groupNameCvList: this.groupNameCvList,
+          subgroupNameCvList: this.subgroupNameCvList,
+          damageCodeCvList: this.damageCodeCvList,
+          repairCodeCvList: this.repairCodeCvList,
+          unitTypeCvList: this.unitTypeCvList,
+          last_test_desc: this.last_test_desc,
+          next_test_desc: this.next_test_desc,
+          sot_purpose: this.displayTankPurpose(this.sot!)
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        const newRepair: any = new RepairItem(row);
+        newRepair.bill_to_guid = result.billing_to;
+        newRepair.job_no = result.job_no;
+        newRepair.owner_enable = result.owner_enable;
+        newRepair.labour_cost_discount = result.labour_cost_discount;
+        newRepair.material_cost_discount = result.material_cost_discount;
+        newRepair.total_cost = result.total_cost;
+        newRepair.total_hour = result.total_hour;
+        newRepair.total_labour_cost = result.total_labour_cost;
+        newRepair.total_material_cost = result.total_material_cost;
+        newRepair.overwrite_remarks = result.overwrite_remarks;
+        newRepair.repair_part = result.repair_part?.map((x: any) => {
+          const { tariff_repair, ...cleaned } = x;
+          const rp_damage_repairInput = cleaned.rp_damage_repair?.map((rpdr: any) => {
+            const { ...cleanedRpdr } = rpdr;
+            return new RPDamageRepairItem(cleanedRpdr);
+          });
+          const obj = new RepairPartItem(cleaned);
+          obj.rp_damage_repair = rp_damage_repairInput;
+          obj.action = 'overwrite';
+          delete obj.job_order;
+          return obj;
+        }) ?? [];
+        newRepair.action = "overwrite";
+
+        delete newRepair.aspnetsuser;
+        delete newRepair.storing_order_tank;
+
+        console.log(newRepair)
+        this.repairDS.updateRepair(newRepair, undefined).subscribe(result => {
+          console.log(result)
+          if (this.sot_guid) {
+            this.loadDataHandling_repair(this.sot_guid)
+            this.handleSaveSuccess(result?.data?.updateRepair);
           }
         });
       }
@@ -2144,18 +2343,28 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return !this.isNoPurpose(this.sot!, 'repair') && this.canRemovePurpose('repair');
   }
 
-  canOverwriteCleaningApproval() {
-    const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
-    return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '') && !this.cleaningItem?.[0]?.customer_billing_guid;
-  }
-
   canOverwriteSteamingApproval(row: SteamItem) {
-    const allowOverwriteStatus = ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS'];
+    const allowOverwriteStatus = ['APPROVED', 'JOB_IN_PROGRESS', 'COMPLETED'];
     return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
     return (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
+  }
+
+  canOverwriteCleaningApproval() {
+    const allowOverwriteStatus = ['APPROVED', 'JOB_IN_PROGRESS', 'COMPLETED'];
+    return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '') && !this.cleaningItem?.[0]?.customer_billing_guid;
+  }
+
+  canOverwriteResidueApproval(row: SteamItem) {
+    const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED'];
+    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
+  }
+
+  canOverwriteRepairApproval(row: SteamItem) {
+    const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
+    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
   }
 
   onRollbackSteamingJobs(event: Event, row: SteamItem) {
