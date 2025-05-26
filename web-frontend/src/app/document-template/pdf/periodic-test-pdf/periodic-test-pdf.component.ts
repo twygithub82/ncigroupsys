@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import {PDFUtility} from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -599,7 +600,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell=4;
     let fontSize = 5;
@@ -656,10 +657,11 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       }
 
       //lastTableFinalY+=gap;
-      lastTableFinalY += 2;
-      pdf.setFontSize(8);
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      lastTableFinalY += 7;
+      // pdf.setFontSize(8);
+      // pdf.setTextColor(0, 0, 0); // Black text
+      // pdf.text(`${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      PDFUtility.addText(pdf, `${cust.customer_name}`, lastTableFinalY, leftMargin,8 ,true);
       let startY = 0;
       if ((cust.periodic_test_due?.length || 0) > 0) {
         lastTableFinalY += 3;

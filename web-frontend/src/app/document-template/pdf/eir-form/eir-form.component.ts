@@ -470,7 +470,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
     let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
 

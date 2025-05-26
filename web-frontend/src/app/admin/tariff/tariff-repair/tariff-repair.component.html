@@ -52,12 +52,39 @@
               <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                        <mat-chip-grid #chipProfile>
+                          @if(this.selectedParts.length>0){
+                          <mat-chip-row (click)="removeAllSelectedParts(); $event.stopPropagation()">
+                            {{getSelectedPartDisplay()}}
+                            <button matChipRemove hidden>
+                              <mat-icon>cancel</mat-icon>
+                            </button>
+                          </mat-chip-row>
+                          }
+                          <input #partInput [formControl]="partControl" [matAutocomplete]="profileName"
+                            [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                          <mat-autocomplete #profileName="matAutocomplete" (optionSelected)="selectedPart($event)">
+                            @for (p of part_nameList; track p) {
+                            <mat-option [value]="p">
+                              <mat-checkbox color="primary"
+                                (click)="onCheckboxPartClicked(p);$event.stopPropagation()"
+                                [checked]="itemPartSelected(p) || false"></mat-checkbox>
+                              {{p.profile_name}}
+                            </mat-option>
+                            }
+                          </mat-autocomplete>
+                        </mat-chip-grid>
+                      </mat-form-field>
+                    </div>
+                    <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                         <input matInput formControlName="part_name" type="text">
                       </mat-form-field>
-                    </div>
+                    </div> -->
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>

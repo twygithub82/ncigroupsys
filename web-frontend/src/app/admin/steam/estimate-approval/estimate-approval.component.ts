@@ -636,7 +636,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   initializeFilterCustomerCompany() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    //this.searchForm!.get('customer_code')!.valueChanges.pipe
+    this.customerCodeControl.valueChanges.pipe
+    (
       startWith(''),
       debounceTime(300),
       tap(value => {

@@ -761,11 +761,11 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       this.selectedProfiles.splice(index, 1);
     }
 
-    if (this.profileInput) {
-      this.searchCustomerCompanyList('');
-      this.profileInput.nativeElement.value = '';
+    // if (this.profileInput) {
+    //  this.searchProfileNameList('');
+    //   this.profileInput.nativeElement.value = '';
 
-    }
+    // }
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -888,8 +888,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.custInput) {
-      this.searchCustomerCompanyList('');
-      this.custInput.nativeElement.value = '';
+       this.searchCustomerCompanyList('');
+       this.custInput.nativeElement.value = '';
 
     }
     // this.updateFormControl();
