@@ -1,10 +1,10 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
-  selector: 'input[type=number]',
+  selector: 'input[appPreventNonNumeric]',
   standalone: true,
 })
-export class PreventNonNumericDirective {
+export class PreventNonNumDirective {
   @Input() restrictNonNumeric = true;
   @Input() allowDecimal = false;
   @Input() decimalLimit: number | null = 2;
