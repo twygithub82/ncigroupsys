@@ -1923,7 +1923,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
+      if (result?.action === 'confirmed') {
         if (Utility.isBase64Url(url)) {
           imgForm.patchValue({
             preview: ''

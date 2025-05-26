@@ -332,6 +332,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       width: '35vw',
       data: {
         item: [...row],

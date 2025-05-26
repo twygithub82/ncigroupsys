@@ -650,6 +650,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       width: '90vw',
       data: {
         item: selectedItems,
@@ -682,6 +683,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       width: '90vw',
       data: {
         item: [row],
@@ -714,6 +716,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     }
     console.log(schedulingSot);
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       width: '35vw',
       data: {
         action: "cancel",

@@ -382,6 +382,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     const addSot = row ?? new StoringOrderTankItem();
     addSot.so_guid = addSot.so_guid ?? this.so_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       data: {
         item: row ? row : addSot,
         action: 'new',
@@ -422,6 +423,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       data: {
         item: row,
         action: 'edit',
@@ -504,6 +506,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       data: {
         action: "cancel",
         item: [...row],
@@ -543,6 +546,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       data: {
         action: "rollback",
         item: [...row],

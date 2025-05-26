@@ -466,6 +466,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
       location_from_cv: lastLocation
     });
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       width: '1000px',
       data: {
         item: addTransfer,
