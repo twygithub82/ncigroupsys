@@ -13,52 +13,53 @@
       </div>
       }
       @else if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-      <div class="row">
-        <div class="col-md-6 col-xl-4">
-          <div class="card info-card">
-            <div class="info-box8">
-              <!-- <i class="material-icons bg-black card1-icon">assessment</i> -->
-              <i class="material-icons bg-purple card1-icon far fa-calendar-check"></i>
-              <h5 class="col-purple font-bold"> Tank : Yet to Survey</h5>
-              @if (igDS.loading$ | async) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-              }
-              @if (!(igDS.loading$ | async)) {
-              <h2>{{this.in_gate_yet_to_survey}}</h2>
-              }
-              <!-- <div>
+      <div class="dashboard-content-info">
+        <div class="row">
+          <div class="col-md-6 col-xl-4">
+            <div class="card info-card">
+              <div class="info-box8">
+                <!-- <i class="material-icons bg-black card1-icon">assessment</i> -->
+                <i class="material-icons bg-purple card1-icon far fa-calendar-check"></i>
+                <h5 class="col-purple font-bold"> Tank : Yet to Survey</h5>
+                @if (igDS.loading$ | async) {
+                <div class="tbl-spinner">
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+                }
+                @if (!(igDS.loading$ | async)) {
+                <h2>{{this.in_gate_yet_to_survey}}</h2>
+                }
+                <!-- <div>
                 <i class="material-icons col-red float-start me-1 ms-1">trending_down</i>
                 <p class="float-start m-0"><span class="col-orange">10%</span> Decrease
               </div> -->
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-6 col-xl-4">
-          <div class="card info-card">
-            <div class="info-box8">
-              <i class="material-icons bg-orange card1-icon fas fa-stopwatch"></i>
-              <!-- <i class="material-icons bg-orange card1-icon">people</i> -->
-              <h5 class="col-orange font-bold">Tank : Waiting</h5>
-              @if (sotDS.loading$ | async) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-              }
-              @if (!(sotDS.loading$ | async)) {
-              <h2>{{this.sot_waiting}}</h2>
-              }
-              <!-- <div>
+          <div class="col-md-6 col-xl-4">
+            <div class="card info-card">
+              <div class="info-box8">
+                <i class="material-icons bg-orange card1-icon fas fa-stopwatch"></i>
+                <!-- <i class="material-icons bg-orange card1-icon">people</i> -->
+                <h5 class="col-orange font-bold">Tank : Waiting</h5>
+                @if (sotDS.loading$ | async) {
+                <div class="tbl-spinner">
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+                }
+                @if (!(sotDS.loading$ | async)) {
+                <h2>{{this.sot_waiting}}</h2>
+                }
+                <!-- <div>
                 <i class="material-icons col-green float-start me-1 ms-1">trending_up</i>
                 <p class="float-start m-0"><span class="col-green">25%</span> Increase
               </div> -->
+              </div>
             </div>
           </div>
-        </div>
-        <!-- <div class="col-md-6 col-xl-3">
+          <!-- <div class="col-md-6 col-xl-3">
           <div class="card info-card">
             <div class="info-box8">
               <i class="material-icons bg-green card1-icon">local_activity</i>
@@ -84,8 +85,8 @@
             </div>
           </div>
         </div> -->
-      </div>
-      <!-- <div class="row ">
+        </div>
+        <!-- <div class="row ">
         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
           <div class="card">
             <div class="header">
@@ -944,6 +945,7 @@
           </div>
         </div>
       </div> -->
+      </div>
       }
     </div>
   </div>
