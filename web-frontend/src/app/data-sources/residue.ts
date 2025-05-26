@@ -24,15 +24,15 @@ export class ResidueGO {
   public status_cv?: string;
   public est_cost?: number;
   public total_cost?: number;
+  public customer_billing_guid?: string;
+  public owner_billing_guid?: string;
+  public overwrite_remarks?: string;
 
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
-  public customer_billing_guid?: string;
-  public owner_billing_guid?: string;
-
 
   constructor(item: Partial<ResidueGO> = {}) {
     this.guid = item.guid;
@@ -50,6 +50,9 @@ export class ResidueGO {
     this.job_no = item.job_no;
     this.est_cost = item.est_cost;
     this.total_cost = item.total_cost;
+    this.customer_billing_guid = item.customer_billing_guid;
+    this.owner_billing_guid = item.owner_billing_guid;
+    this.overwrite_remarks = item.overwrite_remarks;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -568,6 +571,7 @@ export const GET_RESIDUE_FOR_MOVEMENT = gql`
           tariff_residue_guid
           update_by
           update_dt
+          qty_unit_type_cv
           job_order {
             team {
               create_by

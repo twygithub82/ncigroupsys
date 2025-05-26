@@ -322,7 +322,8 @@
     "CONFIRM-PASSWORD": "Confirm Password",
     "REMEMBER": "Remember me",
     "FORGOTPASSWORD": "Forgot password?",
-    "LOGIN": "Login"
+    "LOGIN": "Login",
+    "AUTH-CAPTION": "Software Platform by"
   },
   "COMMON-FORM": {
     "TARIFF-CLEANING": "Cleaning",

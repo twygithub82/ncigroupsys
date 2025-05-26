@@ -714,9 +714,11 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.bill_to_guid = bill_to?.value?.guid;
       re.status_cv = this.repairItem?.status_cv;
       re.owner_enable = this.isOwner;
+      re.job_no = this.repairForm?.get('job_no')?.value;
       re.labour_cost_discount = Utility.convertNumber(this.repairForm?.get('labour_cost_discount')?.value, 2);
       re.material_cost_discount = Utility.convertNumber(this.repairForm?.get('material_cost_discount')?.value, 2);
       re.total_cost = Utility.convertNumber(this.repairForm?.get('net_cost')?.value, 2);
+      re.total_hour = Utility.convertNumber(this.repairForm?.get('total_hour')?.value, 2);
       re.est_cost = Utility.convertNumber(this.repairForm?.get('net_cost_est')?.value, 2);
       re.total_labour_cost = Utility.convertNumber(this.repairForm?.get('total_labour_cost')?.value, 2);
       re.total_material_cost = Utility.convertNumber(this.repairForm?.get('total_mat_cost')?.value, 2);
