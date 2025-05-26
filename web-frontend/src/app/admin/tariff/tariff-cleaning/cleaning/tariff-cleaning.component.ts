@@ -4,7 +4,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule,MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -42,6 +42,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -72,6 +74,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatChipsModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -131,8 +134,15 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     DELETE: 'COMMON-FORM.DELETE',
-    SEARCH: "COMMON-FORM.SEARCH"
+    SEARCH: "COMMON-FORM.SEARCH",
+    CARGO_SELECTED:'COMMON-FORM.CARGO-SELECTED',
   }
+
+  
+  @ViewChild('custInput', { static: true })
+  custInput?: ElementRef<HTMLInputElement>;
+
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   searchForm?: UntypedFormGroup;
 
@@ -172,6 +182,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   hasPreviousPage = false;
   previous_endCursor: string | undefined = undefined;
 
+  selectedCargo: any[] = [];
+  
+
   constructor(
     private router: Router,
     public httpClient: HttpClient,
@@ -203,6 +216,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   ngOnInit() {
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
+    this.initializeFilterCustomerCompany();
   }
   refresh() {
     this.loadData();
@@ -403,8 +417,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     var where: any = {};
     const tariff_cleaning: any = {}
 
-    if (this.searchForm!.value['cargo_name']) {
-      tariff_cleaning.cargo = { contains: this.searchForm!.value['cargo_name'] };
+    if (this.selectedCargo.length > 0) {
+       var guids:string[]= this.selectedCargo.map(c => c.guid);
+      tariff_cleaning.guid = { in: guids };
     }
 
     if (this.searchForm!.get('class_no')?.value) {
@@ -485,23 +500,24 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
 
   initializeFilterCustomerCompany() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
-      })
-    ).subscribe();
+    // this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     if (typeof value === 'string') {
+    //       searchCriteria = value;
+    //     } else {
+    //       searchCriteria = value.code;
+    //     }
+    //     this.searchCustomerCompanyList(searchCriteria);
+    //     // this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //     //   this.customer_companyList = data
+    //     // });
+    //   })
+    // ).subscribe();
 
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+    this.searchForm!.get('cargo_name')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -511,12 +527,33 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
         } else {
           searchCriteria = value.cargo;
         }
-        this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
-          this.last_cargoList = data
-        });
+        this.searchCargoList(searchCriteria);
+        // this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
+        //   this.last_cargoList = data
+        // });
       })
     ).subscribe();
   }
+
+   searchCargoList(searchCriteria: string) {
+    searchCriteria = searchCriteria || '';
+    this.subs.sink = this.tcDS.loadItems({ and: [{ cargo: { contains: searchCriteria } }, { delete_dt: { eq: null } }] }, { cargo: 'ASC' }).subscribe(data => {
+      if (this.custInput?.nativeElement.value === searchCriteria) {
+        this.last_cargoList = data;
+      }
+    });
+  }
+
+   searchCustomerCompanyList(searchCriteria: string) {
+    searchCriteria = searchCriteria || '';
+    this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+      if (this.custInput?.nativeElement.value === searchCriteria) {
+        this.customer_companyList = data;
+      }
+    });
+  }
+
+
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -568,6 +605,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.categoryControl.reset();
     this.hazardLevelControl.reset();
     this.banTypeControl.reset('');
+    this.selectedCargo = [];
   }
 
   editCall(row: TariffCleaningItem) {
@@ -712,4 +750,85 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.resetForm();
     this.search();
   }
+
+  
+    itemSelected(row: any):boolean{
+      var retval:boolean=false;
+      const index = this.selectedCargo.findIndex(c => c.guid === row.guid);
+      retval = (index >= 0);
+      return retval;
+    }
+  
+  
+  
+        
+    getSelectedCargoDisplay():string{
+      var retval:string = "";
+      if(this.selectedCargo?.length>1){
+        retval = `${this.selectedCargo.length} ${this.translatedLangText.CARGO_SELECTED}`;
+      }
+      else if(this.selectedCargo?.length==1){
+        retval =`${this.selectedCargo[0].cargo}`
+      }
+      return retval;
+    }
+  
+   
+    
+    removeAllSelectedCargo(): void {
+     this.selectedCargo=[];
+    }
+  
+    
+    selected(event: MatAutocompleteSelectedEvent): void {
+      const cargo = event.option.value;
+      const index = this.selectedCargo.findIndex(c => c.guid === cargo.guid);
+      if (!(index >= 0)) {
+        this.selectedCargo.push(cargo);
+       // this.search();
+      }
+      else
+      {
+        this.selectedCargo.splice(index, 1);
+       // this.search();
+      }
+  
+      if (this.custInput) {
+        
+        this.custInput.nativeElement.value = ' ';
+        this.searchForm?.get('cargo_name')?.setValue('');
+        this.searchCargoList('');
+      }
+      // this.updateFormControl();
+      //this.customerCodeControl.setValue(null);
+      //this.pcForm?.patchValue({ customer_code: null });
+    }
+    
+  onCheckboxClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
+   
+  }
+  
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.searchForm?.get('cargo_name')?.setValue(null);
+  }
+  // onCheckboxProfileClicked(row: any) {
+  //   const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+  //   this.selectedProfile(fakeEvent);
+   
+  // }
+
+  
+
 }

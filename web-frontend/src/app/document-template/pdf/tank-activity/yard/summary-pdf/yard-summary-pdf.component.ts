@@ -882,7 +882,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
         
         // Variable to store the final Y position of the last table
-        let lastTableFinalY = 45;
+        let lastTableFinalY = 40;
         let minHeightHeaderCol=3;
         
         let fontSz=5.5;

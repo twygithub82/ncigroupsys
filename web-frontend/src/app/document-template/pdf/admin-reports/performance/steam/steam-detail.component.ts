@@ -950,11 +950,11 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
 
     const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+10,8)
+    Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
   

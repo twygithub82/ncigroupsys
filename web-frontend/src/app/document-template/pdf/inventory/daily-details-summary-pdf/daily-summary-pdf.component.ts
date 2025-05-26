@@ -1107,12 +1107,25 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     let currentY = topMargin;
     let scale = this.scale;
 
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
+
+
+ pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    let lastTableFinalY = 15;
+    let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY + 5;
+
+
+
+     const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin , lastTableFinalY + 8, 8)
+
+   
+
+    let startY = lastTableFinalY + 10;
     let startX = pageWidth - rightMargin - tablewidth;
 
    
@@ -1135,7 +1148,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     const data: any[][] = [];
     data.push([this.displayOpeningBalance(),this.displayTotalInGate(),this.displayTotalOutGate(),this.displayClosingBalance()]);
     
-    var bufferX:number =65;
+    //var bufferX:number =65;
     autoTable(pdf, {
       head: headers,
       body: data,
@@ -1157,7 +1170,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       didDrawPage: (data: any) => {
         const pageCount = pdf.getNumberOfPages();
 
-        if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
+       // if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
         // Capture the final Y position of the table
         lastTableFinalY = data.cursor.y;
         var pg = pagePositions.find(p => p.page == pageCount);
@@ -1166,13 +1179,14 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     });
 
 
-    var bufferY :number=20;
+    var bufferY :number=10;
+    startY =lastTableFinalY +bufferY;
      if (cardElements.length > 0) {
       const card = cardElements[0];
       const canvas = await html2canvas(card, { scale: scale });
       let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPG', leftMargin, startY+bufferY, chartContentWidth, imgHeight);
+      pdf.addImage(imgData, 'JPG', leftMargin, startY, chartContentWidth, imgHeight);
     }
     
 

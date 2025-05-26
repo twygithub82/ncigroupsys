@@ -1282,7 +1282,9 @@
     "GROUP-ADJUSTMENT": "Group Adjustment",
     "TEAM-UNASSIGN-SUCCESS": "Team Unassigned Successfully",
     "APPROVAL-REF": "Approval Ref",
-    "RELEASE-REF": "Release Ref"
+    "RELEASE-REF": "Release Ref",
+    "CARGO-SELECTED": "Cargo Selected",
+    "PART-SELECTED": "Part Selected"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

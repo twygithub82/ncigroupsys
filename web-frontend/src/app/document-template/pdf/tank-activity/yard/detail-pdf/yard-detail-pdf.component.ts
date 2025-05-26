@@ -922,7 +922,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         await Utility.addHeaderWithCompanyLogo_Landscape(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
         await PDFUtility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
         // Variable to store the final Y position of the last table
-        let lastTableFinalY = 45;
+        let lastTableFinalY = 40;
         let minHeightHeaderCol=3;
         let fontSize=5;
         

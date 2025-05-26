@@ -607,7 +607,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
     let startY = lastTableFinalY ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
