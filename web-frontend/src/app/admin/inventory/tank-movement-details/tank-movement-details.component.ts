@@ -2080,7 +2080,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       ? Math.max(...maxCompleteDt)
       : undefined;
 
-    return max;
+    return this.displayDate(max);
   }
 
   displayColumnChanged() {

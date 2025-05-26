@@ -37,7 +37,7 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { Subscription } from 'rxjs';
+import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
@@ -131,24 +131,16 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
   }
 
-  soSelection = new SelectionModel<StoringOrderItem>(true, []);
-  searchField: string = "";
-  purposeOptionCvList: CodeValuesItem[] = [];
   searchForm?: UntypedFormGroup;
-  customerCodeControl = new UntypedFormControl();
-  lastCargoControl = new UntypedFormControl();
-  customer_companyList?: CustomerCompanyItem[];
-  last_cargoList?: TariffCleaningItem[];
-  soStatusCvList: CodeValuesItem[] = [];
+  processNameControl = new UntypedFormControl();
+  descriptionControl = new UntypedFormControl();
+  processNameList: string[] = [];
+  descriptionList: string[] = [];
 
   clnMethodItem: CleaningMethodItem[] = [];
   catList: CleaningCategoryItem[] = [];
-  soList: StoringOrderItem[] = [];
-  // sotDS: StoringOrderTankDS;
-  // ccDS: CustomerCompanyDS;
-  // soDS: StoringOrderDS;
-  catDS: CleaningCategoryDS;
   mthDS: CleaningMethodDS;
+  mthAutoCompleteDS: CleaningMethodDS;
 
   pageIndex = 0;
   pageSize = 10;
@@ -173,11 +165,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     super();
     this.translateLangText();
     this.initSearchForm();
-    // this.soDS = new StoringOrderDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.catDS = new CleaningCategoryDS(this.apollo);
     this.mthDS = new CleaningMethodDS(this.apollo);
+    this.mthAutoCompleteDS = new CleaningMethodDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -189,21 +178,30 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   messageSubscription?: Subscription;
 
   ngOnInit() {
-    this.initializeFilterCustomerCompany();
     this.loadData();
-    // this.messageSubscription = this.graphqlNotificationService.newMessageReceived.subscribe(
-    //   (message) => {
-    //    // alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
-
-    //   },
-    //   (error) => console.error(error),
-    // );
+    this.initializeValueChanges();
   }
-  refresh() {
-    this.onPageEvent({
-      pageIndex: this.pageIndex, pageSize: this.pageSize,
-      length: 0
-    });
+
+  initializeValueChanges() {
+    this.processNameControl!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.mthAutoCompleteDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
+          this.processNameList = data.map(i => i.name || '');
+        });
+      })
+    ).subscribe();
+
+    this.descriptionControl!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.mthAutoCompleteDS.search({ description: { contains: value } }, { description: "ASC" }, 100).subscribe(data => {
+          this.descriptionList = data.map(i => i.description || '');
+        });
+      })
+    ).subscribe();
   }
 
   initSearchForm() {
@@ -299,12 +297,12 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
     var order = this.lastOrderBy;
 
-    if (this.searchForm!.value['name']) {
-      where.name = { contains: this.searchForm!.value['name'] };
+    if (this.processNameControl?.value) {
+      where.name = { contains: this.processNameControl?.value };
     }
 
-    if (this.searchForm!.value['description']) {
-      where.description = { contains: this.searchForm!.value['description'] };
+    if (this.descriptionControl?.value) {
+      where.description = { contains: this.descriptionControl?.value };
     }
     this.searchData(where, order, undefined, undefined, undefined, undefined, this.pageIndex, undefined);
 
@@ -388,13 +386,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     //}
   }
 
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
-  }
-
-  initializeFilterCustomerCompany() {
-  }
-
   addCall() {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -468,10 +459,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  displayLastCargoFn(tc: TariffCleaningItem): string {
-    return tc && tc.cargo ? `${tc.cargo}` : '';
-  }
-
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
 
@@ -482,7 +469,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
+    this.search();
   }
 
   resetForm() {
@@ -492,54 +479,59 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  
-     handleDelete(event: Event, row: any, ): void {
-        event.preventDefault();
-        event.stopPropagation();
-        this.deleteItem(row);
+
+  handleDelete(event: Event, row: any,): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.deleteItem(row);
+  }
+
+  deleteItem(row: CleaningMethodItem) {
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        this.RmoveCleaningMethod(row.guid!);
       }
-    
-      deleteItem(row: CleaningMethodItem) {
-         
-          let tempDirection: Direction;
-          if (localStorage.getItem('isRtl') === 'true') {
-            tempDirection = 'rtl';
-          } else {
-            tempDirection = 'ltr';
-          }
-          const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-            data: {
-              headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
-              action: 'new',
-            },
-            direction: tempDirection
-          });
-          this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-            if (result?.action === 'confirmed') {
-             this.RmoveCleaningMethod(row.guid!);
-            }
-          });
-        }
-        
-     CanDelete(row: CleaningMethodItem):boolean{
-        var bRetval:boolean =false;
-    
-          if(!bRetval)
-          {
-            bRetval =(row?.tariff_cleanings?.length||0)===0;
-          }
-        return bRetval;
+    });
+  }
+
+  CanDelete(row: CleaningMethodItem): boolean {
+    var bRetval: boolean = false;
+
+    if (!bRetval) {
+      bRetval = (row?.tariff_cleanings?.length || 0) === 0;
+    }
+    return bRetval;
+  }
+
+  RmoveCleaningMethod(guids: string) {
+    this.mthDS.deleteCleaningMethod([guids]).subscribe(result => {
+      if (result.data.deleteCleaningMethod) {
+        this.handleSaveSuccess(result.data.deleteCleaningMethod);
+        this.pageIndex = 0;
+        this.search();
       }
-    
-      RmoveCleaningMethod( guids: string) {
-      
-          this.mthDS.deleteCleaningMethod([guids]).subscribe(result => {
-            if (result.data.deleteCleaningMethod) {
-              this.handleSaveSuccess(result.data.deleteCleaningMethod);
-              this.pageIndex=0;
-              this.search();
-            }
-          })
-      
-        }
+    })
+  }
+
+  displayProcessNameFn(pn: string): string {
+    return pn || '';
+  }
+
+  displayDescriptionFn(pn: string): string {
+    return pn || '';
+  }
 }

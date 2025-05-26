@@ -167,6 +167,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   banTypeCvList: CodeValuesItem[] = [];
   hazardLevelCvList: CodeValuesItem[] = [];
 
+  lastCargoControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
   banTypeControl = new UntypedFormControl();
   hazardLevelControl = new UntypedFormControl();
@@ -216,7 +217,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   ngOnInit() {
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
-    this.initializeFilterCustomerCompany();
+    this.initializeValueChanges();
   }
   refresh() {
     this.loadData();
@@ -225,7 +226,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   initSearchForm() {
     this.searchForm = this.fb.group({
-      cargo_name: [''],
+      last_cargo: this.lastCargoControl,
       class_no: [''],
       method: [''],
       category: this.categoryControl,
@@ -417,9 +418,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     var where: any = {};
     const tariff_cleaning: any = {}
 
-    if (this.selectedCargo.length > 0) {
-       var guids:string[]= this.selectedCargo.map(c => c.guid);
-      tariff_cleaning.guid = { in: guids };
+    if (this.lastCargoControl?.value?.guid) {
+      tariff_cleaning.guid = { contains: this.lastCargoControl?.value?.guid };
+    } else if (this.lastCargoControl?.value) {
+      if (typeof this.lastCargoControl?.value === 'string') {
+        tariff_cleaning.cargo = { contains: this.lastCargoControl?.value };
+      }
     }
 
     if (this.searchForm!.get('class_no')?.value) {
@@ -498,26 +502,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     return this.cvDS.getCodeDescription(codeValType, this.banTypeCvList);
   }
 
-
-  initializeFilterCustomerCompany() {
-    // this.searchForm!.get('customer_code')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     var searchCriteria = '';
-    //     if (typeof value === 'string') {
-    //       searchCriteria = value;
-    //     } else {
-    //       searchCriteria = value.code;
-    //     }
-    //     this.searchCustomerCompanyList(searchCriteria);
-    //     // this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-    //     //   this.customer_companyList = data
-    //     // });
-    //   })
-    // ).subscribe();
-
-    this.searchForm!.get('cargo_name')!.valueChanges.pipe(
+  initializeValueChanges() {
+    this.lastCargoControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -594,7 +580,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   resetForm() {
     this.searchForm?.patchValue({
-      cargo_name: '',
       class_no: '',
       method: '',
       category: '',
@@ -602,6 +587,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       //ban_type: '',
       un_no: '',
     });
+    this.lastCargoControl.reset();
     this.categoryControl.reset();
     this.hazardLevelControl.reset();
     this.banTypeControl.reset('');

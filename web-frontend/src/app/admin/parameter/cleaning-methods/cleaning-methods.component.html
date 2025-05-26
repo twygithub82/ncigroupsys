@@ -46,14 +46,30 @@
                 <div class="row">
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PROCESS_NAME }}</mat-label>
-                      <input matInput formControlName="name">
+                      <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
+                      <input matInput [formControl]="processNameControl" [matAutocomplete]="processName"
+                        formControlName="name">
+                      <mat-autocomplete #processName="matAutocomplete" [displayWith]="displayProcessNameFn">
+                        @for (pn of processNameList; track pn) {
+                        <mat-option [value]="pn">
+                          {{pn}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PROCESS_DESCRIPTION }}</mat-label>
-                      <input matInput formControlName="description">
+                      <mat-label>{{translatedLangText.PROCESS_DESCRIPTION}}</mat-label>
+                      <input matInput [formControl]="descriptionControl" [matAutocomplete]="description"
+                        formControlName="description">
+                      <mat-autocomplete #description="matAutocomplete" [displayWith]="displayDescriptionFn">
+                        @for (pn of descriptionList; track pn) {
+                        <mat-option [value]="pn">
+                          {{pn}}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
                   </div>
                   <!-- <div
@@ -76,7 +92,7 @@
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef></mat-header-cell>
                   <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_name">
@@ -88,7 +104,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="category_description">
-                  <mat-header-cell *matHeaderCellDef >
+                  <mat-header-cell *matHeaderCellDef>
                     {{translatedLangText.DESCRIPTION }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -96,7 +112,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="update_date">
-                  <mat-header-cell *matHeaderCellDef >
+                  <mat-header-cell *matHeaderCellDef>
                     {{translatedLangText.LAST_UPDATED }}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
@@ -104,9 +120,12 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef>
+                  <mat-header-cell
+                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                    *matHeaderCellDef>
                   </mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
+                  <mat-cell *matCellDef="let row; let i=index;"
+                    class="pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
                     @if(CanDelete(row)){
                     <button mat-icon-button (click)="$event.stopPropagation()" (click)="handleDelete($event, row)"
                       [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">

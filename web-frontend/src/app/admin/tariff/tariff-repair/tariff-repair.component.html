@@ -19,7 +19,8 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
                       <mat-icon>clear_all</mat-icon>
                     </button>
                   </div>
@@ -52,39 +53,24 @@
               <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
-                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                        <mat-chip-grid #chipProfile>
-                          @if(this.selectedParts.length>0){
-                          <mat-chip-row (click)="removeAllSelectedParts(); $event.stopPropagation()">
-                            {{getSelectedPartDisplay()}}
-                            <button matChipRemove hidden>
-                              <mat-icon>cancel</mat-icon>
-                            </button>
-                          </mat-chip-row>
-                          }
-                          <input #partInput [formControl]="partControl" [matAutocomplete]="profileName"
-                            [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
-                          <mat-autocomplete #profileName="matAutocomplete" (optionSelected)="selectedPart($event)">
-                            @for (p of part_nameList; track p) {
-                            <mat-option [value]="p">
-                              <mat-checkbox color="primary"
-                                (click)="onCheckboxPartClicked(p);$event.stopPropagation()"
-                                [checked]="itemPartSelected(p) || false"></mat-checkbox>
-                              {{p.profile_name}}
-                            </mat-option>
-                            }
-                          </mat-autocomplete>
-                        </mat-chip-grid>
-                      </mat-form-field>
-                    </div>
-                    <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                      <mat-form-field class="example-full-width">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <!-- <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                         <input matInput formControlName="part_name" type="text">
+                      </mat-form-field> -->
+                      <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                        <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
+                          formControlName="part_name">
+                        <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
+                          @for (pn of partNameList; track pn) {
+                          <mat-option [value]="pn">
+                            {{pn}}
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
                       </mat-form-field>
-                    </div> -->
+                    </div>
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
@@ -202,8 +188,9 @@
                     </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                    <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                    <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                      [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
@@ -285,9 +272,9 @@
 
                 <!-- actions -->
                 <ng-container matColumnDef="actions">
-                  <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-0_75-xl'"></mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'"></mat-header-cell>
                   <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                     <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                       <mat-icon>more_vert</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">
@@ -301,13 +288,13 @@
                         <span>{{translatedLangText.DELETE}}</span>
                       </button>
                       }
-                    </mat-menu> 
-                 
+                    </mat-menu>
+
                   </mat-cell>
                 </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"  class="custom-body-row"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"   class="custom-body-row" (click)="editCall(row.tariff_repair)"
-                  [style.cursor]="'pointer'" matRipple>
+                <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row"
+                  (click)="editCall(row.tariff_repair)" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>
