@@ -61,7 +61,8 @@ export interface DialogData {
   date:string,
   repType:string,
   customer:string,
-  inventory_type:string[]
+  inventory_type:string[],
+  report_name:string
 }
 @Component({
   selector: 'app-monthly-report-details-pdf',
@@ -298,6 +299,8 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     DIFFERENCE:'COMMON-FORM.DIFFERENCE',
     MONTHLY_REVENUE_REPORT:'COMMON-FORM.MONTHLY-REVENUE-REPORT',
     S_N:'COMMON-FORM.S_N',
+    MASTER:'COMMON-FORM.MASTER',
+    SALES:'COMMON-FORM.SALES'
 
   }
 
@@ -359,7 +362,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"
   ]
   // date:string='';
-  // invType:string='';
+  repName:string='';
 
 
 
@@ -401,6 +404,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     this.repType=this.data.repType;
     this.customer=this.data.customer;
     this.invTypes=this.data.inventory_type;
+    this.repName=this.data.report_name;
     this.onDownloadClick();
 
   }
@@ -1107,6 +1111,30 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       },
     });
 
+
+     var maxYAxisValue=12;
+
+   
+  
+   
+    this.lineChartOptions.yaxis = {
+     
+      title: {
+        text: `${this.translatedLangText.SALES}`,
+      },
+      labels: {
+        align: 'right', // Align labels to the right
+        minWidth: 50,   // Set a minimum width for the labels
+        maxWidth: 100,  // Set a maximum width for the labels
+        offsetX: 10,    // Add horizontal offset to the labels
+      },
+    //   ...(tickAmount ? { tickAmount } : {}), // Only include tickAmount if it's valid
+    //  tickAmount: 3, // Controls number of ticks (adjust as needed)
+     // forceNiceScale: true, // Optional: ensures clean scaling
+      //decimalsInFloat: 0
+    }
+   
+
     var labelStyle = {
       style: {
         fontSize: '8px',     // Adjust font size here (e.g., '12px', '14px')
@@ -1120,7 +1148,10 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     // var x
     this.lineChartOptions.xaxis={
       categories: catgries,
-      labels:labelStyle
+      labels:labelStyle,
+      title: {
+        text: `${this.date}`,
+      },
     };
 
     this.lineChartOptions.series=series;
@@ -1525,6 +1556,13 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
   GetReportTitle(): string {
     var title:string='';
      title = `${this.translatedLangText.MONTHLY_SALES_REPORT}`;
+     if(this.repName)
+     {
+      title += `: ${this.repName}`;
+     }else
+     {
+       title += `: ${this.translatedLangText.MASTER}`;
+     }
     // switch(this.repType?.toUpperCase())
     // {
     //   case "CLEANING":

@@ -368,6 +368,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   }
 
   search(report_type: number) {
+    var repName :string="";
     if (this.searchForm?.invalid) return;
     this.isGeneratingReport = true;
     // var cond_counter = 0;
@@ -389,6 +390,7 @@ this.isGeneratingReport = true;
     if (this.searchForm?.get('cost_type')?.value.code_val != "ALL") {
       where.revenue_type = [this.searchForm?.get('cost_type')?.value.code_val];
       invTypes = [this.searchForm?.get('cost_type')?.value.code_val];
+      repName=this.searchForm?.get('cost_type')?.value.description;
     }
 
     if (this.searchForm?.get('customer_code')?.value) {
@@ -419,7 +421,7 @@ this.isGeneratingReport = true;
 
 
     this.lastSearchCriteria = where;
-    this.performSearch(report_type, date, customerName, invTypes);
+    this.performSearch(report_type, date, customerName, invTypes,repName);
 
     // where.report_type = ["LOLO", "PREINSPECTION", "CLEANING", "STEAMING", "REPAIR", "RESIDUE"];
     // if (this.searchForm?.get('cost_type')?.value.code_val !== 'ALL') {
@@ -454,14 +456,14 @@ this.isGeneratingReport = true;
     // this.performSearch(report_type, date, customerName);
   }
 
- performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[]) {
+ performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[],reportName:string='') {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!, invTypes!);
+        this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!, invTypes!,reportName);
       });
 
   }
@@ -580,14 +582,14 @@ this.isGeneratingReport = true;
 
   }
 
-  ProcessMonthlyReport(repData: any, date: string, report_type: number, customerName: string, invTypes?: string[]) {
+  ProcessMonthlyReport(repData: any, date: string, report_type: number, customerName: string, invTypes?: string[],reportName?:string) {
 
 
     
     if (!this.ZeroTransaction(repData)) {
 
       //this.onExportDetail(repData, date, customerName, report_type, invTypes);
-       this.onExportDetail(repData, date, customerName,invTypes);
+       this.onExportDetail(repData, date, customerName,invTypes,reportName);
 
     }
     else {
@@ -616,7 +618,7 @@ this.isGeneratingReport = true;
 
   }
 
-  onExportDetail(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[]) {
+  onExportDetail(repData: AdminReportMonthlyReport, date: string, customerName: string, invTypes?: string[],reportName?:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -637,7 +639,8 @@ this.isGeneratingReport = true;
         date: date,
         repType: this.processType,
         customer: customerName,
-        inventory_type: invTypes
+        inventory_type: invTypes,
+        report_name:reportName
 
       },
 

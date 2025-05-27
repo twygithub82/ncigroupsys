@@ -1818,7 +1818,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '30%',
+          columnWidth: '10%',
           borderRadius: 3,
           dataLabels: {
             position: 'top', // top, center, bottom
@@ -1956,8 +1956,9 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       });
 
       const maxValue = Math.max(...all_values); // Find the maximum value in the data
-      const maxYAxisValue = maxValue * 1.1; // Add 10% to the maximum value
-
+      const maxYAxisValue = Math.round(maxValue * 1.5); // Add 10% to the maximum value
+      const computedTickAmount = maxYAxisValue + 1; // since range starts at 0
+      const tickAmount = computedTickAmount < 5 ? computedTickAmount : undefined;
       var series: any;
       if (this.queryType == 3) {
         series = [
@@ -2025,7 +2026,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           },
         },
         forceNiceScale: true,
-        tickAmount: 5, // Adjust based on your data range
+        ...(tickAmount ? { tickAmount } : {}), // Only include tickAmount if it's valid
         decimalsInFloat: 0
       }
       // if(series.length==1)

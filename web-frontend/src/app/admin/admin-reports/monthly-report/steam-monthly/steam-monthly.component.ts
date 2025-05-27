@@ -545,8 +545,8 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     });
 
     dialogRef.updatePosition({
-      top: '-9999px',  // Move far above the screen
-      left: '-9999px'  // Move far to the left of the screen
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
