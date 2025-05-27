@@ -389,7 +389,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   canCancelSelectedRows(): boolean {
     return !this.roSelection.hasValue() || !this.roSelection.selected.every((item) => {
       const index: number = this.roList.findIndex((d) => d === item);
-      return this.soDS.canCancel(this.roList[index]);
+      return this.roDS.canCancel(this.roList[index]);
     });
   }
 
