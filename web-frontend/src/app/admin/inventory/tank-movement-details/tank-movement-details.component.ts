@@ -221,6 +221,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
+    UPDATE: 'COMMON-FORM.UPDATE',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
     CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
@@ -1052,7 +1053,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayDateTime(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateTimeStr(input);
+    //return Utility.convertEpochToDateTimeStr(input);
+
+    const date = new Date(input! * 1000); // assuming `input` is in seconds (epoch)
+  
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    const yyyy = date.getFullYear();
+
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+
+    return `${dd}/${mm}/${yyyy} - ${hh}:${min}`;
   }
 
   displayDate(input: any): string | undefined {

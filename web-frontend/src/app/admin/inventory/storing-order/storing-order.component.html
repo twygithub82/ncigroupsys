@@ -64,7 +64,7 @@
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
-                          {{ccDS.displayName(cc)}}
+                          {{ccDS.displayCodeDashName(cc)}}
                         </mat-option>
                         }
                       </mat-autocomplete>
@@ -152,14 +152,14 @@
                 <ng-container matColumnDef="select">
                   <mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
+                    <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                       [checked]="soSelection.hasValue() && isAllSelected()"
                       [indeterminate]="soSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
+                    <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
                       [checked]="soSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
@@ -190,11 +190,11 @@
                 </ng-container>
                 <ng-container matColumnDef="no_of_tanks">
                   <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     {{translatedLangText.NO_OF_TANKS}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.NO_OF_TANKS}}:</span>
                     {{row.storing_order_tank.length}}
                   </mat-cell>
@@ -221,31 +221,31 @@
                 </ng-container>
                 <ng-container matColumnDef="accept_status">
                   <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     {{translatedLangText.ACCEPTED}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.ACCEPTED}}:</span>
                     {{soDS.getAccepetedStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="waiting_status">
                   <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     {{translatedLangText.OUTSTANDING}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.OUTSTANDING}}:</span>
                     {{soDS.getWaitingStatusCount(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="cancel_status">
                   <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     {{translatedLangText.CANCELED}}
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.CANCELED}}:</span>
                     {{soDS.getCanceledStatusCount(row)}}</mat-cell>
                 </ng-container>

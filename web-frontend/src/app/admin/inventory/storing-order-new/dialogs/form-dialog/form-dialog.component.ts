@@ -91,7 +91,7 @@ export class FormDialogComponent {
     this.action = data.action!;
     this.sotExistedList = data.sotExistedList;
     if (this.action === 'edit') {
-      this.dialogTitle = 'Edit ' + data.item.tank_no;
+      this.dialogTitle = 'Edit Record';
       this.storingOrderTank = data.item;
     } else {
       this.dialogTitle = 'New Record';

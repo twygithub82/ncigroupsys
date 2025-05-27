@@ -210,9 +210,9 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <mat-accordion multi>
                 <mat-expansion-panel [expanded]="verifySection(accordionSections.tank_details)">
-                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.tank_details)">
+                  <mat-expansion-panel-header class="ps-0 tank-header" (click)="setSection(accordionSections.tank_details)">
                     <mat-panel-title>
-                      <div class="d-flex justify-content-between align-items-center w-100">
+                      <div class="d-flex justify-content-between align-items-center w-100" color="primary">
                         <div class="header">
                           <h2>
                             {{translatedLangText.TANK_DETAILS}}
@@ -361,7 +361,7 @@
                   </div>
                 </mat-expansion-panel>
                 <mat-expansion-panel [expanded]="verifySection(accordionSections.gate_details)">
-                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.gate_details)">
+                  <mat-expansion-panel-header class="ps-0 tank-header" (click)="setSection(accordionSections.gate_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
@@ -537,7 +537,7 @@
                   </div>
                 </mat-expansion-panel>
                 <mat-expansion-panel [expanded]="verifySection(accordionSections.purpose_details)">
-                  <mat-expansion-panel-header class="ps-0" (click)="setSection(accordionSections.purpose_details)">
+                  <mat-expansion-panel-header class="ps-0 tank-header" (click)="setSection(accordionSections.purpose_details)">
                     <mat-panel-title>
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <div class="header">
