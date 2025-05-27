@@ -1,5 +1,4 @@
 import { Apollo } from 'apollo-angular';
-import { testTypeMapping } from 'environments/environment';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
@@ -7,6 +6,7 @@ import { BaseDataSource } from './base-ds';
 import { CustomerCompanyItem } from './customer-company';
 import { TankItem } from './tank';
 import { TariffBufferItem } from './tariff-buffer';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export class TankInfoGO {
   public guid?: string;
@@ -261,7 +261,7 @@ export class TankInfoDS extends BaseDataSource<TankInfoItem> {
   getNextTestCv(last_test_cv?: string): string | undefined {
     if (!last_test_cv) return "";
     const test_type = last_test_cv;
-    const mappedVal = testTypeMapping[test_type!];
+    const mappedVal = BusinessLogicUtil.getTestTypeMapping(test_type);
     return mappedVal;
   }
 }

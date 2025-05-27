@@ -47,4 +47,10 @@ export class BusinessLogicUtil {
             return `${nature} - ${in_gate_alert}`;
         return '';
     }
+
+    static getTestTypeMapping(test_type: string | undefined): string {
+        if (test_type === '5') return '2.5';
+        if (test_type === '2.5') return '5';
+        return '';
+    }
 }
