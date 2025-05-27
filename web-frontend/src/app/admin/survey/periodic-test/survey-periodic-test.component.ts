@@ -437,6 +437,9 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
                     eq: null
                   }
                 }
+              },
+              status_cv: {
+                nin: ['CANCELED', 'NO_ACTION']
               }
             }
           }

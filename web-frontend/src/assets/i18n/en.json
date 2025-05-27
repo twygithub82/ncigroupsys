@@ -1285,8 +1285,9 @@
     "RELEASE-REF": "Release Ref",
     "CARGO-SELECTED": "Cargo Selected",
     "PART-SELECTED": "Part Selected",
-    "MASTER":"Master",
-    "SALES":"Sales"
+    "ROLLBACK-COMPLETED": "Rollback Completed",
+    "MASTER": "Master",
+    "SALES": "Sales"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

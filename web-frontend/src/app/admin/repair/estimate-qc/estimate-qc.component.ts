@@ -35,7 +35,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { JobOrderDS, JobOrderGO, RepJobOrderRequest } from 'app/data-sources/job-order';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
-import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairGO, RepairItem, RepairStatusRequest } from 'app/data-sources/repair';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -44,6 +44,7 @@ import { UserDS } from 'app/data-sources/user';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-estimate-qc',
@@ -198,6 +199,8 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     QC_COMPLETE: 'COMMON-FORM.QC-COMPLETE',
     OVERWRITE: 'COMMON-FORM.OVERWRITE',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
+    CONFIRM_ROLLBACK: 'COMMON-FORM.CONFIRM-ROLLBACK',
+    ROLLBACK_COMPLETED: 'COMMON-FORM.ROLLBACK-COMPLETED',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -567,6 +570,49 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
             this.handleSaveSuccess(result?.data?.rollbackQCRepair);
           }
         });
+      }
+    });
+  }
+
+  onRollbackCompleted(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_ROLLBACK,
+        action: 'rollback',
+      },
+      direction: tempDirection
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const repReqList = this.repList?.map((rep: RepairPartItem) => {
+          return {
+            guid: rep?.guid,
+            approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)
+          }
+        });
+
+        var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+          guid: this.repairItem?.guid,
+          sot_guid: this.sotItem!.guid,
+          action: "IN_PROGRESS",
+          remarks: this.repairItem?.remarks,
+          repairPartRequests: repReqList
+        });
+        console.log(repairStatusReq);
+        // this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+        //   console.log(result)
+        //   if (result.data.updateRepairStatus > 0) {
+        //     this.handleSaveSuccess(result.data.updateRepairStatus);
+        //   }
+        // });
       }
     });
   }
