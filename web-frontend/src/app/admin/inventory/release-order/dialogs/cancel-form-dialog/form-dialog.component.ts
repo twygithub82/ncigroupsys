@@ -14,7 +14,7 @@ import { ReleaseOrderItem } from 'app/data-sources/release-order';
 export interface DialogData {
   action?: string;
   item: ReleaseOrderItem[];
-  langText?: any;
+  translatedLangText?: any;
   index: number;
 }
 
@@ -55,13 +55,11 @@ export class CancelFormDialogComponent {
     // Set the defaults
     this.releaseOrder = data.item;
     this.releaseOrderForm = this.createStorigOrderForm();
-    this.translate.get(data.langText.ARE_YOU_SURE_CANCEL).subscribe((res: string) => {
-      this.dialogTitle = res;
-    });
     this.index = data.index;
   }
   createStorigOrderForm(): UntypedFormGroup {
     return this.fb.group({
+      remarks: ['', Validators.required],
       releaseOrder: this.fb.array(this.releaseOrder.map(ro => this.createOrderGroup(ro)))
     });
   }
@@ -70,13 +68,13 @@ export class CancelFormDialogComponent {
       guid: [ro.guid],
       ro_no: [ro.ro_no],
       customer_company_guid: [ro.customer_company_guid],
-      storing_order_tank: this.fb.array(ro.release_order_sot.map((rosot: any) => this.createTankGroup(rosot.storing_order_tank))),
-      remarks: [ro.remarks, Validators.required]
+      storing_order_tank: this.fb.array(ro.release_order_sot.map((rosot: any) => this.createTankGroup(rosot))),
+      // remarks: [ro.remarks, Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
     return this.fb.group({
-      tank_no: [tank.tank_no],
+      tank_no: [tank.storing_order_tank.tank_no],
       status_cv: [tank.status_cv]
     });
   }
@@ -85,7 +83,12 @@ export class CancelFormDialogComponent {
   }
   confirmCancel(): void {
     if (this.releaseOrderForm.valid) {
-      let ro = this.releaseOrderForm.get('releaseOrder')?.value
+      let ro = this.releaseOrderForm.get('releaseOrder')?.value?.map((s: any) => {
+        return {
+          ...s,
+          remarks: this.releaseOrderForm.value['remarks']
+        };
+      });
       const returnDialog: DialogData = {
         action: 'confirmed',
         item: ro,
@@ -99,5 +102,10 @@ export class CancelFormDialogComponent {
   }
   getReleaseOrderTanksArray(so: AbstractControl<any, any>): UntypedFormArray {
     return so.get('storing_order_tank') as UntypedFormArray;
+  }
+  displayTargetedSot(sotList: UntypedFormArray) {
+    return sotList.controls.filter(sot => sot.get('status_cv')?.value === 'WAITING')
+      .map(sot => sot.get('tank_no')?.value)
+      .join(', ')
   }
 }
