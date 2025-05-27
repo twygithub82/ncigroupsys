@@ -29,6 +29,7 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
 import { BarChartModule, Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
+import {PDFUtility} from 'app/utilities/pdf-utility';
 import {
    ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -55,6 +56,7 @@ export interface DialogData {
 }
 
 export type ChartOptions = {
+    animations?: any;
   series?: ApexAxisChartSeries;
   series2?: ApexNonAxisChartSeries;
   chart?: ApexChart;
@@ -72,6 +74,23 @@ export type ChartOptions = {
   markers?: ApexMarkers;
   labels: string[];
   responsive: ApexResponsive[];
+  // series?: ApexAxisChartSeries;
+  // series2?: ApexNonAxisChartSeries;
+  // chart?: ApexChart;
+  // dataLabels?: ApexDataLabels;
+  // plotOptions?: ApexPlotOptions;
+  // yaxis?: ApexYAxis;
+  // xaxis?: ApexXAxis;
+  // fill?: ApexFill;
+  // tooltip?: ApexTooltip;
+  // stroke?: ApexStroke;
+  // legend?: ApexLegend;
+  // title?: ApexTitleSubtitle;
+  // colors?: string[];
+  // grid?: ApexGrid;
+  // markers?: ApexMarkers;
+  // labels: string[];
+  // responsive: ApexResponsive[];
 };
 
 @Component({
@@ -363,6 +382,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     super();
     this.translateLangText();
     this.InitialDefaultData();
+    this.date= this.data.date;
     this.processTankStatus(data.repData);
     this.steamDS = new SteamDS(this.apollo);
     this.steamPartDS = new SteamPartDS(this.apollo);
@@ -386,7 +406,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    this.date= this.data.date;
+    
     this.repType=this.data.repType;
     this.customer=this.data.customer;
     this.onDownloadClick();
@@ -705,12 +725,13 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY , 12);
 
     if(this.customer)
     {
+      startY+=5;
       const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+      Utility.addText(pdf, customer,startY  , leftMargin+4, 8);
     }
     var idx = 0;
     for (let n = 0; n < (this.repData?.result_per_day?.length||0); n++) {
@@ -736,6 +757,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0.001, 0.001], 0);
+    startY+=2;
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,
@@ -823,14 +845,16 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     leftMargin: number,rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
      
     pdf.addPage();
+     const tablewidth = 55;
      var pageNumber=pdf.getNumberOfPages();
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
      const card = cardElements[0];
-     const contentWidth=pageWidth - leftMargin - rightMargin;
+     const contentWidth=pageWidth - leftMargin - rightMargin-tablewidth-5;
 
+     const imgData = await PDFUtility.captureFullCardImage(card);
       // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+      const canvas = await html2canvas(card);
+     // const imgData = canvas.toDataURL('image/jpeg', 0.8); // Convert to JPEG with 80% quality
 
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
@@ -838,17 +862,19 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
       const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
       const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
 
-      const pos = 15;
-      pdf.text(reportTitle, titleX, pos); // Position it at the top
+      var pos = 10;
+      PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pos);
+      // pdf.text(reportTitle, titleX, pos); // Position it at the top
 
-      // Draw underline for the title
-      pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+      // // Draw underline for the title
+      // pdf.setLineWidth(0.5); // Set line width for underline
+      // pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
 
-      pdf.addImage(imgData, 'JPEG', leftMargin, pos+5, contentWidth, imgHeight); // Adjust y position to leave space for the title
+      pos +=8;
+      pdf.addImage(imgData, 'JPEG', leftMargin, pos, contentWidth, imgHeight); // Adjust y position to leave space for the title
 
 
-       let minHeightBodyCell = 9;
+    let minHeightBodyCell = 9;
     let fontSz = 6.5;
     const headers = [[
           this.translatedLangText.DESCRIPTION,
@@ -867,20 +893,20 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
         };
 
     const comStyles: any = {
-      0: { halign: 'center', cellWidth: 20, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 25, minCellHeight: minHeightBodyCell },
     };
 
-    let lastTableFinalY = pos+5;
-    let startY = pos+5;
+    let lastTableFinalY = 10;
+    let startY = lastTableFinalY;
     let minHeightHeaderCol=8;
     const data: any[][] = [];
     data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
     data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
    
-        let tablewidth=55;
-        startY = lastTableFinalY + 10;
-        let startX = pageWidth - rightMargin - tablewidth+6;
+        
+       
+        let startX = (pageWidth -rightMargin - tablewidth );
         //Add table using autoTable plugin
     
         // pdf.setFontSize(8);
@@ -891,7 +917,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
         autoTable(pdf, {
           head: headers,
           body: data,
-          startY: startY + 5, // Start table at the current startY value
+          startY: startY + 8, // Start table at the current startY value
           margin: { left: startX },
           theme: 'grid',
           styles: {
@@ -1076,7 +1102,10 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
   ?.map(i => i.count) // Extract the count property
   .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
   maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
-  maxYAxisValue = maxYAxisValue*1.2;
+
+  maxYAxisValue = Math.round( maxYAxisValue*1.5  );
+  const computedTickAmount = maxYAxisValue ; // since range starts at 0
+   const tickAmount = computedTickAmount <=3 ? computedTickAmount : undefined;
     this.lineChart2Options.yaxis = {
       max: maxYAxisValue,
       min: 0,
@@ -1088,10 +1117,19 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
         minWidth: 50,   // Set a minimum width for the labels
         maxWidth: 100,  // Set a maximum width for the labels
         offsetX: 10,    // Add horizontal offset to the labels
+        
         formatter: (value: number) => {
-          return value.toFixed(2); // Format the label to reduce its length
+            return Math.round(value).toString(); // ensures no decimal values on Y-axis
         }
-      }
+      },
+    //   ...(tickAmount ? { tickAmount } : {}), // Only include tickAmount if it's valid
+    //  tickAmount: 3, // Controls number of ticks (adjust as needed)
+     // forceNiceScale: true, // Optional: ensures clean scaling
+      //decimalsInFloat: 0
+    }
+    if(tickAmount)
+    {
+      this.lineChart2Options.yaxis.tickAmount=tickAmount;
     }
     this.lineChart2Options.series=[
       {
@@ -1102,10 +1140,8 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     this.lineChart2Options.xaxis= {
       type: 'category',
       categories:days,
-      labels: {
-        style: {
-          colors: '#9aa0ac',
-        },
+      title: {
+        text: `${this.date}`,
       },
     }
 

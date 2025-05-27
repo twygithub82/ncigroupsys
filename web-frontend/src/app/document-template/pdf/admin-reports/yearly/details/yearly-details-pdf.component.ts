@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import {PDFUtility}from 'app/utilities/pdf-utility';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -680,7 +681,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY -3, 12);
 
     if(this.customer)
       {
@@ -810,7 +811,9 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
 
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+      //const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+
+      const imgData = await PDFUtility.captureFullCardImage(card);
 
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
@@ -950,7 +953,9 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
   ?.map(i => i.count) // Extract the count property
   .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
   maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
-  maxYAxisValue = maxYAxisValue*1.2;
+   maxYAxisValue = Math.round( maxYAxisValue*1.5  );
+  const computedTickAmount = maxYAxisValue ; // since range starts at 0
+   const tickAmount = computedTickAmount <=3 ? computedTickAmount : undefined;
     this.lineChart2Options.yaxis = {
       max: maxYAxisValue,
       min: 0,
@@ -962,7 +967,15 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
         minWidth: 50,   // Set a minimum width for the labels
         maxWidth: 100,  // Set a maximum width for the labels
         offsetX: 10,    // Add horizontal offset to the labels
+        formatter: (value: number) => {
+            return Math.round(value).toString(); // ensures no decimal values on Y-axis
+        }
       }
+    }
+
+    if(tickAmount)
+    {
+      this.lineChart2Options.yaxis.tickAmount=tickAmount;
     }
 
     for(var i=counts.length;i<=3;i++)
@@ -980,9 +993,11 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
 
   
     this.lineChart2Options.xaxis={
+      type: 'category',
       categories: months,
       position: 'bottom',
       labels: {
+        show : true,
         offsetY: -2,
         style: {
           colors: '#9aa0ac',
@@ -1015,16 +1030,17 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
   
    async AddYearlyCleaningOverviewChart(pdf: jsPDF, reportTitle:string, pageWidth: number, 
     leftMargin: number,rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
-     
+     let tablewidth=55;
     pdf.addPage();
      var pageNumber=pdf.getNumberOfPages();
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
      const card = cardElements[0];
-     const contentWidth=pageWidth - leftMargin - rightMargin;
+     const contentWidth=pageWidth - leftMargin - rightMargin-tablewidth;
 
       // Convert card to image (JPEG format)
       const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+     // const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+      const imgData = await PDFUtility.captureFullCardImage(card);
 
       const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
@@ -1072,7 +1088,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
     data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
    
-        let tablewidth=55;
+        
         startY = lastTableFinalY + 10;
         let startX = pageWidth - rightMargin - tablewidth+6;
         //Add table using autoTable plugin
@@ -1110,51 +1126,52 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     this.lineChart2Options = {
       series: [
         {
-          name: 'Inflation',
-          data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
+          name: 'Bill Amount',
+          data: [113, 120, 130, 120, 125, 119, 126],
         },
       ],
       chart: {
-        height: 400,
-        type: 'bar',
+        height: 380,
+        type: 'line',
+        animations: {
+          enabled: false, // disables animations
+        },
+        dropShadow: {
+          enabled: false,
+          color: '#000',
+          top: 18,
+          left: 7,
+          blur: 10,
+          opacity: 0.2,
+        },
         foreColor: '#9aa0ac',
         toolbar: {
           show: false,
          
         },
-        animations: {
-          enabled: false, // disables animations
-        },
       },
-      plotOptions: {
-        bar: {
-          borderRadius: 1, // 👈 Adds curve to top corners
-          columnWidth:'30px',
-          distributed: true, // ✅ enables individual bar colors
-          dataLabels: {
-            position: 'top', // top, center, bottom
-          },
-        },
-      },
-      colors: [
-          '#FF4560', '#00E396', '#775DD0', '#FEB019', '#FF66C3',
-          '#00B8D9', '#FFAB00', '#36B37E', '#998DD9', '#F45B5B',
-          '#6A67CE', '#008FFB'
-        ], // ✅ one color for each bar
+      colors: ['#6777EF'],
       dataLabels: {
         enabled: true,
-        formatter: function (val: number) {
-          if(val===0)
-          {
-            return '';
-          }
-          return val;
-
+      },
+      stroke: {
+        curve: 'smooth',
+        width:2
+      },
+      markers: {
+        size: 3, // ✅ shows a visible dot
+        strokeWidth: 0,
+        colors: ['#6777EF'],
+      },
+      xaxis: {
+        categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        title: {
+          text: 'Weekday',
         },
-        offsetY: -20,
-        style: {
-          fontSize: '12px',
-          colors: ['#9aa0ac'],
+      },
+      yaxis: {
+        title: {
+          text: 'Bill Amount($)',
         },
       },
       grid: {
@@ -1162,93 +1179,16 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
         borderColor: '#9aa0ac',
         strokeDashArray: 1,
       },
-      xaxis: {
-        categories: [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec',
-        ],
-        position: 'top',
-        labels: {
-          offsetY: -10,
-          style: {
-            colors: '#9aa0ac',
-          },
-        },
-        axisBorder: {
-          show: false,
-        },
-        axisTicks: {
-          show: false,
-        },
-        crosshairs: {
-          fill: {
-            type: 'gradient',
-            gradient: {
-              colorFrom: '#D8E3F0',
-              colorTo: '#BED1E6',
-              stops: [0, 100],
-              opacityFrom: 0.4,
-              opacityTo: 0.5,
-            },
-          },
-        },
-      },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'light',
-          type: 'horizontal',
-          shadeIntensity: 0.25,
-          gradientToColors: undefined,
-          inverseColors: true,
-          opacityFrom: 1,
-          opacityTo: 1,
-        },
-      },
-      yaxis: {
-        axisBorder: {
-          show: false,
-        },
-        axisTicks: {
-          show: false,
-        },
-        labels: {
-          show: false,
-          formatter: function (val: number) {
-            return val + '%';
-          },
-        },
-      },
-      title: {
-        text: this.translatedLangText.MONTH,
-        offsetY: 380,
-        align: 'center',
-        style: {
-          color: '#9aa0ac',
-        },
-      },
-      legend: {
-        show: false,
-      },
       tooltip: {
         theme: 'dark',
         marker: {
-          show: false,
+          show: true,
         },
         x: {
-          show: false,
+          show: true,
         },
       },
+    
     };
   }
 }

@@ -51,7 +51,6 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { testTypeMapping } from 'environments/environment';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subject, merge } from 'rxjs';
@@ -2081,10 +2080,11 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       (this.surveyForm!.get('periodic_test.test_dt')!.value || this.out_gate?.out_gate_survey?.test_dt)) {
       const test_type = this.surveyForm!.get('periodic_test.last_test_cv')!.value || this.out_gate?.out_gate_survey?.last_test_cv;
       const match = test_type.match(/^[0-9]*\.?[0-9]+/);
-      const yearCount = parseFloat(match[0]);
+      // const yearCount = parseFloat(match[0]);
+      const yearCount = 2.5;
       const testDt = Utility.convertDate(this.surveyForm!.get('periodic_test.test_dt')!.value) as number || this.out_gate?.out_gate_survey?.test_dt as number;
       const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
-      const mappedVal = testTypeMapping[test_type];
+      const mappedVal = BusinessLogicUtil.getTestTypeMapping(test_type);
       this.surveyForm!.get('periodic_test.next_test_cv')!.setValue(mappedVal);
       return this.getTestTypeDescription(mappedVal) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     }

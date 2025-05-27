@@ -546,8 +546,8 @@ export class ResidueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
     });
 
     dialogRef.updatePosition({
-      top: '-9999px',  // Move far above the screen
-      left: '-9999px'  // Move far to the left of the screen
+      top: '-90vh',  // Move far above the screen
+      left: '0px'  // Move far to the left of the screen
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -583,10 +583,10 @@ export class ResidueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
       direction: tempDirection
     });
 
-    dialogRef.updatePosition({
-      top: '-9999px',  // Move far above the screen
-      left: '-9999px'  // Move far to the left of the screen
-    });
+    // dialogRef.updatePosition({
+    //   top: '-999px',  // Move far above the screen
+    //   left: '0px'  // Move far to the left of the screen
+    // });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport = false;

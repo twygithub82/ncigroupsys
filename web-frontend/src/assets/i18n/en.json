@@ -972,8 +972,8 @@
     "TRANSFER-LOCATION": "Transfer Location",
     "TRANSFER-IN": "Transfer In",
     "DELIVERY-COURIER": "Delivery Courier",
-    "CONFIRM-CANCEL": "Confirm Cancel?",
-    "CONFIRM-ROLLBACK": "Confirm Rollback?",
+    "CONFIRM-CANCEL": "Cancel?",
+    "CONFIRM-ROLLBACK": "Rollback?",
     "DOM": "D.O.M",
     "MISSING-INFORMATION": "Missing Information",
     "CURRENCY": "Currency",
@@ -1284,7 +1284,9 @@
     "APPROVAL-REF": "Approval Ref",
     "RELEASE-REF": "Release Ref",
     "CARGO-SELECTED": "Cargo Selected",
-    "PART-SELECTED": "Part Selected"
+    "PART-SELECTED": "Part Selected",
+    "MASTER":"Master",
+    "SALES":"Sales"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

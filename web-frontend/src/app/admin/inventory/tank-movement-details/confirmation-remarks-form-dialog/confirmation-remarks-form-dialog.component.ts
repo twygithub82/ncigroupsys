@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { Utility } from 'app/utilities/utility';
+import * as moment from 'moment';
 import { provideNgxMask } from 'ngx-mask';
 
 export interface DialogData {
@@ -24,6 +25,7 @@ export interface DialogData {
   dialogTitle?: string;
   translatedLangText?: any;
   last_qc_dt?: number;
+  complete_dt?: number;
   last_remarks?: string;
   qc_dt?: number;
   remarks?: string;
@@ -63,6 +65,8 @@ export class ConfirmationRemarksFormDialogComponent {
   dialogTitle?: string;
   confirmationForm: UntypedFormGroup;
   last_qc_dt?: number;
+  complete_dt?: number;
+  estCompleteDt?: moment.Moment;
   last_remarks?: string;
   startDateQC = new Date();
 
@@ -80,6 +84,9 @@ export class ConfirmationRemarksFormDialogComponent {
       this.dialogTitle = data.dialogTitle || data.translatedLangText?.ROLLBACK;
     }
     this.last_qc_dt = this.data.last_qc_dt;
+    this.complete_dt = this.data.complete_dt;
+    const completeDt = Utility.convertDateMoment(this.complete_dt);
+    this.estCompleteDt = Utility.convertDateMoment(Utility.convertDate(completeDt)) as moment.Moment;
     this.confirmationForm = this.createForm();
   }
 

@@ -3,6 +3,7 @@ import { jsPDF } from 'jspdf';
 import { customerInfo } from 'environments/environment';
 import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
 import { Utility } from "./utility";
+import html2canvas from "html2canvas";
 
 export class PDFUtility {
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
@@ -609,4 +610,32 @@ export class PDFUtility {
 
   return newDoc;
 }
+
+static async captureFullCardImage(card: HTMLElement): Promise<string> {
+  // Clone the card into a hidden, absolutely positioned container
+  const clone = card.cloneNode(true) as HTMLElement;
+  clone.style.position = 'absolute';
+  clone.style.top = '80px';
+  clone.style.left = '300px';
+  clone.style.zIndex = '-9999'; // Prevent interaction
+  clone.style.visibility = 'visible';
+  clone.style.opacity = '1';
+  clone.style.pointerEvents = 'none';
+  document.body.appendChild(clone);
+
+  // Render the cloned element into canvas
+  const canvas = await html2canvas(clone, {
+    scrollY: -window.scrollY, // Prevent scroll offset distortion
+    useCORS: true,
+    backgroundColor: null,
+    scale: 2, // Optional: improve quality
+  });
+
+  // Clean up
+  document.body.removeChild(clone);
+
+  // Convert to image
+  return canvas.toDataURL('image/jpeg', 0.8);
+}
+
 }

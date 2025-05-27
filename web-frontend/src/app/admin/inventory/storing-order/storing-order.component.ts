@@ -111,7 +111,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     PURPOSE: 'COMMON-FORM.PURPOSE',
     ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    CONFIRM_CANCEL: 'COMMON-FORM.CONFIRM-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -242,7 +242,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   };
 
   getPackages(): boolean {
-    if(this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) 
+    if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage())
       return true;
     else
       return false;
@@ -336,7 +336,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       width: '35vw',
       data: {
         item: [...row],
-        langText: this.langText
+        translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
@@ -383,7 +383,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     if (savedPagination) {
       this.pageIndex = savedPagination.pageIndex;
       this.pageSize = savedPagination.pageSize;
-      
+
       this.performSearch(
         savedPagination.pageSize,
         savedPagination.pageIndex,
@@ -434,12 +434,12 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
     const soNo = this.searchForm?.get('so_no')?.value;
     const soStatus = this.searchForm?.get('so_status')?.value;
-    const customerCode = this.searchForm?.get('customer_code')?.value;
+    const customerCode = this.customerCodeControl?.value;
     const tankNo = this.searchForm?.get('tank_no')?.value;
     const jobNo = this.searchForm?.get('job_no')?.value;
     const etaStart = this.searchForm?.get('eta_dt_start')?.value;
     const etaEnd = this.searchForm?.get('eta_dt_end')?.value;
-    const lastCargo = this.searchForm?.get('last_cargo')?.value;
+    const lastCargo = this.lastCargoControl?.value;
     const purpose = this.searchForm?.get('purpose')?.value;
 
     if (soNo) {
@@ -458,7 +458,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       const sotSome: any = {};
 
       if (lastCargo) {
-        where.last_cargo_guid = { contains: lastCargo.guid };
+        sotSome.last_cargo_guid = { contains: lastCargo.guid };
       }
 
       if (tankNo) {
@@ -594,7 +594,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   initializeFilterCustomerCompany() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -610,7 +610,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
       })
     ).subscribe();
 
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+    this.lastCargoControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {

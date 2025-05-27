@@ -2669,19 +2669,26 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         translatedLangText: this.translatedLangText,
         last_qc_dt: row.repair_part?.filter(x => x.approve_part)?.[0]?.job_order?.qc_dt,
         last_remarks: row?.remarks,
+        complete_dt: row?.complete_dt,
       },
       direction: tempDirection
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
+        const outputQcDt = Utility.convertDate(result.qc_dt) as number;
+        const outputDate = result.qc_dt;
+        const estDate = Utility.convertDateMoment(row!.complete_dt!) as moment.Moment;
+
+        const isSameDate = outputDate.isSame(estDate, 'day');
+
         const distinctJobOrders = row.repair_part?.filter((item, index, self) =>
           index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
             (t.job_order?.team?.guid === item?.job_order?.team_guid ||
               t.job_order?.team?.description === item?.job_order?.team?.description))
         )
           .filter(item => item.job_order !== null && item.job_order !== undefined)
-          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: Utility.convertDate(result.qc_dt) as number }));
+          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: isSameDate ? row!.complete_dt : outputQcDt }));
 
         const repJobOrder = new RepJobOrderRequest({
           guid: row?.guid,
