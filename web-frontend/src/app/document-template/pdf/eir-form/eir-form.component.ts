@@ -637,7 +637,8 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     lastTableFinalY = startRectY + bufferLabelY;
     textContent = `${this.translatedLangText.COMPUTER_GENERATED_NOTE}`;
-    PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, 8);
+    // PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, 8);
+    PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, pageHeight - (bottomMargin), 8);
     //const totalPages = pdf.getNumberOfPages();
 
     // pagePositions.forEach(({ page, x, y }) => {
