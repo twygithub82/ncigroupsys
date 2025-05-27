@@ -1,15 +1,16 @@
-import { Component, OnInit, NgModule } from '@angular/core';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '@core';
-import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '@core';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { environment } from 'environments/environment';
 @Component({
   selector: 'app-signin-staff',
@@ -25,7 +26,8 @@ import { environment } from 'environments/environment';
     MatIconModule,
     MatButtonModule,
     TranslateModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDividerModule,
   ],
 })
 export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

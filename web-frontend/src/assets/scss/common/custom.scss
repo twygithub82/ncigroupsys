@@ -12,15 +12,23 @@
 .left-img {
   display: flex;
   flex-direction: column;
+  padding-left: 0;
+  padding-right: 0;
 
   img {
     max-width: 80%;
   }
 
   .caption {
-    margin-top: 15px;
-    color: $theme-gold-purple-active-color;
-    font-weight: bold;
+    color: $theme-gold-purple-disabled-menu;
+    font-style: italic;
+    font-size: 1.2rem;
+  }
+
+  .divider {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
   }
 }
 
