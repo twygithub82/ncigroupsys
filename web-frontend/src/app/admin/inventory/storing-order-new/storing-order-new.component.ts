@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -42,6 +42,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
   selector: 'app-storing-order-new',
@@ -221,8 +222,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   initSOForm() {
     this.soForm = this.fb.group({
       guid: [''],
-      customer_company_guid: [''],
-      customer_code: this.customerCodeControl,
+      customer_company_guid: ['', Validators.required],
+      customer_code: [{ value: this.customerCodeControl }, [Validators.required]],
       so_no: [''],
       so_notes: [''],
       haulier: [''],
@@ -268,19 +269,21 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   initializeFilter() {
-    this.soForm!.get('customer_code')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.code;
           this.soForm!.get('customer_company_guid')!.setValue(value.guid);
+        } else {
+          searchCriteria = value || '';
+          this.soForm!.get('customer_company_guid')!.setValue(null);
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
+          this.updateValidators(this.customer_companyList)
         });
       })
     ).subscribe();
@@ -382,6 +385,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     const addSot = row ?? new StoringOrderTankItem();
     addSot.so_guid = addSot.so_guid ?? this.so_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       data: {
         item: row ? row : addSot,
         action: 'new',
@@ -422,6 +426,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       data: {
         item: row,
         action: 'edit',
@@ -504,6 +509,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       data: {
         action: "cancel",
         item: [...row],
@@ -543,6 +549,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       data: {
         action: "rollback",
         item: [...row],
@@ -644,17 +651,17 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         });
         console.log('so Value', so);
         console.log('sot Value', sot);
-        if (so.guid) {
-          this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateStoringOrder);
-          });
-        } else {
-          this.soDS.addStoringOrder(so, sot).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addStoringOrder);
-          });
-        }
+        // if (so.guid) {
+        //   this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+        //     console.log(result)
+        //     this.handleSaveSuccess(result?.data?.updateStoringOrder);
+        //   });
+        // } else {
+        //   this.soDS.addStoringOrder(so, sot).subscribe(result => {
+        //     console.log(result)
+        //     this.handleSaveSuccess(result?.data?.addStoringOrder);
+        //   });
+        // }
       }
     } else {
       console.log('Invalid soForm', this.soForm?.value);
@@ -822,5 +829,12 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         'actions'
       ];
     }
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.customerCodeControl.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 }

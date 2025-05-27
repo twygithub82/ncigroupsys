@@ -401,6 +401,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       width: "35vw",
       data: {
         item: [...row],

@@ -4,7 +4,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule,MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, MatRippleModule } from '@angular/material/core';
@@ -43,6 +43,7 @@ import { Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { debounceTime, startWith, tap } from 'rxjs';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
@@ -103,7 +104,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-repair' }
   ]
 
-  part_nameList:any[]=[];
+  part_nameList: any[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
@@ -124,6 +125,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   lengthItems: TariffRepairLengthItem[] = [];
   dimensionItems: string[] = [];
+  partNameList: string[] = []
 
   pageIndex = 0;
   pageSize = 10;
@@ -139,6 +141,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
+  partNameControl: UntypedFormControl = new UntypedFormControl()
   translatedLangText: any = {}
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -235,7 +238,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SEARCH: 'COMMON-FORM.SEARCH',
     ADD: 'COMMON-FORM.ADD',
-    GROUP_ADJUSTMENT:  'COMMON-FORM.GROUP-ADJUSTMENT',
+    GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     PART_SELECTED: 'COMMON-FORM.PART-SELECTED',
   }
@@ -272,6 +275,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
     this.translateLangText();
     this.displayColumnChanged();
+    this.initializeValueChanges();
   }
 
   translateLangText() {
@@ -295,6 +299,18 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       max_cost: [''],
       handled_item_cv: ['']
     });
+  }
+
+  initializeValueChanges() {
+    this.partNameControl!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.trfRepairDS.searchDistinctPartName(undefined, undefined, value).subscribe(data => {
+          this.partNameList = data;
+        });
+      })
+    ).subscribe();
   }
 
   displayColumnChanged() {
@@ -1019,146 +1035,148 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     return Utility.formatNumberDisplay(input);
   }
 
+  displayPartNameFn(pn: string): string {
+    return pn || '';
+  }
 
-  
-    itemSelected(row: CustomerCompanyItem):boolean{
-      var retval:boolean=false;
-      const index = this.selectedParts.findIndex(c => c.code === row.code);
-      retval = (index >= 0);
-      return retval;
+
+
+  itemSelected(row: CustomerCompanyItem): boolean {
+    var retval: boolean = false;
+    const index = this.selectedParts.findIndex(c => c.code === row.code);
+    retval = (index >= 0);
+    return retval;
+  }
+
+  itemPartSelected(row: any): boolean {
+    var retval: boolean = false;
+    const index = this.selectedParts.findIndex(c => c.guid === row.guid);
+    retval = (index >= 0);
+    return retval;
+  }
+
+
+  // getSelectedPartsDisplay():string{
+  //   var retval:string = "";
+  //   if(this.selectedParts?.length>1){
+  //     retval = `${this.selectedParts.length} ${this.translatedLangText.PROFILES_SELECTED}`;
+  //   }
+  //   else if(this.selectedParts?.length==1){
+  //     retval =`${this.selectedParts[0].description}`
+  //   }
+  //   return retval;
+  // }
+
+
+  getSelectedPartDisplay(): string {
+    var retval: string = "";
+    if (this.selectedParts?.length > 1) {
+      retval = `${this.selectedParts.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
-  
-    itemPartSelected(row: any):boolean{
-      var retval:boolean=false;
-      const index = this.selectedParts.findIndex(c => c.guid === row.guid);
-      retval = (index >= 0);
-      return retval;
+    else if (this.selectedParts?.length == 1) {
+      retval = `${this.selectedParts[0].name}`
     }
-  
-  
-    // getSelectedPartsDisplay():string{
-    //   var retval:string = "";
-    //   if(this.selectedParts?.length>1){
-    //     retval = `${this.selectedParts.length} ${this.translatedLangText.PROFILES_SELECTED}`;
-    //   }
-    //   else if(this.selectedParts?.length==1){
-    //     retval =`${this.selectedParts[0].description}`
-    //   }
-    //   return retval;
-    // }
-    
-        
-    getSelectedPartDisplay():string{
-      var retval:string = "";
-      if(this.selectedParts?.length>1){
-        retval = `${this.selectedParts.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
-      }
-      else if(this.selectedParts?.length==1){
-        retval =`${this.selectedParts[0].name}`
-      }
-      return retval;
-    }
-  
-    // removeSelectedParts(): void {
-    //   this.selectedParts = [];
-    //  }
-    
-     removeSelectedPart(pro: any): void {
+    return retval;
+  }
+
+  // removeSelectedParts(): void {
+  //   this.selectedParts = [];
+  //  }
+
+  removeSelectedPart(pro: any): void {
     const index = this.selectedParts.findIndex(c => c.guid === pro.guid);
     if (index >= 0) {
       this.selectedParts.splice(index, 1);
 
     }
   }
-    removeAllSelectedParts(): void {
-     this.selectedParts=[];
-    }
-  
-    
-    selected(event: MatAutocompleteSelectedEvent): void {
-      const part = event.option.value;
-      const index = this.selectedParts.findIndex(c => c.code === part.code);
-      if (!(index >= 0)) {
-        this.selectedParts.push(part);
-        this.search();
-      }
-      else
-      {
-        this.selectedParts.splice(index, 1);
-        this.search();
-      }
-  
-      if (this.partInput) {
-        //this.searchCustomerCompanyList('');
-        this.partInput.nativeElement.value = '';
-  
-      }
-      // this.updateFormControl();
-      //this.customerCodeControl.setValue(null);
-      //this.pcForm?.patchValue({ customer_code: null });
-    }
-    
- 
-  onCheckboxPartClicked(row: any) {
-    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-     this.selected(fakeEvent);
-   // this.selectedParts(fakeEvent);
-   
+  removeAllSelectedParts(): void {
+    this.selectedParts = [];
   }
 
-  
-  
-    add(event: MatChipInputEvent): void {
-      const input = event.input;
-      const value = event.value;
-      // Add our fruit
-      if ((value || '').trim()) {
-        //this.fruits.push(value.trim());
-      }
-      // Reset the input value
-      if (input) {
-        input.value = '';
-      }
-      this.partControl.setValue(null);
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const part = event.option.value;
+    const index = this.selectedParts.findIndex(c => c.code === part.code);
+    if (!(index >= 0)) {
+      this.selectedParts.push(part);
+      this.search();
     }
-  
-    remove(cust: any): void {
-      const index = this.selectedParts.findIndex(c => c.code === cust.code);
-      if (index >= 0) {
-        this.selectedParts.splice(index, 1);
-  
-      }
+    else {
+      this.selectedParts.splice(index, 1);
+      this.search();
     }
-  
-  
-    removeSelectedParts(pro: any): void {
-      const index = this.selectedParts.findIndex(c => c.guid === pro.guid);
-      if (index >= 0) {
-        this.selectedParts.splice(index, 1);
-  
-      }
+
+    if (this.partInput) {
+      //this.searchCustomerCompanyList('');
+      this.partInput.nativeElement.value = '';
+
     }
-  
-  
-    selectedPart(event: MatAutocompleteSelectedEvent): void {
-      const profile = event.option.value;
-      const index = this.selectedParts.findIndex(c => c.guid === profile.guid);
-      if (!(index >= 0)) {
-        this.selectedParts.push(profile);
-  
-      }
-      else
-      {
-        this.selectedParts.splice(index, 1);
-      }
-  
-      if (this.partInput) {
-       // this.searchCustomerCompanyList('');
-        this.partInput.nativeElement.value = '';
-  
-      }
-      // this.updateFormControl();
-      //this.customerCodeControl.setValue(null);
-      //this.pcForm?.patchValue({ customer_code: null });
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+
+  onCheckboxPartClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
+    // this.selectedParts(fakeEvent);
+
+  }
+
+
+
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
     }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.partControl.setValue(null);
+  }
+
+  remove(cust: any): void {
+    const index = this.selectedParts.findIndex(c => c.code === cust.code);
+    if (index >= 0) {
+      this.selectedParts.splice(index, 1);
+
+    }
+  }
+
+
+  removeSelectedParts(pro: any): void {
+    const index = this.selectedParts.findIndex(c => c.guid === pro.guid);
+    if (index >= 0) {
+      this.selectedParts.splice(index, 1);
+
+    }
+  }
+
+
+  selectedPart(event: MatAutocompleteSelectedEvent): void {
+    const profile = event.option.value;
+    const index = this.selectedParts.findIndex(c => c.guid === profile.guid);
+    if (!(index >= 0)) {
+      this.selectedParts.push(profile);
+
+    }
+    else {
+      this.selectedParts.splice(index, 1);
+    }
+
+    if (this.partInput) {
+      // this.searchCustomerCompanyList('');
+      this.partInput.nativeElement.value = '';
+
+    }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
 }

@@ -4,7 +4,6 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
-
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
@@ -49,42 +48,42 @@
                   }
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                         <mat-chip-grid #chipGrid>
                           <!-- @for (cust of selectedCustomers; track cust) { -->
-                           @if(selectedCustomers.length > 0){
-                            <mat-chip-row color="primary" (click)="removeAllSelectedCustomers()">
-                              {{getSelectedCustomersDisplay()}}
-                              <button matChipRemove hidden>
-                                <mat-icon>cancel</mat-icon>
-                              </button>
-                            </mat-chip-row>
-                           }
-                         
-                          <!-- } -->
-                       
-                        <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
-                          [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                          (matChipInputTokenEnd)="add($event)">
-                        <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
-                          @for (cc of customer_companyList; track cc) {
-                          <mat-option [value]="cc">
-                            <mat-checkbox color="primary" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
-                              [checked]="itemSelected(cc) || false"></mat-checkbox>
-                            {{ccDS.displayCodeDashName(cc)}}
-                          </mat-option>
+                          @if(selectedCustomers.length > 0){
+                          <mat-chip-row color="primary" (click)="removeAllSelectedCustomers()">
+                            {{getSelectedCustomersDisplay()}}
+                            <button matChipRemove hidden>
+                              <mat-icon>cancel</mat-icon>
+                            </button>
+                          </mat-chip-row>
                           }
-                        </mat-autocomplete>
-                      </mat-chip-grid>
+
+                          <!-- } -->
+
+                          <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
+                            [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            (matChipInputTokenEnd)="add($event)">
+                          <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
+                            @for (cc of customer_companyList; track cc) {
+                            <mat-option [value]="cc">
+                              <mat-checkbox color="primary" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
+                                [checked]="itemSelected(cc) || false"></mat-checkbox>
+                              {{ccDS.displayCodeDashName(cc)}}
+                            </mat-option>
+                            }
+                          </mat-autocomplete>
+                        </mat-chip-grid>
                       </mat-form-field>
                     </div>
 
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.GROUP}}</mat-label>
                         <mat-select formControlName="group_name_cv">
@@ -96,7 +95,7 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.SUB_GROUP}}</mat-label>
                         <mat-select formControlName="sub_group_name_cv">
@@ -108,7 +107,7 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                         <input matInput [matAutocomplete]="partName" [formControl]="partNameControl">
@@ -121,13 +120,13 @@
                         </mat-autocomplete>
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.LABOUR_HOUR}}</mat-label>
                         <input matInput formControlName="labour_hour" type="number" min="0">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.MATERIAL_COST$}}</mat-label>
                         <input matInput formControlName="material_cost" type="number" min="0">
@@ -178,7 +177,7 @@
                         }
                       </mat-form-field>
                     </div> -->
-                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
                         <mat-select formControlName="handled_item_cv">
@@ -218,8 +217,9 @@
                     </mat-checkbox>
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                    <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                    <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                      [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
@@ -231,32 +231,34 @@
                       }}:</span>{{row.customer_company.code}}</mat-cell>
                 </ng-container> -->
                 <ng-container matColumnDef="custCompanyName">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_5-xl'"
-                    >{{translatedLangText.CUSTOMER
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-2_5-xl'">{{translatedLangText.CUSTOMER
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_5-xl'" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_5-xl'"
+                    (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>
                     <!-- {{custCompDS.displayName(row.customer_company)}} -->
-                     {{row.customer_company.name}}
+                    {{row.customer_company.name}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="PartName">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_75-xl'"
-                    >{{translatedLangText.PART_NAME
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-2_75-xl'">{{translatedLangText.PART_NAME
                     }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'" (contextmenu)="onContextMenu($event, row)">
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'"
+                    (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.PART_NAME
                       }}:</span>{{row.tariff_repair.part_name}}</mat-cell>
                 </ng-container>
-             
+
                 <ng-container matColumnDef="group">
-                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.GROUP}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.GROUP}}:</span>
                     {{this.displayGroupNameCodeValue_Description(row.tariff_repair.group_name_cv)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="subgroup">
-                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.SUB_GROUP}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.SUB_GROUP}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.SUB_GROUP}}:</span>
                     {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair.subgroup_name_cv)}}</mat-cell>
@@ -270,22 +272,23 @@
                   </mat-cell>
                 </ng-container> -->
                 <ng-container matColumnDef="labour_hour">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl'"
-                    >{{translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'" (contextmenu)="onContextMenu($event, row)">
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_25-xl'">{{translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
+                    (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.LABOUR_HOUR}}:</span>
                     {{row.labour_hour}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="material_cost">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'"
-                    >{{translatedLangText.MATERIAL_COST$}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'" (contextmenu)="onContextMenu($event, row)">
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'tbl-col-width-per-1_5-xl'">{{translatedLangText.MATERIAL_COST$}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
+                    (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.MATERIAL_COST$}}:</span>
                     {{row.material_cost?.toFixed(2)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_update">
-                  <mat-header-cell *matHeaderCellDef 
-                    >{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
@@ -303,9 +306,9 @@
                     </button>
                   </mat-cell>
                 </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"  class="custom-body-row"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"  class="custom-body-row" (click)="editCall(row)"
-                  [style.cursor]="'pointer'" matRipple>
+                <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row"
+                  (click)="editCall(row)" [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>

@@ -253,7 +253,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.countryCodes = Utility.getCountryCodes();
+    this.countryCodes = Utility.getCountryCodes("country", true);
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.translateLangText();
@@ -471,8 +471,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       const customer_company: any = { tank: { guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } }
       where.and.push({ customer_company: customer_company })
     }
-
-    if (this.pcForm!.value["country"]) {
+    
+    if (this.pcForm!.value["country"] && this.pcForm!.value["country"] != '--Select--') {
       // where.country = { eq: this.pcForm!.value["country"] };
       const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
       where.and.push({ customer_company: customer_company })
@@ -600,8 +600,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   public loadData() {
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
-      // this.unit_typeList = [{ guid: '', unit_type: '--Select--' }, ...data]
-      this.unit_typeList = [...data]
+      this.unit_typeList = [{ guid: '', unit_type: '--Select--' }, ...data]
+      // this.unit_typeList = [...data]
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);

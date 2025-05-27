@@ -624,18 +624,18 @@ export class Utility {
     }
   }
 
-static onNumericOnly(event: Event, form: any): void {
-  const input = event.target as HTMLInputElement;
-  input.value = input.value.replace(/[^0-9]/g, '');
-  form?.setValue(input.value, { emitEvent: false });
-}
+  static onNumericOnly(event: Event, form: any): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '');
+    form?.setValue(input.value, { emitEvent: false });
+  }
 
-static onUNNumericOnly(event: Event, form: any): void {
-  const input = event.target as HTMLInputElement;
-  // Allow digits (0-9), U, and N only
-  input.value = input.value.replace(/[^0-9UN]/g, '');
-  form?.setValue(input.value, { emitEvent: false });
-}
+  static onUNNumericOnly(event: Event, form: any): void {
+    const input = event.target as HTMLInputElement;
+    // Allow digits (0-9), U, and N only
+    input.value = input.value.replace(/[^0-9UN]/g, '');
+    form?.setValue(input.value, { emitEvent: false });
+  }
 
   static onAlphaOnly(event: Event, form: any): void {
     const input = event.target as HTMLInputElement;
@@ -655,9 +655,10 @@ static onUNNumericOnly(event: Event, form: any): void {
     form?.setValue(input.value, { emitEvent: false });
   }
 
-  static getCountryCodes(orderBy: 'country' | 'code' = 'country') {
+  static getCountryCodes(orderBy: 'country' | 'code' = 'country', emptyCountry: boolean = false): any[] {
     const displayNames = new Intl.DisplayNames(['en'], { type: 'region' });
-    return getCountries()
+
+    let result = getCountries()
       .map(countryISO => ({
         country: displayNames.of(countryISO),
         code: `+${getCountryCallingCode(countryISO)}`,
@@ -669,6 +670,20 @@ static onUNNumericOnly(event: Event, form: any): void {
           ? parseInt(a.code) - parseInt(b.code)
           : (a.country || '').localeCompare(b.country || '');
       });
+
+    if (emptyCountry) {
+      result = [
+        {
+          country: '--Select--',
+          code: '',
+          iso: '',
+          flagUrl: ''
+        },
+        ...result
+      ];
+    }
+
+    return result;
   }
 
   static getFlagUrl(iso: string): string {
@@ -702,7 +717,7 @@ static onUNNumericOnly(event: Event, form: any): void {
     pdf.text(content, leftPost, topPos); // Position it at the top
   }
 
-   static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number,fontSize: number=14) {
+  static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number = 14) {
     // pdf.setFontSize(14); // Title font size 
     // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
@@ -719,7 +734,7 @@ static onUNNumericOnly(event: Event, form: any): void {
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize);
   }
 
-  static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean,fontSize: number=14) {
+  static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean, fontSize: number = 14) {
     // pdf.setFontSize(14); // Title font size 
     // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
@@ -734,11 +749,11 @@ static onUNNumericOnly(event: Event, form: any): void {
     // if (underline) {
     //   pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
     // }
-    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize,underline);
+    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
-   pdf.saveGraphicsState();
+    pdf.saveGraphicsState();
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title

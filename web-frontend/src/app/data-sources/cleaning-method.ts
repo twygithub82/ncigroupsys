@@ -155,9 +155,9 @@ export class CleaningMethodItem {
   public update_by?: string;
   public delete_dt?: number;
   public cleaning_method_formula?: CleaningStepItem[];
-  public category_guid?:string;
-  public cleaning_category?:CleaningCategoryItem;
-  public tariff_cleanings?:TariffCleaningItem[];
+  public category_guid?: string;
+  public cleaning_category?: CleaningCategoryItem;
+  public tariff_cleanings?: TariffCleaningItem[];
 
   constructor(item: Partial<CleaningMethodItem> = {}) {
     this.guid = item.guid;
@@ -170,9 +170,9 @@ export class CleaningMethodItem {
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
     this.cleaning_method_formula = item.cleaning_method_formula;
-    this.category_guid=item.category_guid;
-    this.cleaning_category=item.cleaning_category;
-    this.tariff_cleanings=item.tariff_cleanings;
+    this.category_guid = item.category_guid;
+    this.cleaning_category = item.cleaning_category;
+    this.tariff_cleanings = item.tariff_cleanings;
   }
 }
 
@@ -182,30 +182,30 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
     super();
   }
 
-    loadItems(where?: any, order?: any,first?:any): Observable<CleaningMethodItem[]> {
-        this.loadingSubject.next(true);
-        return this.apollo
-            .query<any>({
-                query: GET_CLEANING_METHOD_QUERY,
-                variables: { where, order ,first},
-                fetchPolicy: 'no-cache' // Ensure fresh data
-            })
-            .pipe(
-                map((result) => result.data),
-                catchError((error: ApolloError) => {
-                    console.error('GraphQL Error:', error);
-                    return of([] as CleaningMethodItem[]); // Return an empty array on error
-                }),
-                finalize(() => this.loadingSubject.next(false)),
-                map((result) => {
-                    const rst = result.queryCleaningMethod || { nodes: [], totalCount: 0 };
-                    this.itemsSubjects.next(rst.nodes);
-                    this.pageInfo = rst.pageInfo;
-                    this.totalCount = rst.totalCount;
-                    return rst.nodes;
-                })
-            );
-    }
+  loadItems(where?: any, order?: any, first?: any): Observable<CleaningMethodItem[]> {
+    this.loadingSubject.next(true);
+    return this.apollo
+      .query<any>({
+        query: GET_CLEANING_METHOD_QUERY,
+        variables: { where, order, first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CleaningMethodItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const rst = result.queryCleaningMethod || { nodes: [], totalCount: 0 };
+          this.itemsSubjects.next(rst.nodes);
+          this.pageInfo = rst.pageInfo;
+          this.totalCount = rst.totalCount;
+          return rst.nodes;
+        })
+      );
+  }
 
   search(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<CleaningMethodItem[]> {
     this.loadingSubject.next(true);

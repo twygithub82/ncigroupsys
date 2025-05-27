@@ -1,32 +1,26 @@
 <div class="container">
-  <div class="modalHeader">
-    <h4 mat-dialog-title>{{data.langText.ARE_YOU_SURE_CANCEL | translate}}</h4>
+  <div class="modalHeader ps-0">
+    <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0">{{data.translatedLangText.CONFIRM_CANCEL}}</h4>
   </div>
-  <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
-    <mat-divider></mat-divider>
+  <div mat-dialog-content class="ps-3 pe-3 pt-0">
     <form class="register-form" [formGroup]="storingOrderForm" #formDirective="ngForm">
       <div formArrayName="storingOrder">
         @for (so of storingOrderArray().controls; track so; let index = $index) {
-        <mat-card [formGroupName]="index" [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-grey': index % 2 == 1}"
-          matRipple>
-          <mat-card-header class="pt-2 pe-2 pb-0">
-            <mat-card-title class="pt-1">
-              <span class="font-bold text-decoration-underline text-normal">{{so.get('so_no')?.value}}</span>
-            </mat-card-title>
-          </mat-card-header>
+        <div [formGroupName]="index" [ngClass]="{'p-0 m-b-10': true, 'bg-light-grey': index % 2 == 1}" matRipple>
+          <span class="font-bold text-decoration-underline text-normal">{{so.get('so_no')?.value}}</span>
           <mat-card-content>
             <!-- @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
             @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
             <span>{{sot.get('tank_no')?.value}}</span>
             }
             } -->
-            <span class="text-normal">
+            <p class="text-normal">
               {{displayTargetedSot(getStoringOrderTanksArray(so))}}
-            </span>
+            </p>
             <div class="row mt-3">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
-                  <mat-label>{{data.langText.REMARKS | translate}}</mat-label>
+                  <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
                   <input matInput formControlName="remarks">
                   <!-- @if (so?.get('remarks')?.hasError('required')) {
                   <mat-error>
@@ -39,17 +33,17 @@
           </mat-card-content>
           <!-- <mat-card-actions [ngClass]="'empty-card-actions'">
           </mat-card-actions> -->
-        </mat-card>
+        </div>
         }
       </div>
     </form>
   </div>
-  <div mat-dialog-actions class="mb-3 align-right">
+  <div mat-dialog-actions class="pt-2 mb-3 align-right">
     <button mat-flat-button color="warn" (click)="confirmCancel()">
-      {{data.langText.CONFIRM | translate}}
+      {{data.translatedLangText.CONFIRM}}
     </button>
     <button mat-flat-button (click)="onNoClick()" tabindex="-1">
-      {{data.langText.CLOSE | translate}}
+      {{data.translatedLangText.CLOSE}}
     </button>
   </div>
 </div>

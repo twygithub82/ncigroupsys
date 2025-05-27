@@ -30,10 +30,10 @@
               </div> -->
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <div class="row">
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -59,13 +59,13 @@
                     </mat-select>
                   </mat-form-field>
                 </div> -->
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_CODE}}</mat-label>
                     <input matInput formControlName="branch_code" type="text">
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
                     <input matInput formControlName="country" type="text">
@@ -77,7 +77,7 @@
                     <input matInput formControlName="contact_person" type="text">
                   </mat-form-field>
                 </div> -->
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
                     <mat-select formControlName="default_profile">
@@ -107,7 +107,7 @@
           <table mat-table [dataSource]="customer_companyList" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
-              <mat-header-cell *matHeaderCellDef 
+              <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.MAIN_CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -116,7 +116,7 @@
                   }}:</span>{{this.getMainCustomerCode(row)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef 
+              <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg'">{{this.translatedLangText.CUSTOMER_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -124,9 +124,11 @@
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{row.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_5-xl'">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-3_5-xl'">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl'" (contextmenu)="onContextMenu($event, row)">
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl'"
+                (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.name}}</mat-cell>
             </ng-container>
@@ -147,8 +149,8 @@
             </ng-container> -->
 
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'" *matHeaderCellDef
-                >{{this.translatedLangText.DEFAULT_PROFILE
+              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'"
+                *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-2-xl'" *matCellDef="let row"
                 (contextmenu)="onContextMenu($event, row)">
@@ -157,8 +159,8 @@
             </ng-container>
 
             <ng-container matColumnDef="bDate">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_5-xl'"
-                >{{this.translatedLangText.LAST_UPDATE
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-3_5-xl'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl'"
                 (contextmenu)="onContextMenu($event, row)">

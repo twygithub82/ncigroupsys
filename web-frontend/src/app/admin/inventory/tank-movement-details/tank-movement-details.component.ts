@@ -1156,6 +1156,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(AddPurposeFormDialogComponent, {
+      disableClose: true,
       width: '600px',
       data: {
         type: type,
@@ -1232,6 +1233,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(SteamTempFormDialogComponent, {
+      disableClose: true,
       width: '1000px',
       data: {
         steamItem: steam,
@@ -1309,6 +1311,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(TankNoteFormDialogComponent, {
+      disableClose: true,
       width: '600px',
       data: {
         tankNote: this.sot?.tank_note,
@@ -1397,6 +1400,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteJobNoFormDialogComponent, {
+      disableClose: true,
       width: '600px',
       data: {
         sot: this.sot,
@@ -1441,6 +1445,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteDepotCostFormDialogComponent, {
+      disableClose: true,
       width: '600px',
       data: {
         billingSot: this.sot?.billing_sot,
@@ -1508,6 +1513,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteLastCargoFormDialogComponent, {
+      disableClose: true,
       width: '600px',
       data: {
         sot: this.sot,
@@ -1552,6 +1558,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteCleanStatusFormDialogComponent, {
+      disableClose: true,
       width: '600px',
       data: {
         sot: this.sot,
@@ -1593,6 +1600,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteCleaningApprovalFormDialogComponent, {
+      disableClose: true,
       width: '80vw',
       height: '90vh',
       data: {
@@ -1647,6 +1655,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteSteamingApprovalFormDialogComponent, {
+      disableClose: true,
       width: '80vw',
       height: '90vh',
       data: {
@@ -1706,6 +1715,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteResidueApprovalFormDialogComponent, {
+      disableClose: true,
       width: '80vw',
       height: '90vh',
       data: {
@@ -1766,6 +1776,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteRepairApprovalFormDialogComponent, {
+      disableClose: true,
       width: '80vw',
       height: '90vh',
       data: {
@@ -2080,7 +2091,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       ? Math.max(...maxCompleteDt)
       : undefined;
 
-    return max;
+    return this.displayDate(max);
   }
 
   displayColumnChanged() {
@@ -2385,6 +2396,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      disableClose: true,
       width: '500px',
       data: {
         action: 'rollback',
@@ -2435,6 +2447,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      disableClose: true,
       width: '500px',
       data: {
         action: 'rollback',
@@ -2480,6 +2493,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      disableClose: true,
       width: '500px',
       data: {
         action: 'rollback',
@@ -2522,6 +2536,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      disableClose: true,
       width: '500px',
       data: {
         action: 'rollback',
@@ -2581,6 +2596,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      disableClose: true,
       width: '500px',
       data: {
         action: 'rollback',
@@ -2633,6 +2649,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
+      disableClose: true,
       width: '500px',
       data: {
         action: 'overwrite',
@@ -2640,19 +2657,26 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         translatedLangText: this.translatedLangText,
         last_qc_dt: row.repair_part?.filter(x => x.approve_part)?.[0]?.job_order?.qc_dt,
         last_remarks: row?.remarks,
+        complete_dt: row?.complete_dt,
       },
       direction: tempDirection
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
+        const outputQcDt = Utility.convertDate(result.qc_dt) as number;
+        const outputDate = result.qc_dt;
+        const estDate = Utility.convertDateMoment(row!.complete_dt!) as moment.Moment;
+
+        const isSameDate = outputDate.isSame(estDate, 'day');
+
         const distinctJobOrders = row.repair_part?.filter((item, index, self) =>
           index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
             (t.job_order?.team?.guid === item?.job_order?.team_guid ||
               t.job_order?.team?.description === item?.job_order?.team?.description))
         )
           .filter(item => item.job_order !== null && item.job_order !== undefined)
-          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: Utility.convertDate(result.qc_dt) as number }));
+          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: isSameDate ? row!.complete_dt : outputQcDt }));
 
         const repJobOrder = new RepJobOrderRequest({
           guid: row?.guid,

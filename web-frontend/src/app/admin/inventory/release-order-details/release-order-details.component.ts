@@ -430,8 +430,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const sotGuidList = this.getFormSotGuids();
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       width: '80vw',
-      maxWidth:'1200px',
+      maxWidth: '1200px',
       data: {
         sotIdList: sotGuidList, //this.releaseOrderItem.release_order_sot?.map((tank) => tank.sot_guid),
         action: 'new',
@@ -475,6 +476,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const toCancel = row.map((tank) => new ReleaseOrderSotItem({ guid: tank.get('guid')?.value, remarks: tank.get('remarks')?.value, storing_order_tank: new StoringOrderTankItem({ tank_no: tank.get('tank_no')?.value }) }));
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       data: {
         action: "cancel",
         item: [...toCancel],

@@ -678,6 +678,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       width: '90vw',
       data: {
         item: selectedItems,
@@ -712,6 +713,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      disableClose: true,
       width: '90vw',
       data: {
         item: [sot],
@@ -744,6 +746,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      disableClose: true,
       width: '40vw',
       data: {
         action: "cancel",

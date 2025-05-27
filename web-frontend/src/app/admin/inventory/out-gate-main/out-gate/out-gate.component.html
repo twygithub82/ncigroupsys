@@ -27,94 +27,97 @@
       </div>
     </div>
   </form>
-  <div class="responsive_table">
-    <table mat-table [dataSource]="sotList" matSort
-      class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-      <!-- ID Column -->
-      <ng-container matColumnDef="id">
-        <mat-header-cell *matHeaderCellDef ></mat-header-cell>
-        <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="tank_no">
-        <mat-header-cell mat-header-cell *matHeaderCellDef
-          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          {{translatedLangText.TANK_NO}}
-        </mat-header-cell>
-        <mat-cell mat-cell *matCellDef="let row"
-          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="job_no">
-        <mat-header-cell mat-header-cell *matHeaderCellDef
-          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          {{translatedLangText.JOB_NO}}
-        </mat-header-cell>
-        <mat-cell mat-cell *matCellDef="let row"
-          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>{{row.release_job_no}}
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="last_cargo">
-        <mat-header-cell *matHeaderCellDef >
-          {{translatedLangText.LAST_CARGO}}
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-          <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tariff_cleaning?.cargo}}
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="customer_code">
-        <mat-header-cell mat-header-cell *matHeaderCellDef
-          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          {{translatedLangText.CUSTOMER}}
-        </mat-header-cell>
-        <mat-cell mat-cell *matCellDef="let row"
-          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          <span
-            class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(roSotDS.getReleaseOrderSotItem(row.release_order_sot)?.release_order?.customer_company)}}
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="ro_no">
-        <mat-header-cell mat-header-cell *matHeaderCellDef
-          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          {{translatedLangText.RO_NO}}
-        </mat-header-cell>
-        <mat-cell mat-cell *matCellDef="let row"
-          [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-          <span
-            class="mobile-label">{{translatedLangText.RO_NO}}:</span>{{roSotDS.getReleaseOrderSotItem(row.release_order_sot)?.release_order?.ro_no}}
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="eir_no">
-        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-          {{translatedLangText.EIR_NO}}
-        </mat-header-cell>
-        <mat-cell mat-cell *matCellDef="let row" class="">
-          <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row?.in_gate)?.eir_no}}
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="eir_dt">
-        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-          {{translatedLangText.EIR_DATE}}
-        </mat-header-cell>
-        <mat-cell mat-cell *matCellDef="let row" class="">
-          <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{ogDS.getOutGateItem(row?.out_gate)?.eir_dt}}
-        </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="eir_status_cv">
-        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-          {{translatedLangText.EIR_STATUS}}
-        </mat-header-cell>
-        <mat-cell mat-cell *matCellDef="let row" class="">
-          <span
-            class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{ogDS.getOutGateItem(row.storing_order?.out_gate)?.eir_status_cv}}
-        </mat-cell>
-      </ng-container>
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;"
-        [routerLink]="['/admin/inventory/out-gate-main/details', row.guid]" [style.cursor]="'pointer'" matRipple>
-      </mat-row>
-    </table>
+  <div class="body">
+    <div class="responsive_table">
+      <table mat-table [dataSource]="sotList" matSort
+        class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="tank_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            {{translatedLangText.TANK_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.tank_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="job_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            {{translatedLangText.JOB_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>{{row.release_job_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="last_cargo">
+          <mat-header-cell *matHeaderCellDef>
+            {{translatedLangText.LAST_CARGO}}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+            <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tariff_cleaning?.cargo}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="customer_code">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            {{translatedLangText.CUSTOMER}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            <span
+              class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(roSotDS.getReleaseOrderSotItem(row.release_order_sot)?.release_order?.customer_company)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="ro_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            {{translatedLangText.RO_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            <span
+              class="mobile-label">{{translatedLangText.RO_NO}}:</span>{{roSotDS.getReleaseOrderSotItem(row.release_order_sot)?.release_order?.ro_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="eir_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.EIR_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row?.in_gate)?.eir_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="eir_dt">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.EIR_DATE}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            <span
+              class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{ogDS.getOutGateItem(row?.out_gate)?.eir_dt}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="eir_status_cv">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.EIR_STATUS}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            <span
+              class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{ogDS.getOutGateItem(row.storing_order?.out_gate)?.eir_status_cv}}
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"
+          [routerLink]="['/admin/inventory/out-gate-main/details', row.guid]" [style.cursor]="'pointer'" matRipple>
+        </mat-row>
+      </table>
+    </div>
   </div>
   <!-- No result -->
   @if (!(sotDS.loading$ | async) && !sotList.length) {

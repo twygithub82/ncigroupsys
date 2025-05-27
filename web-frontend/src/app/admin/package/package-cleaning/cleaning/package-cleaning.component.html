@@ -32,10 +32,10 @@
               }
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <mat-chip-grid #chipGrid>
@@ -62,7 +62,7 @@
                     </mat-chip-grid>
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.PROCEDURE_CLEAN_CATEGORY}}</mat-label>
                     <mat-select formControlName="cleaning_category" multiple (selectionChange)="search()">
@@ -74,7 +74,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-1">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_COST}}</mat-label>
                     <input matInput formControlName="customer_cost" type="number" min="0" (keydown.enter)="search()"
