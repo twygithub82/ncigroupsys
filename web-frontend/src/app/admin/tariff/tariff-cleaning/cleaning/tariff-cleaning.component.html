@@ -199,10 +199,10 @@
             </ng-container>
             <ng-container matColumnDef="cargo">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                [ngClass]="''">
                 {{translatedLangText.NAME }}</mat-header-cell>
               <mat-cell mat-cell
-                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="''"
                 *matCellDef="let row">
                 <span class="mobile-label">{{translatedLangText.NAME }}:</span>{{row.tariff_cleaning?.cargo}}
               </mat-cell>

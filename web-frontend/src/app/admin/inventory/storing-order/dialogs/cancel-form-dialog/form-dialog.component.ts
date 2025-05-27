@@ -3,19 +3,18 @@ import { Component, Inject } from '@angular/core';
 import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MAT_DIALOG_DATA, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
-import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 
 export interface DialogData {
   action?: string;
   item: StoringOrderItem[];
-  langText?: any;
+  translatedLangText?: any;
   index: number;
 }
 
@@ -50,15 +49,11 @@ export class CancelFormDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<CancelFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-    private fb: UntypedFormBuilder,
-    private translate: TranslateService
+    private fb: UntypedFormBuilder
   ) {
     // Set the defaults
     this.storingOrder = data.item;
     this.storingOrderForm = this.createStorigOrderForm();
-    this.translate.get(data.langText.ARE_YOU_SURE_CANCEL).subscribe((res: string) => {
-      this.dialogTitle = res;
-    });
     this.index = data.index;
   }
   createStorigOrderForm(): UntypedFormGroup {
