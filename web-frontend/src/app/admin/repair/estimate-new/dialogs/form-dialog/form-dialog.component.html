@@ -146,7 +146,7 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.QTY}}</mat-label>
-            <input matInput formControlName="quantity" type="number" min="0" required>
+            <input matInput formControlName="quantity" type="number" min="0" [allowDecimal]="false" required>
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">

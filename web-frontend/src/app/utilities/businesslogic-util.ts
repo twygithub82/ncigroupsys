@@ -53,4 +53,8 @@ export class BusinessLogicUtil {
         if (test_type === '2.5') return '5';
         return '';
     }
+
+    static getSaveDescription(guid: string | undefined) {
+        return guid ? `COMMON-FORM.SAVE` : 'COMMON-FORM.UPDATE';
+    }
 }

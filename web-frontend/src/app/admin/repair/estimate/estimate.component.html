@@ -318,12 +318,12 @@
                                 <span>{{translatedLangText.COPY}}</span>
                               </button>
                               }
-                              @if (repairDS.canRollback(repairRow)) {
+                              <!-- @if (repairDS.canRollback(repairRow)) {
                               <button mat-menu-item (click)="rollbackRow(repairRow)">
                                 <mat-icon>undo</mat-icon>
                                 <span>{{translatedLangText.ROLLBACK}}</span>
                               </button>
-                              }
+                              } -->
                               @if (repairDS.canCancel(repairRow)) {
                               <button mat-menu-item (click)="cancelRow(repairRow, row)">
                                 <mat-icon>cancel</mat-icon>

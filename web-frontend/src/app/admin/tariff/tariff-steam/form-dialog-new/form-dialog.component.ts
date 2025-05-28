@@ -378,25 +378,16 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         newSteam.temp_min = Number(this.pcForm.value['min_temp']);
         newSteam.labour = Number(this.pcForm.value['labour']);
         this.trfSteamDS.addNewTariffSteam(newSteam).subscribe(result => {
-
           this.handleSaveSuccess(result?.data?.addTariffSteaming);
         });
       }
       else {
         this.pcForm?.setErrors({ overlaps: true });
       }
-
-
     });
-
-
-
-
-
   }
 
   update() {
-
     if (!this.pcForm?.valid) return;
 
     let where: any = { or: [] };
@@ -433,19 +424,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         else {
           this.pcForm?.setErrors({ overlaps: true });
         }
-
       }
       else {
         this.pcForm?.setErrors({ overlaps: true });
       }
-
-
     });
-
-
-
-
-
   }
 
   displayLastUpdated(r: TariffDepotItem) {
