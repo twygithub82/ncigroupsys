@@ -2292,7 +2292,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (purpose === 'steaming') {
           return this.isNoPurpose(this.sot, 'steaming') && this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'repair');
         } else if (purpose === 'cleaning') {
-          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming');
+          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming') && !this.anyActiveRepair();
         } else if (purpose === 'repair') {
           return this.isNoPurpose(this.sot, 'repair') && this.isNoPurpose(this.sot, 'steaming');
         } else if (purpose === 'storage') {
@@ -2535,7 +2535,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackCleaning(row?: InGateCleaningItem) {
-    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'NO_ACTION';
+    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.anyActiveRepair())) && row?.status_cv === 'NO_ACTION';
   }
 
   onRollbackCleaning(event: Event, row?: InGateCleaningItem) {
@@ -2947,5 +2947,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
     });
+  }
+
+  anyActiveRepair() {
+    if (this.repairItem?.length) {
+      const found = this.repairItem?.filter(x => x.status_cv !== 'CANCELED' && x.status_cv !== 'NO_ACTION');
+      if (found.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 }
