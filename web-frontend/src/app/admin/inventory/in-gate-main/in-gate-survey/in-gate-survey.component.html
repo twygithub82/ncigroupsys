@@ -15,7 +15,7 @@
           <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
             @for (cc of customer_companyList; track cc) {
             <mat-option [value]="cc">
-              {{ccDS.displayName(cc)}}
+              {{ccDS.displayCodeDashName(cc)}}
             </mat-option>
             }
           </mat-autocomplete>
@@ -54,22 +54,22 @@
         </ng-container>
         <ng-container matColumnDef="customer">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             <span
-              class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.tank?.storing_order?.customer_company)}}
+              class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.tank?.storing_order?.customer_company.name}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="eir_no">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             {{translatedLangText.EIR_NO}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.eir_no}}
           </mat-cell>
         </ng-container>
@@ -85,11 +85,11 @@
         </ng-container>
         <ng-container matColumnDef="eir_status_cv">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             {{translatedLangText.STATUS}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             <span
               class="mobile-label">{{translatedLangText.EIR_STATUS}}:</span>{{getEirStatusDescription(row.eir_status_cv)}}
           </mat-cell>

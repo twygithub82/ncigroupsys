@@ -145,7 +145,7 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="header">
                   <h2>
-                    {{translatedLangText.SURVEY_INFO}}
+                    {{translatedLangText.SURVEY_DETAILS}}
                   </h2>
                 </div>
                 <div class="body">
@@ -157,7 +157,7 @@
                   }
                   @if (!(igDS.loading$ | async)) {
                   <mat-card-content>
-                    <div class="row">
+                    <!-- <div class="row">
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 p-l-25">
@@ -166,7 +166,7 @@
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
                   </mat-card-content>
                   }
                 </div>
@@ -408,24 +408,6 @@
                         @if (!(igDS.loading$ | async)) {
                         <mat-card-content>
                           <div class="row">
-                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                              <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-5 col-xs-5 m-b-5 p-l-15">
-                                  <span class="contact-detail-label">{{translatedLangText.LAST_TEST}}:</span>
-                                  <span class="contact-detail-info font-bold">{{last_test_desc}}</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                              <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-5 col-xs-5 m-b-5">
-                                  <span>{{translatedLangText.NEXT_TEST}}:</span>
-                                  <span class="contact-detail-info font-bold">{{next_test_desc}}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="row">
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.TEST_TYPE}}</mat-label>
@@ -446,10 +428,13 @@
                                 <mat-label>{{translatedLangText.DATE}}</mat-label>
                                 <input matInput formControlName="test_dt" [matDatepicker]="test_dt_picker" required>
                                 <mat-datepicker-toggle matSuffix [for]="test_dt_picker"></mat-datepicker-toggle>
+                                <mat-datepicker #test_dt_picker></mat-datepicker>
+                                <!-- <mat-datepicker-toggle matSuffix [for]="test_dt_picker"></mat-datepicker-toggle>
                                 <mat-datepicker #test_dt_picker startView="multi-year"
                                   (yearSelected)="chosenYearHandler($event)"
                                   (monthSelected)="chosenMonthHandler($event, test_dt_picker)"
-                                  panelClass="example-month-picker"></mat-datepicker>
+                                  panelClass="example-month-picker"></mat-datepicker> -->
+                                  
                                 <!-- @if (surveyForm?.get('periodic_test.test_dt')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.DATE}} {{translatedLangText.SO_REQUIRED}}
@@ -472,7 +457,26 @@
                                 } -->
                               </mat-form-field>
                             </div>
+                            <div class="row">
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                                <div class="row">
+                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-5 col-xs-5 m-b-5 p-l-15">
+                                    <span class="contact-detail-label">{{translatedLangText.LAST_TEST}}:</span>
+                                    <span class="contact-detail-info font-bold">{{last_test_desc}}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                                <div class="row">
+                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-5 col-xs-5 m-b-5 p-l-20">
+                                    <span class="contact-detail-label">{{translatedLangText.NEXT_TEST}}:</span>
+                                    <span class="contact-detail-info font-bold">{{next_test_desc}}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
+
                         </mat-card-content>
                         }
                       </div>
@@ -555,15 +559,17 @@
                               <div class="row">
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 align-left">
                                   <span class="me-2">{{translatedLangText.LAST_UPDATE_BY}}:</span>
-                                  <span class="contact-detail-info font-bold">{{in_gate?.update_by || in_gate?.create_by}}</span>
+                                  <span class="contact-detail-info font-bold">{{in_gate?.update_by ||
+                                    in_gate?.create_by}}</span>
                                 </div>
                               </div>
                             </div>
-                            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 align-left">
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right">
                                   <span class="me-2">{{translatedLangText.LAST_UPDATE_ON}}:</span>
-                                  <span class="contact-detail-info font-bold">{{displayDateTime(in_gate?.update_dt) || displayDateTime(in_gate?.create_dt)}}</span>
+                                  <span class="contact-detail-info font-bold">{{displayDateTime(in_gate?.update_dt) ||
+                                    displayDateTime(in_gate?.create_dt)}}</span>
                                 </div>
                               </div>
                             </div>

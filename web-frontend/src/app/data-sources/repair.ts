@@ -1523,6 +1523,12 @@ const UPDATE_REPAIR_STATUS = gql`
   }
 `
 
+const ROLLBACK_COMPLETED_REPAIR = gql`
+  mutation rollbackCompletedRepair($repJobOrder: [RepJobOrderRequestInput!]!) {
+    rollbackCompletedRepair(repJobOrder: $repJobOrder)
+  }
+`
+
 const ROLLBACK_QC_REPAIR = gql`
   mutation rollbackQCRepair($repJobOrder: [RepJobOrderRequestInput!]!) {
     rollbackQCRepair(repJobOrder: $repJobOrder)
@@ -1880,6 +1886,20 @@ export class RepairDS extends BaseDataSource<RepairItem> {
       mutation: UPDATE_REPAIR_STATUS,
       variables: {
         repair
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  rollbackCompletedRepair(repJobOrder: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: ROLLBACK_COMPLETED_REPAIR,
+      variables: {
+        repJobOrder
       }
     }).pipe(
       finalize(() => {

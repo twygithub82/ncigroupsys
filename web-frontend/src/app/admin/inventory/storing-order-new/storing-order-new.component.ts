@@ -651,17 +651,17 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         });
         console.log('so Value', so);
         console.log('sot Value', sot);
-        // if (so.guid) {
-        //   this.soDS.updateStoringOrder(so, sot).subscribe(result => {
-        //     console.log(result)
-        //     this.handleSaveSuccess(result?.data?.updateStoringOrder);
-        //   });
-        // } else {
-        //   this.soDS.addStoringOrder(so, sot).subscribe(result => {
-        //     console.log(result)
-        //     this.handleSaveSuccess(result?.data?.addStoringOrder);
-        //   });
-        // }
+        if (so.guid) {
+          this.soDS.updateStoringOrder(so, sot).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.updateStoringOrder);
+          });
+        } else {
+          this.soDS.addStoringOrder(so, sot).subscribe(result => {
+            console.log(result)
+            this.handleSaveSuccess(result?.data?.addStoringOrder);
+          });
+        }
       }
     } else {
       console.log('Invalid soForm', this.soForm?.value);

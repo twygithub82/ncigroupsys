@@ -348,6 +348,9 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
     }
+    else{
+      where.tank_status_cv = { ncontains: 'RELEASED' };
+    }
 
     if (this.searchForm!.get('purpose')?.value) {
       const purposes = this.searchForm!.get('purpose')?.value;
@@ -535,6 +538,10 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvListDisplay);
   }
 
+  getMaxDate(){
+    return new Date();
+  }
+  
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }

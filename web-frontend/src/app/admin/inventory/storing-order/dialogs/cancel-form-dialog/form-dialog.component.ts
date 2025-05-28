@@ -58,6 +58,7 @@ export class CancelFormDialogComponent {
   }
   createStorigOrderForm(): UntypedFormGroup {
     return this.fb.group({
+      remarks: ['', Validators.required],
       storingOrder: this.fb.array(this.storingOrder.map(so => this.createOrderGroup(so)))
     });
   }
@@ -67,7 +68,7 @@ export class CancelFormDialogComponent {
       so_no: [so.so_no],
       customer_company_guid: [so.customer_company_guid],
       storing_order_tank: this.fb.array(so.storing_order_tank.map((tank: any) => this.createTankGroup(tank))),
-      remarks: [so.remarks, Validators.required]
+      // remarks: [so.remarks, Validators.required]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
@@ -81,12 +82,18 @@ export class CancelFormDialogComponent {
   }
   confirmCancel(): void {
     if (this.storingOrderForm.valid) {
-      let so = this.storingOrderForm.value['storingOrder']
+      let so = this.storingOrderForm.value['storingOrder'].map((s: any) => {
+        return {
+          ...s,
+          remarks: this.storingOrderForm.value['remarks']
+        };
+      });
       const returnDialog: DialogData = {
         action: 'confirmed',
         item: so,
         index: this.index
       }
+      console.log('returnDialog', returnDialog);
       this.dialogRef.close(returnDialog);
     }
   }
