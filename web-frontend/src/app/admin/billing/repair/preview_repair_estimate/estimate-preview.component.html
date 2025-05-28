@@ -203,11 +203,11 @@
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.SUBGROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
                           {{getSubgroupNameCodeDescription(row.tariff_repair?.subgroup_name_cv)}}
                         </mat-cell>
@@ -286,7 +286,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
-                          <div class="cost-label">
+                          <div class="cost-label justify-content-center">
                             <span>{{parse2Decimal(row.material_cost)}}</span>
                           </div>
                         </mat-cell>
@@ -299,7 +299,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
-                          <div class="cost-label">
+                          <div class="cost-label justify-content-center">
                             <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
                           </div>
                         </mat-cell>

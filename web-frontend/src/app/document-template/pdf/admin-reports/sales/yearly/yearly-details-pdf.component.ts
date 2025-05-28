@@ -54,6 +54,7 @@ import { E } from '@angular/cdk/keycodes';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { report_status_yard} from 'app/data-sources/reports';
+import {PDFUtility} from 'app/utilities/pdf-utility';
 
 interface SeriesItem {
   name: string;
@@ -1499,7 +1500,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
 
-    let chartContentWidth = pageWidth - leftMargin - rightMargin;
+    let chartContentWidth = pageWidth - leftMargin - rightMargin-10;
     startY=lastTableFinalY+10;
     for (var i = 0; i < cardElements.length; i++) {
       if (i > 0) {
@@ -1509,7 +1510,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       }
       const card1 = cardElements[i];
       const canvas1 = await html2canvas(card1, { scale: scale });
-      const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+      const imgData1 = await PDFUtility.captureFullCardImage(card1);
+     // const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
       // Calculate aspect ratio
       const aspectRatio = canvas1.width / canvas1.height;

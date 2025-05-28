@@ -282,7 +282,7 @@
             <ng-container matColumnDef="cost">
               <mat-header-cell *matHeaderCellDef>{{translatedLangText.CARGO_COST}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{translatedLangText.CARGO_COST}}:</span>
+                <span class="mobile-label justify-content-center">{{translatedLangText.CARGO_COST}}:</span>
                 {{row.tariff_cleaning?.cleaning_category_with_tariff?.cost}}
               </mat-cell>
             </ng-container>
