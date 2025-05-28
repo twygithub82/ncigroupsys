@@ -683,8 +683,9 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     // const finalJobOrder = Array.from(jobOrderMap.values());
     console.log(finalJobOrder);
     const without4xPartsNotAssign = this.repList.filter(part =>
-      !part.job_order?.guid && !part.job_order?.team?.guid && !this.repairPartDS.is4X(part.rp_damage_repair) && this.repairPartDS.isApproved(part)
+      (!part.job_order?.team?.guid) && !this.repairPartDS.is4X(part.rp_damage_repair) && this.repairPartDS.isApproved(part)
     );
+    
     this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
       console.log(result)
       if ((result?.data?.assignJobOrder ?? 0) > 0 && missingJobOrders?.length) {
@@ -693,7 +694,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
           console.log(`deleteJobOrder: ${JSON.stringify(jobOrderGuidToDelete)}, result: ${JSON.stringify(result)}`);
         });
       }
-
+      
       let action = "PARTIAL_ASSIGN";
       if (!without4xPartsNotAssign?.length) {
         action = "ASSIGN";
