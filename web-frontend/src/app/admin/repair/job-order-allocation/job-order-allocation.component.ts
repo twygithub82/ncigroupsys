@@ -46,6 +46,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-job-order-allocation',
@@ -201,6 +202,8 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     ASSIGN: 'COMMON-FORM.ASSIGN',
     ABORT: 'COMMON-FORM.ABORT',
     ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
+    UNASSIGN: 'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -932,5 +935,40 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
 
   isAssignEnabled() {
     return this.repSelection.hasValue() && this.repairForm?.get('team_allocation')?.value;
+  }
+
+  canUnassignTeam(row: RepairItem | undefined) {
+    return row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED';
+  }
+
+  onUnassignTeam(event: Event, repairGuid: string) {
+    this.stopEventTrigger(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.unassignTeam(repairGuid);
+      }
+    });
+  }
+
+  unassignTeam(repairGuid: string) {
+    this.repairDS.rollbackAssignedRepair([repairGuid]).subscribe(result => {
+      console.log(result)
+      this.handleSaveSuccess(result?.data?.rollbackAssignedRepair);
+    });
   }
 }
