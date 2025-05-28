@@ -1053,18 +1053,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayDateTime(input: number | undefined): string | undefined {
-    //return Utility.convertEpochToDateTimeStr(input);
-
-    const date = new Date(input! * 1000); // assuming `input` is in seconds (epoch)
-  
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
-    const yyyy = date.getFullYear();
-
-    const hh = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-
-    return `${dd}/${mm}/${yyyy} - ${hh}:${min}`;
+    return Utility.convertEpochToDateTimeStr(input);
   }
 
   displayDate(input: any): string | undefined {
@@ -2949,9 +2938,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  anyActiveRepair() {
+  anyActiveRepair(includePending: boolean = false): boolean {
     if (this.repairItem?.length) {
-      const found = this.repairItem?.filter(x => x.status_cv !== 'CANCELED' && x.status_cv !== 'NO_ACTION');
+      const found = this.repairItem?.filter(x => x.status_cv !== 'CANCELED' && x.status_cv !== 'NO_ACTION' && (!includePending || x.status_cv !== 'PENDING'));
+      // Check if any repair item has a status that is not 'CANCELED', 'NO_ACTION', or 'PENDING' (if includePending is true)
       if (found.length > 0) {
         return true;
       } else {
