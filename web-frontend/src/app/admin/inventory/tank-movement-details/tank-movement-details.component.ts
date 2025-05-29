@@ -1255,7 +1255,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   repairDialog(event: Event, repair: RepairItem) {
     this.preventDefault(event);
-    if (!this.modulePackageService.isGrowthPackage() || !this.modulePackageService.isCustomizedPackage()) return;
+    if (repair.status_cv === 'PENDING' || repair.status_cv === 'CANCELED') return;
+    // this.router.navigate(['/admin/repair/estimate/edit', this.sot?.guid, repair.guid], {
+    //   state: { from: this.router.url } // store current route
+    // });
+
+    if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1266,8 +1271,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
       // width: '794px',
       // height: '80vh',
-      width: '75vw',
-      height: '80vh',
+      position: { top: '-9999px', left: '-9999px' },
       data: {
         type: this.sot?.purpose_repair_cv,
         repair_guid: repair?.guid,
@@ -2917,7 +2921,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  onDownload() {
+  onDownloadEir() {
     let tempDirection: Direction;
 
     if (localStorage.getItem('isRtl') === 'true') {

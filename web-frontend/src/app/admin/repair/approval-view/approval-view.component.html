@@ -888,13 +888,13 @@
               </div>
               }
               <div class="row m-t-10">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
                     (click)="$event.preventDefault();" [routerLink]="['/admin/repair/approval']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 align-right">
                   @if (repairDS.canRollbackStatus(repairItem, repList)) {
                   <button mat-flat-button color="accent" [disabled]="(repairDS.actionLoading$ | async)"
                     (click)="onRollback($event)">
@@ -934,18 +934,19 @@
                     {{translatedLangText.NO_ACTION}}
                   </button>
                   }
-                  <!-- @if (canSave()) {
-                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)" class="m-l-5">
+                  @if (repairDS.canAbort(repairItem, repList)) {
+                  <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-r-5"
+                    (click)="onAbort($event)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {
-                      save
+                      close
                       } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                    {{translatedLangText.ABORT}}
                   </button>
-                  } -->
+                  }
                 </div>
               </div>
             </div>

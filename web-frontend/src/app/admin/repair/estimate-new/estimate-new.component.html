@@ -199,18 +199,17 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="seq">
-                        <mat-header-cell *matHeaderCellDef >No.</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
                         <mat-cell *matCellDef="let row;">{{row.index + 1}}</mat-cell>
                       </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
-                        <mat-header-cell *matHeaderCellDef >Id</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.SUBGROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -221,8 +220,7 @@
                       </ng-container>
                       <ng-container matColumnDef="damange">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.DAMAGE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -238,8 +236,7 @@
                       </ng-container>
                       <ng-container matColumnDef="repair">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -253,8 +250,7 @@
                       </ng-container>
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -265,8 +261,7 @@
                       </ng-container>
                       <ng-container matColumnDef="quantity">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.QTY}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -277,8 +272,7 @@
                       </ng-container>
                       <ng-container matColumnDef="hour">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.HOUR}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -289,8 +283,7 @@
                       </ng-container>
                       <ng-container matColumnDef="price">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.PRICE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -303,8 +296,7 @@
                       </ng-container>
                       <ng-container matColumnDef="material">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.MATERIAL}} $
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -316,7 +308,7 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="isOwner">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''" >
+                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
                           @if (isOwner) {
                           {{translatedLangText.OWNER}}
                           }
@@ -811,7 +803,7 @@
               <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
-                    (click)="$event.preventDefault();" [routerLink]="['/admin/repair/estimate']">
+                    (click)="$event.preventDefault(); goBack();">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
@@ -820,11 +812,11 @@
                   modulePackageService.isCustomizedPackage()) {
                   @if (canExport()) {
                   <button mat-flat-button color="accent"
-                    [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async) || (isExportingPDF)" class="m-r-5"
-                    (click)="onExport($event)">
+                    [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async) || (isExportingPDF)"
+                    class="m-r-5" (click)="onExport($event)">
                     @if (!(repairDS.loading$ | async) && !(isFileActionLoading$ | async) && !(isExportingPDF)) {
                     <i class="fas fa-file-export"></i>
-                    } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)||(isExportingPDF))  {
+                    } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)||(isExportingPDF)) {
                     <mat-icon>
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                     </mat-icon>
