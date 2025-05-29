@@ -344,7 +344,7 @@
                 <mat-icon>
                   save
                 </mat-icon>
-                {{translatedLangText.UPDATE}}
+               {{ this.tc_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
                 <!-- @if(submitForSaving)
                 {
                   <mat-icon>save</mat-icon>

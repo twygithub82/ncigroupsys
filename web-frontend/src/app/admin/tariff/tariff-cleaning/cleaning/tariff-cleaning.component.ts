@@ -615,8 +615,6 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
         }
       }
     });
-
-
   }
 
   addCallSelection(event: Event) {

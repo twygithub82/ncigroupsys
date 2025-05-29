@@ -700,6 +700,10 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     // });
   }
 
+    getMaxDate(){
+    return new Date();
+  }
+
   resetForm() {
     this.filterRepairForm?.patchValue({
       filterRepair: '',

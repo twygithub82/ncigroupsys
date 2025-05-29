@@ -802,6 +802,7 @@
     "COMPLETE-JOB": "Complete Job",
     "START-TIME": "Start Time",
     "STOP-TIME": "Stop Time",
+    "END-TIME": "End Time",
     "TIME-TAKEN": "Time Taken",
     "START-JOB": "Start Job",
     "STOP-JOB": "Stop Job",

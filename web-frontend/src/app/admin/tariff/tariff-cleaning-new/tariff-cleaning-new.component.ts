@@ -316,8 +316,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   ngOnInit() {
     //this.initializeFilter();
-
-
     this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
 
       if (value && !value.startsWith(this.prefix) && value != '-') {

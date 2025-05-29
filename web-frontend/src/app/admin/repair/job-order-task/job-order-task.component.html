@@ -36,7 +36,7 @@
               <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                 @for (cc of customer_companyList; track cc) {
                 <mat-option [value]="cc">
-                  {{ccDS.displayName(cc)}}
+                  {{ccDS.displayCodeDashName(cc)}}
                 </mat-option>
                 }
               </mat-autocomplete>
@@ -45,7 +45,7 @@
           <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.APPROVE_DATE}}</mat-label>
-              <mat-date-range-input [rangePicker]="allocate_picker">
+              <mat-date-range-input [rangePicker]="allocate_picker" [max]="getMaxDate()">
                 <input matStartDate placeholder="Start date" formControlName="allocate_dt_start">
                 <input matEndDate placeholder="End date" formControlName="allocate_dt_end">
               </mat-date-range-input>
@@ -110,7 +110,7 @@
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
             <span
-              class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
+              class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="estimate_no">
@@ -205,7 +205,7 @@
         <span>Not Started</span>
       </div>
       <div class="legend-item d-flex align-items-center me-4 mb-0">
-        <mat-icon class="text-success me-2">timer</mat-icon>
+        <mat-icon class="time-2" color="primary">timer</mat-icon>
         <span>Started</span>
       </div>
       <div class="legend-item d-flex align-items-center me-4 mb-0">
