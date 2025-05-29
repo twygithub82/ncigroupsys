@@ -1132,7 +1132,6 @@ $breakpoints: (
 /* Class for striped rows */
 .striped-rows .mdc-data-table__row:nth-child(odd) {
   background-color: lighten(#b3cbff, 10%);
-  ;
 }
 
 .striped-rows .mdc-data-table__row:nth-child(even) {
@@ -2088,31 +2087,50 @@ $grid-breakpoints: (
 //   }
 // }
 
-// .mat-expansion-panel-header {
-//   background-color: $theme-gold-purple-legal-bg;
+// .mat-expansion-panel-header.tank-header {
+//   background-color: lighten(#b3cbff, 10%);
 
 //   &:hover,
 //   &:focus {
-//     background-color: $theme-gold-purple-navbar-brand_hover !important;
+//     background-color: lighten(#b3cbff, 5%) !important;
 //   }
 
 //   &.mat-expanded {
-//     background-color: $theme-gold-purple;
-
 //     .header h2 {
-//       color: white;
+//       // color: white;
 //     }
 
 //     &:hover,
 //     &:focus {
-//       background-color: $theme-gold-purple-navbar-brand_hover !important;
+//       background-color: lighten(#b3cbff, 10%) !important;
 //     }
 //   }
 // }
 
-// .mat-expansion-panel-content {
-//   background-color: #fff;
-// }
+.mat-expansion-panel.alternate-panel {
+
+  // Default blue background for .tank-header
+  .tank-header {
+    background-color: lighten(#b3cbff, 10%);
+
+    &:hover,
+    &:focus {
+      background-color: lighten(#b3cbff, 5%) !important;
+    }
+  }
+
+  // Override when the panel is expanded
+  &.mat-expanded {
+    .tank-header {
+      background-color: initial !important;
+
+      &:hover,
+      &:focus {
+        background-color: initial !important;
+      }
+    }
+  }
+}
 
 // .mat-accordion {
 //   .mat-expansion-panel {
