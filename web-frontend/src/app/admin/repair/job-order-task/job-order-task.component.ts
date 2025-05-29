@@ -724,6 +724,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     ]);
   }
 
+  getMaxDate(){
+    return new Date();
+  }
+
   onTabFocused() {
     this.resetForm();
     this.onFilterJobOrder();

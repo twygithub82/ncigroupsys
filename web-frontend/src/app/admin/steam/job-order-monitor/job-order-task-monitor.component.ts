@@ -617,37 +617,12 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   updateData(newData: SteamTemp[] | undefined): void {
     if (newData?.length) {
-
-
       this.deList = newData.map((row, index) => ({
         ...row,
         index: index,
         edited: false
       }));
-
-      // this.deList.forEach(item => {
-      //   this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "STEAM")
-      // })
     }
-  }
-
-  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
-    //this.stopEventTrigger(event);
-    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
-    newSot.unit_type_guid = row.unit_type_guid;
-    newSot.last_cargo_guid = row.last_cargo_guid;
-    newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
-    newSot.clean_status_cv = row.clean_status_cv;
-    newSot.certificate_cv = row.certificate_cv;
-    newSot.so_guid = row.so_guid;
-    newSot.eta_dt = row.eta_dt;
-    newSot.etr_dt = row.etr_dt;
-    //this.addEstDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
@@ -1112,7 +1087,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       guid = stmTmp.guid;
       var steamTmp: SteamTemp = this.GetRecordSteamingTempValue(guid!);
       this.callRecordSteamingTemp(steamTmp, 'EDIT', event);
-
     }
     else {
       var steamTmp: SteamTemp = this.GetRecordSteamingTempValue(guid!);
@@ -1182,10 +1156,9 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         if (!checkAction.includes(action!)) {
           this.QuerySteamTemp();
           this.resetSelectedItemForUpdating();
-        }
-        else {
+        } else {
           if (this.RequiredShowConfirmation(ReqTemp, steamTemp)) {
-            let tempStatus: number = this.CheckAndGetTempStatus();
+            let tempStatus: number = this.CheckAndGetTempStatus(steamTemp);
             this.completeSteamJob(event!, false, tempStatus);
           }
           else {
@@ -1338,21 +1311,20 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  CheckAndGetTempStatus(): number {
-    var ReqTemp: number = this.reqTemp!;
-    let allGreater = this.deList.some(a => a.meter_temp > ReqTemp);
-    let allLess = this.deList.every(a => a.meter_temp < ReqTemp);
-    let anyEqual = this.deList.some(a => a.meter_temp === ReqTemp);
+  CheckAndGetTempStatus(steamTemp?: SteamTemp): number {
+    const reqTemp = this.reqTemp!;
+    const deTemps = this.deList.map(a => a.meter_temp);
+    const steamTempVal = steamTemp?.meter_temp ?? null;
 
-    if (allGreater) {
-      return 2;
-    } else if (allLess) {
-      return 1;
-    } else if (anyEqual) {
-      return 0;
-    } else {
-      return 0; // Mixed cases (some greater, some less, none equal)
-    }
+    const allTemps = steamTempVal !== null ? [...deTemps, steamTempVal] : deTemps;
 
+    const anyGreater = allTemps.some(temp => temp > reqTemp);
+    const allLess = allTemps.every(temp => temp < reqTemp);
+    const anyEqual = allTemps.some(temp => temp === reqTemp);
+
+    if (anyGreater) return 2;
+    if (allLess) return 1;
+    if (anyEqual) return 0;
+    return 0; // Mixed cases
   }
 }

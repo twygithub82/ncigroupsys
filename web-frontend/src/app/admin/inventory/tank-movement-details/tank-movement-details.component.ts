@@ -1053,7 +1053,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayDateTime(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateTimeStr(input);
+    var dateTime = Utility.convertEpochToDateTimeStr(input);
+    if (dateTime && dateTime !== '-') {
+        const parts = dateTime.split(' ');
+        if (parts.length >= 2) {
+            dateTime = `${parts[0]} - ${parts[1]}`;
+        }
+    }
+    return dateTime;
   }
 
   displayDate(input: any): string | undefined {

@@ -2,7 +2,7 @@
   <div class="modalHeader_align_left">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-        <h4>{{dialogTitle}}</h4>
+        <h4 class="mt-2">{{dialogTitle}}</h4>
       </div>
     </div>
   </div>
@@ -10,7 +10,7 @@
     @if (timeTableList.length) {
     <div class="responsive_table">
       <table mat-table [dataSource]="timeTableList" matSort
-        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
         <ng-container matColumnDef="id">
           <mat-header-cell *matHeaderCellDef ></mat-header-cell>
           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -28,11 +28,11 @@
         <ng-container matColumnDef="stop_time">
           <mat-header-cell mat-header-cell *matHeaderCellDef
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            {{data.translatedLangText.STOP_TIME}}
+            {{data.translatedLangText.END_TIME}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            <span class="mobile-tab-label">{{data.translatedLangText.STOP_TIME}}:</span>{{displayDateTime(row.stop_time)}}
+            <span class="mobile-tab-label">{{data.translatedLangText.END_TIME}}:</span>{{displayDateTime(row.stop_time)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="duration">
