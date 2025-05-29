@@ -504,6 +504,12 @@ const GET_IN_GATE_CLEANING_BY_ID_FOR_ESTIMATE_PDF = gql`
         startCursor
       }
       nodes {
+        customer_company {
+          address_line1
+          address_line2
+          email
+          name
+        }
         allocate_by
         allocate_dt
         approve_by

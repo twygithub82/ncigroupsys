@@ -588,6 +588,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         pdf.setLineWidth(0.1);
         pdf.setLineDashPattern([0.001, 0.001], 0);
         
+        
+        //pdf.setLineWidth(0.1);
         // pdf.setFontSize(8);
         // pdf.setTextColor(0, 0, 0); // Black text
 
@@ -665,8 +667,9 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
           },
         });
   
-        startY = lastTableFinalY + 3;
-        
+        startY = lastTableFinalY + 4;
+        PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,8);
+        startY+=4;
         this.createSteamEstimateDetail(pdf,startY,leftMargin,rightMargin,pageWidth);
         // PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,9);
         // startY+=3;
@@ -772,10 +775,10 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
           1: { cellWidth: 70,halign: 'left', valign: 'middle'},
           2: { cellWidth: 15,halign: 'center', valign: 'middle'},
           3: { cellWidth: 15,halign: 'center', valign: 'middle'},
-          4: { cellWidth: 25,halign: 'right', valign: 'middle'},
-          5: { cellWidth: 25,halign: 'right', valign: 'middle'},
-          6: { cellWidth: 25,halign: 'right', valign: 'middle'},
-          7: { cellWidth: 12,halign: 'center', valign: 'middle'},
+          4: { cellWidth: 24,halign: 'right', valign: 'middle'},
+          5: { cellWidth: 24,halign: 'right', valign: 'middle'},
+          6: { cellWidth: 24,halign: 'right', valign: 'middle'},
+          7: { cellWidth: 10,halign: 'center', valign: 'middle'},
         },
         didDrawPage: (data: any) => {
           startY = data.cursor.y;
@@ -832,10 +835,10 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
           1: { cellWidth: 70,halign: 'left', valign: 'middle'},
           2: { cellWidth: 15,halign: 'center', valign: 'middle'},
           3: { cellWidth: 15,halign: 'center', valign: 'middle'},
-          4: { cellWidth: 25,halign: 'right', valign: 'middle'},
-          5: { cellWidth: 25,halign: 'right', valign: 'middle'},
-          6: { cellWidth: 25,halign: 'right', valign: 'middle'},
-          7: { cellWidth: 12,halign: 'center', valign: 'middle'},
+          4: { cellWidth: 24,halign: 'right', valign: 'middle'},
+          5: { cellWidth: 24,halign: 'right', valign: 'middle'},
+          6: { cellWidth: 24,halign: 'right', valign: 'middle'},
+          7: { cellWidth: 10,halign: 'center', valign: 'middle'},
         },
          didDrawCell: function (data) {
             const doc = data.doc;
@@ -864,74 +867,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       }
   
   
-      // createSummaryTable(pdf:jsPDF,leftMargin:number,rightMargin:number,pageWidth:number, pageHeight:number)
-      // {
-      //   var fontSz=7;
-      //   var vAlign='middle';
-      //   var startY = pageHeight-44;
-      //   const data:RowInput[] = [
-      //         [
-      //           { content: `${this.translatedLangText.APPROVED_COST}`, colSpan: 1, rowSpan:3, styles: { halign: 'left', fontStyle: 'bold' } },
-      //           { content: `${this.translatedLangText.ITEM}`, styles: { halign: 'center', fontStyle: 'bold' } },
-      //           { content: `${this.translatedLangText.RATE}`, styles: { halign: 'center', fontStyle: 'bold' } },
-      //           { content:`${this.translatedLangText.ESTIMATE_COST}`, colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } },
-      //           { content: `${this.translatedLangText.APPROVED_COST}`, colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } }
-      //         ],
-      //         [
-      //           { content: `${this.translatedLangText.LABOUR}`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-      //           { content: `$ ${this.repairItem?.labour_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}, 
-      //           { content: `${this.repairCost?.total_hour_table}`,styles: { halign: 'right', fontStyle: 'bold'}},
-      //           { content:  `$ ${this.repairCost?.total_labour_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-      //         ],
-      //         [
-      //           { content:`${this.translatedLangText.MATERIAL}`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-      //           '', '', 
-      //           { content:`$ ${this.repairCost?.total_mat_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-      //         ],
-      //         [
-      //           { content: `${this.translatedLangText.FOR} ${this.repairItem?.storing_order_tank?.storing_order?.customer_company?.name}`, colSpan: 1, rowSpan:3, styles: { halign: 'left', fontStyle: 'bold' } },
-      //           { content:`${this.translatedLangText.LABOUR_DISCOUNT}`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-      //           { content:`${this.repairCost?.labour_cost_discount} %`,styles: { halign: 'right', fontStyle: 'bold'}},
-      //            '', 
-      //           { content:`- $ ${this.repairCost?.discount_labour_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-      //         ],
-      //         [
-      //            { content:`${this.translatedLangText.MATERIAL_DISCOUNT} %`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-      //            { content:`${this.repairCost?.material_cost_discount} %`,styles: { halign: 'right', fontStyle: 'bold'}},
-      //           '', 
-      //            { content:`- $ ${this.repairCost?.discount_mat_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-      //         ],
-      //         [
-      //            { content:`${this.translatedLangText.NET_COST} $`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-      //           '', '', 
-      //            { content:`$ ${this.repairCost?.net_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-      //         ]
-      //       ];
-  
-      //       autoTable(pdf, {
-      //           body:data,
-      //           startY: startY,
-      //           theme: 'grid',
-      //           margin: { left: leftMargin },
-      //           styles: {
-      //             font: 'helvetica',
-      //             fontSize: fontSz,
-      //             lineWidth:0.1,
-      //             valign: 'middle',
-      //             cellPadding:1
-      //           },
-      //           columnStyles: {
-      //             0: { cellWidth: 34 },
-      //             1: { cellWidth: 30 },
-      //             2: { cellWidth: 16 },
-      //             3: { cellWidth: 28 },
-      //             4: { cellWidth: 28 },
-      //             5: { cellWidth: 28 },
-      //             6: { cellWidth: 28 },
-      //           }
-      //         });
-       
-      // }
+      
   
   
       getReportTitle()

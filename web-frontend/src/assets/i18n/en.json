@@ -1288,7 +1288,9 @@
     "ROLLBACK-COMPLETED": "Rollback Completed",
     "MASTER": "Master",
     "SALES": "Sales",
-    "STEAM-ESTIMATE": "Steam Estimate"
+    "STEAM-ESTIMATE": "Steam Estimate",
+    "ISSUE-DATE": "Issue Date",
+    "VALID-THROUGH": "Valid Through"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

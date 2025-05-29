@@ -753,8 +753,10 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
           },
         });
   
-        startY = lastTableFinalY + 3;
         
+        startY = lastTableFinalY + 4;
+        PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,8);
+        startY+=4;
         this.createResidueEstimateDetail(pdf,startY,leftMargin,rightMargin,pageWidth);
         // PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,9);
         // startY+=3;

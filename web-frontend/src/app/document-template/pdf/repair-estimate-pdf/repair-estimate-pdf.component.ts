@@ -1100,9 +1100,9 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         },
       });
 
-      startY = lastTableFinalY + 5;
-      PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,9);
-      startY+=3;
+      startY = lastTableFinalY + 4;
+      PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,8);
+      startY+=4;
       this.createOffhireEstimate(pdf,startY,leftMargin,rightMargin,pageWidth);
        startY+=52;
       this.createRepairEstimateDetail(pdf,startY,leftMargin,rightMargin,pageWidth);

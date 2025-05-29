@@ -4,6 +4,7 @@ import { customerInfo } from 'environments/environment';
 import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
 import { Utility } from "./utility";
 import html2canvas from "html2canvas";
+import { CustomerCompanyItem } from "app/data-sources/customer-company";
 
 export class PDFUtility {
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
@@ -59,7 +60,7 @@ export class PDFUtility {
      pdf.setLineWidth(0.1);
       // Set dashed line pattern
       pdf.setLineDashPattern([0.001, 0.001], 0);
-      pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+      pdf.line(titleX, topPosition + 1, titleX + titleWidth + 1, topPosition + 1); // Draw the line under the title
     }
   }
 
@@ -331,7 +332,7 @@ export class PDFUtility {
     const posY1_img = topMargin + 0;
     // const imgHeight = heightHeader - 0;
     // const imgWidth = 70;
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height,'',"FAST"); // (imageElement, format, x, y, width, height)
   }
 
 
@@ -638,4 +639,118 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
   return canvas.toDataURL('image/jpeg', 0.8);
 }
 
+ static async addHeaderWithCompanyLogo_Portriat_r1(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService, // Inject TranslateService
+    customerCompany:CustomerCompanyItem
+  ): Promise<void> {
+
+    const translatedLangText: any = {};
+    const langText = {
+      CUSTOMER: 'COMMON-FORM.CUSTOMER',
+      ISSUE_DATE: 'COMMON-FORM.ISSUE-DATE',
+      VALID_THROUGH: 'COMMON-FORM.VALID-THROUGH',
+    };
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+
+    
+    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
+
+    const posX1_img = leftMargin + 5;
+    const posY1_img = topMargin + 5;
+    
+    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+
+
+    pdf.setLineWidth(0.1);
+    // Set dashed line pattern
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+    var yPos=topMargin+30;
+    // Draw top line
+   pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
+
+   let posX=leftMargin+5;
+  let posY = topMargin;
+
+  posY+=50;
+  pdf.setFontSize(10);
+  pdf.text(`${translatedLangText.CUSTOMER}:`, posX, posY);
+  posY+=5;
+  pdf.text(customerCompany.name||'', posX, posY);
+  posY+=5;
+  pdf.text(customerCompany.address_line1||'', posX, posY);
+  posY+=5;
+  pdf.text(customerCompany.address_line2||'', posX, posY);
+
+  
+  var buffer =55;
+  var IssDate = `${translatedLangText.ISSUE_DATE}: ${Utility.convertDateToStr(new Date())}`;
+  this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
+  var validDate=new Date();
+  validDate = this.addMonths(validDate, 1.5);
+  buffer+=5;
+  var validDateStr = `${translatedLangText.VALID_THROUGH}: ${Utility.convertDateToStr(new Date())}`;
+  this.AddTextAtRightCornerPage(pdf, validDateStr, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
+    // // Define header height
+    // const heightHeader: number = 28;
+
+    // // Draw bottom line
+    // pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
+
+    // // Add company name
+    // pdf.setFontSize(12);
+    // const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
+    // let posX = leftMargin + 36.5; //pageWidth / 1.75;
+    // let posY = topMargin + 8;
+    // pdf.text(customerInfo.companyName, posX, posY);
+
+    // // Add company address
+    // pdf.setFontSize(10);
+    // posX -= 20.5;
+    // posY += 5;
+    // pdf.text(customerInfo.companyAddress, posX, posY);
+
+    // // Add phone, fax
+    // let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
+    // posX += 8.5;
+    // posY += 5;
+    // pdf.text(nextLine, posX, posY);
+    // nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
+    // pdf.text(nextLine, posX + 39, posY);
+
+    // // Add website, company UEN
+    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    // posX += 0;
+    // posY += 5;
+    // pdf.text(nextLine, posX, posY);
+    // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    // pdf.text(nextLine, posX + 39, posY);
+
+    
+  }
+
+ static addMonths(date: Date, months: number): Date {
+    const result = new Date(date);
+    const wholeMonths = Math.floor(months);
+    const partialMonthDays = (months - wholeMonths) * 30; // Approximate a month as 30 days
+
+    result.setMonth(result.getMonth() + wholeMonths);
+    result.setDate(result.getDate() + partialMonthDays);
+
+    return result;
+  }
 }

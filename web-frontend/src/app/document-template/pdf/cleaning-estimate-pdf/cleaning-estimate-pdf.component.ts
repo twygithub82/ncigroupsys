@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -25,6 +25,8 @@ import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { SteamDS } from 'app/data-sources/steam';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
+import autoTable, { RowInput, Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -172,6 +174,9 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
   customer_company_guid?: string | null;
   estimate_no?: string | null;
 
+  totalCost?: number;
+  approvedCost?: number;
+
   customerInfo: any = customerInfo;
   disclaimerNote: string = "";
   pdfTitle: string = "";
@@ -237,10 +242,11 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
 
       this.cdr.detectChanges();
 
-      this.existingPdf = pdfData ?? this.existingPdf;
-      if (!this.existingPdf?.length) {
-        this.generatePDF();
-      }
+      this.exportToPDF_r2();
+      // this.existingPdf = pdfData ?? this.existingPdf;
+      // if (!this.existingPdf?.length) {
+      //   this.generatePDF();
+      // }
     }
     // else {
     //   const eirBlob = await Utility.urlToBlob(this.existingPdf?.[0]?.url);
@@ -604,4 +610,393 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     const a = headerElement.innerHTML
     return '';
   }
+
+   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
+    
+       async exportToPDF_r1(fileName: string = 'document.pdf') {
+          const pageWidth = 210; // A4 width in mm (portrait)
+          const pageHeight = 297; // A4 height in mm (portrait)
+          const leftMargin = 10;
+          const rightMargin = 10;
+          const topMargin = 5;
+          const bottomMargin = 5;
+          const contentWidth = pageWidth - leftMargin - rightMargin;
+          const maxContentHeight = pageHeight - topMargin - bottomMargin;
+      
+          this.generatingPdfLoadingSubject.next(true);
+          this.generatingPdfProgress = 0;
+      
+          const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+          //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+          let pageNumber = 1;
+      
+          let reportTitleCompanyLogo = 32;
+          let tableHeaderHeight = 12;
+          let tableRowHeight = 8.5;
+          let minHeightHeaderCol = 3;
+          let minHeightBodyCell = 7;
+          let fontSz = 8.5;
+      
+          const pagePositions: { page: number; x: number; y: number }[] = [];
+          // const progressValue = 100 / cardElements.length;
+      
+          const reportTitle ='';
+      
+          // const headers = [[
+          //   this.translatedLangText.NO,
+          //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
+          //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
+          //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
+          //   this.translatedLangText.PROCEDURE
+          // ]];
+      
+          const comStyles: any = {
+            // Set columns 0 to 16 to be center aligned
+            0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
+            1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+            2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+            3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+          };
+      
+          // Define headStyles with valid fontStyle
+          const headStyles: Partial<Styles> = {
+            fillColor: [211, 211, 211], // Background color
+            textColor: 0, // Text color (white)
+            fontStyle: "bold", // Valid fontStyle value
+            halign: 'center', // Centering header text
+            valign: 'middle',
+            lineColor: 201,
+            lineWidth: 0.1
+          };
+      
+          let currentY = topMargin;
+          let scale = this.scale;
+          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+      
+  
+         // await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+         // await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
+      
+          // Variable to store the final Y position of the last table
+          let lastTableFinalY = 0;
+      
+          let startY = 37; // Start table 20mm below the customer name
+      
+          await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+  
+          pdf.setLineWidth(0.1);
+          pdf.setLineDashPattern([0.001, 0.001], 0);
+          
+          // pdf.setFontSize(8);
+          // pdf.setTextColor(0, 0, 0); // Black text
+  
+         // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
+          //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+          //PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
+          //PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
+         // const data: any[][] = [];
+          var item = this.cleaningItem;
+          var data: any[][] = [
+            [
+              { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+              { content: `${item?.storing_order_tank?.tank_no}` },
+              { content: `${this.translatedLangText.EIR_NO}` ,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+              { content: `${item?.storing_order_tank?.in_gate?.[0]?.eir_no}` }
+            ],
+            [
+              { content: `${this.translatedLangText.CUSTOMER}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${item?.storing_order_tank?.storing_order?.customer_company?.name}` },
+              { content: `${this.translatedLangText.EIR_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${this.displayDate(item?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
+            ],
+            [
+              { content: `${this.translatedLangText.JOB_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${item?.job_no}` },
+              { content: `${this.translatedLangText.QUOTATION_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${this.displayDate(item?.create_dt)}` }
+            ],
+            [
+              { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
+              { content: `` },
+              { content: `` }
+            ]
+          ];
+      
+          autoTable(pdf, {
+            body: data,
+            startY: startY, // Start table at the current startY value
+            theme: 'grid',
+            margin: { left: leftMargin },
+            styles: {
+              cellPadding: { left:1 , right: 1, top: 1, bottom: 1 },
+              fontSize: fontSz,
+              minCellHeight: minHeightHeaderCol,
+              lineWidth: 0.15, // cell border thickness
+              lineColor: [0, 0, 0], // black
+            },
+            tableWidth: contentWidth,
+            columnStyles: {
+              0: { cellWidth: 35 },
+              1: { cellWidth: 61 },
+              2: { cellWidth: 35 },
+              3: { cellWidth: 61 }
+            },
+            // headStyles: headStyles, // Custom header styles
+            bodyStyles: {
+              fillColor: [255, 255, 255],
+              halign: 'left', // Left-align content for body by default
+              valign: 'middle', // Vertically align content
+      
+            },
+            didDrawPage: (data: any) => {
+              const pageCount = pdf.getNumberOfPages();
+      
+              lastTableFinalY = data.cursor.y;
+      
+              var pg = pagePositions.find(p => p.page == pageCount);
+              if (!pg) {
+                pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+                if (pageCount > 1) {
+                  Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                }
+              }
+            },
+          });
+    
+          
+          startY = lastTableFinalY + 4;
+          PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,8);
+          startY+=4;
+          this.createCleaningEstimateDetail(pdf,startY,leftMargin,rightMargin,pageWidth);
+         
+          var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
+           this.downloadFile(pdf.output('blob'), pdfFileName)
+          // this.generatedPDF = pdf.output('blob');
+          // this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
+          // this.generatingPdfLoadingSubject.next(false);
+           //this.dialogRef.close();
+        }
+    
+     
+    
+    
+    
+    
+        createCleaningEstimateDetail(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
+        {
+          const fontSz=8;
+          const vAlign="bottom";
+          const headers: RowInput[] = [
+          [
+            { 
+              content: this.translatedLangText.NO_DOT, 
+               
+              styles: { fontSize: fontSz,halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2 }
+            },
+            { 
+              content: this.translatedLangText.DESCRIPTION,
+              
+              styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:220, lineWidth: 0.1,cellPadding: 2  }
+            },
+             { 
+              content: this.translatedLangText.CLEANING_COST,
+              
+              styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+            },
+            //  { 
+            //   content: this.translatedLangText.PRICE,
+              
+            //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:220, lineWidth: 0.1,cellPadding: 2  }
+            // },
+            //  { 
+            //   content: this.translatedLangText.ESTIMATE_COST,
+              
+            //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+            // },
+            //  { 
+            //   content: this.translatedLangText.APPROVED_COST,
+              
+            //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+            // }
+          
+          ]
+        ];
+    
+         var repData:RowInput[]=[];
+         var items = [this.cleaningItem];
+         const grpFontSz=7;
+         this.totalCost=0;
+         var index=0;
+          items?.forEach((item, index) => {
+            repData.push([
+              ++index,item?.storing_order_tank?.tariff_cleaning?.cargo,`${this.parse2Decimal(item?.cleaning_cost)}`]);
+
+              this.totalCost+=item?.cleaning_cost;
+          });
+    
+    
+         
+          autoTable(pdf, {
+          head:headers,
+          body:repData,
+          startY: startY, // Start table at the current startY value
+          styles: {
+            cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
+            fontSize: 7.5,
+            lineWidth: 0.1 // remove all borders initially
+          },
+          theme: 'grid',
+          margin: { left: leftMargin },
+          headStyles: {
+            fillColor: 220,
+            textColor: 0,
+            fontStyle: 'bold',
+            lineWidth: 0.1 // keep outer border for header
+          },
+          columnStyles: {
+            0: { cellWidth: 10,halign: 'center', valign: 'middle' },
+            1: { cellWidth: 152,halign: 'left', valign: 'middle'},
+            2: { cellWidth: 30,halign: 'center', valign: 'middle'},
+          },
+          didDrawPage: (data: any) => {
+            startY = data.cursor.y;
+          }
+          });
+          
+           var totalSGD=`${this.translatedLangText.TOTAL_SGD}:`;
+          var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
+          startY+=2;
+           var estData:RowInput[]=[];
+           estData.push([
+             '',
+              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+             
+           ])
+  
+  
+          autoTable(pdf, {
+          body:estData,
+          startY: startY, // Start table at the current startY value
+          styles: {
+            cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
+            fontSize: 7.5,
+            lineWidth: 0 // remove all borders initially
+          },
+          theme: 'grid',
+          margin: { left: leftMargin },
+          headStyles: {
+            fillColor: 220,
+            textColor: 0,
+            fontStyle: 'bold',
+            lineWidth: 0.1 // keep outer border for header
+          },
+          columnStyles: {
+            0: { cellWidth: 10,halign: 'center', valign: 'middle' },
+            1: { cellWidth: 152,halign: 'left', valign: 'middle'},
+            2: { cellWidth: 30,halign: 'center', valign: 'middle'},
+          
+          },
+           didDrawCell: function (data) {
+              const doc = data.doc;
+              if(data.column.index === 4){
+              doc.line(
+              data.cell.x,
+              data.cell.y + data.cell.height,
+              data.cell.x + data.cell.width,
+              data.cell.y + data.cell.height
+            );
+            }
+           },
+          didDrawPage: (data: any) => {
+          
+            startY = data.cursor.y;
+          
+          }
+          });
+  
+          // var AppCostLabel=`${this.translatedLangText.APPROVED_COST}:`;
+          // var AppCostValue=`${this.parse2Decimal(this.approvedCost)}`;
+          // startY+=7;
+          // PDFUtility.addText(pdf, AppCostLabel, startY , leftMargin, fontSz,true);
+          // PDFUtility.addText(pdf, AppCostValue, startY , leftMargin+28, fontSz);
+    
+        }
+
+        async exportToPDF_r2(fileName: string = 'document.pdf') {
+          const pageWidth = 210; // A4 width in mm (portrait)
+          const pageHeight = 297; // A4 height in mm (portrait)
+          const leftMargin = 10;
+          const rightMargin = 10;
+          const topMargin = 5;
+          const bottomMargin = 5;
+          const contentWidth = pageWidth - leftMargin - rightMargin;
+          const maxContentHeight = pageHeight - topMargin - bottomMargin;
+      
+          this.generatingPdfLoadingSubject.next(true);
+          this.generatingPdfProgress = 0;
+      
+          const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+          //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+          let pageNumber = 1;
+      
+          let reportTitleCompanyLogo = 32;
+          let tableHeaderHeight = 12;
+          let tableRowHeight = 8.5;
+          let minHeightHeaderCol = 3;
+          let minHeightBodyCell = 7;
+          let fontSz = 8.5;
+      
+          const pagePositions: { page: number; x: number; y: number }[] = [];
+          // const progressValue = 100 / cardElements.length;
+      
+          const reportTitle ='';
+      
+          // const headers = [[
+          //   this.translatedLangText.NO,
+          //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
+          //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
+          //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
+          //   this.translatedLangText.PROCEDURE
+          // ]];
+      
+          const comStyles: any = {
+            // Set columns 0 to 16 to be center aligned
+            0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
+            1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+            2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+            3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+          };
+      
+          // Define headStyles with valid fontStyle
+          const headStyles: Partial<Styles> = {
+            fillColor: [211, 211, 211], // Background color
+            textColor: 0, // Text color (white)
+            fontStyle: "bold", // Valid fontStyle value
+            halign: 'center', // Centering header text
+            valign: 'middle',
+            lineColor: 201,
+            lineWidth: 0.1
+          };
+      
+          let currentY = topMargin;
+          let scale = this.scale;
+          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+      
+  
+         // await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+         // await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
+      
+          // Variable to store the final Y position of the last table
+          let lastTableFinalY = 0;
+      
+          let startY = 37; // Start table 20mm below the customer name
+          var item = this.cleaningItem;
+          await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
+
+           var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
+           this.downloadFile(pdf.output('blob'), pdfFileName)
+
+        }
 }
