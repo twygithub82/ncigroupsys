@@ -1,9 +1,9 @@
 <div class="container">
-  <div class="modalHeader">
-    <h3 mat-dialog-title>{{data.action === 'cancel' ? data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h3>
+  <div class="modalHeader ps-0">
+    <h3 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0">{{data.action === 'cancel' ?
+      data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h3>
   </div>
-  <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
-    <mat-divider></mat-divider>
+  <div mat-dialog-content class="ps-3 pe-3 pt-0">
     <form class="register-form" [formGroup]="storingOrderTankForm" #formDirective="ngForm">
       <div formArrayName="storingOrderTank">
         @for (sot of getStoringOrderTanksArray().controls; track sot; let index = $index) {
@@ -35,7 +35,7 @@
       </div>
     </form>
   </div>
-  <div mat-dialog-actions class="mb-3">
+  <div mat-dialog-actions class="pt-2 mb-3 align-right">
     <button mat-flat-button color="warn" (click)="confirm()">
       {{data.translatedLangText.CONFIRM | translate}}
     </button>

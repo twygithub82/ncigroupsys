@@ -241,7 +241,7 @@ export class Utility {
     const formattedHours = String(hours).padStart(2, '0');
     const formattedMinutes = String(minutes).padStart(2, '0');
 
-    return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes}`;
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year} ${formattedHours}:${formattedMinutes}`;
   }
 
   static getToday(): string {

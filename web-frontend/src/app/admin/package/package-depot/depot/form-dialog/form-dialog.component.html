@@ -174,7 +174,7 @@
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.FREE_STORAGE}}</mat-label>
-                    <input matInput formControlName="free_storage_days" type="number" min="0">
+                    <input matInput formControlName="free_storage_days" type="number" min="0" [allowDecimal]="false">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>

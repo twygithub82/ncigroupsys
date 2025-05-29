@@ -337,17 +337,14 @@
                 <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK }}
               </button>
             </div>
-
-
+            
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-
               @if (!(submitForSaving | async)) {
               <button mat-flat-button color="primary" type="submit">
                 <mat-icon>
                   save
                 </mat-icon>
                 {{translatedLangText.UPDATE}}
-
                 <!-- @if(submitForSaving)
                 {
                   <mat-icon>save</mat-icon>

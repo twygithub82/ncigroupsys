@@ -388,7 +388,7 @@
                           <mat-form-field>
                             <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
                               (change)="calculateCost();" [disabled]="isDisabled(row)" (wheel)="preventDefault($event)"
-                              (focus)="selectText($event)" type="number" min="0">
+                              (focus)="selectText($event)" type="number" min="0" [allowDecimal]="false">
                           </mat-form-field>
                         </tlx-form-field>
                       </mat-cell>

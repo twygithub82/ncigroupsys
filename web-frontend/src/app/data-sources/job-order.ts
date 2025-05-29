@@ -766,8 +766,8 @@ const COMPLETE_JOB_ITEM = gql`
 `
 
 const COMPLETE_JOB_ORDER = gql`
-  mutation completeJobOrder($jobOrderRequest: [UpdateJobOrderRequestInput!]! , $steaming:steamingInput) {
-    completeJobOrder(jobOrderRequest: $jobOrderRequest , steaming: $steaming)
+  mutation completeJobOrder($jobOrderRequest: [UpdateJobOrderRequestInput!]!, $steaming: steamingInput) {
+    completeJobOrder(jobOrderRequest: $jobOrderRequest, steaming: $steaming)
   }
 `
 
@@ -1031,7 +1031,7 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
     );
   }
 
-  completeJobOrder(jobOrderRequest: UpdateJobOrderRequest[],steaming?:any): Observable<any> {
+  completeJobOrder(jobOrderRequest: UpdateJobOrderRequest[], steaming?: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: COMPLETE_JOB_ORDER,
@@ -1190,7 +1190,7 @@ export class JobOrderDS extends BaseDataSource<JobOrderItem> {
   }
 
   canJobAllocate(jobOrderItem: JobOrderItem | undefined): boolean {
-    return !jobOrderItem?.status_cv || jobOrderItem?.status_cv === 'JOB_IN_PROGRESS' || jobOrderItem?.status_cv === 'PENDING';
+    return !jobOrderItem?.status_cv || jobOrderItem?.status_cv === 'PENDING';
   }
 
   getEstimateJobOrder(rpList: RepairPartItem[] | undefined) {

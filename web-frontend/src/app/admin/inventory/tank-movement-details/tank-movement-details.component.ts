@@ -1053,18 +1053,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayDateTime(input: number | undefined): string | undefined {
-    //return Utility.convertEpochToDateTimeStr(input);
-
-    const date = new Date(input! * 1000); // assuming `input` is in seconds (epoch)
-  
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
-    const yyyy = date.getFullYear();
-
-    const hh = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-
-    return `${dd}/${mm}/${yyyy} - ${hh}:${min}`;
+    return Utility.convertEpochToDateTimeStr(input);
   }
 
   displayDate(input: any): string | undefined {
@@ -2292,7 +2281,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (purpose === 'steaming') {
           return this.isNoPurpose(this.sot, 'steaming') && this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'repair');
         } else if (purpose === 'cleaning') {
-          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming');
+          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming') && !this.anyActiveRepair();
         } else if (purpose === 'repair') {
           return this.isNoPurpose(this.sot, 'repair') && this.isNoPurpose(this.sot, 'steaming');
         } else if (purpose === 'storage') {
@@ -2535,7 +2524,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackCleaning(row?: InGateCleaningItem) {
-    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'NO_ACTION';
+    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.anyActiveRepair())) && row?.status_cv === 'NO_ACTION';
   }
 
   onRollbackCleaning(event: Event, row?: InGateCleaningItem) {
@@ -2947,5 +2936,19 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
     });
+  }
+
+  anyActiveRepair(includePending: boolean = false): boolean {
+    if (this.repairItem?.length) {
+      const found = this.repairItem?.filter(x => x.status_cv !== 'CANCELED' && x.status_cv !== 'NO_ACTION' && (!includePending || x.status_cv !== 'PENDING'));
+      // Check if any repair item has a status that is not 'CANCELED', 'NO_ACTION', or 'PENDING' (if includePending is true)
+      if (found.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 }

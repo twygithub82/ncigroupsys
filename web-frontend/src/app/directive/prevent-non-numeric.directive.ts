@@ -6,7 +6,7 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 })
 export class PreventNonNumericDirective {
   @Input() restrictNonNumeric = true;
-  @Input() allowDecimal = false;
+  @Input() allowDecimal = true;
   @Input() decimalLimit: number | null = 2;
   @Input() disableScroll = true;
 

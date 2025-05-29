@@ -20,7 +20,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
@@ -29,12 +28,8 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: TariffBufferItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 interface Condition {
   guid: { eq: string };

@@ -53,7 +53,8 @@ import { Observable, Subscription } from 'rxjs';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import {SteamGO} from 'app/data-sources/steam';
+import { SteamGO } from 'app/data-sources/steam';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 @Component({
   selector: 'job-order-task-monitor',
   standalone: true,
@@ -1082,8 +1083,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '1000px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         action: 'cancel',
         index: row.index,
@@ -1198,10 +1198,10 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  RequiredShowConfirmation(reqTemp: number,steamTemp: SteamTemp):boolean {
-    var bRetval :boolean =false;
+  RequiredShowConfirmation(reqTemp: number, steamTemp: SteamTemp): boolean {
+    var bRetval: boolean = false;
 
-    bRetval = (reqTemp <= steamTemp.meter_temp!||reqTemp<=steamTemp.top_temp!||reqTemp<=steamTemp.bottom_temp!);
+    bRetval = (reqTemp <= steamTemp.meter_temp! || reqTemp <= steamTemp.top_temp! || reqTemp <= steamTemp.bottom_temp!);
     return bRetval;
   }
   QuerySteamTemp() {
@@ -1273,14 +1273,14 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
           updJobOrderReq.complete_dt = Math.floor(Date.now() / 1000);
           var updJobOrderReqs: UpdateJobOrderRequest[] = [];
           updJobOrderReqs.push(updJobOrderReq);
-          var steaming:any=undefined;
-          if(!this.steamItem?.storing_order_tank?.tank?.flat_rate){
-           const minItem = this.deList.reduce((minItem, item) =>
+          var steaming: any = undefined;
+          if (!this.steamItem?.storing_order_tank?.tank?.flat_rate) {
+            const minItem = this.deList.reduce((minItem, item) =>
               item.create_dt < minItem.create_dt ? item : minItem
             );
             steaming = new SteamGO(this.steamItem);
-            steaming.action="EDIT";
-            var startTime = minItem?.create_dt||0;
+            steaming.action = "EDIT";
+            var startTime = minItem?.create_dt || 0;
             var endTime = Math.floor(Date.now() / 1000);
             // Calculate time difference in seconds
             const timeDiffSeconds = endTime - startTime;
@@ -1292,7 +1292,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
             const roundedHours = Math.round(decimalHours * 4) / 4;
             steaming.total_hour = roundedHours;
           }
-          this.joDS.completeJobOrder(updJobOrderReqs,steaming).subscribe(result => {
+          this.joDS.completeJobOrder(updJobOrderReqs, steaming).subscribe(result => {
             console.log(result);
             if (result.data.completeJobOrder > 0) {
               let stmStatus: SteamStatusRequest = new SteamStatusRequest();

@@ -332,18 +332,18 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
       guid: so.guid,
-      customer_code: so.customer_company,
       customer_company_guid: so.customer_company_guid,
       so_no: so.so_no,
       so_notes: so.so_notes,
       haulier: so.haulier
     });
+    this.customerCodeControl.setValue(so.customer_company);
     if (so.storing_order_tank) {
       this.populateSOT(so.storing_order_tank);
     }
 
     if (!this.soDS.canAdd(this.storingOrderItem)) {
-      this.soForm?.get('customer_code')?.disable();
+      this.customerCodeControl?.disable();
       this.soForm?.get('so_notes')?.disable();
       this.soForm?.get('haulier')?.disable();
     }
@@ -836,5 +836,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  anyEdited(): boolean {
+    const found = this.sotList.data.filter(x => (x.actions?.length || 0) > 0);
+    return found.length > 0;
   }
 }

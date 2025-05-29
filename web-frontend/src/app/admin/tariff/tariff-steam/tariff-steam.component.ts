@@ -47,7 +47,6 @@ import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-st
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 @Component({
   selector: 'app-tariff-residue',
@@ -357,33 +356,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
-  }
-
-  adjustCost() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '600px',
-      data: {
-        action: 'new',
-        langText: this.langText,
-        selectedItems: this.selection.selected
-      }
-
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        if (result.selectedValue > 0) {
-          this.handleSaveSuccess(result.selectedValue);
-          this.search();
-        }
-      }
-    });
   }
 
   editCall(row: TariffResidueItem) {
