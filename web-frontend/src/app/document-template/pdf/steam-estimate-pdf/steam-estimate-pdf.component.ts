@@ -166,7 +166,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     TOTAL_SGD: 'COMMON-FORM.TOTAL-SGD',
     RESIDUE_ESTIMATE:'COMMON-FORM.RESIDUE-ESTIMATE',
     HOUR:'COMMON-FORM.HOUR',
-    LABOUR_COST:'COMMON-FORM.LABOUR-COST'
+    LABOUR_COST:'COMMON-FORM.LABOUR-COST',
+    STEAM_ESTIMATE:'COMMON-FORM.STEAM-ESTIMATE'
   }
 
   type?: string | null;
@@ -935,7 +936,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   
       getReportTitle()
       {
-        return this.translatedLangText.RESIDUE_CARGO_DISPOSAL;
+        return this.translatedLangText.STEAM_ESTIMATE;
       }
 
      

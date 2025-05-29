@@ -101,7 +101,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     'unit_price',
     'hour',
     'cost',
-    'approve_part'
+    'approve_part',
+    'actions'
   ];
 
   pageTitleNew = 'MENUITEMS.STEAM.LIST.ESTIMATE-NEW'
@@ -1557,10 +1558,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
-          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)); //+ ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0)));
+          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0))+ ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
         }
         else {
-          return acc + ((row.quantity || 0) * (row.cost || 0)); //+ ((row.labour || 0) * (this.packageLabourItem?.cost || 0)));
+          return acc + ((row.quantity || 0) * (row.cost || 0))+  ((row.labour || 0) * (this.packageLabourItem?.cost || 0));
         }
       }
       return acc; // If row is approved, keep the current accumulator value

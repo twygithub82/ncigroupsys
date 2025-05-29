@@ -1287,7 +1287,8 @@
     "PART-SELECTED": "Part Selected",
     "ROLLBACK-COMPLETED": "Rollback Completed",
     "MASTER": "Master",
-    "SALES": "Sales"
+    "SALES": "Sales",
+    "STEAM-ESTIMATE": "Steam Estimate"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
