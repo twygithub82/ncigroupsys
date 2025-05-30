@@ -354,7 +354,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       const team_guidList = this.filterJobOrderForm!.get('teamList')?.value?.map((x: any) => x.guid) ?? []
       where.team_guid = { in: team_guidList }
     } else {
-      where.team_guid = { nin: [null, ''] }
+      // where.team_guid = { nin: [null, ''] }
     }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);

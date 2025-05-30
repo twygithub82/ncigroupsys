@@ -2,6 +2,7 @@ import { environment } from "environments/environment"
 
 export const api_endpoints = {
   staff_auth: '/api/StaffAuthentication/StaffLogin',
+  staff_user_claims: '/api/StaffAuthentication/GetUserClaims',
   staff_assign_roles: '/api/StaffAuthentication/AssignStaffRolesAndTeams',
   staff_create: '/api/StaffAuthentication/CreateStaffCredential',
   staff_remove: '/api/StaffAuthentication/RemoveStaff',

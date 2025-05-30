@@ -42,56 +42,6 @@ export class AuthService {
     return !!this.currentUserSubject.value?.isStaff;
   }
 
-  // login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
-  //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-  //   const endpoint = isStaff ? api_full_endpoints.staff_auth : api_full_endpoints.user_auth;
-  //   const url = `${endpoint}`
-  //   const body = { username, password };
-  //   if (rememberMe) {
-  //     localStorage.setItem(this.rememberMyKey, 'true');
-  //     localStorage.setItem(this.usernameKey, body.username);
-  //   } else {
-  //     localStorage.removeItem(this.rememberMyKey);
-  //     localStorage.removeItem(this.usernameKey);
-  //   }
-  //   return this.http.post<any>(url, body, { headers })
-  //     .pipe(
-  //       map(user => {
-  //         if (user && user.token) {
-  //           const decodedToken = decodeToken(user.token);
-  //           var usr = new User;
-  //           usr.name = decodedToken[jwt_mapping.name.key]
-  //           usr.email = decodedToken[jwt_mapping.email.key]
-  //           usr.groupsid = decodedToken[jwt_mapping.groupsid.key]
-  //           usr.role = decodedToken[jwt_mapping.role.key]
-  //           usr.roles = [decodedToken[jwt_mapping.role.key]]
-  //           usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key]
-  //           usr.token = decodedToken;
-  //           usr.plainToken = user.token;
-  //           usr.expiration = user.expiration;
-  //           usr.refreshToken = user.refreshToken;
-  //           usr.isStaff = isStaff;
-
-  //           const userToken = new UserToken;
-  //           userToken.token = usr.plainToken;
-  //           userToken.expiration = usr.expiration;
-  //           userToken.refreshToken = usr.refreshToken;
-
-  //           localStorage.setItem(this.userKey, JSON.stringify(usr));
-  //           localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
-  //           this.currentUserSubject.next(usr);
-  //           this.tokenRefreshed.next();
-  //           this.userLoggedIn.next();
-  //         }
-  //         return user;
-  //       }),
-  //       catchError(error => {
-  //         this.logout();
-  //         return throwError(() => error);
-  //       })
-  //     );
-  // }
-
   login(username: string, password: string, isStaff: boolean, rememberMe: boolean): Observable<any> {
     if (rememberMe) {
       localStorage.setItem(this.rememberMyKey, 'true');
@@ -106,9 +56,11 @@ export class AuthService {
     return authRequest$.pipe(
       map(user => {
         if (user && user.token) {
+          debugger
+          // const availableFuncs = this.authApiService.getUserClaims(user);
           const decodedToken = decodeToken(user.token);
-
           const usr = new User();
+          usr.id = decodedToken.guid;
           usr.name = decodedToken[jwt_mapping.name.key];
           usr.email = decodedToken[jwt_mapping.email.key];
           usr.groupsid = decodedToken[jwt_mapping.groupsid.key];
