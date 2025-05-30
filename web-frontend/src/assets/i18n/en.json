@@ -661,7 +661,7 @@
     "CONFIRM-REMOVE-INVOICES": "Would like to remove the selected invoice(s)?",
     "CONFIRM-INVALID-ESTIMATE": "Fail to update the existing invoice due to invalid estimate added",
     "CONFIRM-INVALID-INVOICE": "Failed to update the invoice number because the new invoice number is duplicated.",
-    "CONFIRM-TEAM-UNASSIGN": "Would like to unassign the selected job?",
+    "CONFIRM-TEAM-UNASSIGN": "Unassign?",
     "MARK-DAMAGE": "Mark Damaged",
     "FILL-IN-REMARKS": "Fill in Remarks",
     "LEFT-REMARKS": "Left Remarks",

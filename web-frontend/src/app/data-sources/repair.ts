@@ -1958,7 +1958,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAbort(re: RepairItem | undefined, rp: RepairPartItem[]): boolean {
-    return (re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED');
+    const hasActiveJob = rp.some(part => part.job_order?.status_cv === 'JOB_IN_PROGRESS' || part.job_order?.status_cv === 'COMPLETED' || part.job_order?.status_cv === 'QC_COMPLETED');
+    return (re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED') && !hasActiveJob;
   }
 
   canRollback(re: RepairItem | undefined): boolean {

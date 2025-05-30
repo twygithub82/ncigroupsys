@@ -248,9 +248,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   repairEstimatePdf: any;
   isDuplicate = false;
   isFileActionLoading$: Observable<boolean> = this.fileManagerService.actionLoading$;
-  isExportingPDF:boolean=false;
-  
-  
+  isExportingPDF: boolean = false;
+
+  previousUrl: string | null = null;
 
   constructor(
     public httpClient: HttpClient,
@@ -277,6 +277,9 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
+
+    const nav = this.router.getCurrentNavigation();
+    this.previousUrl = nav?.extras?.state?.['from'] ?? null;
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -648,7 +651,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           if (def_guid) {
             this.repairForm?.get('is_default_template')?.setValue(true);
           }
-          
+
           const def_template = this.templateList.find(x =>
             def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
           );
@@ -887,7 +890,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
-    this.isExportingPDF=true;
+    this.isExportingPDF = true;
     dialogRef.updatePosition({
       top: '-9999px',  // Move far above the screen
       left: '-9999px'  // Move far to the left of the screen
@@ -899,7 +902,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       }
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isExportingPDF=false;
+      this.isExportingPDF = false;
     });
   }
 
@@ -1377,5 +1380,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     return (
       this.repairDS.canAmend(this.repairItem)
     );
+  }
+
+  goBack() {
+    if (this.previousUrl) {
+      this.router.navigateByUrl(this.previousUrl);
+    } else {
+      this.router.navigate(['/admin/repair/estimate']); // default route if no referrer
+    }
   }
 }
