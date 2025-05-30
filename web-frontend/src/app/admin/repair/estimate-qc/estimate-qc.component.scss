@@ -1,8 +1,6 @@
 ::ng-deep {
     .multiline-tooltip {
         white-space: pre-line;
-
-
         .mdc-tooltip__surface {
             max-width: unset;
         }
@@ -15,4 +13,9 @@
 
 .mat-icon {
   overflow: visible !important;
+}
+
+.card .header-custom-padding{
+  padding-left: 0.6%;
+  padding-bottom: 0%;
 }
