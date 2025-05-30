@@ -292,7 +292,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItem: null
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -304,39 +303,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
         this.handleSaveSuccess(result);
       }
     });
-  }
-
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
   }
 
   preventDefault(event: Event) {
@@ -585,7 +551,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.tariffResidueDS.SearchTariffResidue(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.tariffResidueDS.SearchTariffResidueWithCount(where, order, first, after, last, before).subscribe(data => {
       this.tariffResidueItems = data;
       this.endCursor = this.tariffResidueDS.pageInfo?.endCursor;
       this.startCursor = this.tariffResidueDS.pageInfo?.startCursor;
@@ -737,7 +703,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '500px',
       data: {
         headerText: this.translatedLangText.ARE_U_SURE_DELETE,
         act: "warn"
