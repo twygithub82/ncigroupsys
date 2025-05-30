@@ -438,7 +438,7 @@
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
-                        <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner"
+                        <mat-checkbox color="primary" (click)="selectOwner($event, row)" [checked]="row.owner"
                           [ngClass]="'tbl-checkbox'">
                         </mat-checkbox>
                       </mat-cell>
@@ -569,7 +569,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
                                 [allowDecimal]="true" (focus)="selectText($event)"
-                                [placeholder]="translatedLangText.LABOUR_DISCOUNT" type="number" min="0">
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -578,7 +578,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
                                 [allowDecimal]="true" (focus)="selectText($event)"
-                                [placeholder]="translatedLangText.MATERIAL_DISCOUNT" type="number" min="0">
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>

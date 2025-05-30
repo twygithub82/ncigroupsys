@@ -204,6 +204,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     APPROVE_INFO: 'COMMON-FORM.APPROVE-INFO',
     ABORT: 'COMMON-FORM.ABORT',
     APPROVAL: 'COMMON-FORM.APPROVAL',
+    PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
+    
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -932,7 +934,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   handleRollbackSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      let successMsg = this.translatedLangText.REINSTATE_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/repair/approval']);
     }
