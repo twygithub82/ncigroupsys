@@ -109,7 +109,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  partControl = new UntypedFormControl();
   trfRepairDS: TariffRepairDS;
   cvDS: CodeValuesDS;
   trfRepairItems: TariffRepairItem[] = [];
@@ -141,6 +140,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
+  partControl = new UntypedFormControl();
   partNameControl: UntypedFormControl = new UntypedFormControl()
   translatedLangText: any = {}
   langText = {
@@ -611,8 +611,15 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if (this.pcForm!.value["part_name"]) {
-      const description: Text = this.pcForm!.value["part_name"];
+    // if (this.pcForm!.value["part_name"]) {
+    //   const description: Text = this.pcForm!.value["part_name"];
+    //   // where.part_name = { contains: description }
+    //   const tariff_repair: any = { part_name: { contains: description } }
+    //   where.and.push({ tariff_repair: tariff_repair })
+    // }
+
+    if (this.partNameControl.value) {
+      const description = this.partNameControl.value;
       // where.part_name = { contains: description }
       const tariff_repair: any = { part_name: { contains: description } }
       where.and.push({ tariff_repair: tariff_repair })
@@ -1122,10 +1129,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
     // this.selectedParts(fakeEvent);
-
   }
-
-
 
   add(event: MatChipInputEvent): void {
     const input = event.input;

@@ -266,7 +266,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
-    GROUP_ADJUSTMENT:  'COMMON-FORM.GROUP-ADJUSTMENT',
+    GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
   }
 
   @ViewChild('custInput', { static: true })
