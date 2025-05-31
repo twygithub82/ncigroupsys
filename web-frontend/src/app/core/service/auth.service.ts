@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { JwtPayload } from '@core/models/JwtPayload';
 import { jwt_mapping } from 'app/api-endpoints';
 import { decodeToken } from 'app/utilities/jwt-util';
-import { BehaviorSubject, Observable, Subject, catchError, map, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 import { User, UserToken } from '../models/user';
 import { AuthApiService } from './auth-api.service';
 
@@ -22,6 +22,8 @@ export class AuthService {
   tokenRefreshed = new Subject<void>();
   userLoggedIn = new Subject<void>();
   userLoggedOut = new Subject<void>();
+  
+  private regexCache = new Map<string, RegExp>();
 
   constructor(private http: HttpClient, private authApiService: AuthApiService) {
     this.currentUserSubject = new BehaviorSubject<User>(
@@ -51,42 +53,49 @@ export class AuthService {
       localStorage.removeItem(this.usernameKey);
     }
 
-    const authRequest$ = this.authApiService.login(username, password, isStaff);
+    return this.authApiService.login(username, password, isStaff).pipe(
+      switchMap(user => {
+        if (!user?.token) throw new Error('No token in login response');
 
-    return authRequest$.pipe(
-      map(user => {
-        if (user && user.token) {
-          debugger
-          // const availableFuncs = this.authApiService.getUserClaims(user);
-          const decodedToken = decodeToken(user.token);
-          const usr = new User();
-          usr.id = decodedToken.guid;
-          usr.name = decodedToken[jwt_mapping.name.key];
-          usr.email = decodedToken[jwt_mapping.email.key];
-          usr.groupsid = decodedToken[jwt_mapping.groupsid.key];
-          usr.role = decodedToken[jwt_mapping.role.key];
-          usr.roles = [usr.role];
-          usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key];
-          usr.token = decodedToken;
-          usr.plainToken = user.token;
-          usr.expiration = user.expiration;
-          usr.refreshToken = user.refreshToken;
-          usr.isStaff = isStaff;
+        const decodedToken = decodeToken(user.token);
+        const userId = decodedToken[jwt_mapping.sid.key];
 
-          const userToken = new UserToken();
-          userToken.token = usr.plainToken;
-          userToken.expiration = usr.expiration;
-          userToken.refreshToken = usr.refreshToken;
+        // Set the plain token in advance so interceptor works for getUserClaims
+        const tempUserToken = new UserToken();
+        tempUserToken.token = user.token;
+        tempUserToken.expiration = user.expiration;
+        tempUserToken.refreshToken = user.refreshToken;
+        localStorage.setItem(this.tokenKey, JSON.stringify(tempUserToken));
 
-          localStorage.setItem(this.userKey, JSON.stringify(usr));
-          localStorage.setItem(this.tokenKey, JSON.stringify(userToken));
+        return this.authApiService.getUserClaims(userId).pipe(
+          map(claims => {
+            const usr = new User();
+            usr.id = userId;
+            usr.name = decodedToken[jwt_mapping.name.key];
+            usr.email = decodedToken[jwt_mapping.email.key];
+            usr.groupsid = decodedToken[jwt_mapping.groupsid.key];
+            usr.role = decodedToken[jwt_mapping.role.key];
+            usr.roles = claims.roles ?? [usr.role];
+            usr.functions = claims.functions ?? [];
+            usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key];
+            usr.token = decodedToken;
+            usr.plainToken = user.token;
+            usr.expiration = user.expiration;
+            usr.refreshToken = user.refreshToken;
+            usr.isStaff = isStaff;
 
-          this.currentUserSubject.next(usr);
-          this.tokenRefreshed.next();
-          this.userLoggedIn.next();
-        }
+            localStorage.setItem(this.userKey, JSON.stringify(usr));
+            this.currentUserSubject.next(usr);
+            this.tokenRefreshed.next();
+            this.userLoggedIn.next();
 
-        return user;
+            return user; // or return usr
+          }),
+          catchError(error => {
+            this.logout();
+            return throwError(() => error);
+          })
+        );
       }),
       catchError(error => {
         this.logout();
@@ -261,5 +270,30 @@ export class AuthService {
 
     // Check if any of the user's roles match any of the expected roles
     return userRoles.some(userRole => userRole.toLowerCase() === 'sa') || expectedRoles.some(role => userRoles.some(userRole => userRole.toLowerCase() === role.toLowerCase())) || expectedRoles.some(role => role.toLowerCase() === userRole.toLowerCase());
+  }
+  
+  hasFunctions(expectedPatterns: string[] | undefined): boolean {
+    const userFunctions = this.currentUserValue?.functions || [];
+
+    if (!expectedPatterns || expectedPatterns.length === 0) {
+      return !!this.currentUserValue?.token;
+    }
+
+    const regexes = expectedPatterns.map(p => this.getRegexFromPattern(p));
+    return userFunctions.some(func => regexes.some(r => r.test(func)));
+  }
+
+  private getRegexFromPattern(pattern: string): RegExp {
+    if (this.regexCache.has(pattern)) {
+      return this.regexCache.get(pattern)!;
+    }
+
+    const safePattern = pattern
+      .replace(/[-[\]/{}()+?.\\^$|]/g, '\\$&') // escape regex
+      .replace(/\*/g, '.*'); // wildcard to regex
+
+    const regex = new RegExp(`^${safePattern}$`);
+    this.regexCache.set(pattern, regex);
+    return regex;
   }
 }

@@ -556,19 +556,18 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  updateMaterialCostAndLabourCostByPercentage()
-  {
-    let pd_guids = this.selectedItems.map(i=>i.guid)||[];
+  updateMaterialCostAndLabourCostByPercentage() {
+    let pd_guids = this.selectedItems.map(i => i.guid) || [];
     let materialCostPercentage = 1;
     let labourCostPercentage = 1;
-    if (this.pcForm!.value['labour_hour'])labourCostPercentage=(Number(this.pcForm!.value['labour_hour']) / 100) + 1;
-    if (this.pcForm!.value['material_cost'])materialCostPercentage=(Number(this.pcForm!.value['material_cost']) / 100) + 1;
+    if (this.pcForm!.value['labour_hour']) labourCostPercentage = (Number(this.pcForm!.value['labour_hour']) / 100) + 1;
+    if (this.pcForm!.value['material_cost']) materialCostPercentage = (Number(this.pcForm!.value['material_cost']) / 100) + 1;
 
-    this.trfRepairDS.updateTariffRepairs_MaterialCost("","",
-      "", "",-1, pd_guids, materialCostPercentage, labourCostPercentage
-      ).subscribe(result => {
-        this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
-      });
+    this.trfRepairDS.updateTariffRepairs_MaterialCost("", "",
+      "", "", -1, pd_guids, materialCostPercentage, labourCostPercentage
+    ).subscribe(result => {
+      this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
+    });
 
   }
   displayLastUpdated(r: TariffDepotItem) {
@@ -612,8 +611,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       }
 
       let len = `${this.pcForm?.get("length")?.value || ''}`;
-      if(len=='')
-      {
+      if (len == '') {
         this.lengthUnitControl.reset();
       }
     });
@@ -670,24 +668,22 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     return false; // Return false if the control doesn't exist
   }
 
-  isMultiSelect():boolean{
-    var bRetval:boolean = this.selectedItems.length >1;
+  isMultiSelect(): boolean {
+    var bRetval: boolean = this.selectedItems.length > 1;
     return bRetval;
   }
-  
-  GetLabourCostLabel()
-  {
-    var content = this.translatedLangText.LABOUR_HOUR ;
-    if(this.isMultiSelect()) content+='(%)';
-    content +=' :';
+
+  GetLabourCostLabel() {
+    var content = this.translatedLangText.LABOUR_HOUR;
+    if (this.isMultiSelect()) content += '(%)';
+    content += ' :';
     return content
   }
 
-  GetMaterialCostLabel()
-  {
-    var content = this.translatedLangText.MATERIAL_COST ;
-    if(this.isMultiSelect()) content+='(%)';
-    content +=' :';
+  GetMaterialCostLabel() {
+    var content = this.translatedLangText.MATERIAL_COST;
+    if (this.isMultiSelect()) content += '(%)';
+    content += ' :';
     return content
   }
 }
