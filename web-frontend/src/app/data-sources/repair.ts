@@ -326,6 +326,7 @@ export const GET_REPAIR = gql`
         aspnetusers_guid
         create_by
         create_dt
+        complete_dt
         delete_dt
         estimate_no
         guid
@@ -882,6 +883,7 @@ export const GET_REPAIR_FOR_JOB_ORDER = gql`
         aspnetusers_guid
         create_by
         create_dt
+        complete_dt
         delete_dt
         estimate_no
         guid

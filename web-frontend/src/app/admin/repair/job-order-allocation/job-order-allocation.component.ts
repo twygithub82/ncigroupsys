@@ -943,7 +943,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   canUnassignTeam(row: RepairItem | undefined) {
-    return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED');
+    return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
   }
 
   onUnassignTeam(event: Event, repairGuid: string) {
