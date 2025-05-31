@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AuthService } from '@core/service/auth.service';
 import { modulePackage } from 'environments/environment';
 
 @Injectable({
@@ -7,7 +8,7 @@ import { modulePackage } from 'environments/environment';
 
 export class ModulePackageService {
   modulePackage = modulePackage;
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   isStarterPackage() {
     return modulePackage === "starter"
@@ -23,5 +24,10 @@ export class ModulePackageService {
 
   getModulePackage() {
     return modulePackage;
+  }
+
+  // Delegates to AuthService
+  hasFunctions(expectedFunctions: string[] | undefined): boolean {
+    return this.authService.hasFunctions(expectedFunctions);
   }
 }

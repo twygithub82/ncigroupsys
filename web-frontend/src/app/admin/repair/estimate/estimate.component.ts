@@ -849,7 +849,19 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.filterRECheck.status_cv = this.availableProcessStatus;
   }
 
-  getMaxDate(){
+  getMaxDate() {
     return new Date();
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_ADD']);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_DELETE']);
   }
 }
