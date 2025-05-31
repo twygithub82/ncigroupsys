@@ -47,6 +47,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-job-order-allocation',
@@ -257,7 +258,8 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -932,16 +934,16 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   toggleRep(row: RepairPartItem) {
-    if (this.repairPartDS.is4X(row.rp_damage_repair) || !this.joDS.canJobAllocate(row?.job_order) || !this.repairPartDS.isApproved(row)) return;
+    if (!this.canEdit() || this.repairPartDS.is4X(row.rp_damage_repair) || !this.joDS.canJobAllocate(row?.job_order) || !this.repairPartDS.isApproved(row)) return;
     this.repSelection.toggle(row);
   }
 
   isAssignEnabled() {
-    return this.repSelection.hasValue() && this.repairForm?.get('team_allocation')?.value;
+    return this.repSelection.hasValue() && this.repairForm?.get('team_allocation')?.value && this.canEdit();
   }
 
   canUnassignTeam(row: RepairItem | undefined) {
-    return row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED';
+    return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED');
   }
 
   onUnassignTeam(event: Event, repairGuid: string) {
@@ -973,5 +975,17 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       console.log(result)
       this.handleSaveSuccess(result?.data?.rollbackAssignedRepair);
     });
+  }
+
+  canEdit() {
+    return this.isAllowEdit() && this.repairDS.canAssign(this.repairItem);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_JOB_ALLOCATION_EDIT']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['REPAIR_JOB_ALLOCATION_DELETE']);
   }
 }

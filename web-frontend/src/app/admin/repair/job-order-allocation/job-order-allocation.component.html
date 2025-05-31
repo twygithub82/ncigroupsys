@@ -477,7 +477,7 @@
                     {{translatedLangText.UNASSIGN}}
                   </button>
                   }
-                  @if (repairDS.canAssign(repairItem)) {
+                  @if (canEdit()) {
                   <button mat-flat-button color="primary"
                     [disabled]="(repairDS.actionLoading$ | async) || (joDS.actionLoading$ | async)">
                     <mat-icon>

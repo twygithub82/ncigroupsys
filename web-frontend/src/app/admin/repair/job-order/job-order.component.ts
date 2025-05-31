@@ -565,7 +565,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   canUnassignTeam(row: RepairItem) {
-    return row.status_cv === 'ASSIGNED' || row.status_cv === 'PARTIAL_ASSIGNED';
+    return this.isAllowDelete() && (row.status_cv === 'ASSIGNED' || row.status_cv === 'PARTIAL_ASSIGNED');
   }
 
   onUnassignTeam(event: Event, repairGuid: string) {
@@ -754,6 +754,18 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   onTabFocused() {
     this.resetForm();
     this.onFilterRepair();
+  }
+
+  canEdit() {
+    return this.isAllowEdit();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_JOB_ALLOCATION_EDIT']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['REPAIR_JOB_ALLOCATION_DELETE']);
   }
 
   @ViewChild('repairJobOrderTask') repairJobOrderTask!: JobOrderTaskComponent;
