@@ -9,7 +9,7 @@
         <div class="card">
           <div class="body overflow-auto">
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex"
-              (selectedIndexChange)="onTabChange($event)"  (selectedTabChange)="onTabSelected($event)">
+              (selectedIndexChange)="onTabChange($event)" (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
                 <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()"
                   #formDirective="ngForm">
@@ -65,9 +65,9 @@
                 </form>
                 <div class="responsive_table">
                   <table mat-table [dataSource]="rsdEstList" matSort
-                    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
+                    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="tank_no">
@@ -116,14 +116,15 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="action">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-end'">
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" class="justify-content-end">
                         @if(row?.status_cv=="ASSIGNED")
                         {
                         <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
                           [matTooltip]="translatedLangText.UNASSIGNED">
                           <mat-icon>remove_circle_outline</mat-icon>
+                          <!-- <span class="material-symbols-outlined">chip_extraction</span> -->
                         </button>
                         }
                         <!-- <span

@@ -145,6 +145,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     CURRENT_STATUS: 'COMMON-FORM.CURRENT-STATUS',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
     NET_COST: 'COMMON-FORM.NET-COST',
+    COST: 'COMMON-FORM.CARGO-COST',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     AMEND: 'COMMON-FORM.AMEND',
@@ -717,5 +718,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
   getProcessStatusDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.processStatusCvList);
+  }
+
+  getMaxDate() {
+    return new Date();
   }
 }

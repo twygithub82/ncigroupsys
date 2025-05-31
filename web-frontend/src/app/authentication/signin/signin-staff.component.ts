@@ -99,21 +99,15 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
         .login(this.f['username'].value, this.f['password'].value, true, this.rememberMe)
         .subscribe({
           next: (res) => {
-            if (res) {
-              if (res) {
-                const token = this.authService.currentUserValue.token;
-                if (token) {
-                  this.router.navigate(['/']);
-                }
-              } else {
-                this.error = 'Invalid Login';
-              }
+            const token = this.authService.currentUserValue?.token;
+            if (token) {
+              this.router.navigate(['/']);
             } else {
               this.error = 'Invalid Login';
             }
           },
           error: (error) => {
-            console.log(error)
+            console.log(error);
             this.error = 'Error login';
             this.submitted = false;
             this.loading = false;

@@ -57,7 +57,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="eir_picker">
+                      <mat-date-range-input [rangePicker]="eir_picker" [max]="getMaxDate()">
                         <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
                         <input matEndDate placeholder="End date" formControlName="eir_dt_end">
                       </mat-date-range-input>
@@ -74,7 +74,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
-                      <input matInput formControlName="est_dt" [matDatepicker]="est_dt_picker">
+                      <input matInput formControlName="est_dt" [matDatepicker]="est_dt_picker" [max]="getMaxDate()">
                       <mat-datepicker-toggle matSuffix [for]="est_dt_picker"></mat-datepicker-toggle>
                       <mat-datepicker #est_dt_picker></mat-datepicker>
                       <!-- <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
@@ -89,7 +89,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.APPROVAL_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="approval_picker">
+                      <mat-date-range-input [rangePicker]="approval_picker" [max]="getMaxDate()">
                         <input matStartDate placeholder="Start date" formControlName="approval_dt_start">
                         <input matEndDate placeholder="End date" formControlName="approval_dt_end">
                       </mat-date-range-input>
@@ -164,7 +164,7 @@
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
-                      class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
+                      class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_dt">
@@ -202,12 +202,13 @@
                 <ng-container matColumnDef="net_cost">
                   <mat-header-cell mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    {{translatedLangText.NET_COST}}
+                    {{translatedLangText.COST}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <span class="mobile-tab-label">{{translatedLangText.NET_COST}}:</span>
-                    <span class="dollar-sign">$</span><span>{{row.net_cost}}</span>
+                    <span class="mobile-tab-label">{{translatedLangText.COST}}:</span>
+                    {{row.net_cost}}
+                    <!-- <span class="dollar-sign">$</span><span>{{row.net_cost}}</span> -->
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="status_cv">

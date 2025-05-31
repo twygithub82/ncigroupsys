@@ -109,7 +109,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   // ccDS: CustomerCompanyDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  partControl = new UntypedFormControl();
   trfRepairDS: TariffRepairDS;
   cvDS: CodeValuesDS;
   trfRepairItems: TariffRepairItem[] = [];
@@ -137,10 +136,11 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   hasNextPage = false;
   hasPreviousPage = false;
   selectedParts: any[] = [];
-  selection = new SelectionModel<TariffRepairItem>(true, []);
+  selection = new SelectionModel<any>(true, []);
 
   id?: number;
   pcForm?: UntypedFormGroup;
+  partControl = new UntypedFormControl();
   partNameControl: UntypedFormControl = new UntypedFormControl()
   translatedLangText: any = {}
   langText = {
@@ -452,6 +452,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
+      disableClose: true,
       width: '80vw',
       //height: '90vh',
       data: {
@@ -477,13 +478,17 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
+
+    const tariffRepair = this.selection.selected.map(x => x.tariff_repair);
+
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
+      disableClose: true,
       width: '65vw',
       //height: '1000px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems: this.selection.selected
+        selectedItems: tariffRepair
       }
     });
 
@@ -507,6 +512,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: TariffRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
+      disableClose: true,
       width: '65vw',
       //height: '1000px',
       //height: '90vh',
@@ -611,8 +617,15 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if (this.pcForm!.value["part_name"]) {
-      const description: Text = this.pcForm!.value["part_name"];
+    // if (this.pcForm!.value["part_name"]) {
+    //   const description: Text = this.pcForm!.value["part_name"];
+    //   // where.part_name = { contains: description }
+    //   const tariff_repair: any = { part_name: { contains: description } }
+    //   where.and.push({ tariff_repair: tariff_repair })
+    // }
+
+    if (this.partNameControl.value) {
+      const description = this.partNameControl.value;
       // where.part_name = { contains: description }
       const tariff_repair: any = { part_name: { contains: description } }
       where.and.push({ tariff_repair: tariff_repair })
@@ -1122,10 +1135,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
     // this.selectedParts(fakeEvent);
-
   }
-
-
 
   add(event: MatChipInputEvent): void {
     const input = event.input;

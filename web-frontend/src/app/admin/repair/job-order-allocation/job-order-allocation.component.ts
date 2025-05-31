@@ -682,45 +682,47 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     // });
     // const finalJobOrder = Array.from(jobOrderMap.values());
     console.log(finalJobOrder);
-    const without4xPartsNotAssign = this.repList.filter(part =>
-      (!part.job_order?.team?.guid) && !this.repairPartDS.is4X(part.rp_damage_repair) && this.repairPartDS.isApproved(part)
-    );
-    
-    this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
-      console.log(result)
-      if ((result?.data?.assignJobOrder ?? 0) > 0 && missingJobOrders?.length) {
-        const jobOrderGuidToDelete = missingJobOrders.map(jo => jo?.guid!)
-        this.joDS.deleteJobOrder(jobOrderGuidToDelete).subscribe(result => {
-          console.log(`deleteJobOrder: ${JSON.stringify(jobOrderGuidToDelete)}, result: ${JSON.stringify(result)}`);
+    if (finalJobOrder.length) {
+      const without4xPartsNotAssign = this.repList.filter(part =>
+        (!part.job_order?.team?.guid) && !this.repairPartDS.is4X(part.rp_damage_repair) && this.repairPartDS.isApproved(part)
+      );
+
+      this.joDS.assignJobOrder(finalJobOrder).subscribe(result => {
+        console.log(result)
+        if ((result?.data?.assignJobOrder ?? 0) > 0 && missingJobOrders?.length) {
+          const jobOrderGuidToDelete = missingJobOrders.map(jo => jo?.guid!)
+          this.joDS.deleteJobOrder(jobOrderGuidToDelete).subscribe(result => {
+            console.log(`deleteJobOrder: ${JSON.stringify(jobOrderGuidToDelete)}, result: ${JSON.stringify(result)}`);
+          });
+        }
+
+        let action = "PARTIAL_ASSIGN";
+        if (!without4xPartsNotAssign?.length) {
+          action = "ASSIGN";
+          const allJobInProgress = finalJobOrder.every(x => x.status_cv == 'JOB_IN_PROGRESS');
+          if (allJobInProgress) {
+            action = "IN_PROGRESS";
+          }
+        }
+
+        console.log(without4xPartsNotAssign?.length ? "some parts are not assigned" : "all parts are assigned");
+
+        const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+          guid: this.repairItem!.guid,
+          sot_guid: this.sotItem!.guid,
+          action
         });
-      }
-      
-      let action = "PARTIAL_ASSIGN";
-      if (!without4xPartsNotAssign?.length) {
-        action = "ASSIGN";
-        const allJobInProgress = finalJobOrder.every(x => x.status_cv == 'JOB_IN_PROGRESS');
-        if (allJobInProgress) {
-          action = "IN_PROGRESS";
-        }
-      }
 
-      console.log(without4xPartsNotAssign?.length ? "some parts are not assigned" : "all parts are assigned");
+        console.log(repairStatusReq);
 
-      const repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
-        guid: this.repairItem!.guid,
-        sot_guid: this.sotItem!.guid,
-        action
+        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+          console.log(result);
+          if (result.data.updateRepairStatus > 0) {
+            this.handleSaveSuccess(result.data.updateRepairStatus);
+          }
+        });
       });
-
-      console.log(repairStatusReq);
-
-      this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
-        console.log(result);
-        if (result.data.updateRepairStatus > 0) {
-          this.handleSaveSuccess(result.data.updateRepairStatus);
-        }
-      });
-    });
+    }
   }
 
   updateData(newData: RepairPartItem[] | undefined): void {

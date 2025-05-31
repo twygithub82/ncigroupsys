@@ -438,7 +438,7 @@
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
-                        <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner"
+                        <mat-checkbox color="primary" (click)="selectOwner($event, row)" [checked]="row.owner"
                           [ngClass]="'tbl-checkbox'">
                         </mat-checkbox>
                       </mat-cell>
@@ -569,7 +569,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
                                 [allowDecimal]="true" (focus)="selectText($event)"
-                                [placeholder]="translatedLangText.LABOUR_DISCOUNT" type="number" min="0">
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -578,7 +578,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
                                 [allowDecimal]="true" (focus)="selectText($event)"
-                                [placeholder]="translatedLangText.MATERIAL_DISCOUNT" type="number" min="0">
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -888,13 +888,13 @@
               </div>
               }
               <div class="row m-t-10">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
                     (click)="$event.preventDefault();" [routerLink]="['/admin/repair/approval']">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 align-right">
                   @if (repairDS.canRollbackStatus(repairItem, repList)) {
                   <button mat-flat-button color="accent" [disabled]="(repairDS.actionLoading$ | async)"
                     (click)="onRollback($event)">
@@ -910,15 +910,15 @@
                   }
                   @if (canApprove()) {
                   <button mat-flat-button color="basic" [disabled]="(repairDS.actionLoading$ | async)"
-                    class="m-l-5 bg-green" (click)="onApprove($event)">
+                    class="m-l-5" color="primary" (click)="onApprove($event)">
                     <mat-icon>
                       @if (!(teamDS.loading$ | async) && !(repairDS.actionLoading$ | async)) {
-                      done
+                      save
                       } @else if ((repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.APPROVE}}
+                    {{translatedLangText.UPDATE}}
                   </button>
                   }
                   @if (repairDS.canCancel(repairItem)) {
@@ -934,18 +934,19 @@
                     {{translatedLangText.NO_ACTION}}
                   </button>
                   }
-                  <!-- @if (canSave()) {
-                  <button mat-flat-button color="primary" [disabled]="(repairDS.loading$ | async)" class="m-l-5">
+                  @if (repairDS.canAbort(repairItem, repList)) {
+                  <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-r-5"
+                    (click)="onAbort($event)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {
-                      save
+                      close
                       } @else if ((repairDS.loading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                    {{translatedLangText.ABORT}}
                   </button>
-                  } -->
+                  }
                 </div>
               </div>
             </div>

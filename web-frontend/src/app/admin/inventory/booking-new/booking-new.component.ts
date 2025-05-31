@@ -190,6 +190,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   hasNextPage = false;
   hasPreviousPage = false;
 
+  todayDt: Date = new Date();
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,

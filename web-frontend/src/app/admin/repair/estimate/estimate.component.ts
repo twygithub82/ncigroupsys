@@ -151,6 +151,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     SEARCH: 'COMMON-FORM.SEARCH',
+    COST: 'COMMON-FORM.COST',
   }
 
   availableProcessStatus: string[] = [
@@ -846,5 +847,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.filterRECheck.est_dt_start = undefined;
     this.filterRECheck.est_dt_end = undefined;
     this.filterRECheck.status_cv = this.availableProcessStatus;
+  }
+
+  getMaxDate(){
+    return new Date();
   }
 }

@@ -2,6 +2,7 @@ import { environment } from "environments/environment"
 
 export const api_endpoints = {
   staff_auth: '/api/StaffAuthentication/StaffLogin',
+  staff_user_claims: '/api/StaffAuthentication/GetUserClaims',
   staff_assign_roles: '/api/StaffAuthentication/AssignStaffRolesAndTeams',
   staff_create: '/api/StaffAuthentication/CreateStaffCredential',
   staff_remove: '/api/StaffAuthentication/RemoveStaff',
@@ -63,5 +64,9 @@ export const jwt_mapping = {
   'primarygroupsid': {
     'key': 'http://schemas.microsoft.com/ws/2008/06/identity/claims/primarygroupsid',
     'value': 'primarygroupsid'
+  },
+  'sid': {
+    'key': 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid',
+    'value': 'sid'
   }
 }

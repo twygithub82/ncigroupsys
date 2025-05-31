@@ -4,7 +4,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule,MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -135,10 +135,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     DELETE: 'COMMON-FORM.DELETE',
     SEARCH: "COMMON-FORM.SEARCH",
-    CARGO_SELECTED:'COMMON-FORM.CARGO-SELECTED',
+    CARGO_SELECTED: 'COMMON-FORM.CARGO-SELECTED',
   }
 
-  
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
 
@@ -184,7 +183,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   previous_endCursor: string | undefined = undefined;
 
   selectedCargo: any[] = [];
-  
+
 
   constructor(
     private router: Router,
@@ -227,6 +226,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   initSearchForm() {
     this.searchForm = this.fb.group({
       last_cargo: this.lastCargoControl,
+      cargo_name: [''],
       class_no: [''],
       method: [''],
       category: this.categoryControl,
@@ -508,10 +508,10 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+        } else {
+          searchCriteria = value || '';
         }
         this.searchCargoList(searchCriteria);
         // this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
@@ -521,7 +521,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     ).subscribe();
   }
 
-   searchCargoList(searchCriteria: string) {
+  searchCargoList(searchCriteria: string) {
     searchCriteria = searchCriteria || '';
     this.subs.sink = this.tcDS.loadItems({ and: [{ cargo: { contains: searchCriteria } }, { delete_dt: { eq: null } }] }, { cargo: 'ASC' }).subscribe(data => {
       if (this.custInput?.nativeElement.value === searchCriteria) {
@@ -530,7 +530,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-   searchCustomerCompanyList(searchCriteria: string) {
+  searchCustomerCompanyList(searchCriteria: string) {
     searchCriteria = searchCriteria || '';
     this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
       if (this.custInput?.nativeElement.value === searchCriteria) {
@@ -735,66 +735,63 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     this.search();
   }
 
-  
-    itemSelected(row: any):boolean{
-      var retval:boolean=false;
-      const index = this.selectedCargo.findIndex(c => c.guid === row.guid);
-      retval = (index >= 0);
-      return retval;
+
+  itemSelected(row: any): boolean {
+    var retval: boolean = false;
+    const index = this.selectedCargo.findIndex(c => c.guid === row.guid);
+    retval = (index >= 0);
+    return retval;
+  }
+
+
+
+
+  getSelectedCargoDisplay(): string {
+    var retval: string = "";
+    if (this.selectedCargo?.length > 1) {
+      retval = `${this.selectedCargo.length} ${this.translatedLangText.CARGO_SELECTED}`;
     }
-  
-  
-  
-        
-    getSelectedCargoDisplay():string{
-      var retval:string = "";
-      if(this.selectedCargo?.length>1){
-        retval = `${this.selectedCargo.length} ${this.translatedLangText.CARGO_SELECTED}`;
-      }
-      else if(this.selectedCargo?.length==1){
-        retval =`${this.selectedCargo[0].cargo}`
-      }
-      return retval;
+    else if (this.selectedCargo?.length == 1) {
+      retval = `${this.selectedCargo[0].cargo}`
     }
-  
-   
-    
-    removeAllSelectedCargo(): void {
-     this.selectedCargo=[];
+    return retval;
+  }
+
+
+
+  removeAllSelectedCargo(): void {
+    this.selectedCargo = [];
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const cargo = event.option.value;
+    const index = this.selectedCargo.findIndex(c => c.guid === cargo.guid);
+    if (!(index >= 0)) {
+      this.selectedCargo.push(cargo);
+      // this.search();
     }
-  
-    
-    selected(event: MatAutocompleteSelectedEvent): void {
-      const cargo = event.option.value;
-      const index = this.selectedCargo.findIndex(c => c.guid === cargo.guid);
-      if (!(index >= 0)) {
-        this.selectedCargo.push(cargo);
-       // this.search();
-      }
-      else
-      {
-        this.selectedCargo.splice(index, 1);
-       // this.search();
-      }
-  
-      if (this.custInput) {
-        
-        this.custInput.nativeElement.value = '';
-        this.searchForm?.get('last_cargo')?.setValue('');
-        this.searchCargoList('');
-      }
-     
-      // this.updateFormControl();
-      //this.customerCodeControl.setValue(null);
-      //this.pcForm?.patchValue({ customer_code: null });
+    else {
+      this.selectedCargo.splice(index, 1);
+      // this.search();
     }
-    
+
+    if (this.custInput) {
+
+      this.custInput.nativeElement.value = ' ';
+      this.searchForm?.get('cargo_name')?.setValue('');
+      this.searchCargoList('');
+    }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
   onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
-   
+
   }
-  
+
   add(event: MatChipInputEvent): void {
     const input = event.input;
     const value = event.value;
@@ -811,9 +808,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   // onCheckboxProfileClicked(row: any) {
   //   const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
   //   this.selectedProfile(fakeEvent);
-   
+
   // }
 
-  
+
 
 }

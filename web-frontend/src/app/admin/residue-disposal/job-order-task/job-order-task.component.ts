@@ -309,9 +309,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     if (this.filterJobOrderForm!.get('customer')?.value) {
-      if(!where.and)where.and=[];
+      if (!where.and) where.and = [];
       where.and.push({
-        storing_order_tank:{storing_order:{customer_company:{ code: { eq: (this.filterJobOrderForm!.get('customer')?.value).code } }}}
+        storing_order_tank: { storing_order: { customer_company: { code: { eq: (this.filterJobOrderForm!.get('customer')?.value).code } } } }
       });
     }
     // TODO:: Get login user team

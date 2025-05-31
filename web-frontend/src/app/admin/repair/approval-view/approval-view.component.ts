@@ -34,7 +34,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { JobOrderDS, JobOrderItem, JobOrderRequest } from 'app/data-sources/job-order';
+import { JobOrderDS, JobOrderGO, JobOrderItem, JobOrderRequest, RepJobOrderRequest } from 'app/data-sources/job-order';
 import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RepairDS, RepairGO, RepairItem, RepairRequest, RepairStatusRequest } from 'app/data-sources/repair';
@@ -204,6 +204,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     APPROVE_INFO: 'COMMON-FORM.APPROVE-INFO',
     ABORT: 'COMMON-FORM.ABORT',
     APPROVAL: 'COMMON-FORM.APPROVAL',
+    PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
+    
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -669,6 +671,54 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     });
   }
 
+  onAbort(event: Event) {
+    this.preventDefault(event);
+    console.log(this.repairItem)
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+      width: '1000px',
+      data: {
+        action: 'cancel',
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
+        item: [this.repairItem],
+        translatedLangText: this.translatedLangText
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO(item.job_order!));
+
+        const repJobOrder = new RepJobOrderRequest({
+          guid: this.repairItem?.guid,
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          remarks: this.repairItem?.remarks,
+          job_order: distinctJobOrders
+        });
+
+        console.log(repJobOrder)
+        this.repairDS.abortRepair(repJobOrder).subscribe(result => {
+          console.log(result)
+          this.handleCancelSuccess(result?.data?.abortRepair)
+        });
+      }
+    });
+  }
+
   undoTempAction(row: any[], actionToBeRemove: string) {
     const data: any[] = [...this.repList];
     row.forEach((newItem: any) => {
@@ -932,7 +982,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   handleRollbackSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
+      let successMsg = this.translatedLangText.REINSTATE_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/repair/approval']);
     }

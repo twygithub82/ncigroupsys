@@ -9,269 +9,274 @@
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
-        <div class="row">
-          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-            <!-- <mat-form-field class="example-full-width"> -->
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-              <mat-select formControlName="group_name_cv">
-                <mat-option *ngFor="let t of groupNameCvList" [value]="t">
-                  {{ t.description }}
-                </mat-option>
-              </mat-select>
-              <!-- @if (pcForm.get('group_name_cv')?.hasError('required')) {
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+          <!-- <mat-form-field class="example-full-width"> -->
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
+            <mat-select formControlName="group_name_cv">
+              <mat-option *ngFor="let t of groupNameCvList" [value]="t">
+                {{ t.description }}
+              </mat-option>
+            </mat-select>
+            <!-- @if (pcForm.get('group_name_cv')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
               } -->
-            </mat-form-field>
-          </div>
-          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 ms-10 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-              <mat-select formControlName="sub_group_name_cv">
-                <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
-                  {{ t.description }}
-                </mat-option>
-              </mat-select>
-              <!-- @if (pcForm.get('sub_group_name_cv')?.hasError('required')) {
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 ms-10 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
+            <mat-select formControlName="sub_group_name_cv">
+              <mat-option *ngFor="let t of subGroupNameCvList" [value]="t">
+                {{ t.description }}
+              </mat-option>
+            </mat-select>
+            <!-- @if (pcForm.get('sub_group_name_cv')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.SUB_GROUP_NAME }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
               } -->
-            </mat-form-field>
-          </div>
+          </mat-form-field>
         </div>
-        <div class="row">
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-              <input matInput formControlName="part_name" type="text" required>
-              <!-- @if (pcForm.get('part_name')?.hasError('required')) {
+      </div>
+      <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+            <input matInput formControlName="part_name" type="text" required>
+            <!-- @if (pcForm.get('part_name')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
               } -->
-              @if (pcForm.get('part_name')?.hasError('existed')) {
-              <mat-error>
-                {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
-              </mat-error>
-              }
-            </mat-form-field>
-          </div>
-          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-            <!-- <mat-form-field class="example-full-width">
+            @if (pcForm.get('part_name')?.hasError('existed')) {
+            <mat-error>
+              {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+          <!-- <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
               <input matInput formControlName="dimension" type="text">
             </mat-form-field> -->
-            {{translatedLangText.DIMENSION}}:
-            <span class="font-bold">
-              {{this.pcForm.get('dimension')?.value}}
-            </span>
-          </div>
+          {{translatedLangText.DIMENSION}}:
+          <span class="font-bold">
+            {{this.pcForm.get('dimension')?.value}}
+          </span>
         </div>
-        <div class="row">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
-            <!-- <mat-form-field class="example-full-width">
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+          <!-- <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.ALIAS_NAME}}</mat-label>
               <input matInput formControlName="alias" type="text">
             </mat-form-field> -->
-            {{translatedLangText.ALIAS_NAME}}:
-            <span class="font-bold">
-              {{this.pcForm.get('alias')?.value}}
-            </span>
-          </div>
+          {{translatedLangText.ALIAS_NAME}}:
+          <span class="font-bold">
+            {{this.pcForm.get('alias')?.value}}
+          </span>
         </div>
-        <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
-              <input matInput formControlName="height_diameter" type="number" min="0" [required]="isRequired('height_diameter_unit_cv')">
-              <!-- @if (pcForm.get('height_diameter')?.hasError('required')) {
+      </div>
+      <div class="row">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
+            <input matInput formControlName="height_diameter" type="number" min="0"
+              [required]="isRequired('height_diameter_unit_cv')">
+            <!-- @if (pcForm.get('height_diameter')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.HEIGHT_DIAMETER }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 } -->
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select formControlName="height_diameter_unit_cv"   [required]="isRequired('height_diameter')">
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-                </mat-option>
-              </mat-select>
-              <!-- @if (pcForm.get('height_diameter_unit_cv')?.hasError('required')) {
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+            <mat-select formControlName="height_diameter_unit_cv" [required]="isRequired('height_diameter')">
+              <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
+                {{ t.description }}
+              </mat-option>
+            </mat-select>
+            <!-- @if (pcForm.get('height_diameter_unit_cv')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 } -->
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
-              <input matInput formControlName="width_diameter" type="number" min="0" [required]="isRequired('width_diameter_unit_cv')">
-              <!-- @if (pcForm.get('width_diameter')?.hasError('required')) {
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
+            <input matInput formControlName="width_diameter" type="number" min="0"
+              [required]="isRequired('width_diameter_unit_cv')">
+            <!-- @if (pcForm.get('width_diameter')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.WIDTH_DIAMETER }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 } -->
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select formControlName="width_diameter_unit_cv" [required]="isRequired('width_diameter')">
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-                </mat-option>
-              </mat-select>
-              <!-- @if (pcForm.get('width_diameter_unit_cv')?.hasError('required')) {
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+            <mat-select formControlName="width_diameter_unit_cv" [required]="isRequired('width_diameter')">
+              <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
+                {{ t.description }}
+              </mat-option>
+            </mat-select>
+            <!-- @if (pcForm.get('width_diameter_unit_cv')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 } -->
-            </mat-form-field>
-          </div>
+          </mat-form-field>
         </div>
-        <div class="row">
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
-              <input matInput formControlName="thickness" type="number"  min="0" [required]="isRequired('thickness_unit_cv')">
-              <!-- @if (pcForm.get('thickness')?.hasError('required')) {
+      </div>
+      <div class="row">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
+            <input matInput formControlName="thickness" type="number" min="0"
+              [required]="isRequired('thickness_unit_cv')">
+            <!-- @if (pcForm.get('thickness')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.THICKNESS }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 } -->
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select formControlName="thickness_unit_cv" [required]="isRequired('thickness')">
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-                </mat-option>
-              </mat-select>
-                <!-- @if (pcForm.get('thickness_unit_cv')?.hasError('required')) {
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+            <mat-select formControlName="thickness_unit_cv" [required]="isRequired('thickness')">
+              <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
+                {{ t.description }}
+              </mat-option>
+            </mat-select>
+            <!-- @if (pcForm.get('thickness_unit_cv')?.hasError('required')) {
                   <mat-error>
                     {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                   </mat-error>
                   } -->
-            </mat-form-field>
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.LENGTH}}</mat-label>
-              <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')">
-            </mat-form-field>
-            @if (pcForm.get('length')?.hasError('existed')) {
-            <mat-error>
-              {{translatedLangText.LENGTH }} {{translatedLangText.EXISTED }}
-            </mat-error>
-            }
-            <!-- @if (pcForm.get('length')?.hasError('required')) {
+          </mat-form-field>
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.LENGTH}}</mat-label>
+            <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')">
+          </mat-form-field>
+          @if (pcForm.get('length')?.hasError('existed')) {
+          <mat-error>
+            {{translatedLangText.LENGTH }} {{translatedLangText.EXISTED }}
+          </mat-error>
+          }
+          <!-- @if (pcForm.get('length')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.LENGTH }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>
               } -->
-          </div>
-          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select formControlName="length_unit_cv" [required]="isRequired('length')">
-                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                  {{ t.description }}
-                </mat-option>
-              </mat-select>
-                @if (pcForm.get('length_unit_cv')?.hasError('existed')) {
-                  <mat-error>
-                    {{translatedLangText.UNIT_TYPE }} {{translatedLangText.EXISTED }}
-                  </mat-error>
-                  }
-                <!-- @if (pcForm.get('length_unit_cv')?.hasError('required')) {
+        </div>
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+            <mat-select formControlName="length_unit_cv" [required]="isRequired('length')">
+              <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
+                {{ t.description }}
+              </mat-option>
+            </mat-select>
+            @if (pcForm.get('length_unit_cv')?.hasError('existed')) {
+            <mat-error>
+              {{translatedLangText.UNIT_TYPE }} {{translatedLangText.EXISTED }}
+            </mat-error>
+            }
+            <!-- @if (pcForm.get('length_unit_cv')?.hasError('required')) {
                   <mat-error>
                     {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                   </mat-error>
                   } -->
-            </mat-form-field>
-          </div>
+          </mat-form-field>
         </div>
-        <div class="row">
-          <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{GetLabourCostLabel()}}</mat-label>
-              <input matInput formControlName="labour_hour" type="number" min="0">
-            </mat-form-field>
-          </div>
-          <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
-            <mat-form-field class="example-full-width">
-              <mat-label>{{GetMaterialCostLabel()}}</mat-label>
-              <input matInput formControlName="material_cost" type="number" min="0">
-            </mat-form-field>
-          </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{GetLabourCostLabel()}}</mat-label>
+            <input matInput formControlName="labour_hour" type="number" min="0">
+          </mat-form-field>
         </div>
-        <div class="row">
-          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="card">
-              <div class="materialTableHeader">
-              </div>
-              <div class="body">
-                <div class="responsive_table">
-                  <table mat-table [dataSource]="selectedItems" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                    <ng-container matColumnDef="fName">
-                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-4_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      *matHeaderCellDef >{{translatedLangText.PART_NAME
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-4_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                       *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.PART_NAME }}:</span>{{row.part_name}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="lName">
-                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                       *matHeaderCellDef >{{translatedLangText.GROUP_NAME
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                       *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.GROUP_NAME
-                          }}:</span>{{this.getGroupNameCodeValue(row.group_name_cv)?.description}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="email">
-                      <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                      *matHeaderCellDef >{{translatedLangText.SUB_GROUP_NAME
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                       *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.SUB_GROUP_NAME }}:</span>
-                        {{this.getSubGroupNameCodeValue(row.subgroup_name_cv)?.description}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="gender">
-                      <mat-header-cell [ngClass]="'justify-content-center'" 
-                        *matHeaderCellDef >{{translatedLangText.LABOUR_HOUR
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'justify-content-center'" 
-                        *matCellDef="let row">
-                        <span class="mobile-label">{{translatedLangText.LABOUR_HOUR }}:</span>
-                        {{row.labour_hour}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="bDate">
-                      <mat-header-cell [ngClass]="'justify-content-center'" 
-                        *matHeaderCellDef >{{translatedLangText.MATERIAL_COST
-                        }}</mat-header-cell>
-                      <mat-cell [ngClass]="'justify-content-center'" 
-                        *matCellDef="let row" >
-                        <span class="mobile-label">{{translatedLangText.MATERIAL_COST }} :</span>
-                        {{row.material_cost.toFixed(2)}}</mat-cell>
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
-                    </mat-row>
-                  </table>
-                </div>
+        <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{GetMaterialCostLabel()}}</mat-label>
+            <input matInput formControlName="material_cost" type="number" min="0">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="materialTableHeader">
+            </div>
+            <div class="body">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="selectedItems" matSort
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                  <ng-container matColumnDef="fName">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-4_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef>{{translatedLangText.PART_NAME
+                      }}</mat-header-cell>
+                    <mat-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-4_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.PART_NAME }}:</span>{{row.part_name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="lName">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                      *matHeaderCellDef>{{translatedLangText.GROUP_NAME
+                      }}</mat-header-cell>
+                    <mat-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                      *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.GROUP_NAME
+                        }}:</span>{{this.getGroupNameCodeValue(row.group_name_cv)?.description}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="email">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                      *matHeaderCellDef>{{translatedLangText.SUB_GROUP_NAME
+                      }}</mat-header-cell>
+                    <mat-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                      *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.SUB_GROUP_NAME }}:</span>
+                      {{this.getSubGroupNameCodeValue(row.subgroup_name_cv)?.description}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="gender">
+                    <mat-header-cell [ngClass]="'justify-content-center'"
+                      *matHeaderCellDef>{{translatedLangText.LABOUR_HOUR
+                      }}</mat-header-cell>
+                    <mat-cell [ngClass]="'justify-content-center'" *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.LABOUR_HOUR }}:</span>
+                      {{row.labour_hour}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="bDate">
+                    <mat-header-cell [ngClass]="'justify-content-center'"
+                      *matHeaderCellDef>{{translatedLangText.MATERIAL_COST
+                      }}</mat-header-cell>
+                    <mat-cell [ngClass]="'justify-content-center'" *matCellDef="let row">
+                      <span class="mobile-label">{{translatedLangText.MATERIAL_COST }} :</span>
+                      {{row.material_cost.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
               </div>
             </div>
           </div>
