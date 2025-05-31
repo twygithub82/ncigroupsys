@@ -45,6 +45,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-estimate-qc',
@@ -200,7 +201,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     OVERWRITE: 'COMMON-FORM.OVERWRITE',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     CONFIRM_ROLLBACK: 'COMMON-FORM.CONFIRM-ROLLBACK',
-    ROLLBACK_COMPLETED: 'COMMON-FORM.ROLLBACK-COMPLETED',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -258,7 +258,8 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -591,7 +592,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result?.action === 'confirmed') {
         const repReqList = this.repList?.map((rep: RepairPartItem) => {
           return {
             guid: rep?.guid,
@@ -607,12 +608,12 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
           repairPartRequests: repReqList
         });
         console.log(repairStatusReq);
-        // this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
-        //   console.log(result)
-        //   if (result.data.updateRepairStatus > 0) {
-        //     this.handleSaveSuccess(result.data.updateRepairStatus);
-        //   }
-        // });
+        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+          console.log(result)
+          if (result.data.updateRepairStatus > 0) {
+            this.handleSaveSuccess(result.data.updateRepairStatus);
+          }
+        });
       }
     });
   }
@@ -892,5 +893,9 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayApproveCost(rep: RepairPartItem) {
     return this.parse2Decimal((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
   }
 }

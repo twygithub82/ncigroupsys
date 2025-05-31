@@ -407,10 +407,10 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  <!-- @if (repairDS.canQCComplete(repairItem)) {
+                  @if (repairDS.canQCComplete(repairItem)) {
                   <button mat-flat-button color="accent"
-                    [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)"
-                    class="m-l-5 mt-2" (click)="onRollbackCompleted($event)">
+                    [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)" class="m-l-5 mt-2"
+                    (click)="onRollbackCompleted($event)">
                     <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {
                       cached
@@ -418,13 +418,13 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.ROLLBACK_COMPLETED}}
+                    {{translatedLangText.ROLLBACK}}
                   </button>
-                  } -->
+                  }
                   @if (repairDS.canRollbackQC(repairItem)) {
                   <button mat-flat-button color="accent"
-                    [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)" class="m-l-5 mt-2 primary-light"
-                    (click)="onOverwriteQC($event)">
+                    [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)"
+                    class="m-l-5 mt-2 primary-light" (click)="onOverwriteQC($event)">
                     <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {
                       cached
@@ -464,11 +464,11 @@
                   </button> -->
 
                   <button mat-flat-button color="primary"
-                          [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)"
-                          class="m-l-5 mt-2"
-                          (click)="onQCComplete($event)">
+                    [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)" class="m-l-5 mt-2"
+                    (click)="onQCComplete($event)">
                     <!-- Icon / Spinner -->
-                    <ng-container *ngIf="!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async); else loading">
+                    <ng-container
+                      *ngIf="!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async); else loading">
                       <i class="fas fa-user-check me-1"></i> <!-- 'me-2' adds right margin if using Bootstrap -->
                     </ng-container>
                     <ng-template #loading>
