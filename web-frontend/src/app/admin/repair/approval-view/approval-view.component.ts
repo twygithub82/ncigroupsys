@@ -49,7 +49,6 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-approval-view',
@@ -205,7 +204,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     ABORT: 'COMMON-FORM.ABORT',
     APPROVAL: 'COMMON-FORM.APPROVAL',
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
-    
+
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -502,6 +501,13 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     if (!this.repairDS.canApprove(this.repairItem)) {
       this.repairForm?.get('job_no')?.disable();
     }
+
+    if (!this.canEdit()) {
+      this.repairForm?.get('surveyor_id')?.disable();
+      this.repairForm?.get('labour_cost_discount')?.disable();
+      this.repairForm?.get('material_cost_discount')?.disable();
+      this.repairForm?.get('remarks')?.disable();
+    }
   }
 
   // getCustomerLabourPackage(customer_company_guid: string) {
@@ -545,41 +551,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     row.owner = !(row.owner || false);
     this.calculateCost();
     this.calculateCostEst();
-  }
-
-  editApproveDetails(event: Event, row: RepairPartItem, index: number) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '1000px',
-      data: {
-        item: row,
-        action: 'edit',
-        translatedLangText: this.translatedLangText,
-        index: index,
-        repairItem: this.repairItem
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const data = [...this.repList];
-        const updatedItem = new RepairPartItem({
-          ...result.item,
-        });
-        if (result.index >= 0) {
-          data[result.index] = updatedItem;
-          this.updateData(data);
-        } else {
-          this.updateData([...this.repList, result.item]);
-        }
-      }
-    });
   }
 
   onCancel(event: Event) {
@@ -1274,11 +1245,11 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   canToggleOwner() {
-    return !this.sotDS.isCustomerSameAsOwner(this.sotItem) && this.repairDS.canAmend(this.repairItem);
+    return !this.sotDS.isCustomerSameAsOwner(this.sotItem) && this.canEdit();
   }
 
   isDisabled(repairPart: RepairPartItem): boolean {
-    const packageCheck = (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage());
+    const packageCheck = (!this.canEdit());
     const repairCheck = !this.repairDS.canApprove(this.repairItem);
     const repairPartCheck = (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true) || !(repairPart?.approve_part ?? true);
     // const isBilled = (!this.repairItem?.customer_billing_guid && !this.repairItem?.customer_billing_guid);
@@ -1323,5 +1294,17 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   displayApproveCost(rep: RepairPartItem) {
     return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost !== null && rep.approve_cost !== undefined ? rep.approve_cost : rep.material_cost) : 0, 2);
+  }
+
+  canEdit() {
+    return this.isAllowEdit() && this.repairDS.canAmend(this.repairItem);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_ESTIMATE_APPROVAL_EDIT']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['REPAIR_ESTIMATE_APPROVAL_DELETE']);
   }
 }

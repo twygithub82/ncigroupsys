@@ -593,25 +593,28 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const repReqList = this.repList?.map((rep: RepairPartItem) => {
-          return {
-            guid: rep?.guid,
-            approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)
-          }
-        });
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: Utility.convertDate(result.qc_dt) as number }));
 
-        var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+        var repairStatusReq: RepJobOrderRequest = new RepJobOrderRequest({
           guid: this.repairItem?.guid,
-          sot_guid: this.sotItem!.guid,
-          action: "IN_PROGRESS",
-          remarks: this.repairItem?.remarks,
-          repairPartRequests: repReqList
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          remarks: result.remarks,
+          job_order: distinctJobOrders,
+          sot_status: this.sotItem?.tank_status_cv,
         });
         console.log(repairStatusReq);
-        this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
+        this.repairDS.rollbackCompletedRepair(repairStatusReq).subscribe(result => {
           console.log(result)
-          if (result.data.updateRepairStatus > 0) {
-            this.handleSaveSuccess(result.data.updateRepairStatus);
+          if (result.data.rollbackCompletedRepair > 0) {
+            this.handleSaveSuccess(result.data.rollbackCompletedRepair);
           }
         });
       }

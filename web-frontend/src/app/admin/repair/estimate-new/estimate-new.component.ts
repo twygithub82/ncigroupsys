@@ -1035,7 +1035,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   canToggleOwner() {
-    return !this.sotDS.isCustomerSameAsOwner(this.sotItem) && this.repairDS.canAmend(this.repairItem);
+    return !this.sotDS.isCustomerSameAsOwner(this.sotItem) && this.canEdit();
   }
 
   onOwnerToggle(event: MatCheckboxChange): void {
