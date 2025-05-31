@@ -167,7 +167,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     RESIDUE_ESTIMATE:'COMMON-FORM.RESIDUE-ESTIMATE',
     HOUR:'COMMON-FORM.HOUR',
     LABOUR_COST:'COMMON-FORM.LABOUR-COST',
-    STEAM_ESTIMATE:'COMMON-FORM.STEAM-ESTIMATE'
+    STEAM_ESTIMATE:'COMMON-FORM.STEAM-ESTIMATE',
+    STEAM_CARGO:'COMMON-FORM.STEAM-CARGO'
   }
 
   type?: string | null;
@@ -238,7 +239,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.translatedLangText.RESIDUE_CARGO_DISPOSAL;
+    this.pdfTitle = this.translatedLangText.STEAM_CARGO;
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([

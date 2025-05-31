@@ -67,7 +67,8 @@ export interface DialogData {
   date:string,
   repType:string,
   customer:string,
-  inventory_type:string[]
+  inventory_type:string[],
+  report_name:string
 }
 
 @Component({
@@ -344,6 +345,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   index: number = 0;
   customer?:string;
   invTypes?:string[]=[];
+  repName?:string;
   // date:string='';
   // invType:string='';
  //public barChartOptions!: Partial<ChartOptions>;
@@ -466,6 +468,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     this.repType=this.data.repType;
     this.customer=this.data.customer;
     this.invTypes=this.data.inventory_type;
+    this.repName=this.data.report_name;
    // this.SetChartValues();
     this.onDownloadClick();
 
@@ -1673,14 +1676,15 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   }
   GetReportTitle(): string {
     var title:string='';
-    // if(this.repType === "ALL" || this.repType === ""){
-    //   `${title}`
-    // }
-    // else{
-    //      let formatted = this.repType!.charAt(0).toUpperCase() + this.repType!.slice(1).toLowerCase();
-         //title = `${this.translatedLangText.YEARLY_SALES_REPORT} - ${formatted}`
-    // }
     title = `${this.translatedLangText.YEARLY_SALES_REPORT}`;
+    if(this.repName)
+     {
+      title += `: ${this.repName}`;
+     }else
+     {
+       title += `: ${this.translatedLangText.MASTER}`;
+     }
+    
     return title;
 
     // switch(this.repType)

@@ -903,7 +903,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
         const subComStyles: any = {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'left', cellWidth: 10, minCellHeight: minHeightBodyCell },
+          0: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
           1: { halign: 'center', minCellHeight: minHeightBodyCell },
           2: { halign: 'center', cellWidth: 30, minCellHeight: minHeightBodyCell },
           3: { halign: 'center', cellWidth: 30, minCellHeight: minHeightBodyCell },

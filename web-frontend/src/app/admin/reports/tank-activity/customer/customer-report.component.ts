@@ -157,7 +157,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     [
       '',
       'CLEANING',
-      'STEAMING',
+      'STEAM',
       'RESIDUE',
       'REPAIR',
       'STORAGE'

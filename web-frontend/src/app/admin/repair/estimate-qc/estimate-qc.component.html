@@ -455,7 +455,7 @@
                     class="m-l-5 mt-2" (click)="onQCComplete($event)">
                     <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {
-                      <i class="fas fa-user-check"></i>
+                      <i class="fas fa-user-check icon-container"></i>
                       } @else if ((joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }

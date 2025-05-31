@@ -241,6 +241,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     UN_WISE: 'COMMON-FORM.UN-WISE',
     CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
     CARGO: 'COMMON-FORM.CARGO',
+    CARGOES: 'COMMON-FORM.CARGOES',
     UN: 'COMMON-FORM.CARGO-UN-NO',
     S_N: 'COMMON-FORM.S_N'
 
@@ -1197,7 +1198,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
       return this.translatedLangText.UN;
     }
     else {
-      return this.translatedLangText.CARGO;
+      return this.translatedLangText.CARGOES;
     }
   }
 

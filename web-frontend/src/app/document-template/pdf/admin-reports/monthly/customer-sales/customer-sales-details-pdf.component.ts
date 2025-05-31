@@ -715,9 +715,9 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY + 20; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 15; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
@@ -774,7 +774,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.0001, 0.0001], 0);
+    pdf.setLineDashPattern([0.01, 0.01], 0);
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,

@@ -5,6 +5,7 @@ import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
 import { Utility } from "./utility";
 import html2canvas from "html2canvas";
 import { CustomerCompanyItem } from "app/data-sources/customer-company";
+import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 
 export class PDFUtility {
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
@@ -669,7 +670,7 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     
     const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
 
-    const posX1_img = leftMargin + 5;
+    const posX1_img = leftMargin ;
     const posY1_img = topMargin + 5;
     
     pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
@@ -683,10 +684,10 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     // Draw top line
    pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
 
-   let posX=leftMargin+5;
+   let posX=leftMargin;
   let posY = topMargin;
 
-  posY+=50;
+  posY+=40;
   pdf.setFontSize(10);
   pdf.text(`${translatedLangText.CUSTOMER}:`, posX, posY);
   posY+=5;
@@ -697,49 +698,14 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
   pdf.text(customerCompany.address_line2||'', posX, posY);
 
   
-  var buffer =55;
+  var buffer =45;
   var IssDate = `${translatedLangText.ISSUE_DATE}: ${Utility.convertDateToStr(new Date())}`;
   this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
   var validDate=new Date();
-  validDate = this.addMonths(validDate, 1.5);
+  validDate = this.addMonths(validDate, 2);
   buffer+=5;
-  var validDateStr = `${translatedLangText.VALID_THROUGH}: ${Utility.convertDateToStr(new Date())}`;
+  var validDateStr = `${translatedLangText.VALID_THROUGH}: ${Utility.convertDateToStr(validDate)}`;
   this.AddTextAtRightCornerPage(pdf, validDateStr, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
-    // // Define header height
-    // const heightHeader: number = 28;
-
-    // // Draw bottom line
-    // pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
-
-    // // Add company name
-    // pdf.setFontSize(12);
-    // const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    // let posX = leftMargin + 36.5; //pageWidth / 1.75;
-    // let posY = topMargin + 8;
-    // pdf.text(customerInfo.companyName, posX, posY);
-
-    // // Add company address
-    // pdf.setFontSize(10);
-    // posX -= 20.5;
-    // posY += 5;
-    // pdf.text(customerInfo.companyAddress, posX, posY);
-
-    // // Add phone, fax
-    // let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    // posX += 8.5;
-    // posY += 5;
-    // pdf.text(nextLine, posX, posY);
-    // nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
-    // pdf.text(nextLine, posX + 39, posY);
-
-    // // Add website, company UEN
-    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    // posX += 0;
-    // posY += 5;
-    // pdf.text(nextLine, posX, posY);
-    // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    // pdf.text(nextLine, posX + 39, posY);
-
     
   }
 
@@ -752,5 +718,84 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     result.setDate(result.getDate() + partialMonthDays);
 
     return result;
+  }
+
+  static async ReportFooter_CompanyInfo_portrait(pdf: jsPDF, 
+    pageWidth: number, topMargin: number, 
+    bottomMargin: number, leftMargin: number, 
+    rightMargin: number,translateService: TranslateService) 
+  {
+
+     const translatedLangText: any = {};
+    var posX=leftMargin;
+    var posY = topMargin;
+    var fontSz=8;
+    var startY=topMargin;
+    const langText = {
+      GST_REG: 'COMMON-FORM.GST-REG',
+      PHONE: 'COMMON-FORM.PHONE',
+      
+    };
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+   var data: any[][] = [
+              [
+                { content: `${customerInfo.companyName}`, styles: { halign: 'left', valign: 'bottom',fontStyle: 'bold',fontSize: fontSz} },
+                { content: `${customerInfo.companyAddress}`, rowSpan:2 , styles:{halign:'left',valign:'top',fontSize: fontSz+1} },
+                { content: `[Payment Conditions]` ,  rowSpan:3, styles: { halign: 'center', valign: 'top',fontStyle: 'bold',fontSize: fontSz} },
+              ],
+              [
+                { content: `${translatedLangText.GST_REG}: [GST Reg No]`,styles: { halign: 'left', valign: 'bottom',fontSize: fontSz}  },
+                '',
+                ''
+              ],
+              [
+                '',
+                { content: `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`,styles: { halign: 'left', valign: 'bottom',fontSize: fontSz}  },
+                ''
+                
+              ],
+             
+            ];
+        
+            var contentWidth=pageWidth-leftMargin-rightMargin;
+            var minHeightHeaderCol=4;
+            var tblCellWidth =(pageWidth-leftMargin-rightMargin)/2;
+            autoTable(pdf, {
+              body: data,
+              startY: startY, // Start table at the current startY value
+              theme: 'grid',
+              margin: { left: leftMargin },
+              styles: {
+                cellPadding: { left:1 , right: 1, top: 1, bottom: 1 },
+                fontSize: fontSz,
+                minCellHeight: minHeightHeaderCol,
+                lineWidth: 0, // cell border thickness
+                lineColor: [0, 0, 0], // black
+              },
+              tableWidth: contentWidth,
+              columnStyles: {
+                0: { cellWidth: tblCellWidth/2 },
+                1: { cellWidth: tblCellWidth/2 },
+                2: { cellWidth: tblCellWidth },
+                
+              },
+              // headStyles: headStyles, // Custom header styles
+              bodyStyles: {
+                fillColor: [255, 255, 255],
+                halign: 'left', // Left-align content for body by default
+                valign: 'middle', // Vertically align content
+        
+              },
+             
+            });
+  
   }
 }

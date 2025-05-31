@@ -163,6 +163,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
     CLEANING_COST: 'COMMON-FORM.CLEANING-COST',
     TOTAL_SGD: 'COMMON-FORM.TOTAL-SGD',
+    TOTAL:'COMMON-FORM.TOTAL'
   }
 
   type?: string | null;
@@ -775,7 +776,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           // this.generatedPDF = pdf.output('blob');
           // this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
           // this.generatingPdfLoadingSubject.next(false);
-           //this.dialogRef.close();
+           this.dialogRef.close();
         }
     
      
@@ -991,12 +992,254 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           // Variable to store the final Y position of the last table
           let lastTableFinalY = 0;
       
-          let startY = 37; // Start table 20mm below the customer name
+          let startY = 0; // Start table 20mm below the customer name
           var item = this.cleaningItem;
           await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
 
+          startY=70;
+          PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false);
+          startY+=3;
+          var data: any[][] = [
+            [
+              { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+              { content: `${item?.storing_order_tank?.tank_no}` },
+              { content: `${this.translatedLangText.EIR_NO}` ,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+              { content: `${item?.storing_order_tank?.in_gate?.[0]?.eir_no}` }
+            ],
+            [
+              { content: `${this.translatedLangText.CUSTOMER}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${item?.storing_order_tank?.storing_order?.customer_company?.name}` },
+              { content: `${this.translatedLangText.EIR_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${this.displayDate(item?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
+            ],
+            [
+              { content: `${this.translatedLangText.JOB_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${item?.job_no}` },
+              { content: `${this.translatedLangText.QUOTATION_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${this.displayDate(item?.create_dt)}` }
+            ],
+            [
+              { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
+              { content: `` },
+              { content: `` }
+            ]
+          ];
+      
+          autoTable(pdf, {
+            body: data,
+            startY: startY, // Start table at the current startY value
+            theme: 'grid',
+            margin: { left: leftMargin },
+            styles: {
+              cellPadding: { left:1 , right: 1, top: 1, bottom: 1 },
+              fontSize: fontSz,
+              minCellHeight: minHeightHeaderCol,
+              lineWidth: 0.15, // cell border thickness
+              lineColor: [0, 0, 0], // black
+            },
+            tableWidth: contentWidth,
+            columnStyles: {
+              0: { cellWidth: 35 },
+              1: { cellWidth: 61 },
+              2: { cellWidth: 35 },
+              3: { cellWidth: 61 }
+            },
+            // headStyles: headStyles, // Custom header styles
+            bodyStyles: {
+              fillColor: [255, 255, 255],
+              halign: 'left', // Left-align content for body by default
+              valign: 'middle', // Vertically align content
+      
+            },
+            didDrawPage: (data: any) => {
+              const pageCount = pdf.getNumberOfPages();
+      
+              lastTableFinalY = data.cursor.y;
+      
+              var pg = pagePositions.find(p => p.page == pageCount);
+              if (!pg) {
+                pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+                if (pageCount > 1) {
+                  Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                }
+              }
+            },
+          });
+
+          startY=lastTableFinalY+15;
+          this.createCleaningEstimateDetail_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
+          startY=pageHeight-45;
+          var estTerms ="[Estimate Terms and COnditions / Disclaimer]";
+          PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
+
+          startY+=8;
+           pdf.setLineWidth(0.1);
+    
+          pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+          var yPos=startY;
+            // 
+          pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
+          startY= yPos +1;
+          await PDFUtility.ReportFooter_CompanyInfo_portrait(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
+
            var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
            this.downloadFile(pdf.output('blob'), pdfFileName)
+           this.dialogRef.close(); 
+        }
 
+
+        createCleaningEstimateDetail_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
+        {
+
+
+          pdf.setLineWidth(0.1);
+    // Set dashed line pattern
+          pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+          var yPos=startY;
+            // Draw top line
+          pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
+
+          startY+=1;
+          const fontSz=8;
+          const vAlign="bottom";
+          const headers: RowInput[] = [
+          [
+            { 
+              content: this.translatedLangText.NO_DOT, 
+               
+              styles: { fontSize: fontSz,halign: 'center', valign: vAlign,fillColor: 255, lineWidth: 0.0,cellPadding: 2 }
+            },
+            { 
+              content: this.translatedLangText.DESCRIPTION,
+              
+              styles: { fontSize: fontSz, halign: 'left', valign: vAlign,fillColor:255, lineWidth: 0.0,cellPadding: 2  }
+            },
+             { 
+              content: this.translatedLangText.CLEANING_COST,
+              
+              styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 255, lineWidth: 0.0,cellPadding: 2  }
+            },
+          
+          ]
+        ];
+    
+         var repData:RowInput[]=[];
+         var items = [this.cleaningItem];
+         const grpFontSz=7;
+         this.totalCost=0;
+         var index=0;
+          items?.forEach((item, index) => {
+            repData.push([
+              ++index,item?.storing_order_tank?.tariff_cleaning?.cargo,`${this.parse2Decimal(item?.cleaning_cost)}`]);
+
+              this.totalCost+=item?.cleaning_cost;
+          });
+    
+    
+         
+          autoTable(pdf, {
+          head:headers,
+          body:repData,
+          startY: startY, // Start table at the current startY value
+          styles: {
+            cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
+            fontSize: 7.5,
+            lineWidth: 0.0 // remove all borders initially
+          },
+          theme: 'grid',
+          margin: { left: leftMargin },
+          headStyles: {
+            fillColor: 220,
+            textColor: 0,
+            fontStyle: 'bold',
+            lineWidth: 0.0 // keep outer border for header
+          },
+          columnStyles: {
+            0: { cellWidth: 10,halign: 'center', valign: 'middle' },
+            1: { cellWidth: 152,halign: 'left', valign: 'middle'},
+            2: { cellWidth: 30,halign: 'center', valign: 'middle'},
+          },
+          didDrawPage: (data: any) => {
+            startY = data.cursor.y;
+          }
+          });
+          
+          yPos = startY+5;
+          pdf.setLineWidth(0.1);
+    // Set dashed line pattern
+          pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+            // Draw top line
+          pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
+
+
+           var totalSGD=`${this.translatedLangText.TOTAL}:`;
+          var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
+           var amtWords = Utility.convertToWords(this.totalCost);
+          startY=yPos+2;
+           var estData:RowInput[]=[];
+           estData.push([
+              { content: `${amtWords}`,  colSpan: 3,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#d0e0e0'} },
+             
+           ])
+           estData.push([
+             '',
+              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 5 }}},
+              { content: `${totalCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 5 } } },
+             
+           ])
+  
+  //cellPadding: { top: 5 }
+          autoTable(pdf, {
+          body:estData,
+          startY: startY, // Start table at the current startY value
+          styles: {
+            cellPadding: { left:2 , right: 2, top: 1, bottom: 3 }, // Reduce padding
+            fontSize: 7.5,
+            lineWidth: 0 // remove all borders initially
+          },
+          theme: 'grid',
+          margin: { left: leftMargin },
+          headStyles: {
+            fillColor: 220,
+            textColor: 0,
+            fontStyle: 'bold',
+            lineWidth: 0.1 // keep outer border for header
+          },
+          columnStyles: {
+            0: { cellWidth: 10,halign: 'center', valign: 'middle' },
+            1: { cellWidth: 152,halign: 'left', valign: 'middle'},
+            2: { cellWidth: 30,halign: 'center', valign: 'middle'},
+          
+          },
+           didDrawCell: function (data) {
+              const doc = data.doc;
+              
+               if(data.row.index === 0){
+              doc.setLineWidth(0.3);
+              doc.setDrawColor(0, 0, 0); // Set line color to black
+                doc.line(
+                data.cell.x,
+                data.cell.y + data.cell.height-1,
+                data.cell.x + data.cell.width,
+                data.cell.y + data.cell.height-1
+              );
+              }
+           },
+          didDrawPage: (data: any) => {
+          
+            startY = data.cursor.y;
+          
+          }
+          });
+  
+       
+
+         
+       
+    
         }
 }

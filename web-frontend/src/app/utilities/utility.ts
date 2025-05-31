@@ -864,84 +864,7 @@ export class Utility {
   ): Promise<void> {
 
     await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
-    // const translatedLangText: any = {};
-    // const langText = {
-    //   PHONE: 'COMMON-FORM.PHONE',
-    //   FAX: 'COMMON-FORM.FAX',
-    //   WEB: 'COMMON-FORM.WEB',
-    //   CRN: 'COMMON-FORM.CRN',
-    // };
-
-    // // Translate each key in langText
-    // for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
-    //   try {
-    //     translatedLangText[key] = await translateService.get(langText[key]).toPromise();
-    //   } catch (error) {
-    //     console.error(`Error translating key "${key}":`, error);
-    //     translatedLangText[key] = langText[key]; // Fallback to the original key
-    //   }
-    // }
-
-    // pdf.setLineWidth(0.1);
-    // // Set dashed line pattern
-    // pdf.setLineDashPattern([1, 1], 0.5);
-
-    // // Draw top line
-    // pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
-
-    // // Define header height
-    // const heightHeader: number = 28;
-
-    // // Draw bottom line
-    // pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
-
-    // // Add company name
-    // pdf.setFontSize(12);
-    // const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    // let posX = leftMargin + 36.5; //pageWidth / 1.75;
-    // let posY = topMargin + 8;
-    // pdf.text(customerInfo.companyName, posX, posY);
-
-    // // Add company address
-    // pdf.setFontSize(10);
-    // posX -= 20.5;
-    // posY += 5;
-    // pdf.text(customerInfo.companyAddress, posX, posY);
-
-    // // Add phone, fax
-    // let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    // posX += 8.5;
-    // posY += 5;
-    // pdf.text(nextLine, posX, posY);
-    // nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
-    // pdf.text(nextLine, posX + 39, posY);
-
-    // // Add website, company UEN
-    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    // posX += 0;
-    // posY += 5;
-    // pdf.text(nextLine, posX, posY);
-    // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    // pdf.text(nextLine, posX + 39, posY);
-
-    // // // Load and add company logo
-    // // const imgUrl = customerInfo.companyReportLogo;
-    // // const img = new Image();
-
-    // // // Wait for the image to load
-    // // await new Promise<void>((resolve, reject) => {
-    // //   img.onload = () => resolve();
-    // //   img.onerror = () => reject(new Error('Failed to load image'));
-    // //   img.src = imgUrl;
-    // // });
-    // const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
-
-    // // Add the image to the PDF
-    // const posX1_img = pageWidth / 1.7; //leftMargin + 5;
-    // const posY1_img = topMargin + 0;
-    // // const imgHeight = heightHeader - 0;
-    // // const imgWidth = 80;
-    // pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+  
   }
 
   static async addHeaderWithCompanyLogo_Landscape(
@@ -955,84 +878,7 @@ export class Utility {
   ): Promise<void> {
 
     await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
-    // const translatedLangText: any = {};
-
-    // const langText = {
-    //   PHONE: 'COMMON-FORM.PHONE',
-    //   FAX: 'COMMON-FORM.FAX',
-    //   WEB: 'COMMON-FORM.WEB',
-    //   CRN: 'COMMON-FORM.CRN',
-    // };
-
-    // // Translate each key in langText
-    // for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
-    //   try {
-    //     translatedLangText[key] = await translateService.get(langText[key]).toPromise();
-    //   } catch (error) {
-    //     console.error(`Error translating key "${key}":`, error);
-    //     translatedLangText[key] = langText[key]; // Fallback to the original key
-    //   }
-    // }
-    // pdf.setLineWidth(0.1);
-    // // Set dashed line pattern
-    // pdf.setLineDashPattern([1, 1], 0.5);
-
-    // // Draw top line
-    // pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
-
-    // // Define header height
-    // const heightHeader: number = 28;
-
-    // // Draw bottom line
-    // pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
-
-    // // Add company name
-    // pdf.setFontSize(12);
-    // const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
-    // let posX = pageWidth / 3.5;
-    // let posY = topMargin + 8;
-    // pdf.text(customerInfo.companyName, posX, posY);
-
-    // // Add company address
-    // pdf.setFontSize(10);
-    // posX -= 20.5;
-    // posY += 5;
-    // pdf.text(customerInfo.companyAddress, posX, posY);
-
-    // // Add phone, fax
-    // let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    // posX += 8.5;
-    // posY += 5;
-    // pdf.text(nextLine, posX, posY);
-    // nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
-    // pdf.text(nextLine, posX + 39, posY);
-
-    // // Add website, company UEN
-    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    // posX += 0;
-    // posY += 5;
-    // pdf.text(nextLine, posX, posY);
-    // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    // pdf.text(nextLine, posX + 39, posY);
-
-    // // // Load and add company logo
-    // // const imgUrl = customerInfo.companyReportLogo;
-    // // const img = new Image();
-
-    // // // Wait for the image to load
-    // // await new Promise<void>((resolve, reject) => {
-    // //   img.onload = () => resolve();
-    // //   img.onerror = () => reject(new Error('Failed to load image'));
-    // //   img.src = imgUrl;
-    // // });
-    // const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
-
-    // // Add the image to the PDF
-    // const posX1_img = pageWidth - (width + leftMargin);
-    // const posY1_img = topMargin + 0;
-    // // const imgHeight = heightHeader - 0;
-    // // const imgWidth = 70;
-    // pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+    
   }
 
   static async loadPDFImage(
@@ -1256,6 +1102,101 @@ export class Utility {
 
   static patchStringToArrayValue(arrayVal: string | undefined) {
     return arrayVal ? [arrayVal] : []
+  }
+
+   static convertToWords(amount: number | string, currency: string = '', centsCurrency: string = 'CENTS'): string {
+    // Handle string input and parse it
+    if (typeof amount === 'string') {
+      amount = parseFloat(amount.replace(/,/g, ''));
+    }
+
+    // Round to 2 decimal places
+    amount = Math.round(Number(amount) * 100) / 100;
+    
+    const dollars = Math.floor(amount);
+    const cents = Math.round((amount - dollars) * 100);
+    
+    let result = '';
+    
+    if (dollars > 0) {
+      result = this.convertDollars(dollars) + ' ' + currency;
+    }
+    
+    if (cents > 0) {
+      if (result !== '') {
+        result += ' AND ';
+      }
+      result += this.convertCents(cents) + ' ' + centsCurrency;
+    }
+    
+    if (result === '') {
+      return 'ZERO ' + currency + ' ONLY';
+    }
+    
+    return result + ' ONLY';
+  }
+
+  static convertDollars(num: number): string {
+   let scales = ['', 'THOUSAND', 'MILLION', 'BILLION', 'TRILLION'];
+    if (num === 0) return 'ZERO';
+    
+    let words = '';
+    let scaleIndex = 0;
+    
+    while (num > 0) {
+      const chunk = num % 1000;
+      if (chunk !== 0) {
+        const chunkWords = this.convertChunk(chunk);
+        words = chunkWords + ' ' + scales[scaleIndex] + ' ' + words;
+      }
+      num = Math.floor(num / 1000);
+      scaleIndex++;
+    }
+    
+    return words.trim();
+  }
+
+  static convertCents(num: number): string {
+     let units = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE'];
+    let tens = ['', 'TEN', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+    let teens = ['TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+    if (num < 10) {
+      return units[num];
+    } else if (num < 20) {
+      return teens[num - 10];
+    } else {
+      const ten = Math.floor(num / 10);
+      const unit = num % 10;
+      return tens[ten] + (unit > 0 ? ' ' + units[unit] : '');
+    }
+  }
+
+  static convertChunk(num: number): string {
+    let units = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE'];
+    let tens = ['', 'TEN', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+    let teens = ['TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+    let words = '';
+    
+    if (num >= 100) {
+      words += units[Math.floor(num / 100)] + ' HUNDRED';
+      num %= 100;
+      if (num > 0) words += ' AND ';
+    }
+    
+    if (num >= 20) {
+      words += tens[Math.floor(num / 10)];
+      num %= 10;
+      if (num > 0) words += ' ';
+    } else if (num >= 10) {
+      words += teens[num - 10];
+      num = 0;
+    }
+    
+    if (num > 0) {
+      words += units[num];
+    }
+    
+    return words;
   }
 }
 

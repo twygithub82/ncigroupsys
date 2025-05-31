@@ -432,7 +432,7 @@
     "CARGO-NAME": "Cargo Name",
     "CARGO-ALIAS": "Alias Name",
     "CARGO-DESCRIPTION": "Cargo Description",
-    "CARGO-UN-NO": "UN No",
+    "CARGO-UN-NO": "UN Number",
     "CARGO-CLASS": "Class No",
     "CARGO-CLASS-SELECT": "Cargo Class",
     "CARGO-FLASH-POINT": "Flash Point",
@@ -1048,7 +1048,7 @@
     "AVAILABLE-IN-YARD": "Available In Yard",
     "RELEASED-TANK": "Released Tank",
     "CLEAN-CERT-BOOKING": "Clean Cert. Booking",
-    "CLEAN-IN": "Clean Being",
+    "CLEAN-IN": "Clean Begin",
     "DURATION-DAYS": "Duration (Days)",
     "CLEANING-INVENTORY": "Cleaning Inventory",
     "CUSTOMER-WISE": "Customer wise",
@@ -1291,7 +1291,10 @@
     "SALES": "Sales",
     "STEAM-ESTIMATE": "Steam Estimate",
     "ISSUE-DATE": "Issue Date",
-    "VALID-THROUGH": "Valid Through"
+    "VALID-THROUGH": "Valid Through",
+    "STEAM-CARGO":"Steaming Cargo",
+    "GST-REG":"GST Reg No",
+    "CARGOES":"Cargoes"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
