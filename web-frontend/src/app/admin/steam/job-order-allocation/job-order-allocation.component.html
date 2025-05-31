@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <div class="header">
+          <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
             </h2>
@@ -125,7 +125,7 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
-            <div class="header">
+            <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.BILLING_PROFILE}}
               </h2>
@@ -194,7 +194,7 @@
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
-            <div class="header">
+            <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.TEAM_ALLOCATION}}
               </h2>
@@ -234,7 +234,7 @@
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
-            <div class="header">
+            <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.ESTIMATE_DETAILS}}
               </h2>
@@ -247,7 +247,7 @@
               </div>
               }
               @if (!(sotDS.loadingSubject | async)) {
-              <div class="body overflow-auto">
+              <div class="row">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="deList" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">

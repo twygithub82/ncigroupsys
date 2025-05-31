@@ -161,7 +161,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     REMOVE_COPIED: 'COMMON-FORM.REMOVE-COPIED',
     APPROVE: 'COMMON-FORM.APPROVE',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
-    SEARCH: 'COMMON-FORM.SEARCH'
+    SEARCH: 'COMMON-FORM.SEARCH',
+    COST: 'COMMON-FORM.COST'
   }
 
   availableTankStatus: string[] = [
@@ -171,13 +172,12 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   availableProcessStatus: string[] = [
     'ASSIGNED',
-    'PARTIAL_ASSIGNED',
-    'APPROVED',
+    //'PARTIAL_ASSIGNED',
+    //'APPROVED',
     'JOB_IN_PROGRESS',
-    'COMPLETED',
+    //'COMPLETED',
     'PENDING',
-    'NO_ACTION'
-
+    //'NO_ACTION'
   ]
   searchForm?: UntypedFormGroup;
 
@@ -934,6 +934,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   canApprove(steamItem: SteamItem) {
     return this.steamDS.canApprove(steamItem!) && !steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
+  }
+
+    getMaxDate(){
+    return new Date();
   }
 
   // IsApproved(steamItem:SteamItem):boolean
