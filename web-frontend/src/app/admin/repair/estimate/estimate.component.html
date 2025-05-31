@@ -202,7 +202,7 @@
                         </button>
                         }
                         @else {
-                        <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW"
+                        <button mat-mini-fab class="primary-light" [matTooltip]="translatedLangText.NEW"
                           [routerLink]="['/admin/repair/estimate/new', row.guid]">
                           <mat-icon class="col-white">add</mat-icon>
                         </button>
@@ -273,13 +273,13 @@
                         <ng-container matColumnDef="net_cost">
                           <mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            {{translatedLangText.NET_COST}}
+                            {{translatedLangText.COST}}
                           </mat-header-cell>
                           <mat-cell *matCellDef="let repairRow"
                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span class="mobile-tab-label">{{translatedLangText.NET_COST}}:</span>
+                            <span class="mobile-tab-label">{{translatedLangText.COST}}:</span>
                             <!-- <span>$</span><span class="ms-3">{{repairRow.net_cost}}</span> -->
-                            <span class="dollar-sign">$</span><span>{{repairRow.net_cost}}</span>
+                            <span>{{repairRow.net_cost}}</span>
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="status_cv">

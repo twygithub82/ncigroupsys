@@ -16,7 +16,7 @@
         <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
           @for (cc of customer_companyList; track cc) {
           <mat-option [value]="cc">
-            {{ccDS.displayName(cc)}}
+            {{ccDS.displayCodeDashName(cc)}}
           </mat-option>
           }
         </mat-autocomplete>
@@ -77,7 +77,7 @@
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
         <span
-          class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company)}}
+          class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="estimate_no">
@@ -122,7 +122,7 @@
         {
         @if (canStartJob(row)) {
         <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
-          <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
+          <mat-icon [ngClass]="{'custom-timer-icon': row.time_table?.length}" disabled>timer</mat-icon>
         </button>
         }
         @if (canCompleteJob(row, isStarted(row))) {
@@ -170,7 +170,7 @@
     <span>{{translatedLangText.YET_START}}</span>
   </div>
   <div class="legend-item d-flex align-items-center me-4 mb-2">
-    <mat-icon class="text-success me-2">timer</mat-icon>
+    <mat-icon class="custom-timer-icon me-2">timer</mat-icon>
     <span>{{translatedLangText.STARTED}}</span>
   </div>
   <div class="legend-item d-flex align-items-center me-4 mb-2">
