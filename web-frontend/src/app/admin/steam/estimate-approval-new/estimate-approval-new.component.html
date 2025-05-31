@@ -528,8 +528,8 @@
           </div>
           <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
             @if (canExport()) {
-            <button mat-flat-button color="accent" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
-              class="m-r-5" (click)="onExport($event)">
+            <button mat-flat-button [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
+              class="m-r-5 accent-darker" (click)="onExport($event)">
               @if (!(steamDS.loading$ | async)) {
               <i class="fas fa-file-export"></i>
               } @else if ((steamDS.loading$ | async)) {

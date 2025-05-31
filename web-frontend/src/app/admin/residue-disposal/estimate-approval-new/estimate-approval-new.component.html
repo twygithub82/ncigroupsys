@@ -612,7 +612,7 @@
             </div>
             <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 align-right">
               @if (canExport()) {
-              <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)" class="m-r-5"
+              <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)" class="m-r-5 accent-darker"
                 (click)="onExport($event)">
                 @if (!(residueDS.loading$ | async)&&!(isExportingPDF)) {
                 <i class="fas fa-file-export"></i>
