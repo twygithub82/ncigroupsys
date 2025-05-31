@@ -86,7 +86,7 @@
             <mat-select formControlName="location_cv">
               @for (codeValue of data.populateData.partLocationCvList; track codeValue) {
               <mat-option [value]="codeValue.code_val"
-                (onSelectionChange)="onOptionClicked($event, codeValue.code_val,'location_cv');">{{codeValue.description}}</mat-option>
+                (onSelectionChange)="onOptionClicked($event, codeValue.code_val, 'location_cv')">{{codeValue.description}}</mat-option>
               }
             </mat-select>
             <!-- @if (repairPartForm.get('location_cv')?.hasError('required')) {
@@ -119,7 +119,7 @@
           </mat-form-field>
         </div>
         <div class="col-xl col-lg col-md col-sm mb-1">
-          @if (repairDS.canAmend(repair)) {
+          @if (canEdit()) {
           <button mat-mini-fab color="primary" [disabled]="!this.repairPartForm.get('part_name')?.value"
             (click)="searchPart()">
             <mat-icon>search</mat-icon>
@@ -170,7 +170,7 @@
           </mat-icon>
           {{data.translatedLangText.ADD_ANOTHER}}</button>
         }
-        @if (repairDS.canAmend(this.repair)) {
+        @if (canEdit()) {
         <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" class="m-l-5"
           (click)="submit(false)">
           <mat-icon>

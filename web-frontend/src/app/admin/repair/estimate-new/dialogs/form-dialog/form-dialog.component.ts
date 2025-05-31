@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormContro
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule, MatOptionModule,MatOptionSelectionChange } from '@angular/material/core';
+import { MatNativeDateModule, MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,7 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule,MatSelectChange  } from '@angular/material/select';
+import { MatSelectModule, MatSelectChange } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
@@ -31,6 +31,7 @@ import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, Subject, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 
 export interface DialogData {
@@ -102,7 +103,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     // Set the defaults
@@ -136,21 +138,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.fb.group({
       guid: [this.repairPart.guid],
       tariff_repair_guid: [this.repairPart.tariff_repair_guid],
-      part_name: [{ value: this.repairPart.tariff_repair?.part_name, disabled: !this.repairDS.canAmend(this.repair) }],
+      part_name: [{ value: this.repairPart.tariff_repair?.part_name, disabled: !this.canEdit() }],
       repair_guid: [this.repairPart.repair_guid],
-      description: [{ value: this.repairPart.description, disabled: !this.repairDS.canAmend(this.repair) }],
-      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.repairDS.canAmend(this.repair) }],
-      comment: [{ value: this.repairPart.comment, disabled: !this.repairDS.canAmend(this.repair) }],
-      remarks: [{ value: this.repairPart.remarks, disabled: !this.repairDS.canAmend(this.repair) }],
-      quantity: [{ value: this.repairPart.quantity, disabled: !this.repairDS.canAmend(this.repair) }],
-      hour: [{ value: this.repairPart.hour, disabled: !this.repairDS.canAmend(this.repair) }],
-      group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.repairDS.canAmend(this.repair) }],
-      subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.repairDS.canAmend(this.repair) }],
-      dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.repairDS.canAmend(this.repair) }],
-      length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.repairDS.canAmend(this.repair) }],
-      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.repairDS.canAmend(this.repair) }],
-      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.repairDS.canAmend(this.repair) }],
-      material_cost: [{ value: this.repairPart.material_cost, disabled: !this.repairDS.canAmend(this.repair) }]
+      description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
+      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }],
+      comment: [{ value: this.repairPart.comment, disabled: !this.canEdit() }],
+      remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }],
+      quantity: [{ value: this.repairPart.quantity, disabled: !this.canEdit() }],
+      hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
+      group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
+      subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
+      dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.canEdit() }],
+      length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.canEdit() }],
+      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
+      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
+      material_cost: [{ value: this.repairPart.material_cost, disabled: !this.canEdit() }]
     });
   }
 
@@ -289,7 +291,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if (value) {
           this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
           if (value.child_code) {
-            if (this.repairDS.canAmend(this.repair)) {
+            if (this.canEdit()) {
               subgroupName?.enable();
             }
             if ((this.subgroupNameCvList?.length ?? 0) > 1) {
@@ -327,8 +329,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         if (value.includes('4X')) {
           this.SetRepair4X(false);
         } else {
-          this.SetRepair4X(true);
           this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost?.toFixed(2) ?? 0.00);
+          this.SetRepair4X(true);
         }
       })
     ).subscribe();
@@ -346,32 +348,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     ).subscribe();
   }
 
-  // handleValueChange(value: any) {
-  //   this.valueChangesDisabled = true;
-  //   if (value) {
-  //     this.partNameFilteredList = this.partNameList?.filter(item =>
-  //       item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
-  //     );
-  //     const isValid = this.partNameList?.some(item => item === value);
-  //     if (isValid) {
-  //       // Only search if the value exists in the partNameList
-  //       this.trDS.searchDistinctDimension(value).subscribe(data => {
-  //         this.dimensionList = data;
-  //         if (!this.dimensionList.length) {
-  //           this.repairPartForm?.get('dimension')?.disable();
-  //           this.getCustomerCost(value, undefined, undefined);
-  //         } else {
-  //           this.repairPartForm?.get('dimension')?.enable();
-  //         }
-  //       });
-  //     }
-  //   } else {
-  //     // If no value is entered, reset the filtered list to the full list
-  //     this.partNameFilteredList = this.partNameList;
-  //   }
-  //   this.valueChangesDisabled = false;
-  // }
-
   findInvalidControls() {
     const controls = this.repairPartForm.controls;
     for (const name in controls) {
@@ -381,32 +357,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  // REPDamage(damages: any[]): RPDamageRepairItem[] {
-  //   const damage = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0);
-
-  //   damage.forEach((x: any) => {
-  //     if (damages.includes(x.code_cv)) {
-  //       x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit'
-  //     }
-  //   });
-
-  //   return damages.map(dmg => {
-  //     return this.repDrDS.createREPDamage(undefined, undefined, dmg)
-  //   });
-  // }
-
-  SetRepair4X(isEnable: boolean) {
+  SetRepair4X(isResetDisable: boolean) {
     const quantity = this.repairPartForm?.get('quantity');
     const hour = this.repairPartForm?.get('hour');
-    const material_cost = this.repairPartForm?.get('material_cost');
-    if (!isEnable) {
+    if (!isResetDisable) {
       quantity?.setValue(0);
       quantity?.disable();
       hour?.setValue(0);
       hour?.disable();
     } else {
-      quantity?.enable();
-      hour?.enable();
+      if (this.canEdit()) {
+        quantity?.enable();
+        hour?.enable();
+      }
     }
   }
 
@@ -589,44 +552,35 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   onSelectObjectSelectionChange(event: MatSelectChange, formControlName: string): void {
-    var ctr=this.repairPartForm.get(formControlName)
+    var ctr = this.repairPartForm.get(formControlName)
     const currentValue = ctr?.value;
     if (currentValue === event.value) {
       // Deselect
       ctr?.setValue(null);
-     
-    } 
-    else
-    {
+    }
+    else {
       ctr?.setValue(event.value);
     }
-
   }
-
 
   onOptionClicked(event: MatOptionSelectionChange, value: string, formControlName: string) {
     if (!event.isUserInput || !event.source.selected) {
       return; // Prevent double or non-user-triggered calls
     }
-  
-    var ctr=this.repairPartForm.get(formControlName)
-    if(ctr)
-    {
-      if (event.source.selected && ctr.value === value)
-      {
+
+    var ctr = this.repairPartForm.get(formControlName)
+    if (ctr) {
+      if (event.source.selected && ctr.value === value) {
         ctr.setValue(null);
-       // event.source.deselect();
       }
-      // else
-      // {
-      //   ctr.setValue(value);
-      // }
     }
-    // if (event.source.selected && this.selectedValue === value) {
-    //   // Deselect if same item is selected again
-    //   this.selectedValue = null;
-    // } else if (event.source.selected) {
-    //   this.selectedValue = value;
-    // }
+  }
+
+  canEdit() {
+    return this.isAllowEdit() && this.repairDS.canAmend(this.repair);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
   }
 }

@@ -219,7 +219,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
-  yesnoCvList: CodeValuesItem[] = []
   soTankStatusCvList: CodeValuesItem[] = []
   purposeOptionCvList: CodeValuesItem[] = []
   testTypeCvList: CodeValuesItem[] = []
@@ -433,7 +432,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   public loadData() {
     const queries = [
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
-      { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'soTankStatusCv', codeValType: 'SO_TANK_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'testTypeCv', codeValType: 'TEST_TYPE' },
@@ -467,9 +465,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
           });
         });
       }
-    });
-    this.cvDS.connectAlias('yesnoCv').subscribe(data => {
-      this.yesnoCvList = data;
     });
     this.cvDS.connectAlias('soTankStatusCv').subscribe(data => {
       this.soTankStatusCvList = data;
@@ -597,21 +592,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       labour_cost_discount: this.repairItem!.labour_cost_discount,
       material_cost_discount: this.repairItem!.material_cost_discount
     });
-
-    const isEditable = this.repairDS.canAmend(this.repairItem);
-    this.repairForm?.get('surveyor_id')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('labour_cost_discount')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('material_cost_discount')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('remarks')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
+    
+    if (!this.canEdit()) {
+      this.repairForm?.get('surveyor_id')?.disable();
+      this.repairForm?.get('labour_cost_discount')?.disable();
+      this.repairForm?.get('material_cost_discount')?.disable();
+      this.repairForm?.get('remarks')?.disable();
+    }
   }
 
   getCustomerLabourPackage(customer_company_guid: string) {
@@ -724,7 +711,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         populateData: {
           groupNameCvList: this.groupNameCvList,
           subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
           repairCodeCvList: this.repairCodeCvList,
@@ -764,7 +750,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         populateData: {
           groupNameCvList: this.groupNameCvList,
           subgroupNameCvList: this.subgroupNameCvList,
-          yesnoCvList: this.yesnoCvList,
           partLocationCvList: this.partLocationCvList,
           damageCodeCvList: this.damageCodeCvList,
           repairCodeCvList: this.repairCodeCvList,
@@ -1093,10 +1078,6 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     return true;//!this.storingOrderItem.status_cv || (this.sotList?.data.some(item => item.action) ?? false);
   }
 
-  getYesNoDescription(codeValType: string): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.yesnoCvList);
-  }
-
   getSoStatusDescription(codeValType: string): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.soTankStatusCvList);
   }
@@ -1379,7 +1360,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   hasMenuItems(row: any): boolean {
     return (
-      this.repairDS.canAmend(this.repairItem)
+      this.isAllowEdit()
     );
   }
 
@@ -1389,5 +1370,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       this.router.navigate(['/admin/repair/estimate']); // default route if no referrer
     }
+  }
+
+  canEdit() {
+    return this.isAllowEdit() && this.repairDS.canAmend(this.repairItem);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
   }
 }
