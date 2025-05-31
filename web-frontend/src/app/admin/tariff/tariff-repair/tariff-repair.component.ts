@@ -136,7 +136,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   hasNextPage = false;
   hasPreviousPage = false;
   selectedParts: any[] = [];
-  selection = new SelectionModel<TariffRepairItem>(true, []);
+  selection = new SelectionModel<any>(true, []);
 
   id?: number;
   pcForm?: UntypedFormGroup;
@@ -452,6 +452,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
+      disableClose: true,
       width: '80vw',
       //height: '90vh',
       data: {
@@ -477,13 +478,17 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
+
+    const tariffRepair = this.selection.selected.map(x => x.tariff_repair);
+
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
+      disableClose: true,
       width: '65vw',
       //height: '1000px',
       data: {
         action: 'new',
         langText: this.langText,
-        selectedItems: this.selection.selected
+        selectedItems: tariffRepair
       }
     });
 
@@ -507,6 +512,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     var rows: TariffRepairItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
+      disableClose: true,
       width: '65vw',
       //height: '1000px',
       //height: '90vh',
