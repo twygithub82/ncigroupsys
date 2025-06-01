@@ -87,6 +87,7 @@ import { ResidueEstPartGO } from 'app/data-sources/residue-part';
 import { OverwriteRepairApprovalFormDialogComponent } from './overwrite-repair-appr-form-dialog/overwrite-repair-appr-form-dialog.component';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { PreviewRepairEstFormDialog } from '@shared/preview/preview_repair_estimate/preview-repair-estimate.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -1055,10 +1056,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   displayDateTime(input: number | undefined): string | undefined {
     var dateTime = Utility.convertEpochToDateTimeStr(input);
     if (dateTime && dateTime !== '-') {
-        const parts = dateTime.split(' ');
-        if (parts.length >= 2) {
-            dateTime = `${parts[0]} - ${parts[1]}`;
-        }
+      const parts = dateTime.split(' ');
+      if (parts.length >= 2) {
+        dateTime = `${parts[0]} - ${parts[1]}`;
+      }
     }
     return dateTime;
   }
@@ -1255,12 +1256,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   repairDialog(event: Event, repair: RepairItem) {
     this.preventDefault(event);
-    if (repair.status_cv === 'PENDING' || repair.status_cv === 'CANCELED') return;
+    // if (repair.status_cv === 'PENDING' || repair.status_cv === 'CANCELED') return;
     // this.router.navigate(['/admin/repair/estimate/edit', this.sot?.guid, repair.guid], {
     //   state: { from: this.router.url } // store current route
     // });
 
-    if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
+    // if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1268,17 +1269,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+    const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
       // width: '794px',
-      // height: '80vh',
-      position: { top: '-9999px', left: '-9999px' },
+      height: '90vh',
+      // position: { top: '-9999px', left: '-9999px' },
       data: {
-        type: this.sot?.purpose_repair_cv,
         repair_guid: repair?.guid,
-        customer_company_guid: this.sot?.storing_order?.customer_company_guid,
-        estimate_no: repair?.estimate_no,
-        repairEstimatePdf: undefined,
-        retrieveFile: true
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
@@ -2292,7 +2288,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         if (purpose === 'steaming') {
           return this.isNoPurpose(this.sot, 'steaming') && this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'repair');
         } else if (purpose === 'cleaning') {
-          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming') && !this.anyActiveRepair();
+          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming') && !this.anyActiveRepair(true);
         } else if (purpose === 'repair') {
           return this.isNoPurpose(this.sot, 'repair') && this.isNoPurpose(this.sot, 'steaming');
         } else if (purpose === 'storage') {

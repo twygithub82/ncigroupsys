@@ -45,7 +45,7 @@
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
-                          {{ccDS.displayName(cc)}}
+                          {{ccDS.displayCodeDashName(cc)}}
                         </mat-option>
                         }
                       </mat-autocomplete>
@@ -72,7 +72,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="eir_picker">
+                      <mat-date-range-input [rangePicker]="eir_picker" [max]="getMaxDate()">
                         <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
                         <input matEndDate placeholder="End date" formControlName="eir_dt_end">
                       </mat-date-range-input>
@@ -89,7 +89,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="est_picker">
+                      <mat-date-range-input [rangePicker]="est_picker" [max]="getMaxDate()">
                         <input matStartDate placeholder="Start date" formControlName="est_dt_start">
                         <input matEndDate placeholder="End date" formControlName="est_dt_end">
                       </mat-date-range-input>
@@ -149,163 +149,158 @@
             }
             @for(row of sotList; track row){
             <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
-              <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
-                <mat-card-title [ngClass]="{'pt-1': true}">
-                  {{row.tank_no}}
-                </mat-card-title>
-                <mat-card-actions class="pt-0 pb-0">
-                  @if (copiedResidueEst) {
-                  <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
-                    (click)="pasteResidueEstimate($event,row,copiedResidueEst)">
-                    <!-- [routerLink]="['/admin/repair/estimate/duplicate', row.guid, copiedResidueEst!.guid]"> -->
-                    <mat-icon class="col-white">content_paste</mat-icon>
-                  </button>
-                  }
-                  @else {
-                  <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW"
-                    (click)="addResidueEstimate($event,row)">
-                    <!-- [routerLink]="['/admin/repair/estimate/new', row.guid]"> -->
-                    <mat-icon class="col-white">add</mat-icon>
-                  </button>
-                  }
-                </mat-card-actions>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="row">
-                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span> {{
-                    ccDS.displayName(row.storing_order?.customer_company)}}
-                  </div>
-                  <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
-                    {{igDS.getInGateItem(row.in_gate)?.eir_no}}
-                  </div> -->
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
-                    {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
-                  </div>
-                  <div class="col-xl-2-5 col-lg-2-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.JOB_NO}}:</span> {{
-                    row.job_no}}
-                  </div>
-                  <div class="col-xl-1-5 col-lg-1-5 col-md-6 col-sm-6 mb-1">
-                    <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                    {{getTankStatusDescription(row.tank_status_cv)}}
-                  </div>
-                </div>
-                @if ((filterDeleted(row.residue || [])?.length ?? 0) > 0) {
-                <div class="responsive_table">
-                  <table mat-table [dataSource]="filterDeleted(row.residue || [])" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                    <ng-container matColumnDef="select">
-                      <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                          [ngClass]="'tbl-checkbox'">
-                        </mat-checkbox>
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let residueRow">{{residueRow.guid}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="estimate_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.ESTIMATE_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{residueRow.estimate_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="net_cost">
-                      <mat-header-cell *matHeaderCellDef>
-                        {{translatedLangText.NET_COST}}
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let residueRow">
-                        <span class="mobile-label">{{translatedLangText.NET_COST}}:</span>
-                        <span>$</span><span class="ms-3">{{residueRow.net_cost}}</span>
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.STATUS}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(residueRow.status_cv)}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="remarks">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.REMARKS}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let residueRow" class="">
-                        <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{residueRow.remarks}}
-                      </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="actions">
-                      <mat-header-cell
-                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                        *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let residueRow; let i=index;"
-                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                          <mat-icon>more_vert</mat-icon>
+              <mat-accordion>
+                <mat-expansion-panel [ngClass]="{}"  class="alternate-panel" [expanded]="false">
+                  <mat-expansion-panel-header class="tank-header">
+                    <mat-panel-description>
+                      <div class="w-xl-15 w-lg-50">
+                        <span class="font-bold">{{row.tank_no}}</span>
+                      </div>
+                      <div class="w-xl-35 w-lg-50">
+                        <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
+                        {{row.storing_order?.customer_company?.name}}
+                      </div>
+                      <div class="w-xl-20 w-lg-50">
+                        <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
+                        {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
+                      </div>
+                      <div class="w-xl-20 w-lg-50">
+                        <span class="font-bold">{{translatedLangText.JOB_NO}}:</span>
+                        {{row.job_no}}
+                      </div>
+                      <div class="w-xl-15 w-lg-50">
+                        <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                        {{getTankStatusDescription(row.tank_status_cv)}}
+                      </div>
+                      <div class="m-l-">
+                        @if (copiedResidueEst) {
+                        <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
+                          (click)="pasteResidueEstimate($event,row,copiedResidueEst)">
+                          <mat-icon class="col-white">content_paste</mat-icon>
                         </button>
-                        <mat-menu #menu="matMenu">
-                          @if (residueDS.canApprove(residueRow)) {
-                          <button mat-menu-item (click)="approveRow($event,residueRow)">
-                            <mat-icon>check</mat-icon>
-                            <span>{{translatedLangText.APPROVE}}</span>
-                          </button>
-                          }
-                          @if (residueDS.canCopy(residueRow)) {
-                          <button mat-menu-item (click)="copyResidueEst(residueRow)">
-                            <mat-icon>content_copy</mat-icon>
-                            <span>{{translatedLangText.COPY}}</span>
-                          </button>
-                          }
-                          @if (residueDS.canRollback(residueRow)) {
-                          <button mat-menu-item (click)="rollbackRow(residueRow)">
-                            <mat-icon>undo</mat-icon>
-                            <span>{{translatedLangText.ROLLBACK}}</span>
-                          </button>
-                          }
-                          @if (residueDS.canCancel(residueRow)) {
-                          <button mat-menu-item (click)="cancelRow(residueRow)">
-                            <mat-icon>cancel</mat-icon>
-                            <span>{{translatedLangText.CANCEL}}</span>
-                          </button>
-                          }
-                          @if (residueDS.canNoAction(residueRow)) {
-                          <button mat-menu-item (click)="onNoAction($event,residueRow)">
-                            <mat-icon>close</mat-icon>
-                            <span>{{translatedLangText.NO_ACTION}}</span>
-                          </button>
-                          }
-                        </mat-menu>
-                      </mat-cell>
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                      matRipple (click)="updateResidueEstimate($event,row,residueRow)">
-                    </mat-row>
-                  </table>
-                </div>
-                }
-                @else {
-                <mat-divider></mat-divider>
-                {{translatedLangText.NO_RESULT}}
-                }
-              </mat-card-content>
-              <mat-card-actions [ngClass]="'empty-card-actions'">
-              </mat-card-actions>
+                        }
+                        @else {
+                        <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW"
+                          (click)="addResidueEstimate($event,row)">
+                          <mat-icon class="col-white">add</mat-icon>
+                        </button>
+                        }
+                      </div>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <mat-card-content>
+                    <mat-divider></mat-divider>
+                    @if ((filterDeleted(row.residue || [])?.length ?? 0) > 0) {
+                    <div class="responsive_table">
+                      <table mat-table [dataSource]="filterDeleted(row.residue || [])" matSort
+                        class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                        <ng-container matColumnDef="select">
+                          <mat-header-cell *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row"
+                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
+                              [ngClass]="'tbl-checkbox'">
+                            </mat-checkbox>
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="id">
+                          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                          <mat-cell *matCellDef="let residueRow">{{residueRow.guid}}</mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="estimate_no">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.ESTIMATE_NO}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let residueRow" class="">
+                            <span
+                              class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{residueRow.estimate_no}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="net_cost">
+                          <mat-header-cell *matHeaderCellDef>
+                            {{translatedLangText.COST}}
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let residueRow">
+                            <span class="mobile-label">{{translatedLangText.COST}}:</span>
+                            <span class>{{residueRow.net_cost}}</span>
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="status_cv">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.STATUS}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let residueRow" class="">
+                            <span
+                              class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(residueRow.status_cv)}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="remarks">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.REMARKS}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let residueRow" class="">
+                            <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{residueRow.remarks}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="actions">
+                          <mat-header-cell
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                            *matHeaderCellDef></mat-header-cell>
+                          <mat-cell *matCellDef="let residueRow; let i=index;"
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                              <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                              @if (residueDS.canApprove(residueRow)) {
+                              <button mat-menu-item (click)="approveRow($event,residueRow)">
+                                <mat-icon>check</mat-icon>
+                                <span>{{translatedLangText.APPROVE}}</span>
+                              </button>
+                              }
+                              @if (residueDS.canCopy(residueRow)) {
+                              <button mat-menu-item (click)="copyResidueEst(residueRow)">
+                                <mat-icon>content_copy</mat-icon>
+                                <span>{{translatedLangText.COPY}}</span>
+                              </button>
+                              }
+                              @if (residueDS.canRollback(residueRow)) {
+                              <button mat-menu-item (click)="rollbackRow(residueRow)">
+                                <mat-icon>undo</mat-icon>
+                                <span>{{translatedLangText.ROLLBACK}}</span>
+                              </button>
+                              }
+                              @if (residueDS.canCancel(residueRow)) {
+                              <button mat-menu-item (click)="cancelRow(residueRow)">
+                                <mat-icon>cancel</mat-icon>
+                                <span>{{translatedLangText.CANCEL}}</span>
+                              </button>
+                              }
+                              @if (residueDS.canNoAction(residueRow)) {
+                              <button mat-menu-item (click)="onNoAction($event,residueRow)">
+                                <mat-icon>close</mat-icon>
+                                <span>{{translatedLangText.NO_ACTION}}</span>
+                              </button>
+                              }
+                            </mat-menu>
+                          </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                          matRipple (click)="updateResidueEstimate($event,row,residueRow)">
+                        </mat-row>
+                      </table>
+                    </div>
+                    }
+                  </mat-card-content>
+                </mat-expansion-panel>
+              </mat-accordion>
             </mat-card>
             }
+
+
             <!-- No result -->
             @if (!(sotDS.loading$ | async) && !sotList.length) {
             <mat-divider></mat-divider>

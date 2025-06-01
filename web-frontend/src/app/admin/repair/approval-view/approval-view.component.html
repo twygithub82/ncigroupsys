@@ -439,7 +439,7 @@
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
                         <mat-checkbox color="primary" (click)="selectOwner($event, row)" [checked]="row.owner"
-                          [ngClass]="'tbl-checkbox'">
+                          [ngClass]="'tbl-checkbox'" [disabled]="isDisabled(row)">
                         </mat-checkbox>
                       </mat-cell>
                     </ng-container>
@@ -448,10 +448,6 @@
                       [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-blue font-bold': true}"
                       [style.cursor]="'pointer'" matRipple>
                     </mat-row>
-                    <!-- <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
-                        [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
-                        (click)="editApproveDetails($event, row, row.index)" [style.cursor]="'pointer'" matRipple>
-                      </mat-row> -->
                     <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
                       [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
                       [style.cursor]="'pointer'" matRipple>
@@ -895,7 +891,7 @@
                   </button>
                 </div>
                 <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 align-right">
-                  @if (repairDS.canRollbackStatus(repairItem, repList)) {
+                  @if (isAllowEdit() && repairDS.canRollbackStatus(repairItem, repList)) {
                   <button mat-flat-button color="accent" [disabled]="(repairDS.actionLoading$ | async)"
                     (click)="onRollback($event)">
                     <mat-icon>
@@ -908,9 +904,9 @@
                     {{translatedLangText.ROLLBACK}}
                   </button>
                   }
-                  @if (canApprove()) {
-                  <button mat-flat-button color="basic" [disabled]="(repairDS.actionLoading$ | async)"
-                    class="m-l-5" color="primary" (click)="onApprove($event)">
+                  @if (isAllowEdit() && canApprove()) {
+                  <button mat-flat-button color="basic" [disabled]="(repairDS.actionLoading$ | async)" class="m-l-5"
+                    color="primary" (click)="onApprove($event)">
                     <mat-icon>
                       @if (!(teamDS.loading$ | async) && !(repairDS.actionLoading$ | async)) {
                       save
@@ -921,7 +917,7 @@
                     {{translatedLangText.UPDATE}}
                   </button>
                   }
-                  @if (repairDS.canCancel(repairItem)) {
+                  @if (isAllowEdit() && repairDS.canCancel(repairItem)) {
                   <button mat-flat-button color="warn" [disabled]="(repairDS.actionLoading$ | async)" class="m-l-5"
                     (click)="onCancel($event)">
                     <mat-icon>
@@ -934,7 +930,7 @@
                     {{translatedLangText.NO_ACTION}}
                   </button>
                   }
-                  @if (repairDS.canAbort(repairItem, repList)) {
+                  @if (isAllowEdit() && repairDS.canAbort(repairItem, repList)) {
                   <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-r-5"
                     (click)="onAbort($event)">
                     <mat-icon>

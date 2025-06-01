@@ -165,7 +165,7 @@
             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
             @if (canStartJob(row)) {
             <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
-              <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
+              <mat-icon [ngClass]="{'custom-timer-icon': row.time_table?.length}" disabled>timer</mat-icon>
             </button>
             }
             @if (canCompleteJob(row, isStarted(row))) {

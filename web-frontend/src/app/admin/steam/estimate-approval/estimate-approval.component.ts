@@ -173,11 +173,11 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   availableProcessStatus: string[] = [
     'ASSIGNED',
     //'PARTIAL_ASSIGNED',
-    //'APPROVED',
+    'APPROVED',
     'JOB_IN_PROGRESS',
-    //'COMPLETED',
+    'COMPLETED',
     'PENDING',
-    //'NO_ACTION'
+    'NO_ACTION'
   ]
   searchForm?: UntypedFormGroup;
 

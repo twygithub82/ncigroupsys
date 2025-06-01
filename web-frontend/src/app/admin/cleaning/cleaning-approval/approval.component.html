@@ -231,7 +231,7 @@
                         <span>{{translatedLangText.NO_ACTION}}</span>
                       </button>
                       @if (canExport(row)) {
-                      <button mat-menu-item (click)="onExport($event, row)">
+                      <button mat-menu-item (click)="onExport($event, row)" class="accent-darker">
                         <i class="fas fa-file-export"></i>
                         {{translatedLangText.EXPORT}}
                       </button>

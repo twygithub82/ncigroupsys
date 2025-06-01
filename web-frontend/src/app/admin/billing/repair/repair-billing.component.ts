@@ -24,12 +24,13 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
+import { PreviewRepairEstFormDialog } from '@shared/preview/preview_repair_estimate/preview-repair-estimate.component';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
@@ -44,8 +45,6 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { RepairEstimatePreviewComponent } from './preview_repair_estimate/estimate-preview.component';
-import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-repair-billing',
@@ -205,7 +204,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   tankStatusCvListDisplay: CodeValuesItem[] = [];
   yardCvList: CodeValuesItem[] = [];
   repairOptionCvList: CodeValuesItem[] = [];
-  
+
 
   currentStartCursor: string | undefined = undefined;
   currentEndCursor: string | undefined = undefined;
@@ -369,7 +368,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
-     this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
+    this.cvDS.connectAlias('repairOptionCv').subscribe(data => {
       this.repairOptionCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
@@ -1276,32 +1275,61 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     return '-';
   }
 
-  showEstimateDetail(event: Event, row: RepairItem) {
-    this.preventDefault(event);  // Prevents the form submission
+  repairDialog(event: Event, repair: RepairItem) {
+    this.preventDefault(event);
+    // if (repair.status_cv === 'PENDING' || repair.status_cv === 'CANCELED') return;
+    // this.router.navigate(['/admin/repair/estimate/edit', this.sot?.guid, repair.guid], {
+    //   state: { from: this.router.url } // store current route
+    // });
+
+    // if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    //  const addSot = row ?? new RepairPartItem();
-    // addSot.repair_guid = addSot.repair_guid;
-    const dialogRef = this.dialog.open(RepairEstimatePreviewComponent, {
-      width: '90vw',
+
+    const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
+      // width: '794px',
       height: '90vh',
+      // position: { top: '-9999px', left: '-9999px' },
       data: {
-
-        repair_guid: row.guid,
-        sot_guid: row.sot_guid
-
+        repair_guid: repair?.guid,
       },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
-
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
     });
   }
+
+  // showEstimateDetail(event: Event, row: RepairItem) {
+  //   this.preventDefault(event);  // Prevents the form submission
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   //  const addSot = row ?? new RepairPartItem();
+  //   // addSot.repair_guid = addSot.repair_guid;
+  //   const dialogRef = this.dialog.open(RepairEstimatePreviewComponent, {
+  //     width: '90vw',
+  //     height: '90vh',
+  //     data: {
+
+  //       repair_guid: row.guid,
+  //       sot_guid: row.sot_guid
+
+  //     },
+  //     direction: tempDirection
+  //   });
+
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+
+  //   });
+  // }
 
   getRepairOptionDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.repairOptionCvList);
@@ -1311,10 +1339,9 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     return Utility.formatNumberDisplay(value);
   }
 
-  getTotalCost(sotRow :StoringOrderTankItem)
-  {
-    var repairs : RepairItem[]=this.filterDeleted(sotRow.repair || []);
-     const totalCost = repairs.reduce((accumulator, s) => {
+  getTotalCost(sotRow: StoringOrderTankItem) {
+    var repairs: RepairItem[] = this.filterDeleted(sotRow.repair || []);
+    const totalCost = repairs.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
       var itm: any = s;
       return accumulator + itm.total_cost;

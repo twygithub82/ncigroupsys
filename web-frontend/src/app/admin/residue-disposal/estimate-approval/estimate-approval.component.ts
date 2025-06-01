@@ -155,6 +155,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     SEARCH: 'COMMON-FORM.SEARCH',
+    COST: 'COMMON-FORM.COST'
   }
 
   availableTankStatus: string[] = [
@@ -780,6 +781,10 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     //     this.resetForm();
     //   }
     // });
+  }
+
+    getMaxDate(){
+    return new Date();
   }
 
   resetForm() {

@@ -45,7 +45,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { Observable, Subscription } from 'rxjs';
+import { EMPTY, Observable, of, Subscription, switchMap } from 'rxjs';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
@@ -815,45 +815,95 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  completeJob(event: Event) {
-    this.preventDefault(event);  // Prevents the form submission
-    if (this.isStarted()) {
-      const found = this.jobOrderItem?.time_table?.find(x => x?.start_time && !x?.stop_time);
-    
-      if (found) {
+  // completeJob(event: Event) {
+  //   this.preventDefault(event);  // Prevents the form submission
+  //   if (this.isStarted()) {
+  //     const found = this.jobOrderItem?.time_table?.find(x => x?.start_time && !x?.stop_time);
+
+  //     if (found) {
+  //       const stopJobParam = [new TimeTableItem({
+  //         ...found,
+  //         stop_time: Utility.convertDate(new Date()) as number,
+  //         job_order: new JobOrderGO({ ...this.jobOrderItem })
+  //       })];
+
+  //       this.ttDS.stopJobTimer(stopJobParam).subscribe(() => {
+  //         this.completeJobOrder();
+  //       });
+  //     }
+  //   } else {
+  //     this.completeJobOrder();
+  //   }
+  // }
+
+  // completeJobOrder(): void {
+  //   const completeJobParam = [new UpdateJobOrderRequest({
+  //     guid: this.jobOrderItem?.guid,
+  //     remarks: this.jobOrderItem?.remarks,
+  //     start_dt: this.jobOrderItem?.start_dt,
+  //     complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+  //   })];
+
+  //   this.joDS.completeJobOrder(completeJobParam).subscribe(result => {
+  //     if ((result?.data?.completeJobOrder ?? 0) > 0) {
+  //       const firstJobPart = this.jobOrderItem?.repair_part?.[0];
+  //       const repairStatusReq = new RepairStatusRequest({
+  //         guid: firstJobPart?.repair?.guid,
+  //         sot_guid: this.jobOrderItem?.storing_order_tank?.guid,
+  //         action: "COMPLETE"
+  //       });
+
+  //       this.repairDS.updateRepairStatus(repairStatusReq).subscribe(res => {
+  //         console.log(res);
+  //         if ((res?.data?.updateRepairStatus ?? 0) > 0) {
+  //           this.handleSaveSuccess(res?.data?.updateRepairStatus);
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
+
+  completeJob(event: Event): void {
+    this.preventDefault(event);
+
+    const stopJob$ = this.isStarted()
+      ? (() => {
+        const found = this.jobOrderItem?.time_table?.find(x => x?.start_time && !x?.stop_time);
+        if (!found) return of(null); // Nothing to stop
         const stopJobParam = [new TimeTableItem({
           ...found,
           stop_time: Utility.convertDate(new Date()) as number,
           job_order: new JobOrderGO({ ...this.jobOrderItem })
         })];
-    
-        this.ttDS.stopJobTimer(stopJobParam).subscribe(() => {
-          this.completeJobOrder();
-        });
-      }
-    } else {
-      this.completeJobOrder();
-    }
-  }
-  
-  completeJobOrder(): void {
-    const completeJobParam = [new UpdateJobOrderRequest({
-      guid: this.jobOrderItem?.guid,
-      remarks: this.jobOrderItem?.remarks,
-      start_dt: this.jobOrderItem?.start_dt,
-      complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-    })];
-  
-    this.joDS.completeJobOrder(completeJobParam).subscribe(result => {
-      if ((result?.data?.completeJobOrder ?? 0) > 0) {
-        const firstJobPart = this.jobOrderItem?.repair_part?.[0];
-        const repairStatusReq = new RepairStatusRequest({
-          guid: firstJobPart?.repair?.guid,
-          sot_guid: this.jobOrderItem?.storing_order_tank?.guid,
-          action: "COMPLETE"
-        });
-  
-        this.repairDS.updateRepairStatus(repairStatusReq).subscribe();
+        return this.ttDS.stopJobTimer(stopJobParam);
+      })()
+      : of(null);
+
+    stopJob$.pipe(
+      switchMap(() => {
+        const completeJobParam = [new UpdateJobOrderRequest({
+          guid: this.jobOrderItem?.guid,
+          remarks: this.jobOrderItem?.remarks,
+          start_dt: this.jobOrderItem?.start_dt,
+          complete_dt: this.jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+        })];
+        return this.joDS.completeJobOrder(completeJobParam);
+      }),
+      switchMap(result => {
+        if ((result?.data?.completeJobOrder ?? 0) > 0) {
+          const firstJobPart = this.jobOrderItem?.repair_part?.[0];
+          const repairStatusReq = new RepairStatusRequest({
+            guid: firstJobPart?.repair?.guid,
+            sot_guid: this.jobOrderItem?.storing_order_tank?.guid,
+            action: "COMPLETE"
+          });
+          return this.repairDS.updateRepairStatus(repairStatusReq);
+        }
+        return EMPTY;
+      })
+    ).subscribe(res => {
+      if ((res?.data?.updateRepairStatus ?? 0) > 0) {
+        this.handleSaveSuccess(res.data.updateRepairStatus);
       }
     });
   }

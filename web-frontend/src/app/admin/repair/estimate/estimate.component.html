@@ -166,7 +166,7 @@
               <mat-accordion multiple>
                 <mat-expansion-panel [ngClass]="{}" class="alternate-panel" [expanded]="false">
                   <!-- <mat-expansion-panel-header [ngClass]="{'tank-header': i % 2 !== 0}"> -->
-                    <mat-expansion-panel-header class="tank-header">
+                  <mat-expansion-panel-header class="tank-header">
                     <!-- <mat-panel-title>
                       <mat-card-header class="p-0 d-flex justify-content-between align-items-center">
                         <mat-card-title [ngClass]="'font-bold'">
@@ -194,6 +194,7 @@
                         <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
                         {{getRepairOptionDescription(row.purpose_repair_cv)}}
                       </div>
+                      @if (isAllowEdit()) {
                       <div class="m-l-">
                         @if (copiedRepair) {
                         <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
@@ -202,12 +203,15 @@
                         </button>
                         }
                         @else {
-                        <button mat-mini-fab color="primary" [matTooltip]="translatedLangText.NEW"
+                        @if (isAllowAdd()) {
+                        <button mat-mini-fab class="primary-light" [matTooltip]="translatedLangText.NEW"
                           [routerLink]="['/admin/repair/estimate/new', row.guid]">
                           <mat-icon class="col-white">add</mat-icon>
                         </button>
                         }
+                        }
                       </div>
+                      }
                     </mat-panel-description>
                   </mat-expansion-panel-header>
                   <mat-card-content>
@@ -273,13 +277,13 @@
                         <ng-container matColumnDef="net_cost">
                           <mat-header-cell *matHeaderCellDef
                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            {{translatedLangText.NET_COST}}
+                            {{translatedLangText.COST}}
                           </mat-header-cell>
                           <mat-cell *matCellDef="let repairRow"
                             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span class="mobile-tab-label">{{translatedLangText.NET_COST}}:</span>
+                            <span class="mobile-tab-label">{{translatedLangText.COST}}:</span>
                             <!-- <span>$</span><span class="ms-3">{{repairRow.net_cost}}</span> -->
-                            <span class="dollar-sign">$</span><span>{{repairRow.net_cost}}</span>
+                            <span>{{repairRow.net_cost}}</span>
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="status_cv">
@@ -309,6 +313,7 @@
                             *matHeaderCellDef></mat-header-cell>
                           <mat-cell *matCellDef="let repairRow; let i=index;"
                             [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                            @if (isAllowEdit()) {
                             <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                               <mat-icon>more_vert</mat-icon>
                             </button>
@@ -325,13 +330,14 @@
                                 <span>{{translatedLangText.ROLLBACK}}</span>
                               </button>
                               } -->
-                              @if (repairDS.canCancel(repairRow)) {
+                              @if (isAllowDelete() && repairDS.canCancel(repairRow)) {
                               <button mat-menu-item (click)="cancelRow(repairRow, row)">
                                 <mat-icon>cancel</mat-icon>
                                 <span>{{translatedLangText.CANCEL}}</span>
                               </button>
                               }
                             </mat-menu>
+                            }
                           </mat-cell>
                         </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

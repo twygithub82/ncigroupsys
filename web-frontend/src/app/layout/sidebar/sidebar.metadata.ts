@@ -11,4 +11,5 @@ export interface RouteInfo {
   submenu: RouteInfo[];
   queryParams?: Record<string, string | number | boolean>;
   modulePackage: string[];
+  expectedFunctions?: string[];
 }

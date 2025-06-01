@@ -41,30 +41,29 @@
             <div class="row">
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.NAME}}</mat-label>
-                    <mat-chip-grid #chipGrid>
-                      <!-- @for (cust of selectedCustomers; track cust) { -->
-                       @if(this.selectedCargo.length>0){
-                        <mat-chip-row color="primary" (click)="removeAllSelectedCargo()">
-                          <span> {{getSelectedCargoDisplay()}}</span>
-                          <button matChipRemove hidden>
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        </mat-chip-row>
-                       }
-                     
-                      <!-- } -->
-                   
+                  <mat-label>{{translatedLangText.NAME}}</mat-label>
+                  <mat-chip-grid #chipGrid>
+                    <!-- @for (cust of selectedCustomers; track cust) { -->
+                    @if(this.selectedCargo.length>0){
+                    <mat-chip-row color="primary" (click)="removeAllSelectedCargo()">
+                      <span> {{getSelectedCargoDisplay()}}</span>
+                      <button matChipRemove hidden>
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                    }
+
+                    <!-- } -->
+
                     <input #custInput formControlName="last_cargo" [matAutocomplete]="cargoCode"
                       [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                       (matChipInputTokenEnd)="add($event)">
-                    <mat-autocomplete #cargoCode="matAutocomplete" (optionSelected)="selected($event)" panelClass="no-tick-autocomplete">
+                    <mat-autocomplete #cargoCode="matAutocomplete" (optionSelected)="selected($event)"
+                      panelClass="no-tick-autocomplete">
                       @for (cc of last_cargoList; track cc) {
-                      <mat-option [value]="cc"  class="checkbox-option">
+                      <mat-option [value]="cc" class="checkbox-option">
                         <div class="horizontal-container"> <!-- Flex container -->
-                          <mat-checkbox 
-                            color="primary" 
-                            class="checkbox-item"  
+                          <mat-checkbox color="primary" class="checkbox-item"
                             (click)="onCheckboxClicked(cc); $event.stopPropagation()"
                             [checked]="itemSelected(cc) || false">
                           </mat-checkbox>
@@ -74,7 +73,7 @@
                       }
                     </mat-autocomplete>
                   </mat-chip-grid>
-                  </mat-form-field>
+                </mat-form-field>
               </div>
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width" appearance="fill">
@@ -187,12 +186,9 @@
               <mat-cell *matCellDef="let row">{{row.tariff_cleaning?.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="cargo">
-              <mat-header-cell *matHeaderCellDef
-                [ngClass]="''">
+              <mat-header-cell *matHeaderCellDef [ngClass]="''">
                 {{translatedLangText.NAME }}</mat-header-cell>
-              <mat-cell mat-cell
-                [ngClass]="''"
-                *matCellDef="let row">
+              <mat-cell mat-cell [ngClass]="''" *matCellDef="let row">
                 <span class="mobile-label">{{translatedLangText.NAME }}:</span>{{row.tariff_cleaning?.cargo}}
               </mat-cell>
             </ng-container>

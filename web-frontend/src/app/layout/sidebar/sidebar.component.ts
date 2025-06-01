@@ -234,11 +234,34 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
       this.callSidemenuCollapse();
     }
   }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
   }
+
+  // filterMenuByPackage(menu: RouteInfo[], modulePackage: string): RouteInfo[] {
+  //   return menu
+  //     .map(item => {
+  //       const filteredSubmenu = item.submenu
+  //         ? this.filterMenuByPackage(item.submenu, modulePackage)
+  //         : [];
+
+  //       const isVisible =
+  //         (!item.modulePackage || item.modulePackage.length === 0 || item.modulePackage.includes(modulePackage)) ||
+  //         filteredSubmenu.length > 0;
+
+  //       if (!isVisible) return null;
+
+  //       return {
+  //         ...item,
+  //         submenu: filteredSubmenu
+  //       };
+  //     })
+  //     .filter((item): item is RouteInfo => item !== null);
+  // }
+
   filterMenuByPackage(menu: RouteInfo[], modulePackage: string): RouteInfo[] {
     return menu
       .map(item => {
@@ -246,9 +269,21 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
           ? this.filterMenuByPackage(item.submenu, modulePackage)
           : [];
 
-        const isVisible =
-          (!item.modulePackage || item.modulePackage.length === 0 || item.modulePackage.includes(modulePackage)) ||
-          filteredSubmenu.length > 0;
+        // First: check function access
+        const hasFunctionAccess =
+          !item.expectedFunctions ||
+          item.expectedFunctions.length === 0 ||
+          this.authService.hasFunctions(item.expectedFunctions);
+
+        if (!hasFunctionAccess) return null;
+
+        // Then: check module access
+        const hasModuleAccess =
+          !item.modulePackage ||
+          item.modulePackage.length === 0 ||
+          item.modulePackage.includes(modulePackage);
+
+        const isVisible = hasModuleAccess || filteredSubmenu.length > 0;
 
         if (!isVisible) return null;
 

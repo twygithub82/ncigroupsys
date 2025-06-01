@@ -57,7 +57,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
-import {SteamEstimatePdfComponent} from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
+import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -203,7 +203,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
     BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
-    BILLING_TO: 'COMMON-FORM.BILLING-TO',
+    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     JOB_REFERENCE: 'COMMON-FORM.JOB-REFERENCE',
     QUANTITY: 'COMMON-FORM.QTY',
@@ -213,8 +214,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
     APPROVE: 'COMMON-FORM.APPROVE',
     ABORT: 'COMMON-FORM.ABORT',
-    TANK_STATUS: 'COMMON-FORM.TANK-STATUS'
-
+    TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
+    DETAILS: 'COMMON-FORM.DETAILS',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -942,9 +943,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.status_cv = "PENDING";
       newSteamItem.sot_guid = this.sotItem?.guid;
       newSteamItem.est_cost = this.getTotalCost();
-      newSteamItem.est_hour= this.getTotalLabourHour();
+      newSteamItem.est_hour = this.getTotalLabourHour();
       newSteamItem.rate = this.packageLabourItem?.cost;
-      newSteamItem.flat_rate=this.sotItem?.tank?.flat_rate;
+      newSteamItem.flat_rate = this.sotItem?.tank?.flat_rate;
       newSteamItem.steaming_part = [];
       this.deList.forEach(data => {
         var steamPart: SteamPartItem = new SteamPartItem(data);
@@ -973,9 +974,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.sot_guid = this.sotItem?.guid;
       updSteamItem.steaming_part = [];
       updSteamItem.est_cost = this.getTotalCost();
-      updSteamItem.est_hour= this.getTotalLabourHour();
+      updSteamItem.est_hour = this.getTotalLabourHour();
       updSteamItem.rate = this.packageLabourItem?.cost;
-      updSteamItem.flat_rate=this.sotItem?.tank?.flat_rate;
+      updSteamItem.flat_rate = this.sotItem?.tank?.flat_rate;
       updSteamItem.total_material_cost = this.getTotalMaterialCost();
       updSteamItem.total_labour_cost = this.getTotalApprovedLabourCost();
       this.deList.forEach(data => {
@@ -1089,6 +1090,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   isOwnerChange() {
     this.isOwner = !this.isOwner;
+  }
+
+  displayCustomerCompanyName(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
   }
 
   getBadgeClass(action: string): string {
@@ -1476,7 +1481,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (this.deList.length > 0) {
       this.deList.map(d => {
 
-        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null) 
+        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
           && (d.approve_part == null || d.approve_part == true)) {
           if (this.IsApproved()) {
             ret += d.approve_labour;
@@ -1497,7 +1502,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     let ret = 0;
     if (this.deList.length > 0) {
       this.deList.map(d => {
-        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null) 
+        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
           && (d.approve_part == null || d.approve_part == true)) {
           if (this.IsApproved()) {
             ret += (d.approve_labour * this.packageLabourItem?.cost!);
@@ -1540,7 +1545,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }, 0);
   }
 
-  getTotalLabourHour():number{
+  getTotalLabourHour(): number {
     return this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
@@ -1558,10 +1563,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
-          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0))+ ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
+          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)) + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
         }
         else {
-          return acc + ((row.quantity || 0) * (row.cost || 0))+  ((row.labour || 0) * (this.packageLabourItem?.cost || 0));
+          return acc + ((row.quantity || 0) * (row.cost || 0)) + ((row.labour || 0) * (this.packageLabourItem?.cost || 0));
         }
       }
       return acc; // If row is approved, keep the current accumulator value
@@ -1658,14 +1663,14 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           job_order: undefined
         })
       });
-      
-      
+
+
       re.total_labour_cost = this.getTotalApprovedLabourCost();
       re.total_material_cost = this.getTotalMaterialCost();
-      re.total_hour=this.getTotalLabourHour();
+      re.total_hour = this.getTotalLabourHour();
       re.total_cost = this.getTotalCost();
-      re.rate=this.packageLabourItem?.cost;
-      re.flat_rate= this.sotItem?.tank?.flat_rate;
+      re.rate = this.packageLabourItem?.cost;
+      re.flat_rate = this.sotItem?.tank?.flat_rate;
       console.log(re)
       this.steamDS.approveSteaming(re).subscribe(result => {
         console.log(result)
@@ -1762,32 +1767,32 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-   onExport(event: Event) {
-      this.preventDefault(event);
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      this.isExportingPDF=true;
-      const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
-        width: '794px',
-        height: '80vh',
-        data: {
-          steam_guid: this.steamItem?.guid,
-          estimate_no: this.steamItem?.estimate_no,
-          packageLabourCost: this.packageLabourItem?.cost
-        },
-        // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
-        direction: tempDirection
-      });
-      dialogRef.updatePosition({
-        top: '-9999px',  // Move far above the screen
-        left: '-9999px'  // Move far to the left of the screen
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        this.isExportingPDF=false;
-      });
+  onExport(event: Event) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+    this.isExportingPDF = true;
+    const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        steam_guid: this.steamItem?.guid,
+        estimate_no: this.steamItem?.estimate_no,
+        packageLabourCost: this.packageLabourItem?.cost
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF = false;
+    });
+  }
 }

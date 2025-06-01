@@ -45,6 +45,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-estimate-qc',
@@ -200,7 +201,6 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     OVERWRITE: 'COMMON-FORM.OVERWRITE',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     CONFIRM_ROLLBACK: 'COMMON-FORM.CONFIRM-ROLLBACK',
-    ROLLBACK_COMPLETED: 'COMMON-FORM.ROLLBACK-COMPLETED',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -258,7 +258,8 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -591,28 +592,31 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const repReqList = this.repList?.map((rep: RepairPartItem) => {
-          return {
-            guid: rep?.guid,
-            approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)
-          }
-        });
+      if (result?.action === 'confirmed') {
+        const distinctJobOrders = this.repList
+          .filter((item, index, self) =>
+            index === self.findIndex(t => t.job_order?.guid === item.job_order?.guid &&
+              (t.job_order?.team?.guid === item?.job_order?.team_guid ||
+                t.job_order?.team?.description === item?.job_order?.team?.description))
+          )
+          .filter(item => item.job_order !== null && item.job_order !== undefined)
+          .map(item => new JobOrderGO({ ...item.job_order!, qc_dt: Utility.convertDate(result.qc_dt) as number }));
 
-        var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
+        var repairStatusReq: RepJobOrderRequest = new RepJobOrderRequest({
           guid: this.repairItem?.guid,
-          sot_guid: this.sotItem!.guid,
-          action: "IN_PROGRESS",
-          remarks: this.repairItem?.remarks,
-          repairPartRequests: repReqList
+          sot_guid: this.repairItem?.sot_guid,
+          estimate_no: this.repairItem?.estimate_no,
+          remarks: result.remarks,
+          job_order: distinctJobOrders,
+          sot_status: this.sotItem?.tank_status_cv,
         });
         console.log(repairStatusReq);
-        // this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {
-        //   console.log(result)
-        //   if (result.data.updateRepairStatus > 0) {
-        //     this.handleSaveSuccess(result.data.updateRepairStatus);
-        //   }
-        // });
+        this.repairDS.rollbackCompletedRepair(repairStatusReq).subscribe(result => {
+          console.log(result)
+          if (result.data.rollbackCompletedRepair > 0) {
+            this.handleSaveSuccess(result.data.rollbackCompletedRepair);
+          }
+        });
       }
     });
   }
@@ -892,5 +896,9 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
   displayApproveCost(rep: RepairPartItem) {
     return this.parse2Decimal((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
   }
 }
