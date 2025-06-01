@@ -17,7 +17,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
               <div class="booking-tbl responsive_table">
                 <table mat-table [dataSource]="dataSource" formArrayName="schedulingSot" matSort
-                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table squeeze-form-field">
                   <ng-container matColumnDef="tank_no">
                     <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
                       {{data.translatedLangText.TANK_NO}}
@@ -176,7 +176,7 @@
             </mat-card>
             }
           </div> -->
-          <!-- <h5 class="mt-3">{{data.translatedLangText.SCHEDULING_DETAILS}}</h5> -->
+          <h5 class="mt-3">{{data.translatedLangText.SCHEDULING_DETAILS}}</h5>
           <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width" appearance="fill">
@@ -223,7 +223,7 @@
           <mat-icon>
             save
           </mat-icon>
-          {{data.translatedLangText.SAVE_AND_SUBMIT}}</button>
+          {{data.translatedLangText[getSaveBtnDescription()]}}</button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>

@@ -88,7 +88,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="eir_picker">
+                      <mat-date-range-input [rangePicker]="eir_picker" [max]="todayDt">
                         <input matStartDate placeholder="Start date" formControlName="eir_dt_start">
                         <input matEndDate placeholder="End date" formControlName="eir_dt_end">
                       </mat-date-range-input>
@@ -216,7 +216,7 @@
                       </div>
                       <div class="w-xl-27 w-lg-33">
                         <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
-                        {{ccDS.displayName(row.storing_order?.customer_company)}}
+                        {{ccDS.displayCodeDashName(row.storing_order?.customer_company)}}
                       </div>
                       <div class="w-xl-17 w-lg-33">
                         <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>

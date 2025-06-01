@@ -148,7 +148,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    SAVE: 'COMMON-FORM.SAVE',
+    UPDATE: 'COMMON-FORM.UPDATE'
   }
 
   availableTankStatus: string[] = [

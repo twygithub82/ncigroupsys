@@ -152,6 +152,8 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    SAVE: 'COMMON-FORM.SAVE',
+    UPDATE: 'COMMON-FORM.UPDATE'
   }
 
   availableProcessStatus: string[] = [
@@ -201,7 +203,9 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   hasNextPage = false;
   hasPreviousPage = false;
 
-  availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE", "RELEASED"];
+  availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE"];
+
+  todayDt: Date = new Date();
 
   constructor(
     public httpClient: HttpClient,
