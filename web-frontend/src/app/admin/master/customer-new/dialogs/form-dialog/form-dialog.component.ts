@@ -24,6 +24,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ContactPersonItem } from 'app/data-sources/contact-person';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { Utility } from 'app/utilities/utility';
 
 
 export interface DialogData {
@@ -277,10 +278,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   getTitleCvObject(codeValType: string): CodeValuesItem | undefined {
     return this.cvDS.getCodeObject(codeValType, this.data.populateData.satulationCvList);
   }
-
-
-
-  searchPart() {
-
+  
+  onNumericOnly(event: Event): void {
+    Utility.onNumericOnly(event, this.contactPersonForm!?.get("phone")!);
   }
+
+  // isUpdate(): boolean{
+  //   if(this.action === "")
+  // }
 }

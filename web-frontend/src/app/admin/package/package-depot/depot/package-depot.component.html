@@ -160,11 +160,11 @@
             </ng-container>
             <ng-container matColumnDef="gate_surcharge">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.GATE_SURCHARGE_COST
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.IN_OUT_SURCHARGE_COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.GATE_SURCHARGE_COST }}:</span>
+                <span class="mobile-label">{{this.translatedLangText.IN_OUT_SURCHARGE_COST }}:</span>
                 {{row.gate_in_cost.toFixed(2)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="storage_cost">

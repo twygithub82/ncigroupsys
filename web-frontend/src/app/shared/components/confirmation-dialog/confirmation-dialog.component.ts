@@ -50,7 +50,7 @@ export class ConfirmationDialogComponent {
   ) {
     this.translateLangText();
     // Set the defaults
-    this.headerText = data.headerText || this.langText.ARE_YOU_SURE_DELETE
+    this.headerText = data.headerText || this.langText.CONFIRM_DELETE
     this.index = data.index;
     this.act = data.action;
   }

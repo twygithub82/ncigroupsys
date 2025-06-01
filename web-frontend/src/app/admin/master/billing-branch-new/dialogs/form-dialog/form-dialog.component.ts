@@ -24,6 +24,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ContactPersonItem } from 'app/data-sources/contact-person';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { Utility } from 'app/utilities/utility';
 
 
 export interface DialogData {
@@ -66,10 +67,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dialogTitle: string;
   customer_company_guid: string;
 
-  contactPerson : ContactPersonItem;
+  contactPerson: ContactPersonItem;
   contactPersonForm?: UntypedFormGroup;
   repairPart: any;
-  
+
   partNameList?: string[];
   partNameFilteredList?: string[];
   dimensionList?: string[];
@@ -82,7 +83,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   trDS: TariffRepairDS;
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
-  phone_regex:any =/^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
+  phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
 
   title_control = new UntypedFormControl();
   constructor(
@@ -108,34 +109,34 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.CONTACT_PERSON}`;
     }
-    this.contactPerson= data.item ? data.item : new ContactPersonItem();
-    
+    this.contactPerson = data.item ? data.item : new ContactPersonItem();
+
     this.index = data.index;
     this.title_control.setValue(this.contactPerson.title_cv);
-  
+
     this.initializeValueChange();
-   // this.patchForm();
+    // this.patchForm();
   }
   ngOnInit() {
     // this.initializeFilterCustomerCompany();
     this.contactPersonForm = this.createForm();
-     
-   }
+
+  }
 
   createForm(): UntypedFormGroup {
     return this.fb.group({
-      guid: [this.contactPerson.guid||''],
+      guid: [this.contactPerson.guid || ''],
       title_cv: [this.contactPerson.title_cv, [Validators.required]],
       customer_company: [this.contactPerson.customer_company],
-      name:  [this.contactPerson.name, [Validators.required]],
+      name: [this.contactPerson.name, [Validators.required]],
       email: [this.contactPerson.email, [Validators.required, Validators.email]],
       department: [this.contactPerson.department],
       job_title: [this.contactPerson.job_title],
       customer_guid: [this.contactPerson.customer_guid],
-      did : [ this.contactPerson.did,
+      did: [this.contactPerson.did,
         //[Validators.required] // Adjust regex for your format
       ],
-      phone: [this.contactPerson.phone,[
+      phone: [this.contactPerson.phone, [
         Validators.required,
         Validators.pattern(this.phone_regex)] // Adjust regex for your format
       ]
@@ -154,8 +155,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       name: this.contactPerson.name,
       email: this.contactPerson.email,
       department: this.contactPerson.department,
-      did :this.contactPerson.did,
-      phone:this.contactPerson.phone,
+      did: this.contactPerson.did,
+      phone: this.contactPerson.phone,
       job_title: this.contactPerson.job_title,
       customer_guid: this.contactPerson.customer_guid
     });
@@ -163,7 +164,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   submit() {
     if (this.contactPersonForm?.valid) {
-    //  let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
+      //  let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
       // if (this.action === 'new') {
       //   if (!actions.includes('new')) {
       //     actions = [...new Set([...actions, 'new'])];
@@ -182,9 +183,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         phone: this.contactPersonForm?.get("phone")!.value,
         job_title: this.contactPersonForm?.get("job_title")!.value,
         did: this.contactPersonForm?.get("did")!.value,
-  //     actions
+        //     actions
       }
-  
+
       console.log(rep)
       const returnDialog: DialogData = {
         item: rep,
@@ -216,7 +217,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     //   startWith(''),
     //   debounceTime(300),
     //   tap(value => {
-        
+
     //     if (value?.child_code) {
     //       const queries = [
     //         { alias: 'subgroupNameCv', codeValType: value.child_code },
@@ -358,7 +359,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   validateLength(): boolean {
-     let isValid = true;
+    let isValid = true;
     // const length = this.repairPartForm.get('length')?.value;
     // const remarks = this.repairPartForm.get('remarks')?.value;
 
@@ -368,11 +369,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     //   this.repairPartForm.get('remarks')?.setErrors({ required: true });
     // }
 
-     return isValid;
+    return isValid;
   }
 
   canEdit(): boolean {
     return true;
+  }
+
+  onNumericOnly(event: Event): void {
+    Utility.onNumericOnly(event, this.contactPersonForm!?.get("phone")!);
   }
 
   // updateValidators(validOptions: any[]) {

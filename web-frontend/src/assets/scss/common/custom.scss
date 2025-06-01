@@ -2132,7 +2132,11 @@ $grid-breakpoints: (
   }
 }
 
-.custom-timer-icon {
+.yellow-timer-icon {
+  color: #FFC107; //#25D366 //#0ec955b4; /* any custom color */
+}
+
+.green-timer-icon {
   color: #25D366 //#0ec955b4; /* any custom color */
 }
 
