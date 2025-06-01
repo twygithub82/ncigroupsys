@@ -277,16 +277,16 @@
                     </ng-container> -->
                     <ng-container matColumnDef="labour_hour">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_25-xl'">{{translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
+                        [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center'">{{translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.LABOUR_HOUR}}:</span>
                         {{row.labour_hour}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="material_cost">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_5-xl'">{{translatedLangText.MATERIAL_COST$}}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
+                        [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center'">{{translatedLangText.MATERIAL_COST$}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.MATERIAL_COST$}}:</span>
                         {{row.material_cost?.toFixed(2)}}</mat-cell>
