@@ -13,7 +13,7 @@
               @for (tab of allowedTabs; track tab.label) {
               @if (tab.component == 'app-job-allocation') {
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
-                <div class="card p-0">
+                <div class="card p-0 tab-card-container">
                   <form [formGroup]="filterRepairForm!" (ngSubmit)="onFilterRepair()"
                     #formDirective="ngForm">
                     <mat-accordion>

@@ -340,4 +340,10 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.resetForm();
     this.search();
   }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+    this.resetForm();
+    this.search();
+  }
 }

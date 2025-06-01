@@ -1,37 +1,47 @@
-<div class="body">
+<div class="card p-0 tab-card-container">
   <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
-    <div class="row">
-      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-        <mat-form-field class="example-full-width" appearance="fill">
-          <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-          <input matInput formControlName="tank_no">
-        </mat-form-field>
-      </div>
-      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-        <mat-form-field class="example-full-width" appearance="fill">
-          <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-          <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
-            [matAutocomplete]="customerCode">
-          <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-            @for (cc of customer_companyList; track cc) {
-            <mat-option [value]="cc">
-              {{ccDS.displayCodeDashName(cc)}}
-            </mat-option>
-            }
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-      <div
-        class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-        <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
-          <mat-icon>search</mat-icon>
-        </button>
-        <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-          matTooltip={{translatedLangText.CLEAR_ALL}}>
-          <mat-icon>clear_all</mat-icon>
-        </button>
-      </div>
-    </div>
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+              <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                <mat-icon>search</mat-icon>
+              </button>
+            </div>
+            <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                <mat-icon>clear_all</mat-icon>
+              </button>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="row">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+              <input matInput formControlName="tank_no">
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+              <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                [matAutocomplete]="customerCode">
+              <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                @for (cc of customer_companyList; track cc) {
+                <mat-option [value]="cc">
+                  {{ccDS.displayCodeDashName(cc)}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
   </form>
   <div class="body">
     <div class="responsive_table">
