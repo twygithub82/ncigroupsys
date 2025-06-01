@@ -361,7 +361,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'unitTypeCv', codeValType: 'RESIDUE_UNIT' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
@@ -784,7 +784,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '1000px',
+      //width: '1000px',
       data: {
         item: row,
         langText: this.langText,

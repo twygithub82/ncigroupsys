@@ -712,6 +712,10 @@ export class Utility {
     );
   }
 
+  static getSaveBtnDescription(guid: string | undefined | null) {
+    return guid ? 'UPDATE' : 'SAVE';
+  }
+
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number) {
     pdf.setFontSize(fontSize); // Title font size 
     pdf.text(content, leftPost, topPos); // Position it at the top

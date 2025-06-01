@@ -31,7 +31,7 @@
                   <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                     @for (cc of customer_companyList_summary; track cc) {
                     <mat-option [value]="cc">
-                      {{ccDS.displayName(cc)}}
+                      {{ccDS.displayCodeDashName(cc)}}
                     </mat-option>
                     }
                   </mat-autocomplete>
@@ -163,7 +163,7 @@
                   <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                     @for (cc of customer_companyList_detail; track cc) {
                     <mat-option [value]="cc">
-                      {{ccDS.displayName(cc)}}
+                      {{ccDS.displayCodeDashName(cc)}}
                     </mat-option>
                     }
                   </mat-autocomplete>

@@ -17,7 +17,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -305,8 +305,13 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     });
   }
 
-
   onTabFocused() {
+    this.resetForm();
+    this.search();
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
     this.resetForm();
     this.search();
   }

@@ -36,7 +36,7 @@
                   <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                     @for (cc of customer_companyList; track cc) {
                     <mat-option [value]="cc">
-                      {{ccDS.displayName(cc)}}
+                      {{ccDS.displayCodeDashName(cc)}}
                     </mat-option>
                     }
                   </mat-autocomplete>
@@ -295,39 +295,41 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
                 {{translatedLangText.COST}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
                 <span class="mobile-label">{{translatedLangText.COST}}:</span>{{DisplayCost(row)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoice_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                 {{translatedLangText.LIFT_ON}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
                 <span class="mobile-label">{{translatedLangText.LIFT_ON}}: </span> 
 
                 @if(isLiftOnInvoice(row)){
-                <mat-icon class="col-green font-bold" >check</mat-icon>
+                <mat-icon class="col-green" >check</mat-icon>
                 }
                 @else {
-                <mat-icon class="col-black" >remove</mat-icon>
+                <!-- <mat-icon class="col-black" >remove</mat-icon> -->
+                 <span class="">-</span> 
                 }
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoice_date">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                 {{translatedLangText.LIFT_OFF}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
                 <span class="mobile-label">{{translatedLangText.LIFT_OFF}}: </span>  
                 @if(isLiftOffInvoice(row)){
                 <mat-icon class="col-green font-bold" >check</mat-icon>
                 }
                 @else {
-                <mat-icon class="col-black" >remove</mat-icon>
+                <!-- <mat-icon class="col-black" >remove</mat-icon> -->
+                <span class="">-</span> 
                 }
                 
               </mat-cell>

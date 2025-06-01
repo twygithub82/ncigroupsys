@@ -131,7 +131,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     TARIFF_CARGO_ASSIGNED: 'COMMON-FORM.TARIFF-CARGO-ASSIGNED',
-    ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     DELETE: 'COMMON-FORM.DELETE',
     SEARCH: "COMMON-FORM.SEARCH",
@@ -653,7 +653,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '15vw',
       data: {
-        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         act: "warn"
       },
       direction: tempDirection

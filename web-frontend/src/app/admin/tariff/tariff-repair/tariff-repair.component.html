@@ -6,90 +6,89 @@
     </div>
     <div class="card">
       <div class="body">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          
-          <div class="card p-0">
-            <mat-accordion>
-              <mat-expansion-panel [expanded]="true">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                  </mat-panel-title>
-                  <mat-panel-description>
-                    <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                      <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                      <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                        (click)="$event.stopPropagation()">
-                        <mat-icon>clear_all</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                      <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
-                        <mat-icon class="col-white">add</mat-icon>
-                      </button>
-                    </div>
-                    @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                    <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' +translatedLangText.EDIT">
-                      <button mat-mini-fab color="primary" (click)="editCallSelection()"
-                        (click)="$event.stopPropagation()">
-                        <mat-icon class="">edit</mat-icon>
-                      </button>
-                    </div>
-                    }
-                    @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                    <div class="m-l-10" [matTooltip]="translatedLangText.GROUP_ADJUSTMENT">
-                      <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                        <mat-icon class="col-white">percent</mat-icon>
-                      </button>
-                    </div>
-                    }
-                    <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card p-0 tab-card-container">
+              <mat-accordion>
+                <mat-expansion-panel [expanded]="true">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                        <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                          <mat-icon>search</mat-icon>
+                        </button>
+                      </div>
+                      <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                        <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                          (click)="$event.stopPropagation()">
+                          <mat-icon>clear_all</mat-icon>
+                        </button>
+                      </div>
+                      <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+                        <button mat-mini-fab class="primary-light" (click)="addCall()"
+                          (click)="$event.stopPropagation()">
+                          <mat-icon class="col-white">add</mat-icon>
+                        </button>
+                      </div>
+                      @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                      <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' +translatedLangText.EDIT">
+                        <button mat-mini-fab class="accent-light" (click)="editCallSelection()"
+                          (click)="$event.stopPropagation()">
+                          <mat-icon class="">edit</mat-icon>
+                        </button>
+                      </div>
+                      }
+                      @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                      <div class="m-l-10" [matTooltip]="translatedLangText.GROUP_ADJUSTMENT">
+                        <button mat-mini-fab class="accent-darker" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                          <mat-icon class="col-white">percent</mat-icon>
+                        </button>
+                      </div>
+                      }
+                      <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                       <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                         (click)="$event.stopPropagation()" />
                     </div> -->
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                  <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
-                    <div class="row">
-                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                       <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                    <mat-chip-grid #chipGrid>
-                      <!-- @for (cust of selectedCustomers; track cust) { -->
-                       @if(this.selectedParts.length>0){
-                        <mat-chip-row color="primary" (click)="removeAllSelectedParts()">
-                          <span> {{getSelectedPartDisplay()}}</span>
-                          <button matChipRemove hidden>
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        </mat-chip-row>
-                       }
-                    <input #partInput [formControl]="partNameControl" [matAutocomplete]="partName" formControlName="part_name"
-                      [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                      (matChipInputTokenEnd)="add($event)">
-                    <mat-autocomplete  #partName="matAutocomplete" (optionSelected)="selected($event)">
-                      @for (pn of partNameList; track pn) {
-                      <mat-option [value]="pn"  class="checkbox-option">
-                        <div class="horizontal-container"> <!-- Flex container -->
-                          <mat-checkbox 
-                            color="primary" 
-                            class="checkbox-item"  
-                            (click)="onCheckboxClicked(pn); $event.stopPropagation()"
-                            [checked]="itemSelected(pn) || false">
-                          </mat-checkbox>
-                          <div class="option-text">{{ pn }}</div>
-                        </div>
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-chip-grid>
-                  </mat-form-field>
-                        <!-- <mat-form-field class="example-full-width" appearance="fill">
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+                      <div class="row">
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                            <mat-chip-grid #chipGrid>
+                              <!-- @for (cust of selectedCustomers; track cust) { -->
+                              @if(this.selectedParts.length>0){
+                              <mat-chip-row color="primary" (click)="removeAllSelectedParts()">
+                                <span> {{getSelectedPartDisplay()}}</span>
+                                <button matChipRemove hidden>
+                                  <mat-icon>cancel</mat-icon>
+                                </button>
+                              </mat-chip-row>
+                              }
+                              <input #partInput [formControl]="partNameControl" [matAutocomplete]="partName"
+                                formControlName="part_name" [matChipInputFor]="chipGrid"
+                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                (matChipInputTokenEnd)="add($event)">
+                              <mat-autocomplete #partName="matAutocomplete" (optionSelected)="selected($event)">
+                                @for (pn of partNameList; track pn) {
+                                <mat-option [value]="pn" class="checkbox-option">
+                                  <div class="horizontal-container"> <!-- Flex container -->
+                                    <mat-checkbox color="primary" class="checkbox-item"
+                                      (click)="onCheckboxClicked(pn); $event.stopPropagation()"
+                                      [checked]="itemSelected(pn) || false">
+                                    </mat-checkbox>
+                                    <div class="option-text">{{ pn }}</div>
+                                  </div>
+                                </mat-option>
+                                }
+                              </mat-autocomplete>
+                            </mat-chip-grid>
+                          </mat-form-field>
+                          <!-- <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                            <mat-chip-grid #chipGrid>
                             @if(this.selectedParts.length>0){
@@ -119,7 +118,7 @@
                           </mat-autocomplete>
                           </mat-chip-grid>
                         </mat-form-field> -->
-                        <!-- <mat-form-field class="example-full-width" appearance="fill">
+                          <!-- <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                           <mat-chip-grid #chipProfile>
                             @if(this.selectedParts.length>0){
@@ -143,32 +142,32 @@
                             </mat-autocomplete>
                           </mat-chip-grid>
                         </mat-form-field> -->
-                      </div>
-                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                        <mat-form-field class="example-full-width">
-                          <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-                          <mat-select formControlName="group_name_cv" multiple>
-                            @for (cn of groupNameCvList; track cn) {
-                            <mat-option [value]="cn.code_val">
-                              {{cn.description}}
-                            </mat-option>
-                            }
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                        <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-                          <mat-select formControlName="sub_group_name_cv" multiple>
-                            @for (cn of subGroupNameCvList; track cn) {
-                            <mat-option [value]="cn.code_val">
-                              {{cn.description}}
-                            </mat-option>
-                            }
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                      <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                          <mat-form-field class="example-full-width">
+                            <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
+                            <mat-select formControlName="group_name_cv" multiple>
+                              @for (cn of groupNameCvList; track cn) {
+                              <mat-option [value]="cn.code_val">
+                                {{cn.description}}
+                              </mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
+                            <mat-select formControlName="sub_group_name_cv" multiple>
+                              @for (cn of subGroupNameCvList; track cn) {
+                              <mat-option [value]="cn.code_val">
+                                {{cn.description}}
+                              </mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                        <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
                           <input matInput formControlName="min_cost" type="number">
@@ -220,19 +219,19 @@
                           <input matInput formControlName="max_labour" type="number">
                         </mat-form-field>
                       </div> -->
-                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                        <mat-form-field class="example-full-width">
-                          <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
-                          <mat-select formControlName="handled_item_cv">
-                            @for (cn of handledItemCvList; track cn) {
-                            <mat-option [value]="cn.code_val">
-                              {{cn.description}}
-                            </mat-option>
-                            }
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                      <!-- <div
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
+                          <mat-form-field class="example-full-width">
+                            <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
+                            <mat-select formControlName="handled_item_cv">
+                              @for (cn of handledItemCvList; track cn) {
+                              <mat-option [value]="cn.code_val">
+                                {{cn.description}}
+                              </mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                        <!-- <div
                         class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                         <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                           <mat-icon>search</mat-icon>
@@ -242,161 +241,163 @@
                           <mat-icon>clear_all</mat-icon>
                         </button>
                       </div> -->
-                    </div>
-                  </form>
-                </div>
-              </mat-expansion-panel>
-            </mat-accordion>
-            <div class="body">
-              
-              
-                  <div class="responsive_table">
-                    <table mat-table [dataSource]="trfRepairItems" matSort
-                      class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl curve-table">
-                      <!-- Checkbox Column -->
-                      @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                      <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
-                          <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
-                            [checked]="selection.hasValue() && isAllSelected()"
-                            [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                          </mat-checkbox>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                          <mat-checkbox color="primary" (click)="$event.stopPropagation()"
-                            (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
-                            [ngClass]="'tbl-checkbox'">
-                          </mat-checkbox>
-                        </mat-cell>
-                      </ng-container>
-                      }
-                      <ng-container matColumnDef="fName">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="''">
-                          {{this.translatedLangText.PART_NAME
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="''">
-                          <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                            }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="dimension">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="''">{{this.translatedLangText.DIMENSION}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
-                          <span
-                            class="mobile-label">{{this.translatedLangText.DIMENSION}}:</span>{{row.tariff_repair?.dimension
-                          || "-"}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="lName">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.LENGTH
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_repair)"
-                          [ngClass]="'tbl-col-width-per-1'">
-                          <span class="mobile-label">{{this.translatedLangText.LENGTH }}:</span>{{row.tariff_repair?.length ||
-                          "-"}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="gname">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_75-xl'">{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl'">
-                          <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
-                          {{this.displayGroupNameCodeValue_Description(row.tariff_repair?.group_name_cv)}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="subgroup">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_75-xl'">{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl'"
-                          (contextmenu)="onContextMenu($event, row.tariff_repair)">
-                          <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
-                          {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="hour">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
-                          (contextmenu)="onContextMenu($event, row.tariff_repair)">
-                          <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
-                          {{row.tariff_repair?.labour_hour || "-"}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="bDate">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.MATERIAL$}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
-                          (contextmenu)="onContextMenu($event, row.tariff_repair)">
-                          <span class="mobile-label">{{this.translatedLangText.MATERIAL$}}:</span>
-                          <div class="cost-label">
-                            <span>{{parse2Decimal(row.tariff_repair?.material_cost)}}</span>
-                          </div>
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="last_date">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
-                          <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
-                          {{this.displayLastUpdated(row.tariff_repair)}}
-                        </mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="handled_item">
-                        <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.HANDLED_ITEM}}</mat-header-cell>
-                        <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
-                          <span class="mobile-label">{{this.translatedLangText.HANDLED_ITEM}}:</span>
-                          {{getHandledItemDescription(row.tank_count > 0 ? 'HANDLED' : 'NON_HANDLE')}}
-                        </mat-cell>
-                      </ng-container>
+                      </div>
+                    </form>
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+              <div class="body">
 
-                      <!-- actions -->
-                      <ng-container matColumnDef="actions">
-                        <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'"></mat-header-cell>
-                        <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75-xl'">
-                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                            <mat-icon>more_vert</mat-icon>
+
+                <div class="responsive_table">
+                  <table mat-table [dataSource]="trfRepairItems" matSort
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl curve-table">
+                    <!-- Checkbox Column -->
+                    @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                    <ng-container matColumnDef="select">
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-start'">
+                        <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                        </mat-checkbox>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                        <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                          [ngClass]="'tbl-checkbox'">
+                        </mat-checkbox>
+                      </mat-cell>
+                    </ng-container>
+                    }
+                    <ng-container matColumnDef="fName">
+                      <mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{this.translatedLangText.PART_NAME
+                        }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="''">
+                        <span class="mobile-label">{{this.translatedLangText.PART_NAME
+                          }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="dimension">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="''">{{this.translatedLangText.DIMENSION}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
+                        <span
+                          class="mobile-label">{{this.translatedLangText.DIMENSION}}:</span>{{row.tariff_repair?.dimension
+                        || "-"}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="lName">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1'">{{this.translatedLangText.LENGTH
+                        }}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_repair)"
+                        [ngClass]="'tbl-col-width-per-1'">
+                        <span class="mobile-label">{{this.translatedLangText.LENGTH
+                          }}:</span>{{row.tariff_repair?.length ||
+                        "-"}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="gname">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_75-xl'">{{this.translatedLangText.GROUP_NAME}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl'">
+                        <span class="mobile-label">{{this.translatedLangText.GROUP_NAME}}:</span>
+                        {{this.displayGroupNameCodeValue_Description(row.tariff_repair?.group_name_cv)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="subgroup">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_75-xl'">{{this.translatedLangText.SUB_GROUP_NAME}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl'"
+                        (contextmenu)="onContextMenu($event, row.tariff_repair)">
+                        <span class="mobile-label">{{this.translatedLangText.SUB_GROUP_NAME}}:</span>
+                        {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="hour">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
+                        (contextmenu)="onContextMenu($event, row.tariff_repair)">
+                        <span class="mobile-label">{{this.translatedLangText.LABOUR_HOUR}}:</span>
+                        {{row.tariff_repair?.labour_hour || "-"}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="bDate">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.MATERIAL$}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
+                        (contextmenu)="onContextMenu($event, row.tariff_repair)">
+                        <span class="mobile-label">{{this.translatedLangText.MATERIAL$}}:</span>
+                        <div class="cost-label">
+                          <span>{{parse2Decimal(row.tariff_repair?.material_cost)}}</span>
+                        </div>
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="last_date">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
+                        <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
+                        {{this.displayLastUpdated(row.tariff_repair)}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="handled_item">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.HANDLED_ITEM}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
+                        <span class="mobile-label">{{this.translatedLangText.HANDLED_ITEM}}:</span>
+                        {{getHandledItemDescription(row.tank_count > 0 ? 'HANDLED' : 'NON_HANDLE')}}
+                      </mat-cell>
+                    </ng-container>
+
+                    <!-- actions -->
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl'"></mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75-xl'">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                          <button mat-menu-item (click)="dupCall(row.tariff_repair)">
+                            <mat-icon>add_to_photos</mat-icon>
+                            <span>{{translatedLangText.DUPLICATE}}</span>
                           </button>
-                          <mat-menu #menu="matMenu">
-                            <button mat-menu-item (click)="dupCall(row.tariff_repair)">
-                              <mat-icon>add_to_photos</mat-icon>
-                              <span>{{translatedLangText.DUPLICATE}}</span>
-                            </button>
-                            @if (!row.tank_count) {
-                            <button mat-menu-item (click)="cancelItem(row.tariff_repair)" class="text-danger">
-                              <mat-icon class="text-danger">delete_forever</mat-icon>
-                              <span>{{translatedLangText.DELETE}}</span>
-                            </button>
-                            }
-                          </mat-menu>
+                          @if (!row.tank_count) {
+                          <button mat-menu-item (click)="cancelItem(row.tariff_repair)" class="text-danger">
+                            <mat-icon class="text-danger">delete_forever</mat-icon>
+                            <span>{{translatedLangText.DELETE}}</span>
+                          </button>
+                          }
+                        </mat-menu>
 
-                        </mat-cell>
-                      </ng-container>
-                      <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row"
-                        (click)="editCall(row.tariff_repair)" [style.cursor]="'pointer'" matRipple>
-                      </mat-row>
-                    </table>
-                  </div>
-                  <!-- Loading spinner -->
-                  @if (!(trfRepairDS.loading$ | async) && !trfRepairItems.length) {
-                  <mat-divider></mat-divider>
-                  <div class="no-results m-l-20 pt-3" [style.display]="trfRepairItems.length === 0 ? '' : 'none'">
-                    <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
-                  </div>
-                  }
-                  <!-- Loading spinner -->
-                  @if (trfRepairDS.loading$ | async) {
-                  <div class="tbl-spinner">
-                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                    </mat-progress-spinner>
-                  </div>
-                  }
-                  <mat-paginator #paginator [length]="trfRepairDS.totalCount" [pageIndex]="0" [pageSize]="10"
-                    [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
-                  </mat-paginator>
-              
+                      </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row"
+                      (click)="editCall(row.tariff_repair)" [style.cursor]="'pointer'" matRipple>
+                    </mat-row>
+                  </table>
+                </div>
+                <!-- Loading spinner -->
+                @if (!(trfRepairDS.loading$ | async) && !trfRepairItems.length) {
+                <mat-divider></mat-divider>
+                <div class="no-results m-l-20 pt-3" [style.display]="trfRepairItems.length === 0 ? '' : 'none'">
+                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
+                </div>
+                }
+                <!-- Loading spinner -->
+                @if (trfRepairDS.loading$ | async) {
+                <div class="tbl-spinner">
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+                }
+                <mat-paginator #paginator [length]="trfRepairDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                </mat-paginator>
+
+              </div>
             </div>
+
           </div>
-          
         </div>
       </div>
-    </div>
     </div>
   </div>
 </section>

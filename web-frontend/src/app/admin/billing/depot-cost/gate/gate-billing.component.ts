@@ -682,6 +682,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       invoice_type: 'GATE_IN'
     });
 
+    this.invoiceTypeControl.setValue('GATE_IN');
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
