@@ -18,12 +18,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
-import { CodeValuesDS } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
@@ -87,6 +88,10 @@ export class FormDialogComponent {
   booking: BookingItem = new BookingItem();
   startDateToday = new Date();
   existingBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
+  existingFilteredBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
+
+  bookTypeCvControl = new UntypedFormControl();
+  bookingTypeCvList: CodeValuesItem[] = [];
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -123,9 +128,11 @@ export class FormDialogComponent {
   }
 
   createStorigOrderTankForm(): UntypedFormGroup {
+    const bookType = BusinessLogicUtil.findCodeValue(this.booking?.book_type_cv, this.data.populateData?.bookingTypeCvList);
+    this.bookTypeCvControl.setValue(bookType);
     this.bookingForm = this.fb.group({
       reference: [''],
-      book_type_cv: [this.booking?.book_type_cv],
+      book_type_cv: this.bookTypeCvControl,
       booking_dt: [Utility.convertDateMoment(this.booking?.booking_dt)],
       test_class_cv: [this.booking?.test_class_cv],
       sotList: this.fb.array(this.storingOrderTank.map(tank => this.createTankRowForm(tank)))
@@ -133,7 +140,7 @@ export class FormDialogComponent {
 
     if (!this.canEdit()) {
       this.bookingForm.get('reference')?.disable();
-      this.bookingForm.get('book_type_cv')?.disable();
+      this.bookTypeCvControl?.disable();
       this.bookingForm.get('booking_dt')?.disable();
       this.bookingForm.get('test_class_cv')?.disable();
     }
@@ -145,7 +152,7 @@ export class FormDialogComponent {
   createTankRowForm(tank: any): UntypedFormGroup {
     return this.fb.group({
       sot: [tank],
-      reference: [tank.reference || this.booking?.reference || '']
+      reference: [{ value: tank.reference || this.booking?.reference || '', disabled: !this.canEdit() }]
     });
   }
 
@@ -161,7 +168,7 @@ export class FormDialogComponent {
         return {
           guid: this.booking?.guid,
           sot_guid: sot?.guid,  // safely get the guid from tank object
-          book_type_cv: this.bookingForm.get('book_type_cv')?.value,
+          book_type_cv: this.bookTypeCvControl?.value?.code_val,
           booking_dt: Utility.convertDate(bookDt),
           reference: group.get('reference')?.value,
           test_class_cv: this.bookingForm.get('test_class_cv')?.value,
@@ -213,12 +220,20 @@ export class FormDialogComponent {
   }
 
   initializeValueChange() {
-    this.bookingForm!.get('book_type_cv')!.valueChanges.pipe(
+    this.bookTypeCvControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(100),
       tap(value => {
-        const booking_dt = this.bookingForm!.get('booking_dt')?.value;
-        this.validateBookingType(value, booking_dt);
+        if (value && value.code_val) {
+          this.bookingTypeCvList = this.data.populateData?.bookingTypeCvList?.filter((x: any) => x.code_val === value.code_val) || [];
+        } else {
+          this.bookingTypeCvList = this.data.populateData?.bookingTypeCvList?.filter((x: any) => x.code_val.toUpperCase().includes(value.toUpperCase())) || [];
+        }
+
+        if (this.bookingTypeCvList.length === 1) {
+          const booking_dt = this.bookingForm!.get('booking_dt')?.value;
+          this.validateBookingType(value?.code_val, booking_dt);
+        }
       })
     ).subscribe();
 
@@ -228,7 +243,7 @@ export class FormDialogComponent {
       tap(booking_dt => {
         if (booking_dt) {
           const safeBookingDt = booking_dt.clone();
-          const value = this.bookingForm!.get('book_type_cv')?.value;
+          const value = this.bookTypeCvControl?.value?.code_val;
           this.validateBookingType(value, safeBookingDt);
         }
       })
@@ -236,7 +251,7 @@ export class FormDialogComponent {
   }
 
   validateBookingType(value: string, booking_dt: any): void {
-    const control = this.bookingForm!.get('book_type_cv');
+    const control = this.bookTypeCvControl;
     control?.setErrors(null);
 
     const dateOnly = Utility.convertDate(booking_dt) as number;
@@ -245,13 +260,16 @@ export class FormDialogComponent {
       ? this.booking && this.booking.book_type_cv !== value
       : true;
 
-    if (
-      condition &&
-      this.existingBookTypeCvs!.some(
-        booking => booking?.book_type_cv === value && (booking?.booking_dt ?? 0) >= dateOnly
-      )
-    ) {
-      control?.setErrors({ existed: true });
+    if (condition) {
+      const matched = this.existingBookTypeCvs!.filter(booking => booking?.book_type_cv === value && (booking?.booking_dt ?? 0) >= dateOnly) || [];
+
+      if (matched?.length) {
+        this.existingFilteredBookTypeCvs = matched
+        console.log(this.existingFilteredBookTypeCvs)
+        control?.setErrors({ existed: true });
+      } else {
+        this.existingFilteredBookTypeCvs = [];
+      }
     }
   }
 
@@ -294,5 +312,17 @@ export class FormDialogComponent {
 
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_EDIT']);
+  }
+
+  displayCodeValueFn(cv: CodeValuesItem): string {
+    return cv?.description || '';
+  }
+
+  isExistedBookType(row: any) {
+    if (this.existingFilteredBookTypeCvs) {
+      const found = this.existingFilteredBookTypeCvs.filter(x => x?.sot_guid === row?.value?.sot?.guid);
+      return found?.length > 0
+    }
+    return false;
   }
 }
