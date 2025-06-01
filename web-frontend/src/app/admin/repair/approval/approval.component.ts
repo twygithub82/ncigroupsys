@@ -153,7 +153,6 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     SEARCH: 'COMMON-FORM.SEARCH',
   }
 
-
   availableProcessStatus: string[] = [
     'APPROVED',
     'JOB_IN_PROGRESS',

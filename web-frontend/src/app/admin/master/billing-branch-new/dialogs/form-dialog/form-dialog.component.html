@@ -64,7 +64,7 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.CONTACT_NO}}</mat-label>
-            <input matInput formControlName="phone" required >
+            <input matInput formControlName="phone" (input)="onNumericOnly($event)" required >
             <!-- @if (contactPersonForm?.get('phone')?.hasError('required')) {
               <mat-error>
               {{data.translatedLangText.CONTACT_NO}} {{data.translatedLangText.SO_REQUIRED}}
@@ -106,7 +106,8 @@
           <mat-icon>
             save
           </mat-icon>
-          {{data.translatedLangText.ADD}}</button>
+          {{ this.data.action === 'edit' ? data.translatedLangText.UPDATE : data.translatedLangText.ADD }}
+        </button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>

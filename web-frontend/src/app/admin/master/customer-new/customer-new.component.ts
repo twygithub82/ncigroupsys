@@ -125,6 +125,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     BACK: 'COMMON-FORM.BACK',
     SAVE: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
@@ -597,6 +598,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: row,
         action: 'edit',
@@ -637,7 +639,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         action: 'new',
       },
       direction: tempDirection

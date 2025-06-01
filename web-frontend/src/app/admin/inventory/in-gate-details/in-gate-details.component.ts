@@ -80,7 +80,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  tabIndex = "in-gate";
+  tabIndex = "app-in-gate";
   displayedColumns = [
     'select',
     'so_no',

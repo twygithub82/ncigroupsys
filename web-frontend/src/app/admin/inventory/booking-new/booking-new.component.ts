@@ -151,6 +151,15 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
   }
 
+  availableTankStatus: string[] = [
+    '',
+    'CLEANING',
+    'STEAM',
+    'RESIDUE',
+    'REPAIR',
+    'STORAGE'
+  ]
+
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   searchForm?: UntypedFormGroup;
@@ -177,7 +186,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   tankStatusCvList: CodeValuesItem[] = [];
   testClassCvList: CodeValuesItem[] = [];
   testClassCvListNewBooking: CodeValuesItem[] = [];
-  tankStatusInYard = TANK_STATUS_IN_YARD;
 
   selectedCompany?: string = "";
 
@@ -475,7 +483,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
     } else {
-      where.tank_status_cv = { in: this.tankStatusInYard };
+      where.tank_status_cv = { in: this.availableTankStatus };
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {

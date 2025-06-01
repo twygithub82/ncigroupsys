@@ -307,7 +307,8 @@
                           {{row.phone}}
                         </mat-cell>
                       </ng-container>
-                      <ng-container matColumnDef="actions">
+
+                      <!-- <ng-container matColumnDef="actions">
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
@@ -321,7 +322,22 @@
                             </button>
                           </mat-menu>
                         </mat-cell>
+                      </ng-container> -->
+
+                      <ng-container matColumnDef="actions">
+                        <mat-header-cell class="pr-0"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          *matHeaderCellDef>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i=index;"
+                          class="tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
+                          <button mat-icon-button (click)="handleDelete($event, row, i)"
+                            [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                            <mat-icon>delete_forever</mat-icon>
+                          </button>
+                        </mat-cell>
                       </ng-container>
+
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.delete_dt, 'edited-row': row.guid && !row.delete_dt && row.edited}"
@@ -349,15 +365,21 @@
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
+                <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
                   @if (isAnyItemEdited()) {
                   <button mat-flat-button color="primary">
                     <mat-icon>
                       save
                     </mat-icon>
-                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                    {{translatedLangText.UPDATE}}
                   </button>
                   }
+                </div> -->
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
+                  <button mat-flat-button color="primary" [disabled]="!isAnyItemEdited()">
+                    <mat-icon>save</mat-icon>
+                    {{ translatedLangText.UPDATE }}
+                  </button>
                 </div>
               </div>
             </div>

@@ -48,6 +48,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-billing-branch-new',
@@ -571,7 +572,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         data.unshift(newItem);
         this.updateData(data);
 
-        this.calculateCostSummary();
+        //this.calculateCostSummary();
       }
     });
   }
@@ -586,6 +587,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '1000px',
       data: {
         item: row,
         action: 'edit',
@@ -624,22 +626,20 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        item: row,
-        langText: this.langText,
-        index: index
+        headerText: this.translatedLangText.CONFIRM_DELETE,
+        action: 'new',
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-
         const data = [...this.repList.data];
         data.splice(index, 1);
         this.updateData(data); // Refresh the data source
         // }
-        this.calculateCostSummary();
+        //this.calculateCostSummary();
       }
     });
   }
@@ -1075,6 +1075,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   handleDelete(event: Event, row: any, index: number): void {
+    event.preventDefault(); // Prevents the form submission
+    event.stopPropagation();
     this.deleteItem(row, index);
   }
 
