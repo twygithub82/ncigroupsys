@@ -47,6 +47,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 
 @Component({
   selector: 'app-billing-branch-new',
@@ -265,6 +266,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   tankItemList?: TankItem[] = [];
   customerTypeControl = new UntypedFormControl();
+  customerCodeControl = new UntypedFormControl();
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -278,7 +280,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   customerTypeCvList: CodeValuesItem[] = [];
   currencyList?: CurrencyItem[] = [];
   selectedBillingBranch: any;
-  phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
+  phone_regex: any = /([0-9]{7,10})$/; // 7–10 digits
   countryCodes: any = [];
   countryCodesFiltered: any = [];
 
@@ -312,18 +314,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   ngOnInit() {
     this.initializeValueChange();
     this.loadData();
-    this.SetCostDecimal();
   }
 
-  SetCostDecimal() {
-    this.ccForm?.get('material_discount_amount')?.valueChanges.subscribe(value => {
-      if (value !== null && value !== '') {
-        // Ensure the value has two decimal places
-        const formattedValue = parseFloat(value).toFixed(2);
-        this.ccForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
-      }
-    });
-  }
   calculateCostSummary() {
     // var totalMaterialCost: number = 0;
     // var totalLabourHours: number = 0;
@@ -337,13 +329,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     // });
 
     //const totalCost= this.repList.data.reduce((total,part)=>total+(part.material_cost??0));
-  }
-
-  GetNetCost(): string {
-    var val: number = 0;
-
-    val = Number(this.ccForm?.get("total_cost")?.value) - Number(this.ccForm?.get("labour_discount_amount")?.value) - Number(this.ccForm?.get("material_discount_amount")?.value)
-    return val.toFixed(2);
   }
 
   initializeValueChange() {
@@ -368,7 +353,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     this.ccForm = this.fb.group({
       guid: [''],
       // customer_company_guid: [''],
-      customer_code: [''],
+      customer_code: this.customerCodeControl,
       branch_code: ['', [
         Validators.required,
         Validators.minLength(3), // Minimum 3 characters
@@ -392,19 +377,11 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  SortRepairEstPart(items: TemplateEstPartItem[]): TemplateEstPartItem[] {
-    if (items.length == 0) return [];
-    var retval: TemplateEstPartItem[] = items.sort((a, b) => b.create_dt! - a.create_dt!);
-
-    return retval;
-  }
-
   patchData(currentBillingBranch: CustomerCompanyItem) {
     if (currentBillingBranch) {
       const patchCountryCodeValue = Utility.getCountryCodeObject(currentBillingBranch.country_code, this.countryCodes);
       this.ccForm?.patchValue({
         guid: currentBillingBranch.guid,
-        customer_code: this.getCustomerCompanyItem(currentBillingBranch.main_customer_guid!),
         branch_code: currentBillingBranch.code,
         branch_name: currentBillingBranch.name,
         country_code: patchCountryCodeValue,
@@ -421,6 +398,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         remarks: currentBillingBranch.remarks,
       });
 
+      this.customerCodeControl.setValue(this.getCustomerCompanyItem(currentBillingBranch.main_customer_guid!))
+
       var existContact = currentBillingBranch?.cc_contact_person!.map((row) => ({
         ...row,
         action: ''
@@ -428,6 +407,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       this.updateData(existContact!);
     }
   }
+
   public loadData() {
     this.initializeFilterCustomerCompany();
     this.historyState = history.state;
@@ -472,7 +452,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
           this.ccForm?.patchValue({
             customer_code: selectedCustomer
           });
-          this.ccForm?.get('customer_code')?.disable();
+          this.customerCodeControl?.disable();
         }
         else if (this.selectedBillingBranch) // data from billing branch
         {
@@ -777,12 +757,13 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   onBillingBranchSubmit() {
     this.ccForm!.get('repList')?.setErrors(null);
+    this.findInvalidControls();
     if (this.ccForm?.valid) {
       if (!this.repList.data.length) {
         this.ccForm.get('repList')?.setErrors({ required: true });
       } else {
         var customerCode = this.ccForm?.get("branch_code")?.value?.toUpperCase();
-        var mainCustomer = this.ccForm?.get("customer_code")?.value as CustomerCompanyItem;
+        var mainCustomer = this.customerCodeControl?.value as CustomerCompanyItem;
         if (customerCode == mainCustomer?.code) {
           this.ccForm.get('branch_code')?.setErrors({ duplicated: true });
           return;
@@ -792,8 +773,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         where.code = { eq: customerCode };
         this.ccDS.search(where).subscribe(result => {
           if (result.length == 0 && this.branch_guid == undefined) {
-            if (this.ccForm?.get("customer_code")?.value) {
-              let mainCust = this.ccForm?.get("customer_code")?.value as CustomerCompanyItem;
+            if (this.customerCodeControl?.value) {
+              let mainCust = this.customerCodeControl?.value as CustomerCompanyItem;
               if (mainCust.guid) {
                 this.UpdateCustomerBillingBranches();
               }
@@ -809,8 +790,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
             this.ccForm?.get('branch_code')?.setErrors({ existed: true });
           }
           else if (result.length > 0 && this.branch_guid != undefined) {
-
-            if (this.ccForm?.get("customer_code")?.value) {
+            if (this.customerCodeControl?.value) {
               this.UpdateCustomerBillingBranches();
             }
             else {
@@ -849,9 +829,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.ccForm?.get("currency")?.value) {
       cust.currency_guid = cust.currency?.guid;
     }
-
-    // cust.type_cv= (this.ccForm?.get("customer_type")?.value as CodeValuesItem)?.code_val;
-
 
     var existContactPerson = selectedBillingBranch?.cc_contact_person?.map((row) => ({
       ...row,
@@ -913,7 +890,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   UpdateCustomerBillingBranches() {
-    const mainCustomer: CustomerCompanyItem = new CustomerCompanyItem(this.ccForm?.get("customer_code")?.value!);
+    const mainCustomer: CustomerCompanyItem = new CustomerCompanyItem(this.customerCodeControl?.value!);
     if (mainCustomer.guid) {
       delete mainCustomer.update_by;
       delete mainCustomer.update_dt;
@@ -1039,7 +1016,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       });
     }
     else {
-      this.ccForm?.get('customer_code')?.setErrors({ required: true });
+      this.customerCodeControl?.setErrors({ required: true });
     }
   }
 
@@ -1060,7 +1037,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     cust.country_code = this.ccForm?.get("country_code")?.value?.code;
     cust.postal = this.ccForm?.get("postal_code")?.value;
 
-    const mainCustomer: CustomerCompanyItem = this.ccForm?.get("customer_code")?.value!;
+    const mainCustomer: CustomerCompanyItem = this.customerCodeControl?.value!;
     if (mainCustomer) {
       cust.main_customer_guid = mainCustomer.guid;
     }
@@ -1099,53 +1076,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
   handleDelete(event: Event, row: any, index: number): void {
     this.deleteItem(row, index);
-  }
-
-  cancelItem(event: Event, row: RepairPartItem) {
-    // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.cancelSelectedRows(this.sotSelection.selected)
-    } else {
-      this.cancelSelectedRows([row])
-    }
-  }
-
-  rollbackItem(event: Event, row: RepairPartItem) {
-    // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.rollbackSelectedRows(this.sotSelection.selected)
-    } else {
-      this.rollbackSelectedRows([row])
-    }
-  }
-
-  undoAction(event: Event, row: RepairPartItem, action: string) {
-    // this.id = row.id;
-    this.stopPropagation(event);
-    if (this.sotSelection.hasValue()) {
-      this.undoTempAction(this.sotSelection.selected, action)
-    } else {
-      this.undoTempAction([row], action)
-    }
-  }
-
-  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
-    //this.stopEventTrigger(event);
-    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
-    newSot.unit_type_guid = row.unit_type_guid;
-    newSot.last_cargo_guid = row.last_cargo_guid;
-    newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
-    newSot.clean_status_cv = row.clean_status_cv;
-    newSot.certificate_cv = row.certificate_cv;
-    newSot.so_guid = row.so_guid;
-    newSot.eta_dt = row.eta_dt;
-    newSot.etr_dt = row.etr_dt;
-    //this.addEstDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
@@ -1265,32 +1195,11 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
     this.resetForm();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
-
 
   resetForm() {
     this.initCCForm();
-
-
   }
 
   getCurrency(guid: string): CurrencyItem | undefined {
@@ -1302,7 +1211,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         return curItm![0];
       else
         return undefined;
-
     }
     return undefined;
 
@@ -1335,16 +1243,16 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initializeFilterCustomerCompany() {
-    this.ccForm!.get('customer_code')!.valueChanges.pipe(
+    this.customerCodeControl!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        if (value === undefined) return;
+        if (!value) return;
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (value && typeof value === 'object') {
+          searchCriteria = value.code;
         } else {
-          searchCriteria = value?.code;
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems(
           {
@@ -1365,6 +1273,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
           },
           { code: 'ASC' }).subscribe(data => {
             this.customer_companyList = data
+            this.updateValidators(this.customer_companyList)
           });
       })
     ).subscribe();
@@ -1384,10 +1293,28 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   onAlphaOnly(event: Event): void {
-    Utility.onAlphaOnly(event, this.ccForm?.get("phone")!);
+    Utility.onAlphaOnly(event, this.ccForm?.get("branch_code")!);
   }
 
-    onNumericOnly(event: Event): void {
-    Utility.onNumericOnly(event, this.ccForm?.get("customer_code")!);
+  onNumericOnly(event: Event): void {
+    Utility.onNumericOnly(event, this.ccForm?.get("phone")!);
+  }
+
+  findInvalidControls() {
+    const controls = this.ccForm?.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        console.log(name);
+      } else {
+        console.log(name, controls[name]);
+      }
+    }
+  }
+
+  updateValidators(validOptions: any[]) {
+    this.customerCodeControl?.setValidators([
+      Validators.required,
+      AutocompleteSelectionValidator(validOptions)
+    ]);
   }
 }
