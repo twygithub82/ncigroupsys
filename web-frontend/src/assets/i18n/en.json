@@ -1294,8 +1294,12 @@
     "VALID-THROUGH": "Valid Through",
     "STEAM-CARGO":"Steaming Cargo",
     "GST-REG":"GST Reg No",
-    "CARGOES":"Cargoes"
-    
+    "CARGOES":"Cargoes",
+    "PROCESS-DESCRIPTION-SELECTED": "Process Description Selected",
+    "PROCESS-NAME-SELECTED": "Process Name Selected",
+    "CATEGORY-DESCRIPTION-SELECTED": "Category Description Selected",
+    "CATEGORY-NAME-SELECTED": "Category Name Selected",
+    "FORMULA-DESCRIPTION-SELECTED": "Formula Description Selected"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -780,7 +780,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.custInput) {
 
-      this.custInput.nativeElement.value = ' ';
+      this.custInput.nativeElement.value = '';
       this.searchForm?.get('cargo_name')?.setValue('');
       this.searchCargoList('');
     }

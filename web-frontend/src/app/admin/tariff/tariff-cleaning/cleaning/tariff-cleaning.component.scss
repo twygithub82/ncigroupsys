@@ -11,15 +11,8 @@
   content: none !important;
 }
 
-/* Hide the checkmark tick in mat-option */
-.no-tick-autocomplete .mat-option .mat-pseudo-checkbox {
-  display: none !important;
-}
 
-/* If using mat-option[aria-selected="true"] */
-.no-tick-autocomplete .mat-option.mat-selected::after {
-  display: none !important;
-}
+
 
 /* Ensure the mat-option uses flexbox */
 .checkbox-option {
@@ -44,4 +37,8 @@
   margin-top: 4px;
   white-space: normal;    /* Allow text wrapping */
   line-height: 1.5;       /* Improve readability */
+}
+
+::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+ display:none
 }

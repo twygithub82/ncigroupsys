@@ -37,3 +37,6 @@ table.advance-table mat-cell {
   line-height: 1.5;       /* Improve readability */
 }
 
+::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+ display:none
+}

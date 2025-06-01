@@ -4,7 +4,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -41,6 +41,9 @@ import { Utility } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-cleaning-formulas',
@@ -70,7 +73,8 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
     ReactiveFormsModule,
     FormsModule,
     MatAutocompleteModule,
-    MatDividerModule
+    MatDividerModule,
+    MatChipsModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -90,6 +94,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   ]
 
   translatedLangText: any = {};
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -130,6 +135,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
     DURATION: "COMMON-FORM.DURATION-MIN",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    FORMULA_DESCRIPTION_SELECTED:'COMMON-FORM.FORMULA-DESCRIPTION-SELECTED',
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -148,6 +154,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   soList: StoringOrderItem[] = [];
   mthDS: CleaningMethodDS;
   fmlDS: CleaningFormulaDS;
+  
+
 
   pageIndex = 0;
   pageSize = 10;
@@ -182,11 +190,13 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenuPosition = { x: '0px', y: '0px' };
   messages = [];
   messageSubscription?: Subscription;
+  descList:string[]=[];
 
   ngOnInit() {
     this.initializeFilterCustomerCompany();
     this.translateLangText();
     this.loadData();
+    this.initializeValueChanges();
   }
   refresh() {
     this.onPageEvent({
@@ -194,6 +204,37 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       length: 0
     });
   }
+
+  
+   initializeValueChanges() {
+      var searchObj = this.searchForm;
+      // searchObj?.get("name")!.valueChanges.pipe(
+      //   startWith(''),
+      //   debounceTime(300),
+      //   tap(value => {
+      //     this.fmlDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
+      //       this.nameList = data.map(i => i.name || '');
+      //     });
+      //   })
+      // ).subscribe();
+  
+      searchObj?.get("description")!.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          this.fmlDS.search({ description: { contains: value } }, { description: "ASC" }, 100).subscribe(data => {
+
+            const seen = new Set<string>();
+            this.descList = data.map(i => i.description || '').filter(desc => {
+                const key = desc.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+              });
+          });
+        })
+      ).subscribe();
+    }
 
   initSearchForm() {
     this.searchForm = this.fb.group({
@@ -281,9 +322,16 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       where.name = { contains: this.searchForm!.value['name'] };
     }
 
-    if (this.searchForm!.value['description']) {
-      where.description = { contains: this.searchForm!.value['description'] };
+
+     if(this.selectedDescs.length>0)
+    {
+      where.description={in: this.selectedDescs};
     }
+
+
+    // if (this.searchForm!.value['description']) {
+    //   where.description = { contains: this.searchForm!.value['description'] };
+    // }
 
     if (this.searchForm!.value['min_duration']) {
       where.duration = { gte: Number(this.searchForm!.value['min_duration']) }
@@ -498,5 +546,85 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       })
   
     }
+
+
+        @ViewChild('descInput', { static: true })
+            descInput?: ElementRef<HTMLInputElement>;
+            selectedDescs:any[]=[];
+              description_itemSelected(row: any): boolean {
+                 var itm=this.selectedDescs;
+                var retval: boolean = false;
+                const index = itm.findIndex(c => c=== row);
+                retval = (index >= 0);
+                return retval;
+              }
+            
+            
+            
+            
+              description_getSelectedDisplay(): string {
+                var itm=this.selectedDescs;
+                var retval: string = "";
+                if (itm?.length > 1) {
+                  retval = `${itm.length} ${this.translatedLangText.FORMULA_DESCRIPTION_SELECTED}`;
+                }
+                else if (itm?.length == 1) {
+                  retval = `${itm[0]}`
+                }
+                return retval;
+              }
+            
+            
+            
+              description_removeAllSelected(): void {
+                this.selectedDescs=[];
+              }
+            
+              description_selected(event: MatAutocompleteSelectedEvent): void {
+                var itm=this.selectedDescs;
+                var cnt=this.searchForm?.get('description');
+                var elmInput=this.descInput;
+                const val=event.option.value;
+                const index = itm.findIndex(c => c === val);
+                if (!(index >= 0)) {
+                  itm.push(val);
+                  // this.search();
+                }
+                else {
+                  itm.splice(index, 1);
+                  // this.search();
+                }
+            
+                if (elmInput) {
+            
+                  elmInput.nativeElement.value = '';
+                 cnt?.setValue('');
+                  
+                }
+                // this.updateFormControl();
+                //this.customerCodeControl.setValue(null);
+                //this.pcForm?.patchValue({ customer_code: null });
+              }
+            
+              description_onCheckboxClicked(row: any) {
+                const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+                this.description_selected(fakeEvent);
+            
+              }
+            
+              description_add(event: MatChipInputEvent): void {
+                var cnt=this.searchForm?.get('description');
+                const input = event.input;
+                const value = event.value;
+                // Add our fruit
+                if ((value || '').trim()) {
+                  //this.fruits.push(value.trim());
+                }
+                // Reset the input value
+                if (input) {
+                  input.value = '';
+                }
+                cnt?.setValue(null);
+              }
 
 }
