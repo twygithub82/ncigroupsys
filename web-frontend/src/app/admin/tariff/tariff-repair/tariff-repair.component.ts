@@ -621,6 +621,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
+    if(this.selectedParts.length > 0) {
+      const tariff_repair: any = { part_name: { in:this.selectedParts} };
+      where.and.push({ tariff_repair: tariff_repair });
+    }
     // if (this.pcForm!.value["part_name"]) {
     //   const description: Text = this.pcForm!.value["part_name"];
     //   // where.part_name = { contains: description }
@@ -628,12 +632,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     //   where.and.push({ tariff_repair: tariff_repair })
     // }
 
-    if (this.partNameControl.value) {
-      const description = this.partNameControl.value;
-      // where.part_name = { contains: description }
-      const tariff_repair: any = { part_name: { contains: description } }
-      where.and.push({ tariff_repair: tariff_repair })
-    }
+    // if (this.partNameControl.value) {
+    //   const description = this.partNameControl.value;
+    //   // where.part_name = { contains: description }
+    //   const tariff_repair: any = { part_name: { contains: description } }
+    //   where.and.push({ tariff_repair: tariff_repair })
+    // }
 
     if (this.pcForm!.value["handled_item_cv"]) {
       const handled = this.pcForm!.value["handled_item_cv"];

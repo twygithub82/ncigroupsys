@@ -418,13 +418,16 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     var where: any = {};
     const tariff_cleaning: any = {}
 
-    if (this.lastCargoControl?.value?.guid) {
-      tariff_cleaning.guid = { contains: this.lastCargoControl?.value?.guid };
-    } else if (this.lastCargoControl?.value) {
-      if (typeof this.lastCargoControl?.value === 'string') {
-        tariff_cleaning.cargo = { contains: this.lastCargoControl?.value };
-      }
+    if(this.selectedCargo.length > 0) {
+       tariff_cleaning.guid = { in: this.selectedCargo.map(c => c.guid) };
     }
+    // if (this.lastCargoControl?.value?.guid) {
+    //   tariff_cleaning.guid = { contains: this.lastCargoControl?.value?.guid };
+    // } else if (this.lastCargoControl?.value) {
+    //   if (typeof this.lastCargoControl?.value === 'string') {
+    //     tariff_cleaning.cargo = { contains: this.lastCargoControl?.value };
+    //   }
+    // }
 
     if (this.searchForm!.get('class_no')?.value) {
       const classNo: CodeValuesItem = this.searchForm!.get('class_no')?.value;
