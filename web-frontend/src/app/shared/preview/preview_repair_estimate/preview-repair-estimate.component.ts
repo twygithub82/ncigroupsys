@@ -46,6 +46,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable } from 'rxjs';
@@ -58,12 +59,11 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'app-estimate-preview',
+  selector: 'app-preview-repair-estimate',
   standalone: true,
-  templateUrl: './estimate-preview.component.html',
-  styleUrl: './estimate-preview.component.scss',
+  templateUrl: './preview-repair-estimate.component.html',
+  styleUrl: './preview-repair-estimate.component.scss',
   imports: [
-    BreadcrumbComponent,
     MatButtonModule,
     MatSidenavModule,
     MatTooltipModule,
@@ -85,7 +85,6 @@ export interface DialogData {
     MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
@@ -99,7 +98,7 @@ export interface DialogData {
 })
 
 
-export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
     // 'group_name_cv',
@@ -111,8 +110,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     'hour',
     'price',
     'material',
-    'isOwner',
-    'actions'
+    'isOwner'
   ];
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
@@ -213,8 +211,6 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     REPAIR_ESTIMATE_DETAILS: 'COMMON-FORM.REPAIR-ESITMATE-DETAILS'
   }
 
-  clean_statusList: CodeValuesItem[] = [];
-
   sot_guid?: string | null;
   repair_guid?: string | null;
 
@@ -223,7 +219,6 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
 
   sotItem?: StoringOrderTankItem;
   repairItem?: RepairItem;
-  packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
@@ -237,8 +232,9 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
   repairCodeCvList: CodeValuesItem[] = []
   unitTypeCvList: CodeValuesItem[] = []
   processStatusCvList: CodeValuesItem[] = []
-  templateList: MasterTemplateItem[] = []
+  clean_statusList: CodeValuesItem[] = [];
   surveyorList: UserItem[] = []
+  customer_companyList?: CustomerCompanyItem[];
 
   customerCodeControl = new UntypedFormControl();
   dialogTitle: string = '';
@@ -261,13 +257,10 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
 
   constructor(
     public dialog: MatDialog,
-    public dialogRef: MatDialogRef<RepairEstimatePreviewComponent>,
+    public dialogRef: MatDialogRef<PreviewRepairEstFormDialog>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-    public httpClient: HttpClient,
-    private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
     private fileManagerService: FileManagerService,
@@ -294,15 +287,12 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeValueChanges();
     this.loadData();
   }
 
   initForm() {
     this.repairForm = this.fb.group({
       guid: [''],
-      est_template: [''],
-      is_default_template: [''],
       remarks: [''],
       surveyor_id: [''],
       labour_cost_discount: [0],
@@ -354,123 +344,6 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
       net_cost_est: [0],
       repList: ['']
     });
-  }
-
-  initializeValueChanges() {
-    this.repairForm?.get('est_template')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          console.log(value);
-          if (this.getCustomer()?.def_template_guid) {
-            this.repairForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
-          }
-          // estimate
-          this.repairForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
-          this.repairForm?.get('material_cost_discount')?.setValue(value.material_cost_discount);
-          this.repairForm?.get('remarks')?.setValue(value.remarks);
-
-          const existingList: any[] = [];
-          const data: any[] = [...this.repList];
-          data.forEach(rep => {
-            if (rep.guid) {
-              rep.delete_dt = Utility.getDeleteDtEpoch();
-              rep.action = 'cancel'
-              existingList.push(rep);
-            }
-          });
-
-          const repList: RepairPartItem[] = this.filterDeleted(value.template_est_part).map((tep: any) => {
-            const package_repair = tep.tariff_repair?.package_repair;
-            let material_cost = 0;
-            if (package_repair?.length) {
-              material_cost = package_repair[0].material_cost
-            }
-            const tep_damage_repair = this.filterDeleted(tep.tep_damage_repair).map((item: any) => {
-              return new RPDamageRepairItem({
-                code_cv: item.code_cv,
-                code_type: item.code_type,
-                action: 'new'
-              });
-            })
-            return new RepairPartItem({
-              repair_guid: this.repair_guid || undefined,
-              description: tep.description,
-              hour: !this.repairPartDS.is4X(tep_damage_repair) ? tep.hour : 0,
-              location_cv: tep.location_cv,
-              comment: tep.comment,
-              quantity: !this.repairPartDS.is4X(tep_damage_repair) ? tep.quantity : 0,
-              remarks: tep.remarks,
-              material_cost: material_cost,
-              tariff_repair_guid: tep.tariff_repair_guid,
-              tariff_repair: tep.tariff_repair,
-              rp_damage_repair: tep_damage_repair,
-              action: "new"
-            });
-          });
-          this.updateData([...existingList, ...repList]);
-
-          // estimate part
-          // const tariff_repair_guid = value.template_est_part.map((tep: any) => tep.tariff_repair_guid);
-          // this.getCustomerCost(this.sotItem?.storing_order?.customer_company_guid, tariff_repair_guid).pipe(
-          //   switchMap(data => {
-          //     let material_cost = 0;
-          //     if (data && data.length) {
-          //       material_cost = data[0].material_cost;
-          //       console.log('Customer Package Cost Data:', data);
-          //     }
-
-          //     const repList: RepairPartItem[] = value.template_est_part.map((tep: any) => {
-          //       const tep_damage_repair = tep.tep_damage_repair.map((item: any) => {
-          //         return new RPDamageRepairItem({
-          //           guid: item.guid,
-          //           rp_guid: item.rp_guid,
-          //           code_cv: item.code_cv,
-          //           code_type: item.code_type,
-          //           action: 'new'
-          //         });
-          //       })
-
-          //       return new RepairPartItem({
-          //         description: tep.description,
-          //         hour: tep.hour,
-          //         location_cv: tep.location_cv,
-          //         quantity: tep.quantity,
-          //         remarks: tep.remarks,
-          //         material_cost: material_cost,
-          //         tariff_repair_guid: tep.tariff_repair_guid,
-          //         tariff_repair: tep.tariff_repair,
-          //         rp_damage_repair: tep_damage_repair,
-          //         action: 'new',
-          //       });
-          //     });
-          //     console.log(repList);
-          //     this.updateData(repList);
-          //     return of(repList);
-          //   })
-          // ).subscribe();
-        }
-      })
-    ).subscribe();
-
-    this.repairForm?.get('labour_cost_discount')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        this.calculateCost();
-        this.calculateCostEst();
-      })
-    ).subscribe();
-
-    this.repairForm?.get('material_cost_discount')?.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        this.calculateCost();
-        this.calculateCostEst();
-      })
-    ).subscribe();
   }
 
   public loadData() {
@@ -544,169 +417,78 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
 
     this.getSurveyorList();
 
-    this.sot_guid = this.data.sot_guid; //this.route.snapshot.paramMap.get('id');
-    this.repair_guid = this.data.repair_guid; //this.route.snapshot.paramMap.get('repair_id');
+    this.repair_guid = this.data.repair_guid;
 
-    this.route.data.subscribe(routeData => {
-      this.isDuplicate = routeData['action'] === 'duplicate';
-      if (this.sot_guid) {
-        this.subs.sink = this.sotDS.getStoringOrderTankByIDForRepair(this.sot_guid).subscribe(data => {
-          if (this.sotDS.totalCount > 0) {
-            this.sotItem = data[0];
-            this.populateRepair(this.sotItem.repair, this.isDuplicate);
-            this.getCustomerLabourPackage(this.sotItem.storing_order?.customer_company_guid!);
-            this.getTemplateList(this.sotItem.storing_order?.customer_company_guid!);
+    this.subs.sink = this.repairDS.getRepairByIDForApproval(this.repair_guid!).subscribe(data => {
+      if (data?.length) {
+        this.repairItem = data[0];
+        this.sotItem = this.repairItem?.storing_order_tank;
+        this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+          if (cc?.length) {
+            const bill_to = this.repairForm?.get('bill_to');
+            this.customer_companyList = cc;
+            if (this.repairItem?.bill_to_guid) {
+              const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
+              if (found?.length) {
+                bill_to?.setValue(found[0]);
+              }
+            } else if (this.customer_companyList?.length == 1) {
+              bill_to?.setValue(this.customer_companyList[0]);
+            }
+            if (!this.repairDS.canApprove(this.repairItem)) {
+              bill_to?.disable();
+            }
           }
         });
+        this.populateRepair(this.repairItem);
       }
     });
   }
 
-  populateRepair(repair: RepairItem[] | undefined, isDuplicate: boolean) {
-    if (this.isDuplicate) {
-      if (this.repair_guid) {
-        this.repairDS.getRepairByID(this.repair_guid, this.sotItem?.storing_order?.customer_company_guid!).subscribe(data => {
-          if (this.repairDS.totalCount > 0) {
-            const found = data;
-            if (found?.length) {
-              this.populateFoundRepair(found[0]!, isDuplicate);
-            }
-          }
-        });
-      }
-    } else {
-      if (repair?.length) {
-        const found = repair.filter(x => x.guid === this.repair_guid);
-        if (found?.length) {
-          this.populateFoundRepair(found[0]!, isDuplicate);
+  populateRepair(repair: RepairItem | undefined) {
+    this.populateFoundRepair(repair!);
 
-          this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
-            next: (response) => {
-              console.log('Files retrieved successfully:', response);
-              if (response?.length) {
-                this.repairEstimatePdf = response.filter((f: any) => f.description === 'REPAIR_ESTIMATE');
-              }
-            },
-            error: (error) => {
-              console.error('Error retrieving files:', error);
-            },
-            complete: () => {
-              console.log('File retrieval process completed.');
-            }
-          });
+    this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
+      next: (response) => {
+        console.log('Files retrieved successfully:', response);
+        if (response?.length) {
+          this.repairEstimatePdf = response.filter((f: any) => f.description === 'REPAIR_ESTIMATE');
         }
+      },
+      error: (error) => {
+        console.error('Error retrieving files:', error);
+      },
+      complete: () => {
+        console.log('File retrieval process completed.');
       }
-    }
+    });
     this.isOwnerChanged();
   }
 
-  populateFoundRepair(repair: RepairItem, isDuplicate: boolean) {
-    this.repairItem = isDuplicate ? new RepairItem() : repair;
-    this.isOwner = !isDuplicate ? (repair!.owner_enable ?? false) : false;
+  populateFoundRepair(repair: RepairItem) {
+    this.repairItem = repair;
+    this.isOwner = (repair!.owner_enable ?? false);
     this.repairItem!.repair_part = this.filterDeleted(repair!.repair_part).map((rep: any) => {
-      if (isDuplicate) {
-        const package_repair = rep.tariff_repair?.package_repair;
-        let material_cost = rep.material_cost;
-        if (isDuplicate && package_repair?.length) {
-          material_cost = package_repair[0].material_cost;
-        }
-
-        const rp_damage_repair = this.filterDeleted(rep.rp_damage_repair).map((rp_d_r: any) => {
-          rp_d_r.guid = undefined;
-          rp_d_r.action = 'new';
-          return rp_d_r;
-        });
-
-        return {
-          ...rep,
-          rp_damage_repair: rp_damage_repair,
-          material_cost: material_cost,
-          guid: null,
-          repair_guid: null,
-          action: 'new'
-        };
-      }
-
       return rep;
     });
     console.log(this.repairItem!.repair_part);
     this.updateData(this.repairItem!.repair_part);
     this.repairForm?.patchValue({
-      guid: !isDuplicate ? this.repairItem!.guid : '',
+      guid: this.repairItem!.guid,
       remarks: this.repairItem!.remarks,
       surveyor_id: this.repairItem!.aspnetusers_guid,
       labour_cost_discount: this.repairItem!.labour_cost_discount,
       material_cost_discount: this.repairItem!.material_cost_discount
     });
 
-    const isEditable = false;
-    this.repairForm?.get('surveyor_id')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('labour_cost_discount')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('material_cost_discount')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('remarks')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-    this.repairForm?.get('')?.[isEditable ? 'enable' : 'disable']();
-  }
-
-  getCustomerLabourPackage(customer_company_guid: string) {
-    const where = {
-      and: [
-        { customer_company_guid: { eq: customer_company_guid } }
-      ]
-    }
-    this.subs.sink = this.plDS.getCustomerPackageCost(where).subscribe(data => {
-      if (data?.length > 0) {
-        this.packageLabourItem = data[0];
-      }
-    });
+    this.repairForm?.get('surveyor_id')?.disable();
+    this.repairForm?.get('labour_cost_discount')?.disable();
+    this.repairForm?.get('material_cost_discount')?.disable();
+    this.repairForm?.get('remarks')?.disable();
   }
 
   getCustomer() {
     return this.sotItem?.storing_order?.customer_company;
-  }
-
-  getTemplateList(customer_company_guid: string) {
-    let where: any = {
-      or: [
-        {
-          and: [
-            { template_est_customer: { some: { customer_company_guid: { eq: customer_company_guid }, delete_dt: { eq: null } } } },
-            { type_cv: { eq: "EXCLUSIVE" } }
-          ]
-        },
-        { type_cv: { eq: "GENERAL" } }
-      ]
-    }
-    where = this.mtDS.addDeleteDtCriteria(where);
-    this.subs.sink = this.mtDS.searchEstimateTemplateForRepair(where, { create_dt: 'ASC' }, customer_company_guid).subscribe(data => {
-      if (data?.length > 0) {
-        this.templateList = data;//this.filterDeletedTemplate(data, customer_company_guid);
-        const def_guid = this.getCustomer()?.def_template_guid;
-        if (!this.repair_guid) {
-          if (def_guid) {
-            this.repairForm?.get('is_default_template')?.setValue(true);
-          }
-
-          const def_template = this.templateList.find(x =>
-            def_guid ? x.guid === def_guid : x.type_cv === 'GENERAL'
-          );
-
-          if (def_guid !== def_template?.guid) {
-            this.getCustomer()!.def_template_guid = def_guid;
-            this.repairForm?.get('is_default_template')?.setValue(true);
-          }
-
-          this.repairForm?.get('est_template')?.setValue(def_template);
-        }
-      }
-    });
   }
 
   getCustomerCost(customer_company_guid: string | undefined, tariff_repair_guid: string[] | undefined) {
@@ -744,170 +526,6 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     this.calculateCostEst();
   }
 
-  // addEstDetails(event: Event, row?: RepairPartItem) {
-  //   this.preventDefault(event);  // Prevents the form submission
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   const addSot = row ?? new RepairPartItem();
-  //   addSot.repair_guid = addSot.repair_guid;
-  //   const dialogRef = this.dialog.open(FormDialogComponent, {
-  //     width: '1000px',
-  //     data: {
-  //       repair: this.repairItem,
-  //       item: row ? row : addSot,
-  //       action: 'new',
-  //       translatedLangText: this.translatedLangText,
-  //       populateData: {
-  //         groupNameCvList: this.groupNameCvList,
-  //         subgroupNameCvList: this.subgroupNameCvList,
-  //         yesnoCvList: this.yesnoCvList,
-  //         partLocationCvList: this.partLocationCvList,
-  //         damageCodeCvList: this.damageCodeCvList,
-  //         repairCodeCvList: this.repairCodeCvList,
-  //         unitTypeCvList: this.unitTypeCvList
-  //       },
-  //       index: -1,
-  //       customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
-  //       existedPart: this.repList
-  //     },
-  //     direction: tempDirection
-  //   });
-  //   dialogRef.componentInstance.dataSubject.subscribe((result) => {
-  //     this.addRepairPart(result)
-  //   });
-  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //     if (result) {
-  //       this.addRepairPart(result)
-  //     }
-  //   });
-  // }
-
-  // editEstDetails(event: Event, row: RepairPartItem, index: number) {
-  //   this.preventDefault(event);  // Prevents the form submission
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   const dialogRef = this.dialog.open(FormDialogComponent, {
-  //     width: '1000px',
-  //     data: {
-  //       repair: this.repairItem,
-  //       item: row,
-  //       action: 'edit',
-  //       translatedLangText: this.translatedLangText,
-  //       populateData: {
-  //         groupNameCvList: this.groupNameCvList,
-  //         subgroupNameCvList: this.subgroupNameCvList,
-  //         yesnoCvList: this.yesnoCvList,
-  //         partLocationCvList: this.partLocationCvList,
-  //         damageCodeCvList: this.damageCodeCvList,
-  //         repairCodeCvList: this.repairCodeCvList,
-  //         unitTypeCvList: this.unitTypeCvList
-  //       },
-  //       index: index,
-  //       customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
-  //       existedPart: this.repList
-  //     },
-  //     direction: tempDirection
-  //   });
-  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //     if (result) {
-  //       const data = [...this.repList];
-  //       const updatedItem = new RepairPartItem({
-  //         ...result.item,
-  //       });
-  //       if (result.index >= 0) {
-  //         data[result.index] = updatedItem;
-  //         this.updateData(data);
-  //       } else {
-  //         this.updateData([...this.repList, result.item]);
-  //       }
-  //     }
-  //   });
-  // }
-
-  // deleteItem(event: Event, row: RepairPartItem, index: number) {
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   const dialogRef = this.dialog.open(DeleteDialogComponent, {
-  //     width: '1000px',
-  //     data: {
-  //       item: row,
-  //       langText: this.langText,
-  //       index: index
-  //     },
-  //     direction: tempDirection
-  //   });
-  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //     if (result?.action === 'confirmed') {
-  //       if (result.item.guid) {
-  //         const data: any[] = [...this.repList];
-  //         const updatedItem = {
-  //           ...result.item,
-  //           delete_dt: Utility.getDeleteDtEpoch(),
-  //           action: 'cancel'
-  //         };
-  //         data[result.index] = updatedItem;
-  //         this.updateData(data); // Refresh the data source
-  //       } else {
-  //         const data = [...this.repList];
-  //         data.splice(index, 1);
-  //         this.updateData(data); // Refresh the data source
-  //       }
-  //     }
-  //   });
-  // }
-
-  // cancelSelectedRows(row: RepairPartItem[]) {
-  //   //this.preventDefault(event);  // Prevents the form submission
-  //   let tempDirection: Direction;
-  //   if (localStorage.getItem('isRtl') === 'true') {
-  //     tempDirection = 'rtl';
-  //   } else {
-  //     tempDirection = 'ltr';
-  //   }
-  //   const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-  //     width: '1000px',
-  //     data: {
-  //       action: "cancel",
-  //       item: [...row],
-  //       translatedLangText: this.translatedLangText
-  //     },
-  //     direction: tempDirection
-  //   });
-  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-  //     if (result?.action === 'confirmed') {
-  //       const data: any[] = [...this.repList];
-  //       result.item.forEach((newItem: RepairPartItem) => {
-  //         // Find the index of the item in data with the same id
-  //         const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-  //         // If the item is found, update the properties
-  //         if (index !== -1) {
-  //           data[index] = {
-  //             ...data[index],
-  //             ...newItem,
-  //             actions: Array.isArray(data[index].actions!)
-  //               ? [...new Set([...data[index].actions!, 'cancel'])]
-  //               : ['cancel']
-  //           };
-  //         }
-  //       });
-  //       this.updateData(data);
-  //     }
-  //   });
-  // }
-
   undoTempAction(row: any[], actionToBeRemove: string) {
     const data: any[] = [...this.repList];
     row.forEach((newItem: any) => {
@@ -926,16 +544,6 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     this.updateData(data);
   }
 
-  addRepairPart(result: any) {
-    const data = [...this.repList];
-    const newItem = new RepairPartItem({
-      ...result.item,
-    });
-    data.push(newItem);
-
-    this.updateData(data);
-  }
-
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
     this.preventDefault(event);
@@ -946,11 +554,6 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
       this.contextMenu.menu.focusFirstItem('mouse');
       this.contextMenu.openMenu();
     }
-  }
-
-  onEnterKey(event: Event) {
-    this.preventDefault(event);
-    // Add any additional logic if needed
   }
 
   onExport(event: Event) {
@@ -985,81 +588,13 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     });
   }
 
-  onFormSubmit() {
-    this.repairForm!.get('repList')?.setErrors(null);
-    if (this.repairForm?.valid) {
-      if (!this.repList.length) {
-        this.repairForm.get('repList')?.setErrors({ required: true });
-      } else {
-        let re: RepairItem = new RepairGO(this.repairItem);
-
-        const rep: RepairPartItem[] = this.repList.map((item: any) => {
-          // Ensure action is an array and take the last action only
-          const rp_damage_repair = item.rp_damage_repair.map((item: any) => {
-            return new RPDamageRepairItem({
-              guid: item.guid,
-              rp_guid: item.rp_guid,
-              code_cv: item.code_cv,
-              code_type: item.code_type,
-              action: item.action
-            });
-          });
-
-          return new RepairPartItem({
-            ...item,
-            tariff_repair: undefined,
-            rp_damage_repair: rp_damage_repair,
-            action: (!item.guid || item.action === 'new') ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
-          });
-        });
-        re.repair_part = rep;
-        re.sot_guid = this.sotItem?.guid;
-        re.aspnetusers_guid = this.repairForm.get('surveyor_id')?.value;
-        re.labour_cost_discount = Utility.convertNumber(this.repairForm.get('labour_cost_discount')?.value);
-        re.material_cost_discount = Utility.convertNumber(this.repairForm.get('material_cost_discount')?.value);
-        re.labour_cost = this.getLabourCost();
-        re.total_hour = Utility.convertNumber(this.repairForm.get('total_hour')?.value, 2);
-        re.total_cost = Utility.convertNumber(this.repairForm.get('net_cost')?.value, 2);
-        re.est_cost = Utility.convertNumber(this.repairForm.get('net_cost_est')?.value, 2);
-        re.total_labour_cost = Utility.convertNumber(this.repairForm.get('total_labour_cost')?.value, 2);
-        re.total_material_cost = Utility.convertNumber(this.repairForm.get('total_mat_cost')?.value, 2);
-        re.remarks = this.repairForm.get('remarks')?.value;
-        re.owner_enable = this.isOwner;
-        re.job_no = re.job_no ?? this.sotItem?.job_no;
-
-        let cc: any = undefined;
-        if (this.repairForm?.get('is_default_template')?.value && this.repairForm.get('est_template')?.value?.guid) {
-          cc = this.getCustomer();
-          cc!.def_template_guid = this.repairForm.get('est_template')?.value?.guid;
-          cc = new CustomerCompanyGO({ ...cc });
-          console.log(cc);
-        }
-
-        // remove the object
-        re.aspnetsuser = undefined;
-
-        console.log('repair onFormSubmit: ', re);
-        if (re.guid) {
-          this.repairDS.updateRepair(re, cc).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.updateRepair);
-          });
-        } else {
-          this.repairDS.addRepair(re, cc).subscribe(result => {
-            console.log(result)
-            this.handleSaveSuccess(result?.data?.addRepair);
-          });
-        }
-      }
-    } else {
-      console.log('Invalid repairForm', this.repairForm?.value);
-    }
-  }
-
   updateData(newData: RepairPartItem[] | undefined): void {
     if (newData?.length) {
       newData = newData.map((row) => ({
         ...row,
+        approve_qty: BusinessLogicUtil.displayApproveQty(row),
+        approve_hour: BusinessLogicUtil.displayApproveHour(row),
+        approve_cost: BusinessLogicUtil.displayApproveCost(row),
         tariff_repair: {
           ...row.tariff_repair,
           sequence: this.getGroupSeq(row.tariff_repair?.group_name_cv)
@@ -1097,13 +632,6 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
     newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
-  }
-
-  handleSaveSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      ComponentUtil.showNotification('snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
-      this.router.navigate(['/admin/repair/estimate']);
-    }
   }
 
   translateLangText() {
@@ -1147,8 +675,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
         'hour',
         'price',
         'material',
-        'isOwner',
-        'actions'
+        'isOwner'
       ];
     } else {
       this.displayedColumns = [
@@ -1160,8 +687,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
         'quantity',
         'hour',
         'price',
-        'material',
-        'actions'
+        'material'
       ];
     }
   }
@@ -1447,7 +973,7 @@ export class RepairEstimatePreviewComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   getLabourCost(): number | undefined {
-    return this.repairItem?.labour_cost || this.packageLabourItem?.cost;
+    return this.repairItem?.labour_cost;
   }
 
   getDisplayLabourCost(): string {

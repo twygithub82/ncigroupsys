@@ -71,7 +71,8 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                      <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt" [max]="maxManuDOMDt">
+                      <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt"
+                        [max]="maxManuDOMDt">
                       <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                       <mat-datepicker #eir_picker></mat-datepicker>
                     </mat-form-field>
@@ -146,7 +147,8 @@
                     </mat-form-field>
                   </div>
                   <div class="col-1 d-flex align-items-center">
-                    <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced" (change)="onToggleInvoiced($event)"> 
+                    <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced"
+                      (change)="onToggleInvoiced($event)">
                       {{translatedLangText.INVOICED}}
                     </mat-slide-toggle>
                   </div>
@@ -233,28 +235,28 @@
                   </mat-panel-title> -->
                   <mat-panel-description class="d-flex align-items-center gap-2">
                     <div class="w-xl-12 w-lg-50">
-                        <span class="font-bold font-small">{{sotRow.tank_no}}</span>
-                      </div>
-                      <div class="w-xl-28 w-lg-50 font-small">
-                        <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
-                        {{ccDS.displayName(sotRow.storing_order?.customer_company)}}
-                      </div>
-                      <div class="w-xl-15 w-lg-50 font-small">
-                        <span class="font-bold">{{translatedLangText.TOTAL_COST}}:</span>
-                        {{getTotalCost(sotRow)}}
-                      </div>
-                      <div class="w-xl-14 w-lg-50 font-small">
-                        <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
-                        {{displayDate(igDS.getInGateItem(sotRow.in_gate)?.eir_dt)}}
-                      </div>
-                      <div class="w-xl-16 w-lg-50 font-small">
-                        <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                        {{getTankStatusDescription(sotRow.tank_status_cv)}}
-                      </div>
-                      <div class="w-xl-17 w-lg-50 font-small">
-                        <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
-                        {{getRepairOptionDescription(sotRow.purpose_repair_cv)}}
-                      </div>
+                      <span class="font-bold font-small">{{sotRow.tank_no}}</span>
+                    </div>
+                    <div class="w-xl-28 w-lg-50 font-small">
+                      <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
+                      {{ccDS.displayName(sotRow.storing_order?.customer_company)}}
+                    </div>
+                    <div class="w-xl-15 w-lg-50 font-small">
+                      <span class="font-bold">{{translatedLangText.TOTAL_COST}}:</span>
+                      {{getTotalCost(sotRow)}}
+                    </div>
+                    <div class="w-xl-14 w-lg-50 font-small">
+                      <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
+                      {{displayDate(igDS.getInGateItem(sotRow.in_gate)?.eir_dt)}}
+                    </div>
+                    <div class="w-xl-16 w-lg-50 font-small">
+                      <span class="font-bold">{{translatedLangText.STATUS}}:</span>
+                      {{getTankStatusDescription(sotRow.tank_status_cv)}}
+                    </div>
+                    <div class="w-xl-17 w-lg-50 font-small">
+                      <span class="font-bold">{{translatedLangText.REPAIR_TYPE}}:</span>
+                      {{getRepairOptionDescription(sotRow.purpose_repair_cv)}}
+                    </div>
                     <!-- <div class="w-40">
                       <span class="font-bold me-1">{{translatedLangText.TANK_NO}}:</span>
                       {{sotRow.tank_no}}
@@ -311,20 +313,19 @@
                           </mat-header-cell>
                           <mat-cell *matCellDef="let row"
                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                              [checked]="reSelection.isSelected(row)" [ngClass]="'tbl-checkbox'"
-                              [hidden]="CheckBoxDisable(row)">
+                            <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                              (change)="$event ? toggleRow(row) : null" [checked]="reSelection.isSelected(row)"
+                              [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
                             </mat-checkbox>
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="id">
-                          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef></mat-header-cell>
                           <mat-cell
                             *matCellDef="let repairRow">{{repairRow.guid}}{{repairRow.storing_order_tank?.storing_order?.customer_company?.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="customer">
-                          <mat-header-cell *matHeaderCellDef
-                            >{{translatedLangText.CUSTOMER}}</mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef>{{translatedLangText.CUSTOMER}}</mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let repairRow" class="">
                             <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span
                               class="customer-text"
@@ -332,8 +333,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="customer_type">
-                          <mat-header-cell *matHeaderCellDef
-                            >{{translatedLangText.CUSTOMER_TYPE}}</mat-header-cell>
+                          <mat-header-cell *matHeaderCellDef>{{translatedLangText.CUSTOMER_TYPE}}</mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let repairRow" class="">
                             <span
                               class="mobile-label">{{translatedLangText.CUSTOMER_TYPE}}:</span>{{DisplayCustomerType(repairRow)}}
@@ -357,7 +357,7 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="net_cost">
-                          <mat-header-cell *matHeaderCellDef >
+                          <mat-header-cell *matHeaderCellDef>
                             {{translatedLangText.NET_COST}}
                           </mat-header-cell>
                           <mat-cell *matCellDef="let repairRow">
@@ -394,7 +394,6 @@
                             {
                             <span class="mobile-label">{{translatedLangText.INVOICE_NO}}: </span> -
                             }
-
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="invoice_date">
@@ -411,20 +410,19 @@
                             {
                             <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}: </span> -
                             }
-
                           </mat-cell>
                         </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                         <mat-row *matRowDef="let repairRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                          (click)="showEstimateDetail($event, repairRow)" matRipple>
+                          (click)="repairDialog($event, repairRow)" matRipple>
                         </mat-row>
                       </table>
                     </div>
                     }
                     @else {
-                      <div class="no-results">
-                        {{translatedLangText.NO_RESULT}}
-                      </div>
+                    <div class="no-results">
+                      {{translatedLangText.NO_RESULT}}
+                    </div>
                     }
                   </mat-card-content>
                   <mat-card-actions [ngClass]="'empty-card-actions'">
