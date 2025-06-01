@@ -461,7 +461,6 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     if (this.searchForm!.get('cutoff_dt')?.value) {
-
       where.create_dt = { lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
@@ -654,6 +653,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       depot_status_cv: ''
     });
 
+    this.invoiceTypeControl.setValue('LIFT_ON');
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
