@@ -140,7 +140,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
-    SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE',
+    SAVE: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
@@ -841,5 +841,9 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   anyEdited(): boolean {
     const found = this.sotList.data.filter(x => (x.actions?.length || 0) > 0);
     return found.length > 0;
+  }
+
+  getSaveBtnDescription(): string {
+    return Utility.getSaveBtnDescription(this.so_guid);
   }
 }

@@ -277,8 +277,8 @@ export class FormDialogComponent {
                   if (data.length > 0) {
                     const hasWaiting = data.some(item => item.status_cv === 'WAITING' || item.status_cv === 'ACCEPTED');
                     if (hasWaiting) {
-                      const hasPreOrder = data.some(item => item.status_cv === 'PREORDER');
-                      if (hasPreOrder) {
+                      const hasPreInYardTank = data.some(item => item.status_cv === 'WAITING' || item.status_cv === 'PREORDER');
+                      if (hasPreInYardTank) {
                         this.storingOrderTankForm.get('tank_no')?.setErrors({ existed: true });
                         this.isTankNoValidated = false;
                       } else {
