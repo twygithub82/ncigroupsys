@@ -4,9 +4,11 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
+        <div class="card">
+      <div class="body">
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
+        <div class="card p-0">
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <mat-accordion>
               <mat-expansion-panel [expanded]="true">
@@ -295,5 +297,7 @@
         </div>
       </div>
     </div>
+  </div>
+  </div>
   </div>
 </section>

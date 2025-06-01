@@ -20,7 +20,7 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
          
-          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm" (ngSubmit)="search()" >
+          <form class="ms-0 " [formGroup]="searchForm!" #formDirective="ngForm" (ngSubmit)="search()" >
               <button type="submit" style="display: none;">Submit</button>
             <div class="row" >
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -79,15 +79,7 @@
                   <mat-datepicker #cutoff_picker></mat-datepicker>
                 </mat-form-field>
               </div>
-              <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="release_picker" placeholder="Select date"
-                    formControlName="release_dt">
-                  <mat-datepicker-toggle matSuffix [for]="release_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #release_picker></mat-datepicker>
-                </mat-form-field>
-              </div> -->
+         
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
@@ -124,23 +116,14 @@
                   {{translatedLangText.INVOICED}}
                 </mat-slide-toggle>
               </div>
-              <!-- <div
-                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
-                  <mat-icon>search</mat-icon>
-                </button>
-                <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-                  matTooltip={{translatedLangText.CLEAR_ALL}}>
-                  <mat-icon>clear_all</mat-icon>
-                </button>
-              </div> -->
+             
             </div>
           </form>
           
         </mat-expansion-panel>
       </mat-accordion>
       <div class="row body card-aligned">
-        <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+        <mat-card  matRipple>
           <!-- <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title [ngClass]="{'pt-1': true}">
               {{translatedLangText.INVOICE_DETAILS}}
