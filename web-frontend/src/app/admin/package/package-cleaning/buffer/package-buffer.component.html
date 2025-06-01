@@ -55,7 +55,7 @@
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
                            <div class="horizontal-container">
-                          <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) || false"
+                          <mat-checkbox color="primary" class="multiSelected_autocomplete" [checked]="itemSelected(cc) || false"
                             (click)="onCheckboxClicked(cc);$event.stopPropagation()"></mat-checkbox>
                           <!-- {{ccDS.displayName(cc)}} -->
                            <div class="option-text">{{ccDS.displayCodeDashName(cc)}}</div>
