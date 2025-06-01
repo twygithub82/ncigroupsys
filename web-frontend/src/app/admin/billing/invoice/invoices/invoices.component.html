@@ -18,7 +18,7 @@
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.EDIT">
-                <button mat-mini-fab color="primary" (click)="InvoiceUpdate()" (click)="$event.stopPropagation()">
+                <button mat-mini-fab class="primary-light" (click)="InvoiceUpdate()" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">edit</mat-icon>
                 </button>
               </div>
@@ -28,7 +28,7 @@
                 </button>
               </div>
               <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                <button mat-mini-fab color="primary" (click)="export_report()"
+                <button mat-mini-fab class="accent-darker" (click)="export_report()"
                   (click)="$event.stopPropagation()" [disabled]="(billDS.actionLoading$| async)">
                   <mat-icon>insert_drive_file</mat-icon>
                 </button>
@@ -55,7 +55,7 @@
                   <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                     @for (cc of customer_companyList; track cc) {
                     <mat-option [value]="cc">
-                      {{ccDS.displayName(cc)}}
+                      {{ccDS.displayCodeDashName(cc)}}
                     </mat-option>
                     }
                   </mat-autocomplete>

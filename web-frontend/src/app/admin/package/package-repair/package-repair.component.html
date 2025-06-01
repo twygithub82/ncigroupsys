@@ -36,7 +36,7 @@
                     @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                     <!-- <div class="m-l-10" [matTooltip]="translatedLangText.EDIT +' '+ translatedLangText.MATERIAL_COST"> -->
                     <div class="m-l-10" [matTooltip]="translatedLangText.GROUP_ADJUSTMENT">
-                      <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                      <button mat-mini-fab class="accent-darker" (click)="adjustCost()" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">percent</mat-icon>
                       </button>
                     </div>

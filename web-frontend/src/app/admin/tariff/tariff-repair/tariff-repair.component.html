@@ -34,7 +34,7 @@
                       </div>
                       @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                       <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' +translatedLangText.EDIT">
-                        <button mat-mini-fab color="primary" (click)="editCallSelection()"
+                        <button mat-mini-fab class="accent-light" (click)="editCallSelection()"
                           (click)="$event.stopPropagation()">
                           <mat-icon class="">edit</mat-icon>
                         </button>
@@ -42,7 +42,7 @@
                       }
                       @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                       <div class="m-l-10" [matTooltip]="translatedLangText.GROUP_ADJUSTMENT">
-                        <button mat-mini-fab color="accent" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                        <button mat-mini-fab class="accent-darker" (click)="adjustCost()" (click)="$event.stopPropagation()">
                           <mat-icon class="col-white">percent</mat-icon>
                         </button>
                       </div>

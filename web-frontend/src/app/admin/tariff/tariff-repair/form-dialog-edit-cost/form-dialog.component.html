@@ -134,7 +134,7 @@
           @if (canEdit()) {
           <button mat-flat-button color="primary" (click)="update()">
             <ng-container *ngIf="!(this.UpdateInProgress); else loading">
-              <mat-icon>save</mat-icon>
+              <mat-icon class="icon-align">save</mat-icon>
               {{ translatedLangText.UPDATE }}
             </ng-container>
             <ng-template #loading>

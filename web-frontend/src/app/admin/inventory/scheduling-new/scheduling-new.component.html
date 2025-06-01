@@ -19,13 +19,13 @@
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                    <button mat-mini-fab color="primary" (click)="addSchedulingDetails($event)"
-                      (click)="$event.stopPropagation()" [disabled]="!sotSelection.hasValue()">
+                    <button mat-mini-fab (click)="addSchedulingDetails($event)"
+                      (click)="$event.stopPropagation()" [disabled]="!sotSelection.hasValue()" [ngClass]="{ 'primary-light': sotSelection.hasValue() }">
                       <mat-icon>add</mat-icon>
                     </button>
                   </div>
                   <div class="m-l-10" [matTooltip]="translatedLangText.SELECT_ALL">
-                    <mat-checkbox class="card-checkbox ms-1" (change)="masterToggle()"
+                    <mat-checkbox class="card-checkbox ms-1" color="primary" (change)="masterToggle()"
                       (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
                       [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
                       {{translatedLangText.SELECT_ALL}}
@@ -55,7 +55,7 @@
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
-                          {{ccDS.displayName(cc)}}
+                          {{ccDS.displayCodeDashName(cc)}}
                         </mat-option>
                         }
                       </mat-autocomplete>
@@ -199,7 +199,7 @@
                   <mat-expansion-panel-header>
                     <mat-panel-description>
                       <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="sotSelection.isSelected(row)"
-                        class="card-checkbox" (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
+                        class="card-checkbox" color="primary" (click)="$event.stopPropagation()" [disabled]="checkDisable(row)">
                       </mat-checkbox>
                       <div class="w-xl-16 w-lg-33">
                         <span class="font-bold">{{row.tank_no}}</span>
