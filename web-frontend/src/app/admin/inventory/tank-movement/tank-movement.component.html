@@ -39,7 +39,36 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                      <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                      <mat-chip-grid #name_chipGrid>
+                          
+                          @if(this.selectedNames.length>0){
+                            <mat-chip-row color="primary" (click)="name_removeAllSelected()">
+                              <span> {{name_getSelectedDisplay()}}</span>
+                              <button matChipRemove hidden>
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
+                          }
+                        <input #nameInput  matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode" formControlName="customer_code"
+                          [matChipInputFor]="name_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          (matChipInputTokenEnd)="name_add($event)">
+                        <mat-autocomplete  #customerCode="matAutocomplete" (optionSelected)="name_selected($event)">
+                          @for (cc of customer_companyList; track cc) {
+                          <mat-option [value]="cc"  class="checkbox-option">
+                            <div class="horizontal-container"> 
+                              <mat-checkbox 
+                                color="primary" 
+                                class="checkbox-item"  
+                                (click)="name_onCheckboxClicked(cc); $event.stopPropagation()"
+                                [checked]="name_itemSelected(cc) || false">
+                              </mat-checkbox>
+                              <div class="option-text">{{ccDS.displayCodeDashName(cc)}}</div>
+                            </div>
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-chip-grid>
+                      <!-- <input nameInput formControlName="customer_code" [formControl]="customerCodeControl"
                         [matAutocomplete]="customerCode">
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
@@ -47,7 +76,7 @@
                           {{ccDS.displayCodeDashName(cc)}}
                         </mat-option>
                         }
-                      </mat-autocomplete>
+                      </mat-autocomplete> -->
                     </mat-form-field>
                   </div>
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -70,7 +99,36 @@
                   <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                      <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
+                       <mat-chip-grid #cargo_chipGrid>
+                            
+                            @if(this.selectedCargoes.length>0){
+                              <mat-chip-row color="primary" (click)="cargo_removeAllSelected()">
+                                <span> {{cargo_getSelectedDisplay()}}</span>
+                                <button matChipRemove hidden>
+                                  <mat-icon>cancel</mat-icon>
+                                </button>
+                              </mat-chip-row>
+                            }
+                          <input #cargoInput matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo" formControlName="last_cargo"
+                            [matChipInputFor]="cargo_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            (matChipInputTokenEnd)="cargo_add($event)">
+                          <mat-autocomplete  #lastCargo="matAutocomplete" (optionSelected)="cargo_selected($event)">
+                          @for (tc of last_cargoList; track tc) {
+                            <mat-option [value]="tc"  class="checkbox-option">
+                              <div class="horizontal-container"> 
+                                <mat-checkbox 
+                                  color="primary" 
+                                  class="checkbox-item"  
+                                  (click)="cargo_onCheckboxClicked(tc); $event.stopPropagation()"
+                                  [checked]="cargo_itemSelected(tc) || false">
+                                </mat-checkbox>
+                                <div class="option-text">{{tc.cargo}}</div>
+                              </div>
+                            </mat-option>
+                            }
+                          </mat-autocomplete>
+                        </mat-chip-grid>
+                      <!-- <input #cargoInput matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
                         formControlName="last_cargo">
                       <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
                         @for (tc of last_cargoList; track tc) {
@@ -78,7 +136,7 @@
                           {{tc.cargo}}
                         </mat-option>
                         }
-                      </mat-autocomplete>
+                      </mat-autocomplete> -->
                       <!-- @if (lastCargoControl.hasError('invalidAutocompleteSelection')) {
                       <mat-error>
                         {{translatedLangText.INVALID_SELECTION}}

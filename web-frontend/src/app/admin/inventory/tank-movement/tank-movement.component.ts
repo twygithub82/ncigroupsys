@@ -2,7 +2,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -37,6 +37,8 @@ import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-tank-movement',
@@ -68,6 +70,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    MatChipsModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -89,7 +92,9 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/tank-movement' }
   ]
 
+   separatorKeysCodes: number[] = [ENTER, COMMA];
   translatedLangText: any = {};
+  
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -117,7 +122,9 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     EIR_STATUS: 'COMMON-FORM.EIR-STATUS',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    YARD: 'COMMON-FORM.YARD'
+    YARD: 'COMMON-FORM.YARD',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
+    CARGO_SELECTED: 'COMMON-FORM.CARGO-SELECTED',
   }
 
   availableProcessStatus: string[] = [
@@ -341,9 +348,31 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       ];
     }
 
-    if (this.searchForm!.get('last_cargo')?.value) {
-      where.last_cargo_guid = { contains: this.searchForm!.get('last_cargo')?.value?.guid };
+    if(this.selectedCargoes.length > 0) {
+       var cond = this.selectedCargoes.map((item) => {
+         return item.guid;
+       });
+       where.last_cargo_guid = { in:cond};
+    
     }
+
+    
+    if(this.selectedNames.length > 0) {
+       var cond = this.selectedNames.map((item) => {
+         return item.guid;
+       });
+       const soSearch: any = {};
+      if (cond.length > 0) {
+        soSearch.customer_company = { guid: { in: cond } };
+        where.storing_order = soSearch;
+      }
+      
+    
+    }
+
+    // if (this.searchForm!.get('last_cargo')?.value) {
+    //   where.last_cargo_guid = { contains: this.searchForm!.get('last_cargo')?.value?.guid };
+    // }
 
     if (this.searchForm!.get('tank_status_cv')?.value) {
       where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
@@ -376,13 +405,13 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
-    if (this.searchForm!.get('customer_code')?.value) {
-      const soSearch: any = {};
-      if (this.searchForm!.get('customer_code')?.value) {
-        soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
-      }
-      where.storing_order = soSearch;
-    }
+    // if (this.searchForm!.get('customer_code')?.value) {
+    //   const soSearch: any = {};
+    //   if (this.searchForm!.get('customer_code')?.value) {
+    //     soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
+    //   }
+    //   where.storing_order = soSearch;
+    // }
 
     if (this.searchForm!.get('eir_no')?.value || this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value || this.searchForm!.get('yard_cv')?.value) {
       const igSearch: any = {};
@@ -579,4 +608,171 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.customerCodeControl.reset('');
   }
+
+
+
+
+
+  
+    
+    @ViewChild('nameInput', { static: true })
+    nameInput?: ElementRef<HTMLInputElement>;
+    selectedNames:any[]=[];
+      name_itemSelected(row: any): boolean {
+         var itm=this.selectedNames;
+        var retval: boolean = false;
+        const index = itm.findIndex(c => c.guid=== row.guid);
+        retval = (index >= 0);
+        return retval;
+      }
+    
+    
+    
+    
+      name_getSelectedDisplay(): string {
+        var itm=this.selectedNames;
+        var retval: string = "";
+        if (itm?.length > 1) {
+          retval = `${itm.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+        }
+        else if (itm?.length == 1) {
+          retval = `${this.ccDS.displayCodeDashName(itm[0])}`
+        }
+        return retval;
+      }
+    
+    
+    
+      name_removeAllSelected(): void {
+        this.selectedNames=[];
+      }
+    
+      name_selected(event: MatAutocompleteSelectedEvent): void {
+        var itm=this.selectedNames;
+        var cnt=this.customerCodeControl;
+        var elmInput=this.nameInput;
+        const val=event.option.value;
+        const index = itm.findIndex(c => c === val);
+        if (!(index >= 0)) {
+          itm.push(val);
+          // this.search();
+        }
+        else {
+          itm.splice(index, 1);
+          // this.search();
+        }
+    
+        if (elmInput) {
+    
+          elmInput.nativeElement.value = '';
+         cnt?.setValue('');
+          
+        }
+        // this.updateFormControl();
+        //this.customerCodeControl.setValue(null);
+        //this.pcForm?.patchValue({ customer_code: null });
+      }
+    
+      name_onCheckboxClicked(row: any) {
+        const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+        this.name_selected(fakeEvent);
+    
+      }
+    
+      name_add(event: MatChipInputEvent): void {
+        var cnt=this.customerCodeControl;
+        const input = event.input;
+        const value = event.value;
+        // Add our fruit
+        if ((value || '').trim()) {
+          //this.fruits.push(value.trim());
+        }
+        // Reset the input value
+        if (input) {
+          input.value = '';
+        }
+        cnt?.setValue(null);
+      }
+  
+  
+  
+        @ViewChild('cargoInput', { static: true })
+    cargoInput?: ElementRef<HTMLInputElement>;
+    selectedCargoes:any[]=[];
+      cargo_itemSelected(row: any): boolean {
+         var itm=this.selectedCargoes;
+        var retval: boolean = false;
+        const index = itm.findIndex(c => c.guid=== row.guid);
+        retval = (index >= 0);
+        return retval;
+      }
+    
+    
+    
+    
+      cargo_getSelectedDisplay(): string {
+        var itm=this.selectedCargoes;
+        var retval: string = "";
+        if (itm?.length > 1) {
+          retval = `${itm.length} ${this.translatedLangText.CARGO_SELECTED}`;
+        }
+        else if (itm?.length == 1) {
+          retval = `${itm[0].cargo}`
+        }
+        return retval;
+      }
+    
+    
+    
+      cargo_removeAllSelected(): void {
+        this.selectedCargoes=[];
+      }
+    
+      cargo_selected(event: MatAutocompleteSelectedEvent): void {
+        var itm=this.selectedCargoes;
+        var cnt=this.lastCargoControl;
+        var elmInput=this.cargoInput;
+        const val=event.option.value;
+        const index = itm.findIndex(c => c.guid === val.guid);
+        if (!(index >= 0)) {
+          itm.push(val);
+          // this.search();
+        }
+        else {
+          itm.splice(index, 1);
+          // this.search();
+        }
+    
+        if (elmInput) {
+    
+          elmInput.nativeElement.value = '';
+         cnt?.setValue('');
+          
+        }
+        // this.updateFormControl();
+        //this.customerCodeControl.setValue(null);
+        //this.pcForm?.patchValue({ customer_code: null });
+      }
+    
+      cargo_onCheckboxClicked(row: any) {
+        const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+        this.cargo_selected(fakeEvent);
+    
+      }
+    
+      cargo_add(event: MatChipInputEvent): void {
+        var cnt=this.lastCargoControl;
+        const input = event.input;
+        const value = event.value;
+        // Add our fruit
+        if ((value || '').trim()) {
+          //this.fruits.push(value.trim());
+        }
+        // Reset the input value
+        if (input) {
+          input.value = '';
+        }
+        cnt?.setValue(null);
+      }
+  
 }
