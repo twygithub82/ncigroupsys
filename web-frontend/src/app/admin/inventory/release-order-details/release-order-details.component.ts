@@ -46,6 +46,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-release-order-details',
@@ -160,7 +161,9 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BOOKING_DATE: "COMMON-FORM.BOOKING-DATE",
     RELEASE_DATE: "COMMON-FORM.RELEASE-DATE",
     SCHEDULE_DATE: "COMMON-FORM.SCHEDULE-DATE",
-    TANK_STATUS: "COMMON-FORM.TANK-STATUS"
+    TANK_STATUS: "COMMON-FORM.TANK-STATUS",
+    LOCATION: "COMMON-FORM.LOCATION",
+    SAVE: "COMMON-FORM.SAVE",
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -594,9 +597,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const toRemove = new ReleaseOrderSotUpdateItem({ storing_order_tank: new StoringOrderTankItem({ tank_no: row.get("tank_no")?.value }) });
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        item: toRemove,
         translatedLangText: this.translatedLangText,
         index: index,
       },
@@ -605,7 +607,6 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const sotArray = this.getReleaseOrderSotArray();
-
         // Remove the item from the FormArray
         sotArray.removeAt(index);
       }
