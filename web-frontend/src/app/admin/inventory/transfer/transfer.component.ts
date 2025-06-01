@@ -157,6 +157,16 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
   lastCursorDirection: string | undefined = undefined;
 
   tankStatusInYard = TANK_STATUS_IN_YARD;
+  todayDt = new Date();
+
+  availableProcessStatus: string[] = [
+    'STEAM',
+    'RESIDUE',
+    'CLEANING',
+    'REPAIR',
+    'STORAGE',
+    'RO_GENERATED',
+  ]
 
   constructor(
     public httpClient: HttpClient,
@@ -323,7 +333,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
 
   constructSearchCriteria() {
     const where: any = {
-      tank_status_cv: { in: TANK_STATUS_IN_YARD }
+      tank_status_cv: { in: this.availableProcessStatus }
     };
 
     if (this.searchForm!.get('tank_no')?.value) {
