@@ -29,20 +29,20 @@ export const MANAGEMENT_ROUTE: Routes = [
   {
     path: "reports/yearly",
     component: MainManagementYearlyComponent,
-    // canActivate: [AuthGuard],
-    // data: { expectedFunctions: ['MANAGEMENT_INVENTORY_REPORT_VIEW', 'MANAGEMENT_REVENUE_REPORT_VIEW', 'MANAGEMENT_MAN_HOUR_VIEW'] }
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['MANAGEMENT_INVENTORY_REPORT_VIEW', 'MANAGEMENT_REVENUE_REPORT_VIEW'] }
   },
   {
     path: "reports/monthly",
     component: MainManagementMonthlyComponent,
-    // canActivate: [AuthGuard],
-    // data: { expectedFunctions: ['MANAGEMENT_INVENTORY_REPORT_VIEW', 'MANAGEMENT_REVENUE_REPORT_VIEW', 'MANAGEMENT_MAN_HOUR_VIEW'] }
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['MANAGEMENT_INVENTORY_REPORT_VIEW', 'MANAGEMENT_REVENUE_REPORT_VIEW'] }
   },
   {
     path: "reports/performance",
     component: MainManagementPerformanceComponent,
-    // canActivate: [AuthGuard],
-    // data: { expectedFunctions: ['MANAGEMENT_INVENTORY_REPORT_VIEW', 'MANAGEMENT_REVENUE_REPORT_VIEW', 'MANAGEMENT_MAN_HOUR_VIEW'] }
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['MANAGEMENT_MAN_HOUR_VIEW'] }
   },
   {
     path: "reports/order-track",
