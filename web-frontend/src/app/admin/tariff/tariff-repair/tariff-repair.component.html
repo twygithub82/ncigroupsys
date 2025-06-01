@@ -57,22 +57,68 @@
                   <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                     <div class="row">
                       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
-                        <!-- <mat-form-field class="example-full-width">
+                       <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                    <mat-chip-grid #chipGrid>
+                      <!-- @for (cust of selectedCustomers; track cust) { -->
+                       @if(this.selectedParts.length>0){
+                        <mat-chip-row color="primary" (click)="removeAllSelectedParts()">
+                          <span> {{getSelectedPartDisplay()}}</span>
+                          <button matChipRemove hidden>
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip-row>
+                       }
+                    <input #partInput [formControl]="partNameControl" [matAutocomplete]="partName" formControlName="part_name"
+                      [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      (matChipInputTokenEnd)="add($event)">
+                    <mat-autocomplete  #partName="matAutocomplete" (optionSelected)="selected($event)">
+                      @for (pn of partNameList; track pn) {
+                      <mat-option [value]="pn"  class="checkbox-option">
+                        <div class="horizontal-container"> <!-- Flex container -->
+                          <mat-checkbox 
+                            color="primary" 
+                            class="checkbox-item"  
+                            (click)="onCheckboxClicked(pn); $event.stopPropagation()"
+                            [checked]="itemSelected(pn) || false">
+                          </mat-checkbox>
+                          <div class="option-text">{{ pn }}</div>
+                        </div>
+                      </mat-option>
+                      }
+                    </mat-autocomplete>
+                  </mat-chip-grid>
+                  </mat-form-field>
+                        <!-- <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                          <input matInput formControlName="part_name" type="text">
-                        </mat-form-field> -->
-                        <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
+                           <mat-chip-grid #chipGrid>
+                            @if(this.selectedParts.length>0){
+                              <mat-chip-row color="primary" (click)="removeAllSelectedParts()">
+                                <span> {{getSelectedPartDisplay()}}</span>
+                                <button matChipRemove hidden>
+                                  <mat-icon>cancel</mat-icon>
+                                </button>
+                              </mat-chip-row>
+                            }
                           <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
                             formControlName="part_name">
                           <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
                             @for (pn of partNameList; track pn) {
                             <mat-option [value]="pn">
-                              {{pn}}
+                               <div class="horizontal-container">
+                                <mat-checkbox 
+                                  color="primary" 
+                                  class="checkbox-item"  
+                                  (click)="onCheckboxClicked(pn); $event.stopPropagation()"
+                                  [checked]="itemSelected(pn) || false">
+                                </mat-checkbox>
+                                <div class="option-text">{{ pn }}</div>
+                              </div>
                             </mat-option>
                             }
                           </mat-autocomplete>
-                        </mat-form-field>
+                          </mat-chip-grid>
+                        </mat-form-field> -->
                         <!-- <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                           <mat-chip-grid #chipProfile>

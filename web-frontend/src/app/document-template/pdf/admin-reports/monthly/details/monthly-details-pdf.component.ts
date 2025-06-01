@@ -769,6 +769,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth: 'auto',
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

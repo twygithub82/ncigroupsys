@@ -18,9 +18,22 @@ table.advance-table mat-cell {
   border-spacing: 0 6px; // spacing between rows to reveal curves
 }
 
-// table.curve-table {
-//   border-collapse: separate; /* Important for border-radius to work */
-//   border-spacing: 0;
-//   border-radius: 15px;
-//   overflow: hidden; /* Helps apply the radius to inner content */
-// }
+
+
+.checkbox-item {
+ // margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.horizontal-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Ensure text wraps properly */
+.option-text {
+  margin-top: 4px;
+  white-space: normal;    /* Allow text wrapping */
+  line-height: 1.5;       /* Improve readability */
+}
+

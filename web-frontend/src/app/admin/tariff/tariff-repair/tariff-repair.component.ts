@@ -241,6 +241,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     PART_SELECTED: 'COMMON-FORM.PART-SELECTED',
+    
+    
   }
 
   @ViewChild('partInput', { static: true })
@@ -300,6 +302,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       handled_item_cv: ['']
     });
   }
+
+
 
   initializeValueChanges() {
     this.partNameControl!.valueChanges.pipe(
@@ -641,128 +645,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    // // Handling material_cost
-    // if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
-    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
-    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-    //   // where.material_cost = { gte: minCost, lte: maxCost };
-    //   const tariff_repair: any = { material_cost: { gte: minCost, lte: maxCost } }
-    //   where.and.push({ tariff_repair: tariff_repair })
-    // } else if (this.pcForm!.value["min_cost"]) {
-    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
-    //   // where.material_cost = { gte: minCost };
-    //   const tariff_repair: any = { material_cost: { gte: minCost } }
-    //   where.and.push({ tariff_repair: tariff_repair })
-    // } else if (this.pcForm!.value["max_cost"]) {
-    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-    //   // where.material_cost = { lte: maxCost };
-    //   const tariff_repair: any = { material_cost: { lte: maxCost } }
-    //   where.and.push({ tariff_repair: tariff_repair })
-    // }
-
-    // Handling Dimension
-    // if (this.pcForm!.value["dimension"]) {
-    //   let dimensionConditions: any = {};
-    //   let selectedTarifRepairDimensionItems: string[] = this.pcForm!.value["dimension"];
-
-    //   // Initialize tariff_repair if it doesn't exist
-    //   where.and = where.and || [];
-    //   dimensionConditions.or = [];
-    //   selectedTarifRepairDimensionItems.forEach((item) => {
-    //     const condition: any = {};
-
-    //     // Only add condition if item is defined (non-undefined)
-    //     if (item !== undefined && item !== null && item !== '') {
-    //       condition.dimension = { eq: item };
-    //     }
-
-    //     if (Object.keys(condition).length > 0) {
-    //       dimensionConditions.or.push(condition);
-    //     }
-    //   });
-
-    //   // Push condition to 'and' if it has valid properties
-    //   if (dimensionConditions.or.length > 0) {
-    //     // where.and.push(dimensionConditions);
-    //     const tariff_repair: any = { or: dimensionConditions }
-    //     where.and.push({ tariff_repair: tariff_repair })
-    //   }
-    // }
-
-    // Handling Length
-    // if (this.pcForm!.value["len"]) {
-    //   let selectedTarifRepairLengthItems: TariffRepairLengthItem[] = this.pcForm!.value["len"];
-
-    //   // Initialize tariff_repair if it doesn't exist
-    //   //  where.tariff_repair = where.tariff_repair || {};
-    //   where.and = where.and || [];
-
-    //   const lengthConditions: any = {};
-    //   lengthConditions.or = [];
-    //   selectedTarifRepairLengthItems.forEach((item) => {
-    //     const condition: any = {};
-
-    //     // Add condition for length if defined
-    //     if (item.length !== undefined) {
-    //       condition.length = { eq: item.length };
-    //     }
-
-    //     // Add condition for length_unit_cv if it exists
-    //     if (item.length_unit_cv) {
-    //       condition.length_unit_cv = { eq: item.length_unit_cv };
-    //     }
-
-    //     // Push condition to 'or' if it has valid properties
-    //     if (Object.keys(condition).length > 0) {
-    //       lengthConditions.or.push(condition);
-    //     }
-    //   });
-
-    //   // Push length conditions to 'and' if it has valid properties
-    //   if (lengthConditions.or.length > 0) {
-    //     where.and.push(lengthConditions);
-    //   }
-    // }
-
-    // // Handling length
-    // if (this.pcForm!.value["min_len"] && this.pcForm!.value["max_len"]) {
-    //   const minLen: number = Number(this.pcForm!.value["min_len"]);
-    //   const maxLen: number = Number(this.pcForm!.value["max_len"]);
-    //   where.length = { gte: minLen, lte: maxLen };
-    // } else if (this.pcForm!.value["min_len"]) {
-    //   const minLen: number = Number(this.pcForm!.value["min_len"]);
-    //   where.length = { gte: minLen };
-    // } else if (this.pcForm!.value["max_len"]) {
-    //   const maxLen: number = Number(this.pcForm!.value["max_len"]);
-    //   where.length = { lte: maxLen };
-    // }
-
-    // // Handling labour_hour
-    // if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
-    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-    //   where.labour_hour = { gte: minLabour, lte: maxLabour };
-    // } else if (this.pcForm!.value["min_labour"]) {
-    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-    //   where.labour_hour = { gte: minLabour };
-    // } else if (this.pcForm!.value["max_labour"]) {
-    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-    //   where.labour_hour = { lte: maxLabour };
-    // }
+   
     this.lastSearchCriteria = where;
-    // this.subs.sink = this.trfRepairDS.SearchTariffRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-    //   this.trfRepairItems = data;
-    //   this.previous_endCursor = undefined;
-    //   this.endCursor = this.trfRepairDS.pageInfo?.endCursor;
-    //   this.startCursor = this.trfRepairDS.pageInfo?.startCursor;
-    //   this.hasNextPage = this.trfRepairDS.pageInfo?.hasNextPage ?? false;
-    //   this.hasPreviousPage = this.trfRepairDS.pageInfo?.hasPreviousPage ?? false;
-    //   this.pageIndex = 0;
-    //   this.paginator.pageIndex = 0;
-    //   this.selection.clear();
-    //   if (!this.hasPreviousPage)
-    //     this.previous_endCursor = undefined;
-    // });
+    
     this.subs.sink = this.trfRepairDS.SearchTariffRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.trfRepairItems = data;
       this.previous_endCursor = undefined;
@@ -1054,9 +939,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
 
 
-  itemSelected(row: CustomerCompanyItem): boolean {
+  itemSelected(pn: string): boolean {
     var retval: boolean = false;
-    const index = this.selectedParts.findIndex(c => c.code === row.code);
+    const index = this.selectedParts.findIndex(c => c === pn);
     retval = (index >= 0);
     return retval;
   }
@@ -1069,25 +954,14 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  // getSelectedPartsDisplay():string{
-  //   var retval:string = "";
-  //   if(this.selectedParts?.length>1){
-  //     retval = `${this.selectedParts.length} ${this.translatedLangText.PROFILES_SELECTED}`;
-  //   }
-  //   else if(this.selectedParts?.length==1){
-  //     retval =`${this.selectedParts[0].description}`
-  //   }
-  //   return retval;
-  // }
-
 
   getSelectedPartDisplay(): string {
     var retval: string = "";
     if (this.selectedParts?.length > 1) {
-      retval = `${this.selectedParts.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+      retval = `${this.selectedParts.length} ${this.translatedLangText.PART_SELECTED}`;
     }
     else if (this.selectedParts?.length == 1) {
-      retval = `${this.selectedParts[0].name}`
+      retval = `${this.selectedParts[0]}`
     }
     return retval;
   }
@@ -1110,21 +984,29 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   selected(event: MatAutocompleteSelectedEvent): void {
     const part = event.option.value;
-    const index = this.selectedParts.findIndex(c => c.code === part.code);
+    const index = this.selectedParts.findIndex(c => c === part);
+
+      if (this.partInput) {
+      // this.searchCustomerCompanyList('');
+      this.partInput.nativeElement.value = '';
+      this.partNameControl.setValue('');
+      //this.searchDistinctPartName('');
+    }
+
     if (!(index >= 0)) {
       this.selectedParts.push(part);
-      this.search();
+     // this.search();
     }
     else {
       this.selectedParts.splice(index, 1);
-      this.search();
+     // this.search();
     }
 
-    if (this.partInput) {
-      //this.searchCustomerCompanyList('');
-      this.partInput.nativeElement.value = '';
+    // if (this.partInput) {
+    //   //this.searchCustomerCompanyList('');
+    //   this.partInput.nativeElement.value = '';
 
-    }
+    // }
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -1148,7 +1030,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     if (input) {
       input.value = '';
     }
-    this.partControl.setValue(null);
+    this.partControl.setValue('');
   }
 
   remove(cust: any): void {
@@ -1170,23 +1052,38 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
 
   selectedPart(event: MatAutocompleteSelectedEvent): void {
-    const profile = event.option.value;
-    const index = this.selectedParts.findIndex(c => c.guid === profile.guid);
+    const part = event.option.value;
+    const index = this.selectedParts.findIndex(c => c === part);
+
+
+
+      if (this.partInput) {
+      // this.searchCustomerCompanyList('');
+      this.partInput.nativeElement.value = '';
+
+    }
+
+
     if (!(index >= 0)) {
-      this.selectedParts.push(profile);
+      this.selectedParts.push(part);
 
     }
     else {
       this.selectedParts.splice(index, 1);
     }
 
-    if (this.partInput) {
-      // this.searchCustomerCompanyList('');
-      this.partInput.nativeElement.value = '';
-
-    }
+  
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
   }
+
+   onCheckboxClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
+
+  }
+
+  
 }
+  

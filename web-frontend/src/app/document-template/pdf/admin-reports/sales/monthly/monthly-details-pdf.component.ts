@@ -300,7 +300,8 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     MONTHLY_REVENUE_REPORT:'COMMON-FORM.MONTHLY-REVENUE-REPORT',
     S_N:'COMMON-FORM.S_N',
     MASTER:'COMMON-FORM.MASTER',
-    SALES:'COMMON-FORM.SALES'
+    SALES:'COMMON-FORM.SALES',
+   
 
   }
 
@@ -657,8 +658,8 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
  async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
-    const leftMargin = 5;
-    const rightMargin = 5;
+    const leftMargin = 10;
+    const rightMargin = 10;
     const topMargin = 5;
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
@@ -676,7 +677,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -698,14 +699,14 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.DATE, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.DAY, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+       ...(showGateSurcharge? [
+        { content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+     //   { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      ]:[]),
      ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
      ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign:vAlign} }]:[]),
      ...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showGateSurcharge? [
-        { content: this.translatedLangText.GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-     //   { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      ]:[]),
-      ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
+     ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
@@ -794,15 +795,15 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     var series:SeriesItem[]=[];
     var index:number=1;
     var prcss:string[]=[
-      ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
-      ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
-      ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showGateSurcharge? [
+        ...(showGateSurcharge? [
         this.translatedLangText.GATE_IN, 
         this.translatedLangText.GATE_OUT,
         this.translatedLangText.LIFT_ON,  
         this.translatedLangText.LIFT_OFF,  
       ]:[]),
+      ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
+      ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
+      ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
       ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
       ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
       ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
@@ -829,14 +830,13 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       const entry = grpData[date];
       data.push([
         (++idx).toString(),date,entry.day,
-        ...(showPreinspectSurcharge?[  Utility.formatNumberDisplay(entry.preinspection?.count||''),Utility.formatNumberDisplay(entry.preinspection?.cost||'')]:[]),
-       ...(showLoloSurcharge?[  Utility.formatNumberDisplay(entry.lolo?.count||''),Utility.formatNumberDisplay(entry.lolo?.cost||'')]:[]),
-       ...(showStorageSurcharge?[  Utility.formatNumberDisplay(entry.storage?.count||''),Utility.formatNumberDisplay(entry.storage?.cost||'')]:[]),
-         
-        ...(showGateSurcharge?[
+          ...(showGateSurcharge?[
           Utility.formatNumberDisplay(entry.gate?.count||''),Utility.formatNumberDisplay(entry.gate?.cost||''),
          // Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count),Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
         ]:[]),
+        ...(showPreinspectSurcharge?[  Utility.formatNumberDisplay(entry.preinspection?.count||''),Utility.formatNumberDisplay(entry.preinspection?.cost||'')]:[]),
+       ...(showLoloSurcharge?[  Utility.formatNumberDisplay(entry.lolo?.count||''),Utility.formatNumberDisplay(entry.lolo?.cost||'')]:[]),
+       ...(showStorageSurcharge?[  Utility.formatNumberDisplay(entry.storage?.count||''),Utility.formatNumberDisplay(entry.storage?.cost||'')]:[]),
         ...(showSteamSurcharge?[Utility.formatNumberDisplay( entry.steaming?.count||''),Utility.formatNumberDisplay(entry.steaming?.cost||'')]:[]),
         ...(showResidueSurcharge?[ Utility.formatNumberDisplay( entry.residue?.count||''),Utility.formatNumberDisplay(entry.residue?.cost||'')]:[]),
         ...(showCleanSurcharge?[Utility.formatNumberDisplay(entry.cleaning?.count||''),Utility.formatNumberDisplay(entry.cleaning?.cost||'')]:[]),
@@ -935,6 +935,10 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     }
     data.push([
       this.translatedLangText.TOTAL,"","",
+       ...(showGateSurcharge?[
+        Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_count||''),Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_cost||''),
+       // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
+        ]:[]),
       ...(showPreinspectSurcharge?[
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.total_count||''),
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.total_cost||'')
@@ -945,10 +949,6 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_count||''),
         Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_cost||'')
       ]:[]),
-      ...(showGateSurcharge?[
-        Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_count||''),Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_cost||''),
-       // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
-        ]:[]),
       ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.total_count||''),
         Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.total_cost||'')]:[]),
       ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_monthly_revenue?.total_count||''),
@@ -963,6 +963,10 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
     data.push([
       this.translatedLangText.AVERAGE,"","",
+        ...(showGateSurcharge?[
+        Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_count||''),Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_cost||''),
+       // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
+        ]:[]),
       ...(showPreinspectSurcharge?[
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.average_count||''),
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.average_cost||'')
@@ -973,10 +977,6 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_count||''),
         Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_cost||'')
       ]:[]),
-      ...(showGateSurcharge?[
-        Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_count||''),Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_cost||''),
-       // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
-        ]:[]),
       ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_count||''),
         Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_cost||'')]:[]),
       ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_monthly_revenue?.average_count||''),
@@ -1158,17 +1158,16 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     this.lineChartOptions.colors=[ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
       "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
 
-    if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
-    if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
-    if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
     if(!showGateSurcharge){
       this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate In"].includes(s.name));
       this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Gate Out"].includes(s.name));
       this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Lift On"].includes(s.name));
       this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Lift Off"].includes(s.name));
     }
+    if(!showPreinspectSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Preinspection"].includes(s.name));}
+    if(!showLoloSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["LOLO"].includes(s.name));}
+    if(!showStorageSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Storage"].includes(s.name));}
     if(!showSteamSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Steam"].includes(s.name));}
-    
     if(!showCleanSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
     if(!showRepairSurcharge){this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
 
@@ -1204,7 +1203,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       pdf.setPage(page);
       var lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin + 9, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 9), pdf.internal.pageSize.height - lineBuffer);
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 
   //  this.generatingPdfProgress = 100;

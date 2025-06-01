@@ -786,6 +786,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth: 'auto',
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

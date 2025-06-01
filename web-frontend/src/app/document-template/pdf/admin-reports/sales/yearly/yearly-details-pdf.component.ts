@@ -292,6 +292,9 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     TANK:'COMMON-FORM.TANK',
     COST:'COMMON-FORM.COST',
     S_N:'COMMON-FORM.S_N',
+    MASTER:'COMMON-FORM.MASTER',
+    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE'
+    
   }
 
   type?: string | null;
@@ -699,8 +702,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
  async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
-    const leftMargin = 5;
-    const rightMargin = 5;
+    const leftMargin = 10;
+    const rightMargin = 10;
     const topMargin = 5;
     const bottomMargin = 5;
     const contentWidth = pageWidth - leftMargin - rightMargin;
@@ -718,7 +721,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -727,7 +730,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
     let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
     let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
-    let showGateSurcharge:boolean=this.invTypes?.includes("GATE")!;
+    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
     let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
     let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
     let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
@@ -737,10 +740,10 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     const headers = [[
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      ...(showGateSurcharge? [{ content: this.translatedLangText.GATEIO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       ...(showPreinspectSurcharge?[{ content: this.translatedLangText.PREINSPECTION, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       ...(showLoloSurcharge? [{ content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       ...(showStorageSurcharge? [{ content: this.translatedLangText.STORAGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
-      ...(showGateSurcharge? [{ content: this.translatedLangText.GATE_SURCHARGE, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
       ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
@@ -828,10 +831,10 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     var series:SeriesItem[]=[];
     var index:number=1;
     var prcss:string[]=[
+      ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
       ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
       ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
       ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
       ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
       ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
       ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
@@ -841,16 +844,16 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     var total_all_cost:number=0;
     var average_counter=0;
     for (const monthData of grpData.monthlyData) {
-      var total:number =(monthData.gate?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.gate?.cost||0)
+      var total:number =(monthData.in_out?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.in_out?.cost||0)
       +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
       total_all_cost+=total;
       average_counter++;
       data.push([
         (++idx).toString(),monthData.key,
+        ...(showGateSurcharge?[ monthData.in_out?.count||'',Utility.formatNumberDisplay(monthData.in_out?.cost)]:[]),
         ...(showPreinspectSurcharge?[ monthData.preinspection?.count||'',Utility.formatNumberDisplay(monthData.preinspection?.cost)]:[]),
         ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
         ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
-        ...(showGateSurcharge?[ monthData.gate?.count||'',Utility.formatNumberDisplay(monthData.gate?.cost)]:[]),
         ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.cost)]:[]),
         ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
         ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.cost)]:[]),
@@ -871,6 +874,9 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         }
         switch (p)
         {
+          case this.translatedLangText.GATE_SURCHARGE:
+            if(showGateSurcharge)  s.data.push(monthData.in_out?.cost||0);
+          break;
           case this.translatedLangText.PREINSPECTION:
            if(showPreinspectSurcharge) s.data.push(monthData.preinspection?.cost||0);
           break;
@@ -892,9 +898,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
           case this.translatedLangText.RESIDUE:
             if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
           break;
-          case this.translatedLangText.GATE_SURCHARGE:
-            if(showGateSurcharge)  s.data.push(monthData.gate?.cost||0);
-          break;
+        
         }
         if(bInsert)
         {
@@ -904,10 +908,10 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     }
     data.push([
       this.translatedLangText.TOTAL,"",
+      ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.total_cost),'']:[]),
       ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost),'']:[]),
       ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost),'']:[]),
       ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost),'']:[]),
-      ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.total_cost),'']:[]),
       ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.total_cost),'']:[]),
       ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.total_cost),'']:[]),
       ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.total_cost),'']:[]),
@@ -917,10 +921,10 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     data.push([
       this.translatedLangText.AVERAGE,"",
+      ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||''),'']:[]),
       ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||''),'']:[]),
       ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||''),'']:[]),
       ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||''),'']:[]),
       ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.average_cost||''),'']:[]),
       ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.average_cost||''),'']:[]),
       ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.average_cost||''),'']:[]),
@@ -929,10 +933,10 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     ]);
     
     prcsValues=[
+      ...(showGateSurcharge?[(this.repData?.gate_yearly_revenue?.total_cost||0)]:[]),
       ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_revenue?.total_cost||0)]:[]),
       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_revenue?.total_cost||0)]:[]),
       ...(showStorageSurcharge?[(this.repData?.storage_yearly_revenue?.total_cost||0)]:[]),
-      ...(showGateSurcharge?[(this.repData?.gate_yearly_revenue?.total_cost||0)]:[]),
       ...(showSteamSurcharge?[(this.repData?.steam_yearly_revenue?.total_cost||0)]:[]),
       ...(showResidueSurcharge?[(this.repData?.residue_yearly_revenue?.total_cost||0)]:[]),
       ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_revenue?.total_cost||0)]:[]),
@@ -948,6 +952,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       body: data,
       startY: startY, // Start table at the current startY value
       theme: 'grid',
+      tableWidth: 'auto',
       styles: {
         fontSize: fontSz,
         minCellHeight: minHeightHeaderCol
@@ -976,35 +981,35 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
            switch (data.column.index)
            {
              case 2:
-              if(showPreinspectSurcharge) prop="preinspection";
+              if(showGateSurcharge) prop="in_out";
+              else if(showPreinspectSurcharge) prop="preinspection";
               else if(showSteamSurcharge) prop="steaming";
               else if(showCleanSurcharge) prop="cleaning";
               else if(showRepairSurcharge) prop="repair";
               else if(showResidueSurcharge) prop="residue";
-              else if(showGateSurcharge) prop="gate";
               else if(showLoloSurcharge) prop="lolo";
               else if(showStorageSurcharge) prop="storage";
                break;
              case 4:
-              if(showLoloSurcharge) prop="lolo";
+              if(showLoloSurcharge) prop="preinspection";
               break;
-             case 8:
-              if(showStorageSurcharge) prop="storage";
+             case 6:
+              if(showStorageSurcharge) prop="lolo"; //storage";
               break;
-            case 10:
-              if(showGateSurcharge)prop="gate";
+            case 8:
+              if(showGateSurcharge)prop="storage";
                break;
-            case 12:
-              if(showSteamSurcharge)var prop="steaming";
+            case 10:
+              if(showSteamSurcharge)prop="steaming";
               break;
+            case 12:
+                if(showResidueSurcharge)prop="residue";
+                break;
             case 14:
-                if(showResidueSurcharge)var prop="residue";
+                if(showCleanSurcharge)prop="cleaning";
                 break;
             case 16:
-                if(showCleanSurcharge)var prop="cleaning";
-                break;
-            case 18:
-              if(showRepairSurcharge)var prop="repair";
+              if(showRepairSurcharge)prop="repair";
               break;
            }
            if(prop)
@@ -1149,7 +1154,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       
       }
     if(showGateSurcharge){
-      var lbl="Gate Surcharge";
+      var lbl=`${this.translatedLangText.GATE_SURCHARGE}`;
       var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
       ds.push({
         label:lbl,
@@ -1278,7 +1283,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
     const totalPages = pdf.getNumberOfPages();
 
-    let lineOffset = 8;
+    let lineOffset = 0;
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
