@@ -11,6 +11,9 @@
             <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex"
               (selectedIndexChange)="onTabChange($event)" (selectedTabChange)="onTabSelected($event)">
               <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
+                <div class="card">
+                
+               
                 <form class="ms-0" [formGroup]="filterResidueForm!" (ngSubmit)="onFilterResidue()"
                   #formDirective="ngForm">
                   <div class="row">
@@ -63,6 +66,7 @@
                     </div>
                   </div>
                 </form>
+                
                 <div class="responsive_table">
                   <table mat-table [dataSource]="rsdEstList" matSort
                     class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
@@ -154,7 +158,9 @@
                 <mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="pageIndexResidue"
                   [pageSize]="pageSizeResidue" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
                 </mat-paginator>
+               </div>
               </mat-tab>
+
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
                 <app-job-order-task #residueJobOrderTask></app-job-order-task>
               </mat-tab>
