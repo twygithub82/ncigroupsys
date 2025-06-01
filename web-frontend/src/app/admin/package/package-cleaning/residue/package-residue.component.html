@@ -57,7 +57,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
-                        <mat-checkbox color="primary" style="padding: 0 12px;" [checked]="itemSelected(cc) || false" (click)="onCheckboxClicked(cc);$event.stopPropagation()"></mat-checkbox>
+                        <mat-checkbox color="primary" [checked]="itemSelected(cc) || false" (click)="onCheckboxClicked(cc);$event.stopPropagation()"></mat-checkbox>
                         {{ccDS.displayCodeDashName(cc)}}
                       </mat-option>
                       }
