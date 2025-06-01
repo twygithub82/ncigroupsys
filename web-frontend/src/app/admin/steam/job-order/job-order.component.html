@@ -11,177 +11,186 @@
             <mat-tab-group class="tlx-mdc-tab-group" #tabGroup dynamicHeight [selectedIndex]="isActiveTab"
               [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)"
               (selectedTabChange)="onTabSelected($event)">
-              <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
-                <form class="ms-0" [formGroup]="filterSteamForm!" (ngSubmit)="onFilterSteam()" #formDirective="ngForm">
-                  <div class="row">
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
-                        <mat-label>
-                          {{translatedLangText.TANK_NO}}
-                        </mat-label>
-                        <input matInput formControlName="filterSteam">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                        <input matInput formControlName="customer" [matAutocomplete]="customerCode">
-                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                          @for (cc of customer_companyList; track cc) {
-                          <mat-option [value]="cc">
-                            {{ccDS.displayCodeDashName(cc)}}
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                        <mat-select multiple formControlName="status_cv">
-                          @for (codeValue of processStatusCvList; track codeValue) {
-                          @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
-                          <mat-option [value]="codeValue.code_val">
-                            {{codeValue.description}}
-                          </mat-option>
-                          }
-                          }
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-                    <div
-                      class="col-xl-3 col-lg-4 col-md-2 col-sm-2 mb-2 pt-3 d-flex align-items-center ms-auto justify-content-end">
-                      <button mat-mini-fab color="primary" matTooltip={{translatedLangText.SEARCH}}>
-                        <mat-icon>search</mat-icon>
-                      </button>
-                      <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-                        matTooltip={{translatedLangText.CLEAR_ALL}}>
-                        <mat-icon>clear_all</mat-icon>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-                <div class="responsive_table">
-                  <table mat-table [dataSource]="rsdEstList" matSort
-                    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
-                    <ng-container matColumnDef="id">
-                      <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                      <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="tank_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.TANK_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="customer">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.CUSTOMER}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="estimate_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.ESTIMATE_NO}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="approved_dt">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.APPROVE_DATE}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.APPROVE_DATE}}:</span>
-                        <span>{{displayDate(row.approve_dt)}}</span>
-                      </mat-cell>
-                    </ng-container>
 
-                    <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                        {{translatedLangText.STATUS}}
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span
-                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="actions">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      </mat-header-cell>
-                      <mat-cell *matCellDef="let row; let i=index;"
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                        @if (canToggleJob(row))
-                        {
-                        <button mat-icon-button (click)="stopEventTrigger($event)">
-                          <mat-icon>build</mat-icon>
-                        </button>
-                        }
-                        @else
-                        {
-                        <button mat-icon-button (click)="stopEventTrigger($event)">
-                          <mat-icon>whatshot</mat-icon>
-                        </button>
-                        }
-                      </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="unassign">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                        @if(row?.status_cv=="ASSIGNED")
-                        {
-                        <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
-                          [matTooltip]="translatedLangText.UNASSIGNED">
-                          <mat-icon>remove_circle_outline</mat-icon>
-                        </button>
-                        }
-                        <!-- <span
-                          class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}} -->
-                      </mat-cell>
-                    </ng-container>
-                    <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
-                      (click)="this.AllocationSteamEstimate($event,row)" [style.cursor]="'pointer'" matRipple>
-                    </mat-row>
-                  </table>
-                </div>
-                <!-- No result -->
-                @if (!(steamDs.loading$ | async) && !rsdEstList.length) {
-                <mat-divider></mat-divider>
-                <div class="no-results m-l-20 pt-3" [style.display]="rsdEstList.length === 0 ? '' : 'none'">
-                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-                </div>
-                }
-                <!-- Loading spinner -->
-                @if (steamDs.loading$ | async) {
-                <div class="tbl-spinner">
-                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                  </mat-progress-spinner>
-                </div>
-                }
-                <mat-paginator #paginator [length]="steamDs.totalCount" [pageIndex]="pageIndexSteam"
-                  [pageSize]="pageSizeSteam" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventSteam($event)">
-                </mat-paginator>
-                <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
-                  <div class="legend-item d-flex align-items-center me-4 mb-2">
-                    <mat-icon class="me-2">build</mat-icon>
-                    <span>{{translatedLangText.REPAIR}}</span>
-                  </div>
-                  <div class="legend-item d-flex align-items-center me-4 mb-2">
-                    <mat-icon class="me-2 ">whatshot</mat-icon>
-                    <span>{{translatedLangText.STEAM_HEAT_TYPE}}</span>
+
+              <mat-tab [label]="translatedLangText.REPAIR_EST_TAB_TITLE">
+
+                <div class="row">
+                  <div class="card p-0 tab-card-container">
+                    <form class="ms-0" [formGroup]="filterSteamForm!" (ngSubmit)="onFilterSteam()" #formDirective="ngForm">
+                      <div class="row">
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
+                            <mat-label>
+                              {{translatedLangText.TANK_NO}}
+                            </mat-label>
+                            <input matInput formControlName="filterSteam">
+                          </mat-form-field>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                            <input matInput formControlName="customer" [matAutocomplete]="customerCode">
+                            <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                              @for (cc of customer_companyList; track cc) {
+                              <mat-option [value]="cc">
+                                {{ccDS.displayCodeDashName(cc)}}
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-form-field>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                            <mat-select multiple formControlName="status_cv">
+                              @for (codeValue of processStatusCvList; track codeValue) {
+                              @if (availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                              <mat-option [value]="codeValue.code_val">
+                                {{codeValue.description}}
+                              </mat-option>
+                              }
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                        <div
+                          class="col-xl-3 col-lg-4 col-md-2 col-sm-2 mb-2 pt-3 d-flex align-items-center ms-auto justify-content-end">
+                          <button mat-mini-fab color="primary" matTooltip={{translatedLangText.SEARCH}}>
+                            <mat-icon>search</mat-icon>
+                          </button>
+                          <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
+                            matTooltip={{translatedLangText.CLEAR_ALL}}>
+                            <mat-icon>clear_all</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                    <div class="body overflow-auto">
+                    <div class="responsive_table">
+                      <table mat-table [dataSource]="rsdEstList" matSort
+                        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+                        <ng-container matColumnDef="id">
+                          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                          <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="tank_no">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.TANK_NO}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row" class="">
+                            <span
+                              class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="customer">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.CUSTOMER}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row" class="">
+                            <span
+                              class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="estimate_no">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.ESTIMATE_NO}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row" class="">
+                            <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="approved_dt">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.APPROVE_DATE}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row" class="">
+                            <span class="mobile-label">{{translatedLangText.APPROVE_DATE}}:</span>
+                            <span>{{displayDate(row.approve_dt)}}</span>
+                          </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="status_cv">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.STATUS}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row" class="">
+                            <span
+                              class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="actions">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row; let i=index;"
+                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                            @if (canToggleJob(row))
+                            {
+                            <button mat-icon-button (click)="stopEventTrigger($event)">
+                              <mat-icon>build</mat-icon>
+                            </button>
+                            }
+                            @else
+                            {
+                            <button mat-icon-button (click)="stopEventTrigger($event)">
+                              <mat-icon>whatshot</mat-icon>
+                            </button>
+                            }
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="unassign">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let row"
+                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                            @if(row?.status_cv=="ASSIGNED")
+                            {
+                            <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
+                              [matTooltip]="translatedLangText.UNASSIGNED">
+                              <mat-icon>remove_circle_outline</mat-icon>
+                            </button>
+                            }
+                            <!-- <span
+                              class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}} -->
+                          </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
+                          (click)="this.AllocationSteamEstimate($event,row)" [style.cursor]="'pointer'" matRipple>
+                        </mat-row>
+                      </table>
+                    </div>
+                    <!-- No result -->
+                    @if (!(steamDs.loading$ | async) && !rsdEstList.length) {
+                    <mat-divider></mat-divider>
+                    <div class="no-results m-l-20 pt-3" [style.display]="rsdEstList.length === 0 ? '' : 'none'">
+                      <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                    </div>
+                    }
+                    <!-- Loading spinner -->
+                    @if (steamDs.loading$ | async) {
+                    <div class="tbl-spinner">
+                      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                      </mat-progress-spinner>
+                    </div>
+                    }
+                    <mat-paginator #paginator [length]="steamDs.totalCount" [pageIndex]="pageIndexSteam"
+                      [pageSize]="pageSizeSteam" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventSteam($event)">
+                    </mat-paginator>
+                    <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
+                      <div class="legend-item d-flex align-items-center me-4 mb-2">
+                        <mat-icon class="me-2">build</mat-icon>
+                        <span>{{translatedLangText.REPAIR}}</span>
+                      </div>
+                      <div class="legend-item d-flex align-items-center me-4 mb-2">
+                        <mat-icon class="me-2 ">whatshot</mat-icon>
+                        <span>{{translatedLangText.STEAM_HEAT_TYPE}}</span>
+                      </div>
+                    </div>
+                    </div>
                   </div>
                 </div>
               </mat-tab>
