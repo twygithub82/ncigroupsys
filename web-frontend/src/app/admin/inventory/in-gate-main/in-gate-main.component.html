@@ -7,24 +7,40 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
+          @if (allowedTabs.length > 1) {
+          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight [(selectedIndex)]="selectedTabIndex"
+            (selectedIndexChange)="onTabChange($event)">
+            @for (tab of allowedTabs; track tab.label) {
             <mat-tab>
+              @if (tab.component == 'app-in-gate') {
               <ng-template mat-tab-label>
                 <span [ngClass]="'m-r-10 d-flex align-items-center'">
                   {{ translatedLangText.IN_GATE }}
                 </span>
               </ng-template>
               <app-in-gate #inGateComp></app-in-gate>
-            </mat-tab>
-            <mat-tab>
+              }
+              @if (tab.component == 'app-in-gate-survey') {
               <ng-template mat-tab-label>
                 <span [ngClass]="'m-r-10 d-flex align-items-center'">
                   {{ translatedLangText.IN_GATE_SURVEY }}
                 </span>
               </ng-template>
               <app-in-gate-survey #inGateSurveyComp></app-in-gate-survey>
+              }
             </mat-tab>
+            }
           </mat-tab-group>
+          } @else {
+          @for (tab of allowedTabs; track tab.label) {
+          @if (tab.component == 'app-in-gate') {
+          <app-in-gate #inGateComp></app-in-gate>
+          }
+          @if (tab.component == 'app-in-gate-survey') {
+          <app-in-gate-survey #inGateSurveyComp></app-in-gate-survey>
+          }
+          }
+          }
         </div>
       </div>
     </div>
