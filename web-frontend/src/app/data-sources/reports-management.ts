@@ -209,7 +209,7 @@ export class MonthlyProcessDataRevenue {
   cleaning?: { count?: number; cost?: number,key?:string,name?:string };
   repair?: { count?: number; cost?: number,key?:string,name?:string };
   steaming?: { count?: number; cost?: number,key?:string,name?:string };
-  gate?: { count?: number; cost?: number,key?:string,name?:string };
+  in_out?: { count?: number; cost?: number,key?:string,name?:string };
   preinspection?: { count?: number; cost?: number,key?:string,name?:string };
   lolo?: { count?: number; cost?: number,key?:string,name?:string };
   storage?: { count?: number; cost?: number,key?:string,name?:string };
@@ -221,7 +221,7 @@ export class MonthlyProcessDataRevenue {
     this.residue=item.residue;
     this.repair=item.repair;
     this.steaming=item.steaming;
-    this.gate=item.gate;
+    this.in_out=item.in_out;
     this.lolo=item.lolo;
     this.preinspection=item.preinspection;
     this.storage=item.storage;
@@ -555,7 +555,7 @@ export class InventoryAnalyzer {
     const processData = [
       { name: 'cleaning', data: data.cleaning_yearly_revenue?.revenue_per_month },
       { name: 'residue', data: data.residue_yearly_revenue?.revenue_per_month },
-      { name: 'gate', data: data.gate_yearly_revenue?.revenue_per_month },
+      { name: 'in_out', data: data.gate_yearly_revenue?.revenue_per_month },
       { name: 'steaming', data: data.steam_yearly_revenue?.revenue_per_month },
       { name: 'repair', data: data.repair_yearly_revenue?.revenue_per_month },
       { name: 'storage', data: data.storage_yearly_revenue?.revenue_per_month },
@@ -611,8 +611,8 @@ export class InventoryAnalyzer {
                 name:monthData.name
               };
               break;
-            case 'gate':
-              monthlyEntry.gate = {
+            case 'in_out':
+              monthlyEntry.in_out = {
                 count: monthData.count,
                 cost: monthData.cost,
                 key:monthData.key,

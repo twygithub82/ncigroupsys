@@ -866,7 +866,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
       ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
       ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
+      ...(showGateSurcharge? [this.translatedLangText.IN_OUT]:[]),
       ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
       ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
       ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
@@ -876,7 +876,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     var total_all_cost:number=0;
     var average_counter=0;
     for (const monthData of grpData.monthlyData) {
-      var total:number =(monthData.gate?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.gate?.cost||0)
+      var total:number =(monthData.in_out?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.in_out?.cost||0)
       +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
       total_all_cost+=total;
       average_counter++;
@@ -885,7 +885,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
         ...(showPreinspectSurcharge?[ monthData.preinspection?.count||'',Utility.formatNumberDisplay(monthData.preinspection?.cost)]:[]),
         ...(showLoloSurcharge?[ monthData.lolo?.count||'',Utility.formatNumberDisplay(monthData.lolo?.cost)]:[]),
         ...(showStorageSurcharge?[ monthData.storage?.count||'',Utility.formatNumberDisplay(monthData.storage?.cost)]:[]),
-        ...(showGateSurcharge?[ monthData.gate?.count||'',Utility.formatNumberDisplay(monthData.gate?.cost)]:[]),
+        ...(showGateSurcharge?[ monthData.in_out?.count||'',Utility.formatNumberDisplay(monthData.in_out?.cost)]:[]),
         ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.cost)]:[]),
         ...(showResidueSurcharge?[ monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.cost)]:[]),
         ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.cost)]:[]),
@@ -928,7 +928,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
             if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
           break;
           case this.translatedLangText.GATE_SURCHARGE:
-            if(showGateSurcharge)  s.data.push(monthData.gate?.cost||0);
+            if(showGateSurcharge)  s.data.push(monthData.in_out?.cost||0);
           break;
         }
         if(bInsert)

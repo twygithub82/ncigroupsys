@@ -23,6 +23,7 @@ import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
@@ -97,6 +98,7 @@ export class FormDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -128,7 +130,14 @@ export class FormDialogComponent {
       test_class_cv: [this.booking?.test_class_cv],
       sotList: this.fb.array(this.storingOrderTank.map(tank => this.createTankRowForm(tank)))
     });
-    
+
+    if (!this.canEdit()) {
+      this.bookingForm.get('reference')?.disable();
+      this.bookingForm.get('book_type_cv')?.disable();
+      this.bookingForm.get('booking_dt')?.disable();
+      this.bookingForm.get('test_class_cv')?.disable();
+    }
+
     this.dataSource = [...this.sotList().controls];
     return this.bookingForm;
   }
@@ -264,7 +273,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return true;
+    return this.isAllowEdit() && this.booking.status_cv !== 'CANCELLED';
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
@@ -277,9 +286,13 @@ export class FormDialogComponent {
 
   removeSot(event: Event, index: number): void {
     event.stopPropagation();
-  
+
     // Remove from the FormArray
     this.sotList().removeAt(index);
     this.dataSource = [...this.sotList().controls];
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_EDIT']);
   }
 }

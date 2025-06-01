@@ -1,68 +1,65 @@
-<div class="row">
-  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div class="card p-0">
-      <mat-accordion>
-        <mat-expansion-panel [expanded]="true">
-          <mat-expansion-panel-header>
-            <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                  <mat-icon>search</mat-icon>
-                </button>
-              </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
-                  <mat-icon>clear_all</mat-icon>
-                </button>
-              </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                <button mat-mini-fab class="primary-light" color="" (click)="addCall()"
-                  (click)="$event.stopPropagation()">
-                  <mat-icon class="col-white">add</mat-icon>
-                </button>
-              </div>
-              <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+<div class="card p-0 tab-card-container">
+  <mat-accordion>
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-description>
+          <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+            <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
+          <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+            <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+              <mat-icon>clear_all</mat-icon>
+            </button>
+          </div>
+          <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+            <button mat-mini-fab class="primary-light" color="" (click)="addCall()" (click)="$event.stopPropagation()">
+              <mat-icon class="col-white">add</mat-icon>
+            </button>
+          </div>
+          <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                 <button mat-mini-fab class="primary-light" color="" (click)="refresh()" (click)="$event.stopPropagation()" matTooltip={{translatedLangText.REFRESH}}>
                   <mat-icon>refresh</mat-icon>
                 </button>
               </div> -->
-              @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-              <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+          @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
+          <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                 matTooltip={{translatedLangText.EXPORT}}>
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />
               </div> -->
-              }
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <form class="ms-0" [formGroup]="tdForm!" #formDirective="ngForm">
-            <div class="row">
-              <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <mat-form-field class="example-full-width">
-                  <mat-label>{{langText.PROFILE_NAME | translate}}</mat-label>
-                  <input matInput formControlName="profile_name" type="text">
-                </mat-form-field>
-              </div>
-              <!-- <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+          }
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <form class="ms-0" [formGroup]="tdForm!" #formDirective="ngForm">
+        <div class="row">
+          <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{langText.PROFILE_NAME | translate}}</mat-label>
+              <input matInput formControlName="profile_name" type="text">
+            </mat-form-field>
+          </div>
+          <!-- <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
                   <input matInput formControlName="description" type="text">
                 </mat-form-field>
               </div> -->
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-                  <input matInput formControlName="unit_type" [matAutocomplete]="unitType">
-                  <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayUnitTypeFn">
-                    @for (cc of tankItemList; track cc) {
-                    <mat-option [value]="cc">
-                      {{cc.unit_type}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-              </div>
-              <!-- <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-2">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+              <input matInput formControlName="unit_type" [matAutocomplete]="unitType">
+              <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayUnitTypeFn">
+                @for (cc of tankItemList; track cc) {
+                <mat-option [value]="cc">
+                  {{cc.unit_type}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <!-- <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
                   <mat-select formControlName="unit_type" multiple>
@@ -72,7 +69,7 @@
                   </mat-select>
                 </mat-form-field>
               </div> -->
-              <!-- <div
+          <!-- <div
                 class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
@@ -82,73 +79,71 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div> -->
-            </div>
-          </form>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <div class="body">
-        <div class="responsive_table">
-          <table mat-table [dataSource]="tariffDepotItems" matSort
-            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-            <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.PROFILE_NAME
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
-                  }}:</span>{{row.tariff_depot?.profile_name}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="lName">
-              <mat-header-cell *matHeaderCellDef >{{this.langText.DESCRIPTION |
-                translate}}</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
-                  }}:</span>{{row.tariff_depot?.description}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef >{{CLEANING_LAST_UPDATED_DT |
-                translate}}</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                <span class="mobile-label">{{CLEANING_LAST_UPDATED_DT | translate}}:</span>
-                {{this.displayLastUpdated(row.tariff_depot)}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="actions">
-              <mat-header-cell
-                [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                *matHeaderCellDef></mat-header-cell>
-              <mat-cell *matCellDef="let row; let i=index;"
-                [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                @if (!row.tank_count) {
-                <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_depot)"
-                  [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                  <mat-icon>delete_forever</mat-icon>
-                </button>
-                }
-              </mat-cell>
-            </ng-container>
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_depot)"
-              [style.cursor]="'pointer'" matRipple>
-            </mat-row>
-          </table>
         </div>
-        <!-- Loading spinner -->
-        @if (!(tfDepotDS.loading$ | async) && !tariffDepotItems.length) {
-        <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="tariffDepotItems.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
-        </div>
-        }
-        <!-- Loading spinner -->
-        @if (tfDepotDS.loading$ | async) {
-        <div class="tbl-spinner">
-          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-          </mat-progress-spinner>
-        </div>
-        }
-        <mat-paginator #paginator [length]="tfDepotDS.totalCount" [pageIndex]="0" [pageSize]="10"
-          [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
-        </mat-paginator>
-      </div>
+      </form>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <div class="body">
+    <div class="responsive_table">
+      <table mat-table [dataSource]="tariffDepotItems" matSort
+        class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+        <ng-container matColumnDef="fName">
+          <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.PROFILE_NAME
+            }}</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
+              }}:</span>{{row.tariff_depot?.profile_name}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="lName">
+          <mat-header-cell *matHeaderCellDef>{{this.langText.DESCRIPTION |
+            translate}}</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
+              }}:</span>{{row.tariff_depot?.description}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="mobile">
+          <mat-header-cell *matHeaderCellDef>{{CLEANING_LAST_UPDATED_DT |
+            translate}}</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="mobile-label">{{CLEANING_LAST_UPDATED_DT | translate}}:</span>
+            {{this.displayLastUpdated(row.tariff_depot)}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <mat-header-cell
+            [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+            *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row; let i=index;"
+            [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            @if (!row.tank_count) {
+            <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_depot)"
+              [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+              <mat-icon>delete_forever</mat-icon>
+            </button>
+            }
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_depot)"
+          [style.cursor]="'pointer'" matRipple>
+        </mat-row>
+      </table>
     </div>
+    <!-- Loading spinner -->
+    @if (!(tfDepotDS.loading$ | async) && !tariffDepotItems.length) {
+    <mat-divider></mat-divider>
+    <div class="no-results m-l-20 pt-3" [style.display]="tariffDepotItems.length === 0 ? '' : 'none'">
+      <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+    </div>
+    }
+    <!-- Loading spinner -->
+    @if (tfDepotDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
+    <mat-paginator #paginator [length]="tfDepotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+    </mat-paginator>
   </div>
 </div>

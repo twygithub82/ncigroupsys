@@ -1,5 +1,8 @@
 import { CodeValuesItem } from "app/data-sources/code-values";
+import { RepairPartItem } from "app/data-sources/repair-part";
+import { RPDamageRepairItem } from "app/data-sources/rp-damage-repair";
 import { modulePackage } from "environments/environment";
+import { Utility } from "./utility";
 
 export class BusinessLogicUtil {
     static isOthers(value: string | string[]): boolean {
@@ -56,5 +59,21 @@ export class BusinessLogicUtil {
 
     static getSaveDescription(guid: string | undefined) {
         return guid ? `COMMON-FORM.SAVE` : 'COMMON-FORM.UPDATE';
+    }
+
+    static displayApproveQty(rep: RepairPartItem) {
+        return (rep.approve_part ?? !this.is4X(rep.rp_damage_repair)) ? (rep.approve_qty !== null && rep.approve_qty !== undefined ? rep.approve_qty : rep.quantity) : 0;
+    }
+
+    static displayApproveHour(rep: RepairPartItem) {
+        return (rep.approve_part ?? !this.is4X(rep.rp_damage_repair)) ? (rep.approve_hour !== null && rep.approve_hour !== undefined ? rep.approve_hour : rep.hour) : 0;
+    }
+
+    static displayApproveCost(rep: RepairPartItem) {
+        return Utility.convertNumber((rep.approve_part ?? !this.is4X(rep.rp_damage_repair)) ? (rep.approve_cost !== null && rep.approve_cost !== undefined ? rep.approve_cost : rep.material_cost) : 0, 2);
+    }
+
+    static is4X(rpDmgRepair: RPDamageRepairItem[] | undefined): boolean | undefined {
+        return rpDmgRepair && rpDmgRepair.some((item: RPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
     }
 }

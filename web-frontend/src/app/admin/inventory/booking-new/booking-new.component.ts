@@ -24,7 +24,6 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -39,6 +38,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -198,9 +198,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private router: Router,
     private translate: TranslateService,
-    private http: HttpClient
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -766,10 +765,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const cancelBookingReq = new BookingGO(result.booking);
-        // this.bookingDS.cancelBooking([cancelBookingReq]).subscribe(cancelResult => {
-        //   this.handleSaveSuccess(cancelResult?.data?.cancelBooking);
-        //   this.performSearch(this.pageSize, 0, this.pageSize);
-        // });
         this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
           this.handleDeleteSuccess(cancelResult?.data?.deleteBooking);
           this.performSearch(this.pageSize, 0, this.pageSize);
@@ -911,5 +906,17 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_DELETE']);
   }
 }

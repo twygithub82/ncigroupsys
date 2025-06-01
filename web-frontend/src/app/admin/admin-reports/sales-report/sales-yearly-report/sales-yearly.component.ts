@@ -371,6 +371,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     let queryType = 1;
     const where: any = {};
     let reportType = "";
+    let repName="";
     //let processType=this.processType;
 
 
@@ -381,6 +382,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     if (this.searchForm?.get('cost_type')?.value.code_val != "ALL") {
       where.revenue_type = [this.searchForm?.get('cost_type')?.value.code_val];
       invTypes = [this.searchForm?.get('cost_type')?.value.code_val];
+       repName=this.searchForm?.get('cost_type')?.value.description;
     }
 
     // if(invTypes.includes("IN_OUT"))
@@ -429,7 +431,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
 
     this.lastSearchCriteria = where;
-    this.performSearch(report_type, date, customerName, reportType, invTypes);
+    this.performSearch(report_type, date, customerName, reportType, invTypes,repName);
     // if (this.searchForm?.invalid) return;
     // this.isGeneratingReport = true;
     // var cond_counter = 0;
@@ -483,14 +485,14 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     // this.performSearch(report_type, date, customerName);
   }
 
-  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string, invTypes?: string[]) {
+  performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string, invTypes?: string[],reportName?:string) {
 
     // if(queryType==1)
     // {
     this.subs.sink = this.reportDS.searchManagementReportRevenueYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-        this.ProcessYearlySalesReport(this.repData, date!, customerName!, report_type!, invTypes!);
+        this.ProcessYearlySalesReport(this.repData, date!, customerName!, report_type!, invTypes!,reportName);
       });
 
 
@@ -639,7 +641,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-  onExportDetail(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string,report_type: string, invTypes: string[]) {
+  onExportDetail(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string,report_type: string, invTypes: string[],reportName?:string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
@@ -660,7 +662,8 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
         date: date,
         repType: this.processType,
         customer: customerName,
-        inventory_type: invTypes
+        inventory_type: invTypes,
+        report_name:reportName
 
       },
 
@@ -807,13 +810,14 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
       return retval;
     }
 
-  ProcessYearlySalesReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string, invTypes: string[]) {
+  ProcessYearlySalesReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string,
+     report_type: string, invTypes: string[],reportName?:string) {
 
 
 
     if (!this.ZeroTransaction(repData)) {
 
-      this.onExportDetail(repData, date, customerName, report_type, invTypes);
+      this.onExportDetail(repData, date, customerName, report_type, invTypes, reportName);
 
 
     }

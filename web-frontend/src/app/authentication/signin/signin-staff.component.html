@@ -65,8 +65,8 @@
             }
             <div class="container-auth-form-btn">
               <div style="text-align:center">
-                <button mat-raised-button color="primary" [class.auth-spinner]="loading" [disabled]="loading"
-                  class="auth-form-btn" [disabled]="!authForm.valid " type="submit">{{LOGIN | translate}}</button>
+                <button mat-raised-button color="primary" [class.auth-spinner]="loading"
+                  class="auth-form-btn" [disabled]="loading || !authForm.valid " type="submit">{{LOGIN | translate}}</button>
               </div>
             </div>
           </form>
