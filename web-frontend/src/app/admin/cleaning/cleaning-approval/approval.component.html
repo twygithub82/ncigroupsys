@@ -42,7 +42,7 @@
                       <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc">
-                          {{ccDS.displayName(cc)}}
+                          {{ccDS.displayCodeDashName(cc)}}
                         </mat-option>
                         }
                       </mat-autocomplete>
@@ -127,7 +127,7 @@
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row" class="">
                     <span
-                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company):'-'}}
+                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?row.storing_order_tank?.storing_order?.customer_company.name:'-'}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="eir_no">
@@ -231,7 +231,7 @@
                         <span>{{translatedLangText.NO_ACTION}}</span>
                       </button>
                       @if (canExport(row)) {
-                      <button mat-menu-item (click)="onExport($event, row)" class="accent-darker">
+                      <button mat-menu-item (click)="onExport($event, row)">
                         <i class="fas fa-file-export"></i>
                         {{translatedLangText.EXPORT}}
                       </button>

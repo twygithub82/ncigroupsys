@@ -49,7 +49,7 @@
                                 [displayWith]="displayCustomerCompanyFn">
                                 @for (cc of customer_companyList; track cc) {
                                 <mat-option [value]="cc">
-                                  {{ccDS.displayName(cc)}}
+                                  {{ccDS.displayCodeDashName(cc)}}
                                 </mat-option>
                                 }
                               </mat-autocomplete>
@@ -127,7 +127,7 @@
                             [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                             class="">
                             <span
-                              class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?ccDS.displayName(row.storing_order_tank?.storing_order?.customer_company):'-'}}
+                              class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?row.storing_order_tank?.storing_order?.customer_company.name:'-'}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="eir_no">
@@ -198,7 +198,7 @@
                             @if (canStartJob(row)) {
                             <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row.job_order)"
                               [disabled]="anyResidueIncomplete(row)">
-                              <mat-icon [ngClass]="{'text-success': true}">timer</mat-icon>
+                              <mat-icon [ngClass]="{'custom-timer-icon': true}">timer</mat-icon>
                             </button>
                             }
                             <!-- @if (canCompleteJob(row, isStarted(row))) {

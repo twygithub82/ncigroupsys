@@ -22,7 +22,7 @@ input[matInput] {
   min-width: 0;
 }
 
-$bg: #4b2e83;
+$bg: #007bff;
 $fg: lighten($bg,20%);
 $borderWidth: 3px;
 
@@ -56,10 +56,11 @@ background: $fg;
 label + input[type=radio] + label {
 border-left: solid $borderWidth $fg;
 }
+
 .radio-group {
 border: solid $borderWidth $fg;
 display: inline-block;
-margin: 20px;
+margin: 5px;
 border-radius: 5px;
 overflow: hidden;
 }

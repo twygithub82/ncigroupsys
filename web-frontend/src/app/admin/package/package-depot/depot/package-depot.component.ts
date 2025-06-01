@@ -275,8 +275,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
-
-
   initializeFilterCustomerCompany() {
     this.pcForm!.get('customer_code')!.valueChanges.pipe(
       startWith(''),
@@ -387,7 +385,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
-      //height: '80vh',
+      height: '80vh',
       data: {
         action: 'update',
         langText: this.langText,
