@@ -48,9 +48,6 @@
                           </button>
                         </mat-chip-row>
                        }
-                       
-                      <!-- } -->
-                   
                     <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
                       [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                       (matChipInputTokenEnd)="add($event)">

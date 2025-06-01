@@ -325,4 +325,8 @@ export class FormDialogComponent {
     }
     return false;
   }
+
+  getSaveBtnDescription(): string {
+    return Utility.getSaveBtnDescription(this.action === 'edit' ? 'edit' : '');
+  }
 }

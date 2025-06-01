@@ -4,30 +4,31 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
+  </div>
 
-    <div class="card">
+  <div class="card">
     <div class="body">
-    <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card p-0">
-          <mat-accordion>
-            <mat-expansion-panel [disabled]="true" hideToggle>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.NEW">
-                    <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
-                      <mat-icon class="col-white">add</mat-icon>
-                    </button>
-                  </div>
-                  <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card p-0">
+            <mat-accordion>
+              <mat-expansion-panel [disabled]="true" hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <div class="m-l-" [matTooltip]="translatedLangText.NEW">
+                      <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
+                        <mat-icon class="col-white">add</mat-icon>
+                      </button>
+                    </div>
+                    <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
                   </div> -->
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
@@ -65,113 +66,116 @@
                   </div>
                 </form>
               </div> -->
-            </mat-expansion-panel>
-          </mat-accordion>
-          <div class="body">
-            <div class="responsive_table">
-              <table mat-table [dataSource]="tariffSteamItems" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                <!-- Checkbox Column -->
-                <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
-                    <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row.tariff_steaming) : null"
-                      [checked]="selection.isSelected(row.tariff_steaming)" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="minTemp">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MIN_TEMP
-                    }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.MIN_TEMP
-                      }}:</span>{{(row.tariff_steaming?.temp_min === null || row.tariff_steaming?.temp_min ===
-                    undefined||
-                    row.tariff_steaming?.temp_min === 9999) ? "-" : roundUpToDecimal(row.tariff_steaming?.temp_min,2)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="maxTemp">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.MAX_TEMP
-                    }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.MAX_TEMP
-                      }}:</span>{{(row.tariff_steaming?.temp_max === null || row.tariff_steaming?.temp_max === undefined
-                    ||
-                    row.tariff_steaming?.temp_max === 9999) ? "-" : roundUpToDecimal(row.tariff_steaming?.temp_max,2)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="cost">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}:</span>
-                    {{row.tariff_steaming?.cost?.toFixed(2)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="labour">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.HOURLY_RATE
-                    }}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE }}:</span>
-                    {{row.tariff_steaming?.labour?.toFixed(2)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="qty">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.QTY}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.QTY}}:</span> {{row.tariff_steaming?.qty }}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="lastUpdate">
-                  <mat-header-cell *matHeaderCellDef
-                    >{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
-                    <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
-                    {{this.displayLastUpdated(row.tariff_steaming)}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <mat-header-cell
-                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                    *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;"
-                    [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    @if (!row.tank_count) {
-                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_steaming)"
-                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                      <mat-icon>delete_forever</mat-icon>
-                    </button>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_steaming)"
-                  [style.cursor]="'pointer'" matRipple>
-                </mat-row>
-              </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+            <div class="body">
+              <div class="responsive_table">
+                <table mat-table [dataSource]="tariffSteamItems" matSort
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                  <!-- Checkbox Column -->
+                  <ng-container matColumnDef="select">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1 justify-content-start'">
+                      <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+                      <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row.tariff_steaming) : null"
+                        [checked]="selection.isSelected(row.tariff_steaming)" [ngClass]="'tbl-checkbox'">
+                      </mat-checkbox>
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="minTemp">
+                    <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.MIN_TEMP
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
+                      <span class="mobile-label">{{this.translatedLangText.MIN_TEMP
+                        }}:</span>{{(row.tariff_steaming?.temp_min === null || row.tariff_steaming?.temp_min ===
+                      undefined||
+                      row.tariff_steaming?.temp_min === 9999) ? "-" :
+                      roundUpToDecimal(row.tariff_steaming?.temp_min,2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="maxTemp">
+                    <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.MAX_TEMP
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
+                      <span class="mobile-label">{{this.translatedLangText.MAX_TEMP
+                        }}:</span>{{(row.tariff_steaming?.temp_max === null || row.tariff_steaming?.temp_max ===
+                      undefined
+                      ||
+                      row.tariff_steaming?.temp_max === 9999) ? "-" :
+                      roundUpToDecimal(row.tariff_steaming?.temp_max,2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="cost">
+                    <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
+                      <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}:</span>
+                      {{row.tariff_steaming?.cost?.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="labour">
+                    <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.HOURLY_RATE
+                      }}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
+                      <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE }}:</span>
+                      {{row.tariff_steaming?.labour?.toFixed(2)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="qty">
+                    <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.QTY}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
+                      <span class="mobile-label">{{this.translatedLangText.QTY}}:</span> {{row.tariff_steaming?.qty }}
+                    </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="lastUpdate">
+                    <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
+                      <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
+                      {{this.displayLastUpdated(row.tariff_steaming)}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell
+                      [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row; let i=index;"
+                      [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      @if (!row.tank_count) {
+                      <button mat-icon-button (click)="$event.stopPropagation()"
+                        (click)="cancelItem(row.tariff_steaming)" [matTooltip]="translatedLangText.DELETE"
+                        class="tbl-action-btn text-custom-danger">
+                        <mat-icon>delete_forever</mat-icon>
+                      </button>
+                      }
+                    </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row.tariff_steaming)"
+                    [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+              <!-- Loading spinner -->
+              @if (!(tariffSteamDS.loading$ | async) && !tariffSteamItems.length) {
+              <mat-divider></mat-divider>
+              <div class="no-results m-l-20 pt-3" [style.display]="tariffSteamItems.length === 0 ? '' : 'none'">
+                <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
+              </div>
+              }
+              <!-- Loading spinner -->
+              @if (tariffSteamDS.loading$ | async) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+              <mat-paginator #paginator [length]="tariffSteamDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageEvent($event)">
+              </mat-paginator>
             </div>
-            <!-- Loading spinner -->
-            @if (!(tariffSteamDS.loading$ | async) && !tariffSteamItems.length) {
-            <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="tariffSteamItems.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
-            </div>
-            }
-            <!-- Loading spinner -->
-            @if (tariffSteamDS.loading$ | async) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
-            </div>
-            }
-            <mat-paginator #paginator [length]="tariffSteamDS.totalCount" [pageIndex]="0" [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageEvent($event)">
-            </mat-paginator>
           </div>
         </div>
       </div>
     </div>
-    </div>
-    </div>
   </div>
+
 </section>

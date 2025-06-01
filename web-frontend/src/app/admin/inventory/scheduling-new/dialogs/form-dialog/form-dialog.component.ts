@@ -178,7 +178,7 @@ export class FormDialogComponent {
     return this.fb.group({
       sot_guid: [tank.guid],
       tank_no: [tank.tank_no],
-      customer_company: [this.ccDS.displayName(tank.storing_order?.customer_company)],
+      customer_company: [this.ccDS.displayCodeDashName(tank.storing_order?.customer_company)],
       eir_no: [this.igDS.getInGateItem(tank.in_gate)?.eir_no],
       eir_dt: [this.igDS.getInGateItem(tank.in_gate)?.eir_dt],
       capacity: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.capacity],
@@ -199,7 +199,7 @@ export class FormDialogComponent {
       sot_guid: [schedulingSot.storing_order_tank?.guid],
       tank_no: [schedulingSot.storing_order_tank?.tank_no],
       status_cv: [schedulingSot.status_cv],
-      customer_company: [this.ccDS.displayName(schedulingSot.storing_order_tank?.storing_order?.customer_company)],
+      customer_company: [this.ccDS.displayCodeDashName(schedulingSot.storing_order_tank?.storing_order?.customer_company)],
       eir_no: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.eir_no],
       eir_dt: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.eir_dt],
       capacity: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.in_gate_survey?.capacity],
@@ -474,5 +474,9 @@ export class FormDialogComponent {
 
   getYardDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.data.populateData.yardCvList);
+  }
+
+  getSaveBtnDescription(): string {
+    return Utility.getSaveBtnDescription(this.action === 'edit' ? 'edit' : '');
   }
 }
