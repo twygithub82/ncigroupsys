@@ -62,3 +62,36 @@ mat-chip-row[color="primary"] {
 mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
   color: red !important;
 }
+
+
+.checkbox-option {
+  display: flex;          /* Enable flex layout */
+  align-items: center;    /* Vertically center items */
+  gap: 8px;               /* Space between checkbox and text */
+  width: 100%;            /* Full width */
+}
+
+.checkbox-item {
+ // margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.horizontal-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Ensure text wraps properly */
+.option-text {
+  margin-top: 4px;
+  white-space: normal;    /* Allow text wrapping */
+  line-height: 1.5;       /* Improve readability */
+}
+
+::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+ display:none
+}
+
+.multiSelected_autocomplete{
+    padding: 0 12px;
+}

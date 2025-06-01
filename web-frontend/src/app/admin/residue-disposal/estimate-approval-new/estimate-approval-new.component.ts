@@ -250,6 +250,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
   billingBranchList: CustomerCompanyItem[] = [];
+  customer_companyList?: CustomerCompanyItem[];
   packResidueList: PackageResidueItem[] = [];
   displayPackResidueList: PackageResidueItem[] = [];
   deList: any[] = [];
@@ -278,7 +279,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   historyState: any = {};
   updateSelectedItem: any = undefined;
-  isExportingPDF:boolean = false;
+  isExportingPDF: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -321,8 +322,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   initForm() {
     this.residueEstForm = this.fb.group({
       guid: [''],
-      customer_code: [''],
-      billing_branch: [''],
+      bill_to: [''],
+      // billing_branch: [''],
       job_no: [''],
       remarks: [''],
       last_test: [''],
@@ -1006,7 +1007,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     } else {
       tempDirection = 'ltr';
     }
-    this.isExportingPDF=true;
+    this.isExportingPDF = true;
     const dialogRef = this.dialog.open(ResidueDisposalPdfComponent, {
       width: '794px',
       height: '80vh',
@@ -1022,7 +1023,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       left: '-9999px'  // Move far to the left of the screen
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isExportingPDF=false;
+      this.isExportingPDF = false;
     });
   }
 
@@ -1040,7 +1041,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
     if (this.historyState.action === "NEW" || this.historyState.action === "DUPLICATE") {
       var newResidueItem: ResidueItem = new ResidueItem();
-      var billGuid: string = (this.residueEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.residueEstForm?.get("billing_branch")?.value?.guid);
+      var billGuid: string = (this.residueEstForm?.get("bill_to")?.value?.guid);
       newResidueItem.bill_to_guid = billGuid;
       newResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
       newResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
@@ -1071,10 +1072,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     }
     else if (this.historyState.action === "UPDATE") {
       var updResidueItem: ResidueItem = new ResidueItem(this.residueItem);
-      var billGuid: string = (this.residueEstForm.get("billing_branch")?.value ? this.residueEstForm.get("billing_branch")?.value?.guid : this.sotItem?.storing_order?.customer_company?.guid);
-      if (!this.residueEstForm.get("billing_branch")?.value?.guid) {
-        billGuid = "";
-      }
+      var billGuid: string = (this.residueEstForm.get("bill_to")?.value?.guid);
       updResidueItem.bill_to_guid = billGuid;
       updResidueItem.job_no = this.residueEstForm.get("job_no")?.value;
       updResidueItem.remarks = this.residueEstForm.get("remarks")?.value;
@@ -1403,17 +1401,37 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   loadBillingBranch() {
     let where: any = {};
-    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.main_customer_guid = { eq: custCompanyGuid };
-
-    this.ccDS.search(where, {}).subscribe(data => {
-      var def = this.createDefaultCustomerCompany("--Select--", "");
-
-      this.billingBranchList = [def, ...data];;
-
-      this.patchResidueEstForm(this.residueItem!);
+    this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+      if (cc?.length) {
+        const bill_to = this.residueEstForm?.get('bill_to');
+        this.customer_companyList = cc;
+        if (this.residueItem?.bill_to_guid) {
+          const found = this.customer_companyList?.find(x => x.guid === this.residueItem?.bill_to_guid)
+          if (found) {
+            bill_to?.setValue(found);
+          }
+        } else if (this.customer_companyList?.length) {
+          const found = this.customer_companyList?.find(x => x.guid === this.sotItem?.storing_order?.customer_company?.guid)
+          if (found) {
+            bill_to?.setValue(found);
+          }
+        }
+        if (this.residueItem && !this.residueDS.canApprove(this.residueItem)) {
+          bill_to?.disable();
+        }
+      }
     });
+    this.patchResidueEstForm(this.residueItem!);
+    // let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    // where.main_customer_guid = { eq: custCompanyGuid };
 
+    // this.ccDS.search(where, {}).subscribe(data => {
+    //   var def = this.createDefaultCustomerCompany("--Select--", "");
+
+    //   this.billingBranchList = [def, ...data];;
+
+    //   this.patchResidueEstForm(this.residueItem!);
+    // });
   }
 
   loadHistoryState() {
@@ -1428,8 +1446,6 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
       this.getPackageResidue();
       this.loadBillingBranch();
-
-
     }
   }
 
@@ -1440,10 +1456,9 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     }
 
     this.residueEstForm?.patchValue({
-
-      customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
+      // customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
       job_no: residue?.job_no ? residue.job_no : this.sotItem?.job_no,
-      billing_branch: this.getBillingBranch(billingGuid),
+      //billing_branch: this.getBillingBranch(billingGuid),
       remarks: residue?.remarks
 
     });
@@ -1614,13 +1629,12 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   approveRow(event: Event) {
-
     this.onApprove(event, this.residueItem!);
   }
 
   onApprove(event: Event, row: ResidueItem) {
     event.preventDefault();
-    const bill_to = (this.residueEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.residueEstForm?.get("billing_branch")?.value?.guid);
+    const bill_to = (this.residueEstForm?.get("bill_to")?.value?.guid);
 
     if (bill_to) {
       let re: ResidueItem = new ResidueItem(row);
@@ -1795,5 +1809,9 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     // this.residueDS.cancelResidue(reList).subscribe(result => {
     //   this.handleCancelSuccess(result?.data?.cancelResidue)
     // });
+  }
+
+  displayCustomerCompanyName(cc: CustomerCompanyItem): string {
+    return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
   }
 }

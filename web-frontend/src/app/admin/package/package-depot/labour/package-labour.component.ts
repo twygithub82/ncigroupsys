@@ -782,12 +782,12 @@ selected(event: MatAutocompleteSelectedEvent): void {
   const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
   if (!(index >= 0)) {
     this.selectedCustomers.push(customer);
-    this.search();
+    //this.search();
   }
   else
   {
     this.selectedCustomers.splice(index, 1);
-    this.search();
+   // this.search();
   }
 
   if (this.custInput) {
