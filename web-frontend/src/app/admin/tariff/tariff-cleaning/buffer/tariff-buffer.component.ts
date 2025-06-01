@@ -199,7 +199,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     TARIFF_BUFFER_ASSIGNED: 'COMMON-FORM.TARIFF-BUFFER-ASSIGNED',
-    ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
   }
 
   constructor(
@@ -618,9 +618,9 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '500px',
+      //width: '500px',
       data: {
-        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         act: "warn"
       },
       direction: tempDirection

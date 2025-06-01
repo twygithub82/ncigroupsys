@@ -218,7 +218,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     TARIFF_RESIDUE_ASSIGNED: 'COMMON-FORM.TARIFF-RESIDUE-ASSIGNED',
-    ARE_U_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
   }
 
   constructor(
@@ -704,7 +704,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.ARE_U_SURE_DELETE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         act: "warn"
       },
       direction: tempDirection
