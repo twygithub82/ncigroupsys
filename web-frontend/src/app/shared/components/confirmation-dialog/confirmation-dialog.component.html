@@ -1,8 +1,21 @@
-<div class="container confirmation-dialog">
-    <h4 mat-dialog-title class="ps-3 pt-3 pb-3 align-center">{{headerText | translate}}</h4>
-    <!-- <mat-divider class="pb-1"></mat-divider> -->
-    <div mat-dialog-actions class="ps-0 pt-2 mb-1 d-flex justify-content-center">
-        <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirm()">
+<div class="container confirmation-dialog p-4">
+    <h4 mat-dialog-title
+        [ngClass]="{'pb-3': true, 'ps-0': allowRemarks || allowRemarksWithRequired, 'align-center': !allowRemarks && !allowRemarksWithRequired}">{{headerText | translate}}</h4>
+    @if (data.allowRemarks || data.allowRemarksWithRequired) {
+    <form class="ms-0" [formGroup]="confirmForm!" #formDirective="ngForm">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                    <mat-label>{{langText.REMARKS | translate}}</mat-label>
+                    <textarea matInput formControlName="remarks" [required]="allowRemarksWithRequired"></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+    }
+    <div mat-dialog-actions
+        [ngClass]="{'pt-2 mb-1': true, 'justify-content-end': allowRemarks || allowRemarksWithRequired, 'd-flex justify-content-center': !allowRemarks && !allowRemarksWithRequired}">
+        <button mat-flat-button color="warn" (click)="confirm()">
             {{langText.CONFIRM | translate}}
         </button>
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1" [hidden]="hideCancel()">

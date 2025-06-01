@@ -158,7 +158,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     // 'APPROVED',
     'JOB_IN_PROGRESS',
     'PENDING',
-    // 'COMPLETED',
+    'COMPLETED',
     // 'NO_ACTION',
     'ASSIGNED',
     // 'PARTIAL_ASSIGNED',

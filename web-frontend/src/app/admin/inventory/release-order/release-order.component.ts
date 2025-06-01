@@ -172,6 +172,8 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   currentEndCursor: string | undefined = undefined;
   lastCursorDirection: string | undefined = undefined;
 
+  todayDt = new Date();
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -553,6 +555,11 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
         gte: Utility.convertDate(releaseDt),
         lte: Utility.convertDate(releaseDt, true),
       };
+    } else {
+      // const releaseDt = this.todayDt
+      // where.release_dt = {
+      //   gte: Utility.convertDate(releaseDt),
+      // };
     }
 
     if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('job_no')?.value) {
@@ -633,27 +640,8 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
     this.resetForm();
     this.search();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {

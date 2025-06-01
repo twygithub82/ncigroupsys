@@ -127,6 +127,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     TEAM: 'COMMON-FORM.TEAM',
     SEARCH: 'COMMON-FORM.SEARCH',
+    STARTED: "COMMON-FORM.STARTED",
+    NOT_STARTED: "COMMON-FORM.NOT-STARTED",
+    TO_COMPLETE: "COMMON-FORM.TO-COMPLETE",
   }
 
   availableJobStatus: string[] = [
