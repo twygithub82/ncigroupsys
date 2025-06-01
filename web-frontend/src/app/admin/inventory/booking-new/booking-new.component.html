@@ -147,7 +147,7 @@
                       <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
                       <mat-select formControlName="tank_status_cv">
                         @for (codeValue of tankStatusCvList; track codeValue) {
-                        @if (!codeValue.code_val || tankStatusInYard.includes(codeValue.code_val)) {
+                        @if (!codeValue.code_val || availableTankStatus.includes(codeValue.code_val)) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
                         </mat-option>
