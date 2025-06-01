@@ -121,7 +121,7 @@
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
               <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" [formGroupName]="i"
-                [style.cursor]="'pointer'" matRipple>
+                [style.cursor]="'pointer'" [ngClass]="{'bg-warn-row': isExistedBookType(row)}" matRipple>
               </mat-row>
             </table>
           </div>
@@ -154,8 +154,7 @@
           </mat-form-field> -->
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
-            <input matInput [formControl]="bookTypeCvControl"
-              [matAutocomplete]="bookType">
+            <input matInput [formControl]="bookTypeCvControl" [matAutocomplete]="bookType" required>
             <mat-autocomplete #bookType="matAutocomplete" [displayWith]="displayCodeValueFn">
               @for (cv of bookingTypeCvList; track cv) {
               <mat-option [value]="cv">

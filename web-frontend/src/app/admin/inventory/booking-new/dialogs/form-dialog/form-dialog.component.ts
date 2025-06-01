@@ -88,6 +88,7 @@ export class FormDialogComponent {
   booking: BookingItem = new BookingItem();
   startDateToday = new Date();
   existingBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
+  existingFilteredBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
 
   bookTypeCvControl = new UntypedFormControl();
   bookingTypeCvList: CodeValuesItem[] = [];
@@ -259,13 +260,16 @@ export class FormDialogComponent {
       ? this.booking && this.booking.book_type_cv !== value
       : true;
 
-    if (
-      condition &&
-      this.existingBookTypeCvs!.some(
-        booking => booking?.book_type_cv === value && (booking?.booking_dt ?? 0) >= dateOnly
-      )
-    ) {
-      control?.setErrors({ existed: true });
+    if (condition) {
+      const matched = this.existingBookTypeCvs!.filter(booking => booking?.book_type_cv === value && (booking?.booking_dt ?? 0) >= dateOnly) || [];
+
+      if (matched?.length) {
+        this.existingFilteredBookTypeCvs = matched
+        console.log(this.existingFilteredBookTypeCvs)
+        control?.setErrors({ existed: true });
+      } else {
+        this.existingFilteredBookTypeCvs = [];
+      }
     }
   }
 
@@ -312,5 +316,13 @@ export class FormDialogComponent {
 
   displayCodeValueFn(cv: CodeValuesItem): string {
     return cv?.description || '';
+  }
+
+  isExistedBookType(row: any) {
+    if (this.existingFilteredBookTypeCvs) {
+      const found = this.existingFilteredBookTypeCvs.filter(x => x?.sot_guid === row?.value?.sot?.guid);
+      return found?.length > 0
+    }
+    return false;
   }
 }

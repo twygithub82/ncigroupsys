@@ -2366,3 +2366,7 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   pointer-events: none;
   z-index: 2;
 }
+
+.mat-mdc-row.bg-warn-row {
+  background-color: $theme-blue-complement-warn-bar !important;
+}
