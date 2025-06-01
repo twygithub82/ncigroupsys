@@ -2,7 +2,7 @@ import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray 
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule,MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
@@ -481,4 +481,28 @@ export class FormDialogComponent {
     const totalDuration = this.updatedMethodFormulaLinkList.reduce((sum, item) => sum + (item.cleaning_formula?.duration || 0), 0);
     return 'Total ' + totalDuration + ' mins';
   }
+
+   selected(event: MatAutocompleteSelectedEvent): void {
+      //const process = event.option.value;
+      this.AddCleaningStep();
+      // const index = this.selectedCargo.findIndex(c => c.guid === cargo.guid);
+      // if (!(index >= 0)) {
+      //   this.selectedCargo.push(cargo);
+      //   // this.search();
+      // }
+      // else {
+      //   this.selectedCargo.splice(index, 1);
+      //   // this.search();
+      // }
+  
+      // if (this.custInput) {
+  
+      //   this.custInput.nativeElement.value = '';
+      //   this.searchForm?.get('cargo_name')?.setValue('');
+      //   this.searchCargoList('');
+      // }
+      // this.updateFormControl();
+      //this.customerCodeControl.setValue(null);
+      //this.pcForm?.patchValue({ customer_code: null });
+    }
 }

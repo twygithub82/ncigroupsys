@@ -9,7 +9,7 @@
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="isMultiSelect()">
           <!-- <mat-form-field class="example-full-width"> -->
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
@@ -25,7 +25,7 @@
               } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 ms-10 mb-1">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 ms-10 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
             <mat-select formControlName="sub_group_name_cv">
@@ -42,7 +42,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
             <input matInput formControlName="part_name" type="text" required>
@@ -58,7 +58,7 @@
             }
           </mat-form-field>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1" [hidden]="isMultiSelect()">
           <!-- <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
               <input matInput formControlName="dimension" type="text">
@@ -70,7 +70,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3" [hidden]="isMultiSelect()">
           <!-- <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.ALIAS_NAME}}</mat-label>
               <input matInput formControlName="alias" type="text">
@@ -82,7 +82,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
             <input matInput formControlName="height_diameter" type="number" min="0"
@@ -94,7 +94,7 @@
                 } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
             <mat-select formControlName="height_diameter_unit_cv" [required]="isRequired('height_diameter')">
@@ -109,7 +109,7 @@
                 } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
             <input matInput formControlName="width_diameter" type="number" min="0"
@@ -121,7 +121,7 @@
                 } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
             <mat-select formControlName="width_diameter_unit_cv" [required]="isRequired('width_diameter')">
@@ -138,7 +138,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
             <input matInput formControlName="thickness" type="number" min="0"
@@ -150,7 +150,7 @@
                 } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
             <mat-select formControlName="thickness_unit_cv" [required]="isRequired('thickness')">
@@ -165,7 +165,7 @@
                   } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.LENGTH}}</mat-label>
             <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')">
@@ -181,7 +181,7 @@
               </mat-error>
               } -->
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
             <mat-select formControlName="length_unit_cv" [required]="isRequired('length')">

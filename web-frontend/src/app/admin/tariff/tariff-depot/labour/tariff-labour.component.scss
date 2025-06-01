@@ -53,3 +53,10 @@
     margin-right: 0%;
     margin-bottom: 0%;
   }
+
+  :host  ::ng-deep .mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
+    margin-right: 0px !important;
+  }
+  // :host ::ng-deep .mat-expansion-panel-header {
+  //   padding-right: 0px !important;
+  // }

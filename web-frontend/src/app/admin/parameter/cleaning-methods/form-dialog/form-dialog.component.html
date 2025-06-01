@@ -51,12 +51,12 @@
                   } -->
               </mat-form-field>
             </div>
-            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 mb-1">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.CLEANING_FORMULA}}</mat-label>
                 <input matInput formControlName="formula" [formControl]="cleanFormulaControl"
                   [matAutocomplete]="formulaCode">
-                <mat-autocomplete #formulaCode="matAutocomplete" [displayWith]="displayCleaningFormulaFn">
+                <mat-autocomplete #formulaCode="matAutocomplete" [displayWith]="displayCleaningFormulaFn" (optionSelected)="selected($event)">
                   @for (cf of cleanFormulaList; track cf) {
                   <mat-option [value]="cf">
                     {{cf.description}} - {{cf.duration}} mins
@@ -65,8 +65,8 @@
                 </mat-autocomplete>
               </mat-form-field>
             </div>
-            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1">
-              <button mat-mini-fab color="primary" (click)="$event.stopPropagation()" (click)="AddCleaningStep()"
+            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1" hidden>
+              <button mat-mini-fab color="primary" (click)="$event.stopPropagation()" (click)="AddCleaningStep()" 
                 [matTooltip]="translatedLangText.ADD" [disabled]="!canAddFormula()">
                 <mat-icon class="col-white">add</mat-icon>
               </button>

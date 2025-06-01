@@ -572,6 +572,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
+       disableClose: true,
       width: '600px',
       height: 'auto',
       data: {
@@ -602,6 +603,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
 
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
+      disableClose: true,
       width: '600px',
       data: {
         action: 'edit',

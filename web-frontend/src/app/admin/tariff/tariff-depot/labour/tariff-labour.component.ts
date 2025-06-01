@@ -291,6 +291,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
+      disableClose: true,
       width: '600px',
       data: {
         action: 'new',
