@@ -126,7 +126,7 @@
                     </mat-form-field> -->
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
-                      <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker">
+                      <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker" [min]="todayDt">
                       <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
                       <mat-datepicker #release_dt_picker></mat-datepicker>
                     </mat-form-field>
@@ -172,8 +172,9 @@
                   </mat-header-cell>
                   <mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                      [checked]="roSelection.isSelected(row)" [ngClass]="'tbl-checkbox'">
+                    <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                      (change)="$event ? toggleRow(row) : null" [checked]="roSelection.isSelected(row)"
+                      [ngClass]="'tbl-checkbox'">
                     </mat-checkbox>
                   </mat-cell>
                 </ng-container>
