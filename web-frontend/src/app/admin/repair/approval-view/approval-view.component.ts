@@ -446,12 +446,15 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
               const bill_to = this.repairForm?.get('bill_to');
               this.customer_companyList = cc;
               if (this.repairItem?.bill_to_guid) {
-                const found = this.customer_companyList?.filter(x => x.guid === this.repairItem?.bill_to_guid)
-                if (found?.length) {
-                  bill_to?.setValue(found[0]);
+                const found = this.customer_companyList?.find(x => x.guid === this.repairItem?.bill_to_guid)
+                if (found) {
+                  bill_to?.setValue(found);
                 }
-              } else if (this.customer_companyList?.length == 1) {
-                bill_to?.setValue(this.customer_companyList[0]);
+              } else if (this.customer_companyList?.length) {
+                const found = this.customer_companyList?.find(x => x.guid === this.sotItem?.storing_order?.customer_company_guid)
+                if (found) {
+                  bill_to?.setValue(found);
+                }
               }
               if (!this.repairDS.canApprove(this.repairItem)) {
                 bill_to?.disable();
