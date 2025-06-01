@@ -15,7 +15,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
           <div class="booking-tbl responsive_table">
             <table mat-table [dataSource]="dataSource" formArrayName="sotList" matSort
-              class="mat-cell advance-table striped-rows hover-highlight dark-header">
+              class="mat-cell advance-table striped-rows hover-highlight dark-header squeeze-form-field">
               <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
@@ -35,7 +35,7 @@
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row" class="">
                   <span class="mobile-label">{{data.translatedLangText.CUSTOMER}}:</span>{{
-                  ccDS.displayName(row.get('sot')?.value?.storing_order?.customer_company)}}
+                  ccDS.displayCodeDashName(row.get('sot')?.value?.storing_order?.customer_company)}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="eir_no">
@@ -75,10 +75,10 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="tank_status">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
                   {{data.translatedLangText.STATUS}}
                 </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
                   <span
                     class="mobile-label">{{data.translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.get('sot')?.value?.tank_status_cv)}}
                 </mat-cell>
@@ -93,15 +93,15 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="reference">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
                   {{data.translatedLangText.REFERENCE}}
                 </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row; let i = index" [ngClass]="''">
+                <mat-cell mat-cell *matCellDef="let row; let i = index" [ngClass]="'tbl-col-width-per-1-xl'">
                   <div [formGroupName]="i">
                     <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
                     <tlx-form-field customClass="mat-table-form-txt-40px">
                       <mat-form-field>
-                        <input tlxFormInput matInput formControlName="reference" [disabled]="!canEdit()">
+                        <input tlxFormInput matInput formControlName="reference">
                       </mat-form-field>
                     </tlx-form-field>
                   </div>
@@ -137,7 +137,7 @@
       <h5 class="mt-3">{{data.translatedLangText.BOOKING_DETAILS}}</h5>
       <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width" appearance="fill">
+          <!-- <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
             <mat-select formControlName="book_type_cv" required>
               @for (codeValue of data.populateData.bookingTypeCvList; track codeValue) {
@@ -146,12 +146,29 @@
               </mat-option>
               }
             </mat-select>
-            <!-- @if (bookingForm.get('book_type_cv')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            } -->
             @if (bookingForm.get('book_type_cv')?.hasError('existed')) {
+            <mat-error>
+              {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
+            </mat-error>
+            }
+          </mat-form-field> -->
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>{{data.translatedLangText.BOOKING_TYPE}}</mat-label>
+            <input matInput [formControl]="bookTypeCvControl"
+              [matAutocomplete]="bookType">
+            <mat-autocomplete #bookType="matAutocomplete" [displayWith]="displayCodeValueFn">
+              @for (cv of bookingTypeCvList; track cv) {
+              <mat-option [value]="cv">
+                {{cv.description}}
+              </mat-option>
+              }
+            </mat-autocomplete>
+            @if (bookTypeCvControl.hasError('invalidAutocompleteSelection')) {
+            <mat-error>
+              {{data.translatedLangText.INVALID_SELECTION}}
+            </mat-error>
+            }
+            @if (bookTypeCvControl.hasError('existed')) {
             <mat-error>
               {{data.translatedLangText.BOOKING_TYPE}} {{data.translatedLangText.EXISTED}}
             </mat-error>
@@ -184,12 +201,12 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+        <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.REFERENCE}}</mat-label>
             <input matInput formControlName="reference">
           </mat-form-field>
-        </div>
+        </div> -->
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
