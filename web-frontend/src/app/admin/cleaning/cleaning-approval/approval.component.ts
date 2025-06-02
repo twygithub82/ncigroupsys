@@ -131,7 +131,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     APPROVAL_STATUS: "COMMON-FORM.APPROVAL-STATUS",
     METHOD: "COMMON-FORM.METHOD",
     EXPORT: "COMMON-FORM.EXPORT",
-    APPROVED_COST: "COMMON-FORM.APPROVED-COST"
+    APPROVED_COST: "COMMON-FORM.APPROVED-COST",
+    PROCESS: "COMMON-FORM.PROCESS"
   }
 
   availableTankStatus: string[] = [

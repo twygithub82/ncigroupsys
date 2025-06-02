@@ -134,11 +134,11 @@
                 </ng-container>
                 <ng-container matColumnDef="eir_no">
                   <mat-header-cell mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     {{translatedLangText.EIR_NO}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
                       class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{row.storing_order_tank?.in_gate[0].eir_no?row.storing_order_tank?.in_gate[0].eir_no:'-'}}
                   </mat-cell>
@@ -167,12 +167,12 @@
                 <ng-container matColumnDef="method">
                   <mat-header-cell mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    {{translatedLangText.METHOD}}
+                    {{translatedLangText.PROCESS}}
                   </mat-header-cell>
                   <mat-cell mat-cell *matCellDef="let row"
                     [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                     <span
-                      class="mobile-label">{{translatedLangText.METHOD}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description:'-'}}
+                      class="mobile-label">{{translatedLangText.PROCESS}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.name || '-'}}
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="purpose">
