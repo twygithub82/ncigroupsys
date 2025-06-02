@@ -760,27 +760,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
     this.resetForm();
     this.search();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
     getMaxDate(){
@@ -805,7 +786,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       approval_dt_end: '',
       est_status_cv: '',
       current_status_cv: '',
-      tank_status: [['CLEANING']],
+      tank_status: ['CLEANING', 'STORAGE'],
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
