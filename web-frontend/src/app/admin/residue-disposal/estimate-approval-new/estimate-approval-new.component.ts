@@ -1456,11 +1456,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     }
 
     this.residueEstForm?.patchValue({
-      // customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
       job_no: residue?.job_no ? residue.job_no : this.sotItem?.job_no,
-      //billing_branch: this.getBillingBranch(billingGuid),
       remarks: residue?.remarks
-
     });
   }
 
@@ -1638,7 +1635,6 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
     if (bill_to) {
       let re: ResidueItem = new ResidueItem(row);
-
       re.guid = this.residueItem?.guid;
       re.sot_guid = this.residueItem?.sot_guid;
       re.bill_to_guid = bill_to;
