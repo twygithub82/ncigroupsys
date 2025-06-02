@@ -14,7 +14,8 @@
         <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-            <input matInput formControlName="customer" [formControl]="customerCodeControl" [matAutocomplete]="customerCode">
+            <input matInput formControlName="customer" [formControl]="customerCodeControl"
+              [matAutocomplete]="customerCode">
             <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
               @for (cc of customer_companyList; track cc) {
               <mat-option [value]="cc">
@@ -57,122 +58,126 @@
       </div>
     </form>
   </div>
-<div class="body overflow-auto">
-<div class="responsive_table">
-  <table mat-table [dataSource]="jobOrderList" matSort
-    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
-    <ng-container matColumnDef="id">
-      <mat-header-cell *matHeaderCellDef></mat-header-cell>
-      <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="tank_no">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        {{translatedLangText.TANK_NO}}
-      </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
-      </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="customer">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        {{translatedLangText.CUSTOMER}}
-      </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span
-          class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
-      </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="estimate_no">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        {{translatedLangText.ESTIMATE_NO}}
-      </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span
-          class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.residue_part?.[0]?.residue?.estimate_no}}
-      </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="allocate_dt">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        {{translatedLangText.ALLOCATE_DATE}}
-      </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span class="mobile-tab-label">{{translatedLangText.ALLOCATE_DATE}}:</span>
-        <span>{{displayDate(row.create_dt)}}</span>
-      </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="status_cv">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        {{translatedLangText.STATUS}}
-      </mat-header-cell>
-      <mat-cell mat-cell *matCellDef="let row"
-        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getJobStatusDescription(row?.status_cv)}}
-      </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <mat-header-cell mat-header-cell *matHeaderCellDef
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-      </mat-header-cell>
-      <mat-cell *matCellDef="let row; let i=index;"
-        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-        @if (canStartJob(row)) {
-        <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
-          <mat-icon [ngClass]="{'text-success': row.time_table?.length}" disabled>timer</mat-icon>
-        </button>
-        }
-        @if (canCompleteJob(row, isStarted(row))) {
-        <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
-          <mat-icon>check_box</mat-icon>
-        </button>
-        }
-      </mat-cell>
-    </ng-container>
-    <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      [routerLink]="['/admin/residue-disposal/job-order/task', row.guid, row.residue_part?.[0]?.residue?.guid]"
-      [style.cursor]="'pointer'" matRipple>
-    </mat-row>
-  </table>
-</div>
-<!-- No result -->
-@if (!(joDS.loading$ | async) && !jobOrderList.length) {
-<mat-divider></mat-divider>
-<div class="no-results m-l-20 pt-3" [style.display]="jobOrderList.length === 0 ? '' : 'none'">
-  <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-</div>
-}
-<!-- Loading spinner -->
-@if (joDS.loading$ | async) {
-<div class="tbl-spinner">
-  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-  </mat-progress-spinner>
-</div>
-}
-<mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
-  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
-</mat-paginator>
-<div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
-  <div class="legend-item d-flex align-items-center me-4 mb-2">
-    <mat-icon class="me-2">timer</mat-icon>
-    <span>{{translatedLangText.YET_START}}</span>
+  <div class="body overflow-auto">
+    <div class="responsive_table">
+      <table mat-table [dataSource]="jobOrderList" matSort
+        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="tank_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.TANK_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="customer">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.CUSTOMER}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span
+              class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="estimate_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.ESTIMATE_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span
+              class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.residue_part?.[0]?.residue?.estimate_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="allocate_dt">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.ALLOCATE_DATE}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{translatedLangText.ALLOCATE_DATE}}:</span>
+            <span>{{displayDate(row.create_dt)}}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="status_cv">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.STATUS}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span
+              class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getJobStatusDescription(row?.status_cv)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i=index;"
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+            @if (canStartJob(row)) {
+            <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
+              <mat-icon [color]="row.time_table?.length ? null : 'warn'"
+                [ngClass]="{'yellow-timer-icon': row.time_table?.length}">
+                timer
+              </mat-icon>
+            </button>
+            }
+            @if (canCompleteJob(row, isStarted(row))) {
+            <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
+              <mat-icon class="green-timer-icon">check_box</mat-icon>
+            </button>
+            }
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
+          [routerLink]="['/admin/residue-disposal/job-order/task', row.guid, row.residue_part?.[0]?.residue?.guid]"
+          [style.cursor]="'pointer'" matRipple>
+        </mat-row>
+      </table>
+    </div>
+    <!-- No result -->
+    @if (!(joDS.loading$ | async) && !jobOrderList.length) {
+    <mat-divider></mat-divider>
+    <div class="no-results m-l-20 pt-3" [style.display]="jobOrderList.length === 0 ? '' : 'none'">
+      <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+    </div>
+    }
+    <!-- Loading spinner -->
+    @if (joDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
+    <mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
+      [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
+    </mat-paginator>
+    <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
+      <div class="legend-item d-flex align-items-center me-4 mb-2">
+        <mat-icon class="me-2" color="warn">timer</mat-icon>
+        <span>{{translatedLangText.NOT_STARTED}}</span>
+      </div>
+      <div class="legend-item d-flex align-items-center me-4 mb-2">
+        <mat-icon class="me-2 yellow-timer-icon">timer</mat-icon>
+        <span>{{translatedLangText.STARTED}}</span>
+      </div>
+      <div class="legend-item d-flex align-items-center me-4 mb-2">
+        <mat-icon class="me-2 green-timer-icon">check_box</mat-icon>
+        <span>{{translatedLangText.TO_COMPLETE}}</span>
+      </div>
+    </div>
   </div>
-  <div class="legend-item d-flex align-items-center me-4 mb-2">
-    <mat-icon class="text-success me-2">timer</mat-icon>
-    <span>{{translatedLangText.STARTED}}</span>
-  </div>
-  <div class="legend-item d-flex align-items-center me-4 mb-2">
-    <mat-icon class="me-2">check_box</mat-icon>
-    <span>{{translatedLangText.YET_COMPLETE}}</span>
-  </div>
-</div>
-</div>
 </div>
