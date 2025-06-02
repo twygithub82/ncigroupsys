@@ -120,11 +120,11 @@
                         </ng-container>
                         <ng-container matColumnDef="customer">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="''">
                             {{translatedLangText.CUSTOMER}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                            [ngClass]="''"
                             class="">
                             <span
                               class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?row.storing_order_tank?.storing_order?.customer_company.name:'-'}}
@@ -155,22 +155,22 @@
 
                         <ng-container matColumnDef="last_cargo">
                           <mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.LAST_CARGO}}
                           </mat-header-cell>
                           <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                            [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cargo?row.storing_order_tank?.tariff_cleaning?.cargo:'-'}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="method">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.PROCESS}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-label">{{translatedLangText.PROCESS}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.name:'-'}}
                           </mat-cell>
