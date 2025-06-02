@@ -159,8 +159,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     'PENDING',
     // 'COMPLETED',
     'NO_ACTION',
-    'ASSIGNED',
-    'PARTIAL_ASSIGNED',
+    //'ASSIGNED',
+    //'PARTIAL_ASSIGNED',
   ]
 
   searchForm?: UntypedFormGroup;

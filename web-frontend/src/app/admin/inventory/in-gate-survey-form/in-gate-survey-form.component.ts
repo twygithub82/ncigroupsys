@@ -1583,7 +1583,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         tempDirection = 'ltr';
       }
       const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
-        width: '500px',
+        //width: '500px',
         data: {
           action: 'publish',
           translatedLangText: this.translatedLangText,

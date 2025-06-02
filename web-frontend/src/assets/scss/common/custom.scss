@@ -2140,19 +2140,16 @@ $grid-breakpoints: (
   color: #25D366 //#0ec955b4; /* any custom color */
 }
 
-// .mat-accordion {
-//   .mat-expansion-panel {
-//     &[aria-disabled='true'], &.bg-light-grey {
-//       .mat-expansion-panel-header {
-//         @include apply-disabled-style($theme-gold-purple-disabled-menu, $theme-gold-purple-disabled-text);
-//       }
-//     }
-//   }
-// }
+.green-button {
+  background-color: #25D366 !important; /* Material green */
+  color: white !important;
+}
 
-// .mat-expansion-panel-spacing {
-//   margin: 0 !important;
-// }
+.yellow-button {
+  background-color: #FFC107 !important; /* Material green */
+  color: white !important;
+}
+
 
 .relative-menu {
   position: absolute;
