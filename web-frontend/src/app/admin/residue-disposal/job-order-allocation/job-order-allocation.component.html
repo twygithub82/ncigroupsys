@@ -130,7 +130,7 @@
           <div class="card">
             <div class="header">
               <h2>
-                {{translatedLangText.BILLING_PROFILE}}
+                {{translatedLangText.BILLING_DETAILS}}
               </h2>
             </div>
             <div class="body">
@@ -147,13 +147,10 @@
                     <div class="row">
                       <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
                         <mat-form-field class="example-full-width" appearance="fill">
-                          <mat-label>{{translatedLangText.BILLING_TO}}</mat-label>
-                          <input matInput formControlName="customer_code" readonly>
+                          <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
+                          <input matInput formControlName="bill_to" readonly>
                         </mat-form-field>
                       </div>
-                      <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{ccDS.displayName(sotItem?.storing_order?.customer_company)}}</div>
-                    </div> -->
                     </div>
                     <div class="row">
                       <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
@@ -165,8 +162,7 @@
                     </div>
                   </div>
                   <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                    <div class="row">
-
+                    <!-- <div class="row">
                       <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                         <div class="contact-detail-info font-bold">
                           <mat-form-field class="example-full-width" appearance="fill">
@@ -175,7 +171,7 @@
                           </mat-form-field>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
                     <div class="row">
                       <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
@@ -409,8 +405,17 @@
                 <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
                 @if(canSave())
                 {
-                <button mat-flat-button color="primary"
-                  (click)="save()">{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
+                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)"
+                  class="m-r-5" (click)="save()">
+                  <mat-icon>
+                    @if (!(residueDS.loading$ | async)) {
+                    save
+                    } @else if ((residueDS.loading$ | async)) {
+                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                    }
+                  </mat-icon>
+                  {{translatedLangText.SAVE}}
+                </button>
                 }
                 @if(canRollBack())
                 {
