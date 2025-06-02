@@ -54,6 +54,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -784,7 +785,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '1000px',
       data: {
         item: row,
@@ -795,10 +796,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        if (result.item.guid) {
+        if (row.guid) {
           const data: any[] = [...this.deList];
           const updatedItem = {
-            ...result.item,
+            ...row,
             delete_dt: Utility.getDeleteDtEpoch(),
             action: 'cancel'
           };
