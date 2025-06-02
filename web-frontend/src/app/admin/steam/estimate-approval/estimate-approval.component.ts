@@ -230,7 +230,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     super();
     this.translateLangText();
     this.initSearchForm();
-    this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);
+    this.lastCargoControl = new UntypedFormControl('', [AutocompleteSelectionValidator(this.last_cargoList)]);
     this.soDS = new StoringOrderDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
@@ -261,8 +261,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   initSearchForm() {
     this.searchForm = this.fb.group({
       tank_no: [''],
-      customer_code: [''],
-      last_cargo: [''],
+      customer_code: this.customerCodeControl,
+      last_cargo: this.lastCargoControl,
       eir_dt_start: [''],
       eir_dt_end: [''],
       part_name: [''],
@@ -504,9 +504,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       ]
     }
 
-    if (this.searchForm!.value['last_cargo']) {
+    if (this.lastCargoControl?.value) {
       if (!where.tariff_cleaning) where.tariff_cleaning = {};
-      where.tariff_cleaning.cargo = { contains: this.searchForm!.value['last_cargo'].cargo };
+      where.tariff_cleaning.cargo = { contains: this.lastCargoControl?.value?.cargo };
     }
 
 
@@ -520,8 +520,9 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       where.in_gate = { some: { eir_dt: { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) } } };
     }
 
-    if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+    if (this.customerCodeControl?.value) {
+      if (!where.storing_order) where.storing_order = {};
+      where.storing_order.customer_company = { code: { contains: this.customerCodeControl?.value?.code } };
     }
 
     if (this.searchForm!.value['est_dt']) {
@@ -627,34 +628,29 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     });
   }
 
-
-
-
-
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name})` : '';
   }
 
   initializeFilterCustomerCompany() {
-    //this.searchForm!.get('customer_code')!.valueChanges.pipe
     this.customerCodeControl.valueChanges.pipe
-    (
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value.code;
-        }
-        this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
-        });
-      })
-    ).subscribe();
+      (
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          var searchCriteria = '';
+          if (typeof value === 'string') {
+            searchCriteria = value;
+          } else {
+            searchCriteria = value.code;
+          }
+          this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+            this.customer_companyList = data
+          });
+        })
+      ).subscribe();
 
-    this.searchForm!.get('last_cargo')!.valueChanges.pipe(
+    this.lastCargoControl.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -732,7 +728,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   updateValidators(validOptions: any[]) {
     this.lastCargoControl.setValidators([
-      Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
   }
@@ -743,33 +738,13 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-        this.search();
-      }
-    });
+    this.resetForm();
+    this.search();
   }
 
   resetForm() {
     this.searchForm?.patchValue({
       tank_no: '',
-      customer_code: '',
-      last_cargo: '',
       eir_dt_start: '',
       eir_dt_end: '',
       part_name: '',
@@ -778,7 +753,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       est_dt: '',
       est_status_cv: '',
       current_status_cv: '',
-      tank_status: [['STEAM']]
+      tank_status: ['STEAM']
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -936,7 +911,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return this.steamDS.canApprove(steamItem!) && !steamItem?.steaming_part?.[0]?.tariff_steaming_guid;
   }
 
-    getMaxDate(){
+  getMaxDate() {
     return new Date();
   }
 

@@ -76,10 +76,10 @@
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="tank_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         {{translatedLangText.TANK_NO}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         <span
                           class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
                       </mat-cell>
@@ -94,36 +94,36 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="estimate_no">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         {{translatedLangText.ESTIMATE_NO}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         <span class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.estimate_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="approved_dt">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         {{translatedLangText.APPROVE_DATE}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         <span class="mobile-label">{{translatedLangText.APPROVE_DATE}}:</span>
                         <span>{{displayDate(row.approve_dt)}}</span>
                       </mat-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="status_cv">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         {{translatedLangText.STATUS}}
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="">
+                      <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                         <span
                           class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getStatusDescription(row?.status_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="action">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-end'">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                       </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let row" class="justify-content-end">
+                      <mat-cell mat-cell *matCellDef="let row" class="tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start">
                         @if(row?.status_cv=="ASSIGNED")
                         {
                         <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
