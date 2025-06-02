@@ -227,6 +227,9 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   hasPreviousPageJobOrder = false;
   previous_endCursorJobOrder: string | undefined = undefined;
   showBayOverview = true;
+
+  todayDt = new Date();
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
