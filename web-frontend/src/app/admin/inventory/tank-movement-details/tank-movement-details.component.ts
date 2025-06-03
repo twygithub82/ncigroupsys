@@ -1203,6 +1203,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
             tank_status_cv: this.sot?.tank_status_cv,
             last_cargo_guid: this.sot?.last_cargo_guid,
             required_temp: result.required_temp,
+            unit_type_guid: this.sot?.unit_type_guid,
             storing_order: {
               customer_company_guid: this.sot?.storing_order?.customer_company_guid
             },

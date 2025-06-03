@@ -51,8 +51,6 @@ export interface DialogData {
   // sotExistedList?: StoringOrderTankItem[]
 }
 
-
-
 @Component({
   selector: 'app-package-depot-form-dialog',
   templateUrl: './form-dialog.component.html',

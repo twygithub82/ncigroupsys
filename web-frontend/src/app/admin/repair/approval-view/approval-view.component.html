@@ -384,7 +384,7 @@
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.QTY}}:</span>
-                        <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
                             <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
                               (change)="calculateCost();" [disabled]="isDisabled(row)" (wheel)="preventDefault($event)"
@@ -401,7 +401,7 @@
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.HOUR}}:</span>
-                        <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
                             <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour"
                               [allowDecimal]="true" (change)="calculateCost();" [disabled]="isDisabled(row)"
@@ -420,11 +420,10 @@
                         <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                         <div class="cost-label">
                           <span>$</span>
-                          <tlx-form-field customClass="mat-table-form-txt-70px">
+                          <tlx-form-field customClass="mat-table-form-txt-90px">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
-                                (change)="calculateCost();" [disabled]="isDisabled(row)" [allowDecimal]="true"
-                                (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                                (change)="calculateCost();" [disabled]="isDisabled(row)" appNumericText [allowDecimal]="true" (focus)="selectText($event)" type="text" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -914,7 +913,7 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.UPDATE}}
+                    {{displayApproveUpdateButton()}}
                   </button>
                   }
                   @if (isAllowEdit() && repairDS.canCancel(repairItem)) {

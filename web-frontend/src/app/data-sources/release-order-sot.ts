@@ -82,7 +82,6 @@ export const CHECK_ANY_ACTIVE_RELEASE_ORDER_SOT = gql`
       totalCount
     }
   }
-
 `;
 
 export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
@@ -207,7 +206,6 @@ export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
       }
     }
   }
-
 `;
 
 export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem> {

@@ -507,7 +507,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         minCellHeight: minHeightHeaderCol,
         lineWidth: 0.45, // cell border thickness
         lineColor: [0, 0, 0], // black
-        cellPadding: 2 // ← Add some padding
+        cellPadding: 2, // ← Add some padding
       },
       tableWidth: contentWidth,
       columnStyles: comStyles,
@@ -516,7 +516,6 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
         fillColor: [255, 255, 255],
         halign: 'left', // Left-align content for body by default
         valign: 'middle', // Vertically align content
-
       },
       didDrawPage: (data: any) => {
         const pageCount = pdf.getNumberOfPages();
@@ -537,7 +536,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     startY = lastTableFinalY + 2;
     // Get the element correctly (remove the dot from className)
     const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
-    
+
     if (!elements || elements.length === 0) {
       console.error('Element not found');
       return;

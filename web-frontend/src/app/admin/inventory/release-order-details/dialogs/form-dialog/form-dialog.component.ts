@@ -108,6 +108,14 @@ export class FormDialogComponent {
     'yard_cv',
   ];
 
+  showTankStatus = [
+    "CLEANING",
+    "REPAIR",
+    "STEAM",
+    "STORAGE",
+    "RESIDUE"
+  ]
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -291,14 +299,7 @@ export class FormDialogComponent {
               storing_order_tank: {
                 status_cv: { eq: "ACCEPTED" },
                 tank_status_cv: {
-                  in: [
-                    "CLEANING",
-                    "REPAIR",
-                    "STEAM",
-                    "STORAGE",
-                    "RO_GENERATED",
-                    "RESIDUE"
-                  ]
+                  in: this.showTankStatus
                 },
                 storing_order: {
                   customer_company_guid: {
@@ -316,7 +317,14 @@ export class FormDialogComponent {
       .subscribe(data => {
         if (this.schedulingDS.totalCount > 0) {
           this.schedulingList = data;//.flatMap(s => s.scheduling_sot);
-          this.schedulingList.forEach((scheduling) => scheduling.scheduling_sot = this.sort(scheduling.scheduling_sot!));
+          this.schedulingList.forEach(scheduling => {
+            scheduling.scheduling_sot = this.sort(
+              scheduling.scheduling_sot!.filter(sotLink => {
+                const sot = sotLink.storing_order_tank;
+                return sot && this.shouldShowTank(sot);
+              })
+            );
+          });
           this.schedulingFilteredList = this.schedulingList;
         }
       });
@@ -368,5 +376,9 @@ export class FormDialogComponent {
     sot.isOver3Days = isOver3Days;
     sot.notStorage = notStorage;
     return ss;
+  }
+
+  shouldShowTank(sot?: StoringOrderTankItem) {
+    return this.showTankStatus.includes(sot?.tank_status_cv || '')
   }
 }

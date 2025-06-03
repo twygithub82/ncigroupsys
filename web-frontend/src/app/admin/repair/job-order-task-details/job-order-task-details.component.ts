@@ -48,6 +48,7 @@ import { Utility } from 'app/utilities/utility';
 import { EMPTY, Observable, of, Subscription, switchMap } from 'rxjs';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'job-order-task-details',
@@ -916,18 +917,19 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '30vw',
       data: {
-        last_remarks: this.jobOrderItem?.remarks,
-        action: 'rollback',
+        // last_remarks: this.jobOrderItem?.remarks,
+        // action: 'rollback',
+        allowRemarksWithRequired: true,
         translatedLangText: this.translatedLangText,
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result && result?.action === 'confirmed') {
         const repJobOrder = new RepJobOrderRequest({
           guid: this.repairItem?.guid,
           sot_guid: this.repairItem?.sot_guid,
