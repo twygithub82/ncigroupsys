@@ -276,7 +276,7 @@ export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem>
   }
 
   canCancelStatus(status_cv: any): boolean {
-    return status_cv === 'PENDING';
+    return status_cv === 'WAITING';
   }
 
   canRollback(roSot: any): boolean {

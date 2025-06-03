@@ -171,14 +171,14 @@
                               <mat-icon>more_vert</mat-icon>
                             </button>
                             <mat-menu #menu="matMenu">
-                              @if (!row.get('actions')?.value.includes('cancel') &&
+                              @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('cancel') &&
                               roSotDS.canCancelStatus(row.get('status_cv')?.value)) {
                               <button mat-menu-item (click)="cancelItem($event, row)">
                                 <mat-icon>cancel</mat-icon>
                                 <span>{{translatedLangText.CANCEL}}</span>
                               </button>
                               }
-                              @if (!row.get('actions')?.value.includes('rollback') &&
+                              @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('rollback') &&
                               canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) {
                               <button mat-menu-item (click)="rollbackItem($event, row)">
                                 <mat-icon>undo</mat-icon>

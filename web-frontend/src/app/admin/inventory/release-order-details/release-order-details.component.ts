@@ -754,7 +754,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canEdit(item: UntypedFormGroup): boolean {
-    return this.roSotDS.canEdit(item.get('status_cv')?.value) && !item.get('actions')?.value!.includes('cancel') && !item.get('actions')?.value!.includes('rollback');
+    return (this.roDS.canAddTank(this.releaseOrderItem)) && this.roSotDS.canEdit(item.get('status_cv')?.value) && !item.get('actions')?.value!.includes('cancel') && !item.get('actions')?.value!.includes('rollback');
   }
 
   canEditRO(ro: ReleaseOrderItem | undefined) {
@@ -831,8 +831,8 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   checkMenuItems(row: any): boolean {
-    return !row.get('actions')?.value.includes('cancel') && this.roSotDS.canCancelStatus(row.get('status_cv')?.value) ||
-      !row.get('actions')?.value.includes('rollback') && this.canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value) ||
+    return (this.roDS.canAddTank(this.releaseOrderItem) && !row.get('actions')?.value.includes('cancel') && this.roSotDS.canCancelStatus(row.get('status_cv')?.value)) ||
+      (this.roDS.canAddTank(this.releaseOrderItem) && !row.get('actions')?.value.includes('rollback') && this.canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) ||
       row.get('action')?.value === 'new' ||
       row.get('actions')?.value.includes('cancel');
   }
