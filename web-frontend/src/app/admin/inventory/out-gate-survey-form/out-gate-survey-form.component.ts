@@ -230,6 +230,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     COMPARTMENT_TYPE_TOP_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-TOP-EMPTY',
     COMPARTMENT_TYPE_MANLID_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-MANLID-EMPTY',
     ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
+    YES: 'COMMON-FORM.YES',
   }
   private destroy$ = new Subject<void>();
 
@@ -1526,7 +1527,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         tempDirection = 'ltr';
       }
       const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
-        width: '500px',
+        // width: '500px',
         data: {
           action: 'publish',
           translatedLangText: this.translatedLangText,
@@ -1536,7 +1537,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       });
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result?.confirmed) {
-          this.onPublish();
+          //this.onPublish();
         }
       });
     } else {
