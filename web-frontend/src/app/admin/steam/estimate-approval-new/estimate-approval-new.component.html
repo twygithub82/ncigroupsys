@@ -317,19 +317,19 @@
                   <!-- ID Column -->
                   <ng-container matColumnDef="seq">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="desc">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.DESCRIPTION}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef [ngClass]="''"
@@ -338,11 +338,11 @@
                   </ng-container>
                   <ng-container matColumnDef="qty">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.QUANTITY}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.QUANTITY}}:</span><tlx-form-field
                         customClass="mat-table-form-txt-40px">
                         <mat-form-field>
@@ -368,11 +368,11 @@
                   </ng-container>
                   <ng-container matColumnDef="hour">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.HOUR}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.HOUR}}:</span><tlx-form-field
                         customClass="mat-table-form-txt-40px">
                         <mat-form-field>
@@ -400,11 +400,11 @@
                   </ng-container>
                   <ng-container matColumnDef="unit_price">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.PRICE}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.PRICE}}:</span><tlx-form-field
                         customClass="mat-table-form-txt-40px">
                         <mat-form-field>

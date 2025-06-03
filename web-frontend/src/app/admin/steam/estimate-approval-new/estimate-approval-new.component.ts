@@ -153,6 +153,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     UNDO: 'COMMON-FORM.UNDO',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
@@ -709,7 +710,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '1000px',
+      //width: '1000px',
       data: {
         item: row,
         langText: this.langText,
