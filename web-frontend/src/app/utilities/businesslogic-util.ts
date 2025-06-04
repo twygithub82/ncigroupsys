@@ -77,12 +77,12 @@ export class BusinessLogicUtil {
         return rpDmgRepair && rpDmgRepair.some((item: RPDamageRepairItem) => !item.delete_dt && item.code_type === 1 && item.code_cv?.toLowerCase() === '4x'.toLowerCase());
     }
 
-    static defaultCodeValue(defaultDescription: string) {
+    static defaultCodeValue(defaultDescription: string, defaultVal: string) {
         return new CodeValuesItem({
             guid: '',
             description: defaultDescription,
             code_val_type: '',
-            code_val: '',
+            code_val: defaultVal,
             child_code: '',
             sequence: -1,
             create_by: ';',
@@ -92,5 +92,9 @@ export class BusinessLogicUtil {
 
     static findCodeValue(codeVal: string | undefined, codeValItem: CodeValuesItem[]): CodeValuesItem | undefined {
         return codeValItem.find(cv => cv.code_val === codeVal);
+    }
+
+    static emptyCompareWith(o1: any, o2: any): boolean {
+        return (o1?.code_val ?? '') === (o2?.code_val ?? '');
     }
 }
