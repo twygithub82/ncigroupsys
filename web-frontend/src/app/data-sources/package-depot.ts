@@ -289,21 +289,21 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     });
   }
 
-  getStorageBeginDate(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem): number | undefined {
-    if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
+  getStorageBeginDate(sotItem: StoringOrderTankItem, storage_cal_cv: string): number | undefined {
+    if (storage_cal_cv === 'TANK_IN_DATE') {
       return sotItem?.in_gate?.[0]?.eir_dt;
-    } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
+    } else if (storage_cal_cv === 'AFTER_CLEANING_DATE') {
       //return sotItem?.cleaning;
-    } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
+    } else if (storage_cal_cv === 'AFTER_AV_DATE') {
 
-    } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
+    } else if (storage_cal_cv === 'NO_STORAGE') {
 
     }
     return sotItem?.in_gate?.[0]?.eir_dt;
   }
 
-  getStorageStartDate(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem): Date {
-    if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
+  getStorageStartDate(sotItem: StoringOrderTankItem, storage_cal_cv?: string): Date {
+    if (storage_cal_cv === 'TANK_IN_DATE') {
       sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt == 0 || inGate.delete_dt == null);
       if (sotItem?.in_gate?.[0]?.eir_dt) {
         const createDtInSeconds = sotItem.in_gate[0].eir_dt;
@@ -314,19 +314,17 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
       else {
         return new Date();
       }
-    } else if (pdItem?.storage_cal_cv === 'AFTER_CLEANING_DATE') {
+    } else if (storage_cal_cv === 'AFTER_CLEANING_DATE') {
       sotItem.cleaning = sotItem.cleaning?.filter(clean => clean.delete_dt == 0 || clean.delete_dt == null);
       if (sotItem?.cleaning?.[0]?.complete_dt) {
         const createDtInSeconds = sotItem.cleaning[0].complete_dt;
         const createDate = new Date(createDtInSeconds * 1000);
-
-
         return createDate;
       }
       else {
         return new Date();
       }
-    } else if (pdItem?.storage_cal_cv === 'AFTER_AV_DATE') {
+    } else if (storage_cal_cv === 'AFTER_AV_DATE') {
       if (sotItem?.repair) {
         sotItem.repair = sotItem.repair?.filter(repair => repair.delete_dt == 0 || repair.delete_dt == null);
         let qcCompletedList = sotItem?.repair?.[0]?.repair_part?.filter(rp =>
@@ -343,8 +341,6 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         if (latestCompleteDate != new Date(0)) {
           const createDtInSeconds = Number(Utility.convertDate(latestCompleteDate));
           const createDate = new Date(createDtInSeconds * 1000);
-
-
           return createDate;
         }
         else {
@@ -355,15 +351,16 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
         return new Date();
       }
 
-    } else if (pdItem?.storage_cal_cv === 'NO_STORAGE') {
+    } else if (storage_cal_cv === 'NO_STORAGE') {
       return new Date();
     }
     return new Date();
 
   }
+
   getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem, free_storage: number = 0, cut_off_date: number = 0): number | undefined {
     sotItem.out_gate = sotItem.out_gate?.filter(outGate => outGate.delete_dt == 0 || outGate.delete_dt == null);
-    
+
     var currentDateOut: Date = new Date();
 
     if (cut_off_date > 0) {
@@ -375,7 +372,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
       currentDateOut = new Date(createDtOutSeconds * 1000);
     }
 
-    const createDate = this.getStorageStartDate(sotItem, pdItem);
+    const createDate = this.getStorageStartDate(sotItem, pdItem?.storage_cal_cv);
     const differenceInMs = currentDateOut.getTime() - createDate.getTime();
     const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
 

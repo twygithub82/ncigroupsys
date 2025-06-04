@@ -44,6 +44,7 @@ import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-tariff-cleaning',
@@ -288,7 +289,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('classNoCv').subscribe(data => {
-      this.classNoCvList = data;
+      this.classNoCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('banTypeCv').subscribe(data => {
       this.banTypeCvList = addDefaultSelectOption(data, 'All');
@@ -418,8 +419,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     var where: any = {};
     const tariff_cleaning: any = {}
 
-    if(this.selectedCargo.length > 0) {
-       tariff_cleaning.guid = { in: this.selectedCargo.map(c => c.guid) };
+    if (this.selectedCargo.length > 0) {
+      tariff_cleaning.guid = { in: this.selectedCargo.map(c => c.guid) };
     }
     // if (this.lastCargoControl?.value?.guid) {
     //   tariff_cleaning.guid = { contains: this.lastCargoControl?.value?.guid };
@@ -431,7 +432,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.get('class_no')?.value) {
       const classNo: CodeValuesItem = this.searchForm!.get('class_no')?.value;
-      tariff_cleaning.class_cv = { contains: classNo.code_val };
+      tariff_cleaning.class_cv = { startsWith: classNo.code_val };
     }
 
     if (this.searchForm!.value['hazard_level']) {
@@ -808,12 +809,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     this.searchForm?.get('cargo_name')?.setValue(null);
   }
-  // onCheckboxProfileClicked(row: any) {
-  //   const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-  //   this.selectedProfile(fakeEvent);
 
-  // }
-
-
-
+  compareObjects(o1: any, o2: any): boolean {
+    return BusinessLogicUtil.emptyCompareWith(o1, o2);
+  }
 }

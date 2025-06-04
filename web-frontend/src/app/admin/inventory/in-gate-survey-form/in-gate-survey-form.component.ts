@@ -233,7 +233,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
     SAVE: 'COMMON-FORM.SAVE',
     DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
-    ARE_YOU_SURE_TO_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-PUBLISH'
+    ARE_YOU_SURE_TO_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-PUBLISH',
+    LITERS: 'COMMON-FORM.LITERS',
+    KG: 'COMMON-FORM.KG'
   }
   private destroy$ = new Subject<void>();
 

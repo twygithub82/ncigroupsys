@@ -270,7 +270,7 @@
                                 <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
                                 <input matInput formControlName="capacity" type="number"
                                   (wheel)="preventDefault($event)" min="0" required>
-                                <h6 class="color-icon p-t-15 p-r-5" matSuffix>L</h6>
+                                <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.LITERS}}</h6>
                                 <!-- @if (surveyForm?.get('tank_details.capacity')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.CAPACITY}} {{translatedLangText.SO_REQUIRED}}
@@ -283,7 +283,7 @@
                                 <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
                                 <input matInput formControlName="tare_weight" type="number"
                                   (wheel)="preventDefault($event)" min="0" required>
-                                <h6 class="color-icon p-t-15 p-r-5" matSuffix>KG</h6>
+                                <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.KG}}</h6>
                                 <!-- @if (surveyForm?.get('tank_details.tare_weight')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.TARE_WEIGHT}} {{translatedLangText.SO_REQUIRED}}
