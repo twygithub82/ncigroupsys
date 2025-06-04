@@ -808,4 +808,12 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
         this.steamBayOverview?.onTabFocused(); break;
     }
   }
+
+   canUnassignTeam(row: SteamItem | undefined) {
+        return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
+      }
+
+  isAllowDelete() {
+    return true;//this.modulePackageService.hasFunctions(['STEAM_JOB_ALLOCATION_DELETE']);
+  }
 }

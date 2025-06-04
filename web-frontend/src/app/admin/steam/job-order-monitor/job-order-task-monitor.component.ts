@@ -1313,10 +1313,14 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   CheckAndGetTempStatus(steamTemp?: SteamTemp): number {
     const reqTemp = this.reqTemp!;
-    const deTemps = this.deList.map(a => a.meter_temp);
-    const steamTempVal = steamTemp?.meter_temp ?? null;
+    const deTemps =this.deList.flatMap(a => [a.meter_temp, a.top_temp, a.bottom_temp]); // this.deList.map(a => a.meter_temp);
+    let steamTempVal = null;
 
-    const allTemps = steamTempVal !== null ? [...deTemps, steamTempVal] : deTemps;
+    if(steamTemp){
+      steamTempVal = [steamTemp.meter_temp, steamTemp.top_temp, steamTemp.bottom_temp];
+    }
+
+    const allTemps = steamTempVal !== null ? [...deTemps, ...steamTempVal] : deTemps;
 
     const anyGreater = allTemps.some(temp => temp > reqTemp);
     const allLess = allTemps.every(temp => temp < reqTemp);

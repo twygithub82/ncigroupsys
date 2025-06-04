@@ -1333,6 +1333,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
     });
+    this.patchSteamEstForm(this.steamItem!);
     // let where: any = {};
     // let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
     // where.main_customer_guid = { eq: custCompanyGuid };
@@ -1565,7 +1566,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   getTotalCost(): number {
     return this.deList.reduce((acc, row) => {
-      if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
+      if ((row.delete_dt === undefined || row.delete_dt === null) && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)) + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
         }
@@ -1796,5 +1797,15 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isExportingPDF = false;
     });
+  }
+
+  getSaveButtonText():string{
+    var retval = this.translatedLangText.SAVE;
+    if(( this.steamItem != null)&&!this.isDuplicate)
+    {
+      retval=this.translatedLangText.UPDATE;
+    }
+
+    return retval;
   }
 }

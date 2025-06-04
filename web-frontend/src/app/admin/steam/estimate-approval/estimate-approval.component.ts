@@ -487,6 +487,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     const where: any = {
       tank_status_cv: { in: ['STEAM', 'STORAGE'] },
       purpose_steam: { eq: true }
+      
+
     };
 
     // if (this.searchForm!.value['tank_status']) {
@@ -572,10 +574,14 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
                 }
                 return {};
               }
-              else {
+              else if(stm.status_cv!=='CANCELED'){
                 var stm_part = [...stm.steaming_part!];
                 stm.steaming_part = stm_part?.filter(data => !data.delete_dt);
                 return { ...stm, net_cost: this.calculateNetCost(stm) };
+              }
+              else
+              {
+                return {};
               }
             });
             return sot;

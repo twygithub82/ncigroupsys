@@ -393,7 +393,7 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 } -->
-                @if (steamDs.canAbort(steamItem, deList)) {
+                <!-- @if (steamDs.canAbort(steamItem, deList)) {
                 <button mat-flat-button color="warn" [disabled]="(steamDs.loading$ | async)" class="m-r-5"
                   (click)="onAbort($event)">
                   <mat-icon>
@@ -405,8 +405,21 @@
                   </mat-icon>
                   {{translatedLangText.ABORT}}
                 </button>
-                }
+                } -->
                 <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
+                 @if (canUnassignTeam(steamItem)) {
+                  <button mat-flat-button color="warn" [disabled]="(steamDs.loading$ | async)" class="m-r-5"
+                    (click)="onUnassignTeam($event, steamItem?.guid!)">
+                    <mat-icon>
+                      @if (!(steamDs.loading$ | async)) {
+                      remove_circle_outline
+                      } @else if ((steamDs.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.UNASSIGN}}
+                  </button>
+                  }
                 @if (steamDs.canSave(steamItem!)) {
                 <button mat-flat-button color="primary"
                   (click)="save()">{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>

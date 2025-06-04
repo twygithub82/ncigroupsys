@@ -147,7 +147,7 @@
                             </mat-header-cell>
                             <mat-cell mat-cell *matCellDef="let row"
                               [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                              @if(row?.status_cv=="ASSIGNED")
+                              @if(canUnassignTeam(row))
                               {
                               <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
                                 [matTooltip]="translatedLangText.UNASSIGNED">
@@ -195,6 +195,7 @@
                     </div>
               </mat-tab>
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
+
                 <app-job-order-task #steamJobOrderTask></app-job-order-task>
               </mat-tab>
               <mat-tab [label]="translatedLangText.BAY_OVERVIEW">

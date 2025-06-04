@@ -548,6 +548,13 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
       update_by
       update_dt
       storing_order_tank {
+        customer_company {
+          code
+          name
+          currency {
+            currency_code
+          }
+        }
         certificate_cv
         clean_status_cv
         create_by
@@ -1154,11 +1161,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     });
   }
 
-  rollbackAssignedSteam(steam: any): Observable<any> {
+  rollbackAssignedSteam(steamingGuid: any): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_ASSIGNED_STEAM,
       variables: {
-        steam
+        steamingGuid
       }
     });
   }

@@ -54,6 +54,8 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-estimate-new',
@@ -213,7 +215,9 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     ABORT: 'COMMON-FORM.ABORT',
-    VIEW: 'COMMON-FORM.VIEW'
+    VIEW: 'COMMON-FORM.VIEW',
+     UNASSIGN: 'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -286,7 +290,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -1301,8 +1306,14 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
         console.log(result)
         if (result.data.updateSteamingStatus > 0) {
-          this.startJobOrders(this.steamItem?.guid!);
-          // this.handleSaveSuccess(result.data.updateSteamingStatus);
+          if(act==="ASSIGNED")
+          {
+             this.startJobOrders(this.steamItem?.guid!);
+          }
+          else
+          {
+            this.handleSaveSuccess(result.data.updateSteamingStatus);
+          }
         }
       });
     });
@@ -1480,7 +1491,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
           });
         }
         else if (this.steamItem?.status_cv == "JOB_IN_PROGRESS") {
-          this.jobOrderDS.rollbackJobInProgressResidue(steamingJobOrder).subscribe(result => {
+         // this.jobOrderDS.rollbackJobInProgressResidue(steamingJobOrder)
+         this.jobOrderDS.rollbackJobInProgressSteaming(steamingJobOrder).subscribe(result => {
             this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
           });
         }
@@ -1543,5 +1555,45 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         });
       }
     }
+  }
+
+  canUnassignTeam(row: SteamItem | undefined) {
+      return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
+    }
+
+    
+   onUnassignTeam(event: Event, repairGuid: string) {
+      this.stopEventTrigger(event);
+  
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+          action: 'new',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result.action === 'confirmed') {
+          this.unassignTeam(repairGuid);
+        }
+      });
+    }
+  
+    unassignTeam(steamGuid: string) {
+      this.steamDs.rollbackAssignedSteam([steamGuid]).subscribe(result => {
+        console.log(result)
+        this.handleSaveSuccess(result?.data?.rollbackAssignedSteaming);
+      });
+    }
+
+   isAllowDelete() {
+    return true;//this.modulePackageService.hasFunctions(['STEAM_JOB_ALLOCATION_DELETE']);
   }
 }
