@@ -123,6 +123,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    CONFIRM_CANCEL: 'COMMON-FORM.CONFIRM-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -309,10 +310,10 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      //width: '1000px',
       data: {
         action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        dialogTitle: this.translatedLangText.CONFIRM_CANCEL,
         item: [...row],
         translatedLangText: this.translatedLangText
       },
@@ -355,7 +356,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      //width: '1000px',
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,

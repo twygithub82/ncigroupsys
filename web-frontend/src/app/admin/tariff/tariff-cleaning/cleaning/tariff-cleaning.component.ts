@@ -288,7 +288,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       // this.hazardLevelCvList = addDefaultSelectOption(this.soStatusCvList, 'All');
     });
     this.cvDS.connectAlias('classNoCv').subscribe(data => {
-      this.classNoCvList = data;
+      this.classNoCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('banTypeCv').subscribe(data => {
       this.banTypeCvList = addDefaultSelectOption(data, 'All');
