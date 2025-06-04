@@ -426,11 +426,11 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
-          searchCriteria = value?.code || '';
+        if (value && value?.code) {
+          searchCriteria = value?.code;
           this.inGateForm!.get('owner_guid')!.setValue(value?.guid);
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["OWNER", "LESSEE"] } }, { code: 'ASC' }).subscribe(data => {
           this.ownerList = data

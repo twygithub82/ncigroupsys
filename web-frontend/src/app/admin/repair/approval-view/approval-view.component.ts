@@ -49,6 +49,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 @Component({
   selector: 'app-approval-view',
@@ -83,7 +84,8 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ]
 })
 export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -165,7 +167,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     QTY: 'COMMON-FORM.QTY',
     HOUR: 'COMMON-FORM.HOUR',
     PRICE: 'COMMON-FORM.PRICE',
-    MATERIAL: 'COMMON-FORM.MATERIAL',
+    MATERIAL: 'COMMON-FORM.MATERIAL$',
     TEMPLATE: 'COMMON-FORM.TEMPLATE',
     PART_DETAILS: 'COMMON-FORM.PART-DETAILS',
     GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
@@ -747,24 +749,18 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.total_labour_cost = Utility.convertNumber(this.repairForm?.get('total_labour_cost')?.value, 2);
       re.total_material_cost = Utility.convertNumber(this.repairForm?.get('total_mat_cost')?.value, 2);
 
-      this.repList?.forEach((rep: RepairPartItem) => {
-        rep.approve_part = rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair);
-        rep.approve_qty = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0;
-        rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
-        rep.approve_cost = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0;
-      })
-
       re.repair_part = this.repList?.map((rep: RepairPartItem) => {
+        const approvePart = rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair);
         return new RepairPartItem({
           ...rep,
           tariff_repair: undefined,
           rp_damage_repair: undefined,
-          approve_part: rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair),
-          approve_qty: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty ?? rep.quantity) : 0,
-          approve_hour: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0,
-          approve_cost: (rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost ?? rep.material_cost) : 0,
-          job_order: undefined
-        })
+          approve_part: approvePart,
+          approve_qty: approvePart ? Utility.convertNumber((rep.approve_qty ?? rep.quantity), 2) : 0,
+          approve_hour: approvePart ? Utility.convertNumber((rep.approve_hour ?? rep.hour), 2) : 0,
+          approve_cost: approvePart ? Utility.convertNumber((rep.approve_cost ?? rep.material_cost), 2) : 0,
+          job_order: undefined,
+        });
       });
       console.log(re)
       this.repairDS.approveRepair(re).subscribe(result => {
@@ -1309,5 +1305,9 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['REPAIR_ESTIMATE_APPROVAL_DELETE']);
+  }
+
+  displayApproveUpdateButton() {
+    return this.canEdit() && this.repairItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.UPDATE;
   }
 }

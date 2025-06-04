@@ -208,7 +208,8 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     STOP_JOB: 'COMMON-FORM.STOP-JOB',
     COMPLETE: 'COMMON-FORM.COMPLETE',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    DURATION: 'COMMON-FORM.DURATION'
+    DURATION: 'COMMON-FORM.DURATION',
+    PAUSE_JOB: 'COMMON-FORM.PAUSE-JOB',
   }
 
   clean_statusList: CodeValuesItem[] = [];

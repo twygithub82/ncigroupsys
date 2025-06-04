@@ -5,7 +5,7 @@
       <app-breadcrumb [title]="pageTitleNew" [items]="breadcrumsMiddleList"
         [active_item]="langText.DETAILS"></app-breadcrumb>
     </div>
-    <div class="row clearfix">
+    <div class="row justify-content-center">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form class="ms-0" [formGroup]="outGateForm!" (ngSubmit)="onOutGateFormSubmit()" #formDirective="ngForm">
           <div class="row">
@@ -30,8 +30,7 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.RO_NO}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_no}}</span>
+                            <span class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_no}}</span>
                           </div>
                           <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-2 align-right p-0">
                             <span>{{translatedLangText.RO_NO}}:</span>
@@ -42,9 +41,8 @@
                         </div>
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
-                            <span class="contact-detail-label">{{translatedLangText.RO_NOTES}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_notes}}</span>
+                            <span class="contact-detail-label">{{translatedLangText.NOTES}}:</span>
+                            <span class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_notes}}</span>
                           </div>
                           <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                             <span>{{translatedLangText.RO_NOTES}}:</span>
@@ -73,8 +71,8 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.BRANCH_NAME}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{ccDS.displayName(customerBranch) || '-'}}</span>
+                            <span class="contact-detail-info font-bold">{{ccDS.displayName(customerBranch) ||
+                              '-'}}</span>
                           </div>
                           <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                             <span>{{translatedLangText.BRANCH_NAME}}:</span>
@@ -101,21 +99,21 @@
                             </div>
                           </div> -->
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.STATUS}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{getROSotStatusDescription(roSotItem?.release_order?.status_cv)}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
+                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
                             <span>{{translatedLangText.STATUS}}:</span>
                           </div>
                           <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
                             <div class="contact-detail-info font-bold">
                               {{getROSotStatusDescription(roSotItem?.release_order?.status_cv)}}
                             </div>
-                          </div> -->
-                        </div>
+                          </div>
+                        </div> -->
                       </div>
                     </div>
                   </mat-card-content>
@@ -205,8 +203,8 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+          <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12">
               <div class="card">
                 <div class="header">
                   <h2>

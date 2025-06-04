@@ -37,7 +37,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 
 import { debounceTime, startWith, tap } from 'rxjs';
-import { PreventNonNumDirective } from 'app/directive/prevent-non-num.directive';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;

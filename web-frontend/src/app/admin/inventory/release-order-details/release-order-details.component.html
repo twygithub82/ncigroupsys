@@ -116,43 +116,43 @@
                               </div>
                             </div> -->
                             <div class="row">
-                              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
+                              <!-- <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
                                 {{row.get('eir_no')?.value}}
-                              </div>
-                              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
+                              </div> -->
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.SCHEDULE_DATE}}:</span>
                                 {{row.get('schedule_dt')?.value}}
                               </div>
-                              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.TANK_STATUS}}:</span>
                                 {{getTankStatusDescription(row.get('tank_status_cv')?.value)}}
                               </div>
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+                                <span class="font-bold">{{translatedLangText.REMARKS}}:</span>
+                                {{row.get('remarks')?.value}}
+                              </div>
                             </div>
                             <div class="row">
-                              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
+                              <!-- <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                                 {{row.get('eir_dt')?.value}}
-                              </div>
-                              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
+                              </div> -->
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                                 {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
                               </div>
-                              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.YARD}}:</span>
+                              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                                <span class="font-bold">{{translatedLangText.LOCATION}}:</span>
                                 {{getYardDescription(row.get('yard_cv')?.value)}}
                               </div>
                             </div>
-                            <div class="row">
+                            <!-- <div class="row">
                               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
                                 <span class="font-bold">{{translatedLangText.REMARKS}}:</span>
                                 {{row.get('remarks')?.value}}
                               </div>
-                              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                                {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
-                              </div> -->
-                            </div>
+                            </div> -->
                           </div>
                           <div class="col-xl-2-75 col-lg-2-75 col-md-12 col-sm-12 mb-1">
                             <mat-form-field class="example-full-width" appearance="fill">
@@ -171,14 +171,14 @@
                               <mat-icon>more_vert</mat-icon>
                             </button>
                             <mat-menu #menu="matMenu">
-                              @if (!row.get('actions')?.value.includes('cancel') &&
+                              @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('cancel') &&
                               roSotDS.canCancelStatus(row.get('status_cv')?.value)) {
                               <button mat-menu-item (click)="cancelItem($event, row)">
                                 <mat-icon>cancel</mat-icon>
                                 <span>{{translatedLangText.CANCEL}}</span>
                               </button>
                               }
-                              @if (!row.get('actions')?.value.includes('rollback') &&
+                              @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('rollback') &&
                               canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) {
                               <button mat-menu-item (click)="rollbackItem($event, row)">
                                 <mat-icon>undo</mat-icon>

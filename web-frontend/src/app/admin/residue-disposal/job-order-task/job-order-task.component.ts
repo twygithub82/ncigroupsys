@@ -125,7 +125,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     YET_START: "COMMON-FORM.YET-START",
     STARTED: "COMMON-FORM.STARTED",
     YET_COMPLETE: "COMMON-FORM.YET-COMPLETE",
+    NOT_STARTED: "COMMON-FORM.NOT-STARTED",
+    TO_COMPLETE: "COMMON-FORM.TO-COMPLETE",
     SEARCH: 'COMMON-FORM.SEARCH',
+    ASSIGN_DATE: 'COMMON-FORM.ASSIGN-DATE',
   }
 
   filterJobOrderForm?: UntypedFormGroup;
@@ -166,7 +169,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   availableProcessStatus: string[] = [
     'PENDING',
     'JOB_IN_PROGRESS',
-    'CANCELED',
   ]
 
   constructor(

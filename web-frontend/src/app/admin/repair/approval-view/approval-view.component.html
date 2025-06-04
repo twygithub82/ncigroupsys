@@ -256,22 +256,22 @@
                     </ng-container>
                     <ng-container matColumnDef="subgroup_name_cv">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.SUBGROUP}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
                         {{getSubgroupNameCodeDescription(row.tariff_repair?.subgroup_name_cv)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="damange">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         {{translatedLangText.DAMAGE}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         <span class="truncate-text">
                           <span class="mobile-label">{{translatedLangText.DAMAGE}}:</span>
                           <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
@@ -283,11 +283,11 @@
                     </ng-container>
                     <ng-container matColumnDef="repair">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         {{translatedLangText.REPAIR}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
                         <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
                           matTooltipClass="multiline-tooltip">
@@ -308,22 +308,22 @@
                     </ng-container>
                     <ng-container matColumnDef="quantity">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         {{translatedLangText.QTY}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.QTY}}:</span>
                         {{row.quantity}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="hour">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         {{translatedLangText.HOUR}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.HOUR}}:</span>
                         {{row.hour}}
                       </mat-cell>
@@ -336,21 +336,21 @@
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
-                        <div class="cost-label">
-                          <span>$</span><span>{{parse2Decimal(row.material_cost)}}</span>
+                        <div class="">
+                          <span>{{parse2Decimal(row.material_cost)}}</span>
                         </div>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="material">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         {{translatedLangText.MATERIAL}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.MATERIAL}}:</span>
-                        <div class="cost-label">
-                          <span>$</span><span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
+                        <div class="">
+                          <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
                         </div>
                       </mat-cell>
                     </ng-container>
@@ -384,7 +384,7 @@
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.QTY}}:</span>
-                        <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
                             <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
                               (change)="calculateCost();" [disabled]="isDisabled(row)" (wheel)="preventDefault($event)"
@@ -401,7 +401,7 @@
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.HOUR}}:</span>
-                        <tlx-form-field customClass="mat-table-form-txt-40px">
+                        <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
                             <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour"
                               [allowDecimal]="true" (change)="calculateCost();" [disabled]="isDisabled(row)"
@@ -420,11 +420,10 @@
                         <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                         <div class="cost-label">
                           <span>$</span>
-                          <tlx-form-field customClass="mat-table-form-txt-70px">
+                          <tlx-form-field customClass="mat-table-form-txt-90px">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
-                                (change)="calculateCost();" [disabled]="isDisabled(row)" [allowDecimal]="true"
-                                (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                                (change)="calculateCost();" [disabled]="isDisabled(row)" appNumericText [allowDecimal]="true" (focus)="selectText($event)" type="text" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -914,7 +913,7 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.UPDATE}}
+                    {{displayApproveUpdateButton()}}
                   </button>
                   }
                   @if (isAllowEdit() && repairDS.canCancel(repairItem)) {

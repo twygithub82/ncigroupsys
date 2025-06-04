@@ -82,7 +82,6 @@ export const CHECK_ANY_ACTIVE_RELEASE_ORDER_SOT = gql`
       totalCount
     }
   }
-
 `;
 
 export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
@@ -207,7 +206,6 @@ export const GET_RELEASE_ORDER_SOT_FOR_OUT_GATE = gql`
       }
     }
   }
-
 `;
 
 export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem> {
@@ -278,7 +276,7 @@ export class ReleaseOrderSotDS extends BaseDataSource<ReleaseOrderSotUpdateItem>
   }
 
   canCancelStatus(status_cv: any): boolean {
-    return status_cv === 'PENDING';
+    return status_cv === 'WAITING';
   }
 
   canRollback(roSot: any): boolean {

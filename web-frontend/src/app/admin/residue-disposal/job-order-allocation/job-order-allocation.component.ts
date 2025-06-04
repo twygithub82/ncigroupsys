@@ -189,8 +189,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     ADD_SUCCESS: 'COMMON-FORM.ADD-SUCCESS',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
     DUPLICATE_PART_DETECTED: 'COMMON-FORM.DUPLICATE-PART-DETECTED',
-    BILLING_PROFILE: 'COMMON-FORM.BILLING-PROFILE',
-    BILLING_TO: 'COMMON-FORM.BILLING-TO',
+    BILLING_DETAILS: 'COMMON-FORM.BILLING-DETAILS',
+    BILL_TO: 'COMMON-FORM.BILL-TO',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     DEPOT_REFERENCE: 'COMMON-FORM.DEPOT-REFERENCE',
     QUANTITY: 'COMMON-FORM.QTY',
@@ -312,7 +312,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     console.log('initForm');
     this.residueEstForm = this.fb.group({
       guid: [''],
-      customer_code: [''],
+      bill_to: [''],
       billing_branch: [''],
       job_no: [''],
       est_template: [''],
@@ -874,8 +874,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     }
     this.populateResiduePartList(residue);
     this.residueEstForm?.patchValue({
-
-      customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
+      bill_to: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
       job_no: this.sotItem?.job_no,
       billing_branch: this.getBillingBranch(billingGuid),
       remarks: residue?.remarks

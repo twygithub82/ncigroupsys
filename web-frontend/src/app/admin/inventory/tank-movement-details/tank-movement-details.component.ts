@@ -475,13 +475,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BILLING_BRANCH: 'COMMON-FORM.BILING-BRANCH',
     OVERWRITE_DATA: 'COMMON-FORM.OVERWRITE-DATA',
     PRICE: 'COMMON-FORM.PRICE',
-    MATERIAL: 'COMMON-FORM.MATERIAL',
+    MATERIAL: 'COMMON-FORM.MATERIAL$',
     MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
     LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     RATE: 'COMMON-FORM.RATE',
     NET_COST: 'COMMON-FORM.NET-COST',
-    LESSEE: 'COMMON-FORM.LESSEE'
+    LESSEE: 'COMMON-FORM.LESSEE',
+    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL'
   }
 
   sot_guid: string | null | undefined;
@@ -1202,6 +1203,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
             tank_status_cv: this.sot?.tank_status_cv,
             last_cargo_guid: this.sot?.last_cargo_guid,
             required_temp: result.required_temp,
+            unit_type_guid: this.sot?.unit_type_guid,
             storing_order: {
               customer_company_guid: this.sot?.storing_order?.customer_company_guid
             },

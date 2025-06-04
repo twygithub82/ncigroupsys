@@ -10,3 +10,14 @@ INSERT INTO idms.code_values (guid, description, code_val_type, code_val, sequen
 UPDATE `idms`.`code_values` SET `sequence` = '4' WHERE (`guid` = '31');
 UPDATE `idms`.`code_values` SET `sequence` = '5' WHERE (`guid` = '33');
 UPDATE `idms`.`code_values` SET `sequence` = '6' WHERE (`guid` = '38');
+
+UPDATE `idms`.`code_values` SET `sequence` = '3' WHERE (`guid` = '542');
+UPDATE `idms`.`code_values` SET `sequence` = '4' WHERE (`guid` = '543');
+UPDATE `idms`.`code_values` SET `sequence` = '5' WHERE (`guid` = '472');
+UPDATE `idms`.`code_values` SET `sequence` = '6' WHERE (`guid` = '517');
+UPDATE `idms`.`code_values` SET `sequence` = '7' WHERE (`guid` = '473');
+UPDATE `idms`.`code_values` SET `sequence` = '8' WHERE (`guid` = '540');
+UPDATE `idms`.`code_values` SET `sequence` = '9' WHERE (`guid` = '516');
+UPDATE `idms`.`code_values` SET `sequence` = '10' WHERE (`guid` = '508');
+UPDATE `idms`.`code_values` SET `sequence` = '11' WHERE (`guid` = '474');
+UPDATE `idms`.`code_values` SET `sequence` = '12' WHERE (`guid` = '544');

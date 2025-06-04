@@ -1583,7 +1583,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         tempDirection = 'ltr';
       }
       const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
-        width: '500px',
+        //width: '500px',
         data: {
           action: 'publish',
           translatedLangText: this.translatedLangText,
@@ -1610,8 +1610,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       console.log('publishInGateSurvey: ', inGateItem)
       this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
         console.log(result)
-        this.handleSaveSuccess(result.data?.publishIngateSurvey)
-        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+        this.handleSaveSuccess(result.data?.publishIngateSurvey);
+        this.onDownload();
       });
     }
   }
@@ -1641,6 +1641,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.fileManagerService.actionLoadingSubject.next(true);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
+      this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
     });
   }
 

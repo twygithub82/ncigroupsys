@@ -5,87 +5,88 @@
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
     <div class="card">
-    <div class="body">
-    <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card p-0">
-          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
-            <mat-accordion>
-              <mat-expansion-panel [expanded]="true">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                  </mat-panel-title>
-                  <mat-panel-description>
-                    <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                      <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                      <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                        (click)="$event.stopPropagation()">
-                        <mat-icon>clear_all</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                      <button mat-mini-fab class="primary-light" [routerLink]="['/admin/inventory/release-order/new']">
-                        <mat-icon class="col-white">add</mat-icon>
-                      </button>
-                    </div>
-                    @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-                    <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
-                      <button mat-mini-fab color="warn" (click)="cancelSelectedRows(roSelection.selected)"
-                        [disabled]="canCancelSelectedRows()">
-                        <mat-icon class="col-white">cancel</mat-icon>
-                      </button>
-                    </div>
-                    <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+      <div class="body">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card p-0">
+              <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+                <mat-accordion>
+                  <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                      </mat-panel-title>
+                      <mat-panel-description>
+                        <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                          <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                        <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                          <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                            (click)="$event.stopPropagation()">
+                            <mat-icon>clear_all</mat-icon>
+                          </button>
+                        </div>
+                        <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+                          <button mat-mini-fab class="primary-light"
+                            [routerLink]="['/admin/inventory/release-order/new']">
+                            <mat-icon class="col-white">add</mat-icon>
+                          </button>
+                        </div>
+                        @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
+                        <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                          <button mat-mini-fab color="warn" (click)="cancelSelectedRows(roSelection.selected)"
+                            [disabled]="canCancelSelectedRows()">
+                            <mat-icon class="col-white">cancel</mat-icon>
+                          </button>
+                        </div>
+                        <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                       <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                         (click)="$event.stopPropagation()" />
                     </div> -->
-                    }
-                    @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-                    <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                        (click)="$event.stopPropagation()" />
-                    </div> -->
-                    }
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-                <div class="row">
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.RO_NO}}</mat-label>
-                      <input matInput formControlName="ro_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                      <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
-                        [matAutocomplete]="customerCode">
-                      <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                        @for (cc of customer_companyList; track cc) {
-                        <mat-option [value]="cc">
-                          {{ccDS.displayCodeDashName(cc)}}
-                        </mat-option>
                         }
-                      </mat-autocomplete>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                      <input matInput formControlName="tank_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
-                      <input matInput formControlName="job_no">
-                    </mat-form-field>
-                  </div>
-                  <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
+                        <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
+                        (click)="$event.stopPropagation()" />
+                    </div> -->
+                        }
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div class="row">
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.RO_NO}}</mat-label>
+                          <input matInput formControlName="ro_no">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                          <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                            [matAutocomplete]="customerCode">
+                          <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                            @for (cc of customer_companyList; track cc) {
+                            <mat-option [value]="cc">
+                              {{ccDS.displayCodeDashName(cc)}}
+                            </mat-option>
+                            }
+                          </mat-autocomplete>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+                          <input matInput formControlName="tank_no">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                          <input matInput formControlName="job_no">
+                        </mat-form-field>
+                      </div>
+                      <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="etr_picker">
@@ -114,8 +115,8 @@
                       </mat-select>
                     </mat-form-field>
                   </div> -->
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <!-- <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                       <mat-date-range-input [rangePicker]="booking_picker">
                         <input matStartDate placeholder="Start date" formControlName="release_dt_start">
@@ -124,26 +125,27 @@
                       <mat-datepicker-toggle matSuffix [for]="booking_picker"></mat-datepicker-toggle>
                       <mat-date-range-picker #booking_picker></mat-date-range-picker>
                     </mat-form-field> -->
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
-                      <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker" [min]="todayDt">
-                      <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
-                      <mat-datepicker #release_dt_picker></mat-datepicker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                      <mat-select formControlName="ro_status">
-                        @for (codeValue of soStatusCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <!-- <div
+                        <mat-form-field class="example-full-width">
+                          <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
+                          <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker"
+                            [min]="todayDt">
+                          <mat-datepicker-toggle matSuffix [for]="release_dt_picker"></mat-datepicker-toggle>
+                          <mat-datepicker #release_dt_picker></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.STATUS}}</mat-label>
+                          <mat-select formControlName="ro_status">
+                            @for (codeValue of soStatusCvList; track codeValue) {
+                            <mat-option [value]="codeValue.code_val">
+                              {{codeValue.description}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <!-- <div
                     class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
@@ -153,85 +155,87 @@
                       <mat-icon>clear_all</mat-icon>
                     </button>
                   </div> -->
-                </div>
-              </mat-expansion-panel>
-            </mat-accordion>
-          </form>
-          <div class="body overflow-auto">
-            <div class="responsive_table">
-              <table mat-table [dataSource]="roList" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                <!-- Checkbox Column -->
-                <ng-container matColumnDef="select">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-start'">
-                    <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
-                      [checked]="roSelection.hasValue() && isAllSelected()"
-                      [indeterminate]="roSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <mat-checkbox color="primary" (click)="$event.stopPropagation()"
-                      (change)="$event ? toggleRow(row) : null" [checked]="roSelection.isSelected(row)"
-                      [ngClass]="'tbl-checkbox'">
-                    </mat-checkbox>
-                  </mat-cell>
-                </ng-container>
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="ro_no">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    {{translatedLangText.RO_NO}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <span class="mobile-label">{{translatedLangText.RO_NO}}:</span>{{row.ro_no}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="customer_code">
-                  <mat-header-cell *matHeaderCellDef>
-                    {{translatedLangText.CUSTOMER}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    <span
-                      class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="ro_dt">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    {{translatedLangText.RO_DATE}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <span class="mobile-label">{{translatedLangText.RO_DATE}}:</span>{{displayDate(row.release_dt)}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="no_of_tanks">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    {{translatedLangText.NO_OF_TANKS}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row"
-                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <span class="mobile-label">{{translatedLangText.NO_OF_TANKS}}:</span>
-                    {{row.release_order_sot?.length}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <mat-header-cell *matHeaderCellDef>
-                    {{translatedLangText.STATUS}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row">
-                    <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
-                    {{getSchedulingStatusDescription(row.status_cv)}}</mat-cell>
-                </ng-container>
-                <!-- <ng-container matColumnDef="accept_status">
+                    </div>
+                  </mat-expansion-panel>
+                </mat-accordion>
+              </form>
+              <div class="body overflow-auto">
+                <div class="responsive_table">
+                  <table mat-table [dataSource]="roList" matSort
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                    <!-- Checkbox Column -->
+                    <ng-container matColumnDef="select">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-start'">
+                        <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
+                          [checked]="roSelection.hasValue() && isAllSelected()"
+                          [indeterminate]="roSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
+                        </mat-checkbox>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                          (change)="$event ? toggleRow(row) : null" [checked]="roSelection.isSelected(row)"
+                          [ngClass]="'tbl-checkbox'">
+                        </mat-checkbox>
+                      </mat-cell>
+                    </ng-container>
+                    <!-- ID Column -->
+                    <ng-container matColumnDef="id">
+                      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="ro_no">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        {{translatedLangText.RO_NO}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.RO_NO}}:</span>{{row.ro_no}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="customer_code">
+                      <mat-header-cell *matHeaderCellDef>
+                        {{translatedLangText.CUSTOMER}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                        <span
+                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayCodeDashName(row.customer_company)}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="ro_dt">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        {{translatedLangText.RO_DATE}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.RO_DATE}}:</span>{{displayDate(row.release_dt)}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="no_of_tanks">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        {{translatedLangText.NO_OF_TANKS}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.NO_OF_TANKS}}:</span>
+                        {{row.release_order_sot?.length}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="status">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        {{translatedLangText.STATUS}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                        {{getSchedulingStatusDescription(row.status_cv)}}</mat-cell>
+                    </ng-container>
+                    <!-- <ng-container matColumnDef="accept_status">
                   <mat-header-cell *matHeaderCellDef >
                     {{translatedLangText.ACCEPTED}} {{translatedLangText.TANKS}}
                   </mat-header-cell>
@@ -252,53 +256,54 @@
                   <mat-cell *matCellDef="let row">
                     <span class="mobile-label">{{translatedLangText.STATUS}}:</span> {{soDS.getCanceledStatusCount(row)}}</mat-cell>
                 </ng-container> -->
-                <!-- actions -->
-                <ng-container matColumnDef="actions">
-                  <mat-header-cell
-                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                    *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;"
-                    [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
+                    <!-- actions -->
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell
+                        [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i=index;"
+                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
                       class="tbl-action-btn">
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                     </button> -->
-                    @if (roDS.canCancel(row)) {
-                    <button mat-icon-button color="warn" (click)="$event.stopPropagation()" (click)="cancelItem(row)"
-                      [matTooltip]="translatedLangText.CANCEL" class="tbl-action-btn">
-                      <mat-icon>cancel</mat-icon>
-                    </button>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"
-                  [routerLink]="['/admin/inventory/release-order/edit', row.guid]" [style.cursor]="'pointer'" matRipple>
-                </mat-row>
-              </table>
+                        @if (roDS.canCancel(row)) {
+                        <button mat-icon-button color="warn" (click)="$event.stopPropagation()"
+                          (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL" class="tbl-action-btn">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"
+                      [routerLink]="['/admin/inventory/release-order/edit', row.guid]" [style.cursor]="'pointer'"
+                      matRipple>
+                    </mat-row>
+                  </table>
+                </div>
+                <!-- No result -->
+                @if (!(roDS.loadingSubject | async) && !roList.length) {
+                <mat-divider></mat-divider>
+                <div class="no-results m-l-20 pt-3" [style.display]="roList.length === 0 ? '' : 'none'">
+                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+                </div>
+                }
+                <!-- Loading spinner -->
+                @if ((roDS.loadingSubject | async)) {
+                <div class="tbl-spinner">
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+                }
+                <mat-paginator #paginator [length]="roDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                </mat-paginator>
+              </div>
             </div>
-            <!-- No result -->
-            @if (!(roDS.loadingSubject | async) && !roList.length) {
-            <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="roList.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-            </div>
-            }
-            <!-- Loading spinner -->
-            @if ((roDS.loadingSubject | async)) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
-            </div>
-            }
-            <mat-paginator #paginator [length]="roDS.totalCount" [pageIndex]="0" [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
-            </mat-paginator>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  </div>
   </div>
 </section>

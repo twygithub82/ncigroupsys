@@ -46,7 +46,7 @@
           }
           @if (action === 'add' && type === 'steaming') {
           <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0 align-right">
               {{data.translatedLangText.FLASH_POINT}}: {{sot.tariff_cleaning?.flash_point}}
             </div>
           </div>
@@ -79,7 +79,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-                <textarea matInput formControlName="remarks" required></textarea>
+                <textarea matInput formControlName="remarks"></textarea>
                 <!-- @if (purposeForm.get('remarks')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
@@ -98,7 +98,7 @@
           </mat-icon>
           {{data.translatedLangText.CONFIRM}}</button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>

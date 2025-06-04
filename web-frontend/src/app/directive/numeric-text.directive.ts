@@ -1,12 +1,12 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
-  selector: 'input[appPreventNonNumeric]',
+  selector: 'input[appNumericText]',
   standalone: true,
 })
-export class PreventNonNumDirective {
+export class NumericTextDirective {
   @Input() restrictNonNumeric = true;
-  @Input() allowDecimal = false;
+  @Input() allowDecimal = true;
   @Input() decimalLimit: number | null = 2;
   @Input() disableScroll = true;
 

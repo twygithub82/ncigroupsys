@@ -153,6 +153,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     UNDO: 'COMMON-FORM.UNDO',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
@@ -245,6 +246,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   templateList: MasterTemplateItem[] = []
   surveyorList: UserItem[] = []
   billingBranchList: CustomerCompanyItem[] = [];
+  customer_companyList?: CustomerCompanyItem[];
   packSteamList: PackageRepairItem[] = [];
   displayPackSteamList: PackageRepairItem[] = [];
   deList: any[] = [];
@@ -322,8 +324,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   initForm() {
     this.steamEstForm = this.fb.group({
       guid: [''],
-      customer_code: [''],
-      billing_branch: [''],
+      bill_to: [''],
+      // billing_branch: [''],
       job_no: [''],
       remarks: [''],
       last_test: [''],
@@ -708,7 +710,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '1000px',
+      //width: '1000px',
       data: {
         item: row,
         langText: this.langText,
@@ -932,10 +934,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
     if (this.historyState.action === "NEW" || this.historyState.action === "DUPLICATE") {
       var newSteamItem: any = new SteamItem();
-      var billGuid: string = (this.steamEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.steamEstForm?.get("billing_branch")?.value?.guid);
-      if (!this.steamEstForm?.get("billing_branch")?.value) {
-        billGuid = "";
-      }
+      var billGuid: string = (this.steamEstForm?.get("bill_to")?.value?.guid);
       newSteamItem.action = "NEW";
       newSteamItem.bill_to_guid = billGuid;
       newSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
@@ -959,14 +958,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           this.handleSaveSuccess(result.data.addSteaming);
         }
       });
-
-    }
-    else if (this.historyState.action === "UPDATE") {
+    } else if (this.historyState.action === "UPDATE") {
       var updSteamItem: any = new SteamItem(this.steamItem);
-      var billGuid: string = (this.steamEstForm.get("billing_branch")?.value ? this.steamEstForm.get("billing_branch")?.value?.guid : this.sotItem?.storing_order?.customer_company?.guid);
-      if (!this.steamEstForm?.get("billing_branch")?.value) {
-        billGuid = "";
-      }
+      var billGuid: string = (this.steamEstForm.get("bill_to")?.value?.guid);
       updSteamItem.action = "EDIT";
       updSteamItem.bill_to_guid = billGuid;
       updSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
@@ -986,19 +980,13 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         updSteamItem.steaming_part?.push(steamPart);
 
       });
-
-      // delete updSteamItem.customer_company;
       delete updSteamItem.storing_order_tank;
-
       this.steamDS.updateSteam(updSteamItem).subscribe(result => {
-
         if (result.data.updateSteaming > 0) {
           this.handleSaveSuccess(result.data.updateSteaming);
         }
       });
-
     }
-
   }
 
   updateData(newData: ResiduePartItem[] | undefined): void {
@@ -1325,17 +1313,37 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   loadBillingBranch() {
-    let where: any = {};
-    let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
-    where.main_customer_guid = { eq: custCompanyGuid };
-
-    this.ccDS.search(where, {}).subscribe(data => {
-      var def = this.createDefaultCustomerCompany("--Select--", "");
-
-      this.billingBranchList = [def, ...data];;
-
-      this.patchSteamEstForm(this.steamItem!);
+    this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
+      if (cc?.length) {
+        const bill_to = this.steamEstForm?.get('bill_to');
+        this.customer_companyList = cc;
+        if (this.steamItem?.bill_to_guid) {
+          const found = this.customer_companyList?.find(x => x.guid === this.steamItem?.bill_to_guid)
+          if (found) {
+            bill_to?.setValue(found);
+          }
+        } else if (this.customer_companyList?.length) {
+          const found = this.customer_companyList?.find(x => x.guid === this.sotItem?.storing_order?.customer_company?.guid)
+          if (found) {
+            bill_to?.setValue(found);
+          }
+        }
+        if (this.steamItem && !this.steamDS.canApprove(this.steamItem)) {
+          bill_to?.disable();
+        }
+      }
     });
+    // let where: any = {};
+    // let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
+    // where.main_customer_guid = { eq: custCompanyGuid };
+
+    // this.ccDS.search(where, {}).subscribe(data => {
+    //   var def = this.createDefaultCustomerCompany("--Select--", "");
+
+    //   this.billingBranchList = [def, ...data];;
+
+    //   this.patchSteamEstForm(this.steamItem!);
+    // });
   }
 
   loadHistoryState() {
@@ -1360,12 +1368,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
 
     this.steamEstForm?.patchValue({
-
-      customer_code: this.ccDS.displayName(this.sotItem?.storing_order?.customer_company),
       job_no: steam?.job_no ? steam.job_no : this.sotItem?.job_no,
-      billing_branch: this.getBillingBranch(billingGuid),
       remarks: steam?.remarks
-
     });
   }
 
@@ -1640,7 +1644,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   approveRow(event: Event) {
     event.preventDefault();
-    const bill_to = (this.steamEstForm?.get("billing_branch")?.value ? this.sotItem?.storing_order?.customer_company?.guid : this.steamEstForm?.get("billing_branch")?.value?.guid);
+    const bill_to = (this.steamEstForm?.get("bill_to")?.value?.guid);
 
     if (bill_to) {
       let re: any = new SteamItem();
@@ -1648,7 +1652,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       re.sot_guid = this.steamItem?.sot_guid;
       re.bill_to_guid = bill_to;
       re.status_cv = this.steamItem?.status_cv;
-
       re.action = "APPROVE";
       re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
         return new SteamPartItem({
@@ -1663,7 +1666,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           job_order: undefined
         })
       });
-
 
       re.total_labour_cost = this.getTotalApprovedLabourCost();
       re.total_material_cost = this.getTotalMaterialCost();
