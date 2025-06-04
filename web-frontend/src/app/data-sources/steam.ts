@@ -794,6 +794,13 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
             customer_company {
               code
               name
+              address_line1
+              address_line2
+              currency {
+                currency_name
+                currency_code
+                rate
+              }
             }
           }
           in_gate(where: { delete_dt: { eq: null } }) {

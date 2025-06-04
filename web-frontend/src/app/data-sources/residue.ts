@@ -648,6 +648,13 @@ export const GET_RESIDUE_FOR_PDF = gql`
             customer_company {
               code
               name
+              address_line1
+              address_line2
+              currency {
+                currency_name
+                currency_code
+                rate
+              }
             }
           }
           in_gate(where: { delete_dt: { eq: null } }) {

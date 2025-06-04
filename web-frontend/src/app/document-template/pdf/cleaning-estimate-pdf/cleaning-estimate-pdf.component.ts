@@ -8,7 +8,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { Utility } from 'app/utilities/utility';
-import { customerInfo } from 'environments/environment';
+import { customerInfo, environment } from 'environments/environment';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -805,22 +805,6 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
               
               styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
             },
-            //  { 
-            //   content: this.translatedLangText.PRICE,
-              
-            //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:220, lineWidth: 0.1,cellPadding: 2  }
-            // },
-            //  { 
-            //   content: this.translatedLangText.ESTIMATE_COST,
-              
-            //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
-            // },
-            //  { 
-            //   content: this.translatedLangText.APPROVED_COST,
-              
-            //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
-            // }
-          
           ]
         ];
     
@@ -996,7 +980,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           var item = this.cleaningItem;
           await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
 
-          startY=70;
+          startY=60;
           PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false);
           startY+=3;
           var data: any[][] = [
@@ -1020,9 +1004,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
             ],
             [
               { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-              { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
-              { content: `` },
-              { content: `` }
+              { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}`,colSpan: 3 }
             ]
           ];
       
@@ -1069,20 +1051,20 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
 
           startY=lastTableFinalY+15;
           this.createCleaningEstimateDetail_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
-          startY=pageHeight-45;
-          var estTerms ="[Estimate Terms and COnditions / Disclaimer]";
-          PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
+          startY=pageHeight-25;
+          var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
+         // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
 
-          startY+=8;
+          startY+=7;
            pdf.setLineWidth(0.1);
     
-          pdf.setLineDashPattern([0.01, 0.01], 0.1);
+          pdf.setLineDashPattern([0.01, 0.01], 0);
 
           var yPos=startY;
             // 
           pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
-          startY= yPos +1;
-          await PDFUtility.ReportFooter_CompanyInfo_portrait(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
+          startY= yPos +3;
+          await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
 
            var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
            this.downloadFile(pdf.output('blob'), pdfFileName)
@@ -1175,14 +1157,17 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
             // Draw top line
           pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
 
-
-           var totalSGD=`${this.translatedLangText.TOTAL}:`;
+          var sysCurrencyCode=Utility.GetSystemCurrencyCode();
+          var totalSGD=`${this.translatedLangText.TOTAL} (${sysCurrencyCode}):`;
           var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
-           var amtWords = Utility.convertToWords(this.totalCost);
+          var amtWords = Utility.convertToWords(this.totalCost);
+          var custCurrencyCode = this.cleaningItem?.customer_company?.currency?.currency_code;
+          
+
           startY=yPos+2;
            var estData:RowInput[]=[];
            estData.push([
-              { content: `${amtWords}`,  colSpan: 3,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#d0e0e0'} },
+              { content: `${amtWords}`,  colSpan: 3,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
              
            ])
            estData.push([
@@ -1191,6 +1176,18 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
               { content: `${totalCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 5 } } },
              
            ])
+
+           if(sysCurrencyCode!=custCurrencyCode){
+             var totalForeign=`${this.translatedLangText.TOTAL} (${custCurrencyCode}):`;
+             var rate =this.cleaningItem?.customer_company?.currency?.rate;
+             var convertedCost =  `${this.parse2Decimal(this.totalCost*rate)}`;
+             estData.push([
+             '',
+              { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 5 }}},
+              { content: `${convertedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 5 } } },
+             
+           ])
+           }
   
   //cellPadding: { top: 5 }
           autoTable(pdf, {

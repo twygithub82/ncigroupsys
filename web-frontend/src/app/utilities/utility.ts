@@ -6,6 +6,7 @@ import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
 import { PDFUtility } from "./pdf-utility";
+import {systemCurrencyCode} from '../../environments/environment';
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -1202,6 +1203,11 @@ export class Utility {
     
     return words;
   }
+
+  static GetSystemCurrencyCode():string
+  {
+    return systemCurrencyCode;
+  }
 }
 
 export const TANK_STATUS_PRE_IN_YARD = [
@@ -1220,6 +1226,10 @@ export const TANK_STATUS_IN_YARD = [
   'OUT_GATE',
   'OUT_SURVEY',
 ]
+
+export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE","APPROVE","COMPLETE","ASSIGNED","JOB_IN_PROGRESS"]
+
+//export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE","APPROVE","COMPLETE","ASSIGNED","JOB_IN_PROGRESS"]
 
 export const TANK_STATUS_POST_IN_YARD = [
   'RELEASED',

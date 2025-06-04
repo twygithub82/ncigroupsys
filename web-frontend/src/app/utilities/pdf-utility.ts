@@ -237,14 +237,19 @@ export class PDFUtility {
     //   img.onerror = () => reject(new Error('Failed to load image'));
     //   img.src = imgUrl;
     // });
-    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
+    const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
     // Add the image to the PDF
     const posX1_img = pageWidth / 1.7; //leftMargin + 5;
     const posY1_img = topMargin + 0;
+      const aspectRatio= height/width;
+    const w=80;
+    const h=aspectRatio*w;
+    
+    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
     // const imgHeight = heightHeader - 0;
     // const imgWidth = 80;
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+   // pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
   }
 
  static async addHeaderWithCompanyLogo_Landscape(
@@ -326,14 +331,19 @@ export class PDFUtility {
     //   img.onerror = () => reject(new Error('Failed to load image'));
     //   img.src = imgUrl;
     // });
-    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
+    const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
     // Add the image to the PDF
     const posX1_img = pageWidth - (width + leftMargin);
     const posY1_img = topMargin + 0;
+    const aspectRatio= height/width;
+    const w=80;
+    const h=aspectRatio*w;
+    
+    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
     // const imgHeight = heightHeader - 0;
     // const imgWidth = 70;
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height,'',"FAST"); // (imageElement, format, x, y, width, height)
+    //pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, width, height,'',"FAST"); // (imageElement, format, x, y, width, height)
   }
 
 
@@ -488,7 +498,7 @@ export class PDFUtility {
     return false; // Selected date is not greater than today
   }
 
-  static async loadPDFImage(
+  static async loadPDFImage_old(
     imgUrl: string,
     maxWidth?: number,
     maxHeight?: number
@@ -526,6 +536,8 @@ export class PDFUtility {
           }
         }
 
+       
+
         resolve({
           img,
           width,
@@ -537,6 +549,68 @@ export class PDFUtility {
       img.src = imgUrl;
     });
   }
+
+ static async loadPDFImage(
+  imgUrl: string,
+  maxWidth?: number,
+  maxHeight?: number,
+  quality: number = 1 // JPEG/WEBP compression quality (0–1)
+): Promise<{ dataUrl: string; width: number; height: number }> {
+  const img = new Image();
+  img.crossOrigin = 'Anonymous'; // Needed if image is from another origin
+
+  return new Promise((resolve, reject) => {
+    img.onload = () => {
+      let { naturalWidth: width, naturalHeight: height } = img;
+
+      const aspectRatio = width / height;
+
+      if (maxWidth || maxHeight) {
+        if (maxWidth && maxHeight) {
+          if (width > maxWidth || height > maxHeight) {
+            if (width / maxWidth > height / maxHeight) {
+              width = maxWidth;
+              height = width / aspectRatio;
+            } else {
+              height = maxHeight;
+              width = height * aspectRatio;
+            }
+          }
+        } else if (maxWidth && width > maxWidth) {
+          width = maxWidth;
+          height = width / aspectRatio;
+        } else if (maxHeight && height > maxHeight) {
+          height = maxHeight;
+          width = height * aspectRatio;
+        }
+      }
+
+      // Draw to canvas and compress
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Failed to get canvas context'));
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', quality); // or 'image/webp'
+
+      resolve({
+        dataUrl,
+        width,
+        height,
+      });
+    };
+
+    img.onerror = () => reject(new Error(`Failed to load image from ${imgUrl}`));
+    img.src = imgUrl;
+  });
+}
+
 
   static convertMmToPt(pdf: jsPDF): jsPDF {
   // Verify the source document is in mm
@@ -668,12 +742,15 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     }
 
     
-    const { img, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 80, undefined);
+    const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
     const posX1_img = leftMargin ;
     const posY1_img = topMargin + 5;
+    const aspectRatio = height/width ;
+    const w=80;
+    const h=aspectRatio*w;
     
-    pdf.addImage(img, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
 
 
     pdf.setLineWidth(0.1);
@@ -687,25 +764,25 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
    let posX=leftMargin;
   let posY = topMargin;
 
-  posY+=40;
-  pdf.setFontSize(10);
-  pdf.text(`${translatedLangText.CUSTOMER}:`, posX, posY);
-  posY+=5;
-  pdf.text(customerCompany.name||'', posX, posY);
-  posY+=5;
-  pdf.text(customerCompany.address_line1||'', posX, posY);
-  posY+=5;
-  pdf.text(customerCompany.address_line2||'', posX, posY);
+  // posY+=40;
+  // pdf.setFontSize(10);
+  // pdf.text(`${translatedLangText.CUSTOMER}:`, posX, posY);
+  // posY+=5;
+  // pdf.text(customerCompany.name||'', posX, posY);
+  // posY+=5;
+  // pdf.text(customerCompany.address_line1||'', posX, posY);
+  // posY+=5;
+  // pdf.text(customerCompany.address_line2||'', posX, posY);
 
   
-  var buffer =45;
+  var buffer =40
   var IssDate = `${translatedLangText.ISSUE_DATE}: ${Utility.convertDateToStr(new Date())}`;
   this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
-  var validDate=new Date();
-  validDate = this.addMonths(validDate, 2);
-  buffer+=5;
-  var validDateStr = `${translatedLangText.VALID_THROUGH}: ${Utility.convertDateToStr(validDate)}`;
-  this.AddTextAtRightCornerPage(pdf, validDateStr, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
+ // var validDate=new Date();
+  //validDate = this.addMonths(validDate, 2);
+  //buffer+=5;
+  //var validDateStr = `${translatedLangText.VALID_THROUGH}: ${Utility.convertDateToStr(validDate)}`;
+  //this.AddTextAtRightCornerPage(pdf, validDateStr, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
     
   }
 
@@ -718,6 +795,39 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     result.setDate(result.getDate() + partialMonthDays);
 
     return result;
+  }
+
+  static async ReportFooter_CompanyInfo_portrait_r1(pdf: jsPDF, 
+    pageWidth: number, topMargin: number, 
+    bottomMargin: number, leftMargin: number, 
+    rightMargin: number,translateService: TranslateService) 
+  {
+
+     const translatedLangText: any = {};
+    var posX=leftMargin;
+    var posY = topMargin;
+    var fontSz=7;
+    var startY=topMargin;
+    const langText = {
+      GST_REG: 'COMMON-FORM.GST-REG',
+      PHONE: 'COMMON-FORM.PHONE',
+      
+    };
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+   var companyInfo = `${customerInfo.companyName} : ${customerInfo.companyAddress}`;
+   var PhoneGST = `${translatedLangText.PHONE}: ${customerInfo.companyPhone} | ${translatedLangText.GST_REG}: ${customerInfo.companyGST}`;
+   this.addText(pdf, companyInfo, posY, leftMargin, fontSz);
+   posY+=(fontSz/2);
+   this.addText(pdf, PhoneGST, posY, leftMargin, fontSz);
+  
   }
 
   static async ReportFooter_CompanyInfo_portrait(pdf: jsPDF, 
@@ -745,28 +855,28 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
         translatedLangText[key] = langText[key]; // Fallback to the original key
       }
     }
+    var minHeightHeaderCol=4;
    var data: any[][] = [
-              [
-                { content: `${customerInfo.companyName}`, styles: { halign: 'left', valign: 'bottom',fontStyle: 'bold',fontSize: fontSz} },
-                { content: `${customerInfo.companyAddress}`, rowSpan:2 , styles:{halign:'left',valign:'top',fontSize: fontSz+1} },
-                { content: `[Payment Conditions]` ,  rowSpan:3, styles: { halign: 'center', valign: 'top',fontStyle: 'bold',fontSize: fontSz} },
-              ],
-              [
-                { content: `${translatedLangText.GST_REG}: [GST Reg No]`,styles: { halign: 'left', valign: 'bottom',fontSize: fontSz}  },
-                '',
-                ''
-              ],
-              [
-                '',
-                { content: `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`,styles: { halign: 'left', valign: 'bottom',fontSize: fontSz}  },
-                ''
-                
-              ],
-             
-            ];
-        
+      [
+        { content: `${customerInfo.companyName}`, styles: { halign: 'left', valign: 'bottom',fontStyle: 'bold',fontSize: fontSz,minHeight:minHeightHeaderCol} },
+        { content: `${customerInfo.companyAddress}`, rowSpan:2 , styles:{halign:'left',valign:'top',fontSize: fontSz+1,minHeight:minHeightHeaderCol} },
+        { content: `[Payment Conditions]` ,  rowSpan:3, styles: { halign: 'center', valign: 'top',fontStyle: 'bold',fontSize: fontSz,minHeight:minHeightHeaderCol} },
+      ],
+      [
+        { content: `${translatedLangText.GST_REG}: [GST Reg No]`,styles: { halign: 'left', valign: 'bottom',fontSize: fontSz,minHeight:minHeightHeaderCol}  },
+        '',
+        ''
+      ],
+      [
+        '',
+        { content: `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`,styles: { halign: 'left', valign: 'top',fontSize: fontSz,minHeight:minHeightHeaderCol}  },
+        ''
+      ],
+      
+    ];
+
             var contentWidth=pageWidth-leftMargin-rightMargin;
-            var minHeightHeaderCol=4;
+            
             var tblCellWidth =(pageWidth-leftMargin-rightMargin)/2;
             autoTable(pdf, {
               body: data,
@@ -774,11 +884,12 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
               theme: 'grid',
               margin: { left: leftMargin },
               styles: {
-                cellPadding: { left:1 , right: 1, top: 1, bottom: 1 },
+                cellPadding: { left:0.5 , right: 0.5, top: 0, bottom: 0 },
                 fontSize: fontSz,
                 minCellHeight: minHeightHeaderCol,
                 lineWidth: 0, // cell border thickness
                 lineColor: [0, 0, 0], // black
+                
               },
               tableWidth: contentWidth,
               columnStyles: {
@@ -794,7 +905,7 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
                 valign: 'middle', // Vertically align content
         
               },
-             
+              pageBreak: 'avoid',
             });
   
   }

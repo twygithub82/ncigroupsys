@@ -1415,7 +1415,14 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
             customer_company {
               code
               name
+              address_line1
+              address_line2
               guid
+              currency {
+                currency_name
+                currency_code
+                rate
+              }
             }
           }
           tariff_cleaning {
@@ -1431,9 +1438,16 @@ export const GET_REPAIR_BY_ID_FOR_PDF = gql`
           }
           customer_company {
             code
-            guid
             name
+            address_line1
+            address_line2
+            guid
             delete_dt
+            currency {
+                currency_name
+                currency_code
+                rate
+              }
           }
           in_gate(where: { delete_dt: { eq: null } }) {
             eir_no

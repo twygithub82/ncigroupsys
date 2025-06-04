@@ -131,6 +131,7 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
             name
             remarks
             type_cv
+          
         }
         buffer_cost
         cleaning_cost
@@ -394,7 +395,6 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
             effective_dt
             email
             guid
-            
           }
           tariff_cleaning {
             alias
@@ -509,6 +509,11 @@ const GET_IN_GATE_CLEANING_BY_ID_FOR_ESTIMATE_PDF = gql`
           address_line2
           email
           name
+          currency {
+            currency_name
+            currency_code
+            rate
+          }
         }
         allocate_by
         allocate_dt
