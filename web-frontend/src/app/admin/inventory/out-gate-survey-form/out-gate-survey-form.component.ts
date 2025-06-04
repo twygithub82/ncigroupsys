@@ -231,6 +231,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     COMPARTMENT_TYPE_MANLID_EMPTY: 'COMMON-FORM.COMPARTMENT-TYPE-MANLID-EMPTY',
     ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
     YES: 'COMMON-FORM.YES',
+    LITERS: 'COMMON-FORM.LITERS',
+    KG: 'COMMON-FORM.KG'
   }
   private destroy$ = new Subject<void>();
 

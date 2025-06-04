@@ -473,7 +473,7 @@
                       @if (steamDS.canAmend(this.steamItem!)) {
                       @if (!row.delete_dt){
                       <button mat-icon-button (click)="handleDelete($event, row, row.index)">
-                        <mat-icon>delete_forever</mat-icon>
+                        <mat-icon color="warn">delete_forever</mat-icon>
                       </button>
                       }
                       @if (row.delete_dt) {
@@ -615,7 +615,7 @@
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.ABORT}}
+                {{translatedLangText.CANCEL}}
               </button>
               }
             </div>

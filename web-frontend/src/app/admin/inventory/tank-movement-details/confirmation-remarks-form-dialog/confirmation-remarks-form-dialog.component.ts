@@ -94,7 +94,7 @@ export class ConfirmationRemarksFormDialogComponent {
     const lastDt = Utility.convertDateMoment(this.last_qc_dt);
     return this.fb.group({
       qc_dt: [Utility.convertDateMoment(Utility.convertDate(lastDt))],
-      remarks: [this.data.last_remarks, Validators.required]
+      remarks: [this.data.last_remarks]
     });
   }
 

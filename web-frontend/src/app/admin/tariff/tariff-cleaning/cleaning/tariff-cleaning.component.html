@@ -74,7 +74,7 @@
           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
-              <mat-select formControlName="class_no">
+              <mat-select formControlName="class_no" [compareWith]="compareObjects">
                 @for (codeValue of classNoCvList; track codeValue) {
                 <mat-option [value]="codeValue">
                   {{codeValue.description}}

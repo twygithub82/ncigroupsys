@@ -248,7 +248,7 @@
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="deList" matSort
-                    class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <!-- ID Column -->
                     <ng-container matColumnDef="seq">
                       <mat-header-cell *matHeaderCellDef
@@ -311,7 +311,7 @@
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.TEAM}}
-                        <mat-checkbox (change)="$event ? masterToggle() : null"
+                        <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                           [checked]="repSelection.hasValue() && isAllSelected()"
                           [indeterminate]="repSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
                         </mat-checkbox>
