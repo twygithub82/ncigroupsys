@@ -731,9 +731,10 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   canToggleJob(steam: SteamItem | undefined) {
-    var retval
-    retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
-    return retval;
+    return this.steamDs.IsSteamRepair(steam);
+    // var retval
+    // retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
+    // return retval;
   }
 
   onTabChange(index: number) {

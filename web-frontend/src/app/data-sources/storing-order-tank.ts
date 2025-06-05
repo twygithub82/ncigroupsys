@@ -1257,6 +1257,7 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
                temp_max
                temp_min
             }
+            steaming_exclusive_guid
            
           }
         }

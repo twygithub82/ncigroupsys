@@ -8,6 +8,7 @@ import { CustomerCompanyItem } from './customer-company';
 import { JobOrderItem } from './job-order';
 import { SteamPartItem } from './steam-part';
 import { StoringOrderTankItem } from './storing-order-tank';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 export class SteamGO {
   public estimate_no?: string;
@@ -79,6 +80,7 @@ export class SteamGO {
     this.na_dt = item.na_dt;
     this.est_cost = item.est_cost;
     this.est_hour = item.est_hour;
+    this.flat_rate=item.flat_rate;
     this.rate = item.rate;  
     this.total_cost = item.total_cost;
     this.total_hour = item.total_hour;
@@ -1197,6 +1199,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     return (validStatus.includes(status) && rp?.some(part => part.job_order?.status_cv && (part.job_order?.status_cv == 'PENDING')));
   }
 
+  canAmendAutoApprovedSteam(steam: SteamItem): boolean {
+    const validStatus = ['APPROVED']
+
+    return validStatus.includes(steam?.status_cv!) && BusinessLogicUtil.isAutoApproveSteaming(steam);
+  }
 
   canAmend(re: SteamItem): boolean {
     if (!re) return true;
@@ -1236,7 +1243,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canRollbackEstimate(re: SteamItem): boolean {
-    const validStatus = ['NO_ACTION', 'APPROVED']
+    const validStatus = ['NO_ACTION']
     return validStatus.includes(re?.status_cv!);
   }
   canRollback(re: SteamItem): boolean {
@@ -1454,5 +1461,12 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     const formattedMinutes = String(minutes).padStart(2, '0');
 
     return `${formattedHours}:${formattedMinutes}`;
+  }
+
+  IsSteamRepair(steam: SteamItem | undefined) {
+    var retval
+    retval = !BusinessLogicUtil.isAutoApproveSteaming(steam);
+   // retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
+    return retval;
   }
 }

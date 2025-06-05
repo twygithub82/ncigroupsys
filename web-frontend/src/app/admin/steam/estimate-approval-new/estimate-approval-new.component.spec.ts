@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SteamEstimateNewComponent } from './estimate-new.component';
+import { SteamEstimateApprovalNewComponent } from './estimate-approval-new.component';
 
-describe('SteamEstimateNewComponent', () => {
-  let component: SteamEstimateNewComponent;
-  let fixture: ComponentFixture<SteamEstimateNewComponent>;
+describe('SteamEstimateApprovalNewComponent', () => {
+  let component: SteamEstimateApprovalNewComponent;
+  let fixture: ComponentFixture<SteamEstimateApprovalNewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SteamEstimateNewComponent]
+      imports: [SteamEstimateApprovalNewComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SteamEstimateNewComponent);
+    fixture = TestBed.createComponent(SteamEstimateApprovalNewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

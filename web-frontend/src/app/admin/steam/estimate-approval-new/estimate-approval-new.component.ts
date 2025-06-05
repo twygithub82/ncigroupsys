@@ -217,18 +217,26 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     ABORT: 'COMMON-FORM.ABORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     DETAILS: 'COMMON-FORM.DETAILS',
+    HOUR_RATE:'COMMON-FORM.HOUR-RATE',
+    FLAT:'COMMON-FORM.FLAT',
+    HOURLY:'COMMON-FORM.HOURLY',
+
   }
 
   clean_statusList: CodeValuesItem[] = [];
 
   sot_guid?: string | null;
   steam_guid?: string | null;
+  isSteamRepair?:boolean = true;
 
   steamEstForm?: UntypedFormGroup;
   sotForm?: UntypedFormGroup;
 
   sotItem?: StoringOrderTankItem;
   steamItem?: SteamItem;
+  flat_rate:boolean=false;
+  rateType:string='';
+  //estItem:{flat_rate:false};
   //repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
@@ -965,12 +973,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.bill_to_guid = billGuid;
       updSteamItem.job_no = this.steamEstForm.get("job_no")?.value;
       updSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
-      updSteamItem.sot_guid = this.sotItem?.guid;
+      updSteamItem.sot_guid = this.sotItem?.guid; 
       updSteamItem.steaming_part = [];
       updSteamItem.est_cost = this.getTotalCost();
       updSteamItem.est_hour = this.getTotalLabourHour();
-      updSteamItem.rate = this.packageLabourItem?.cost;
-      updSteamItem.flat_rate = this.sotItem?.tank?.flat_rate;
+      updSteamItem.rate = this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
+      updSteamItem.flat_rate = this.flat_rate;
       updSteamItem.total_material_cost = this.getTotalMaterialCost();
       updSteamItem.total_labour_cost = this.getTotalApprovedLabourCost();
       this.deList.forEach(data => {
@@ -1306,9 +1314,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
       this.packSteamList = data;
       this.displayPackSteamList = this.packSteamList;
-      // this.displayPackResidueList=data;
+      
       this.populateSteamPartList(this.steamItem!);
-      //this.populateResiduePartList(this.residueItem!);
+      
     });
   }
 
@@ -1353,8 +1361,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.isDuplicate = this.historyState.action === 'DUPLICATE';
       this.sotItem = this.historyState.selectedRow;
       this.steamItem = this.historyState.selectedSteam;
+      this.flat_rate=(this.steamItem?.flat_rate||false)
       console.log(this.steamItem)
       this.steam_guid = this.steamItem?.guid;
+      this.isSteamRepair=this.steamDS.IsSteamRepair(this.steamItem!);
       this.getPackageSteam();
       this.loadBillingBranch();
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
@@ -1483,7 +1493,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   getTotalLabourHours(): string {
     let ret = 0;
-    if (this.deList.length > 0) {
+    if(this.isSteamRepair){
+      if (this.deList.length > 0) {
       this.deList.map(d => {
 
         if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
@@ -1499,13 +1510,20 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         // ret+=d.labour
       }
       );
+      }
+       return String(ret);
     }
-    return String(ret);
+    else
+    {
+      return '-';
+    }
+    
+   
   }
 
   getTotalLabourCost(): string {
     let ret = 0;
-    if (this.deList.length > 0) {
+    if (this.deList.length > 0 && this.isSteamRepair) {
       this.deList.map(d => {
         if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
           && (d.approve_part == null || d.approve_part == true)) {
@@ -1518,8 +1536,13 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       );
+      return ret.toFixed(2);
     }
-    return ret.toFixed(2);
+    else
+    {
+      return '-';
+    }
+    
   }
 
   getTotalApprovedLabourCost(): number {
@@ -1565,6 +1588,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   getTotalCost(): number {
+    if(this.isSteamRepair){
+      
     return this.deList.reduce((acc, row) => {
       if ((row.delete_dt === undefined || row.delete_dt === null) && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
@@ -1576,6 +1601,18 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       }
       return acc; // If row is approved, keep the current accumulator value
     }, 0);
+    }
+    else{
+      return this.calculateSteamItemCost(this.deList[0]);
+      // if((this.steamItem?.flat_rate||1)===1){
+      //   return this.steamItem?.rate||0;  
+      // }
+      // else
+      // {
+      //    return (this.steamItem?.rate||0) * (this.steamItem?.total_hour||0); 
+      // }
+      
+    }
   }
 
   undeleteItem(event: Event, row: SteamItem, index: number) {
@@ -1620,12 +1657,14 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   isAllowToSaveSubmit() {
     var NoDel = this.deList.filter(d => d.action != 'cancel');
-    return (NoDel.length && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid);
+    //return (NoDel.length && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid);
+    return (NoDel.length && BusinessLogicUtil.isAutoApproveSteaming(this.steamItem));
   }
 
   isDisabled(): boolean {
     const validStatus = ['COMPLETED', 'QC_COMPLETED', 'JOB_IN_PROGRESS']
-    return validStatus.includes(this.steamItem?.status_cv!) || this.isAutoApproveSteaming(this.steamItem);
+    return validStatus.includes(this.steamItem?.status_cv!);
+    // ?|| this.isAutoApproveSteaming(this.steamItem);
   }
 
   IsApproved() {
@@ -1689,11 +1728,36 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   calculateSteamItemCost(steamPart: SteamPartItem): number {
     let calResCost: number = 0;
 
-    if (this.IsApproved()) {
-      calResCost = steamPart.approve_cost! * steamPart.approve_qty!;
+    if(this.isSteamRepair)
+    {
+        if (this.IsApproved()) {
+          calResCost = steamPart.approve_cost! * steamPart.approve_qty!;
+        }
+        else {
+          calResCost = steamPart.cost! * steamPart.quantity!;
+        }
     }
-    else {
-      calResCost = steamPart.cost! * steamPart.quantity!;
+    else
+    {
+       if(this.flat_rate)
+       {
+         if (this.IsApproved()) {
+            calResCost = steamPart.approve_cost!;
+          }
+          else {
+            calResCost = steamPart.cost! ;
+          }
+         
+       }
+       else
+       {
+         if (this.IsApproved()) {
+            calResCost = steamPart.approve_labour!;
+          }
+          else {
+            calResCost = steamPart.labour! ;
+          }
+       }
     }
 
     return calResCost;
@@ -1801,11 +1865,41 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   getSaveButtonText():string{
     var retval = this.translatedLangText.SAVE;
-    if(( this.steamItem != null)&&!this.isDuplicate)
+    if((this.steamItem != null)&&!this.isDuplicate)
     {
       retval=this.translatedLangText.UPDATE;
     }
 
     return retval;
   }
+
+  getResultTable_HourText():string{
+    var retval = `${this.translatedLangText.HOUR_RATE}`;
+    if(this.isSteamRepair)
+    {
+       retval = `${this.translatedLangText.HOUR}`;
+    }
+    return retval;
+  }
+
+  // onRateChange(): void {
+  //   this.rateType = this.flat_rate ? this.translatedLangText.FLAT: this.translatedLangText.HOURLY;
+    
+  // }
+  getRateType():string{
+    this.steamItem!.flat_rate = this.flat_rate;
+    return this.flat_rate ? this.translatedLangText.FLAT: this.translatedLangText.HOURLY;
+  } 
+
+  getLabourCost():number{
+    if(this.isSteamRepair)
+    {
+      return this.packageLabourItem?.cost||0;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  
 }

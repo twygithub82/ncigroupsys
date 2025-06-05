@@ -1303,7 +1303,11 @@
     "CATEGORY-DESCRIPTION-SELECTED": "Category Description Selected",
     "CATEGORY-NAME-SELECTED": "Category Name Selected",
     "FORMULA-DESCRIPTION-SELECTED": "Formula Description Selected",
-    "ASSIGN-DATE": "Assign Date"
+    "ASSIGN-DATE": "Assign Date",
+    "HOUR-RATE":"Hour Rate $",
+    "FLAT":"Flat",
+    "HOURLY":"Hourly"
+   
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

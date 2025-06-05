@@ -11,3 +11,116 @@
   .selected-row {
     background-color: #FF00FF; /* Change to your desired color */
   }
+
+
+ /* From Uiverse.io by Na3ar-17 */ 
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #fff;
+}
+
+.switch {
+  font-size: 0.75rem;
+  position: relative;
+  display: inline-block;
+  width: 6em;
+  height: 2em;
+}
+
+.switch input {
+  display: none;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch input:checked + .slider .ball {
+  box-shadow: 10px 10px 100px #7f8996;
+}
+
+.switch input:checked + .slider .title {
+  
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 20%;         /* move to the right side with some padding */
+  transform: translateY(-50%);
+  font-weight: 600;
+  transition: all 0.4s;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 12px;
+  text-align: left;   /* align text to the right */
+  width: auto; 
+}
+
+.switch input:checked + .slider {
+  background-color: #0d6efd;
+  
+}
+
+.switch input:focus + .slider {
+  box-shadow: 10px 10px 100px #7f8996;
+}
+
+.switch input:checked + .slider .ball {
+  left: 72%;
+  transform: rotate(360deg);
+  box-shadow: none;
+  outline: 6px solid rgba(255, 255, 255, 0.278);
+}
+
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #0d6efd;
+  transition: all 0.4s;
+  border-radius: 30px;
+}
+
+.switch .slider .title {
+   position: absolute;
+  top: 50%;
+  right: 10px;         /* move to the right side with some padding */
+  transform: translateY(-50%);
+  font-weight: 600;
+  transition: all 0.4s;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  color: white;
+  font-size: 10px;
+  text-align: right;   /* align text to the right */
+  width: auto; 
+}
+
+.switch .slider .ball {
+  background-color: #fff;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  position: absolute;
+  left: -1px;
+  transition: 0.4s;
+}
+
+.switch .slider .ball .icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0d6efd;
+  
+}
+

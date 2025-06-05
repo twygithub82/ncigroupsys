@@ -367,13 +367,15 @@
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="hour">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                     <mat-header-cell mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                      {{translatedLangText.HOUR}}
+                      {{getResultTable_HourText()}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.HOUR}}:</span><tlx-form-field
+                      <span class="mobile-label">{{getResultTable_HourText()}}:</span>
+                      
+                      <tlx-form-field
                         customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           @if(IsApproved())
@@ -426,24 +428,69 @@
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">{{translatedLangText.LABOUR}}
-                      (${{parse2Decimal(this.packageLabourItem?.cost)}}):</mat-footer-cell>
+                      (${{parse2Decimal(getLabourCost())}}):</mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="approve_part">
-                    <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <mat-icon>more_vert</mat-icon>
-                    </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                      @if (row.approve_part === null || row.approve_part === undefined ||
-                      IsApprovePart(row)){
-                      <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
-                      }
-                      @else {
-                      <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
-                      }
-                    </mat-cell>
+
+                    
+                     @if(isSteamRepair)
+                    {
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <mat-icon>more_vert</mat-icon>
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
+                        @if (row.approve_part === null || row.approve_part === undefined ||
+                        IsApprovePart(row)){
+                        <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
+                        }
+                      </mat-cell>
+                     
+                    }
+                    @else{
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                        {{translatedLangText.RATE}}
+                      </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.RATE}}:</span>
+                       <!-- From Uiverse.io by Na3ar-17 --> 
+                        <div class="container">
+                          <label class="switch">
+                            <input type="checkbox"  [(ngModel)]="flat_rate"  />
+                            <span class="slider">
+                              <span class="title">{{getRateType()}}</span>
+                              <span class="ball">
+                                <span class="icon">
+                                  <svg
+                                    class="w-6 h-6 text-gray-800 dark:text-white"
+                                    aria-hidden="true"
+                                    width="25"
+                                    height="25"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <circle
+                                      cx="12"
+                                      cy="12"
+                                      r="6"
+                                      fill="currentColor"
+                                    />
+                                  </svg>
+                                </span>
+                              </span>
+                            </span>
+                          </label>
+                        </div>
+
+                      </mat-cell>
+                     }
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
                   </ng-container>
@@ -549,7 +596,7 @@
                 {{translatedLangText.EXPORT}}
               </button>
               }
-              @if (steamDS.canAmend(this.steamItem!)||this.isDuplicate) {
+              @if (steamDS.canAmend(this.steamItem!)||this.isDuplicate ||steamDS.canAmendAutoApprovedSteam(this.steamItem!)) {
               @if(isAllowToSaveSubmit())
               {
               <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
