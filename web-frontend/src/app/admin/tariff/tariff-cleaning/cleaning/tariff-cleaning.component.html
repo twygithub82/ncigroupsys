@@ -101,7 +101,7 @@
           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_METHOD }}</mat-label>
-              <mat-select formControlName="method">
+              <mat-select formControlName="method" [compareWith]="compareObjects">
                 @for (cm of cMethodList; track cm) {
                 <mat-option [value]="cm">
                   {{cm.description}}
@@ -121,7 +121,7 @@
           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_CATEGORY }}</mat-label>
-              <mat-select formControlName="category">
+              <mat-select formControlName="category" [compareWith]="compareObjects">
                 @for (cCat of cCategoryList; track cCat) {
                 <mat-option [value]="cCat">
                   {{cCat.name}}

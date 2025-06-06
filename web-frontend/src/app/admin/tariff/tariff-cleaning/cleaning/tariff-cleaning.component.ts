@@ -229,8 +229,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       last_cargo: this.lastCargoControl,
       cargo_name: [''],
       class_no: [''],
-      method: [''],
-      category: this.categoryControl,
+      method: [this.cMethodList.find(m => m.description === 'All' || null)],
+      category: [''],//this.categoryControl,
       hazard_level: this.hazardLevelControl,
       ban_type: [''],
       flash_point: [''],
@@ -268,13 +268,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   public loadData() {
     this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
-        this.cCategoryList = data;
+        this.cCategoryList =  data;//addDefaultSelectOption(data, 'All');
       }
     });
 
     this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
-        this.cMethodList = data;
+        this.cMethodList = addDefaultSelectOption(data, 'All');
       }
     });
 
@@ -446,7 +446,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       tariff_cleaning.ban_type_cv = { contains: banType };
     }
 
-    if (this.searchForm!.value['method']) {
+    if (this.searchForm!.value['method'] && this.searchForm!.value['method'].description !== 'All') {
       const cMethod: CleaningMethodItem = this.searchForm!.value['method'];
       tariff_cleaning.cleaning_method_guid = { contains: cMethod.guid };
     }
@@ -585,8 +585,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   resetForm() {
     this.searchForm?.patchValue({
       class_no: '',
-      method: '',
-      category: '',
+      method: 'All',
+      category: 'EASY',
       hazard_level: '',
       //ban_type: '',
       un_no: '',
