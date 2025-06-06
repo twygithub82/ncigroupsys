@@ -268,13 +268,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   public loadData() {
     this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
-        this.cCategoryList =  data;//addDefaultSelectOption(data, 'All');
+        this.cCategoryList =  addDefaultSelectOption(data, 'All');
       }
     });
 
     this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
-        this.cMethodList = addDefaultSelectOption(data, 'All');
+        this.cMethodList =  addDefaultSelectOption(data, 'All');
       }
     });
 
@@ -812,5 +812,11 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   compareObjects(o1: any, o2: any): boolean {
     return BusinessLogicUtil.emptyCompareWith(o1, o2);
+  }
+
+  displayCargoName(row: any): string {
+    //if()
+    if(row.description) return row.description;
+    else return row.name;
   }
 }
