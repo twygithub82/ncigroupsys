@@ -124,7 +124,8 @@
               <mat-select formControlName="category">
                 @for (cCat of cCategoryList; track cCat) {
                 <mat-option [value]="cCat">
-                  {{cCat.name}}
+                  <!-- {{cCat.name}} -->
+                   {{displayCargoName(cCat)}}
                 </mat-option>
                 }
               </mat-select>

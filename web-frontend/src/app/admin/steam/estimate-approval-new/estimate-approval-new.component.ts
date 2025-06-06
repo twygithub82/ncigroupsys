@@ -951,8 +951,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.sot_guid = this.sotItem?.guid;
       newSteamItem.est_cost = this.getTotalCost();
       newSteamItem.est_hour = this.getTotalLabourHour();
-      newSteamItem.rate = this.packageLabourItem?.cost;
-      newSteamItem.flat_rate = this.sotItem?.tank?.flat_rate;
+      newSteamItem.rate = this.getRate(); //this.packageLabourItem?.cost;
+      newSteamItem.flat_rate = this.flat_rate;//this.sotItem?.tank?.flat_rate;
       newSteamItem.steaming_part = [];
       this.deList.forEach(data => {
         var steamPart: SteamPartItem = new SteamPartItem(data);
@@ -977,7 +977,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.steaming_part = [];
       updSteamItem.est_cost = this.getTotalCost();
       updSteamItem.est_hour = this.getTotalLabourHour();
-      updSteamItem.rate = this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
+      updSteamItem.rate = this.getRate();//this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
       updSteamItem.flat_rate = this.flat_rate;
       updSteamItem.total_material_cost = this.getTotalMaterialCost();
       updSteamItem.total_labour_cost = this.getTotalApprovedLabourCost();
@@ -1361,7 +1361,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.isDuplicate = this.historyState.action === 'DUPLICATE';
       this.sotItem = this.historyState.selectedRow;
       this.steamItem = this.historyState.selectedSteam;
-      this.flat_rate=(this.steamItem?.flat_rate||false)
+      this.flat_rate=((this.steamItem?.flat_rate||0)===0)?false:true;
       console.log(this.steamItem)
       this.steam_guid = this.steamItem?.guid;
       this.isSteamRepair=this.steamDS.IsSteamRepair(this.steamItem!);
@@ -1739,25 +1739,26 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
     else
     {
-       if(this.flat_rate)
-       {
-         if (this.IsApproved()) {
-            calResCost = steamPart.approve_cost!;
-          }
-          else {
-            calResCost = steamPart.cost! ;
-          }
+      calResCost = this.getRate();
+      //  if(this.flat_rate)
+      //  {
+      //    if (this.IsApproved()) {
+      //       calResCost = steamPart.approve_cost!;
+      //     }
+      //     else {
+      //       calResCost = steamPart.cost! ;
+      //     }
          
-       }
-       else
-       {
-         if (this.IsApproved()) {
-            calResCost = steamPart.approve_labour!;
-          }
-          else {
-            calResCost = steamPart.labour! ;
-          }
-       }
+      //  }
+      //  else
+      //  {
+      //    if (this.IsApproved()) {
+      //       calResCost = steamPart.approve_labour!;
+      //     }
+      //     else {
+      //       calResCost = steamPart.labour! ;
+      //     }
+      //  }
     }
 
     return calResCost;
@@ -1899,6 +1900,20 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     else
     {
       return 0;
+    }
+  }
+
+  getRate():number{
+    if(this.isSteamRepair)
+    {
+      return this.packageLabourItem?.cost||0;
+    }
+    else
+    {
+      if(this.deList.length==0) return 0;
+
+      if(this.flat_rate) return this.IsApproved()?(this.deList[0].approve_cost || 0):(this.deList[0].cost || 0);
+      else  return this.IsApproved()?(this.deList[0].approve_labour || 0):(this.deList[0].labour || 0);
     }
   }
   
