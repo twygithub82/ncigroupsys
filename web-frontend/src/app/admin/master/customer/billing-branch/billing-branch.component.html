@@ -80,7 +80,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
-                    <mat-select formControlName="default_profile">
+                    <mat-select formControlName="default_profile" [compareWith]="compareObjects">
                       @for (option of unit_typeList; track option) {
                       <mat-option [value]="option">{{option.unit_type}}</mat-option>
                       }

@@ -229,8 +229,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       last_cargo: this.lastCargoControl,
       cargo_name: [''],
       class_no: [''],
-      method: [''],
-      category: this.categoryControl,
+      method: [this.cMethodList.find(m => m.description === 'All' || null)],
+      category: [''],//this.categoryControl,
       hazard_level: this.hazardLevelControl,
       ban_type: [''],
       flash_point: [''],
@@ -440,18 +440,18 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       tariff_cleaning.hazard_level = { contains: hazardLevel.code_val };
     }
 
-    if (this.searchForm!.value['ban_type']) {
+    if (this.searchForm!.value['ban_type'] && this.searchForm!.value['ban_type'].description !== 'All') {
       const banType: CodeValuesItem = this.searchForm!.value['ban_type'];
       //tariff_cleaning.ban_type = { contains: 'Half_Ban' };
       tariff_cleaning.ban_type_cv = { contains: banType };
     }
 
-    if (this.searchForm!.value['method']) {
+    if (this.searchForm!.value['method'] && this.searchForm!.value['method'].description !== 'All') {
       const cMethod: CleaningMethodItem = this.searchForm!.value['method'];
       tariff_cleaning.cleaning_method_guid = { contains: cMethod.guid };
     }
 
-    if (this.searchForm!.value['category']) {
+    if (this.searchForm!.value['category'] && this.searchForm!.value['category'].description !== 'All') {
       const cCat: CleaningCategoryItem = this.searchForm!.value['category'];
       tariff_cleaning.cleaning_category_guid = { contains: cCat.guid };
     }
@@ -585,8 +585,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   resetForm() {
     this.searchForm?.patchValue({
       class_no: '',
-      method: '',
-      category: '',
+      method: 'All',
+      category: 'EASY',
       hazard_level: '',
       //ban_type: '',
       un_no: '',
@@ -814,7 +814,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     return BusinessLogicUtil.emptyCompareWith(o1, o2);
   }
 
-  displayCargoName(row: any): string {
+  displayCategoryName(row: any): string {
     //if()
     if(row.description) return row.description;
     else return row.name;

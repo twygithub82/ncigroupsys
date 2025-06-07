@@ -41,6 +41,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-billing-branch',
@@ -286,7 +287,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      default_profile: [''],
+      default_profile: [this.unit_typeList.find(u => u.unit_type! === 'All' || null)],
       branch_code: [''],
       phone: [''],
       fax_no: [''],
@@ -446,7 +447,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       where.and = [{ code: { contains: this.pcForm!.value["branch_code"] } }, { type_cv: { eq: 'BRANCH' } }];
     }
 
-    if (this.pcForm!.get("default_profile")?.value) {
+    if (this.pcForm!.get("default_profile")?.value?.guid) {
       const tankSearch: any = {};
       tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
       where.tank = tankSearch;
@@ -598,7 +599,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
     });
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
-      this.unit_typeList = data;
+      this.unit_typeList = [{ guid: '', unit_type: 'All' }, ...data]
+      //this.unit_typeList = data;
     });
 
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
@@ -645,6 +647,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
     // TableExportUtil.exportToExcel(exportData, 'excel');
   }
+
+    compareObjects(o1: any, o2: any): boolean {
+      return BusinessLogicUtil.emptyCompareWith(o1, o2);
+    }
 
   // context menu
   onContextMenu(event: MouseEvent, item: any) {

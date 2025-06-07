@@ -645,7 +645,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       // where.part_name = { contains: description }
       if (handled === 'HANDLED') {
         where.and.push({ tank_count: { gt: 0 } })
-      } else if (handled === 'NON_HANDLE') {
+      } else if (handled === 'NON_HANDLED') {
         where.and.push({ tank_count: { lte: 0 } })
       }
     }
