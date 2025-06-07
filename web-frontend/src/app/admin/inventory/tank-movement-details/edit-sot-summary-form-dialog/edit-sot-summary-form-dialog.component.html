@@ -1,0 +1,112 @@
+<div class="addContainer">
+  <div class="modalHeader_left_align">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4 mat-dialog-title>{{dialogTitle}}</h4>
+      </div>
+    </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
+      <!-- <div class="row">
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.OWNER}}</mat-label>
+            <input matInput [formControl]="ownerCodeControl" [matAutocomplete]="ownerCompany" required>
+            <mat-autocomplete #ownerCompany="matAutocomplete" [displayWith]="displayCustomerCompanyFn" (optionSelected)="onSelect($event.option.value)">
+              @for (cc of ownerCompanyList; track cc) {
+              <mat-option [value]="cc">
+                {{cc.name}}
+              </mat-option>
+              }
+            </mat-autocomplete>
+            @if (ownerCodeControl.hasError('invalidAutocompleteSelection')) {
+            <mat-error>
+              {{data.translatedLangText.INVALID_SELECTION}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.CUSTOMER}}</mat-label>
+            <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCompany" required>
+            <mat-autocomplete #customerCompany="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+              @for (cc of customerCompanyList; track cc) {
+              <mat-option [value]="cc">
+                {{cc.name}}
+              </mat-option>
+              }
+            </mat-autocomplete>
+            @if (customerCodeControl.hasError('invalidAutocompleteSelection')) {
+            <mat-error>
+              {{data.translatedLangText.INVALID_SELECTION}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div> -->
+      <div class="row">
+        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.YARD}}</mat-label>
+            <mat-select formControlName="yard_cv" required>
+              @for (cv of data.populateData.yardCvList; track cv) {
+              <mat-option [value]="cv.code_val">{{cv.description}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <span class="label-display-info">{{data.translatedLangText.NEXT_TEST}}:</span>
+          <span class="value-display-info">
+            {{next_test_desc || '-'}}
+          </span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.LAST_TEST}}</mat-label>
+            <mat-select formControlName="last_test_cv" required>
+              @for (cv of data.populateData.testTypeCvList; track cv) {
+              <mat-option [value]="cv.code_val">{{cv.description}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.TEST_DATE}}</mat-label>
+            <input matInput formControlName="test_dt" [matDatepicker]="eta_picker" [max]="latestTestDt">
+            <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
+            <mat-datepicker #eta_picker [startAt]="initialDt"></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.CLASS_BODIES}}</mat-label>
+            <mat-select formControlName="test_class_cv" required>
+              @for (cv of data.populateData.testClassCvList; track cv) {
+              <mat-option [value]="cv.code_val">{{cv.description}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" (click)="submit()">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{data.translatedLangText.UPDATE}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

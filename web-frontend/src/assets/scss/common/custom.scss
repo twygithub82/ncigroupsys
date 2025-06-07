@@ -2141,12 +2141,14 @@ $grid-breakpoints: (
 }
 
 .green-button {
-  background-color: #25D366 !important; /* Material green */
+  background-color: #25D366 !important;
+  /* Material green */
   color: white !important;
 }
 
 .yellow-button {
-  background-color: #FFC107 !important; /* Material green */
+  background-color: #FFC107 !important;
+  /* Material green */
   color: white !important;
 }
 
@@ -2297,6 +2299,10 @@ mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label
   color: mat.get-color-from-palette(custom-theme.$custom-primary, 500-contrast) !important;
 }
 
+.value-display-info {
+  font-weight: bold;
+}
+
 .right-align-display {
   &>[class^="col-"] {
     padding-left: 5px !important;
@@ -2311,7 +2317,6 @@ mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label
   .value-display-info {
     display: block;
     text-align: left;
-    font-weight: bold;
   }
 }
 

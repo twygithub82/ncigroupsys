@@ -120,9 +120,9 @@ export class FormDialogComponent {
         location_to_cv: this.transferForm.get('location_to_cv')?.value,
         transfer_out_dt: Utility.convertDate(this.transferForm.get('transfer_out_dt')?.value || new Date(), false, true) as number,
         transfer_in_dt: Utility.convertDate(this.transferForm.get('transfer_in_dt')?.value, false, true) as number,
-        haulier: this.transferForm.get('haulier')?.value,
+        haulier: this.transferForm.get('haulier')?.value?.toUpperCase(),
         vehicle_no: this.transferForm.get('vehicle_no')?.value?.toUpperCase(),
-        driver_name: this.transferForm.get('driver_name')?.value,
+        driver_name: this.transferForm.get('driver_name')?.value?.toUpperCase(),
         remarks: this.transferForm.get('remarks')?.value,
       }
       const returnDialog: DialogData = {
