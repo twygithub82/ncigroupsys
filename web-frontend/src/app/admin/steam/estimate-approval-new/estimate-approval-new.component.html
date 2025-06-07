@@ -463,7 +463,7 @@
                        <!-- From Uiverse.io by Na3ar-17 --> 
                         <div class="container">
                           <label class="switch">
-                            <input type="checkbox"  [(ngModel)]="flat_rate"  />
+                            <input type="checkbox"  [(ngModel)]="flat_rate"  [disabled]="isDisabled()" />
                             <span class="slider">
                               <span class="title">{{getRateType()}}</span>
                               <span class="ball">
@@ -596,7 +596,7 @@
                 {{translatedLangText.EXPORT}}
               </button>
               }
-              @if (steamDS.canAmend(this.steamItem!)||this.isDuplicate ||steamDS.canAmendAutoApprovedSteam(this.steamItem!)) {
+              @if (steamDS.canAmend(this.steamItem!)||this.isDuplicate ||steamDS.canAmendAutoApprovedSteam(this.steamItem!) ) {
               @if(isAllowToSaveSubmit())
               {
               <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"

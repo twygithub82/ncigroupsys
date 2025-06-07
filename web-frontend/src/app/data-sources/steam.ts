@@ -1200,6 +1200,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   canAmendAutoApprovedSteam(steam: SteamItem): boolean {
+    if (!steam) return true;
     const validStatus = ['APPROVED']
 
     return validStatus.includes(steam?.status_cv!) && BusinessLogicUtil.isAutoApproveSteaming(steam);

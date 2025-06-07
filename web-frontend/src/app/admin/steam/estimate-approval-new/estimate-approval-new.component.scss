@@ -25,6 +25,33 @@
   color: #fff;
 }
 
+
+.switch input:disabled + .slider {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.switch input:disabled + .slider .ball {
+  background-color: #eee;
+  cursor: not-allowed;
+}
+
+.switch input:disabled + .slider .title {
+  color: #000;
+  cursor: not-allowed;
+}
+
+.switch input:disabled + .slider .ball .icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #999;
+  
+}
+
+
 .switch {
   font-size: 0.75rem;
   position: relative;
