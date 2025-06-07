@@ -1208,6 +1208,11 @@ export class Utility {
   {
     return systemCurrencyCode;
   }
+
+  static IsAllowAutoSearch():boolean
+  {
+    return false;
+  }
 }
 
 export const TANK_STATUS_PRE_IN_YARD = [
