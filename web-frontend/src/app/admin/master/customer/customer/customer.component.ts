@@ -43,6 +43,7 @@ import { Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -257,6 +258,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.countryCodes = Utility.getCountryCodes("country", true);
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
+    this.initPcForm();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
     // var state = history.state;
@@ -302,11 +304,11 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
       customer_code: this.customerCodeControl,
-      default_profile: [''],
+      default_profile: [this.unit_typeList.find(u => u.unit_type! === 'All' || null)],
       phone: [''],
       fax_no: [''],
       email: [''],
-      country: [''],
+      country: ['All'],
       contact_person: [''],
       mobile_no: [''],
       description: this.descriptionControl,
@@ -316,6 +318,10 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
+  }
+
+  compareObjects(o1: any, o2: any): boolean {
+    return BusinessLogicUtil.emptyCompareWith(o1, o2);
   }
 
   refresh() {
@@ -473,7 +479,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       where.and.push({ customer_company: customer_company })
     }
     
-    if (this.pcForm!.value["country"] && this.pcForm!.value["country"] != '--Select--') {
+    if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
       // where.country = { eq: this.pcForm!.value["country"] };
       const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
       where.and.push({ customer_company: customer_company })
@@ -601,7 +607,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   public loadData() {
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
-      this.unit_typeList = [{ guid: '', unit_type: '--Select--' }, ...data]
+      this.unit_typeList = [{ guid: '', unit_type: 'All' }, ...data]
       // this.unit_typeList = [...data]
     });
 

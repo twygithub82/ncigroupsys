@@ -342,7 +342,7 @@
                         [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.HANDLED_ITEM}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
                         <span class="mobile-label">{{this.translatedLangText.HANDLED_ITEM}}:</span>
-                        {{getHandledItemDescription(row.tank_count > 0 ? 'HANDLED' : 'NON_HANDLE')}}
+                        {{getHandledItemDescription(row.tank_count > 0 ? 'HANDLED' : 'NON_HANDLED')}}
                       </mat-cell>
                     </ng-container>
 

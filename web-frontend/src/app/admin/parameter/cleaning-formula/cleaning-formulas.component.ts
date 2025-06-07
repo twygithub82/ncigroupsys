@@ -136,7 +136,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     CLEANING_FORMULA: "MENUITEMS.CLEANING-MANAGEMENT.LIST.CLEAN-FORMULA",
     DURATION: "COMMON-FORM.DURATION-MIN",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    FORMULA_DESCRIPTION_SELECTED:'COMMON-FORM.FORMULA-DESCRIPTION-SELECTED',
+    FORMULA_DESCRIPTION_SELECTED: 'COMMON-FORM.FORMULA-DESCRIPTION-SELECTED',
   }
 
   soSelection = new SelectionModel<StoringOrderItem>(true, []);
@@ -155,7 +155,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   soList: StoringOrderItem[] = [];
   mthDS: CleaningMethodDS;
   fmlDS: CleaningFormulaDS;
-  
+
 
 
   pageIndex = 0;
@@ -191,7 +191,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   contextMenuPosition = { x: '0px', y: '0px' };
   messages = [];
   messageSubscription?: Subscription;
-  descList:string[]=[];
+  descList: string[] = [];
 
   ngOnInit() {
     this.initializeFilterCustomerCompany();
@@ -206,36 +206,36 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  
-   initializeValueChanges() {
-      var searchObj = this.searchForm;
-      // searchObj?.get("name")!.valueChanges.pipe(
-      //   startWith(''),
-      //   debounceTime(300),
-      //   tap(value => {
-      //     this.fmlDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
-      //       this.nameList = data.map(i => i.name || '');
-      //     });
-      //   })
-      // ).subscribe();
-  
-      searchObj?.get("description")!.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        tap(value => {
-          this.fmlDS.search({ description: { contains: value } }, { description: "ASC" }, 100).subscribe(data => {
 
-            const seen = new Set<string>();
-            this.descList = data.map(i => i.description || '').filter(desc => {
-                const key = desc.toLowerCase();
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return true;
-              });
+  initializeValueChanges() {
+    var searchObj = this.searchForm;
+    // searchObj?.get("name")!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     this.fmlDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
+    //       this.nameList = data.map(i => i.name || '');
+    //     });
+    //   })
+    // ).subscribe();
+
+    searchObj?.get("description")!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.fmlDS.search({ description: { contains: value } }, { description: "ASC" }, 100).subscribe(data => {
+
+          const seen = new Set<string>();
+          this.descList = data.map(i => i.description || '').filter(desc => {
+            const key = desc.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
           });
-        })
-      ).subscribe();
-    }
+        });
+      })
+    ).subscribe();
+  }
 
   initSearchForm() {
     this.searchForm = this.fb.group({
@@ -324,9 +324,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
 
-     if(this.selectedDescs.length>0)
-    {
-      where.description={in: this.selectedDescs};
+    if (this.selectedDescs.length > 0) {
+      where.description = { in: this.selectedDescs };
     }
 
 
@@ -493,139 +492,134 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.searchForm?.patchValue({
       description: '',
     });
+    this.selectedDescs = [];
     // this.categoryControl.reset();
     // this.hazardLevelControl.reset();
     // this.banTypeControl.reset();
   }
 
-  handleDelete(event: Event, row: any, ): void {
+  handleDelete(event: Event, row: any,): void {
     event.preventDefault();
     event.stopPropagation();
     this.deleteItem(row);
   }
 
   deleteItem(row: CleaningFormulaItem) {
-     
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
-          action: 'new',
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result?.action === 'confirmed') {
-         this.RmoveCleaningFormula(row.guid!);
-        }
-      });
-    }
-  
-  CanDelete(row: CleaningFormulaItem):boolean{
-    var bRetval:boolean =false;
 
-      if(!bRetval)
-      {
-        bRetval = (row?.cleaning_method_formula?.length||0)===0;
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        this.RmoveCleaningFormula(row.guid!);
       }
+    });
+  }
+
+  CanDelete(row: CleaningFormulaItem): boolean {
+    var bRetval: boolean = false;
+
+    if (!bRetval) {
+      bRetval = (row?.cleaning_method_formula?.length || 0) === 0;
+    }
     return bRetval;
   }
 
-  RmoveCleaningFormula( guids: string) {
-  
-      this.fmlDS.deleteCleaningFormula([guids]).subscribe(result => {
-        if (result.data.deleteCleaningFormula) {
-          this.handleSaveSuccess(result.data.deleteCleaningFormula);
-          this.pageIndex=0;
-          this.search();
-        }
-      })
-  
+  RmoveCleaningFormula(guids: string) {
+
+    this.fmlDS.deleteCleaningFormula([guids]).subscribe(result => {
+      if (result.data.deleteCleaningFormula) {
+        this.handleSaveSuccess(result.data.deleteCleaningFormula);
+        this.pageIndex = 0;
+        this.search();
+      }
+    })
+
+  }
+
+
+  @ViewChild('descInput', { static: true })
+  descInput?: ElementRef<HTMLInputElement>;
+  selectedDescs: any[] = [];
+  description_itemSelected(row: any): boolean {
+    var itm = this.selectedDescs;
+    var retval: boolean = false;
+    const index = itm.findIndex(c => c === row);
+    retval = (index >= 0);
+    return retval;
+  }
+
+  description_getSelectedDisplay(): string {
+    var itm = this.selectedDescs;
+    var retval: string = "";
+    if (itm?.length > 1) {
+      retval = `${itm.length} ${this.translatedLangText.FORMULA_DESCRIPTION_SELECTED}`;
+    }
+    else if (itm?.length == 1) {
+      retval = `${itm[0]}`
+    }
+    return retval;
+  }
+
+
+
+  description_removeAllSelected(): void {
+    this.selectedDescs = [];
+  }
+
+  description_selected(event: MatAutocompleteSelectedEvent): void {
+    var itm = this.selectedDescs;
+    var cnt = this.searchForm?.get('description');
+    var elmInput = this.descInput;
+    const val = event.option.value;
+    const index = itm.findIndex(c => c === val);
+    if (!(index >= 0)) {
+      itm.push(val);
+      //this.search();
+    }
+    else {
+      itm.splice(index, 1);
+      //this.search();
     }
 
+    if (elmInput) {
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+    }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
 
-        @ViewChild('descInput', { static: true })
-            descInput?: ElementRef<HTMLInputElement>;
-            selectedDescs:any[]=[];
-              description_itemSelected(row: any): boolean {
-                 var itm=this.selectedDescs;
-                var retval: boolean = false;
-                const index = itm.findIndex(c => c=== row);
-                retval = (index >= 0);
-                return retval;
-              }
-            
-            
-            
-            
-              description_getSelectedDisplay(): string {
-                var itm=this.selectedDescs;
-                var retval: string = "";
-                if (itm?.length > 1) {
-                  retval = `${itm.length} ${this.translatedLangText.FORMULA_DESCRIPTION_SELECTED}`;
-                }
-                else if (itm?.length == 1) {
-                  retval = `${itm[0]}`
-                }
-                return retval;
-              }
-            
-            
-            
-              description_removeAllSelected(): void {
-                this.selectedDescs=[];
-              }
-            
-              description_selected(event: MatAutocompleteSelectedEvent): void {
-                var itm=this.selectedDescs;
-                var cnt=this.searchForm?.get('description');
-                var elmInput=this.descInput;
-                const val=event.option.value;
-                const index = itm.findIndex(c => c === val);
-                if (!(index >= 0)) {
-                  itm.push(val);
-                  // this.search();
-                }
-                else {
-                  itm.splice(index, 1);
-                  // this.search();
-                }
-            
-                if (elmInput) {
-            
-                  elmInput.nativeElement.value = '';
-                 cnt?.setValue('');
-                  
-                }
-                // this.updateFormControl();
-                //this.customerCodeControl.setValue(null);
-                //this.pcForm?.patchValue({ customer_code: null });
-              }
-            
-              description_onCheckboxClicked(row: any) {
-                const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-                this.description_selected(fakeEvent);
-            
-              }
-            
-              description_add(event: MatChipInputEvent): void {
-                var cnt=this.searchForm?.get('description');
-                const input = event.input;
-                const value = event.value;
-                // Add our fruit
-                if ((value || '').trim()) {
-                  //this.fruits.push(value.trim());
-                }
-                // Reset the input value
-                if (input) {
-                  input.value = '';
-                }
-                cnt?.setValue(null);
-              }
+  description_onCheckboxClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.description_selected(fakeEvent);
+
+  }
+
+  description_add(event: MatChipInputEvent): void {
+    var cnt = this.searchForm?.get('description');
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    cnt?.setValue(null);
+  }
 
 }

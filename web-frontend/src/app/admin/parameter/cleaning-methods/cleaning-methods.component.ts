@@ -133,8 +133,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     PROCESS_NAME: "COMMON-FORM.PROCESS-NAME",
     PROCESS_DESCRIPTION: "COMMON-FORM.DESCRIPTION",
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    PROCESS_DESCRIPTION_SELECTED:'COMMON-FORM.PROCESS-DESCRIPTION-SELECTED',
-    PROCESS_NAME_SELECTED:'COMMON-FORM.PROCESS-NAME-SELECTED'
+    PROCESS_DESCRIPTION_SELECTED: 'COMMON-FORM.PROCESS-DESCRIPTION-SELECTED',
+    PROCESS_NAME_SELECTED: 'COMMON-FORM.PROCESS-NAME-SELECTED'
   }
 
   searchForm?: UntypedFormGroup;
@@ -303,14 +303,12 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
     var order = this.lastOrderBy;
 
-    if(this.selectedNames.length>0)
-    {
-      where.name={in: this.selectedNames};
+    if (this.selectedNames.length > 0) {
+      where.name = { in: this.selectedNames };
     }
 
-    if(this.selectedDescs.length>0)
-    {
-      where.description={in: this.selectedDescs};
+    if (this.selectedDescs.length > 0) {
+      where.description = { in: this.selectedDescs };
     }
 
     // if (this.processNameControl?.value) {
@@ -493,6 +491,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       description: '',
       name: ''
     });
+    this.name_removeAllSelected();
+    this.description_removeAllSelected();
   }
 
 
@@ -551,167 +551,162 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     return pn || '';
   }
 
-
-
-
-  
   @ViewChild('nameInput', { static: true })
   nameInput?: ElementRef<HTMLInputElement>;
-  selectedNames:any[]=[];
-    name_itemSelected(row: any): boolean {
-       var itm=this.selectedNames;
-      var retval: boolean = false;
-      const index = itm.findIndex(c => c=== row);
-      retval = (index >= 0);
-      return retval;
-    }
-  
-  
-  
-  
-    name_getSelectedDisplay(): string {
-      var itm=this.selectedNames;
-      var retval: string = "";
-      if (itm?.length > 1) {
-        retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
-      }
-      else if (itm?.length == 1) {
-        retval = `${itm[0]}`
-      }
-      return retval;
-    }
-  
-  
-  
-    name_removeAllSelected(): void {
-      this.selectedNames=[];
-    }
-  
-    name_selected(event: MatAutocompleteSelectedEvent): void {
-      var itm=this.selectedNames;
-      var cnt=this.processNameControl;
-      var elmInput=this.nameInput;
-      const val=event.option.value;
-      const index = itm.findIndex(c => c === val);
-      if (!(index >= 0)) {
-        itm.push(val);
-        // this.search();
-      }
-      else {
-        itm.splice(index, 1);
-        // this.search();
-      }
-  
-      if (elmInput) {
-  
-        elmInput.nativeElement.value = '';
-       cnt?.setValue('');
-        
-      }
-      // this.updateFormControl();
-      //this.customerCodeControl.setValue(null);
-      //this.pcForm?.patchValue({ customer_code: null });
-    }
-  
-    name_onCheckboxClicked(row: any) {
-      const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-      this.name_selected(fakeEvent);
-  
-    }
-  
-    name_add(event: MatChipInputEvent): void {
-      var cnt=this.processNameControl;
-      const input = event.input;
-      const value = event.value;
-      // Add our fruit
-      if ((value || '').trim()) {
-        //this.fruits.push(value.trim());
-      }
-      // Reset the input value
-      if (input) {
-        input.value = '';
-      }
-      cnt?.setValue(null);
-    }
+  selectedNames: any[] = [];
+  name_itemSelected(row: any): boolean {
+    var itm = this.selectedNames;
+    var retval: boolean = false;
+    const index = itm.findIndex(c => c === row);
+    retval = (index >= 0);
+    return retval;
+  }
 
 
 
-      @ViewChild('descInput', { static: true })
+
+  name_getSelectedDisplay(): string {
+    var itm = this.selectedNames;
+    var retval: string = "";
+    if (itm?.length > 1) {
+      retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
+    }
+    else if (itm?.length == 1) {
+      retval = `${itm[0]}`
+    }
+    return retval;
+  }
+
+
+
+  name_removeAllSelected(): void {
+    this.selectedNames = [];
+  }
+
+  name_selected(event: MatAutocompleteSelectedEvent): void {
+    var itm = this.selectedNames;
+    var cnt = this.processNameControl;
+    var elmInput = this.nameInput;
+    const val = event.option.value;
+    const index = itm.findIndex(c => c === val);
+    if (!(index >= 0)) {
+      itm.push(val);
+      this.search();
+    }
+    else {
+      itm.splice(index, 1);
+      this.search();
+    }
+
+    if (elmInput) {
+
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+    }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  name_onCheckboxClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.name_selected(fakeEvent);
+
+  }
+
+  name_add(event: MatChipInputEvent): void {
+    var cnt = this.processNameControl;
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    cnt?.setValue(null);
+  }
+
+
+
+  @ViewChild('descInput', { static: true })
   descInput?: ElementRef<HTMLInputElement>;
-  selectedDescs:any[]=[];
-    description_itemSelected(row: any): boolean {
-       var itm=this.selectedDescs;
-      var retval: boolean = false;
-      const index = itm.findIndex(c => c=== row);
-      retval = (index >= 0);
-      return retval;
+  selectedDescs: any[] = [];
+  description_itemSelected(row: any): boolean {
+    var itm = this.selectedDescs;
+    var retval: boolean = false;
+    const index = itm.findIndex(c => c === row);
+    retval = (index >= 0);
+    return retval;
+  }
+
+
+
+
+  description_getSelectedDisplay(): string {
+    var itm = this.selectedDescs;
+    var retval: string = "";
+    if (itm?.length > 1) {
+      retval = `${itm.length} ${this.translatedLangText.PROCESS_DESCRIPTION_SELECTED}`;
     }
-  
-  
-  
-  
-    description_getSelectedDisplay(): string {
-      var itm=this.selectedDescs;
-      var retval: string = "";
-      if (itm?.length > 1) {
-        retval = `${itm.length} ${this.translatedLangText.PROCESS_DESCRIPTION_SELECTED}`;
-      }
-      else if (itm?.length == 1) {
-        retval = `${itm[0]}`
-      }
-      return retval;
+    else if (itm?.length == 1) {
+      retval = `${itm[0]}`
     }
-  
-  
-  
-    description_removeAllSelected(): void {
-      this.selectedDescs=[];
+    return retval;
+  }
+
+
+
+  description_removeAllSelected(): void {
+    this.selectedDescs = [];
+  }
+
+  description_selected(event: MatAutocompleteSelectedEvent): void {
+    var itm = this.selectedDescs;
+    var cnt = this.descriptionControl;
+    var elmInput = this.descInput;
+    const val = event.option.value;
+    const index = itm.findIndex(c => c === val);
+    if (!(index >= 0)) {
+      itm.push(val);
+      this.search();
     }
-  
-    description_selected(event: MatAutocompleteSelectedEvent): void {
-      var itm=this.selectedDescs;
-      var cnt=this.descriptionControl;
-      var elmInput=this.descInput;
-      const val=event.option.value;
-      const index = itm.findIndex(c => c === val);
-      if (!(index >= 0)) {
-        itm.push(val);
-        // this.search();
-      }
-      else {
-        itm.splice(index, 1);
-        // this.search();
-      }
-  
-      if (elmInput) {
-  
-        elmInput.nativeElement.value = '';
-       cnt?.setValue('');
-        
-      }
-      // this.updateFormControl();
-      //this.customerCodeControl.setValue(null);
-      //this.pcForm?.patchValue({ customer_code: null });
+    else {
+      itm.splice(index, 1);
+      this.search();
     }
-  
-    description_onCheckboxClicked(row: any) {
-      const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-      this.description_selected(fakeEvent);
-  
+
+    if (elmInput) {
+
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+
     }
-  
-    description_add(event: MatChipInputEvent): void {
-      var cnt=this.descriptionControl;
-      const input = event.input;
-      const value = event.value;
-      // Add our fruit
-      if ((value || '').trim()) {
-        //this.fruits.push(value.trim());
-      }
-      // Reset the input value
-      if (input) {
-        input.value = '';
-      }
-      cnt?.setValue(null);
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  description_onCheckboxClicked(row: any) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.description_selected(fakeEvent);
+
+  }
+
+  description_add(event: MatChipInputEvent): void {
+    var cnt = this.descriptionControl;
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
     }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    cnt?.setValue(null);
+  }
 }

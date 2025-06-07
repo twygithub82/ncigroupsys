@@ -42,26 +42,20 @@
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
                   <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-
-
                       <mat-select  formControlName="customer_code" multiple>
                           <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
-
                             <ng-container *ngIf="cc !== null">
                               {{ ccDS.displayCodeDashName(cc) }}
                             </ng-container>
-
                           </mat-option>
                         </mat-select>
-
                   </mat-form-field>
-
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   @if (soDS.canAdd(storingOrderItem)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10 mt-2'"
                     (click)="addEstDetails($event)">
-                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ESTIMATE_DETAILS}}
+                    <mat-icon class="col-white">add</mat-icon>{{translatedLangText.DETAILS}}
                   </button>
                   }
                 </div>
@@ -70,7 +64,7 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
                     <table mat-table [dataSource]="repList.data" matSort
-                      class="mat-cell advance-table hover-highlight dark-header" multiTemplateDataRows>
+                      class="mat-cell advance-table hover-highlight dark-header curve-table" multiTemplateDataRows>
                       <ng-container matColumnDef="group_name_cv">
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
@@ -330,7 +324,7 @@
                   <div class="row">
                     <div class="col-xl-2-75 col-lg-2-75 col-md-2-75 col-sm-2-75 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border div-bg-blue">
                           <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
@@ -356,7 +350,7 @@
                     </div>
                     <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.RATE}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -406,7 +400,7 @@
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.TOTAL}}</span>
                         </div>
                       </div>

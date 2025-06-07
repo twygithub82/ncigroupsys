@@ -860,6 +860,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
+    //this.search();
   }
 
   onCheckboxClicked(row: CustomerCompanyItem) {

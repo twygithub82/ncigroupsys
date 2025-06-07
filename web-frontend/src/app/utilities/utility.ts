@@ -675,7 +675,7 @@ export class Utility {
     if (emptyCountry) {
       result = [
         {
-          country: '--Select--',
+          country: 'All',
           code: '',
           iso: '',
           flagUrl: ''
