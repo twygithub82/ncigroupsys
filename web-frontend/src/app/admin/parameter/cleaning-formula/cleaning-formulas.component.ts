@@ -585,11 +585,13 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      //this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
     else {
       itm.splice(index, 1);
-      //this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (elmInput) {

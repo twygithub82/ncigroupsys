@@ -585,16 +585,16 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   resetForm() {
     this.searchForm?.patchValue({
       class_no: '',
-      method: 'All',
-      category: 'EASY',
+      method: '',
+      category: '',
       hazard_level: '',
-      //ban_type: '',
+      ban_type: '',
       un_no: '',
     });
     this.lastCargoControl.reset();
     this.categoryControl.reset();
     this.hazardLevelControl.reset();
-    this.banTypeControl.reset('');
+    this.banTypeControl.reset();
     this.selectedCargo = [];
   }
 

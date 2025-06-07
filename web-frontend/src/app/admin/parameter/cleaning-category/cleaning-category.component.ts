@@ -42,6 +42,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { utils } from 'xlsx';
 
 @Component({
   selector: 'app-cleaning-category',
@@ -575,7 +576,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   RmoveCleaningCategory(guids: string) {
-
     this.catDS.deleteCleaningCategory([guids]).subscribe(result => {
       if (result.data.deleteCleaningCategory) {
         this.handleSaveSuccess(result.data.deleteCleaningCategory);
@@ -584,9 +584,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     })
 
   }
-
-
-
 
 
   @ViewChild('nameInput', { static: true })
@@ -627,11 +624,14 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
+      if (Utility.IsAllowAutoSearch())
+        this.search();
       // this.search();
     }
     else {
       itm.splice(index, 1);
-      // this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (elmInput) {
@@ -708,18 +708,18 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      // this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
     else {
       itm.splice(index, 1);
-      // this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (elmInput) {
-
       elmInput.nativeElement.value = '';
       cnt?.setValue('');
-
     }
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
