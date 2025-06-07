@@ -4,137 +4,138 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
-     <div class="card">
-    <div class="body">
-    <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
-        <div class="card p-0">
-          <mat-accordion>
-            <mat-expansion-panel [expanded]="true">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                      <mat-icon>search</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                    <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
-                      <mat-icon class="col-white">add</mat-icon>
-                    </button>
-                  </div>
-                  <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
+    <div class="card">
+      <div class="body">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <div class="card p-0">
+              <mat-accordion>
+                <mat-expansion-panel [expanded]="true">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                        <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                          <mat-icon>search</mat-icon>
+                        </button>
+                      </div>
+                      <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                        <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                          (click)="$event.stopPropagation()">
+                          <mat-icon>clear_all</mat-icon>
+                        </button>
+                      </div>
+                      <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+                        <button mat-mini-fab class="primary-light" (click)="addCall()"
+                          (click)="$event.stopPropagation()">
+                          <mat-icon class="col-white">add</mat-icon>
+                        </button>
+                      </div>
+                      <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                     <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
                       (click)="$event.stopPropagation()">
                       <mat-icon>refresh</mat-icon>
                     </button>
                   </div> -->
-                  @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                  <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                      @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                      <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
                   </div> -->
-                  }
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
-                <div class="row">
-                  <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 mb-0">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.NAME}}</mat-label>
-                        <mat-chip-grid #name_chipGrid>
-                          
-                          @if(this.selectedNames.length>0){
+                      }
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
+                    <div class="row">
+                      <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.NAME}}</mat-label>
+                          <mat-chip-grid #name_chipGrid>
+
+                            @if(this.selectedNames.length>0){
                             <mat-chip-row color="primary" (click)="name_removeAllSelected()">
                               <span> {{name_getSelectedDisplay()}}</span>
                               <button matChipRemove hidden>
                                 <mat-icon>cancel</mat-icon>
                               </button>
                             </mat-chip-row>
-                          }
-                        <input #nameInput  [matAutocomplete]="processName" formControlName="name"
-                          [matChipInputFor]="name_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                          (matChipInputTokenEnd)="name_add($event)">
-                        <mat-autocomplete  #processName="matAutocomplete" (optionSelected)="name_selected($event)">
-                          @for (pn of nameList; track pn) {
-                          <mat-option [value]="pn"  class="checkbox-option" [class.mdc-list-item--selected]="name_itemSelected(pn)">
-                            <div class="horizontal-container"> 
-                              <mat-checkbox 
-                                color="primary" 
-                                class="checkbox-item"  
-                                (click)="name_onCheckboxClicked(pn); $event.stopPropagation()"
-                                [checked]="name_itemSelected(pn) || false">
-                              </mat-checkbox>
-                              <div class="option-text">{{ pn }}</div>
-                            </div>
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
-                      </mat-chip-grid>
-                      </mat-form-field>
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                            }
+                            <input #nameInput [matAutocomplete]="processName" formControlName="name"
+                              [matChipInputFor]="name_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="name_add($event)">
+                            <mat-autocomplete #processName="matAutocomplete" (optionSelected)="name_selected($event)">
+                              @for (pn of nameList; track pn) {
+                              <mat-option [value]="pn" class="checkbox-option"
+                                [class.mdc-list-item--selected]="name_itemSelected(pn)">
+                                <div class="horizontal-container">
+                                  <mat-checkbox color="primary" class="checkbox-item"
+                                    (click)="name_onCheckboxClicked(pn); $event.stopPropagation()"
+                                    [checked]="name_itemSelected(pn) || false">
+                                  </mat-checkbox>
+                                  <div class="option-text">{{ pn }}</div>
+                                </div>
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-chip-grid>
+                        </mat-form-field>
+                        <!-- <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.NAME | translate}}</mat-label>
                       <input matInput formControlName="name">
                     </mat-form-field> -->
-                  </div>
-                  <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 mb-0">
-                     <mat-form-field class="example-full-width" appearance="fill">
+                      </div>
+                      <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
                           <mat-chip-grid #desc_chipGrid>
-                            
+
                             @if(this.selectedDescs.length>0){
-                              <mat-chip-row color="primary" (click)="description_removeAllSelected()">
-                                <span> {{description_getSelectedDisplay()}}</span>
-                                <button matChipRemove hidden>
-                                  <mat-icon>cancel</mat-icon>
-                                </button>
-                              </mat-chip-row>
+                            <mat-chip-row color="primary" (click)="description_removeAllSelected()">
+                              <span> {{description_getSelectedDisplay()}}</span>
+                              <button matChipRemove hidden>
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
                             }
-                          <input #descInput [matAutocomplete]="description" formControlName="description"
-                            [matChipInputFor]="desc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                            (matChipInputTokenEnd)="description_add($event)">
-                          <mat-autocomplete  #description="matAutocomplete" (optionSelected)="description_selected($event)">
-                            @for (pn of descList; track pn) {
-                            <mat-option [value]="pn"  class="checkbox-option">
-                              <div class="horizontal-container"> 
-                                <mat-checkbox 
-                                  color="primary" 
-                                  class="checkbox-item"  
-                                  (click)="description_onCheckboxClicked(pn); $event.stopPropagation()"
-                                  [checked]="description_itemSelected(pn) || false">
-                                </mat-checkbox>
-                                <div class="option-text">{{ pn }}</div>
-                              </div>
-                            </mat-option>
-                            }
-                          </mat-autocomplete>
-                        </mat-chip-grid>
-                      </mat-form-field>
-                    <!-- <mat-form-field class="example-full-width" appearance="fill">
+                            <input #descInput [matAutocomplete]="description" formControlName="description"
+                              [matChipInputFor]="desc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="description_add($event)">
+                            <mat-autocomplete #description="matAutocomplete"
+                              (optionSelected)="description_selected($event)">
+                              @for (pn of descList; track pn) {
+                              <mat-option [value]="pn" class="checkbox-option"
+                                [class.mdc-list-item--selected]="description_itemSelected(pn)">
+                                <div class="horizontal-container">
+                                  <mat-checkbox color="primary" class="checkbox-item"
+                                    (click)="description_onCheckboxClicked(pn); $event.stopPropagation()"
+                                    [checked]="description_itemSelected(pn) || false">
+                                  </mat-checkbox>
+                                  <div class="option-text">{{ pn }}</div>
+                                </div>
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-chip-grid>
+                        </mat-form-field>
+                        <!-- <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.DESCRIPTION | translate}}</mat-label>
                       <input matInput formControlName="description">
                     </mat-form-field> -->
-                  </div>
-                  <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2">
+                      </div>
+                      <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.MIN_COST | translate}}</mat-label>
                       <input matInput formControlName="min_cost" type="number">
                     </mat-form-field>
                   </div> -->
-                  <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2">
+                      <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{langText.MAX_COST | translate}}</mat-label>
                       <input matInput formControlName="max_cost" type="number">
                     </mat-form-field>
                   </div> -->
-                  <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto justify-content-end pe-4 pt-3">
+                      <!-- <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex ms-auto justify-content-end pe-4 pt-3">
                     <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                       <mat-icon>search</mat-icon>
                     </button>
@@ -143,91 +144,96 @@
                       <mat-icon>clear_all</mat-icon>
                     </button>
                   </div> -->
+                    </div>
+                  </form>
+                </mat-expansion-panel>
+              </mat-accordion>
+              <div class="body overflow-auto">
+                <div class="responsive_table">
+                  <table mat-table [dataSource]="catList" matSort
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                    <!-- ID Column -->
+                    <ng-container matColumnDef="id">
+                      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="category_name">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        {{langText.NAME| translate}}
+                      </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let row" class="">
+                        <span class="mobile-label">{{langText.NAME | translate}}:</span>{{row.name}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="category_description">
+                      <mat-header-cell *matHeaderCellDef>
+                        {{langText.DESCRIPTION | translate}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{langText.DESCRIPTION | translate}}:</span>{{row.description}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="category_cost">
+                      <mat-header-cell *matHeaderCellDef ngClass="'justify-content-center'">
+                        {{langText.CATEGORY_COST | translate}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        ngClass="'justify-content-center'">
+                        <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.cost.toFixed(2)}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="update_date">
+                      <mat-header-cell *matHeaderCellDef>
+                        {{langText.LAST_UPDATED | translate}}
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{langText.LAST_UPDATED |
+                          translate}}:</span>{{displayLastUpdated(row)}}
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell
+                        [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matHeaderCellDef>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i=index;"
+                        class="pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
+                        @if(CanDelete(row)){
+                        <button mat-icon-button (click)="$event.stopPropagation()" (click)="handleDelete($event, row)"
+                          [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                          <mat-icon>delete_forever</mat-icon>
+                        </button>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                      [style.cursor]="'pointer'" matRipple>
+                    </mat-row>
+                  </table>
                 </div>
-              </form>
-            </mat-expansion-panel>
-          </mat-accordion>
-          <div class="body overflow-auto">
-            <div class="responsive_table">
-              <table mat-table [dataSource]="catList" matSort
-                class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                  <mat-header-cell *matHeaderCellDef ></mat-header-cell>
-                  <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="category_name">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                    {{langText.NAME| translate}}
-                  </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
-                    <span class="mobile-label">{{langText.NAME | translate}}:</span>{{row.name}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="category_description">
-                  <mat-header-cell *matHeaderCellDef >
-                    {{langText.DESCRIPTION | translate}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.DESCRIPTION | translate}}:</span>{{row.description}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="category_cost">
-                  <mat-header-cell *matHeaderCellDef ngClass="'justify-content-center'">
-                    {{langText.CATEGORY_COST | translate}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" ngClass="'justify-content-center'">
-                    <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.cost.toFixed(2)}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="update_date">
-                  <mat-header-cell *matHeaderCellDef >
-                    {{langText.LAST_UPDATED | translate}}
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{langText.LAST_UPDATED | translate}}:</span>{{displayLastUpdated(row)}}
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <mat-header-cell [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" *matHeaderCellDef>
-                  </mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
-                    @if(CanDelete(row)){
-                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="handleDelete($event, row)"
-                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                      <mat-icon>delete_forever</mat-icon>
-                    </button>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
-                  [style.cursor]="'pointer'" matRipple>
-                </mat-row>
-              </table>
+                <!-- No result -->
+                @if (!(catDS.loading$ | async) && !catList.length) {
+                <mat-divider></mat-divider>
+                <div class="no-results m-l-20 pt-3" [style.display]="catList.length === 0 ? '' : 'none'">
+                  <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
+                </div>
+                }
+                <!-- Loading spinner -->
+                @if (catDS.loading$ | async) {
+                <div class="tbl-spinner">
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+                }
+                <mat-paginator #paginator [length]="catDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                </mat-paginator>
+              </div>
             </div>
-            <!-- No result -->
-            @if (!(catDS.loading$ | async) && !catList.length) {
-            <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="catList.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
-            </div>
-            }
-            <!-- Loading spinner -->
-            @if (catDS.loading$ | async) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
-            </div>
-            }
-            <mat-paginator #paginator [length]="catDS.totalCount" [pageIndex]="0" [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
-            </mat-paginator>
           </div>
         </div>
       </div>
-    </div>
-    </div>
     </div>
   </div>
 </section>

@@ -88,6 +88,7 @@ import { OverwriteRepairApprovalFormDialogComponent } from './overwrite-repair-a
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PreviewRepairEstFormDialog } from '@shared/preview/preview_repair_estimate/preview-repair-estimate.component';
+import { EditSotSummaryFormDialogComponent } from './edit-sot-summary-form-dialog/edit-sot-summary-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -482,7 +483,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     RATE: 'COMMON-FORM.RATE',
     NET_COST: 'COMMON-FORM.NET-COST',
     LESSEE: 'COMMON-FORM.LESSEE',
-    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL'
+    PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
+    TEST_DATE: 'COMMON-FORM.TEST-DATE',
+    OVERWRITE: 'COMMON-FORM.OVERWRITE',
+    CLASS_BODIES: 'COMMON-FORM.CLASS-BODIES',
   }
 
   sot_guid: string | null | undefined;
@@ -501,6 +505,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   schedulingList: SchedulingItem[] = [];
   surveyList: SurveyDetailItem[] = [];
   transferList: TransferItem[] = [];
+  latestSurveyDetailItem: SurveyDetailItem[] = [];
   allowAddPurposeTankStatuses: string[] = [
     'SO_GENERATED',
     'IN_GATE',
@@ -790,34 +795,34 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
     });
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
-      this.testTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.testTypeCvList = data;
       this.last_test_desc = this.getLastTest();
       this.next_test_desc = this.getNextTest();
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
-      this.testClassCvList = addDefaultSelectOption(data, "--Select--");
+      this.testClassCvList = data;
       this.last_test_desc = this.getLastTest();
     });
     this.cvDS.connectAlias('manufacturerCv').subscribe(data => {
-      this.manufacturerCvList = addDefaultSelectOption(data, "--Select--");
+      this.manufacturerCvList = data;
     });
     this.cvDS.connectAlias('claddingCv').subscribe(data => {
-      this.claddingCvList = addDefaultSelectOption(data, "--Select--");
+      this.claddingCvList = data;
     });
     this.cvDS.connectAlias('maxGrossWeightCv').subscribe(data => {
-      this.maxGrossWeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.maxGrossWeightCvList = data;
     });
     this.cvDS.connectAlias('tankHeightCv').subscribe(data => {
-      this.tankHeightCvList = addDefaultSelectOption(data, "--Select--");
+      this.tankHeightCvList = data;
     });
     this.cvDS.connectAlias('walkwayCv').subscribe(data => {
-      this.walkwayCvList = addDefaultSelectOption(data, "--Select--");
+      this.walkwayCvList = data;
     });
     this.cvDS.connectAlias('airlineCv').subscribe(data => {
-      this.airlineCvList = addDefaultSelectOption(data, "--Select--");
+      this.airlineCvList = data;
     });
     this.cvDS.connectAlias('airlineConnCv').subscribe(data => {
-      this.airlineConnCvList = addDefaultSelectOption(data, "--Select--");
+      this.airlineConnCvList = data;
     });
     this.cvDS.connectAlias('disCompCv').subscribe(data => {
       this.disCompCvList = data;
@@ -829,28 +834,28 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.disValveSpecCvList = data;
     });
     this.cvDS.connectAlias('disTypeCv').subscribe(data => {
-      this.disTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.disTypeCvList = data;
     });
     this.cvDS.connectAlias('footValveCv').subscribe(data => {
       this.footValveCvList = data;
     });
     this.cvDS.connectAlias('manlidCoverCv').subscribe(data => {
-      this.manlidCoverCvList = addDefaultSelectOption(data, "--Select--");
+      this.manlidCoverCvList = data;
     });
     this.cvDS.connectAlias('manlidSealCv').subscribe(data => {
-      this.manlidSealCvList = addDefaultSelectOption(data, "--Select--");
+      this.manlidSealCvList = data;
     });
     this.cvDS.connectAlias('pvSpecCv').subscribe(data => {
-      this.pvSpecCvList = addDefaultSelectOption(data, "--Select--");
+      this.pvSpecCvList = data;
     });
     this.cvDS.connectAlias('pvTypeCv').subscribe(data => {
-      this.pvTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.pvTypeCvList = data;
     });
     this.cvDS.connectAlias('thermometerCv').subscribe(data => {
-      this.thermometerCvList = addDefaultSelectOption(data, "--Select--");
+      this.thermometerCvList = data;
     });
     this.cvDS.connectAlias('tankCompTypeCv').subscribe(data => {
-      this.tankCompTypeCvList = addDefaultSelectOption(data, "--Select--");
+      this.tankCompTypeCvList = data;
     });
     this.cvDS.connectAlias('valveBrandCv').subscribe(data => {
       this.valveBrandCvList = data;
@@ -1513,6 +1518,172 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  overwriteTankSummaryDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(EditSotSummaryFormDialogComponent, {
+      disableClose: true,
+      width: '50vw',
+      data: {
+        sot: this.sot,
+        ig: this.ig,
+        igs: this.igs,
+        ti: this.tiItem,
+        latestSurveyDetailItem: this.latestSurveyDetailItem,
+        translatedLangText: this.translatedLangText,
+        transferList: this.transferList,
+        ccDS: this.ccDS,
+        populateData: {
+          yardCvList: this.yardCvList,
+          testTypeCvList: this.testTypeCvList,
+          testClassCvList: this.testClassCvList,
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        let newIg: any = undefined;
+        let newIgs: any = undefined;
+        let newTi: any = undefined;
+
+        if (result.yard_cv) {
+          newIg = {
+            guid: this.ig?.guid,
+            yard_cv: result.yard_cv,
+          };
+        }
+
+        if (result.last_test_cv || result.next_test_cv || result.test_class_cv || result.test_dt) {
+          newIgs = {
+            guid: this.igs?.guid,
+            last_test_cv: result.last_test_cv,
+            next_test_cv: result.next_test_cv,
+            test_class_cv: result.test_class_cv,
+            test_dt: result.test_dt
+          };
+        }
+
+        if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
+          newTi = {
+            guid: this.tiItem?.guid,
+            tank_no: result?.tank_no,
+            yard_cv: result.ti_yard_cv,
+            last_test_cv: result.ti_last_test_cv,
+            test_dt: result.ti_test_dt,
+            next_test_cv: result.ti_next_test_cv,
+            test_class_cv: result.ti_test_class_cv,
+          };
+        }
+
+        const tankSummaryRequest = {
+          ...(newIg && { ingate: newIg }),
+          ...(newIgs && { ingateSurvey: newIgs }),
+          so: undefined,
+          sot: undefined,
+          ...(newTi && { tankInfo: newTi })
+        };
+        this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateTankSummaryDetails);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_igs(this.sot_guid!);
+          this.loadDataHandling_ig(this.sot_guid!);
+        });
+      }
+    });
+  }
+
+  overwriteTankDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(EditSotSummaryFormDialogComponent, {
+      disableClose: true,
+      width: '50vw',
+      data: {
+        sot: this.sot,
+        ig: this.ig,
+        igs: this.igs,
+        ti: this.tiItem,
+        latestSurveyDetailItem: this.latestSurveyDetailItem,
+        translatedLangText: this.translatedLangText,
+        transferList: this.transferList,
+        ccDS: this.ccDS,
+        populateData: {
+          yardCvList: this.yardCvList,
+          testTypeCvList: this.testTypeCvList,
+          testClassCvList: this.testClassCvList,
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        // let newIg: any = undefined;
+        // let newIgs: any = undefined;
+        // let newTi: any = undefined;
+
+        // if (result.yard_cv) {
+        //   newIg = {
+        //     guid: this.ig?.guid,
+        //     yard_cv: result.yard_cv,
+        //   };
+        // }
+
+        // if (result.last_test_cv || result.next_test_cv || result.test_class_cv || result.test_dt) {
+        //   newIgs = {
+        //     guid: this.igs?.guid,
+        //     last_test_cv: result.last_test_cv,
+        //     next_test_cv: result.next_test_cv,
+        //     test_class_cv: result.test_class_cv,
+        //     test_dt: result.test_dt
+        //   };
+        // }
+
+        // if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
+        //   newTi = {
+        //     guid: this.tiItem?.guid,
+        //     tank_no: result?.tank_no,
+        //     yard_cv: result.ti_yard_cv,
+        //     last_test_cv: result.ti_last_test_cv,
+        //     test_dt: result.ti_test_dt,
+        //     next_test_cv: result.ti_next_test_cv,
+        //     test_class_cv: result.ti_test_class_cv,
+        //   };
+        // }
+
+        // const tankSummaryRequest = {
+        //   ...(newIg && { ingate: newIg }),
+        //   ...(newIgs && { ingateSurvey: newIgs }),
+        //   so: undefined,
+        //   sot: undefined,
+        //   ...(newTi && { tankInfo: newTi })
+        // };
+        // this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
+        //   console.log(result)
+        //   this.handleSaveSuccess(result?.data?.updateTankSummaryDetails);
+        //   this.loadDataHandling_sot(this.sot_guid!);
+        //   this.loadDataHandling_igs(this.sot_guid!);
+        //   this.loadDataHandling_ig(this.sot_guid!);
+        // });
+      }
+    });
+  }
+
   overwriteLastCargoDialog(event: Event) {
     this.preventDefault(event);
 
@@ -2067,9 +2238,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getYardDescription(codeValType: string | undefined): string | undefined {
-    var desc = this.cvDS.getCodeDescription(codeValType, this.yardCvList);
-    const parts = desc!.trim().split(/\s+/); // split by one or more spaces
-    return parts.length >= 2 ? parts[1] : "";
+    return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
   getWalkwayDescription(codeValType: string | undefined): string | undefined {
@@ -2310,6 +2479,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return true;
   }
 
+  canOverwriteTankDetail() {
+    
+  }
+
   allowPerformAction() {
     if (this.modulePackageService.isCustomizedPackage() || this.modulePackageService.isGrowthPackage())
       return true;
@@ -2334,6 +2507,24 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.tabConfig.filter(tab =>
       tab.modulePackage.includes(this.modulePackageService.getModulePackage())
     );
+  }
+
+  canOverwriteTankSummaryDetails() {
+    // if (this.sot?.status_cv) {
+    //   if (!this.cleaningItem?.[0]?.customer_billing_guid) {
+    //     return true;
+    //   }
+    // }
+    return true;
+  }
+
+  canOverwriteTankDetails() {
+    // if (this.sot?.status_cv) {
+    //   if (!this.cleaningItem?.[0]?.customer_billing_guid) {
+    //     return true;
+    //   }
+    // }
+    return false;
   }
 
   canOverwriteLastCargo() {
@@ -2734,17 +2925,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.loadSotDepotCost();
         this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
         this.getCustomerLabourPackage(this.sot?.storing_order?.customer_company?.guid!);
-        // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
         this.pdDS.getCustomerPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.tank?.tariff_depot_guid!).subscribe(data => {
           console.log(`packageDepot: `, data)
           this.pdItem = data[0];
         });
+        // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
         this.tiDS.getTankInfoForMovement(this.sot?.tank_no!).subscribe(data => {
           console.log(`tankInfo: `, data)
           this.tiItem = data[0];
           this.last_test_desc = this.getLastTest();
           this.next_test_desc = this.getNextTest();
         });
+        this.loadDataHandling_LastPeriodicTestDetail(this.sot?.tank_no!);
         this.loadDataHandling_branch();
         // if (this.sot?.in_gate?.length) {
         //   this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
@@ -2849,6 +3041,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       if (data.length > 0) {
         console.log(`survey: `, data);
         this.surveyList = data;
+      }
+    });
+  }
+
+  loadDataHandling_LastPeriodicTestDetail(tank_no: string) {
+    this.surveyDS.getSurveyDetailByTankNo(tank_no).subscribe(data => {
+      if (data.length > 0) {
+        console.log(`last survey: `, data)
+        this.latestSurveyDetailItem = data;
       }
     });
   }

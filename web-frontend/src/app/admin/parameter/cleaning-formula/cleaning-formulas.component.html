@@ -73,7 +73,8 @@
                               <mat-autocomplete #description="matAutocomplete"
                                 (optionSelected)="description_selected($event)">
                                 @for (pn of descList; track pn) {
-                                <mat-option [value]="pn">
+                                <mat-option [value]="pn" class="checkbox-option"
+                                  [class.mdc-list-item--selected]="description_itemSelected(pn)">
                                   <div class="horizontal-container">
                                     <mat-checkbox color="primary"
                                       (click)="description_onCheckboxClicked(pn); $event.stopPropagation()"

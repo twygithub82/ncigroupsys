@@ -562,9 +562,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     return retval;
   }
 
-
-
-
   name_getSelectedDisplay(): string {
     var itm = this.selectedNames;
     var retval: string = "";
@@ -591,11 +588,13 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-     // this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
     else {
       itm.splice(index, 1);
-      //this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (elmInput) {
@@ -671,11 +670,13 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-     // this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
     else {
       itm.splice(index, 1);
-     // this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (elmInput) {

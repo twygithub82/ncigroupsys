@@ -1,6 +1,5 @@
 import { TranslateService } from "@ngx-translate/core";
 import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
-import { customerInfo } from 'environments/environment';
 import { jsPDF } from 'jspdf';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
@@ -1208,6 +1207,11 @@ export class Utility {
   static GetSystemCurrencyCode():string
   {
     return systemCurrencyCode;
+  }
+
+  static IsAllowAutoSearch():boolean
+  {
+    return false;
   }
 }
 

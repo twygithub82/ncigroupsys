@@ -1,4 +1,4 @@
-import { MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition, MatSnackBar } from "@angular/material/snack-bar";
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from "@angular/material/snack-bar";
 import { CustomSnackbarComponent } from "@shared/components/custom-snackbar/custom-snackbar";
 
 export class ComponentUtil {

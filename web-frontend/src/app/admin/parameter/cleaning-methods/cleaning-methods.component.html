@@ -6,7 +6,7 @@
     </div>
     <div class="card">
       <div class="body">
-      
+
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
             <div class="card p-0">
@@ -28,7 +28,8 @@
                         </button>
                       </div>
                       <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                        <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
+                        <button mat-mini-fab class="primary-light" (click)="addCall()"
+                          (click)="$event.stopPropagation()">
                           <mat-icon class="col-white">add</mat-icon>
                         </button>
                       </div>
@@ -47,39 +48,39 @@
                   </mat-expansion-panel-header>
                   <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
                     <div class="row">
-                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
-                        <mat-chip-grid #name_chipGrid>
-                          
-                          @if(this.selectedNames.length>0){
+                          <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
+                          <mat-chip-grid #name_chipGrid>
+
+                            @if(this.selectedNames.length>0){
                             <mat-chip-row color="primary" (click)="name_removeAllSelected()">
                               <span> {{name_getSelectedDisplay()}}</span>
                               <button matChipRemove hidden>
                                 <mat-icon>cancel</mat-icon>
                               </button>
                             </mat-chip-row>
-                          }
-                        <input #nameInput [formControl]="processNameControl" [matAutocomplete]="processName" formControlName="processName"
-                          [matChipInputFor]="name_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                          (matChipInputTokenEnd)="name_add($event)">
-                        <mat-autocomplete  #processName="matAutocomplete" (optionSelected)="name_selected($event)">
-                          @for (pn of processNameList; track pn) {
-                          <mat-option [value]="pn"  class="checkbox-option" [ngClass]="{ 'mdc-list-item--selected': name_itemSelected(pn) }">
-                            <div class="horizontal-container"> 
-                              <mat-checkbox 
-                                color="primary" 
-                                class="checkbox-item"  
-                                (click)="name_onCheckboxClicked(pn); $event.stopPropagation()"
-                                [checked]="name_itemSelected(pn) || false">
-                              </mat-checkbox>
-                              <div class="option-text">{{ pn }}</div>
-                            </div>
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
-                      </mat-chip-grid>
-                      </mat-form-field>
+                            }
+                            <input #nameInput [formControl]="processNameControl" [matAutocomplete]="processName"
+                              formControlName="processName" [matChipInputFor]="name_chipGrid"
+                              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="name_add($event)">
+                            <mat-autocomplete #processName="matAutocomplete" (optionSelected)="name_selected($event)">
+                              @for (pn of processNameList; track pn) {
+                              <mat-option [value]="pn" class="checkbox-option"
+                                [class.mdc-list-item--selected]="name_itemSelected(pn)">
+                                <div class="horizontal-container">
+                                  <mat-checkbox color="primary" class="checkbox-item"
+                                    (click)="name_onCheckboxClicked(pn); $event.stopPropagation()"
+                                    [checked]="name_itemSelected(pn) || false">
+                                  </mat-checkbox>
+                                  <div class="option-text">{{ pn }}</div>
+                                </div>
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-chip-grid>
+                        </mat-form-field>
                         <!-- <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
                           <input nameInput [formControl]="processNameControl" [matAutocomplete]="processName"
@@ -97,35 +98,36 @@
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PROCESS_DESCRIPTION}}</mat-label>
                           <mat-chip-grid #desc_chipGrid>
-                            
+
                             @if(this.selectedDescs.length>0){
-                              <mat-chip-row color="primary" (click)="description_removeAllSelected()">
-                                <span> {{description_getSelectedDisplay()}}</span>
-                                <button matChipRemove hidden>
-                                  <mat-icon>cancel</mat-icon>
-                                </button>
-                              </mat-chip-row>
+                            <mat-chip-row color="primary" (click)="description_removeAllSelected()">
+                              <span> {{description_getSelectedDisplay()}}</span>
+                              <button matChipRemove hidden>
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip-row>
                             }
-                          <input #descInput [formControl]="descriptionControl" [matAutocomplete]="description" formControlName="description"
-                            [matChipInputFor]="desc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                            (matChipInputTokenEnd)="description_add($event)">
-                          <mat-autocomplete  #description="matAutocomplete" (optionSelected)="description_selected($event)">
-                            @for (pn of descriptionList; track pn) {
-                            <mat-option [value]="pn"  class="checkbox-option"  [ngClass]="{ 'mdc-list-item--selected': description_itemSelected(pn) }">
-                              <div class="horizontal-container"> 
-                                <mat-checkbox 
-                                  color="primary" 
-                                  class="checkbox-item"  
-                                  (click)="description_onCheckboxClicked(pn); $event.stopPropagation()"
-                                  [checked]="description_itemSelected(pn) || false">
-                                </mat-checkbox>
-                                <div class="option-text">{{ pn }}</div>
-                              </div>
-                            </mat-option>
-                            }
-                          </mat-autocomplete>
-                        </mat-chip-grid>
-                      </mat-form-field>
+                            <input #descInput [formControl]="descriptionControl" [matAutocomplete]="description"
+                              formControlName="description" [matChipInputFor]="desc_chipGrid"
+                              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="description_add($event)">
+                            <mat-autocomplete #description="matAutocomplete"
+                              (optionSelected)="description_selected($event)">
+                              @for (pn of descriptionList; track pn) {
+                              <mat-option [value]="pn" class="checkbox-option"
+                                [class.mdc-list-item--selected]="description_itemSelected(pn)">
+                                <div class="horizontal-container">
+                                  <mat-checkbox color="primary" class="checkbox-item"
+                                    (click)="description_onCheckboxClicked(pn); $event.stopPropagation()"
+                                    [checked]="description_itemSelected(pn) || false">
+                                  </mat-checkbox>
+                                  <div class="option-text">{{ pn }}</div>
+                                </div>
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-chip-grid>
+                        </mat-form-field>
 
                         <!-- <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PROCESS_DESCRIPTION}}</mat-label>
@@ -184,7 +186,8 @@
                         {{translatedLangText.LAST_UPDATED }}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                        <span class="mobile-label">{{translatedLangText.LAST_UPDATED }}:</span>{{displayLastUpdated(row)}}
+                        <span class="mobile-label">{{translatedLangText.LAST_UPDATED
+                          }}:</span>{{displayLastUpdated(row)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="actions">

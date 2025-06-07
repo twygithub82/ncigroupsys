@@ -916,9 +916,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   resetForm() {
+    this.removeAllSelectedParts();
     this.initPcForm();
-
-    //this.customerCodeControl.reset('');
   }
 
   stopEventTrigger(event: Event) {
