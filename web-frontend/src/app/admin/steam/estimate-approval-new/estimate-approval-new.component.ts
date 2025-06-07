@@ -1658,7 +1658,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   isAllowToSaveSubmit() {
     var NoDel = this.deList.filter(d => d.action != 'cancel');
     //return (NoDel.length && !this.steamItem?.steaming_part?.[0]?.tariff_steaming_guid);
-    return (NoDel.length && BusinessLogicUtil.isAutoApproveSteaming(this.steamItem));
+    return (NoDel.length || BusinessLogicUtil.isAutoApproveSteaming(this.steamItem));
   }
 
   isDisabled(): boolean {

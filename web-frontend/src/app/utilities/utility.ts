@@ -722,7 +722,8 @@ export class Utility {
     pdf.text(content, leftPost, topPos); // Position it at the top
   }
 
-  static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number = 14) {
+  static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, 
+    topPosition: number, fontSize: number = 14 , underline: boolean = true,additionalBufferX: number = 0) {
     // pdf.setFontSize(14); // Title font size 
     // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
@@ -736,7 +737,7 @@ export class Utility {
     // pdf.setLineWidth(0.1); // Set line width for underline
     // pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
 
-    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize);
+    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize,underline,additionalBufferX);
   }
 
   static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean, fontSize: number = 14) {
