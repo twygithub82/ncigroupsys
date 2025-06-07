@@ -27,6 +27,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -166,6 +167,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     TOTAL:'COMMON-FORM.TOTAL'
   }
 
+ 
   type?: string | null;
   cleaningDS: InGateCleaningDS;
   sotDS: StoringOrderTankDS;
@@ -980,8 +982,8 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           var item = this.cleaningItem;
           await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
 
-          startY=60;
-          PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false);
+          startY=59;
+          PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false,1);
           startY+=3;
           var data: any[][] = [
             [
@@ -1001,11 +1003,11 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
               { content: `${item?.job_no}` },
               { content: `${this.translatedLangText.QUOTATION_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
               { content: `${this.displayDate(item?.create_dt)}` }
-            ],
-            [
-              { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-              { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}`,colSpan: 3 }
             ]
+            // [
+            //   { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+            //   { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}`,colSpan: 3 }
+            // ]
           ];
       
           autoTable(pdf, {
@@ -1050,7 +1052,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           });
 
           startY=lastTableFinalY+15;
-          this.createCleaningEstimateDetail_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
+          this.createCleaningEstimateDetail_r1(pdf,startY,leftMargin,rightMargin,pageWidth,minHeightHeaderCol);
           startY=pageHeight-25;
           var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
          // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
@@ -1063,7 +1065,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           var yPos=startY;
             // 
           pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
-          startY= yPos +3;
+          startY= yPos +4;
           await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
 
            var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
@@ -1072,7 +1074,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
         }
 
 
-        createCleaningEstimateDetail_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
+        createCleaningEstimateDetail_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number,minHeightBodyCol:number)
         {
 
 
@@ -1128,8 +1130,8 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           startY: startY, // Start table at the current startY value
           styles: {
             cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
-            fontSize: 7.5,
-            lineWidth: 0.0 // remove all borders initially
+            lineWidth: 0.0, // remove all borders initially
+             fontSize: fontSz
           },
           theme: 'grid',
           margin: { left: leftMargin },
@@ -1166,14 +1168,14 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
 
           startY=yPos+2;
            var estData:RowInput[]=[];
-           estData.push([
-              { content: `${amtWords}`,  colSpan: 3,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
+          //  estData.push([
+          //     { content: `${amtWords}`,  colSpan: 3,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
              
-           ])
+          //  ])
            estData.push([
              '',
-              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 5 }}},
-              { content: `${totalCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 5 } } },
+              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
+              { content: `${totalCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top:1 } } },
              
            ])
 
@@ -1183,8 +1185,8 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
              var convertedCost =  `${this.parse2Decimal(this.totalCost*rate)}`;
              estData.push([
              '',
-              { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 5 }}},
-              { content: `${convertedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 5 } } },
+              { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
+              { content: `${convertedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 1 } } },
              
            ])
            }
@@ -1194,18 +1196,11 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           body:estData,
           startY: startY, // Start table at the current startY value
           styles: {
-            cellPadding: { left:2 , right: 2, top: 1, bottom: 3 }, // Reduce padding
-            fontSize: 7.5,
-            lineWidth: 0 // remove all borders initially
+            cellPadding: { left:2 , right: 2, top: 1, bottom: 0 }, // Reduce padding
+            lineWidth: 0, // remove all borders initially
           },
           theme: 'grid',
           margin: { left: leftMargin },
-          headStyles: {
-            fillColor: 220,
-            textColor: 0,
-            fontStyle: 'bold',
-            lineWidth: 0.1 // keep outer border for header
-          },
           columnStyles: {
             0: { cellWidth: 10,halign: 'center', valign: 'middle' },
             1: { cellWidth: 152,halign: 'left', valign: 'middle'},
@@ -1215,16 +1210,16 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
            didDrawCell: function (data) {
               const doc = data.doc;
               
-               if(data.row.index === 0){
-              doc.setLineWidth(0.3);
-              doc.setDrawColor(0, 0, 0); // Set line color to black
-                doc.line(
-                data.cell.x,
-                data.cell.y + data.cell.height-1,
-                data.cell.x + data.cell.width,
-                data.cell.y + data.cell.height-1
-              );
-              }
+              //  if(data.row.index === 0){
+              // doc.setLineWidth(0.3);
+              // doc.setDrawColor(0, 0, 0); // Set line color to black
+              //   doc.line(
+              //   data.cell.x,
+              //   data.cell.y + data.cell.height-1,
+              //   data.cell.x + data.cell.width,
+              //   data.cell.y + data.cell.height-1
+              // );
+              // }
            },
           didDrawPage: (data: any) => {
           

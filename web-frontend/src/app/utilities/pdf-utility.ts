@@ -38,10 +38,11 @@ export class PDFUtility {
     pdf.restoreGraphicsState();
   }
 
-  static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number=14,underline: boolean = true) {
+  static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, 
+    topPosition: number, fontSize: number=14,underline: boolean = true,additionalBufferX: number = 0) {
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX = (pageWidth - titleWidth) / 2; // Centering the title
+    let titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
     if (topPosition <= 10) {
       topPosition = 11; // sequence page report title
@@ -50,7 +51,7 @@ export class PDFUtility {
     {
       topPosition=40;
     }
-
+    titleX+=additionalBufferX;
     pdf.text(title, titleX, topPosition); // Position it at the top
 
     // pdf.setLineDashPattern([0, 0], 0);
@@ -806,7 +807,7 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
      const translatedLangText: any = {};
     var posX=leftMargin;
     var posY = topMargin;
-    var fontSz=7;
+    var fontSz=9;
     var startY=topMargin;
     const langText = {
       GST_REG: 'COMMON-FORM.GST-REG',
@@ -822,11 +823,12 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
         translatedLangText[key] = langText[key]; // Fallback to the original key
       }
     }
-   var companyInfo = `${customerInfo.companyName} : ${customerInfo.companyAddress}`;
+   var companyInfo = `${customerInfo.companyName}`;
+   var companyAdd = `${customerInfo.companyAddress}`
    var PhoneGST = `${translatedLangText.PHONE}: ${customerInfo.companyPhone} | ${translatedLangText.GST_REG}: ${customerInfo.companyGST}`;
    this.addText(pdf, companyInfo, posY, leftMargin, fontSz);
    posY+=(fontSz/2);
-   this.addText(pdf, PhoneGST, posY, leftMargin, fontSz);
+   this.addText(pdf, companyAdd, posY, leftMargin, fontSz);
   
   }
 

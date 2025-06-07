@@ -1244,6 +1244,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canRollbackEstimate(re: SteamItem): boolean {
     const validStatus = ['NO_ACTION']
+    if(BusinessLogicUtil.isAutoApproveSteaming(re)) return false;
     return validStatus.includes(re?.status_cv!);
   }
   canRollback(re: SteamItem): boolean {
