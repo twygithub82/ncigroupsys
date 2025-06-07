@@ -289,6 +289,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   historyState: any = {};
   updateSelectedItem: any = undefined;
   isExportingPDF: boolean = false;
+  labourHour:number=1;
 
   constructor(
     public httpClient: HttpClient,
@@ -950,7 +951,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.status_cv = "PENDING";
       newSteamItem.sot_guid = this.sotItem?.guid;
       newSteamItem.est_cost = this.getTotalCost();
-      newSteamItem.est_hour = this.getTotalLabourHour();
+      newSteamItem.est_hour =  this.getTotalLabourHour();
       newSteamItem.rate = this.getRate(); //this.packageLabourItem?.cost;
       newSteamItem.flat_rate = this.flat_rate;//this.sotItem?.tank?.flat_rate;
       newSteamItem.steaming_part = [];
@@ -976,7 +977,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.sot_guid = this.sotItem?.guid; 
       updSteamItem.steaming_part = [];
       updSteamItem.est_cost = this.getTotalCost();
-      updSteamItem.est_hour = this.getTotalLabourHour();
+      updSteamItem.est_hour = (this.isSteamRepair)? this.getTotalLabourHour():1;
       updSteamItem.rate = this.getRate();//this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
       updSteamItem.flat_rate = this.flat_rate;
       updSteamItem.total_material_cost = this.getTotalMaterialCost();
@@ -1363,6 +1364,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       this.steamItem = this.historyState.selectedSteam;
       this.flat_rate=((this.steamItem?.flat_rate||0)===0)?false:true;
       console.log(this.steamItem)
+      this.labourHour = this.steamItem?.est_hour||1;
+      if(BusinessLogicUtil.isEstimateApproved(this.steamItem!)){
+        this.labourHour = this.steamItem?.total_hour||1;
+      }
       this.steam_guid = this.steamItem?.guid;
       this.isSteamRepair=this.steamDS.IsSteamRepair(this.steamItem!);
       this.getPackageSteam();
@@ -1740,6 +1745,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     else
     {
       calResCost = this.getRate();
+      if(!this.steamItem?.flat_rate)
+        calResCost *= this.labourHour;
       //  if(this.flat_rate)
       //  {
       //    if (this.IsApproved()) {
@@ -1871,6 +1878,15 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       retval=this.translatedLangText.UPDATE;
     }
 
+    return retval;
+  }
+
+  getQtyTable_Text():string{
+    var retval = `${this.translatedLangText.HOUR}`;
+    if(this.isSteamRepair)
+    {
+       retval = `${this.translatedLangText.QTY}`;
+    }
     return retval;
   }
 

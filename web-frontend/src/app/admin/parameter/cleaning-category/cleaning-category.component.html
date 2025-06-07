@@ -64,7 +64,7 @@
                           (matChipInputTokenEnd)="name_add($event)">
                         <mat-autocomplete  #processName="matAutocomplete" (optionSelected)="name_selected($event)">
                           @for (pn of nameList; track pn) {
-                          <mat-option [value]="pn"  class="checkbox-option">
+                          <mat-option [value]="pn"  class="checkbox-option" [class.mdc-list-item--selected]="name_itemSelected(pn)">
                             <div class="horizontal-container"> 
                               <mat-checkbox 
                                 color="primary" 

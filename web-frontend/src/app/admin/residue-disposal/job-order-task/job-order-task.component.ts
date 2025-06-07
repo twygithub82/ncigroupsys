@@ -283,6 +283,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   constructSearchCriteria() {
     const where: any = {
       job_type_cv: { eq: "RESIDUE" }
+      
     };
 
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {
@@ -341,6 +342,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
+        data = data.filter(data => data.residue_part?.length);
         this.jobOrderList = data;
         this.jobOrderList.forEach(jo => {
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);

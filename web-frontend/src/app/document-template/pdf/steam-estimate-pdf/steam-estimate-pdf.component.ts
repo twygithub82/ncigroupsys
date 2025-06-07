@@ -173,6 +173,10 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     STEAM_ESTIMATE:'COMMON-FORM.STEAM-ESTIMATE',
     STEAM_CARGO:'COMMON-FORM.STEAM-CARGO',
     TOTAL:'COMMON-FORM.TOTAL',
+    APPROVED:'COMMON-FORM.APPROVED',
+    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
+    FLAT_RATE:'COMMON-FORM.FLAT-RATE',
+    HOUR_RATE:'COMMON-FORM.HOUR-RATE',
     
   }
 
@@ -216,7 +220,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   total_hours:number=0;
   total_approvedLabour:number=0;
   total_labour:number=0;
-   
+   isAutoApproveSteam:boolean=false;
+   isEstimateApproved:boolean=false;
 
   constructor(
     public dialogRef: MatDialogRef<SteamEstimatePdfComponent>,
@@ -255,6 +260,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       Promise.resolve(null)
     ]);
      if (data?.length > 0) {
+      
+      data[0].steaming_part = data[0].steaming_part.filter((data: any) => !data.delete_dt);
        this.steamItem = data[0];
        await this.getCodeValuesData();
        console.log(this.steamItem)
@@ -413,7 +420,6 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       }
       else
       {
-        this.packageLabourCost=
         this.totalCost = this.steamPartList.reduce((sum, row) => sum + ( (row.cost || 0) * (row.quantity || 0)), 0);
         this.approvedCost = this.steamPartList.reduce((sum, row) => sum + ( (row.approve_part)?(row.approve_cost || 0) * (row.approve_qty || 0):0), 0);
         
@@ -925,14 +931,6 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       
           const reportTitle ='';
       
-          // const headers = [[
-          //   this.translatedLangText.NO,
-          //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
-          //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
-          //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
-          //   this.translatedLangText.PROCEDURE
-          // ]];
-      
           const comStyles: any = {
             // Set columns 0 to 16 to be center aligned
             0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
@@ -1041,7 +1039,15 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
 
           startY=lastTableFinalY+15;
-          this.createSteamEstimateDetail_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
+          this.isAutoApproveSteam = BusinessLogicUtil.isAutoApproveSteaming(item);
+          this.isEstimateApproved = BusinessLogicUtil.isEstimateApproved(item);
+          if(this.isAutoApproveSteam){
+            this.createSteamEstimateDetail_steam_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
+          }
+          else
+          {
+            this.createSteamEstimateDetail_repair_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
+          }
           startY=pageHeight-25;
           // var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
           // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
@@ -1063,7 +1069,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         }
 
       
-          createSteamEstimateDetail_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
+          createSteamEstimateDetail_repair_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
           {
             const fontSz=8;
             const vAlign="bottom";
@@ -1092,20 +1098,20 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
               { 
                 content: this.translatedLangText.PRICE,
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+                styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
               },
               { 
-                content: this.translatedLangText.ESTIMATE_COST,
+                content: this.translatedLangText.TOTAL_COST,
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+                styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
               },
-              { 
-                content: this.translatedLangText.APPROVED_COST,
+              // { 
+              //   content: this.translatedLangText.APPROVED_COST,
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
-              },
+              //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              // },
                 { 
-                content: '',
+                content: this.translatedLangText.APPROVED,
                 
                 styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
               }
@@ -1117,27 +1123,41 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
             var items = this.steamPartList;
             var index=1;
             const grpFontSz=7;
+            var estTotalLbr =0;
+            var estTotalCost=0;
             items?.forEach((item, index) => {
               
-                item.approve_cost = item.approve_part?item.cost:0;
+              item.approve_part=item.approve_part??true;
+                var qty = (this.isEstimateApproved?item.approve_qty:item.quantity);
+                var cost = (this.isEstimateApproved?item.approve_cost:item.cost);
+                var labour = this.isEstimateApproved?item.approve_labour:item.labour;
+                var totalCost = item.approve_part?(qty*cost):'-';
+                
+                if(item.approve_part)
+                {
+                  estTotalLbr+=Number(labour);
+                  estTotalCost+=Number(totalCost);
+                }
+                //item.approve_cost = item.approve_part?item.cost:0;
                 var app = ((item.approve_part===null)||item.approve_part)?"O":"X";
                 repData.push([
-                  item.index + 1,item.description,`${item.labour}`,`${item.quantity}`, this.parse2Decimal(item.cost),
-                  this.parse2Decimal(item.quantity * item.cost),this.parse2Decimal( item.approve_cost),app
+                  item.index + 1,item.description,`${ this.parse2Decimal(labour)}`,`${qty}`, this.parse2Decimal(cost),
+                  this.parse2Decimal( totalCost),app
                 ]);
-                  // if(item.approve_part)
-                  // {
-                  //   var qty=item.quantity;
-                  //   if(this.residueItem.status_cv=="APPROVED") qty=item.approve_qty;
-                  //   repData.push([
-                  //     index++,item.description,`${qty} ${item.qty_unit_type_cv}`, this.parse2Decimal(item.cost),
-                  //     this.parse2Decimal(qty * item.cost),this.parse2Decimal(item.approve_cost)]);
-                  // }
-              
-            
             });
       
       
+             const comStyles: any = {
+               0: { cellWidth: 10,halign: 'center', valign: 'middle' },
+                1: { cellWidth: 80,halign: 'left', valign: 'middle'},
+                2: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                3: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                4: { cellWidth: 24,halign: 'right', valign: 'middle'},
+                5: { cellWidth: 24,halign: 'right', valign: 'middle'},
+                6: { cellWidth: 24,halign: 'center', valign: 'middle'},
+          };
+      
+
             
             autoTable(pdf, {
             head:headers,
@@ -1156,16 +1176,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                 fontStyle: 'bold',
                 lineWidth: 0.0 // keep outer border for header
             },
-            columnStyles: {
-                0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-                1: { cellWidth: 70,halign: 'left', valign: 'middle'},
-                2: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                3: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                4: { cellWidth: 24,halign: 'center', valign: 'middle'},
-                5: { cellWidth: 24,halign: 'center', valign: 'middle'},
-                6: { cellWidth: 24,halign: 'center', valign: 'middle'},
-                7: { cellWidth: 10,halign: 'center', valign: 'middle'},
-            },
+            columnStyles: comStyles,
             didDrawCell: function (data) {
                 const doc = data.doc;
                 
@@ -1196,7 +1207,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     
             var sysCurrencyCode=Utility.GetSystemCurrencyCode();
               var totalSGD=`${this.translatedLangText.TOTAL} (${sysCurrencyCode}):`;
-              var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
+             // var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
                 var AppCostValue=(this.approvedCost===0?'':`${this.parse2Decimal(this.approvedCost)}`);
               //var amtWords = Utility.convertToWords(this.totalCost!);
               var amtWords = (ESTIMATE_APPROVED_STATUS.includes(this.steamItem.status_cv))?Utility.convertToWords(this.approvedCost!): Utility.convertToWords(this.totalCost!);
@@ -1211,11 +1222,22 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
               //     { content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
                   
               //   ])
+
+               var LabourLbl = `${this.translatedLangText.LABOUR} (${sysCurrencyCode}):`;
+               var estTotalLbrCost=estTotalLbr*this.packageLabourCost;
+               //var totallabour= this.
+               estData.push([
+                  '',{ content: `${LabourLbl}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
+                  { content: `${this.parse2Decimal(estTotalLbr)}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}},
+                  '',{ content: `${this.parse2Decimal(this.packageLabourCost)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}},
+                  { content: `${this.parse2Decimal(estTotalLbrCost)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}}
+                 ,'']);
+
+               var  totalCostValue=estTotalLbrCost+estTotalCost;
               estData.push([
                  '','','','',
-                { content: `${totalSGD}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
-                { content: `${totalCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-                { content: `${AppCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+                { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
+                { content: `${this.parse2Decimal(totalCostValue)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
                 ''
               ])
     
@@ -1224,17 +1246,18 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                   var totalForeign=`${this.translatedLangText.TOTAL} (${custCurrencyCode}):`;
                 // var cc= this.steamItem.storing_order_tank?.storing_order?.customer_company;
                   var rate =cc.currency?.rate;
-                  var convertedCost =  `${this.parse2Decimal((this.totalCost||0)*rate)}`;
+                  var convertedCost =  `${this.parse2Decimal((totalCostValue||0)*rate)}`;
                   var convertedapprovedCost =  (this.approvedCost===0?'':`${this.parse2Decimal((this.approvedCost||0)*rate)}`);
                   
                   // estData[0]=[{ content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} }];
+                 
+
                   estData.push([
                   '','','','',
-                  { content: `${totalForeign}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
-                  { content: `${convertedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 1 } } },
-                  { content: `${convertedapprovedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 1 } } },
+                  { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
+                  { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
                   ''
-                ])
+                  ]);
                 }
             autoTable(pdf, {
             body:estData,
@@ -1252,16 +1275,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
               fontStyle: 'bold',
               lineWidth: 0.1 // keep outer border for header
             },
-            columnStyles: {
-                0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-                1: { cellWidth: 70,halign: 'left', valign: 'middle'},
-                2: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                3: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                4: { cellWidth: 24,halign: 'center', valign: 'middle'},
-                5: { cellWidth: 24,halign: 'center', valign: 'middle'},
-                6: { cellWidth: 24,halign: 'center', valign: 'middle'},
-                7: { cellWidth: 10,halign: 'center', valign: 'middle'},
-            },
+            columnStyles: comStyles,
               didDrawCell: function (data) {
                 const doc = data.doc;
                 
@@ -1277,16 +1291,237 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     
                     
                 }
-                // else if(data.row.index === 1 && data.section==="body"){
-                //     doc.setLineWidth(0.3);
-                //     doc.setDrawColor(0, 0, 0); // Set line color to black
-                //       doc.line(
-                //       data.cell.x,
-                //       data.cell.y -1,
-                //       data.cell.x + data.cell.width,
-                //       data.cell.y -1
-                //     );
-                // }
+              },
+            didDrawPage: (data: any) => {
+            
+              startY = data.cursor.y;
+            
+            }
+            });
+      
+          }
+
+
+           createSteamEstimateDetail_steam_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
+          {
+            const fontSz=8;
+            const vAlign="bottom";
+            
+            const isFlat = this.steamItem.flat_rate ?? true;
+            const headers: RowInput[] = [
+            [
+              { 
+                content: this.translatedLangText.NO_DOT, 
+                
+                styles: { fontSize: fontSz,halign: 'center', valign: vAlign,cellPadding: 2 }
+              },
+              { 
+                content: this.translatedLangText.DESCRIPTION,
+                
+                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              },
+              { 
+                  content: this.translatedLangText.HOUR,
+                  styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              },
+              { 
+                content: this.translatedLangText.QTY,
+                
+                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              },
+              { 
+                content: (isFlat?this.translatedLangText.FLAT_RATE:this.translatedLangText.HOUR_RATE),
+                
+                styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
+              },
+              { 
+                content: this.translatedLangText.TOTAL_COST,
+                
+                styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
+              },
+              // { 
+              //   content: this.translatedLangText.APPROVED_COST,
+                
+              //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              // },
+                { 
+                content: this.translatedLangText.APPROVED,
+                
+                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              }
+            
+            ]
+          ];
+
+            var repData:RowInput[]=[];
+            var items = this.steamPartList;
+            var index=1;
+            const grpFontSz=7;
+            var estTotalLbr =0;
+            var estTotalCost=0;
+            items?.forEach((item, index) => {
+                 item.approve_part=item.approve_part??true;
+                var qty = "-";
+                var cost = this.steamItem.rate;
+                var labour = this.isEstimateApproved?this.steamItem.total_hour:this.steamItem.est_hour;
+                var totalCost = isFlat?cost:(item.approve_part?(labour*cost):'-');
+                
+                if(item.approve_part)
+                {
+                  //estTotalLbr+=Number(labour);
+                  estTotalCost+=Number(totalCost);
+                }
+                //item.approve_cost = item.approve_part?item.cost:0;
+                var app = ((item.approve_part===null)||item.approve_part)?"O":"X";
+                repData.push([
+                  item.index + 1,item.description,`${ isFlat?"-":this.parse2Decimal(labour)}`,`${qty}`, this.parse2Decimal(cost),
+                  this.parse2Decimal( totalCost),app
+                ]);
+            });
+      
+            const comStyles: any = {
+              0: { cellWidth: 10,halign: 'center', valign: 'middle' },
+                1: { cellWidth: 80,halign: 'left', valign: 'middle'},
+                2: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                3: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                4: { cellWidth: 24,halign: 'right', valign: 'middle'},
+                5: { cellWidth: 24,halign: 'right', valign: 'middle'},
+                6: { cellWidth: 24,halign: 'center', valign: 'middle'},
+          };
+      
+            
+            autoTable(pdf, {
+            head:headers,
+            body:repData,
+            startY: startY, // Start table at the current startY value
+            styles: {
+              cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
+              fontSize: fontSz,
+              lineWidth: 0 // remove all borders initially
+            },
+            theme: 'grid',
+            margin: { left: leftMargin },
+            headStyles: {
+              fillColor: 255,
+                textColor: 0,
+                fontStyle: 'bold',
+                lineWidth: 0.0 // keep outer border for header
+            },
+            columnStyles: comStyles,
+            didDrawCell: function (data) {
+                const doc = data.doc;
+                
+                  if(data.row.index === 0 && data.section==="head"){
+                doc.setLineWidth(0.3);
+                doc.setDrawColor(0, 0, 0); // Set line color to black
+                  doc.line(
+                  data.cell.x,
+                  data.cell.y - 2,
+                  data.cell.x + data.cell.width,
+                  data.cell.y - 2
+                );
+                }
+              },
+            didDrawPage: (data: any) => {
+              startY = data.cursor.y;
+            }
+            });
+            
+              var  yPos = startY+5;
+              pdf.setLineWidth(0.1);
+        // Set dashed line pattern
+              pdf.setLineDashPattern([0.01, 0.01], 0);
+    
+                // Draw top line
+            //  pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
+    
+    
+            var sysCurrencyCode=Utility.GetSystemCurrencyCode();
+              var totalSGD=`${this.translatedLangText.TOTAL} (${sysCurrencyCode}):`;
+             // var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
+                var AppCostValue=(this.approvedCost===0?'':`${this.parse2Decimal(this.approvedCost)}`);
+              //var amtWords = Utility.convertToWords(this.totalCost!);
+              var amtWords = (ESTIMATE_APPROVED_STATUS.includes(this.steamItem.status_cv))?Utility.convertToWords(this.approvedCost!): Utility.convertToWords(this.totalCost!);
+                var cc= this.steamItem.storing_order_tank?.storing_order?.customer_company;
+              var custCurrencyCode = cc?.currency?.currency_code;
+    
+            //  var totalSGD=`${this.translatedLangText.TOTAL_SGD}:`;
+            // var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
+            startY+=3;
+              var estData:RowInput[]=[];
+              // estData.push([
+              //     { content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
+                  
+              //   ])
+
+               var LabourLbl = `${this.translatedLangText.LABOUR} (${sysCurrencyCode}):`;
+               var estTotalLbrCost=estTotalLbr*this.packageLabourCost;
+               
+              //  estData.push([
+              //     '',{ content: `${LabourLbl}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
+              //     { content: `${this.parse2Decimal(estTotalLbr)}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}},
+              //     '',{ content: `${this.parse2Decimal(this.packageLabourCost)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}},
+              //     { content: `${this.parse2Decimal(estTotalLbrCost)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}}
+              //    ,'']);
+
+               var  totalCostValue=estTotalLbrCost+estTotalCost;
+              estData.push([
+                 '','','','',
+                { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
+                { content: `${this.parse2Decimal(totalCostValue)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+                ''
+              ])
+    
+    
+              if(sysCurrencyCode!=custCurrencyCode){
+                  var totalForeign=`${this.translatedLangText.TOTAL} (${custCurrencyCode}):`;
+                // var cc= this.steamItem.storing_order_tank?.storing_order?.customer_company;
+                  var rate =cc.currency?.rate;
+                  var convertedCost =  `${this.parse2Decimal((totalCostValue||0)*rate)}`;
+                  var convertedapprovedCost =  (this.approvedCost===0?'':`${this.parse2Decimal((this.approvedCost||0)*rate)}`);
+                  
+                  // estData[0]=[{ content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} }];
+                 
+
+                  estData.push([
+                  '','','','',
+                  { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
+                  { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
+                  ''
+                  ]);
+                }
+            autoTable(pdf, {
+            body:estData,
+            startY: startY, // Start table at the current startY value
+            styles: {
+              cellPadding: { left:2 , right: 2, top: 1, bottom: 0 }, // Reduce padding
+              fontSize: 7.5,
+              lineWidth: 0 // remove all borders initially
+            },
+            theme: 'grid',
+            margin: { left: leftMargin },
+            headStyles: {
+              fillColor: 220,
+              textColor: 0,
+              fontStyle: 'bold',
+              lineWidth: 0.1 // keep outer border for header
+            },
+            columnStyles: comStyles,
+              didDrawCell: function (data) {
+                const doc = data.doc;
+                
+                if(data.row.index === 0 && data.section==="body"){
+                    doc.setLineWidth(0.3);
+                    doc.setDrawColor(0, 0, 0); // Set line color to black
+                      doc.line(
+                      data.cell.x,
+                      data.cell.y -1,
+                      data.cell.x + data.cell.width,
+                      data.cell.y -1
+                    );
+    
+                    
+                }
               },
             didDrawPage: (data: any) => {
             

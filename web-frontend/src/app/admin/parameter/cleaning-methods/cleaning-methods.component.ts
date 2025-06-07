@@ -538,7 +538,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       if (result.data.deleteCleaningMethod) {
         this.handleSaveSuccess(result.data.deleteCleaningMethod);
         this.pageIndex = 0;
-        this.search();
+        //this.search();
       }
     })
   }
@@ -591,11 +591,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      this.search();
+     // this.search();
     }
     else {
       itm.splice(index, 1);
-      this.search();
+      //this.search();
     }
 
     if (elmInput) {
@@ -671,11 +671,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      this.search();
+     // this.search();
     }
     else {
       itm.splice(index, 1);
-      this.search();
+     // this.search();
     }
 
     if (elmInput) {

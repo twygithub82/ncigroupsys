@@ -1224,6 +1224,10 @@ const GET_STORING_ORDER_TANKS_STEAM_ESTIMATE = gql`
           approve_by
           approve_dt
           flat_rate
+          rate
+          total_hour
+          est_hour
+          est_cost
           create_by
           complete_by
           complete_dt

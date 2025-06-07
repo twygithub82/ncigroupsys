@@ -776,6 +776,7 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
         begin_by
         begin_dt
         bill_to_guid
+        flat_rate
         complete_by
         complete_dt
         create_by
@@ -790,6 +791,9 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
         remarks
         sot_guid
         status_cv
+        est_hour
+        total_hour
+        rate
         est_cost
         total_cost
         update_by

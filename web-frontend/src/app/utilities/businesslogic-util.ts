@@ -2,7 +2,7 @@ import { CodeValuesItem } from "app/data-sources/code-values";
 import { RepairPartItem } from "app/data-sources/repair-part";
 import { RPDamageRepairItem } from "app/data-sources/rp-damage-repair";
 import { modulePackage } from "environments/environment";
-import { Utility } from "./utility";
+import { Utility,ESTIMATE_APPROVED_STATUS } from "./utility";
 
 export class BusinessLogicUtil {
     static isOthers(value: string | string[]): boolean {
@@ -27,6 +27,11 @@ export class BusinessLogicUtil {
 
     static isAutoApproveSteaming(row: any) {
         return row?.estimate_no?.startsWith('SE');
+    }
+
+    static isEstimateApproved(row:any)
+    {
+        return ESTIMATE_APPROVED_STATUS.includes(row.status_cv);
     }
 
     static isStarterPackage() {

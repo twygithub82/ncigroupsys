@@ -65,7 +65,7 @@
                           (matChipInputTokenEnd)="name_add($event)">
                         <mat-autocomplete  #processName="matAutocomplete" (optionSelected)="name_selected($event)">
                           @for (pn of processNameList; track pn) {
-                          <mat-option [value]="pn"  class="checkbox-option">
+                          <mat-option [value]="pn"  class="checkbox-option" [ngClass]="{ 'mdc-list-item--selected': name_itemSelected(pn) }">
                             <div class="horizontal-container"> 
                               <mat-checkbox 
                                 color="primary" 
@@ -111,7 +111,7 @@
                             (matChipInputTokenEnd)="description_add($event)">
                           <mat-autocomplete  #description="matAutocomplete" (optionSelected)="description_selected($event)">
                             @for (pn of descriptionList; track pn) {
-                            <mat-option [value]="pn"  class="checkbox-option">
+                            <mat-option [value]="pn"  class="checkbox-option"  [ngClass]="{ 'mdc-list-item--selected': description_itemSelected(pn) }">
                               <div class="horizontal-container"> 
                                 <mat-checkbox 
                                   color="primary" 

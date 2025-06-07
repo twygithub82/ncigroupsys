@@ -47,6 +47,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-estimate',
@@ -690,7 +691,17 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   calculateNetCostWithLabourCost(steam: SteamItem, LabourCost: number): any {
-    const total = this.IsApproved(steam) ? this.steamDS.getApprovalTotalWithLabourCost(steam?.steaming_part, LabourCost) : this.steamDS.getTotalWithLabourCost(steam?.steaming_part, LabourCost)
+    let isApproved = this.IsApproved(steam);
+    let total = this.IsApproved(steam) ? this.steamDS.getApprovalTotalWithLabourCost(steam?.steaming_part, LabourCost) : this.steamDS.getTotalWithLabourCost(steam?.steaming_part, LabourCost)
+    const isAutoSteam = BusinessLogicUtil.isAutoApproveSteaming(steam);
+    if(isAutoSteam){
+       total.total_mat_cost=steam.rate;
+
+      if(!steam?.flat_rate){
+        total.total_mat_cost*= isApproved?(steam?.total_hour||1):1;
+      }
+     
+    }
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
     // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
@@ -707,7 +718,18 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   calculateNetCost(steam: SteamItem): any {
-    const total = this.IsApproved(steam) ? this.steamDS.getApprovalTotal(steam?.steaming_part) : this.steamDS.getTotal(steam?.steaming_part);
+    let isApproved = this.IsApproved(steam);
+    let total = isApproved ? this.steamDS.getApprovalTotal(steam?.steaming_part) : this.steamDS.getTotal(steam?.steaming_part);
+    const isAutoSteam = BusinessLogicUtil.isAutoApproveSteaming(steam);
+    if(isAutoSteam){
+       total.total_mat_cost=steam.rate;
+
+      if(!steam?.flat_rate){
+        total.total_mat_cost*= isApproved?(steam?.total_hour||1):1;
+      }
+     
+    }
+    
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
     // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;
@@ -725,8 +747,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
 
   IsApproved(steam: SteamItem) {
-    const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
-    return validStatus.includes(steam!.status_cv!);
+    //const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
+    return BusinessLogicUtil.isEstimateApproved(steam);
 
   }
   displayLastCargoFn(tc: TariffCleaningItem): string {

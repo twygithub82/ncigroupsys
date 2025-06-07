@@ -339,24 +339,35 @@
                   <ng-container matColumnDef="qty">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                      {{translatedLangText.QUANTITY}}
+                      {{getQtyTable_Text()}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.QUANTITY}}:</span><tlx-form-field
+                      <span class="mobile-label">{{getQtyTable_Text()}}:</span><tlx-form-field
                         customClass="mat-table-form-txt-40px">
                         <mat-form-field>
-                          @if(IsApproved())
+                          @if(isSteamRepair)
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                            @if(IsApproved())
+                            {
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
+                              (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
+                              (focus)="selectText($event)" type="number" min="0">
+                            }
+                            @else
+                            {
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity"
+                              (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
+                              (focus)="selectText($event)" type="number" min="0">
+                            }
                           }
                           @else
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity"
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                           
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="labourHour"
+                              (change)="updateAction(row);" [disabled]="true" (wheel)="preventDefault($event)"
+                              (focus)="selectText($event)" type="number" min="0">
+                            
                           }
                         </mat-form-field>
                       </tlx-form-field>
