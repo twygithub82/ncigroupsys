@@ -3,6 +3,7 @@ import { RepairPartItem } from "app/data-sources/repair-part";
 import { RPDamageRepairItem } from "app/data-sources/rp-damage-repair";
 import { modulePackage } from "environments/environment";
 import { Utility } from "./utility";
+import { SurveyDetailItem } from "app/data-sources/survey-detail";
 
 export class BusinessLogicUtil {
     static isOthers(value: string | string[]): boolean {
@@ -96,5 +97,48 @@ export class BusinessLogicUtil {
 
     static emptyCompareWith(o1: any, o2: any): boolean {
         return (o1?.code_val ?? '') === (o2?.code_val ?? '');
+    }
+
+    static shouldUpdateLastTestDt(currentSurveyDetailItem: SurveyDetailItem, latestSurveyDetailItem?: SurveyDetailItem[]): { needUpdate: boolean; latestItem: SurveyDetailItem | null } {
+        if (!currentSurveyDetailItem || currentSurveyDetailItem.status_cv !== 'ACCEPTED') {
+            return { needUpdate: false, latestItem: null };
+        }
+
+        // If list is empty, update is definitely needed
+        if (!latestSurveyDetailItem?.length) {
+            return { needUpdate: true, latestItem: currentSurveyDetailItem };
+        }
+
+        // Filter out invalid survey_dt
+        const validItems = latestSurveyDetailItem.filter(
+            item => typeof item.survey_dt === 'number' && isFinite(item.survey_dt)
+        );
+
+        // Check if current is already in the list
+        const isCurrentLatestInList = validItems.length > 0
+            ? currentSurveyDetailItem.guid === validItems.reduce((latest, item) =>
+                !latest || item.survey_dt! > latest.survey_dt! ? item : latest,
+                null as SurveyDetailItem | null
+            )?.guid
+            : false;
+
+        // Filter out current item from comparison
+        const filteredItems = validItems.filter(item => item.guid !== currentSurveyDetailItem.guid);
+
+        // Combine current with remaining list to find latest
+        const allItems = [...filteredItems, currentSurveyDetailItem];
+        const latestItem = allItems.reduce((latest, item) =>
+            !latest || item.survey_dt! > latest.survey_dt! ? item : latest,
+            null as SurveyDetailItem | null
+        );
+
+        const needUpdate = isCurrentLatestInList
+            ? true
+            : latestItem?.guid === currentSurveyDetailItem.guid;
+
+        return {
+            needUpdate,
+            latestItem
+        };
     }
 }

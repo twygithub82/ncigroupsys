@@ -45,12 +45,18 @@
                   <div class="position-relative">
                     @if(allowPerformAction()) {
                     <div class="relative-menu">
-                      @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus())) {
+                      @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus() ||
+                      canOverwriteTankSummaryDetails())) {
                       <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                         [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
                         <mat-icon>edit</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
+                        @if (canOverwriteTankSummaryDetails()) {
+                        <button mat-menu-item
+                          (click)="overwriteTankSummaryDialog($event)">{{translatedLangText.OVERWRITE}}
+                          {{translatedLangText.TANK_SUMMARY_DETAILS}}</button>
+                        }
                         @if (canOverwriteLastCargo()) {
                         <button mat-menu-item
                           (click)="overwriteLastCargoDialog($event)">{{translatedLangText.OVERWRITE_LAST_CARGO}}</button>
@@ -235,124 +241,142 @@
                     }
                     @if (!(igDS.loading$ | async)) {
                     <mat-card-content>
-                      <div class="row justify-content-center">
-                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.UNIT_TYPE}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{sot?.tank?.unit_type}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.CLADDING}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{getCladdingDescription(igs?.cladding_cv) || "-"}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.TARE_WEIGHT}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{igs?.tare_weight || "-"}} {{translatedLangText.KG}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{getDisCompDescription(igs?.btm_dis_comp_cv) || "-"}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.NOTES}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="d-flex align-items-center">
-                                <span class="value-display-info me-2">
-                                  {{sot?.tank_note || "-"}}
-                                </span>
-                                <mat-icon color="primary" class="cursor-pointer"
-                                  (click)="editTankNotes($event)">mode_edit</mat-icon>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.RELEASE_NOTES}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                              <div class="d-flex align-items-center">
-                                <span class="value-display-info me-2">{{sot?.release_note || "-"}}</span>
-                                <mat-icon color="primary" class="cursor-pointer"
-                                  (click)="editTankNotes($event)">mode_edit</mat-icon>
-                              </div>
-                            </div>
-                          </div>
+                      <div class="position-relative">
+                        @if(allowPerformAction()) {
+                        <div class="relative-menu">
+                          @if (!(cvDS.loading$ | async) && (canOverwriteTankDetails())) {
+                          <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
+                            [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <mat-menu #menu="matMenu">
+                            @if (canOverwriteTankDetails()) {
+                            <button mat-menu-item (click)="overwriteTankDialog($event)">{{translatedLangText.OVERWRITE}}
+                              {{translatedLangText.TANK_DETAILS}}</button>
+                            }
+                          </mat-menu>
+                          }
                         </div>
-                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.MANUFACTURER_DOM}}:</span>
+                        }
+                        <div class="row justify-content-center">
+                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.UNIT_TYPE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{sot?.tank?.unit_type}}
+                                </span>
+                              </div>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{igs?.manufacturer_cv || "-"}} - {{displayDate(igs?.dom_dt)}}
-                              </span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.CLADDING}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{getCladdingDescription(igs?.cladding_cv) || "-"}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.TARE_WEIGHT}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{igs?.tare_weight || "-"}} {{translatedLangText.KG}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{getDisCompDescription(igs?.btm_dis_comp_cv) || "-"}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.NOTES}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                                <div class="d-flex align-items-center">
+                                  <span class="value-display-info me-2">
+                                    {{sot?.tank_note || "-"}}
+                                  </span>
+                                  <mat-icon color="primary" class="cursor-pointer"
+                                    (click)="editTankNotes($event)">mode_edit</mat-icon>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.RELEASE_NOTES}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                                <div class="d-flex align-items-center">
+                                  <span class="value-display-info me-2">{{sot?.release_note || "-"}}</span>
+                                  <mat-icon color="primary" class="cursor-pointer"
+                                    (click)="editTankNotes($event)">mode_edit</mat-icon>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.CAPACITY}}:</span>
+                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.MANUFACTURER_DOM}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{igs?.manufacturer_cv || "-"}} - {{displayDate(igs?.dom_dt)}}
+                                </span>
+                              </div>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{igs?.capacity || "-"}} {{translatedLangText.LITERS}}
-                              </span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.CAPACITY}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{igs?.capacity || "-"}} {{translatedLangText.LITERS}}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.MAX_GROSS_WEIGHT}}:</span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.MAX_GROSS_WEIGHT}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{getMaxGrossWeightDescription(igs?.max_weight_cv) || "-"}}
+                                </span>
+                              </div>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{getMaxGrossWeightDescription(igs?.max_weight_cv) || "-"}}
-                              </span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.COMPARTMENT_TYPE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{igs?.tariff_buffer?.buffer_type || "-"}}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.COMPARTMENT_TYPE}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{igs?.tariff_buffer?.buffer_type || "-"}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.WALKWAY}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{getWalkwayDescription(igs?.walkway_cv) || "-"}}
-                              </span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.WALKWAY}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{getWalkwayDescription(igs?.walkway_cv) || "-"}}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>

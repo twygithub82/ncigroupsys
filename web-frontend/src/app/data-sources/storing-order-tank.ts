@@ -131,7 +131,7 @@ export class StoringOrderTankItem extends StoringOrderTankGO {
   public actions?: string[] = [];
   public billing_sot?: BillingSOTItem;
   public tank_info?: TankInfoItem;
-  public storage_detail?:BillingStorageDetail[]
+  public storage_detail?: BillingStorageDetail[]
 
 
   constructor(item: Partial<StoringOrderTankItem> = {}) {
@@ -3765,6 +3765,12 @@ export const UPDATE_CLEAN_STATUS = gql`
   }
 `;
 
+export const UPDATE_TANK_SUMMARY_DETAILS = gql`
+  mutation updateTankSummaryDetails($tankSummaryRequest: TankSummaryRequestInput!) {
+    updateTankSummaryDetails(tankSummaryRequest: $tankSummaryRequest)
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
@@ -4765,6 +4771,20 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       mutation: UPDATE_CLEAN_STATUS,
       variables: {
         sot
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  updateTankSummaryDetails(tankSummaryRequest: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_TANK_SUMMARY_DETAILS,
+      variables: {
+        tankSummaryRequest
       }
     }).pipe(
       finalize(() => {
