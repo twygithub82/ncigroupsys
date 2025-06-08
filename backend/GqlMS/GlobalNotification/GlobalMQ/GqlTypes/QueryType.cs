@@ -13,6 +13,20 @@ namespace GlobalMQ.GqlTypes
     public class QueryType
     {
 
+        public async Task<string> SendMessage_r1(Message_r1 message, [Service] ITopicEventSender topicEventSender)
+        {
+            string value = "ok";
+            try
+            {
+                await topicEventSender.SendAsync(nameof(SubscriptionType.MessageReceived_r1), message);
+                return value;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<string> SendMessage(Message message, [Service] ITopicEventSender topicEventSender)
         {
             string value = "ok";

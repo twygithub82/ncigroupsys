@@ -32,8 +32,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="IDMS.Models">
-      <HintPath>..\..\..\Models\Realease Dll\IDMS.Models.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>ReleaseDll\IDMS.Models.dll</HintPath>
     </Reference>
   </ItemGroup>
 

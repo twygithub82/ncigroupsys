@@ -22,16 +22,21 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddGraphQLServer()
-      .RegisterDbContext<ApplicationNotificationDBContext>(DbContextKind.Synchronized)
+builder.Services
+.AddGraphQLServer()
+.RegisterDbContext<ApplicationNotificationDBContext>(DbContextKind.Synchronized)
 .AddMutationType<MutationType>()
 .AddQueryType<QueryType>()
 .AddSubscriptionType<SubscriptionType>()
 .AddInMemorySubscriptions()
+.AddType<AnyType>() // Required for dynamic JSON
 .AddFiltering()
 .AddProjections()
-.AddSorting();
-
+.AddSorting()
+.ModifyOptions(options =>
+ {
+     options.StrictValidation = false; // Allows dynamic types
+ });
 
 var app = builder.Build();
 
