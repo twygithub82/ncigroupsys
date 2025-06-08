@@ -163,12 +163,12 @@
           <mat-icon>add</mat-icon>
           {{data.translatedLangText.ADD_ANOTHER}}</button>
         }
-        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(false)"  class="m-l-5">
+        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(false)"  class="m-l-5 ">
           <mat-icon>
             save
           </mat-icon>
           {{buttonContent}}</button>
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1" class="m-l-5">{{data.translatedLangText.CANCEL}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1" class="m-l-5">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>

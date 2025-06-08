@@ -390,16 +390,16 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right m-r-30">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" (click)="save()">{{translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.UPDATE}}</button>
         }
         @if(canRollBack())
         {
-        <button mat-flat-button color="accent" (click)="onRollback($event)" class="m-r-5">
+        <button mat-flat-button color="accent" (click)="onRollback($event)" class="me-1">
           <mat-icon>undo</mat-icon>
           <span>{{translatedLangText.ROLLBACK}}</span>
         </button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
           @if(canEdit()){
           {{translatedLangText.CANCEL}}
           }
