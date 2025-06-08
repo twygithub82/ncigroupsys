@@ -982,9 +982,9 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           var item = this.cleaningItem;
           await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
 
-          startY=59;
+          startY=54;
           PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false,1);
-          startY+=3;
+          startY+=8;
           var data: any[][] = [
             [
               { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
@@ -1077,7 +1077,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
         createCleaningEstimateDetail_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number,minHeightBodyCol:number)
         {
 
-
+          var rightPadding_cost=9;
           pdf.setLineWidth(0.1);
     // Set dashed line pattern
           pdf.setLineDashPattern([0.01, 0.01], 0.1);
@@ -1117,7 +1117,11 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
          var index=0;
           items?.forEach((item, index) => {
             repData.push([
-              ++index,item?.storing_order_tank?.tariff_cleaning?.cargo,`${this.parse2Decimal(item?.cleaning_cost)}`]);
+              ++index,item?.storing_order_tank?.tariff_cleaning?.cargo,
+              { content:`${this.parse2Decimal(item?.cleaning_cost)}`,              
+                 styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: { right: rightPadding_cost }  }
+              }
+            ]);
 
               this.totalCost+=item?.cleaning_cost;
           });
@@ -1130,7 +1134,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           startY: startY, // Start table at the current startY value
           styles: {
             cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
-            lineWidth: 0.0, // remove all borders initially
+            lineWidth: 0, // remove all borders initially
              fontSize: fontSz
           },
           theme: 'grid',
@@ -1144,7 +1148,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           columnStyles: {
             0: { cellWidth: 10,halign: 'center', valign: 'middle' },
             1: { cellWidth: 152,halign: 'left', valign: 'middle'},
-            2: { cellWidth: 30,halign: 'center', valign: 'middle'},
+            2: { cellWidth: 30,halign: 'right', valign: 'middle'},
           },
           didDrawPage: (data: any) => {
             startY = data.cursor.y;
@@ -1175,7 +1179,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
            estData.push([
              '',
               { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
-              { content: `${totalCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top:1 } } },
+              { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top:1,right: rightPadding_cost } } },
              
            ])
 
@@ -1186,7 +1190,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
              estData.push([
              '',
               { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
-              { content: `${convertedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 1 } } },
+              { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 1,right: rightPadding_cost } } },
              
            ])
            }
@@ -1196,15 +1200,15 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           body:estData,
           startY: startY, // Start table at the current startY value
           styles: {
-            cellPadding: { left:2 , right: 2, top: 1, bottom: 0 }, // Reduce padding
+            cellPadding: { left:2 , right: 5, top: 1, bottom: 0 }, // Reduce padding
             lineWidth: 0, // remove all borders initially
           },
           theme: 'grid',
           margin: { left: leftMargin },
           columnStyles: {
             0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-            1: { cellWidth: 152,halign: 'left', valign: 'middle'},
-            2: { cellWidth: 30,halign: 'center', valign: 'middle'},
+            1: { cellWidth: 155,halign: 'left', valign: 'middle'},
+            2: { cellWidth: 27,halign: 'center', valign: 'middle'},
           
           },
            didDrawCell: function (data) {

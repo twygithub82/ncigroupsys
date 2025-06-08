@@ -828,7 +828,7 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
    var PhoneGST = `${translatedLangText.PHONE}: ${customerInfo.companyPhone} | ${translatedLangText.GST_REG}: ${customerInfo.companyGST}`;
    this.addText(pdf, companyInfo, posY, leftMargin, fontSz);
    posY+=(fontSz/2);
-   this.addText(pdf, companyAdd, posY, leftMargin, fontSz);
+   this.addText(pdf, companyAdd, posY, leftMargin, fontSz,false,'helvetica',true,55);
   
   }
 
