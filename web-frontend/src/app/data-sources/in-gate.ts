@@ -408,6 +408,12 @@ export const PUBLISH_IN_GATE_SURVEY = gql`
   }
 `;
 
+export const UPDATE_GATE_DETAILS = gql`
+  mutation updateGateDetails($gateDetailRequest: GateDetailRequestInput!) {
+    updateGateDetails(gateDetailRequest: $gateDetailRequest)
+  }
+`;
+
 export class InGateDS extends BaseDataSource<InGateItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -556,6 +562,20 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       mutation: PUBLISH_IN_GATE_SURVEY,
       variables: {
         inGateRequest
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
+
+  updateGateDetails(gateDetailRequest: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_GATE_DETAILS,
+      variables: {
+        gateDetailRequest
       }
     }).pipe(
       finalize(() => {
