@@ -89,6 +89,9 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { PreviewRepairEstFormDialog } from '@shared/preview/preview_repair_estimate/preview-repair-estimate.component';
 import { EditSotSummaryFormDialogComponent } from './edit-sot-summary-form-dialog/edit-sot-summary-form-dialog.component';
+import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
+import { EditSotDetailsFormDialogComponent } from './edit-sot-details-form-dialog/edit-sot-details-form-dialog.component';
+import { OverwriteStorageFormDialogComponent } from './overwrite-storage-purpose-form-dialog/overwrite-storage-purpose-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -1602,7 +1605,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  overwriteTankDialog(event: Event) {
+  overwriteTankDetailsDialog(event: Event) {
     this.preventDefault(event);
 
     let tempDirection: Direction;
@@ -1611,7 +1614,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(EditSotSummaryFormDialogComponent, {
+    const dialogRef = this.dialog.open(EditSotDetailsFormDialogComponent, {
       disableClose: true,
       width: '50vw',
       data: {
@@ -1680,6 +1683,119 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         //   this.loadDataHandling_sot(this.sot_guid!);
         //   this.loadDataHandling_igs(this.sot_guid!);
         //   this.loadDataHandling_ig(this.sot_guid!);
+        // });
+      }
+    });
+  }
+
+  overwriteGateDetailsDialog(event: Event, gateItem: any, action: string) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(EditGateDetailsFormDialogComponent, {
+      disableClose: true,
+      width: '50vw',
+      data: {
+        sot: this.sot,
+        gateItem: gateItem,
+        action: action,
+        translatedLangText: this.translatedLangText,
+        transferList: this.transferList,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        const newGate = {
+          gateInfo: {
+            guid: gateItem?.guid,
+            remarks: result?.remarks,
+            vehicle_no: result?.vehicle_no,
+            driver_name: result?.driver_name
+          },
+          orderInfo: {
+            guid: this.sot?.storing_order?.guid,
+            haulier: result?.haulier
+          },
+          sot: {
+            guid: this.sot?.guid,
+            ...(action === 'in' && { job_no: result?.job_no }),
+            ...(action === 'out' && { release_job_no: result?.job_no })
+          }
+        };
+        const gateDetailRequest = {
+          ...(action === 'in' && { inGateDetail: newGate }),
+          ...(action === 'out' && { outGateDetail: newGate })
+        };
+        this.igDS.updateGateDetails(gateDetailRequest).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateGateDetails);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_ig(this.sot_guid!);
+          this.loadDataHandling_og(this.sot_guid!);
+        });
+      }
+    });
+  }
+
+  overwritePurposeStorageDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(OverwriteStorageFormDialogComponent, {
+      disableClose: true,
+      width: '50vw',
+      data: {
+        sot: this.sot,
+        translatedLangText: this.translatedLangText,
+        transferList: this.transferList,
+        populateDate: {
+          storageCalCvList: this.storageCalCvList
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        // const newGate = {
+        //   gateInfo: {
+        //     guid: gateItem?.guid,
+        //     remarks: result?.remarks,
+        //     vehicle_no: result?.vehicle_no,
+        //     driver_name: result?.driver_name
+        //   },
+        //   orderInfo: {
+        //     guid: this.sot?.storing_order?.guid,
+        //     haulier: result?.haulier
+        //   },
+        //   sot: {
+        //     guid: this.sot?.guid,
+        //     ...(action === 'in' && { job_no: result?.job_no }),
+        //     ...(action === 'out' && { release_job_no: result?.job_no })
+        //   }
+        // };
+        // const gateDetailRequest = {
+        //   ...(action === 'in' && { inGateDetail: newGate }),
+        //   ...(action === 'out' && { outGateDetail: newGate })
+        // };
+        // this.igDS.updateGateDetails(gateDetailRequest).subscribe(result => {
+        //   console.log(result)
+        //   this.handleSaveSuccess(result?.data?.updateGateDetails);
+        //   this.loadDataHandling_sot(this.sot_guid!);
+        //   this.loadDataHandling_ig(this.sot_guid!);
+        //   this.loadDataHandling_og(this.sot_guid!);
         // });
       }
     });
@@ -2481,7 +2597,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteTankDetail() {
-    
+
   }
 
   allowPerformAction() {
@@ -2525,7 +2641,20 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     //     return true;
     //   }
     // }
-    return false;
+    return true;
+  }
+
+  canOverwriteInGateDetails() {
+    return !!this.ig?.guid;
+  }
+
+  canOverwriteOutGateDetails() {
+    return !!this.og?.guid;
+  }
+
+  canOverwriteStoragePurpose() {
+    // return !!this.sot?.billing_sot?.guid;
+    return true;
   }
 
   canOverwriteLastCargo() {

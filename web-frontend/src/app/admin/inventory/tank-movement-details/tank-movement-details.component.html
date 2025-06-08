@@ -251,7 +251,8 @@
                           </button>
                           <mat-menu #menu="matMenu">
                             @if (canOverwriteTankDetails()) {
-                            <button mat-menu-item (click)="overwriteTankDialog($event)">{{translatedLangText.OVERWRITE}}
+                            <button mat-menu-item
+                              (click)="overwriteTankDetailsDialog($event)">{{translatedLangText.OVERWRITE}}
                               {{translatedLangText.TANK_DETAILS}}</button>
                             }
                           </mat-menu>
@@ -411,152 +412,177 @@
                     }
                     @if (!(igDS.loading$ | async) && !(ogDS.loading$ | async)) {
                     <mat-card-content>
-                      <div class="row justify-content-center">
-                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                          <div class="row">
-                            <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span></span>
-                            </div> -->
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
-                              <span class="contact-detail-info font-bold text-decoration-underline mb-2">
-                                {{translatedLangText.IN_GATE}}
-                              </span>
-                              <span class="cursor-pointer ms-2 me-5 pe-5" (click)="onDownloadEir()">
-                                <mat-icon>
-                                  download
-                                </mat-icon>
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.SO_NO}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info"> {{sot?.storing_order?.so_no || "-"}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.JOB_NO}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info"> {{sot?.job_no || "-"}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.DATE}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{displayDateTime(ig?.eir_dt) || "-"}}
-                              </span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.HAULIER}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{ig?.haulier || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.VEHICLE_NO}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{ig?.vehicle_no || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.DRIVER_NAME}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{ig?.driver_name || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.REMARKS}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{ig?.remarks || "-"}}</span>
-                            </div>
-                          </div>
+                      <div class="position-relative">
+                        @if(allowPerformAction()) {
+                        <div class="relative-menu">
+                          @if (!(cvDS.loading$ | async) && (canOverwriteInGateDetails() ||
+                          canOverwriteOutGateDetails())) {
+                          <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
+                            [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <mat-menu #menu="matMenu">
+                            @if (canOverwriteInGateDetails()) {
+                            <button mat-menu-item
+                              (click)="overwriteGateDetailsDialog($event, ig, 'in')">{{translatedLangText.OVERWRITE}}
+                              {{translatedLangText.IN_GATE}}</button>
+                            }
+                            @if (canOverwriteOutGateDetails()) {
+                            <button mat-menu-item
+                              (click)="overwriteGateDetailsDialog($event, og, 'out')">{{translatedLangText.OVERWRITE}}
+                              {{translatedLangText.OUT_GATE}}</button>
+                            }
+                          </mat-menu>
+                          }
                         </div>
-                        <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                          <div class="row">
-                            <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                        }
+                        <div class="row justify-content-center">
+                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="row">
+                              <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                               <span></span>
                             </div> -->
-                            <div
-                              class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
-                              <span
-                                class="contact-detail-info font-bold text-decoration-underline me-5 pe-5 mb-2">{{translatedLangText.OUT_GATE}}
-                              </span>
+                              <div
+                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
+                                <span class="contact-detail-info font-bold text-decoration-underline mb-2">
+                                  {{translatedLangText.IN_GATE}}
+                                </span>
+                                <span class="cursor-pointer ms-2 me-5 pe-5" (click)="onDownloadEir()">
+                                  <mat-icon>
+                                    download
+                                  </mat-icon>
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.SO_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info"> {{sot?.storing_order?.so_no || "-"}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.JOB_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info"> {{sot?.job_no || "-"}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.DATE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{displayDateTime(ig?.eir_dt) || "-"}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.HAULIER}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{ig?.haulier || "-"}}</span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.VEHICLE_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{ig?.vehicle_no || "-"}}</span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.DRIVER_NAME}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{ig?.driver_name || "-"}}</span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.REMARKS}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{ig?.remarks || "-"}}</span>
+                              </div>
                             </div>
                           </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.RO_NO}}:</span>
+                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                            <div class="row">
+                              <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                              <span></span>
+                            </div> -->
+                              <div
+                                class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
+                                <span
+                                  class="contact-detail-info font-bold text-decoration-underline me-5 pe-5 mb-2">{{translatedLangText.OUT_GATE}}
+                                </span>
+                              </div>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">
-                                {{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}
-                              </span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.RO_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{sot?.release_order_sot?.[0]?.release_order?.ro_no || "-"}}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.JOB_NO}}:</span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.JOB_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{sot?.release_job_no || "-"}}</span>
+                              </div>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{sot?.release_job_no || "-"}}</span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.DATE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{displayDateTime(og?.eir_dt) || "-"}}</span>
+                              </div>
                             </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.DATE}}:</span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.HAULIER}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{og?.haulier || "-"}}</span>
+                              </div>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{displayDateTime(og?.eir_dt) || "-"}}</span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.VEHICLE_NO}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{og?.vehicle_no || "-"}}</span>
+                              </div>
                             </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.HAULIER}}:</span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.DRIVER_NAME}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{og?.driver_name || "-"}}</span>
+                              </div>
                             </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{og?.haulier || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.VEHICLE_NO}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{og?.vehicle_no || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.DRIVER_NAME}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{og?.driver_name || "-"}}</span>
-                            </div>
-                          </div>
-                          <div class="row right-align-display">
-                            <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                              <span class="label-display-info">{{translatedLangText.REMARKS}}:</span>
-                            </div>
-                            <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                              <span class="value-display-info">{{og?.remarks || "-"}}</span>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.REMARKS}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">{{og?.remarks || "-"}}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -605,6 +631,24 @@
                               async)) {
                               @if (sot?.purpose_storage) {
                               <div class="position-relative">
+                                <!-- Overwrite storage same as overwrite depot cost -->
+                                <!-- @if(allowPerformAction()) {
+                                <div class="relative-menu">
+                                  @if (!(cvDS.loading$ | async) && (canOverwriteStoragePurpose())) {
+                                  <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
+                                    [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
+                                    <mat-icon>edit</mat-icon>
+                                  </button>
+                                  <mat-menu #menu="matMenu">
+                                    @if (canOverwriteStoragePurpose()) {
+                                    <button mat-menu-item
+                                      (click)="overwritePurposeStorageDialog($event)">{{translatedLangText.OVERWRITE}}
+                                      {{translatedLangText.STORAGE}}</button>
+                                    }
+                                  </mat-menu>
+                                  }
+                                </div>
+                                } -->
                                 <div class="row justify-content-center pt-3">
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row right-align-display">
