@@ -57,12 +57,12 @@
                         (matChipInputTokenEnd)="add($event)">
                       <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                         @for (cc of customer_companyList; track cc) {
-                        <mat-option [value]="cc" class="checkbox-option">
-                           <div class="horizontal-container">
-                          <mat-checkbox color="primary" 
-                            (click)="onCheckboxClicked(cc);$event.stopPropagation()"
-                            [checked]="itemSelected(cc) || false"></mat-checkbox>
-                          <div class="option-text">{{ccDS.displayCodeDashName(cc)}}</div>
+                        <mat-option [value]="cc" class="checkbox-option"
+                          [class.mdc-list-item--selected]="itemSelected(cc)">
+                          <div class="horizontal-container">
+                            <mat-checkbox color="primary" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
+                              [checked]="itemSelected(cc) || false"></mat-checkbox>
+                            <div class="option-text">{{ccDS.displayCodeDashName(cc)}}</div>
                           </div>
                         </mat-option>
                         }
@@ -141,7 +141,7 @@
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
-                <!-- </span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
+                  <!-- </span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
                 </span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customerCost">

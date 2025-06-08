@@ -763,11 +763,13 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (this.custInput) {

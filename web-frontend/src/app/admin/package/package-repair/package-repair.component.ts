@@ -1081,8 +1081,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-
-
   getSelectedCustomersDisplay(): string {
     var retval: string = "";
     if (this.selectedCustomers?.length > 1) {
@@ -1104,11 +1102,13 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (this.custInput) {
