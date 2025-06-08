@@ -23,7 +23,8 @@ import { FeatherIconsComponent } from '../../shared/components/feather-icons/fea
 import { ModulePackageService } from 'app/services/module-package.service';
 import { AuthService } from '@core/service/auth.service';
 import { debounceTime, take } from 'rxjs/operators';
-
+import {TestComponent} from '../components/test/test.component';
+import {Test1Component} from '../components/test1/test1.component';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -66,6 +67,8 @@ export type ChartOptions = {
     MatProgressSpinnerModule,
     NgClass,
     CommonModule,
+    TestComponent,
+    Test1Component
   ],
 })
 

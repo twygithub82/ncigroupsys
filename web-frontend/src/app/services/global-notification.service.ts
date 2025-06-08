@@ -4,6 +4,18 @@ import gql from 'graphql-tag';
 import { BaseDataSource } from 'app/data-sources/base-ds';
 import { catchError, finalize, map, Observable, of } from 'rxjs';
 import { ApolloError } from '@apollo/client/errors';
+const NEW_MESSAGES_R1_SUBSCRIPTION = gql`
+  subscription {
+    messageReceived_r1 {
+      count
+      event_dt
+      event_id
+      event_name
+      payload
+      topic
+    }
+  }
+`;
 const NEW_MESSAGES_SUBSCRIPTION = gql`
   subscription {
     messageReceived {
