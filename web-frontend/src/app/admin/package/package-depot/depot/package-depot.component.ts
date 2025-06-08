@@ -756,8 +756,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       this.selectedProfiles.push(profile);
 
     }
-    else
-    {
+    else {
       this.selectedProfiles.splice(index, 1);
     }
 
@@ -790,7 +789,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   searchProfileNameList(searchCriteria: string) {
-
     searchCriteria = searchCriteria || '';
     this.subs.sink = this.tariffDepotDS.SearchTariffDepot({ profile_name: { contains: searchCriteria } }, { profile_name: 'ASC' }).subscribe(data => {
       if (this.profileInput?.nativeElement.value === searchCriteria) {
@@ -827,87 +825,86 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
-  itemSelected(row: CustomerCompanyItem):boolean{
-    var retval:boolean=false;
+  itemSelected(row: CustomerCompanyItem): boolean {
+    var retval: boolean = false;
     const index = this.selectedCustomers.findIndex(c => c.code === row.code);
     retval = (index >= 0);
     return retval;
   }
 
-  itemProfileSelected(row: TariffDepotItem):boolean{
-    var retval:boolean=false;
+  itemProfileSelected(row: TariffDepotItem): boolean {
+    var retval: boolean = false;
     const index = this.selectedProfiles.findIndex(c => c.guid === row.guid);
     retval = (index >= 0);
     return retval;
   }
 
 
-  getSelectedProfilesDisplay():string{
-    var retval:string = "";
-    if(this.selectedProfiles?.length>1){
+  getSelectedProfilesDisplay(): string {
+    var retval: string = "";
+    if (this.selectedProfiles?.length > 1) {
       retval = `${this.selectedProfiles.length} ${this.translatedLangText.PROFILES_SELECTED}`;
     }
-    else if(this.selectedProfiles?.length==1){
-      retval =`${this.selectedProfiles[0].description}`
+    else if (this.selectedProfiles?.length == 1) {
+      retval = `${this.selectedProfiles[0].description}`
     }
     return retval;
   }
-  
-      
-  getSelectedCustomersDisplay():string{
-    var retval:string = "";
-    if(this.selectedCustomers?.length>1){
+
+
+  getSelectedCustomersDisplay(): string {
+    var retval: string = "";
+    if (this.selectedCustomers?.length > 1) {
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
-    else if(this.selectedCustomers?.length==1){
-      retval =`${this.selectedCustomers[0].name}`
+    else if (this.selectedCustomers?.length == 1) {
+      retval = `${this.selectedCustomers[0].name}`
     }
     return retval;
   }
 
   removeSelectedProfiles(): void {
     this.selectedProfiles = [];
-   }
-  
-  removeAllSelectedCustomers(): void {
-   this.selectedCustomers=[];
   }
 
-  
+  removeAllSelectedCustomers(): void {
+    this.selectedCustomers = [];
+  }
+
+
   selected(event: MatAutocompleteSelectedEvent): void {
     const customer = event.option.value;
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
-    else
-    {
+    else {
       this.selectedCustomers.splice(index, 1);
-      this.search();
+      if (Utility.IsAllowAutoSearch())
+        this.search();
     }
 
     if (this.custInput) {
-       this.searchCustomerCompanyList('');
-       this.custInput.nativeElement.value = '';
+      this.searchCustomerCompanyList('');
+      this.custInput.nativeElement.value = '';
 
     }
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
   }
-  
-onCheckboxClicked(row: CustomerCompanyItem) {
-  const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-  this.selected(fakeEvent);
- 
-}
 
-onCheckboxProfileClicked(row: TariffDepotItem) {
-  const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-  this.selectedProfile(fakeEvent);
- 
-}
+  onCheckboxClicked(row: CustomerCompanyItem) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
 
+  }
+
+  onCheckboxProfileClicked(row: TariffDepotItem) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selectedProfile(fakeEvent);
+  }
 }
 
