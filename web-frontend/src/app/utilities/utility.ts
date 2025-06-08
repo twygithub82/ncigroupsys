@@ -5,7 +5,7 @@ import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
 import { PDFUtility } from "./pdf-utility";
-import {systemCurrencyCode} from '../../environments/environment';
+import { systemCurrencyCode } from '../../environments/environment';
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -721,8 +721,8 @@ export class Utility {
     pdf.text(content, leftPost, topPos); // Position it at the top
   }
 
-  static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, 
-    topPosition: number, fontSize: number = 14 , underline: boolean = true,additionalBufferX: number = 0) {
+  static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
+    topPosition: number, fontSize: number = 14, underline: boolean = true, additionalBufferX: number = 0) {
     // pdf.setFontSize(14); // Title font size 
     // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
@@ -736,7 +736,7 @@ export class Utility {
     // pdf.setLineWidth(0.1); // Set line width for underline
     // pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
 
-    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize,underline,additionalBufferX);
+    PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline, additionalBufferX);
   }
 
   static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean, fontSize: number = 14) {
@@ -869,7 +869,7 @@ export class Utility {
   ): Promise<void> {
 
     await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
-  
+
   }
 
   static async addHeaderWithCompanyLogo_Landscape(
@@ -883,7 +883,7 @@ export class Utility {
   ): Promise<void> {
 
     await PDFUtility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
-    
+
   }
 
   static async loadPDFImage(
@@ -1109,7 +1109,7 @@ export class Utility {
     return arrayVal ? [arrayVal] : []
   }
 
-   static convertToWords(amount: number | string, currency: string = '', centsCurrency: string = 'CENTS'): string {
+  static convertToWords(amount: number | string, currency: string = '', centsCurrency: string = 'CENTS'): string {
     // Handle string input and parse it
     if (typeof amount === 'string') {
       amount = parseFloat(amount.replace(/,/g, ''));
@@ -1117,37 +1117,37 @@ export class Utility {
 
     // Round to 2 decimal places
     amount = Math.round(Number(amount) * 100) / 100;
-    
+
     const dollars = Math.floor(amount);
     const cents = Math.round((amount - dollars) * 100);
-    
+
     let result = '';
-    
+
     if (dollars > 0) {
       result = this.convertDollars(dollars) + ' ' + currency;
     }
-    
+
     if (cents > 0) {
       if (result !== '') {
         result += ' AND ';
       }
       result += this.convertCents(cents) + ' ' + centsCurrency;
     }
-    
+
     if (result === '') {
       return 'ZERO ' + currency + ' ONLY';
     }
-    
+
     return result + ' ONLY';
   }
 
   static convertDollars(num: number): string {
-   let scales = ['', 'THOUSAND', 'MILLION', 'BILLION', 'TRILLION'];
+    let scales = ['', 'THOUSAND', 'MILLION', 'BILLION', 'TRILLION'];
     if (num === 0) return 'ZERO';
-    
+
     let words = '';
     let scaleIndex = 0;
-    
+
     while (num > 0) {
       const chunk = num % 1000;
       if (chunk !== 0) {
@@ -1157,12 +1157,12 @@ export class Utility {
       num = Math.floor(num / 1000);
       scaleIndex++;
     }
-    
+
     return words.trim();
   }
 
   static convertCents(num: number): string {
-     let units = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE'];
+    let units = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE'];
     let tens = ['', 'TEN', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
     let teens = ['TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
     if (num < 10) {
@@ -1181,13 +1181,13 @@ export class Utility {
     let tens = ['', 'TEN', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
     let teens = ['TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
     let words = '';
-    
+
     if (num >= 100) {
       words += units[Math.floor(num / 100)] + ' HUNDRED';
       num %= 100;
       if (num > 0) words += ' AND ';
     }
-    
+
     if (num >= 20) {
       words += tens[Math.floor(num / 10)];
       num %= 10;
@@ -1196,21 +1196,19 @@ export class Utility {
       words += teens[num - 10];
       num = 0;
     }
-    
+
     if (num > 0) {
       words += units[num];
     }
-    
+
     return words;
   }
 
-  static GetSystemCurrencyCode():string
-  {
+  static GetSystemCurrencyCode(): string {
     return systemCurrencyCode;
   }
 
-  static IsAllowAutoSearch():boolean
-  {
+  static IsAllowAutoSearch(): boolean {
     return false;
   }
 }
@@ -1232,7 +1230,7 @@ export const TANK_STATUS_IN_YARD = [
   'OUT_SURVEY',
 ]
 
-export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE","APPROVE","APPROVED","COMPLETE","ASSIGNED","JOB_IN_PROGRESS"];
+export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE", "ASSIGNED", "JOB_IN_PROGRESS"];
 
 //export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE","APPROVE","COMPLETE","ASSIGNED","JOB_IN_PROGRESS"]
 
