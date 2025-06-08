@@ -153,7 +153,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" (click)="save()">
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">
           <mat-icon>
             @if (this.trfDepotDS.loading$ | async) {
             <mat-spinner color="primary" [diameter]="20" mode="indeterminate"></mat-spinner>
@@ -165,7 +165,7 @@
           {{translatedLangText.SAVE_AND_SUBMIT}}
         </button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
       </div>
     </form>
   </div>

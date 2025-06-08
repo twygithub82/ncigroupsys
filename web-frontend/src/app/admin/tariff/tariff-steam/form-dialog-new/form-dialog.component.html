@@ -80,14 +80,14 @@
           {{translatedLangText.SAVE_AND_SUBMIT}}</button>
         }
         @else {
-        <button mat-flat-button color="primary" (click)="update()">
+        <button mat-flat-button color="primary" class="me-1" (click)="update()">
           <mat-icon>
             save
           </mat-icon>
           {{translatedLangText.UPDATE}}</button>
         }
 
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
       </div>
     </form>
   </div>

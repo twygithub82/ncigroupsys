@@ -176,7 +176,8 @@
           <mat-icon>
             save
           </mat-icon>
-          {{data.translatedLangText.SAVE}}</button>
+          {{ isEdit() ? data.translatedLangText.UPDATE : data.translatedLangText.SAVE }}
+        </button>
         }
         <button mat-flat-button (click)="onNoClick()" tabindex="-1"
           class="m-l-5">{{data.translatedLangText.CANCEL}}</button>
