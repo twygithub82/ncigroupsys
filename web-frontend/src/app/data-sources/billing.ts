@@ -155,7 +155,7 @@ export class BillingItem extends BillingGo {
     this.loff_billing_sot = item.loff_billing_sot;
     this.gin_billing_sot = item.gin_billing_sot;
     this.gout_billing_sot = item.gout_billing_sot;
-    this.storage_detail=item.storage_detail;
+    this.storage_detail = item.storage_detail;
   }
 }
 
@@ -365,9 +365,7 @@ export class StorageDetailRequest {
   public start_dt?: number;
   public state_cv?: string;
   public total_cost?: number;
-
 }
-
 
 const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
   query queryBilling($where: billingFilterInput, $order: [billingSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -1494,7 +1492,7 @@ export class BillingDS extends BaseDataSource<BillingItem> {
       );
   }
 
-   searchStorageBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BillingItem[]> {
+  searchStorageBilling(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<BillingItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
