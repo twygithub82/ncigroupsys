@@ -494,4 +494,8 @@ export class FormDialogComponent {
         : null;
     };
   }
+
+  getSaveBtnDescription(): string {
+    return Utility.getSaveBtnDescription(this.storingOrderTank?.guid);
+  }
 }
