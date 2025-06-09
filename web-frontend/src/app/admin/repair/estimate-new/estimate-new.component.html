@@ -834,7 +834,8 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                    <!-- {{translatedLangText.SAVE_AND_SUBMIT}} -->
+                    {{ repair_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
                   </button>
                   }
                 </div>

@@ -53,11 +53,11 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right pt-2">
+                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
                       <span>{{translatedLangText.OWNER}}:</span>
                     </div>
                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex">
-                      <div class="contact-detail-info font-bold pt-2">
+                      <div class="contact-detail-info font-bold">
                         {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
                       </div>
                     </div>
@@ -422,7 +422,12 @@
                   }
                 @if (steamDs.canSave(steamItem!)) {
                 <button mat-flat-button color="primary"
-                  (click)="save()">{{this.translatedLangText.SAVE_AND_SUBMIT}}</button>
+                  (click)="save()" class="m-r-5">
+                  <mat-icon>
+                    save
+                  </mat-icon>
+                  {{this.translatedLangText.SAVE}}
+                </button>
                 }
                 @if (canRollBack()) {
                 <button mat-flat-button color="accent" [disabled]="(steamDs.loading$ | async)" class="m-r-5"

@@ -408,7 +408,7 @@
             <div class="body overflow-auto">
               <div class="responsive_table">
                 <table mat-table [dataSource]="deList" matSort
-                  class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                  class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <!-- ID Column -->
                   <ng-container matColumnDef="seq">
                     <mat-header-cell *matHeaderCellDef
@@ -635,7 +635,7 @@
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.SAVE}}
+                 {{ residue_guid ? translatedLangText.UPDATE : translatedLangText.SAVE }}
               </button>
               }
               }

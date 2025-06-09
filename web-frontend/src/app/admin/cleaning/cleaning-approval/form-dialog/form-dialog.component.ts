@@ -218,6 +218,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     FULL_KIV: "COMMON-FORM.FULL-KIV",
     NO_ACTION: "COMMON-FORM.NO-ACTION",
     APPROVE: "COMMON-FORM.APPROVE",
+    APPROVED: "COMMON-FORM.APPROVED",
     APPROVED_DATE: "COMMON-FORM.APPROVED-DATE",
     DATE: "COMMON-FORM.DATE",
     FLAMMABLE_NOTIFICATION: "COMMON-FORM.FLAMMABLE-NOTIFICATION",
@@ -574,7 +575,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         retval = this.translatedLangText.NO_ACTION;
         break;
       case "view":
-        retval = this.translatedLangText.VIEW;
+        retval = this.translatedLangText.APPROVED;
         break;
     }
     return retval;
