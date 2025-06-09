@@ -1539,7 +1539,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       });
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result?.confirmed) {
-          //this.onPublish();
+          this.onPublish();
         }
       });
     } else {

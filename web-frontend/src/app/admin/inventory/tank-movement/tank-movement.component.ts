@@ -366,8 +366,6 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         soSearch.customer_company = { guid: { in: cond } };
         where.storing_order = soSearch;
       }
-
-
     }
 
     // if (this.searchForm!.get('last_cargo')?.value) {
