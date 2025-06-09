@@ -67,7 +67,7 @@
                 </div>
 
 
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
                     <mat-chip-grid #chipProfile>
@@ -217,7 +217,7 @@
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.FREE_DAYS}}:</span>
-                {{row.free_storage.toFixed(2)}}</mat-cell>
+                {{row.free_storage}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update">
               <mat-header-cell *matHeaderCellDef
