@@ -1148,7 +1148,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     if (!residue || residue.length === 0) {
       return undefined;
     }
-
+    
     const beginDate = this.getResidueBeginDate(residue);
     const completeDate = this.getResidueCompleteDate(residue);
 
@@ -1162,7 +1162,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       return "Invalid time data";
     }
 
-    const days = Math.floor(timeTakenMs / (3600 * 24));
+    const days = Math.ceil(timeTakenMs / (3600 * 24));
 
     return `${days}`;
   }
