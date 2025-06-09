@@ -917,7 +917,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       return accumulator + totalCost;
       //return accumulator+ Number(stmItm.net_cost||0);
     }, 0); // Initialize accumulator to 0
-    this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
+    this.invoiceTotalCostControl.setValue(Utility.formatNumberDisplay(totalCost));
   }
   toggleRow(row: SteamItem) {
 
