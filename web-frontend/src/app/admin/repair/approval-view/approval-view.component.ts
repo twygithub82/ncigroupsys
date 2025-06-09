@@ -750,7 +750,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       re.total_material_cost = Utility.convertNumber(this.repairForm?.get('total_mat_cost')?.value, 2);
 
       re.repair_part = this.repList?.map((rep: RepairPartItem) => {
-        const approvePart = rep.approve_part ?? this.repairPartDS.is4X(rep.rp_damage_repair);
+        const is4X = this.repairPartDS.is4X(rep.rp_damage_repair);
+        const approvePart = (rep.approve_part == null || rep.approve_part == undefined ? (!is4X ? true : false) : rep.approve_part);
         return new RepairPartItem({
           ...rep,
           tariff_repair: undefined,

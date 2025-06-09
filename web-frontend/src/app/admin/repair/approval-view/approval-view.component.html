@@ -256,11 +256,11 @@
                     </ng-container>
                     <ng-container matColumnDef="subgroup_name_cv">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.SUBGROUP}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.SUBGROUP}}:</span>
                         {{getSubgroupNameCodeDescription(row.tariff_repair?.subgroup_name_cv)}}
                       </mat-cell>
@@ -297,11 +297,11 @@
                     </ng-container>
                     <ng-container matColumnDef="description">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="''">
                         {{translatedLangText.DESCRIPTION}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="''">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
                         {{row.description}}
                       </mat-cell>
@@ -356,11 +356,11 @@
                     </ng-container>
                     <ng-container matColumnDef="approve_part">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-auto-md tbl-col-width-auto-sm tbl-col-width-auto-xs'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                         <mat-icon>more_vert</mat-icon>
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-auto-lg tbl-col-width-auto-md tbl-col-width-auto-sm tbl-col-width-auto-xs'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                         <span class="mobile-label">{{translatedLangText.APPROVAL}}:</span>
                         @if (repairPartDS.is4X(row.rp_damage_repair)){
                         <mat-icon class="font-bold">close</mat-icon>
@@ -378,11 +378,11 @@
                     </ng-container>
                     <ng-container matColumnDef="approve_qty">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.QTY}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.QTY}}:</span>
                         <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
@@ -395,11 +395,11 @@
                     </ng-container>
                     <ng-container matColumnDef="approve_hour">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.HOUR}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.HOUR}}:</span>
                         <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
@@ -412,14 +412,14 @@
                     </ng-container>
                     <ng-container matColumnDef="approve_cost">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.PRICE}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-auto-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                         <div class="cost-label">
-                          <span>$</span>
+                          <span></span>
                           <tlx-form-field customClass="mat-table-form-txt-90px">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
@@ -479,7 +479,7 @@
               }
               @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
@@ -510,7 +510,7 @@
                     </div> -->
                   </div>
                 </div>
-                <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-8-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row p-l-5 p-r-10">
                     <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
                       <div class="row">
@@ -599,7 +599,7 @@
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                           <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                            <div class="col-xl-5-5 col-lg-5-5 col-md-5-5 col-sm-5-5 m-b-0">
                               <div class="row">
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -631,7 +631,7 @@
                                   </div> -->
                               </div>
                             </div>
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                            <div class="col-xl-6-5 col-lg-6-5 col-md-6-5 col-sm-6-5 m-b-0">
                               <div class="row">
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -692,7 +692,7 @@
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                           <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                            <div class="col-xl-5-5 col-lg-5-5 col-md-5-5 col-sm-5-5 m-b-0">
                               <div class="row">
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -724,7 +724,7 @@
                                   </div> -->
                               </div>
                             </div>
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                            <div class="col-xl-6-5 col-lg-6-5 col-md-6-5 col-sm-6-5 m-b-0">
                               <div class="row">
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -780,17 +780,17 @@
                     }
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-5-5 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.LABOUR}}</span>
                         </div>
-                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-6-5 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.TOTAL}}</span>
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                           <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                            <div class="col-xl-5-5 col-lg-5-5 col-md-6 col-sm-6 m-b-0">
                               <div class="row">
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
@@ -825,7 +825,7 @@
                                 </div> -->
                               </div>
                             </div>
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                            <div class="col-xl-6-5 col-lg-6-5 col-md-6 col-sm-6 m-b-0">
                               <div class="row">
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
