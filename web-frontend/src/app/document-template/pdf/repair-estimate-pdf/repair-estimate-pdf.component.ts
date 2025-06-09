@@ -1215,15 +1215,9 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
             data.cell.y + data.cell.height
           );
         }
-
-
       },
-
     });
   }
-
-
-
 
   createRepairEstimateDetail(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
     const fontSz = 6;
@@ -1308,11 +1302,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         rep.description, rep.quantity, rep.hour, this.parse2Decimal(rep.material_cost),
         rep.approve_qty, rep.approve_hour, this.parse2Decimal(rep.approve_cost), isOwner
       ])
-
-
     });
-
-
 
     autoTable(pdf, {
       head: headers,
@@ -1355,9 +1345,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     PDFUtility.addText(pdf, remarks, startY, leftMargin, fontSz, false, undefined, undefined, 0, true);
     startY += 6;
     PDFUtility.addText(pdf, remarksValue, startY, leftMargin, fontSz);
-
   }
-
 
   createSummaryTable(pdf: jsPDF, leftMargin: number, rightMargin: number, pageWidth: number, pageHeight: number) {
     var fontSz = 7;
@@ -1373,32 +1361,32 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       ],
       [
         { content: `${this.translatedLangText.LABOUR}`, styles: { halign: 'left', fontStyle: 'bold' } },
-        { content: `$ ${this.repairItem?.labour_cost}`, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: `$ ${this.parse2Decimal(this.repairItem?.labour_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
         { content: `${this.repairCost?.total_hour_table}`, styles: { halign: 'right', fontStyle: 'bold' } },
-        { content: `$ ${this.repairCost?.total_labour_cost}`, styles: { halign: 'right', fontStyle: 'bold' } }
+        { content: `$ ${this.parse2Decimal(this.repairCost?.total_labour_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
       ],
       [
         { content: `${this.translatedLangText.MATERIAL}`, styles: { halign: 'left', fontStyle: 'bold' } },
         '', '',
-        { content: `$ ${this.repairCost?.total_mat_cost}`, styles: { halign: 'right', fontStyle: 'bold' } }
+        { content: `$ ${this.parse2Decimal(this.repairCost?.total_mat_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
       ],
       [
         { content: `${this.translatedLangText.FOR} ${this.repairItem?.storing_order_tank?.storing_order?.customer_company?.name}`, colSpan: 1, rowSpan: 3, styles: { halign: 'left', fontStyle: 'bold' } },
         { content: `${this.translatedLangText.LABOUR_DISCOUNT}`, styles: { halign: 'left', fontStyle: 'bold' } },
-        { content: `${this.repairCost?.labour_cost_discount} %`, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: `${this.parse2Decimal(this.repairCost?.labour_cost_discount)} %`, styles: { halign: 'right', fontStyle: 'bold' } },
         '',
-        { content: `- $ ${this.repairCost?.discount_labour_cost}`, styles: { halign: 'right', fontStyle: 'bold' } }
+        { content: `- $ ${this.parse2Decimal(this.repairCost?.discount_labour_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
       ],
       [
         { content: `${this.translatedLangText.MATERIAL_DISCOUNT} %`, styles: { halign: 'left', fontStyle: 'bold' } },
-        { content: `${this.repairCost?.material_cost_discount} %`, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: `${this.parse2Decimal(this.repairCost?.material_cost_discount)} %`, styles: { halign: 'right', fontStyle: 'bold' } },
         '',
-        { content: `- $ ${this.repairCost?.discount_mat_cost}`, styles: { halign: 'right', fontStyle: 'bold' } }
+        { content: `- $ ${this.parse2Decimal(this.repairCost?.discount_mat_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
       ],
       [
         { content: `${this.translatedLangText.NET_COST} $`, styles: { halign: 'left', fontStyle: 'bold' } },
         '', '',
-        { content: `$ ${this.repairCost?.net_cost}`, styles: { halign: 'right', fontStyle: 'bold' } }
+        { content: `$ ${this.parse2Decimal(this.repairCost?.net_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
       ]
     ];
 
