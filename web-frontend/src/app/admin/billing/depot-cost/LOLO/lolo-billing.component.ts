@@ -137,7 +137,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     INVOICED: 'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE: 'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
-    CONFIRM_REMOVE_ITEM: 'COMMON-FORM.CONFIRM-REMOVE-ITEMS',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     COST: 'COMMON-FORM.COST',
     CONFIRM_REMOVE_ESITMATE: 'COMMON-FORM.CONFIRM-REMOVE-ESITMATE',
     DELETE: 'COMMON-FORM.DELETE',
@@ -721,7 +721,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ITEM,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         action: 'delete',
       },
       direction: tempDirection
@@ -1021,7 +1021,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         action: 'delete',
       },
       direction: tempDirection
@@ -1206,7 +1206,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         action: 'delete',
       },
       direction: tempDirection
