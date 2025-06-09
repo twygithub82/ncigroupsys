@@ -51,7 +51,7 @@
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label></mat-label>
+                <mat-label>{{data.translatedLangText.COMPARTMENT_TYPE}}</mat-label>
                 <mat-select formControlName="tank_comp_guid" required>
                   @for (buffer of data.populateData.packageBufferList; track buffer) {
                   <mat-option [value]="buffer.tariff_buffer_guid">{{buffer.tariff_buffer?.buffer_type}}</mat-option>
@@ -272,7 +272,7 @@
                                   {{data.translatedLangText.JOB_COMPLETION}}
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                                 <div class="table-label">
                                   {{data.translatedLangText.BILLING_DETAILS}}
                                 </div>

@@ -509,22 +509,6 @@ export class MainMonthlyComponent extends UnsubscribeOnDestroyAdapter implements
   //   return this.cvDS.getCodeDescription(codeValType, this.tankStatusCvList);
   // }
 
-  calculateNetCost(repair: RepairItem): any {
-    // const total = this.repairDS.getTotal(repair?.repair_part)
-    // const labourDiscount = repair.labour_cost_discount;
-    // const matDiscount = repair.material_cost_discount;
-
-    // const total_hour = total.hour;
-    // const total_labour_cost = this.repairDS.getTotalLabourCost(total_hour, repair?.labour_cost);
-    // const total_mat_cost = total.total_mat_cost;
-    // const total_cost = repair?.total_cost;
-    // const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
-    // const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
-    // const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    // return net_cost.toFixed(2);
-    return undefined;
-  }
-
   displayLastCargoFn(tc: TariffCleaningItem): string {
     return tc && tc.cargo ? `${tc.cargo}` : '';
   }

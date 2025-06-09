@@ -491,6 +491,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     TEST_DATE: 'COMMON-FORM.TEST-DATE',
     OVERWRITE: 'COMMON-FORM.OVERWRITE',
     CLASS_BODIES: 'COMMON-FORM.CLASS-BODIES',
+    MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
+    DOM: 'COMMON-FORM.DOM',
   }
 
   sot_guid: string | null | undefined;
@@ -1627,9 +1629,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         transferList: this.transferList,
         ccDS: this.ccDS,
         populateData: {
-          yardCvList: this.yardCvList,
+          claddingCvList: this.claddingCvList,
           testTypeCvList: this.testTypeCvList,
           testClassCvList: this.testClassCvList,
+          disCompCvList: this.disCompCvList,
+          manufacturerCvList: this.manufacturerCvList,
+          maxGrossWeightCvList: this.maxGrossWeightCvList,
+          walkwayCvList: this.walkwayCvList
         }
       },
       direction: tempDirection
@@ -1637,53 +1643,30 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot) {
         console.log(result)
-        // let newIg: any = undefined;
-        // let newIgs: any = undefined;
-        // let newTi: any = undefined;
-
-        // if (result.yard_cv) {
-        //   newIg = {
-        //     guid: this.ig?.guid,
-        //     yard_cv: result.yard_cv,
-        //   };
-        // }
-
-        // if (result.last_test_cv || result.next_test_cv || result.test_class_cv || result.test_dt) {
-        //   newIgs = {
-        //     guid: this.igs?.guid,
-        //     last_test_cv: result.last_test_cv,
-        //     next_test_cv: result.next_test_cv,
-        //     test_class_cv: result.test_class_cv,
-        //     test_dt: result.test_dt
-        //   };
-        // }
-
-        // if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
-        //   newTi = {
-        //     guid: this.tiItem?.guid,
-        //     tank_no: result?.tank_no,
-        //     yard_cv: result.ti_yard_cv,
-        //     last_test_cv: result.ti_last_test_cv,
-        //     test_dt: result.ti_test_dt,
-        //     next_test_cv: result.ti_next_test_cv,
-        //     test_class_cv: result.ti_test_class_cv,
-        //   };
-        // }
-
-        // const tankSummaryRequest = {
-        //   ...(newIg && { ingate: newIg }),
-        //   ...(newIgs && { ingateSurvey: newIgs }),
-        //   so: undefined,
-        //   sot: undefined,
-        //   ...(newTi && { tankInfo: newTi })
-        // };
-        // this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.updateTankSummaryDetails);
-        //   this.loadDataHandling_sot(this.sot_guid!);
-        //   this.loadDataHandling_igs(this.sot_guid!);
-        //   this.loadDataHandling_ig(this.sot_guid!);
-        // });
+        const newIgs = {
+          guid: this.igs?.guid,
+          cladding_cv: result?.cladding_cv,
+          tare_weight: result?.tare_weight,
+          btm_dis_comp_cv: result?.btm_dis_comp_cv,
+          manufacturer_cv: result?.manufacturer_cv,
+          dom_dt: result?.dom_dt,
+          capacity: result?.capacity,
+          max_weight_cv: result?.max_weight_cv,
+          walkway_cv: result?.walkway_cv
+        }
+        const tankDetailRequest = {
+          cleaning: undefined,
+          ingateSurvey: newIgs,
+          so: undefined,
+          sot: undefined,
+          steaming: undefined
+        }
+        console.log(`updateTankDetails: `, tankDetailRequest)
+        this.sotDS.updateTankDetails(tankDetailRequest).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateTankDetails);
+          this.loadDataHandling_igs(this.sot_guid!);
+        });
       }
     });
   }
@@ -2686,6 +2669,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteSteamingApproval(row: SteamItem) {
+    return false;
     const allowOverwriteStatus = ['APPROVED', 'JOB_IN_PROGRESS', 'COMPLETED'];
     return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
   }

@@ -164,6 +164,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   hasNextPageJobOrder = false;
   hasPreviousPageJobOrder = false;
 
+  availableJobStatus: string[] = [
+    'PENDING',
+    'JOB_IN_PROGRESS',
+  ]
+
   private jobOrderSubscriptions: Subscription[] = [];
 
   constructor(
@@ -304,6 +309,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     if (this.filterJobOrderForm!.get('jobStatusCv')?.value?.length) {
       where.status_cv = {
         in: this.filterJobOrderForm!.get('jobStatusCv')?.value
+      };
+    } else {
+      where.status_cv = {
+        in: this.availableJobStatus
       };
     }
 

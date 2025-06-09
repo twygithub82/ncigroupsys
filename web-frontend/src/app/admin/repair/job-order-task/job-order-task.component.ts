@@ -324,8 +324,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       where.status_cv = {
         in: this.filterJobOrderForm!.get('jobStatusCv')?.value
       };
-    }
-    else {
+    } else {
       where.status_cv = {
         in: this.availableJobStatus
       };
@@ -729,7 +728,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     ]);
   }
 
-  getMaxDate(){
+  getMaxDate() {
     return new Date();
   }
 

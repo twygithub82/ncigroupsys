@@ -11,87 +11,91 @@
   </div>
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
-      <!-- <div class="row">
-        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.OWNER}}</mat-label>
-            <input matInput [formControl]="ownerCodeControl" [matAutocomplete]="ownerCompany" required>
-            <mat-autocomplete #ownerCompany="matAutocomplete" [displayWith]="displayCustomerCompanyFn" (optionSelected)="onSelect($event.option.value)">
-              @for (cc of ownerCompanyList; track cc) {
-              <mat-option [value]="cc">
-                {{cc.name}}
-              </mat-option>
-              }
-            </mat-autocomplete>
-            @if (ownerCodeControl.hasError('invalidAutocompleteSelection')) {
-            <mat-error>
-              {{data.translatedLangText.INVALID_SELECTION}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-0">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.CUSTOMER}}</mat-label>
-            <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCompany" required>
-            <mat-autocomplete #customerCompany="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-              @for (cc of customerCompanyList; track cc) {
-              <mat-option [value]="cc">
-                {{cc.name}}
-              </mat-option>
-              }
-            </mat-autocomplete>
-            @if (customerCodeControl.hasError('invalidAutocompleteSelection')) {
-            <mat-error>
-              {{data.translatedLangText.INVALID_SELECTION}}
-            </mat-error>
-            }
-          </mat-form-field>
-        </div>
-      </div> -->
       <div class="row">
-        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.YARD}}</mat-label>
-            <mat-select formControlName="yard_cv" required>
-              @for (cv of data.populateData.yardCvList; track cv) {
+            <mat-label>{{data.translatedLangText.CLADDING}}</mat-label>
+            <mat-select formControlName="cladding_cv" required>
+              @for (cv of data.populateData.claddingCvList; track cv) {
               <mat-option [value]="cv.code_val">{{cv.description}}</mat-option>
               }
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 mb-0">
-          <span class="label-display-info">{{data.translatedLangText.NEXT_TEST}}:</span>
-          <span class="value-display-info">
-            {{next_test_desc || '-'}}
-          </span>
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.TARE_WEIGHT}}</mat-label>
+            <input matInput formControlName="tare_weight" appNumericText [allowDecimal]="false"
+              (input)="onNumericOnly($event, 'tare_weight')" required>
+            <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{data.translatedLangText.KG}}</h6>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+              <mat-label>{{data.translatedLangText.BOTTOM_DIS_COMP}}:</mat-label>
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <mat-button-toggle-group formControlName="btm_dis_comp_cv" class="m-r-10"
+                [hideMultipleSelectionIndicator]="true" color="primary" appearance="standard" exclusiveToggle required>
+                @for (codeValue of data.populateData.disCompCvList; track codeValue) {
+                <mat-button-toggle [value]="codeValue.code_val">{{codeValue.description}}</mat-button-toggle>
+                }
+              </mat-button-toggle-group>
+            </div>
+          </div>
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.LAST_TEST}}</mat-label>
-            <mat-select formControlName="last_test_cv" required>
-              @for (cv of data.populateData.testTypeCvList; track cv) {
-              <mat-option [value]="cv.code_val">{{cv.description}}</mat-option>
+            <mat-label>{{data.translatedLangText.MANUFACTURER}}</mat-label>
+            <mat-select formControlName="manufacturer_cv" required>
+              @for (codeValue of data.populateData.manufacturerCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.TEST_DATE}}</mat-label>
-            <input matInput formControlName="test_dt" [matDatepicker]="eta_picker" [max]="latestTestDt">
-            <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
-            <mat-datepicker #eta_picker [startAt]="initialDt"></mat-datepicker>
+            <mat-label>{{data.translatedLangText.DOM}}</mat-label>
+            <input matInput formControlName="dom_dt" [matDatepicker]="manufacturer_dom_picker" [max]="maxManuDOMDt"
+              required>
+            <mat-datepicker-toggle matSuffix [for]="manufacturer_dom_picker"></mat-datepicker-toggle>
+            <mat-datepicker #manufacturer_dom_picker [startAt]="initialDt"></mat-datepicker>
           </mat-form-field>
         </div>
-        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
+      </div>
+      <div class="row">
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.CLASS_BODIES}}</mat-label>
-            <mat-select formControlName="test_class_cv" required>
-              @for (cv of data.populateData.testClassCvList; track cv) {
-              <mat-option [value]="cv.code_val">{{cv.description}}</mat-option>
+            <mat-label>{{data.translatedLangText.CAPACITY}}</mat-label>
+            <input matInput formControlName="capacity" [allowDecimal]="false"
+              (input)="onNumericOnly($event, 'capacity')" appNumericText required>
+            <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{data.translatedLangText.LITERS}}</h6>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.MAX_GROSS_WEIGHT}}</mat-label>
+            <mat-select formControlName="max_weight_cv" required>
+              @for (codeValue of data.populateData.maxGrossWeightCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.WALKWAY}}</mat-label>
+            <mat-select formControlName="walkway_cv" required>
+              @for (codeValue of data.populateData.walkwayCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
               }
             </mat-select>
           </mat-form-field>

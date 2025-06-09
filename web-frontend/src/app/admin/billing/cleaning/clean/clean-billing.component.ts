@@ -882,7 +882,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       return accumulator + itm.total_cost;
       // return accumulator + (s.buffer_cost || 0) + (s.cleaning_cost || 0);
     }, 0); // Initialize accumulator to 0
-    this.invoiceTotalCostControl.setValue(totalCost.toFixed(2));
+    this.invoiceTotalCostControl.setValue(Utility.formatNumberDisplay(totalCost));
   }
   toggleRow(row: InGateCleaningItem) {
 

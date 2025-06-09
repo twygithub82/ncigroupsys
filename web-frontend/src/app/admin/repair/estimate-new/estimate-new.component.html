@@ -334,7 +334,7 @@
                           <mat-menu #menu="matMenu">
                             @if (canEdit()) {
                             <button mat-menu-item (click)="handleDelete($event, row, row.index)">
-                              <mat-icon>delete_forever</mat-icon>
+                              <mat-icon color="warn">delete_forever</mat-icon>
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                             }
@@ -834,7 +834,8 @@
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
                     </mat-icon>
-                    {{translatedLangText.SAVE_AND_SUBMIT}}
+                    <!-- {{translatedLangText.SAVE_AND_SUBMIT}} -->
+                    {{ repair_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
                   </button>
                   }
                 </div>
