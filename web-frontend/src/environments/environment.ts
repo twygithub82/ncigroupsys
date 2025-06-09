@@ -7,6 +7,7 @@ export const environment = {
   fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://https://tlx-idms-notification.happyocean-dddaac7a.southeastasia.azurecontainerapps.io/graphql',
+  topicSubscribe:'/idms/all/*'
 };
 
 export const testTypeMapping: any = {

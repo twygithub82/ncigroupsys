@@ -1470,8 +1470,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   IsSteamRepair(steam: SteamItem | undefined) {
-    var retval
-    retval = !BusinessLogicUtil.isAutoApproveSteaming(steam);
+    var retval=true;
+    if(steam)
+    {
+        retval = !BusinessLogicUtil.isAutoApproveSteaming(steam);
+    }
    // retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
     return retval;
   }

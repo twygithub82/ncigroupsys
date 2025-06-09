@@ -474,7 +474,7 @@
                        <!-- From Uiverse.io by Na3ar-17 --> 
                         <div class="container">
                           <label class="switch">
-                            <input type="checkbox"  [(ngModel)]="flat_rate"  [disabled]="isDisabled()" />
+                            <input type="checkbox"  [(ngModel)]="flat_rate"  [disabled]="isDisabled()"  (ngModelChange)="onFlatRateChanged($event)" />
                             <span class="slider">
                               <span class="title">{{getRateType()}}</span>
                               <span class="ball">
@@ -512,8 +512,15 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span
-                        class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateSteamItemCost(row))}}<br />
+                      @if(isSteamRepair)
+                      {
+                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateSteamItemCost(row))}}<br />
+                      }
+                      @else
+                      {
+                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{autosteamCost}}<br />
+                      }
+                      
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
@@ -558,7 +565,14 @@
                     </div>
                     <div class="col-xl-1-25 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1 font-bold"></div>
                     <div class="col-xl-1 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-10 font_15">
-                      {{this.parse2Decimal(this.getTotalCost())}}
+                      @if(this.isSteamRepair)
+                      {
+                         {{this.parse2Decimal(this.getTotalCost())}}
+                      }
+                      @else
+                      {
+                         {{autosteamTotalCost}}
+                      }
                     </div>
                   </div>
                 </div>

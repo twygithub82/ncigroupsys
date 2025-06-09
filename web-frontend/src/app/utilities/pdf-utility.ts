@@ -188,7 +188,7 @@ export class PDFUtility {
 
     pdf.setLineWidth(0.1);
     // Set dashed line pattern
-    pdf.setLineDashPattern([1, 1], 0.5);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
     // Draw top line
     pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
@@ -242,9 +242,9 @@ export class PDFUtility {
 
     // Add the image to the PDF
     const posX1_img = pageWidth / 1.7; //leftMargin + 5;
-    const posY1_img = topMargin + 0;
-      const aspectRatio= height/width;
-    const w=80;
+    const posY1_img = topMargin + 1;
+    const aspectRatio= height/width;
+    const w=77.5;
     const h=aspectRatio*w;
     
     pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
@@ -282,7 +282,7 @@ export class PDFUtility {
     }
     pdf.setLineWidth(0.1);
     // Set dashed line pattern
-    pdf.setLineDashPattern([1, 1], 0.5);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
     // Draw top line
     pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
@@ -335,10 +335,10 @@ export class PDFUtility {
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
     // Add the image to the PDF
-    const posX1_img = pageWidth - (width + leftMargin);
-    const posY1_img = topMargin + 0;
+    const posX1_img = pageWidth / 1.45;
+    const posY1_img = topMargin + 1;
     const aspectRatio= height/width;
-    const w=80;
+    const w=77.5;
     const h=aspectRatio*w;
     
     pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)

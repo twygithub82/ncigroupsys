@@ -44,6 +44,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import {BusinessLogicUtil} from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-steam-billing',
@@ -389,7 +390,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.status_cv = { in: ['COMPLETED', 'APPROVED', 'JOB-IN_PROGRESS'] };
+    where.status_cv = { in: ['QC_COMPLETED','COMPLETED', 'APPROVED', 'JOB-IN_PROGRESS'] };
     where.bill_to_guid = { neq: null };
 
 
@@ -907,13 +908,14 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       var itm: any = s;
       var isSteamingEst = this.isSteamingEstimate(s);
       var totalCost=0;
-      if(isSteamingEst){
-        totalCost = (itm.total_hour||1)*(itm.rate||0);
-      }
-      else
-      {
-         totalCost = ((itm.total_hour||1)*(itm.rate||0))+(itm.total_cost||0);
-      }
+      totalCost =itm.total_cost||0;
+      // if(isSteamingEst){
+      //   totalCost = (itm.total_hour||1)*(itm.rate||0);
+      // }
+      // else
+      // {
+      //    totalCost = ((itm.total_hour||1)*(itm.rate||0))+(itm.total_cost||0);
+      // }
       return accumulator + totalCost;
       //return accumulator+ Number(stmItm.net_cost||0);
     }, 0); // Initialize accumulator to 0
@@ -967,7 +969,19 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.plDS.getCustomerPackageCost(where).subscribe(data => {
       if (data.length > 0) {
         var cost: number = data[0].cost;
-        row.total_cost = (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
+        if(isAutoApproveSteaming)
+        {
+          row.total_cost = (row.rate||0);
+          if(!row.flat_rate)
+          {
+            row.total_cost *= row.total_hour;
+          }
+        }
+        else
+        {
+           row.total_cost = (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        }
         //this.calculateTotalCost();
       }
     });
@@ -1093,6 +1107,10 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       }
 
     return cost;
+  }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
 }

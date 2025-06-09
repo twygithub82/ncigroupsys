@@ -27,11 +27,13 @@ export class BusinessLogicUtil {
     }
 
     static isAutoApproveSteaming(row: any) {
+        if (!row) return false;
         return row?.estimate_no?.startsWith('SE');
     }
 
     static isEstimateApproved(row:any)
     {
+        if (!row) return false;
         return ESTIMATE_APPROVED_STATUS.includes(row.status_cv);
     }
 

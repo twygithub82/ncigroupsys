@@ -3,12 +3,15 @@ using IDMS.Models;
 using IDMS.Models.DB;
 using IDMS.Models.GqlTypes;
 using IDMS.Models.Notification;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace GlobalMQ.GqlTypes
 {
     public class MutationType
     {
+
+      
 
         public async Task<int> AddNotification([Service] ApplicationNotificationDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor, notification newNotification, [Service] ITopicEventSender topicEventSender)

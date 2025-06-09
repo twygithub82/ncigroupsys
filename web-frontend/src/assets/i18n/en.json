@@ -1307,7 +1307,8 @@
     "HOUR-RATE":"Hour Rate $",
     "FLAT":"Flat",
     "HOURLY":"Hourly",
-    "APPROVED": "Approved"
+    "APPROVED": "Approved",
+    "BY-HOUR":"By Hour"
    
   },
   "CLEAN-PROCEDURES": {

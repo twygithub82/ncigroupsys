@@ -1,3 +1,7 @@
+// @use '@angular/material' as mat;
+
+ @import "../../../../assets/scss/theme/theme-color-variables.scss";
+
 ::ng-deep {
     .multiline-tooltip {
       white-space: pre-line;
@@ -88,8 +92,8 @@
   width: auto; 
 }
 
-.switch input:checked + .slider {
-  background-color: #0d6efd;
+.switch input:checked + .slider  {
+  background-color:$theme-blue;
   
 }
 
@@ -104,6 +108,7 @@
   outline: 6px solid rgba(255, 255, 255, 0.278);
 }
 
+
 .switch .slider {
   position: absolute;
   cursor: pointer;
@@ -111,7 +116,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #0d6efd;
+  background-color: $theme-blue-nav-anchor-opened;
   transition: all 0.4s;
   border-radius: 30px;
 }
@@ -142,14 +147,25 @@
   transition: 0.4s;
 }
 
+.switch  input:checked + .slider .ball .icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color:  $theme-blue;
+  
+}
+
 .switch .slider .ball .icon {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #0d6efd;
+  color:$theme-blue-nav-anchor-opened;
   
 }
+
+
 
 .font_15{
   font-size: 15px;
