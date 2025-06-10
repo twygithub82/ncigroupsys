@@ -515,9 +515,10 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     // }
 
     this.lastSearchCriteria = this.custCompClnCatDS.addDeleteDtCriteria(where);
-    this.subs.sink = this.custCompClnCatDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    //this.previous_endCursor = this.endCursor;
+    this.subs.sink = this.custCompClnCatDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.custCompClnCatItems = data;
-      this.previous_endCursor = undefined;
+       this.previous_endCursor = undefined;
       this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;
       this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
       this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
@@ -541,7 +542,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   }
 
   onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize, previousPageIndex } = event;
+     const { pageIndex, pageSize, previousPageIndex } = event;
     let first: number | undefined = undefined;
     let after: string | undefined = undefined;
     let last: number | undefined = undefined;
@@ -557,7 +558,8 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       last = undefined;
       before = undefined;
     } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
+      //if (pageIndex > this.pageIndex && this.hasNextPage) {
+      if (pageIndex > this.pageIndex) {
         // Navigate forward
         first = pageSize;
         after = this.endCursor;
@@ -567,8 +569,13 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
         before = this.startCursor;
       }
       else if (pageIndex == this.pageIndex) {
+
         first = pageSize;
         after = this.previous_endCursor;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
@@ -583,9 +590,11 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       this.startCursor = this.custCompClnCatDS.pageInfo?.startCursor;
       this.hasNextPage = this.custCompClnCatDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.custCompClnCatDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = pageIndex;
+     this.pageIndex = pageIndex;
       this.paginator.pageIndex = this.pageIndex;
       this.selection.clear();
+      if (!this.hasPreviousPage)
+        this.previous_endCursor = undefined;
     });
   }
 

@@ -25,6 +25,9 @@ import { AuthService } from '@core/service/auth.service';
 import { debounceTime, take } from 'rxjs/operators';
 import {TestComponent} from '../components/test/test.component';
 import {Test1Component} from '../components/test1/test1.component';
+import { GateInWaitingComponent } from '../components/sot/waiting/gate_in/gatein_waiting.component';
+import {InGateSurveyWaitingComponent} from '../components/sot/notsurvey/in_gate_survey_waiting.component';
+import {CleaningWaitingComponent} from '../components/sot/waiting/cleaning/cleaning_waiting.component';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -42,6 +45,7 @@ export type ChartOptions = {
   markers: ApexMarkers;
   grid: ApexGrid;
   title: ApexTitleSubtitle;
+
 };
 @Component({
   selector: 'app-dashboard1',
@@ -68,7 +72,10 @@ export type ChartOptions = {
     NgClass,
     CommonModule,
     TestComponent,
-    Test1Component
+    Test1Component,
+    InGateSurveyWaitingComponent,
+    GateInWaitingComponent,
+    CleaningWaitingComponent
   ],
 })
 
@@ -90,16 +97,16 @@ export class Dashboard1Component implements OnInit {
   messageSubscription?: Subscription;
   in_gate_yet_to_survey?: number = 0;
   sot_waiting?: number = 0;
-  igDS: InGateDS;
-  sotDS: StoringOrderTankDS;
+  
+  
   constructor(
     private apollo: Apollo,
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
   ) {
-    this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
-    this.igDS = new InGateDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
+   // this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
+   // this.igDS = new InGateDS(this.apollo);
+   // this.sotDS = new StoringOrderTankDS(this.apollo);
     //constructor
   }
 
@@ -108,38 +115,38 @@ export class Dashboard1Component implements OnInit {
     // this.chart3();
     // this.chart2();
     // this.chart4();
-    this.messageSubscribe();
-    this.loadData();
+  //  this.messageSubscribe();
+   // this.loadData();
 
   }
 
   private loadData() {
-    this.igDS.getInGateCountForYetToSurvey().subscribe(data => {
-      this.in_gate_yet_to_survey = data;
-    });
+    // this.igDS.getInGateCountForYetToSurvey().subscribe(data => {
+    //   this.in_gate_yet_to_survey = data;
+    // });
 
-    this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
-      this.sot_waiting = data;
-    });
+    // this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
+    //   this.sot_waiting = data;
+    // });
   }
 
   private messageSubscribe() {
-    this.messageSubscription = this.graphqlNotificationService?.newMessageReceived.subscribe(
-      (message) => {
-        //alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
-        if (message.messageReceived.event_id == "2000" || message.messageReceived.event_id == "2010") {
-          this.igDS.getInGateCountForYetToSurvey().subscribe(data => {
-            this.in_gate_yet_to_survey = data;
-          });
+    // this.messageSubscription = this.graphqlNotificationService?.newMessageReceived.subscribe(
+    //   (message) => {
+    //     //alert(message.messageReceived.event_id + " " + message.messageReceived.event_name);
+    //     if (message.messageReceived.event_id == "2000" || message.messageReceived.event_id == "2010") {
+    //       this.igDS.getInGateCountForYetToSurvey().subscribe(data => {
+    //         this.in_gate_yet_to_survey = data;
+    //       });
 
-          this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
-            this.sot_waiting = data;
-          });
-        }
+    //       // this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
+    //       //   this.sot_waiting = data;
+    //       // });
+    //     }
 
-      },
-      (error) => console.error(error),
-    );
+    //   },
+    //   (error) => console.error(error),
+    // );
   }
 
   // private chart1() {

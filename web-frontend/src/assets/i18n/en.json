@@ -1308,8 +1308,10 @@
     "FLAT":"Flat",
     "HOURLY":"Hourly",
     "APPROVED": "Approved",
-    "BY-HOUR":"By Hour"
-   
+    "BY-HOUR":"By Hour",
+    "GATE-IN-PENDING" : "Gate In: Pending",
+    "IN-GATE-SURVEY-PENDING":"In Gate Survey: Pending",
+    "CLEANING-PENDING":"Cleaning: Pending"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

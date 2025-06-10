@@ -4239,26 +4239,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-  getWaitingStoringOrderTankCount(): Observable<number> {
-    this.loadingSubject.next(true);
-    let where: any = { status_cv: { eq: "WAITING" } }
-    return this.apollo
-      .query<any>({
-        query: GET_STORING_ORDER_TANKS_COUNT,
-        variables: { where },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ soList: [] })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const sotList = result.sotList || { nodes: [], totalCount: 0 };
-          return sotList.totalCount;
-        })
-      );
-  }
-
+ 
   searchStoringOrderTanksForBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
@@ -4868,4 +4849,48 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     }
     return purposes.join('; ');
   }
+
+
+   getWaitingStoringOrderTankCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = { status_cv: { in: ["WAITING","PREORDER"] } }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
+   getInCompleteCleaningCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = [{ clean_status_cv: { eq: "APPROVED" } },{tank_status_cv:{eq:"CLEANING"}}]
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
+
+
 }

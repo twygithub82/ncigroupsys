@@ -1,0 +1,39 @@
+import { Component } from '@angular/core';
+import { BreadcrumbComponent } from 'app/shared/components/breadcrumb/breadcrumb.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {SingletonNotificationService,MessageItem} from 'app/core/service/singletonNotification.service'
+@Component({
+    selector: 'app-test',
+    templateUrl: './test.component.html',
+    styleUrls: ['./test.component.scss'],
+    standalone: true,
+    imports: [
+      BreadcrumbComponent,
+      MatProgressSpinnerModule
+    ],
+})
+export class TestComponent {
+
+  msgReceived: string='';
+  constructor(private notificationService:SingletonNotificationService) {
+    this.initializeSubscription();
+  }
+
+
+
+  initializeSubscription() {
+     this.notificationService.subscribe('test', (message: MessageItem) => {
+    // Handle the message here
+   this.msgReceived = `${new Date().toLocaleString(undefined, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })} message Received`;
+    console.log(this.msgReceived);
+  });
+  }
+
+}
