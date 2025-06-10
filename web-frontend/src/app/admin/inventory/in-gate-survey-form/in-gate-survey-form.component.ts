@@ -57,6 +57,7 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank-no-dialog.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -235,7 +236,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
     ARE_YOU_SURE_TO_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-PUBLISH',
     LITERS: 'COMMON-FORM.LITERS',
-    KG: 'COMMON-FORM.KG'
+    KG: 'COMMON-FORM.KG',
+    UPDATE: 'COMMON-FORM.UPDATE',
+    INVALID: 'COMMON-FORM.INVALID',
+    EXISTED: 'COMMON-FORM.EXISTED'
   }
   private destroy$ = new Subject<void>();
 
@@ -1186,6 +1190,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  loadData_sot(sot_guid: string) {
+    this.subs.sink = this.sotDS.getStoringOrderTankByIDForInGateSurvey(sot_guid).subscribe(data => {
+      if (this.in_gate && data?.length) {
+        this.in_gate.tank = data[0];
+        this.detectChanges();
+      }
+    });
+  }
+
   getCustomerBufferPackage(customer_company_guid: string | undefined) {
     if (!customer_company_guid) return;
     const where = {
@@ -1572,6 +1585,41 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       console.log('Invalid soForm', this.surveyForm?.value);
       this.markFormGroupTouched(this.surveyForm);
     }
+  }
+
+  onChangeTankNo(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(UpdateTankNoDialogComponent, {
+      disableClose: true,
+      width: '300px',
+      data: {
+        action: 'edit',
+        translatedLangText: this.translatedLangText,
+        sot: this.in_gate?.tank,
+        sotDS: this.sotDS,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.confirmed) {
+        const newSot: any = new StoringOrderTank({
+          guid: this.in_gate?.tank?.guid,
+          tank_no: result?.tank_no
+        });
+        newSot.action = 'overwrite'
+        this.sotDS.updateStoringOrderTank(newSot).subscribe(result => {
+          console.log(result)
+          this.loadData_sot(this.in_gate?.tank?.guid!);
+          this.handleSaveSuccess(result.data?.updateStoringOrderTank);
+        });
+      }
+    });
   }
 
   onPublishCheck(event: Event) {
