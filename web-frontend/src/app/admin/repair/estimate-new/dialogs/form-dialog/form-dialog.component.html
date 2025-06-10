@@ -171,7 +171,7 @@
           {{data.translatedLangText.ADD_ANOTHER}}</button>
         }
         @if (canEdit()) {
-        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" class="m-l-5"
+        <button mat-flat-button color="primary" class="me-1" [disabled]="!this.repairPart.tariff_repair_guid" class="m-l-5"
           (click)="submit(false)">
           <mat-icon>
             save
@@ -179,7 +179,7 @@
           {{ isEdit() ? data.translatedLangText.UPDATE : data.translatedLangText.SAVE }}
         </button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1"
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1"
           class="m-l-5">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
