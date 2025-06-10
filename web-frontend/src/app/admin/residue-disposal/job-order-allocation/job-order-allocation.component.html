@@ -405,8 +405,8 @@
                 <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
                 @if(canSave())
                 {
-                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)"
-                  class="m-r-5" (click)="save()">
+                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                  (click)="save()">
                   <mat-icon>
                     @if (!(residueDS.loading$ | async)) {
                     save

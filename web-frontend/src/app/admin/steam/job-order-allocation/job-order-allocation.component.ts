@@ -216,7 +216,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     ABORT: 'COMMON-FORM.ABORT',
     VIEW: 'COMMON-FORM.VIEW',
-     UNASSIGN: 'COMMON-FORM.UNASSIGN',
+    UNASSIGN: 'COMMON-FORM.UNASSIGN',
     CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
   }
 
@@ -1284,6 +1284,10 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       if (this.isAllAssignedToTeam()) {
         console.log("all parts are assigned");
         act = "ASSIGN";
+        const allJobInProgress = finalJobOrder.every(x => x.status_cv == 'JOB_IN_PROGRESS');
+        if (allJobInProgress) {
+          act = "IN_PROGRESS";
+        }
         // var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
         //   guid: this.residueItem!.guid,
         //   sot_guid: this.sotItem!.guid,
@@ -1306,12 +1310,10 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       this.steamDs.updateSteamStatus(steamStatusReq).subscribe(result => {
         console.log(result)
         if (result.data.updateSteamingStatus > 0) {
-          if(act==="ASSIGNED")
-          {
-             this.startJobOrders(this.steamItem?.guid!);
+          if (act === "ASSIGNED") {
+            this.startJobOrders(this.steamItem?.guid!);
           }
-          else
-          {
+          else {
             this.handleSaveSuccess(result.data.updateSteamingStatus);
           }
         }
@@ -1491,8 +1493,8 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
           });
         }
         else if (this.steamItem?.status_cv == "JOB_IN_PROGRESS") {
-         // this.jobOrderDS.rollbackJobInProgressResidue(steamingJobOrder)
-         this.jobOrderDS.rollbackJobInProgressSteaming(steamingJobOrder).subscribe(result => {
+          // this.jobOrderDS.rollbackJobInProgressResidue(steamingJobOrder)
+          this.jobOrderDS.rollbackJobInProgressSteaming(steamingJobOrder).subscribe(result => {
             this.handleRollbackSuccess(result?.data?.rollbackJobInProgressResidue)
           });
         }
@@ -1558,42 +1560,42 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
   }
 
   canUnassignTeam(row: SteamItem | undefined) {
-      return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
+    return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
+  }
+
+
+  onUnassignTeam(event: Event, repairGuid: string) {
+    this.stopEventTrigger(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
 
-    
-   onUnassignTeam(event: Event, repairGuid: string) {
-      this.stopEventTrigger(event);
-  
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.unassignTeam(repairGuid);
       }
-  
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-          action: 'new',
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result.action === 'confirmed') {
-          this.unassignTeam(repairGuid);
-        }
-      });
-    }
-  
-    unassignTeam(steamGuid: string) {
-      this.steamDs.rollbackAssignedSteam([steamGuid]).subscribe(result => {
-        console.log(result)
-        this.handleSaveSuccess(result?.data?.rollbackAssignedSteaming);
-      });
-    }
+    });
+  }
 
-   isAllowDelete() {
+  unassignTeam(steamGuid: string) {
+    this.steamDs.rollbackAssignedSteam([steamGuid]).subscribe(result => {
+      console.log(result)
+      this.handleSaveSuccess(result?.data?.rollbackAssignedSteaming);
+    });
+  }
+
+  isAllowDelete() {
     return true;//this.modulePackageService.hasFunctions(['STEAM_JOB_ALLOCATION_DELETE']);
   }
 }
