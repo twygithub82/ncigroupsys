@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Inject, OnInit, Output,ElementRef,ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Inject, OnInit, Output, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -223,7 +223,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    REPAIR_ESTIMATE:'COMMON-FORM.REPAIR-ESTIMATE'
+    REPAIR_ESTIMATE: 'COMMON-FORM.REPAIR-ESTIMATE'
   }
   @Output() repairEstimateEvent = new EventEmitter<any>();
 
@@ -318,7 +318,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       this.repairEstimatePdf = pdfData ?? this.repairEstimatePdf;
       console.log(this.repairEstimatePdf)
       // if (!this.repairEstimatePdf?.length) 
-        {
+      {
         this.generatePDF();
       }
       // else {
@@ -407,7 +407,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   async generatePDF(): Promise<void> {
 
-     await this.exportToPDF_r1();
+    await this.exportToPDF_r1();
     // const repTableElement = document.getElementById('repair-part-table');
     // const remarksElement = document.getElementById('repair-remarks');
     // const summaryElement = document.getElementById('summary-content');
@@ -950,232 +950,230 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-   async exportToPDF_r1(fileName: string = 'document.pdf') {
-      const pageWidth = 210; // A4 width in mm (portrait)
-      const pageHeight = 297; // A4 height in mm (portrait)
-      const leftMargin = 10;
-      const rightMargin = 10;
-      const topMargin = 5;
-      const bottomMargin = 5;
-      const contentWidth = pageWidth - leftMargin - rightMargin;
-      const maxContentHeight = pageHeight - topMargin - bottomMargin;
-  
-      this.generatingPdfLoadingSubject.next(true);
-      this.generatingPdfProgress = 0;
-  
-      const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-      //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-      let pageNumber = 1;
-  
-      let reportTitleCompanyLogo = 32;
-      let tableHeaderHeight = 12;
-      let tableRowHeight = 8.5;
-      let minHeightHeaderCol = 3;
-      let minHeightBodyCell = 7;
-      let fontSz = 8.5;
-  
-      const pagePositions: { page: number; x: number; y: number }[] = [];
-      // const progressValue = 100 / cardElements.length;
-  
-      const reportTitle ='';
-  
-      // const headers = [[
-      //   this.translatedLangText.NO,
-      //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
-      //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
-      //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
-      //   this.translatedLangText.PROCEDURE
-      // ]];
-  
-      const comStyles: any = {
-        // Set columns 0 to 16 to be center aligned
-        0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
-        1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
-        2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
-        3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
-      };
-  
-      // Define headStyles with valid fontStyle
-      const headStyles: Partial<Styles> = {
-        fillColor: [211, 211, 211], // Background color
-        textColor: 0, // Text color (white)
-        fontStyle: "bold", // Valid fontStyle value
-        halign: 'center', // Centering header text
-        valign: 'middle',
-        lineColor: 201,
-        lineWidth: 0.1
-      };
-  
-      let currentY = topMargin;
-      let scale = this.scale;
-      pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-  
-     // await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-     // await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
-  
-      // Variable to store the final Y position of the last table
-      let lastTableFinalY = 0;
-  
-      let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
-  
-      pdf.setFontSize(8);
-      pdf.setTextColor(0, 0, 0); // Black text
-     // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
-      //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-      //PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
-      //PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
-     // const data: any[][] = [];
-      
-      var data: any[][] = [
-        [
-          { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-          { content: `${this.repairItem?.storing_order_tank?.tank_no}` },
-          { content: `${this.translatedLangText.ESTIMATE_NO}` ,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-          { content: `${this.estimate_no}` }
-        ],
-        [
-          { content: `${this.translatedLangText.CUSTOMER}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-          { content: `${this.repairItem?.storing_order_tank?.storing_order?.customer_company?.name}` },
-          { content: `${this.translatedLangText.EIR_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-          { content: `${this.displayDate(this.repairItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
-        ],
-        [
-          { content: `${this.translatedLangText.LAST_CARGO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-          { content: `${this.repairItem?.storing_order_tank?.tariff_cleaning?.cargo}` },
-          { content: `${this.translatedLangText.ESTIMATE_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-          { content: `${this.displayDate(this.repairItem?.create_dt)}` }
-        ],
-        [
-          { content: `${this.translatedLangText.MANUFACTURER}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-          { content: `${this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey?.manufacturer_cv}` },
-          { content: `${this.translatedLangText.UNIT_TYPE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-          { content: `${this.repairItem?.storing_order_tank?.tank?.unit_type}` }
-        ],
-        [
-          { content: `${this.translatedLangText.LAST_TEST}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-          { content: `${this.last_test_desc}` },
-          { content: '' },
-          { content: '' }
-        ],
-      ];
-  
-      autoTable(pdf, {
-        body: data,
-        startY: startY, // Start table at the current startY value
-        theme: 'grid',
-        margin: { left: leftMargin },
-        styles: {
-          cellPadding: { left:1 , right: 1, top: 1, bottom: 1 },
-          fontSize: fontSz,
-          minCellHeight: minHeightHeaderCol,
-          lineWidth: 0.15, // cell border thickness
-          lineColor: [0, 0, 0], // black
-        },
-        tableWidth: contentWidth,
-        columnStyles: {
-          0: { cellWidth: 35 },
-          1: { cellWidth: 61 },
-          2: { cellWidth: 35 },
-          3: { cellWidth: 61 }
-        },
-        // headStyles: headStyles, // Custom header styles
-        bodyStyles: {
-          fillColor: [255, 255, 255],
-          halign: 'left', // Left-align content for body by default
-          valign: 'middle', // Vertically align content
-  
-        },
-        didDrawPage: (data: any) => {
-          const pageCount = pdf.getNumberOfPages();
-  
-          lastTableFinalY = data.cursor.y;
-  
-          var pg = pagePositions.find(p => p.page == pageCount);
-          if (!pg) {
-            pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-            if (pageCount > 1) {
-              Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-            }
-          }
-        },
-      });
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-      startY = lastTableFinalY + 4;
-      PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,8);
-      startY+=4;
-      this.createOffhireEstimate(pdf,startY,leftMargin,rightMargin,pageWidth);
-       startY+=52;
-      this.createRepairEstimateDetail(pdf,startY,leftMargin,rightMargin,pageWidth);
-      this.createSummaryTable(pdf,leftMargin,rightMargin,pageWidth,pageHeight);
-      this.downloadFile(pdf.output('blob'), this.getReportTitle())
-      // this.generatedPDF = pdf.output('blob');
-      // this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
-      // this.generatingPdfLoadingSubject.next(false);
-      this.dialogRef.close();
-    }
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
 
-    createOffhireEstimate(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
-    {
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
 
-          var damageCodes:any = [];
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightHeaderCol = 3;
+    let minHeightBodyCell = 7;
+    let fontSz = 8.5;
 
-          this.chunkedDamageCodeCvList.forEach((chunk: any) => {
-            chunk.forEach((code: any) => {
-              var content = `${code.code_val}: ${code.description}`;
-              damageCodes.push(content);
-            })
-          })
-        // Repair Codes
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
 
-         var repairCodes:any = [];
-         this.chunkedRepairCodeCvList.forEach((chunk: any) => {
-            chunk.forEach((code: any) => {
-              var content = `${code.code_val}: ${code.description}`;
-              repairCodes.push(content);
-            })
-          })
+    const reportTitle = '';
 
-        // Helper to convert list into 2-column rows
-        var fontSz=5.5;
-        const toColumns = (list: string[]): string[][] => {
-          const rows: any[][] = [];
-          for (let i = 0; i < list.length; i += 3) {
-            rows.push([
-              { content: `${list[i]||''}`,styles: { fontSize: fontSz} },
-              { content: `${list[i+1]||''}`,styles: { fontSize: fontSz} },
-              { content: `${list[i+2]||''}`,styles: { fontSize: fontSz} }
-            ]);
-          }
-          return rows;
-        };
+    // const headers = [[
+    //   this.translatedLangText.NO,
+    //   this.translatedLangText.TANK_NO, this.translatedLangText.CUSTOMER,
+    //   this.translatedLangText.CLEAN_IN, this.translatedLangText.CLEAN_DATE,
+    //   this.translatedLangText.DURATION_DAYS, this.translatedLangText.UN_NO,
+    //   this.translatedLangText.PROCEDURE
+    // ]];
 
-       const vAlign="bottom";
-      const headers: RowInput[] = [
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
+      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+    // await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 0;
+
+    let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
+
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    // const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
+    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+    //PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
+    //PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
+    // const data: any[][] = [];
+
+    var data: any[][] = [
       [
-        { 
-          content: this.translatedLangText.DAMAGE_CODE, 
-          colSpan: 3, 
-          styles: { fontSize: 9,halign: 'left', valign: vAlign,fillColor: [255, 255, 255], lineWidth: { bottom: 0,top:0.1,left:0.1,right:0.1 },cellPadding: 2 }
+        { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.repairItem?.storing_order_tank?.tank_no}` },
+        { content: `${this.translatedLangText.ESTIMATE_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.estimate_no}` }
+      ],
+      [
+        { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.repairItem?.storing_order_tank?.storing_order?.customer_company?.name}` },
+        { content: `${this.translatedLangText.EIR_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDate(this.repairItem?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
+      ],
+      [
+        { content: `${this.translatedLangText.LAST_CARGO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.repairItem?.storing_order_tank?.tariff_cleaning?.cargo}` },
+        { content: `${this.translatedLangText.ESTIMATE_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDate(this.repairItem?.create_dt)}` }
+      ],
+      [
+        { content: `${this.translatedLangText.MANUFACTURER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey?.manufacturer_cv}` },
+        { content: `${this.translatedLangText.UNIT_TYPE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.repairItem?.storing_order_tank?.tank?.unit_type}` }
+      ],
+      [
+        { content: `${this.translatedLangText.LAST_TEST}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.last_test_desc}` },
+        { content: '' },
+        { content: '' }
+      ],
+    ];
+
+    autoTable(pdf, {
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: leftMargin },
+      styles: {
+        cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol,
+        lineWidth: 0.15, // cell border thickness
+        lineColor: [0, 0, 0], // black
+      },
+      tableWidth: contentWidth,
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 61 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 61 }
+      },
+      // headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+          }
+        }
+      },
+    });
+
+    startY = lastTableFinalY + 5;
+    PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY, 8);
+    startY += 4;
+    this.createOffhireEstimate(pdf, startY, leftMargin, rightMargin, pageWidth);
+    startY += 52;
+    this.createRepairEstimateDetail(pdf, startY, leftMargin, rightMargin, pageWidth);
+    this.createSummaryTable(pdf, leftMargin, rightMargin, pageWidth, pageHeight);
+    this.downloadFile(pdf.output('blob'), this.getReportTitle())
+    // this.generatedPDF = pdf.output('blob');
+    // this.uploadPdf(this.repairItem?.guid, this.generatedPDF);
+    // this.generatingPdfLoadingSubject.next(false);
+    this.dialogRef.close();
+  }
+
+  createOffhireEstimate(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
+
+    var damageCodes: any = [];
+
+    this.chunkedDamageCodeCvList.forEach((chunk: any) => {
+      chunk.forEach((code: any) => {
+        var content = `${code.code_val}: ${code.description}`;
+        damageCodes.push(content);
+      })
+    })
+    // Repair Codes
+
+    var repairCodes: any = [];
+    this.chunkedRepairCodeCvList.forEach((chunk: any) => {
+      chunk.forEach((code: any) => {
+        var content = `${code.code_val}: ${code.description}`;
+        repairCodes.push(content);
+      })
+    })
+
+    // Helper to convert list into 2-column rows
+    var fontSz = 5.5;
+    const toColumns = (list: string[]): string[][] => {
+      const rows: any[][] = [];
+      for (let i = 0; i < list.length; i += 3) {
+        rows.push([
+          { content: `${list[i] || ''}`, styles: { fontSize: fontSz } },
+          { content: `${list[i + 1] || ''}`, styles: { fontSize: fontSz } },
+          { content: `${list[i + 2] || ''}`, styles: { fontSize: fontSz } }
+        ]);
+      }
+      return rows;
+    };
+
+    const vAlign = "bottom";
+    const headers: RowInput[] = [
+      [
+        {
+          content: this.translatedLangText.DAMAGE_CODE,
+          colSpan: 3,
+          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 2 }
         },
-        { 
+        {
           content: this.translatedLangText.REPAIR_CODE,
           colSpan: 3,
-          styles: { fontSize: 9, halign: 'left', valign: vAlign,fillColor: [255, 255, 255], lineWidth: { bottom: 0,top:0.1,left:0.1,right:0.1 },cellPadding: 2  }
+          styles: { fontSize: 9, halign: 'left', valign: vAlign, fillColor: [255, 255, 255], lineWidth: { bottom: 0, top: 0.1, left: 0.1, right: 0.1 }, cellPadding: 2 }
         }
-      
+
       ]
     ];
 
-      const cellHeight=2;
-      autoTable(pdf, {
-      head:headers,
+    const cellHeight = 2;
+    autoTable(pdf, {
+      head: headers,
       body: toColumns(damageCodes).map((dRow, i) => {
-        const rRow = toColumns(repairCodes)[i] || ['', '',''];
+        const rRow = toColumns(repairCodes)[i] || ['', '', ''];
         return [...dRow, ...rRow];
       }),
       startY: startY, // Start table at the current startY value
       styles: {
-        cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
         fontSize: 7,
         lineWidth: 0 // remove all borders initially
       },
@@ -1189,144 +1187,129 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       },
       columnStyles: {
         0: { cellWidth: 32 },
-        1: { cellWidth: 32},
-        2: { cellWidth: 32},
-        3: { cellWidth: 32},
-        4: { cellWidth: 32},
-        5: { cellWidth: 32},
+        1: { cellWidth: 32 },
+        2: { cellWidth: 32 },
+        3: { cellWidth: 32 },
+        4: { cellWidth: 32 },
+        5: { cellWidth: 32 },
       },
       didDrawCell: function (data) {
         const doc = data.doc;
         const isLastRow = data.row.index === data.table.body.length - 1;
 
-        if(data.column.index === 0 ||data.column.index === 3)
-        {
+        if (data.column.index === 0 || data.column.index === 3) {
           doc.setLineWidth(0.1);
           doc.line(data.cell.x, data.cell.y, data.cell.x, data.cell.y + data.cell.height); // left line
-          
+
         }
-        else if(data.column.index === 5)
-        {
+        else if (data.column.index === 5) {
           doc.setLineWidth(0.1);
           doc.line(data.cell.x + data.cell.width, data.cell.y, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // right line
         }
-        
-        if(isLastRow)
-        {
-           doc.line(
+
+        if (isLastRow) {
+          doc.line(
             data.cell.x,
             data.cell.y + data.cell.height,
             data.cell.x + data.cell.width,
             data.cell.y + data.cell.height
           );
         }
-        
-       
       },
-     
-      });
-    }
+    });
+  }
 
-
-
-
-    createRepairEstimateDetail(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
-    {
-      const fontSz=6;
-      const vAlign="bottom";
-      const headers: RowInput[] = [
+  createRepairEstimateDetail(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
+    const fontSz = 6;
+    const vAlign = "bottom";
+    const headers: RowInput[] = [
       [
-        { 
-          content: this.translatedLangText.NO_DOT, 
-          rowSpan: 2, 
-          styles: { fontSize: fontSz,halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2 }
+        {
+          content: this.translatedLangText.NO_DOT,
+          rowSpan: 2,
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-        { 
+        {
           content: this.translatedLangText.ITEM,
           rowSpan: 2,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.DAMAGE_CODE,
           rowSpan: 2,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.REPAIR_CODE,
           rowSpan: 2,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.DEPOT_ESTIMATE,
           colSpan: 3,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.CUSTOMER_APPROVAL,
           colSpan: 4,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         }
-      
+
       ],
       [
-        { 
+        {
           content: this.translatedLangText.QTY,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.LABOUR,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.MATERIAL,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:  220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-        { 
+        {
           content: this.translatedLangText.QTY,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:  220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.LABOUR,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:  220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.MATERIAL,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor:  220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         },
-         { 
+        {
           content: this.translatedLangText.LESSEE_OWNER__ABB,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign,fillColor: 220, lineWidth: 0.1,cellPadding: 2  }
+          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: 220, lineWidth: 0.1, cellPadding: 2 }
         }
       ]
     ];
 
-     var repData:RowInput[]=[];
-     const grpFontSz=7;
-      this.repList?.forEach((rep, index) => {
-        
-        if(rep.isGroupHeader)
-        {
-          repData.push([{ content: `${rep.group_name_cv}`, colSpan: 11,styles: { fillColor: 220,halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: grpFontSz} }]);
-        }
-       
-        var isOwner =(rep.owner)?"O":"L";
-        repData.push([
-          rep.index + 1,this.displayDamageRepairCode(rep.rp_damage_repair, 0),this.displayDamageRepairCode(rep.rp_damage_repair, 1),
-          rep.description,rep.quantity,rep.hour,this.parse2Decimal(rep.material_cost),
-          rep.approve_qty,rep.approve_hour,this.parse2Decimal(rep.approve_cost),isOwner
-        ])
-        
+    var repData: RowInput[] = [];
+    const grpFontSz = 7;
+    this.repList?.forEach((rep, index) => {
 
-      });
+      if (rep.isGroupHeader) {
+        repData.push([{ content: `${rep.group_name_cv}`, colSpan: 11, styles: { fillColor: 220, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz } }]);
+      }
 
+      var isOwner = (rep.owner) ? "O" : "L";
+      repData.push([
+        rep.index + 1, this.displayDamageRepairCode(rep.rp_damage_repair, 0), this.displayDamageRepairCode(rep.rp_damage_repair, 1),
+        rep.description, rep.quantity, rep.hour, this.parse2Decimal(rep.material_cost),
+        rep.approve_qty, rep.approve_hour, this.parse2Decimal(rep.approve_cost), isOwner
+      ])
+    });
 
-     
-      autoTable(pdf, {
-      head:headers,
-      body:repData,
+    autoTable(pdf, {
+      head: headers,
+      body: repData,
       startY: startY, // Start table at the current startY value
       styles: {
-        cellPadding: { left:2 , right: 2, top: 1, bottom: 1 }, // Reduce padding
+        cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
         fontSize: 7,
         lineWidth: 0.1 // remove all borders initially
       },
@@ -1339,105 +1322,101 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         lineWidth: 0.1 // keep outer border for header
       },
       columnStyles: {
-        0: { cellWidth: 11,halign: 'center', valign: 'middle' },
-        1: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        2: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        3: { cellWidth: 37,halign: 'left', valign: 'middle'},
-        4: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        5: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        6: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        7: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        8: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        9: { cellWidth: 16,halign: 'center', valign: 'middle'},
-        10: { cellWidth: 16,halign: 'center', valign: 'middle'},
+        0: { cellWidth: 11, halign: 'center', valign: 'middle' },
+        1: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        2: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        3: { cellWidth: 37, halign: 'left', valign: 'middle' },
+        4: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        5: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        6: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        7: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        8: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        9: { cellWidth: 16, halign: 'center', valign: 'middle' },
+        10: { cellWidth: 16, halign: 'center', valign: 'middle' },
       },
       didDrawPage: (data: any) => {
         startY = data.cursor.y;
       }
-      });
-      
-      var remarks=`${this.translatedLangText.REMARKS}:`;
-      var remarksValue=`${this.repairItem?.remarks}`;
-      startY+=4;
-      PDFUtility.addText(pdf, remarks, startY , leftMargin, fontSz,false,undefined,undefined,0,true);
-      startY+=6;
-      PDFUtility.addText(pdf, remarksValue, startY , leftMargin, fontSz);
+    });
 
-    }
+    var remarks = `${this.translatedLangText.REMARKS}:`;
+    var remarksValue = `${this.repairItem?.remarks}`;
+    startY += 4;
+    PDFUtility.addText(pdf, remarks, startY, leftMargin, fontSz, false, undefined, undefined, 0, true);
+    startY += 6;
+    PDFUtility.addText(pdf, remarksValue, startY, leftMargin, fontSz);
+  }
 
+  createSummaryTable(pdf: jsPDF, leftMargin: number, rightMargin: number, pageWidth: number, pageHeight: number) {
+    var fontSz = 7;
+    var vAlign = 'middle';
+    var startY = pageHeight - 44;
+    const data: RowInput[] = [
+      [
+        { content: `${this.translatedLangText.APPROVED_COST}`, colSpan: 1, rowSpan: 3, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: `${this.translatedLangText.ITEM}`, styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: `${this.translatedLangText.RATE}`, styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: `${this.translatedLangText.ESTIMATE_COST}`, colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } },
+        { content: `${this.translatedLangText.APPROVED_COST}`, colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } }
+      ],
+      [
+        { content: `${this.translatedLangText.LABOUR}`, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: `$ ${this.parse2Decimal(this.repairItem?.labour_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: `${this.repairCost?.total_hour_table}`, styles: { halign: 'right', fontStyle: 'bold' } },
+        { content: `$ ${this.parse2Decimal(this.repairCost?.total_labour_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
+      ],
+      [
+        { content: `${this.translatedLangText.MATERIAL}`, styles: { halign: 'left', fontStyle: 'bold' } },
+        '', '',
+        { content: `$ ${this.parse2Decimal(this.repairCost?.total_mat_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
+      ],
+      [
+        { content: `${this.translatedLangText.FOR} ${this.repairItem?.storing_order_tank?.storing_order?.customer_company?.name}`, colSpan: 1, rowSpan: 3, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: `${this.translatedLangText.LABOUR_DISCOUNT}`, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: `${this.parse2Decimal(this.repairCost?.labour_cost_discount)} %`, styles: { halign: 'right', fontStyle: 'bold' } },
+        '',
+        { content: `- $ ${this.parse2Decimal(this.repairCost?.discount_labour_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
+      ],
+      [
+        { content: `${this.translatedLangText.MATERIAL_DISCOUNT} %`, styles: { halign: 'left', fontStyle: 'bold' } },
+        { content: `${this.parse2Decimal(this.repairCost?.material_cost_discount)} %`, styles: { halign: 'right', fontStyle: 'bold' } },
+        '',
+        { content: `- $ ${this.parse2Decimal(this.repairCost?.discount_mat_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
+      ],
+      [
+        { content: `${this.translatedLangText.NET_COST} $`, styles: { halign: 'left', fontStyle: 'bold' } },
+        '', '',
+        { content: `$ ${this.parse2Decimal(this.repairCost?.net_cost)}`, styles: { halign: 'right', fontStyle: 'bold' } }
+      ]
+    ];
 
-    createSummaryTable(pdf:jsPDF,leftMargin:number,rightMargin:number,pageWidth:number, pageHeight:number)
-    {
-      var fontSz=7;
-      var vAlign='middle';
-      var startY = pageHeight-44;
-      const data:RowInput[] = [
-            [
-              { content: `${this.translatedLangText.APPROVED_COST}`, colSpan: 1, rowSpan:3, styles: { halign: 'left', fontStyle: 'bold' } },
-              { content: `${this.translatedLangText.ITEM}`, styles: { halign: 'center', fontStyle: 'bold' } },
-              { content: `${this.translatedLangText.RATE}`, styles: { halign: 'center', fontStyle: 'bold' } },
-              { content:`${this.translatedLangText.ESTIMATE_COST}`, colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } },
-              { content: `${this.translatedLangText.APPROVED_COST}`, colSpan: 2, styles: { halign: 'center', fontStyle: 'bold' } }
-            ],
-            [
-              { content: `${this.translatedLangText.LABOUR}`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-              { content: `$ ${this.repairItem?.labour_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}, 
-              { content: `${this.repairCost?.total_hour_table}`,styles: { halign: 'right', fontStyle: 'bold'}},
-              { content:  `$ ${this.repairCost?.total_labour_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-            ],
-            [
-              { content:`${this.translatedLangText.MATERIAL}`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-              '', '', 
-              { content:`$ ${this.repairCost?.total_mat_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-            ],
-            [
-              { content: `${this.translatedLangText.FOR} ${this.repairItem?.storing_order_tank?.storing_order?.customer_company?.name}`, colSpan: 1, rowSpan:3, styles: { halign: 'left', fontStyle: 'bold' } },
-              { content:`${this.translatedLangText.LABOUR_DISCOUNT}`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-              { content:`${this.repairCost?.labour_cost_discount} %`,styles: { halign: 'right', fontStyle: 'bold'}},
-               '', 
-              { content:`- $ ${this.repairCost?.discount_labour_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-            ],
-            [
-               { content:`${this.translatedLangText.MATERIAL_DISCOUNT} %`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-               { content:`${this.repairCost?.material_cost_discount} %`,styles: { halign: 'right', fontStyle: 'bold'}},
-              '', 
-               { content:`- $ ${this.repairCost?.discount_mat_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-            ],
-            [
-               { content:`${this.translatedLangText.NET_COST} $`,styles: { halign: 'left', fontStyle: 'bold'}}, 
-              '', '', 
-               { content:`$ ${this.repairCost?.net_cost}`,styles: { halign: 'right', fontStyle: 'bold'}}
-            ]
-          ];
+    autoTable(pdf, {
+      body: data,
+      startY: startY,
+      theme: 'grid',
+      margin: { left: leftMargin },
+      styles: {
+        font: 'helvetica',
+        fontSize: fontSz,
+        lineWidth: 0.1,
+        valign: 'middle',
+        cellPadding: 1
+      },
+      columnStyles: {
+        0: { cellWidth: 34 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 16 },
+        3: { cellWidth: 28 },
+        4: { cellWidth: 28 },
+        5: { cellWidth: 28 },
+        6: { cellWidth: 28 },
+      }
+    });
 
-          autoTable(pdf, {
-              body:data,
-              startY: startY,
-              theme: 'grid',
-              margin: { left: leftMargin },
-              styles: {
-                font: 'helvetica',
-                fontSize: fontSz,
-                lineWidth:0.1,
-                valign: 'middle',
-                cellPadding:1
-              },
-              columnStyles: {
-                0: { cellWidth: 34 },
-                1: { cellWidth: 30 },
-                2: { cellWidth: 16 },
-                3: { cellWidth: 28 },
-                4: { cellWidth: 28 },
-                5: { cellWidth: 28 },
-                6: { cellWidth: 28 },
-              }
-            });
-     
-    }
+  }
 
 
-    getReportTitle()
-    {
-      return this.translatedLangText.REPAIR_ESTIMATE;
-    }
+  getReportTitle() {
+    return this.translatedLangText.REPAIR_ESTIMATE;
+  }
 }

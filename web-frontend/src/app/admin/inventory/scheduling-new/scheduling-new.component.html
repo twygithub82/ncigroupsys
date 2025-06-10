@@ -193,11 +193,11 @@
               <div class="body overflow-auto">
                 @for(row of sotList; track row){
                 <mat-card
-                  [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'bg-light-grey': checkDisable(row), 'booking-tbl card-content p-0 m-b-10 cursor-pointer': true}"
+                  [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'bg-extra-light-grey': checkDisable(row), 'booking-tbl card-content p-0 m-b-10 cursor-pointer': true}"
                   matRipple>
                   <mat-accordion>
                     <mat-expansion-panel
-                      [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'bg-light-grey': checkDisable(row)}"
+                      [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'bg-extra-light-grey': checkDisable(row)}"
                       [expanded]="false">
                       <mat-expansion-panel-header>
                         <mat-panel-description>

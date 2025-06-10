@@ -702,6 +702,10 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     return Utility.convertEpochToDateStr(input);
   }
 
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;

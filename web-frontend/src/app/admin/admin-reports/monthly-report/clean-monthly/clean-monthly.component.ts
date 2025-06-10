@@ -616,4 +616,8 @@ export class CleanMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   onTabFocused() {
     this.resetForm();
   }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
 }

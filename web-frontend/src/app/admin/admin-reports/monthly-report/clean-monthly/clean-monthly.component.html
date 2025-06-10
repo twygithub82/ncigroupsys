@@ -255,7 +255,7 @@
                 {{translatedLangText.COST}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                <span class="mobile-label">{{translatedLangText.COST}}:</span>{{row.total_cost.toFixed(2)}}
+                <span class="mobile-label">{{translatedLangText.COST}}:</span>{{parse2Decimal(row.total_cost)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoice_no">

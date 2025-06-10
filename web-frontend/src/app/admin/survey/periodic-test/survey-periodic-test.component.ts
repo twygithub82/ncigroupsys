@@ -737,6 +737,10 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
     return Utility.convertEpochToDateStr(input as number);
   }
 
+  getMaxDate() {
+    return new Date();
+  }
+
   checkScheduling(schedulingSot: SchedulingSotItem[] | undefined): boolean {
     return this.schedulingSotDS.checkScheduling(schedulingSot);
   }

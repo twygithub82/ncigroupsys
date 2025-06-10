@@ -68,13 +68,13 @@
           <!-- <mat-slide-toggle class="scaled-toggle me-2" color="primary" formControlName="apply_all"
               labelPosition="before">{{data.translatedLangText.APPLY_ALL}}
           </mat-slide-toggle> -->
-        <button mat-flat-button color="primary" (click)="submit()">
+        <button mat-flat-button color="primary" class="me-1" (click)="submit()">
           <mat-icon>
             save
           </mat-icon>
           {{data.translatedLangText.UPDATE}}</button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>
