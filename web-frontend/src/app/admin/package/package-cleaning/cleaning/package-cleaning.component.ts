@@ -419,6 +419,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
         if (result.selectedValue > 0) {
           this.handleSaveSuccess(result.selectedValue);
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+          //this.search();
         }
       }
     });
@@ -515,7 +516,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     // }
 
     this.lastSearchCriteria = this.custCompClnCatDS.addDeleteDtCriteria(where);
-    this.subs.sink = this.custCompClnCatDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    this.subs.sink = this.custCompClnCatDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.custCompClnCatItems = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.custCompClnCatDS.pageInfo?.endCursor;

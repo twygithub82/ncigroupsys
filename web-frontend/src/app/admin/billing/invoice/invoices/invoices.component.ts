@@ -136,7 +136,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     IS_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     EDIT: 'COMMON-FORM.EDIT',
     DELETE: 'COMMON-FORM.DELETE',
-    EXPORT: 'COMMON-FORM.EXPORT'
+    EXPORT: 'COMMON-FORM.EXPORT',
+    MULTIPLE: 'COMMON-FORM.MULTIPLE'
   }
 
   distinctCustomerCodes: any;

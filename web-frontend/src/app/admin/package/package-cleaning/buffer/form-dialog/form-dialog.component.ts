@@ -272,9 +272,6 @@ export class FormDialogComponent {
   }
 
   save() {
-
-
-
     var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
     var remarks = this.pcForm!.value["remarks"];
 
@@ -285,7 +282,6 @@ export class FormDialogComponent {
       packLabour.tariff_labour = undefined;
       packLabour.customer_company = undefined;
       this.packBufferDS.updatePackageBuffer(packLabour).subscribe(result => {
-
         if (result.data.updatePackageBuffer > 0) {
 
           console.log('valid');

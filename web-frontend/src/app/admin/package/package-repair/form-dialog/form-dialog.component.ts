@@ -350,9 +350,6 @@ EnableValidator(path: string) {
         .map(cc => cc.guid)
         .filter((guid): guid is string => guid !== undefined);
 
-
-
-
        var material_cost = 1;
        if (this.pcForm!.value["material_cost"]) material_cost = (Number(this.pcForm!.value['material_cost']) / 100) + 1;
        var labour_hour = 1;

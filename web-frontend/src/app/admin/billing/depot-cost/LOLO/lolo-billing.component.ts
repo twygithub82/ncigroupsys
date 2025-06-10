@@ -45,6 +45,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
+
 @Component({
   selector: 'app-lolo-billing',
   standalone: true,
@@ -1206,7 +1207,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_DELETE,
+        headerText: this.translatedLangText.CONFIRM_REMOVE_ESITMATE,
         action: 'delete',
       },
       direction: tempDirection
