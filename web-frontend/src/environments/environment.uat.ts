@@ -6,7 +6,7 @@ export const environment = {
   apiUrl: 'https://tlx-idms-userlogin-uat.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
   graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
-  graphqlWsUrl: 'wss://https://tlx-idms-notification-uat.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/graphql',
+  graphqlWsUrl: 'wss://tlx-idms-notification-uat.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/graphql',
   topicSubscribe: '/idms/all/*'
 };
 
