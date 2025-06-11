@@ -2695,7 +2695,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canRenumberTank() {
     // check is the eir_no same as the tank_info.last_eir_no. only when its same can do renumber
-    return true;
+    return false;
   }
 
   canReownership() {
