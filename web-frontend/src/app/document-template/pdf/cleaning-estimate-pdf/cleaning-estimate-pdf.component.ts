@@ -1024,8 +1024,8 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
             },
             tableWidth: contentWidth,
             columnStyles: {
-              0: { cellWidth: 35 },
-              1: { cellWidth: 61 },
+              0: { cellWidth: 34 },
+              1: { cellWidth: 60 },
               2: { cellWidth: 35 },
               3: { cellWidth: 61 }
             },
@@ -1078,7 +1078,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
         {
 
           var rightPadding_cost=9;
-          pdf.setLineWidth(0.1);
+          pdf.setLineWidth(0.3);
     // Set dashed line pattern
           pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
@@ -1146,9 +1146,9 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
             lineWidth: 0.0 // keep outer border for header
           },
           columnStyles: {
-            0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-            1: { cellWidth: 152,halign: 'left', valign: 'middle'},
-            2: { cellWidth: 30,halign: 'right', valign: 'middle'},
+            0: { cellWidth: 11,halign: 'center', valign: 'middle' },
+            1: { cellWidth: 143,halign: 'left', valign: 'middle'},
+            2: { halign: 'right', valign: 'middle'},
           },
           didDrawPage: (data: any) => {
             startY = data.cursor.y;
@@ -1156,7 +1156,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           });
           
           yPos = startY+5;
-          pdf.setLineWidth(0.1);
+          pdf.setLineWidth(0.3);
     // Set dashed line pattern
           pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
@@ -1206,25 +1206,11 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           theme: 'grid',
           margin: { left: leftMargin },
           columnStyles: {
-            0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-            1: { cellWidth: 155,halign: 'left', valign: 'middle'},
-            2: { cellWidth: 27,halign: 'center', valign: 'middle'},
+            0: { cellWidth: 11,halign: 'center', valign: 'middle' },
+            1: { cellWidth: 143,halign: 'left', valign: 'middle'},
+            2: { halign: 'center', valign: 'middle'},
           
           },
-           didDrawCell: function (data) {
-              const doc = data.doc;
-              
-              //  if(data.row.index === 0){
-              // doc.setLineWidth(0.3);
-              // doc.setDrawColor(0, 0, 0); // Set line color to black
-              //   doc.line(
-              //   data.cell.x,
-              //   data.cell.y + data.cell.height-1,
-              //   data.cell.x + data.cell.width,
-              //   data.cell.y + data.cell.height-1
-              // );
-              // }
-           },
           didDrawPage: (data: any) => {
           
             startY = data.cursor.y;

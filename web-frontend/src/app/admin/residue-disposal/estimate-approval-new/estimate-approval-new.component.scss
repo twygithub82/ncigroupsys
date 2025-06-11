@@ -11,3 +11,16 @@
   .selected-row {
     background-color: #FF00FF; /* Change to your desired color */
   }
+
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; /* match spinner/icon size */
+  height: 16px;
+  margin-right: 8px; /* spacing from text, adjust if needed */
+}
+
+mat-spinner {
+  display: block;
+}

@@ -9,11 +9,14 @@ import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 
 export class PDFUtility {
   static addText(pdf: jsPDF, content: string, topPos: number, leftPost: number, fontSize: number,
-    bold :boolean=false,fontFamily: string = 'helvetica',wrap:boolean=false,maxWidth:number=0, underline: boolean = false) {
+    bold :boolean=false,fontFamily: string = 'helvetica',wrap:boolean=false,maxWidth:number=0, 
+    underline: boolean = false, textColor:string='#000000') {
 
     pdf.saveGraphicsState();
     const fontStyle = bold ? 'bold' : 'normal';
+    pdf.setTextColor(textColor);
     if(wrap){
+      
       pdf.setFont(fontFamily, fontStyle);
       pdf.setFontSize(fontSize); // Title font size 
       pdf.text(content, leftPost, topPos, {maxWidth:maxWidth});
@@ -39,8 +42,9 @@ export class PDFUtility {
   }
 
   static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, 
-    topPosition: number, fontSize: number=14,underline: boolean = true,additionalBufferX: number = 0) {
+    topPosition: number, fontSize: number=14,underline: boolean = true,additionalBufferX: number = 0,textColor:string='#000000') {
     pdf.setFontSize(fontSize); // Title font size 
+    pdf.setTextColor(textColor);
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     let titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
@@ -66,8 +70,10 @@ export class PDFUtility {
     }
   }
 
-  static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+  static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, 
+    fontSize: number,textColor:string='#000000') {
     pdf.setFontSize(fontSize); // Title font size 
+    pdf.setTextColor(textColor);
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
 
@@ -777,8 +783,9 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
 
   
   var buffer =40
+  var textColor='#666666';
   var IssDate = `${translatedLangText.ISSUE_DATE}: ${Utility.convertDateToStr(new Date())}`;
-  this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
+  this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10,textColor);
  // var validDate=new Date();
   //validDate = this.addMonths(validDate, 2);
   //buffer+=5;
@@ -823,12 +830,13 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
         translatedLangText[key] = langText[key]; // Fallback to the original key
       }
     }
+   var textColor='#666666';
    var companyInfo = `${customerInfo.companyName}`;
    var companyAdd = `${customerInfo.companyAddress}`
    var PhoneGST = `${translatedLangText.PHONE}: ${customerInfo.companyPhone} | ${translatedLangText.GST_REG}: ${customerInfo.companyGST}`;
-   this.addText(pdf, companyInfo, posY, leftMargin, fontSz);
+   this.addText(pdf, companyInfo, posY, leftMargin, fontSz,false,'helvetica',true,55,false,textColor);
    posY+=(fontSz/2);
-   this.addText(pdf, companyAdd, posY, leftMargin, fontSz,false,'helvetica',true,55);
+   this.addText(pdf, companyAdd, posY, leftMargin, fontSz,false,'helvetica',true,55,false,textColor);
   
   }
 

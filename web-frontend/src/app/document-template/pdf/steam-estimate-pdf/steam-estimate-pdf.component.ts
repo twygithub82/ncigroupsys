@@ -177,6 +177,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     TOTAL_COST:'COMMON-FORM.TOTAL-COST',
     FLAT_RATE:'COMMON-FORM.FLAT-RATE',
     HOUR_RATE:'COMMON-FORM.HOUR-RATE',
+    STEAMING_QUOTATION:'COMMON-FORM.STEAMING-QUOTATION',
+    QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE'
     
   }
 
@@ -251,7 +253,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.translatedLangText.STEAM_CARGO;
+    this.pdfTitle = this.translatedLangText.STEAMING_QUOTATION;
 
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
@@ -897,7 +899,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
   
       getReportTitle()
       {
-        return this.translatedLangText.STEAM_ESTIMATE;
+        return this.translatedLangText.STEAMING_QUOTATION;
       }
 
 
@@ -973,8 +975,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
             [
               { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
               { content: `${item?.storing_order_tank?.tank_no}` },
-              { content: `${this.translatedLangText.ESTIMATE_NO}` ,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-              { content: `${this.estimate_no}` }
+              { content: `${this.translatedLangText.EIR_NO}` ,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+              { content: `${item?.storing_order_tank?.in_gate?.[0]?.eir_no}` }
             ],
             [
               { content: `${this.translatedLangText.CUSTOMER}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
@@ -991,7 +993,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
             [
               { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
               { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
-              { content: `${this.translatedLangText.ESTIMATE_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+              { content: `${this.translatedLangText.QUOTATION_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
               { content: `${this.displayDate(item?.create_dt)}` }
             ]
           ];
@@ -1013,7 +1015,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
               0: { cellWidth: 35 },
               1: { cellWidth: 61 },
               2: { cellWidth: 35 },
-              3: { cellWidth: 61 }
+              3: { cellWidth: 59 }
             },
             // headStyles: headStyles, // Custom header styles
             bodyStyles: {
@@ -1085,17 +1087,17 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
               { 
                 content: this.translatedLangText.DESCRIPTION,
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+                styles: { fontSize: fontSz, halign: 'left', valign: vAlign,cellPadding: 2  }
               },
               { 
                   content: this.translatedLangText.HOUR,
                   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
               },
-              { 
-                content: this.translatedLangText.QTY,
+              // { 
+              //   content: this.translatedLangText.QTY,
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
-              },
+              //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              // },
               { 
                 content: this.translatedLangText.PRICE,
                 
@@ -1137,7 +1139,9 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                 //item.approve_cost = item.approve_part?item.cost:0;
                 var app = ((item.approve_part===null)||item.approve_part)?"O":"X";
                 repData.push([
-                  item.index + 1,item.description,`${ this.parse2Decimal(labour)}`,`${qty}`, this.parse2Decimal(cost),
+                  item.index + 1,item.description,`${ this.parse2Decimal(labour)}`,
+                  // `${qty}`, 
+                  this.parse2Decimal(cost),
                    { 
                     content: this.parse2Decimal( totalCost),
                     styles: { fontSize: fontSz, halign: 'right', valign: "middle", cellPadding:{right:rightPadding_cost}  }
@@ -1148,13 +1152,13 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       
       
              const comStyles: any = {
-               0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-                1: { cellWidth: 80,halign: 'left', valign: 'middle'},
+               0: { cellWidth: 11,halign: 'center', valign: 'middle' },
+                1: { cellWidth: 85,halign: 'left', valign: 'middle'},
                 2: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                3: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                4: { cellWidth: 24,halign: 'right', valign: 'middle'},
-                5: { cellWidth: 24,halign: 'right', valign: 'middle'},
-                6: { cellWidth: 24,halign: 'center', valign: 'middle'},
+                // 3: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                3: { cellWidth: 25,halign: 'right', valign: 'middle'},
+                4: { cellWidth: 25,halign: 'right', valign: 'middle'},
+                5: { halign: 'center', valign: 'middle'},
           };
       
 
@@ -1229,13 +1233,13 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                estData.push([
                   '',{ content: `${LabourLbl}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
                   { content: `${this.parse2Decimal(estTotalLbr)}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}},
-                  '',{ content: `${this.parse2Decimal(this.packageLabourCost)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding:{right:rightPadding_cost}}},
+                  { content: `${this.parse2Decimal(this.packageLabourCost)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding:{right:rightPadding_cost}}},
                   { content: `${this.parse2Decimal(estTotalLbrCost)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding:{right:rightPadding_cost} }}
                  ,'']);
 
                var  totalCostValue=estTotalLbrCost+estTotalCost;
               estData.push([
-                 '','','','',
+                 '','','',
                 { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
                 { content: `${this.parse2Decimal(totalCostValue)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding:{right:rightPadding_cost} } },
                 ''
@@ -1253,7 +1257,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                  
 
                   estData.push([
-                  '','','','',
+                  '','','',
                   { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1 }},
                   { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding:{right:rightPadding_cost} } },
                   ''
@@ -1269,12 +1273,6 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
             },
             theme: 'grid',
             margin: { left: leftMargin },
-            headStyles: {
-              fillColor: 220,
-              textColor: 0,
-              fontStyle: 'bold',
-              lineWidth: 0.1 // keep outer border for header
-            },
             columnStyles: comStyles,
               didDrawCell: function (data) {
                 const doc = data.doc;
@@ -1321,24 +1319,24 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                 
                 styles: { fontSize: fontSz, halign: 'left', valign: vAlign,cellPadding: 2  }
               },
-              { 
-                  content: this.translatedLangText.HOUR,
-                  styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
-              },
-              { 
-                content: this.translatedLangText.QTY,
+              // { 
+              //     content: this.translatedLangText.HOUR,
+              //     styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              // },
+              // { 
+              //   content: this.translatedLangText.QTY,
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
-              },
+              //   styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+              // },
               { 
                 content: (isFlat?this.translatedLangText.FLAT_RATE:this.translatedLangText.HOUR_RATE),
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+                styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
               },
               { 
                 content: this.translatedLangText.TOTAL_COST,
                 
-                styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+                styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
               },
                { 
                 content: this.translatedLangText.APPROVED,
@@ -1370,7 +1368,14 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                 //item.approve_cost = item.approve_part?item.cost:0;
                 var app = ((item.approve_part===null)||item.approve_part)?"O":"X";
                 repData.push([
-                  item.index + 1,item.description,`${ isFlat?"-":this.parse2Decimal(labour)}`,`${qty}`, this.parse2Decimal(cost),
+                  item.index + 1,item.description,
+                  // `${ isFlat?"-":this.parse2Decimal(labour)}`,
+                  // `${qty}`,
+                   { 
+                    content: this.parse2Decimal( cost),
+                    styles: { fontSize: fontSz, halign: 'right', valign: 'middle',
+                    cellPadding: { right: rightPadding_cost }}
+                  },
                   { 
                     content: this.parse2Decimal( totalCost),
                     styles: { fontSize: fontSz, halign: 'right', valign: 'middle',
@@ -1381,13 +1386,13 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
             });
       
             const comStyles: any = {
-              0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-                1: { cellWidth: 80,halign: 'left', valign: 'middle'},
-                2: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                3: { cellWidth: 15,halign: 'center', valign: 'middle'},
-                4: { cellWidth: 24,halign: 'center', valign: 'middle'},
-                5: { cellWidth: 24,halign: 'right', valign: 'middle'},
-                6: { cellWidth: 24,halign: 'center', valign: 'middle'},
+                0: { cellWidth: 11,halign: 'center', valign: 'middle' },
+                1: { cellWidth: 98,halign: 'left', valign: 'middle'},
+                //2: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                // 3: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                2: { cellWidth: 25,halign: 'right', valign: 'middle'},
+                3: { cellWidth: 28,halign: 'right', valign: 'middle'},
+                4: { cellWidth: 30,halign: 'center', valign: 'middle'},
           };
       
             
@@ -1418,7 +1423,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                   doc.line(
                   data.cell.x,
                   data.cell.y - 2,
-                  data.cell.x + data.cell.width,
+                  pageWidth-rightMargin-leftMargin,
+                 // data.cell.x + data.cell.width,
                   data.cell.y - 2
                 );
                 }
@@ -1458,7 +1464,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
                var  totalCostValue=estTotalLbrCost+estTotalCost;
               estData.push([
-                 '','','','',
+                 '','',
                 { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
                 { content: `${this.parse2Decimal(totalCostValue)}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',
                   fontSize: fontSz,cellPadding: { right: rightPadding_cost } } },
@@ -1477,7 +1483,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                  
 
                   estData.push([
-                  '','','','',
+                  '','',
                   { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
                   { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz,
                     cellPadding: { right: rightPadding_cost }  } },
@@ -1504,7 +1510,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
                       doc.line(
                       data.cell.x,
                       data.cell.y -1,
-                      data.cell.x + data.cell.width,
+                      pageWidth-rightMargin-leftMargin,
                       data.cell.y -1
                     );
     

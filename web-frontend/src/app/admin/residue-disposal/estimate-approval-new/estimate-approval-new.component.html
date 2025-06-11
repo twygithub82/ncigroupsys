@@ -613,13 +613,15 @@
               @if (canExport()) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5 accent-darker" (click)="onExport($event)">
-                @if (!(residueDS.loading$ | async)&&!(isExportingPDF)) {
-                <i class="fas fa-file-export"></i>
-                } @else if ((residueDS.loading$ | async)||(isExportingPDF)) {
-                <mat-icon>
-                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                </mat-icon>
-                }
+                <span class="icon-wrapper">
+                  @if (!(residueDS.loading$ | async)&&!(isExportingPDF)) {
+                  <i class="fas fa-file-export"></i>
+                  } @else if ((residueDS.loading$ | async)||(isExportingPDF)) {
+                  
+                    <mat-spinner color="primary" [diameter]="16"></mat-spinner>
+                  
+                  }
+                </span>
                 {{translatedLangText.EXPORT}}
               </button>
               }

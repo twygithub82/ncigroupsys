@@ -29,6 +29,7 @@ import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
 
 import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD,ESTIMATE_APPROVED_STATUS, Utility } from "app/utilities/utility";
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -167,6 +168,10 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     TOTAL_SGD: 'COMMON-FORM.TOTAL-SGD',
     RESIDUE_ESTIMATE:'COMMON-FORM.RESIDUE-ESTIMATE',
     TOTAL:'COMMON-FORM.TOTAL',
+    RESIDUE_QUOTATION:'COMMON-FORM.RESIDUE-QUOTATION',
+    QUOTATION_DATE: 'COMMON-FORM.QUOTATION-DATE',
+    APPROVED:'COMMON-FORM.APPROVED',
+    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
   }
 
    
@@ -207,7 +212,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-
+  isEstimateApproved:boolean=false;
   constructor(
     public dialogRef: MatDialogRef<ResidueDisposalPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -1014,28 +1019,28 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
 
        async exportToPDF_r2(fileName: string = 'document.pdf') {
-                const pageWidth = 210; // A4 width in mm (portrait)
-                const pageHeight = 297; // A4 height in mm (portrait)
-                const leftMargin = 10;
-                const rightMargin = 10;
-                const topMargin = 5;
-                const bottomMargin = 5;
-                const contentWidth = pageWidth - leftMargin - rightMargin;
-                const maxContentHeight = pageHeight - topMargin - bottomMargin;
-            
-                this.generatingPdfLoadingSubject.next(true);
-                this.generatingPdfProgress = 0;
-            
-                const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-                //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-                let pageNumber = 1;
-            
-                let reportTitleCompanyLogo = 32;
-                let tableHeaderHeight = 12;
-                let tableRowHeight = 8.5;
-                let minHeightHeaderCol = 3;
-                let minHeightBodyCell = 7;
-                let fontSz = 8.5;
+              const pageWidth = 210; // A4 width in mm (portrait)
+              const pageHeight = 297; // A4 height in mm (portrait)
+              const leftMargin = 10;
+              const rightMargin = 10;
+              const topMargin = 5;
+              const bottomMargin = 5;
+              const contentWidth = pageWidth - leftMargin - rightMargin;
+              const maxContentHeight = pageHeight - topMargin - bottomMargin;
+          
+              this.generatingPdfLoadingSubject.next(true);
+              this.generatingPdfProgress = 0;
+          
+              const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+              //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+              let pageNumber = 1;
+          
+              let reportTitleCompanyLogo = 32;
+              let tableHeaderHeight = 12;
+              let tableRowHeight = 8.5;
+              let minHeightHeaderCol = 3;
+              let minHeightBodyCell = 7;
+              let fontSz = 8.5;
             
                 const pagePositions: { page: number; x: number; y: number }[] = [];
                 // const progressValue = 100 / cardElements.length;
@@ -1085,15 +1090,15 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                 var cc= item.storing_order_tank?.storing_order?.customer_company;
                 await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,cc);
       
-                startY=60;
+                startY=54;
                 PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false);
-                startY+=3;
+                startY+=8;
                var data: any[][] = [
                   [
                     { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
                     { content: `${item?.storing_order_tank?.tank_no}` },
-                    { content: `${this.translatedLangText.ESTIMATE_NO}` ,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-                    { content: `${this.estimate_no}` }
+                    { content: `${this.translatedLangText.EIR_NO}` ,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+                    { content: `${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`}
                   ],
                   [
                     { content: `${this.translatedLangText.CUSTOMER}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
@@ -1110,12 +1115,12 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                   [
                     { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
                     { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
-                    { content: `${this.translatedLangText.ESTIMATE_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
+                    { content: `${this.translatedLangText.QUOTATION_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
                     { content: `${this.displayDate(item?.create_dt)}` }
                   ]
                 ];
             
-                autoTable(pdf, {
+               autoTable(pdf, {
                   body: data,
                   startY: startY, // Start table at the current startY value
                   theme: 'grid',
@@ -1132,7 +1137,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                     0: { cellWidth: 35 },
                     1: { cellWidth: 61 },
                     2: { cellWidth: 35 },
-                    3: { cellWidth: 61 }
+                    3: { cellWidth: 59 }
                   },
                   // headStyles: headStyles, // Custom header styles
                   bodyStyles: {
@@ -1156,7 +1161,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                   },
                 });
   
-      
+                this.isEstimateApproved = BusinessLogicUtil.isEstimateApproved(item);
                 startY=lastTableFinalY+15;
                 this.createResidueEstimateDetail_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
                 startY=pageHeight-25;
@@ -1171,7 +1176,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                 var yPos=startY;
                 //   // 
                 pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
-                startY= yPos +3;
+                startY= yPos +4;
                 await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
       
                  //var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
@@ -1182,6 +1187,8 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
       createResidueEstimateDetail_r1(pdf:jsPDF,startY:number,leftMargin:number,rightMargin:number,pageWidth:number)
       {
+        
+       
         const fontSz=8;
         const vAlign="bottom";
         const headers: RowInput[] = [
@@ -1194,7 +1201,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
           { 
             content: this.translatedLangText.DESCRIPTION,
             
-            styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+            styles: { fontSize: fontSz, halign: 'left', valign: vAlign,cellPadding: 2  }
           },
            { 
             content: this.translatedLangText.QTY,
@@ -1204,20 +1211,15 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
            { 
             content: this.translatedLangText.PRICE,
             
-            styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+            styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
           },
-           { 
-            content: this.translatedLangText.ESTIMATE_COST,
+          { 
+            content: this.translatedLangText.TOTAL_COST,
             
-            styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
+            styles: { fontSize: fontSz, halign: 'right', valign: vAlign,cellPadding: 2  }
           },
-           { 
-            content: this.translatedLangText.APPROVED_COST,
-            
-            styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
-          },
-           { 
-            content: '',
+          { 
+            content: this.translatedLangText.APPROVED,
             
             styles: { fontSize: fontSz, halign: 'center', valign: vAlign,cellPadding: 2  }
           }
@@ -1229,22 +1231,45 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
        var items = this.residuePartList;
        var index=1;
        const grpFontSz=7;
+       var estTotalCost=0;
+       var rightPadding_cost=5;
         items?.forEach((item, index) => {
           
               // if(item.approve_part)
               // {
+                item.approve_part=item.approve_part??true;
                 var qty=item.quantity;
-                var app = ((item.approve_part===null)||item.approve_part)?"O":"X";
-                if(ESTIMATE_APPROVED_STATUS.includes( this.residueItem.status_cv)) qty=item.approve_qty;
+                var cost =item.cost;
+                var app = (item.approve_part)?"O":"X";
+                if(this.isEstimateApproved)
+                  { 
+                    qty=item.approve_qty;
+                    cost =item.approve_cost;
+
+                  }
+                var totalCost=qty * cost;
+                if (item.approve_part) estTotalCost+=totalCost;
                 repData.push([
-                  index++,item.description,`${qty} ${item.qty_unit_type_cv}`, this.parse2Decimal(item.cost),
-                  this.parse2Decimal(qty * item.cost),this.parse2Decimal(item.approve_cost),app]);
+                  index++,item.description,`${qty} ${item.qty_unit_type_cv}`, 
+                   { content: `${this.parse2Decimal(cost)}`,styles: { halign: 'right', valign: 'middle',cellPadding: { right: rightPadding_cost-1 } } },
+                   { content: `${this.parse2Decimal(totalCost)}`,styles: { halign: 'right', valign: 'middle',cellPadding: { right: rightPadding_cost } } }                 , 
+                  app
+                ]);
+                
               // }
           
         
         });
   
-  
+          const comStyles: any = {
+                0: { cellWidth: 11,halign: 'center', valign: 'middle' },
+                1: { cellWidth: 85,halign: 'left', valign: 'middle'},
+                2: { cellWidth: 15,halign: 'center', valign: 'middle'},
+                3: { cellWidth: 20,halign: 'right', valign: 'middle'},
+                4: { cellWidth: 25,halign: 'right', valign: 'middle'},
+                5: { halign: 'center', valign: 'middle'},
+          };
+      
        
         autoTable(pdf, {
         head:headers,
@@ -1263,45 +1288,43 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
             fontStyle: 'bold',
             lineWidth: 0.0 // keep outer border for header
         },
-        columnStyles: {
-          0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-          1: { cellWidth: 70,halign: 'left', valign: 'middle'},
-          2: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          3: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          4: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          5: { cellWidth: 28,halign: 'center', valign: 'middle'},
-        },
+        columnStyles: comStyles,
         didDrawCell: function (data) {
-            const doc = data.doc;
-            
-              if(data.row.index === 0 && data.section==="head"){
-            doc.setLineWidth(0.3);
-            doc.setDrawColor(0, 0, 0); // Set line color to black
-              doc.line(
-              data.cell.x,
-              data.cell.y - 2,
-              data.cell.x + data.cell.width,
-              data.cell.y - 2
-            );
-            }
-          },
+                const doc = data.doc;
+                
+                  if(data.row.index === 0 && data.section==="head"){
+                doc.setLineWidth(0.3);
+                doc.setDrawColor(0, 0, 0); // Set line color to black
+                  doc.line(
+                  data.cell.x,
+                  data.cell.y - 2,
+                  data.cell.x + data.cell.width,
+                  data.cell.y - 2
+                );
+                }
+              },
         didDrawPage: (data: any) => {
           startY = data.cursor.y;
         }
         });
         
-         var  yPos = startY+5;
-          pdf.setLineWidth(0.1);
-    // Set dashed line pattern
-          pdf.setLineDashPattern([0.01, 0.01], 0);
 
-            // Draw top line
-        //  pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
+            var  yPos = startY+5;
+              pdf.setLineWidth(0.1);
+        // Set dashed line pattern
+              pdf.setLineDashPattern([0.01, 0.01], 0);
+    //      var  yPos = startY+5;
+    //       pdf.setLineWidth(0.3);
+    // // Set dashed line pattern
+    //       pdf.setLineDashPattern([0.01, 0.01], 0);
+
+    //         // Draw top line
+    //       pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
 
 
         var sysCurrencyCode=Utility.GetSystemCurrencyCode();
           var totalSGD=`${this.translatedLangText.TOTAL} (${sysCurrencyCode}):`;
-          var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
+          var totalCostValue=`${this.parse2Decimal(estTotalCost)}`;
            var AppCostValue=(this.approvedCost===0?'':`${this.parse2Decimal(this.approvedCost)}`);
           var amtWords = (this.residueItem.status_cv=="APPROVED")?Utility.convertToWords(this.approvedCost!): Utility.convertToWords(this.totalCost!);
            var cc= this.residueItem.storing_order_tank?.storing_order?.customer_company;
@@ -1311,15 +1334,16 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         // var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
         startY+=3;
          var estData:RowInput[]=[];
-         estData.push([
-              { content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
+        //  estData.push([
+        //       { content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
              
-           ])
+        //    ])
          estData.push([
            '','','',
-            { content: `${totalSGD}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-            { content: `${totalCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-            { content: `${AppCostValue}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
+            { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
+            { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',
+              fontSize: fontSz,cellPadding: { right: rightPadding_cost } } },
+            '',
          ])
 
 
@@ -1327,100 +1351,52 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
              var totalForeign=`${this.translatedLangText.TOTAL} (${custCurrencyCode}):`;
              //var cc= this.residueItem.storing_order_tank?.storing_order?.customer_company;
              var rate =cc.currency?.rate;
-             var convertedCost =  `${this.parse2Decimal((this.totalCost||0)*rate)}`;
-             var convertedapprovedCost =  (this.approvedCost===0?'':`${this.parse2Decimal((this.approvedCost||0)*rate)}`);
+             var convertedCost =  `${this.parse2Decimal((estTotalCost||0)*rate)}`;
+            // var convertedapprovedCost =  (this.approvedCost===0?'':`${this.parse2Decimal((this.approvedCost||0)*rate)}`);
             //  amtWords =  Utility.convertToWords(this.approvedCost!);
             //  estData[0]=[{ content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} }];
              estData.push([
              '','','',
-              { content: `${totalForeign}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 5 }}},
-              { content: `${convertedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 5 } } },
-             { content: `${convertedapprovedCost}`,styles: { halign: 'center', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 5 } } },
+              { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
+              { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { right: rightPadding_cost }} } ,
+              '',
            ])
            }
-        autoTable(pdf, {
-        body:estData,
-        startY: startY, // Start table at the current startY value
-        styles: {
-          cellPadding: { left:2 , right: 2, top: 1, bottom: 3 }, // Reduce padding
-          fontSize: 7.5,
-          lineWidth: 0 // remove all borders initially
-        },
-        theme: 'grid',
-        margin: { left: leftMargin },
-        headStyles: {
-          fillColor: 220,
-          textColor: 0,
-          fontStyle: 'bold',
-          lineWidth: 0.1 // keep outer border for header
-        },
-        columnStyles: {
-          0: { cellWidth: 10,halign: 'center', valign: 'middle' },
-          1: { cellWidth: 70,halign: 'left', valign: 'middle'},
-          2: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          3: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          4: { cellWidth: 28,halign: 'center', valign: 'middle'},
-          5: { cellWidth: 28,halign: 'center', valign: 'middle'},
-        },
-         didDrawCell: function (data) {
-            const doc = data.doc;
+          autoTable(pdf, {
+            body:estData,
+            startY: startY, // Start table at the current startY value
+            styles: {
+              cellPadding: { left:2 , right: 2, top: 1, bottom: 0 }, // Reduce padding
+              fontSize: 7.5,
+              lineWidth: 0.1 // remove all borders initially
+            },
+            theme: 'grid',
+            margin: { left: leftMargin },
+            columnStyles: comStyles,
+              didDrawCell: function (data) {
+                const doc = data.doc;
+                
+                if(data.row.index === 0 && data.section==="body"){
+                    doc.setLineWidth(0.3);
+                    doc.setDrawColor(0, 0, 0); // Set line color to black
+                      doc.line(
+                      data.cell.x,
+                      data.cell.y -1,
+                      data.cell.x + data.cell.width,
+                      data.cell.y -1
+                    );
+    
+                    
+                }
+              },
+            didDrawPage: (data: any) => {
             
-            if(data.row.index === 0 && data.section==="body"){
-                doc.setLineWidth(0.3);
-                doc.setDrawColor(0, 0, 0); // Set line color to black
-                  doc.line(
-                  data.cell.x,
-                  data.cell.y -1,
-                  data.cell.x + data.cell.width,
-                  data.cell.y -1
-                );
-
-               
-            }
-            else if(data.row.index === 1 && data.section==="body"){
-                doc.setLineWidth(0.3);
-                doc.setDrawColor(0, 0, 0); // Set line color to black
-                  doc.line(
-                  data.cell.x,
-                  data.cell.y -1,
-                  data.cell.x + data.cell.width,
-                  data.cell.y -1
-                );
-            }
+              startY = data.cursor.y;
             
-          //   if(data.column.index === 4){
-          //   doc.line(
-          //   data.cell.x,
-          //   data.cell.y + data.cell.height,
-          //   data.cell.x + data.cell.width,
-          //   data.cell.y + data.cell.height
-          // );
-          // }
-
-            // if(data.row.index === 0){
-            //   doc.setLineWidth(0.3);
-            //   doc.setDrawColor(0, 0, 0); // Set line color to black
-            //     doc.line(
-            //     data.cell.x,
-            //     data.cell.y + data.cell.height-1,
-            //     data.cell.x + data.cell.width,
-            //     data.cell.y + data.cell.height-1
-            //   );
-            //   }
-         },
-        didDrawPage: (data: any) => {
-        
-          startY = data.cursor.y;
-        
-        }
-        });
+            }
+            });
 
         
-        // var AppCostLabel=`${this.translatedLangText.APPROVED_COST}:`;
-        // var AppCostValue=`${this.parse2Decimal(this.approvedCost)}`;
-        // startY+=7;
-        // PDFUtility.addText(pdf, AppCostLabel, startY , leftMargin, fontSz,true);
-        // PDFUtility.addText(pdf, AppCostValue, startY , leftMargin+28, fontSz);
   
       }
 }

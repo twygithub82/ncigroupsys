@@ -782,6 +782,7 @@
     "APPROVAL-STATUS": "Approval Status",
     "METHOD": "Method",
     "LAST-CARGO-CLEANING-QUOTATION": "CLEANING QUOTATION",
+
     "TEAM-DETAILS": "Team Details",
     "TEAM": "Team",
     "UPDATE-BY": "Update By",
@@ -1311,7 +1312,9 @@
     "BY-HOUR":"By Hour",
     "GATE-IN-PENDING" : "Gate In: Pending",
     "IN-GATE-SURVEY-PENDING":"In Gate Survey: Pending",
-    "CLEANING-PENDING":"Cleaning: Pending"
+    "CLEANING-PENDING":"Cleaning: Pending",
+    "STEAMING-QUOTATION":"STEAMING QUOTATION",
+    "RESIDUE-QUOTATION":"RESIDUE QUOTATION"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
