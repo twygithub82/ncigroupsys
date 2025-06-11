@@ -52,6 +52,10 @@
                         <mat-icon>edit</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
+                        @if (canRenumberTank()) {
+                        <button mat-menu-item
+                          (click)="renumberTankDialog($event)">{{translatedLangText.RENUMBER}}</button>
+                        }
                         @if (canOverwriteTankSummaryDetails()) {
                         <button mat-menu-item
                           (click)="overwriteTankSummaryDialog($event)">{{translatedLangText.OVERWRITE}}
@@ -779,8 +783,7 @@
                                   <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                     <div class="row right-align-display">
                                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                                        <span
-                                          class="label-display-info">{{translatedLangText.COMPLETE_DATE}}:</span>
+                                        <span class="label-display-info">{{translatedLangText.COMPLETE_DATE}}:</span>
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <span class="value-display-info">
@@ -1010,8 +1013,7 @@
                                 <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row right-align-display">
                                     <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                                      <span
-                                        class="label-display-info">{{translatedLangText.COMPLETE_DATE}}:</span>
+                                      <span class="label-display-info">{{translatedLangText.COMPLETE_DATE}}:</span>
                                     </div>
                                     <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                       <span class="value-display-info">

@@ -421,28 +421,32 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
         //{ tank_status_cv: { in: ["CLEANING", "REPAIR", "STEAM", "STORAGE", "RO_GENERATED", "RESIDUE"] } },
         { in_gate: { some: { delete_dt: { eq: null } } } },
         {
-          repair: {
-            some: {
-              repair_part: {
+          or: [
+            {
+              repair: {
                 some: {
-                  tariff_repair: {
-                    group_name_cv: {
-                      eq: "PERIODIC_TEST"
+                  repair_part: {
+                    some: {
+                      tariff_repair: {
+                        group_name_cv: {
+                          eq: "PERIODIC_TEST"
+                        }
+                      },
+                      approve_part: {
+                        neq: false
+                      },
+                      delete_dt: {
+                        eq: null
+                      }
                     }
                   },
-                  approve_part: {
-                    neq: false
-                  },
-                  delete_dt: {
-                    eq: null
+                  status_cv: {
+                    nin: ['CANCELED', 'NO_ACTION']
                   }
                 }
-              },
-              status_cv: {
-                nin: ['CANCELED', 'NO_ACTION']
               }
             }
-          }
+          ]
         }
       ]
     };

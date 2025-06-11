@@ -41,6 +41,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-survey-periodic-test-details',
@@ -628,8 +629,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
     const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
     if (!igs?.test_dt || !igs?.last_test_cv) return "-";
     const test_type = igs?.last_test_cv;
-    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-    const yearCount = parseFloat(match?.[0] ?? "0");
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
     const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     return output;
@@ -640,8 +640,7 @@ export class SurveyPeriodicTestDetailsComponent extends UnsubscribeOnDestroyAdap
 
     if (!this.tiItem?.test_dt || !this.tiItem?.last_test_cv) return "-";
     const test_type = this.tiItem?.last_test_cv;
-    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-    const yearCount = parseFloat(match?.[0] ?? "0");
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
     const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     return output;

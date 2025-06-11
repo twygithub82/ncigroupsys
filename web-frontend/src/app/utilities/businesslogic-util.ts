@@ -31,8 +31,7 @@ export class BusinessLogicUtil {
         return row?.estimate_no?.startsWith('SE');
     }
 
-    static isEstimateApproved(row:any)
-    {
+    static isEstimateApproved(row: any) {
         if (!row) return false;
         return ESTIMATE_APPROVED_STATUS.includes(row.status_cv);
     }
@@ -63,6 +62,11 @@ export class BusinessLogicUtil {
         if (test_type === '5') return '2.5';
         if (test_type === '2.5') return '5';
         return '';
+    }
+
+    static getNextTestYear(test_type: string | undefined): number {
+        const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
+        return 2.5;// parseFloat(match?.[0] ?? "0");
     }
 
     static getSaveDescription(guid: string | undefined) {
