@@ -369,6 +369,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       .subscribe(data => {
         this.jobOrderList = data;
         this.jobOrderList.forEach(jo => {
+          // this.notificationService.subscribe(jo.guid!, (msg) => {
+          //   console.log(msg)
+          // });
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);

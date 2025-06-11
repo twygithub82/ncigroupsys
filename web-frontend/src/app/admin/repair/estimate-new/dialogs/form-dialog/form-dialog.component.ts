@@ -547,7 +547,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   validateExistedPart(toValidatePart: RepairPartItem): boolean | undefined {
     return this.existedPart?.some((part: RepairPartItem) => {
-      return toValidatePart.guid !== part.guid && this.extractDescription(toValidatePart) === this.extractDescription(part);
+      const existingPart = this.extractDescription(part);
+      const newPart = this.extractDescription(toValidatePart);
+      return ((!!part.guid && toValidatePart.guid !== part.guid) || !part.guid) && existingPart === newPart;
     }) || false;
   }
 
