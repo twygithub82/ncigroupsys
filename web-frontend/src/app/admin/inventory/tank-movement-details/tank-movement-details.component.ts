@@ -92,6 +92,7 @@ import { EditSotSummaryFormDialogComponent } from './edit-sot-summary-form-dialo
 import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
 import { EditSotDetailsFormDialogComponent } from './edit-sot-details-form-dialog/edit-sot-details-form-dialog.component';
 import { OverwriteStorageFormDialogComponent } from './overwrite-storage-purpose-form-dialog/overwrite-storage-purpose-form-dialog.component';
+import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/renumber-tank-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -496,6 +497,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     RENUMBER: 'COMMON-FORM.RENUMBER',
     DAMAGE: 'COMMON-FORM.DAMAGE',
     SUBGROUP: 'COMMON-FORM.SUBGROUP',
+    INVALID: 'COMMON-FORM.INVALID',
+    EXISTED: 'COMMON-FORM.EXISTED',
   }
 
   sot_guid: string | null | undefined;
@@ -1501,22 +1504,25 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         newSot.free_storage = result.free_storage;
         newSot.depot_cost_remarks = result.depot_cost_remarks;
 
-        // Update current sot for display purpose
-        this.sot.billing_sot.tariff_depot_guid = result.tariff_depot_guid;
-        this.sot.billing_sot.preinspection = result.preinspection;
-        this.sot.billing_sot.preinspection_cost = result.preinspection_cost;
-        this.sot.billing_sot.lift_on = result.lift_on;
-        this.sot.billing_sot.lift_on_cost = result.lift_on_cost;
-        this.sot.billing_sot.lift_off = result.lift_off;
-        this.sot.billing_sot.lift_off_cost = result.lift_off_cost;
-        this.sot.billing_sot.gate_in = result.gate_in;
-        this.sot.billing_sot.gate_in_cost = result.gate_in_cost;
-        this.sot.billing_sot.gate_out = result.gate_out;
-        this.sot.billing_sot.gate_out_cost = result.gate_out_cost;
-        this.sot.billing_sot.storage_cal_cv = result.storage_cal_cv;
-        this.sot.billing_sot.storage_cost = result.storage_cost;
-        this.sot.billing_sot.free_storage = result.free_storage;
-        this.sot.billing_sot.depot_cost_remarks = result.depot_cost_remarks;
+        if (this.sot && this.sot.billing_sot) {
+          // Update current sot for display purpose
+          this.sot.billing_sot.tariff_depot_guid = result.tariff_depot_guid;
+          this.sot.billing_sot.preinspection = result.preinspection;
+          this.sot.billing_sot.preinspection_cost = result.preinspection_cost;
+          this.sot.billing_sot.lift_on = result.lift_on;
+          this.sot.billing_sot.lift_on_cost = result.lift_on_cost;
+          this.sot.billing_sot.lift_off = result.lift_off;
+          this.sot.billing_sot.lift_off_cost = result.lift_off_cost;
+          this.sot.billing_sot.gate_in = result.gate_in;
+          this.sot.billing_sot.gate_in_cost = result.gate_in_cost;
+          this.sot.billing_sot.gate_out = result.gate_out;
+          this.sot.billing_sot.gate_out_cost = result.gate_out_cost;
+          this.sot.billing_sot.storage_cal_cv = result.storage_cal_cv;
+          this.sot.billing_sot.storage_cost = result.storage_cost;
+          this.sot.billing_sot.free_storage = result.free_storage;
+          this.sot.billing_sot.depot_cost_remarks = result.depot_cost_remarks;
+          this.loadSotDepotCost();
+        }
 
         console.log(newSot)
         this.billDS.updateBillingSot(newSot).subscribe(result => {
@@ -1536,76 +1542,68 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(EditSotSummaryFormDialogComponent, {
+    const dialogRef = this.dialog.open(RenumberTankFormDialogComponent, {
       disableClose: true,
-      width: '50vw',
+      width: '500px',
       data: {
+        action: "edit",
         sot: this.sot,
-        ig: this.ig,
-        igs: this.igs,
-        ti: this.tiItem,
-        latestSurveyDetailItem: this.latestSurveyDetailItem,
         translatedLangText: this.translatedLangText,
         transferList: this.transferList,
-        ccDS: this.ccDS,
-        populateData: {
-          yardCvList: this.yardCvList,
-          testTypeCvList: this.testTypeCvList,
-          testClassCvList: this.testClassCvList,
-        }
+        sotDS: this.sotDS
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot) {
         console.log(result)
-        let newIg: any = undefined;
-        let newIgs: any = undefined;
-        let newTi: any = undefined;
+        // let newIg: any = undefined;
+        // let newIgs: any = undefined;
+        // let newTi: any = undefined;
 
-        if (result.yard_cv) {
-          newIg = {
-            guid: this.ig?.guid,
-            yard_cv: result.yard_cv,
-          };
-        }
+        // if (result.yard_cv) {
+        //   newIg = {
+        //     guid: this.ig?.guid,
+        //     yard_cv: result.yard_cv,
+        //   };
+        // }
 
-        if (result.last_test_cv || result.next_test_cv || result.test_class_cv || result.test_dt) {
-          newIgs = {
-            guid: this.igs?.guid,
-            last_test_cv: result.last_test_cv,
-            next_test_cv: result.next_test_cv,
-            test_class_cv: result.test_class_cv,
-            test_dt: result.test_dt
-          };
-        }
+        // if (result.last_test_cv || result.next_test_cv || result.test_class_cv || result.test_dt) {
+        //   newIgs = {
+        //     guid: this.igs?.guid,
+        //     last_test_cv: result.last_test_cv,
+        //     next_test_cv: result.next_test_cv,
+        //     test_class_cv: result.test_class_cv,
+        //     test_dt: result.test_dt
+        //   };
+        // }
 
-        if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
-          newTi = {
-            guid: this.tiItem?.guid,
-            tank_no: result?.tank_no,
-            yard_cv: result.ti_yard_cv,
-            last_test_cv: result.ti_last_test_cv,
-            test_dt: result.ti_test_dt,
-            next_test_cv: result.ti_next_test_cv,
-            test_class_cv: result.ti_test_class_cv,
-          };
-        }
+        // if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
+        //   newTi = {
+        //     guid: this.tiItem?.guid,
+        //     tank_no: result?.tank_no,
+        //     yard_cv: result.ti_yard_cv,
+        //     last_test_cv: result.ti_last_test_cv,
+        //     test_dt: result.ti_test_dt,
+        //     next_test_cv: result.ti_next_test_cv,
+        //     test_class_cv: result.ti_test_class_cv,
+        //   };
+        // }
 
-        const tankSummaryRequest = {
-          ...(newIg && { ingate: newIg }),
-          ...(newIgs && { ingateSurvey: newIgs }),
-          so: undefined,
-          sot: undefined,
-          ...(newTi && { tankInfo: newTi })
-        };
-        this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
-          console.log(result)
-          this.handleSaveSuccess(result?.data?.updateTankSummaryDetails);
-          this.loadDataHandling_sot(this.sot_guid!);
-          this.loadDataHandling_igs(this.sot_guid!);
-          this.loadDataHandling_ig(this.sot_guid!);
-        });
+        // const tankSummaryRequest = {
+        //   ...(newIg && { ingate: newIg }),
+        //   ...(newIgs && { ingateSurvey: newIgs }),
+        //   so: undefined,
+        //   sot: undefined,
+        //   ...(newTi && { tankInfo: newTi })
+        // };
+        // this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
+        //   console.log(result)
+        //   this.handleSaveSuccess(result?.data?.updateTankSummaryDetails);
+        //   this.loadDataHandling_sot(this.sot_guid!);
+        //   this.loadDataHandling_igs(this.sot_guid!);
+        //   this.loadDataHandling_ig(this.sot_guid!);
+        // });
       }
     });
   }
