@@ -493,6 +493,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CLASS_BODIES: 'COMMON-FORM.CLASS-BODIES',
     MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
     DOM: 'COMMON-FORM.DOM',
+    RENUMBER: 'COMMON-FORM.RENUMBER',
+    DAMAGE: 'COMMON-FORM.DAMAGE',
+    SUBGROUP: 'COMMON-FORM.SUBGROUP',
   }
 
   sot_guid: string | null | undefined;
@@ -1524,6 +1527,89 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  renumberTankDialog(event: Event) {
+    this.preventDefault(event);
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(EditSotSummaryFormDialogComponent, {
+      disableClose: true,
+      width: '50vw',
+      data: {
+        sot: this.sot,
+        ig: this.ig,
+        igs: this.igs,
+        ti: this.tiItem,
+        latestSurveyDetailItem: this.latestSurveyDetailItem,
+        translatedLangText: this.translatedLangText,
+        transferList: this.transferList,
+        ccDS: this.ccDS,
+        populateData: {
+          yardCvList: this.yardCvList,
+          testTypeCvList: this.testTypeCvList,
+          testClassCvList: this.testClassCvList,
+        }
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot) {
+        console.log(result)
+        let newIg: any = undefined;
+        let newIgs: any = undefined;
+        let newTi: any = undefined;
+
+        if (result.yard_cv) {
+          newIg = {
+            guid: this.ig?.guid,
+            yard_cv: result.yard_cv,
+          };
+        }
+
+        if (result.last_test_cv || result.next_test_cv || result.test_class_cv || result.test_dt) {
+          newIgs = {
+            guid: this.igs?.guid,
+            last_test_cv: result.last_test_cv,
+            next_test_cv: result.next_test_cv,
+            test_class_cv: result.test_class_cv,
+            test_dt: result.test_dt
+          };
+        }
+
+        if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
+          newTi = {
+            guid: this.tiItem?.guid,
+            tank_no: result?.tank_no,
+            yard_cv: result.ti_yard_cv,
+            last_test_cv: result.ti_last_test_cv,
+            test_dt: result.ti_test_dt,
+            next_test_cv: result.ti_next_test_cv,
+            test_class_cv: result.ti_test_class_cv,
+          };
+        }
+
+        const tankSummaryRequest = {
+          ...(newIg && { ingate: newIg }),
+          ...(newIgs && { ingateSurvey: newIgs }),
+          so: undefined,
+          sot: undefined,
+          ...(newTi && { tankInfo: newTi })
+        };
+        this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateTankSummaryDetails);
+          this.loadDataHandling_sot(this.sot_guid!);
+          this.loadDataHandling_igs(this.sot_guid!);
+          this.loadDataHandling_ig(this.sot_guid!);
+        });
+      }
+    });
+  }
+
   overwriteTankSummaryDialog(event: Event) {
     this.preventDefault(event);
 
@@ -2295,7 +2381,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (!igs?.test_dt || !igs?.last_test_cv) return "-";
     const test_type = igs?.last_test_cv;
     const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-    const yearCount = parseFloat(match?.[0] ?? "0");
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
     const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     return output;
@@ -2307,7 +2393,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (!this.tiItem?.test_dt || !this.tiItem?.last_test_cv) return "-";
     const test_type = this.tiItem?.last_test_cv;
     const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-    const yearCount = parseFloat(match?.[0] ?? "0");
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
     const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     return output;
@@ -2607,6 +2693,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.tabConfig.filter(tab =>
       tab.modulePackage.includes(this.modulePackageService.getModulePackage())
     );
+  }
+
+  canRenumberTank() {
+    // check is the eir_no same as the tank_info.last_eir_no. only when its same can do renumber
+    return true;
+  }
+
+  canReownership() {
+    // check is the eir_no same as the tank_info.last_eir_no. only when its same can do reownership
+    return true;
   }
 
   canOverwriteTankSummaryDetails() {

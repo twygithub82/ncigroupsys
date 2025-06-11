@@ -790,8 +790,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
   getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
     if (igs && igs.next_test_cv && igs.test_dt) {
       const test_type = igs.last_test_cv;
-      const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-      const yearCount = parseFloat(match ? match[0] : "0");
+      const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
       const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
       return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     }

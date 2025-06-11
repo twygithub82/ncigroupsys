@@ -2,7 +2,7 @@ import { Direction } from '@angular/cdk/bidi';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -26,9 +26,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
+import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
@@ -185,7 +185,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService,
+    private notificationService: SingletonNotificationService
   ) {
     super();
     this.translateLangText();
@@ -368,6 +369,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       .subscribe(data => {
         this.jobOrderList = data;
         this.jobOrderList.forEach(jo => {
+          // this.notificationService.subscribe(jo.guid!, (msg) => {
+          //   console.log(msg)
+          // });
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
           this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);

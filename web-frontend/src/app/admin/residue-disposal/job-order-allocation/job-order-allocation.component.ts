@@ -51,6 +51,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-residue-disposal-job-order-estimate-new',
@@ -791,8 +792,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
     if (igs && igs.next_test_cv && igs.test_dt) {
       const test_type = igs.last_test_cv;
-      const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-      const yearCount = parseFloat(match ? match[0] : "0");
+      const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
       const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
       return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     }
@@ -1236,6 +1236,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
         if (this.isAllAssignedToTeam()) {
           console.log("all parts are assigned");
           act = "ASSIGN";
+          const allJobInProgress = finalJobOrder.every(x => x.status_cv == 'JOB_IN_PROGRESS');
+          if (allJobInProgress) {
+            act = "IN_PROGRESS";
+          }
         }
         var residueStatusReq: ResidueStatusRequest = new ResidueStatusRequest({
           guid: this.residueItem!.guid,
@@ -1255,10 +1259,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     });
   }
 
-
-
   isAllAssignedToTeam(): boolean {
-
     return this.deList.every(
       (data) => {
         let bRet = data.approve_part == null ? true : data.approve_part;
@@ -1269,18 +1270,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
         }
         return true;
       }
-
     );
-
-    // let retval = true;
-
-    // this.deList.forEach((data) => {
-    //   if (!data.job_order?.team?.description && data.approve_part) {
-    //     retval = false;
-    //   }
-    // });
-
-    // return retval;
   }
 
   updateJobProcessStatus(residueGuid: string, job_type: string, process_status: string) {
@@ -1300,10 +1290,10 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     const validStatus = ['ASSIGNED', 'PENDING', 'APPROVED', 'PARTIAL_ASSIGNED', 'CANCELED', 'NO_ACTION']
 
     var allowSave: boolean = validStatus.includes(this.residueItem?.status_cv!);
-    if (this.deList?.length) {
-      var itms = this.deList.filter(itm => (itm.job_order?.status_cv == "PENDING" || itm.job_order == null || itm.job_order?.status_cv == null));
-      allowSave = itms.length > 0;
-    }
+    // if (this.deList?.length) {
+    //   var itms = this.deList.filter(itm => (itm.job_order?.status_cv == "PENDING" || itm.job_order == null || itm.job_order?.status_cv == null));
+    //   allowSave = itms.length > 0;
+    // }
     return allowSave;
   }
 

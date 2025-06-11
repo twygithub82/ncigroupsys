@@ -7,6 +7,7 @@ export const environment = {
   fileManagerURL: 'https://tlx-filemanagement-app-uat.azurewebsites.net',
   graphQLUrl: 'https://tlx-idms-gateway-uat.azurewebsites.net/graphql',
   graphqlWsUrl: 'wss://tlx-idms-notification-uat.greenplant-68cf0a82.southeastasia.azurecontainerapps.io/graphql',
+  topicSubscribe: '/idms/all/*'
 };
 
 export const testTypeMapping: any = {
@@ -23,7 +24,7 @@ export const customerInfo = {
   companyEmail: 'dms-global@dms.com',
   companyWebsite: 'dms.com.sg',
   companyUen: '202335130H',
-  companyGST:'[GST Reg No]',
+  companyGST: '[GST Reg No]',
   eirDisclaimerNote: 'Notwithstanding that {companyName} (UEN:{companyUen}; hereinafter known as \"{companyAbb}\") will at its best-effort basis ensure that the above tank serviced is in good condition on the service job requisite by above-named customer and accepted by {companyAbb}. {companyAbb} will not in any way, guarantee nor accept liability for damage or claim due to the condition of tank, or of any other nature whatsoever arises upon tank released. Customer is however, at all times advised to appoint a third party class surveyor to conduct a post inspection, verify and certify that the tank is in good condition prior it is released from {companyAbb}\'s Depot, at own costs and discretion.',
   eirDisclaimerVer: 'VER-2412-210206',
   companyReportLogo: 'assets/images/report-logo.png'

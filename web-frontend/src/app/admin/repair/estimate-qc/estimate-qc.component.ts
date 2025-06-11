@@ -46,6 +46,7 @@ import { Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-estimate-qc',
@@ -845,8 +846,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
     if (!igs?.test_dt || !igs?.last_test_cv) return "-";
     const test_type = igs?.last_test_cv;
-    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-    const yearCount = parseFloat(match?.[0] ?? "0");
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
     const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     console.log("use IGS next test")
@@ -858,8 +858,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
 
     if (!this.tiItem?.test_dt || !this.tiItem?.last_test_cv) return "-";
     const test_type = this.tiItem?.last_test_cv;
-    const match = test_type?.match(/^[0-9]*\.?[0-9]+/);
-    const yearCount = parseFloat(match?.[0] ?? "0");
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
     const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
     const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
     console.log("use TI next test")

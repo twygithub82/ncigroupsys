@@ -2227,9 +2227,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if ((this.surveyForm!.get('periodic_test.last_test_cv')!.value || this.in_gate?.in_gate_survey?.last_test_cv) &&
       (this.surveyForm!.get('periodic_test.test_dt')!.value || this.in_gate?.in_gate_survey?.test_dt)) {
       const test_type = this.surveyForm!.get('periodic_test.last_test_cv')!.value || this.in_gate?.in_gate_survey?.last_test_cv;
-      const match = test_type.match(/^[0-9]*\.?[0-9]+/);
-      // const yearCount = parseFloat(match[0]);
-      const yearCount = 2.5;
+      const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
       const testDt = Utility.convertDate(this.surveyForm!.get('periodic_test.test_dt')!.value) as number || this.in_gate?.in_gate_survey?.test_dt as number;
       const resultDt = Utility.addYearsToEpoch(testDt, yearCount);
       const mappedVal = BusinessLogicUtil.getTestTypeMapping(test_type);

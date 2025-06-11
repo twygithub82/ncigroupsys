@@ -86,6 +86,7 @@ export interface DialogData {
     TlxFormFieldComponent,
     PreventNonNumericDirective,
     MatTooltipModule,
+    NumericTextDirective
     // PreventNonNumDirective,
   ],
 })
@@ -252,7 +253,7 @@ export class OverwriteRepairApprovalFormDialogComponent {
         total_labour_cost: Utility.convertNumber(this.summaryTableForm.get('total_labour_cost')?.value, 2),
         total_material_cost: Utility.convertNumber(this.summaryTableForm.get('total_mat_cost')?.value, 2),
         overwrite_remarks: this.overwriteForm.get('overwrite_remarks')?.value,
-        repair_part: this.repList.map(x => ({ ...x, action: 'overwrite' })),
+        repair_part: this.repList.map(x => ({ ...x, approve_cost: Utility.convertNumber(x.approve_cost), action: 'overwrite' })),
       }
       this.dialogRef.close(returnDialog);
     } else {
@@ -347,19 +348,6 @@ export class OverwriteRepairApprovalFormDialogComponent {
       }
       return acc;
     }, 0);
-  }
-
-  calculateResidueItemCost(steamPart: ResiduePartItem): number {
-    let calResCost: number = 0;
-
-    if (this.isApproved()) {
-      calResCost = steamPart.approve_cost! * steamPart.approve_qty!;
-    }
-    else {
-      calResCost = steamPart.cost! * steamPart.quantity!;
-    }
-
-    return calResCost;
   }
 
   isApprovePart(stm: ResiduePartItem) {
