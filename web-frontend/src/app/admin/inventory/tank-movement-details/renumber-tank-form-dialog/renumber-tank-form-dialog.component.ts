@@ -80,7 +80,7 @@ export class RenumberTankFormDialogComponent {
 
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
-      tank_no: [this.sot?.tank_no],
+      tank_no: this.sot?.tank_no,
     });
     return formGroup;
   }
@@ -88,7 +88,6 @@ export class RenumberTankFormDialogComponent {
   initializeValueChange() {
     this.tankForm?.get('tank_no')!.valueChanges.subscribe(() => {
       const value = this.tankForm?.get('tank_no')!.value
-      let isPreOrder = false; // Reset PREORDER flag
       if (value) {
         const uppercaseValue = value.toUpperCase();
         this.tankForm.get('tank_no')?.setValue(uppercaseValue, { emitEvent: false });
@@ -105,8 +104,8 @@ export class RenumberTankFormDialogComponent {
           this.tankForm.get('tank_no')?.setErrors({ invalidCheckDigit: true });
         } else {
           const formattedTankNo = Utility.formatContainerNumber(uppercaseValue);
-          // Handle new entry or edit
-          if (this.action !== 'edit' || (this.action === 'edit' && formattedTankNo !== this.sot.tank_no)) {
+          // Handle new entry or renumber
+          if (formattedTankNo !== this.sot.tank_no) {
             this.tankForm.get('tank_no')?.setErrors(null);
             this.sotDS.isTankNoAvailableToAdd(formattedTankNo).subscribe({
               next: (data) => {

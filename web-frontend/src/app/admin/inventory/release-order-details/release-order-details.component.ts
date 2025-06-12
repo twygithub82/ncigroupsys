@@ -47,6 +47,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-release-order-details',
@@ -374,7 +375,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
       eir_no: [this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_no],
       eir_dt: [Utility.convertEpochToDateStr(this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.eir_dt)],
       tank_status_cv: [item.storing_order_tank?.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(item.storing_order_tank?.in_gate)?.yard_cv],
+      yard_cv: [BusinessLogicUtil.getLastLocation(item.storing_order_tank, this.igDS.getInGateItem(item.storing_order_tank?.in_gate), item.storing_order_tank?.tank_info, item.storing_order_tank?.transfer)],
       booking_dt: [Utility.convertEpochToDateStr(this.bookingDS.getBookingReleaseOrder(item.storing_order_tank?.booking)?.booking_dt)],
       schedule_dt: [Utility.convertEpochToDateStr(this.schedulingSotDS.getSchedulingSotReleaseOrder(item.storing_order_tank?.scheduling_sot)?.scheduling_dt)],
     });
@@ -827,6 +828,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollback(status_cv: string, sot_guid: string): boolean {
+    return false;
     return this.roSotDS.canRollbackStatus(status_cv) && !this.activeRoSotList.some(item => item.sot_guid === sot_guid);
   }
 

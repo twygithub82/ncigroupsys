@@ -236,6 +236,17 @@ export const GET_RELEASE_ORDER_BY_ID = gql`
               yard_cv
               delete_dt
             }
+            tank_info {
+              yard_cv
+              last_eir_no
+            }
+            transfer(where: { delete_dt: { eq: null } }) {
+              location_from_cv
+              location_to_cv
+              transfer_out_dt
+              transfer_in_dt
+              create_dt
+            }
           }
         }
       }

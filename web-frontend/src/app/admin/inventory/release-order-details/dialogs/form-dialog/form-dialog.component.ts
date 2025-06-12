@@ -30,6 +30,7 @@ import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs';
 
@@ -380,5 +381,9 @@ export class FormDialogComponent {
 
   shouldShowTank(sot?: StoringOrderTankItem) {
     return this.showTankStatus.includes(sot?.tank_status_cv || '')
+  }
+
+  getLastLocation(sot?: StoringOrderTankItem) {
+    return BusinessLogicUtil.getLastLocation(sot, this.igDS.getInGateItem(sot?.in_gate), sot?.tank_info, sot?.transfer)
   }
 }

@@ -437,6 +437,21 @@ const GET_STORING_ORDER_TANKS_IN_GATE_SURVEY = gql`
           update_dt
           walkway_cv
           yard_cv
+          last_eir_no
+          previous_owner_guid
+          previous_tank_no
+          customer_company {
+            code
+            name
+            guid
+          }
+        }
+        transfer(where: { delete_dt: { eq: null } }) {
+          location_from_cv
+          location_to_cv
+          transfer_out_dt
+          transfer_in_dt
+          create_dt
         }
       }
       pageInfo {
@@ -603,6 +618,14 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
         }
         tank_info {
           yard_cv
+          last_eir_no
+        }
+        transfer(where: { delete_dt: { eq: null } }) {
+          location_from_cv
+          location_to_cv
+          transfer_out_dt
+          transfer_in_dt
+          create_dt
         }
       }
       pageInfo {
@@ -781,6 +804,21 @@ const GET_STORING_ORDER_TANKS_OTH_SURVEY_BY_ID = gql`
           walkway_cv
           yard_cv
           last_release_dt
+          last_eir_no
+          previous_owner_guid
+          previous_tank_no
+          customer_company {
+            code
+            name
+            guid
+          }
+        }
+        transfer(where: { delete_dt: { eq: null } }) {
+          location_from_cv
+          location_to_cv
+          transfer_out_dt
+          transfer_in_dt
+          create_dt
         }
       }
       pageInfo {
@@ -895,6 +933,21 @@ const GET_STORING_ORDER_TANKS_PT_SURVEY_BY_ID = gql`
           walkway_cv
           yard_cv
           last_release_dt
+          last_eir_no
+          previous_owner_guid
+          previous_tank_no
+          customer_company {
+            code
+            name
+            guid
+          }
+        }
+        transfer(where: { delete_dt: { eq: null } }) {
+          location_from_cv
+          location_to_cv
+          transfer_out_dt
+          transfer_in_dt
+          create_dt
         }
       }
       pageInfo {
@@ -2834,6 +2887,21 @@ const GET_STORING_ORDER_TANKS_FOR_TRANSFER = gql`
         }
         tank_info {
           yard_cv
+          last_eir_no
+          previous_owner_guid
+          previous_tank_no
+          customer_company {
+            code
+            name
+            guid
+          }
+        }
+        transfer(where: { delete_dt: { eq: null } }) {
+          location_from_cv
+          location_to_cv
+          transfer_out_dt
+          transfer_in_dt
+          create_dt
         }
       }
       pageInfo {
@@ -3819,6 +3887,14 @@ const GET_STORING_ORDER_TANKS_LOCATION_STATUS_SUMMARY = gql`
         }
         tank_info {
           yard_cv
+          last_eir_no
+          previous_owner_guid
+          previous_tank_no
+          customer_company {
+            code
+            name
+            guid
+          }
         }
       }
       pageInfo {

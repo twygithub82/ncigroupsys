@@ -150,7 +150,7 @@
                   <div class="">
                     <span class="font-bold">{{data.translatedLangText.LOCATION}}:</span>
                     <span class="card-detail-value">
-                      {{getYardDescription(igDS.getInGateItem(row.storing_order_tank!.in_gate)?.yard_cv)}}
+                      {{getYardDescription(getLastLocation(row.storing_order_tank))}}
                     </span>
                   </div>
                 </div>
