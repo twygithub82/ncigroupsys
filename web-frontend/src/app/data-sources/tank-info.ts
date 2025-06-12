@@ -181,6 +181,12 @@ export const GET_TANK_INFO_FOR_OUT_GATE_SURVEY = gql`
   }
 `;
 
+export const UPDATE_TANK_INFO = gql`
+  mutation updateTankInfo($tankInfoRequest: TankInfoRequestInput!) {
+    updateTankInfo(tankInfoRequest: $tankInfoRequest)
+  }
+`;
+
 export class TankInfoDS extends BaseDataSource<TankInfoItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -256,6 +262,20 @@ export class TankInfoDS extends BaseDataSource<TankInfoItem> {
         catchError(() => of({ items: [], totalCount: 0 })),
         finalize(() => this.loadingSubject.next(false))
       );
+  }
+
+  updateTankInfo(tankInfoRequest: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_TANK_INFO,
+      variables: {
+        tankInfoRequest
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   getNextTestCv(last_test_cv?: string): string | undefined {

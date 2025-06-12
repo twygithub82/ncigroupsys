@@ -496,16 +496,11 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       this.searchForm!.get('eir_no')?.value ||
       this.searchForm!.get('eir_dt_start')?.value ||
       this.searchForm!.get('eir_dt_end')?.value ||
-      this.searchForm!.get('tare_weight')?.value ||
-      this.searchForm!.get('yard_cv')?.value) {
+      this.searchForm!.get('tare_weight')?.value) {
       // In Gate
       const igSearch: any = {};
       if (this.searchForm!.get('eir_no')?.value) {
         igSearch.eir_no = { contains: this.searchForm!.get('eir_no')?.value }
-      }
-
-      if (this.searchForm!.get('yard_cv')?.value) {
-        igSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value }
       }
 
       if (this.searchForm!.get('eir_dt_start')?.value || this.searchForm!.get('eir_dt_end')?.value) {
@@ -540,6 +535,12 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
         igSearch.in_gate_survey = igsSearch;
       }
       where.in_gate = { some: igSearch };
+    }
+
+    if (this.searchForm!.get('yard_cv')?.value) {
+      const tiSearch: any = {};
+      tiSearch.yard_cv = { contains: this.searchForm!.get('yard_cv')?.value }
+      where.tank_info = tiSearch;
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);

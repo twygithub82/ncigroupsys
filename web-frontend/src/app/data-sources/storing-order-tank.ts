@@ -601,6 +601,9 @@ const GET_STORING_ORDER_TANKS_BOOKING = gql`
             update_dt
           }
         }
+        tank_info {
+          yard_cv
+        }
       }
       pageInfo {
         endCursor
