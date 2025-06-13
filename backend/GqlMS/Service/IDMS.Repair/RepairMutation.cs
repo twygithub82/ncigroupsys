@@ -185,23 +185,29 @@ namespace IDMS.Repair.GqlTypes
 
                 updateRepair.update_by = user;
                 updateRepair.update_dt = currentDateTime;
-                updateRepair.sot_guid = repair.sot_guid;
-                updateRepair.aspnetusers_guid = repair.aspnetusers_guid;
+                updateRepair.total_cost = repair.total_cost;
+                updateRepair.total_labour_cost = repair.total_labour_cost;
+                updateRepair.total_material_cost = repair.total_material_cost;
                 updateRepair.labour_cost_discount = repair.labour_cost_discount;
                 updateRepair.material_cost_discount = repair.material_cost_discount;
-                updateRepair.total_cost = repair.total_cost;
-                updateRepair.labour_cost = repair.labour_cost;
-                updateRepair.estimate_no = repair.estimate_no;
-                updateRepair.remarks = repair.remarks;
-                updateRepair.total_hour = repair.total_hour;
                 updateRepair.job_no = repair.job_no;
                 updateRepair.owner_enable = repair.owner_enable;
 
-                //-----------------------------------------------
-                updateRepair.est_cost = repair.est_cost;
-                updateRepair.total_labour_cost = repair.total_labour_cost;
-                updateRepair.total_material_cost = repair.total_material_cost;
-
+                if (ObjectAction.OVERWRITE.EqualsIgnore(repair.action))
+                {
+                    updateRepair.bill_to_guid = repair.bill_to_guid;
+                    updateRepair.overwrite_remarks = repair.overwrite_remarks;
+                }
+                else
+                {
+                    updateRepair.sot_guid = repair.sot_guid;
+                    updateRepair.aspnetusers_guid = repair.aspnetusers_guid;
+                    updateRepair.est_cost = repair.est_cost;
+                    updateRepair.labour_cost = repair.labour_cost;
+                    updateRepair.total_hour = repair.total_hour;
+                    updateRepair.estimate_no = repair.estimate_no;
+                    updateRepair.remarks = repair.remarks;
+                }
 
                 if (repair.repair_part != null)
                 {
@@ -255,6 +261,15 @@ namespace IDMS.Repair.GqlTypes
                             //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rp_damage_repair);
                             continue;
+                        }
+
+                        if (ObjectAction.OVERWRITE.EqualsIgnore(part.action))
+                        {
+                            existingPart.approve_part = part.approve_part;
+                            existingPart.approve_qty = part.approve_qty;
+                            existingPart.approve_cost = part.approve_cost;
+                            existingPart.approve_hour = part.approve_hour;
+                            existingPart.owner = part.owner;
                         }
                     }
                 }
@@ -656,12 +671,20 @@ namespace IDMS.Repair.GqlTypes
                     context.Database.ExecuteSqlRaw(sql);
 
 
-                    var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
-                    foreach (var tt in timeTables)
+                    //var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
+                    //foreach (var tt in timeTables)
+                    //{
+                    //    tt.stop_time = null;
+                    //    tt.update_by = user;
+                    //    tt.update_dt = currentDateTime;
+                    //}
+                    var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid))
+                        .OrderByDescending(t => t.stop_time).FirstOrDefaultAsync();
+                    if (timeTables != null) 
                     {
-                        tt.stop_time = null;
-                        tt.update_by = user;
-                        tt.update_dt = currentDateTime;
+                        timeTables.stop_time = null;
+                        timeTables.update_by = user;
+                        timeTables.update_dt = currentDateTime;
                     }
                 }
 
@@ -779,14 +802,26 @@ namespace IDMS.Repair.GqlTypes
                     rollbackRepair.update_dt = currentDateTime;
                     rollbackRepair.status_cv = CurrentServiceStatus.APPROVED;
 
-                    var repairParts = rollbackRepair.repair_part;
-                    var jobGuidString = string.Join(",", repairParts.Select(j => j.job_order_guid).Distinct().ToList().Select(g => $"'{g}'"));
+                    //Parts handking
+                    var repairarts = rollbackRepair.repair_part;
+                    if (repairarts != null)
+                    {
+                        foreach (var part in repairarts)
+                        {
+                            //Job Order Handling, must perform before set part.job_order_guid to null
+                            if (part.job_order != null)
+                            {
+                                part.job_order.delete_dt = currentDateTime;
+                                part.job_order.update_dt = currentDateTime;
+                                part.job_order.update_by = user;
+                            }
 
-                    string sql = "";
-                    sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
-                            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-
-                    context.Database.ExecuteSqlRaw(sql);
+                            part.job_order_guid = null;
+                            context.Entry(part).Property(e => e.job_order_guid).IsModified = true;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
