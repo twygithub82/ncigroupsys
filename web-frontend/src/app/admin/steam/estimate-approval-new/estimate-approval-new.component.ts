@@ -1879,6 +1879,13 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     
   }
 
+//   onCostChange(row: any) {
+//   const val = parseFloat(row.approve_cost);
+//   if (!isNaN(val)) {
+//     if(this.IsApproved()) row.approve_cost = parseFloat(val.toFixed(2));
+//     else row.cost = parseFloat(val.toFixed(2));
+//   }
+// }
   // getTotalCostDisplay():string
   // {
   //   if(this.isSteamRepair)

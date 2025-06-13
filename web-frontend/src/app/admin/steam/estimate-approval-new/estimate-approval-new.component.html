@@ -423,15 +423,15 @@
                         <mat-form-field>
                           @if(IsApproved())
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost " 
                             (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                            (focus)="selectText($event)" type="number" min="0" step="0.01">
                           }
                           @else
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.cost"
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.cost" 
                             (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                            (focus)="selectText($event)" type="number" min="0" step="0.01">
                           }
                         </mat-form-field>
                       </tlx-form-field>

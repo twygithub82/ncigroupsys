@@ -364,7 +364,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      { alias: 'unitTypeCv', codeValType: 'RESIDUE_UNIT' },
+      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 

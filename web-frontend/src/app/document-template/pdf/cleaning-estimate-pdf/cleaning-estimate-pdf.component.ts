@@ -980,11 +980,18 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
       
           let startY = 0; // Start table 20mm below the customer name
           var item = this.cleaningItem;
-          await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
 
-          startY=54;
-          PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false,1);
+          await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin-5, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
+
+          startY=43;
+          PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false,1
+            ,'#000000',false);
           startY+=8;
+          // await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,item.customer_company);
+
+          // startY=54;
+          // PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false,1);
+          // startY+=8;
           var data: any[][] = [
             [
               { content: `${this.translatedLangText.TANK_NO}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
@@ -1176,12 +1183,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           //     { content: `${amtWords}`,  colSpan: 3,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
              
           //  ])
-           estData.push([
-             '',
-              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
-              { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top:1,right: rightPadding_cost } } },
-             
-           ])
+        
 
            if(sysCurrencyCode!=custCurrencyCode){
              var totalForeign=`${this.translatedLangText.TOTAL} (${custCurrencyCode}):`;
@@ -1193,6 +1195,15 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
               { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 1,right: rightPadding_cost } } },
              
            ])
+           }
+           else
+           {
+             estData.push([
+             '',
+              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
+              { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top:1,right: rightPadding_cost } } },
+             
+             ]);
            }
   
   //cellPadding: { top: 5 }

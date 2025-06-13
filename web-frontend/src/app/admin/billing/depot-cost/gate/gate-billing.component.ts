@@ -1322,6 +1322,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.calculateTotalCost();
   }
 
+
+
   isGateInInvoice(row: any):boolean{
 
     var bretval:boolean=false;
@@ -1370,5 +1372,14 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
         //   //   this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         // }
       });
+    }
+
+    GetTotalCostTypeLabel(){
+      var retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.GATE_IN})`;
+       if (this.processType === "GATE_OUT") {
+
+           retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.GATE_OUT})`;
+        }
+      return retval;
     }
 }
