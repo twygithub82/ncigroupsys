@@ -19,6 +19,8 @@ using IDMS.Models.Billing;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using IDMS.Models.Package;
 using Microsoft.Extensions.Primitives;
+using IDMS.Models.Tariff;
+using AutoMapper;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -570,8 +572,468 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
+        public async Task<int> UpdateTankSummaryDetails(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, TankSummaryRequest tankSummaryRequest)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (tankSummaryRequest.SOT != null && !string.IsNullOrEmpty(tankSummaryRequest?.SOT?.guid ?? ""))
+                {
+                    //SOT Handling
+                    var tank = new storing_order_tank() { guid = tankSummaryRequest?.SOT?.guid };
+                    context.storing_order_tank.Attach(tank);
+                    //if (!string.IsNullOrEmpty(sot.tank_no))
+                    //    tank.tank_no = sot.tank_no;
+                    if (!string.IsNullOrEmpty(tankSummaryRequest?.SOT?.owner_guid))
+                    {
+                        tank.owner_guid = tankSummaryRequest?.SOT?.owner_guid;
+                        tank.update_by = user;
+                        tank.update_dt = currentDateTime;
+                    }
+                }
+
+
+                //SO Handling
+                if (tankSummaryRequest.SO != null && !string.IsNullOrEmpty(tankSummaryRequest.SO.guid))
+                {
+                    var sOrder = new storing_order() { guid = tankSummaryRequest.SO.guid };
+                    context.storing_order.Attach(sOrder);
+                    if (!string.IsNullOrEmpty(tankSummaryRequest.SO.customer_company_guid))
+                    {
+                        sOrder.customer_company_guid = tankSummaryRequest.SO.customer_company_guid;
+                        sOrder.update_by = user;
+                        sOrder.update_dt = currentDateTime;
+                    }
+                }
+
+                //InGate Handling
+                if (tankSummaryRequest.Ingate != null && !string.IsNullOrEmpty(tankSummaryRequest.Ingate.guid ?? ""))
+                {
+                    var inGate = new in_gate() { guid = tankSummaryRequest.Ingate.guid };
+                    context.in_gate.Attach(inGate);
+                    if (!string.IsNullOrEmpty(tankSummaryRequest.Ingate.yard_cv ?? ""))
+                    {
+                        inGate.yard_cv = tankSummaryRequest.Ingate.yard_cv;
+                        inGate.update_by = user;
+                        inGate.update_dt = currentDateTime;
+                    }
+                }
+
+                //InGate Survey Handling
+                var igSurveyRequest = tankSummaryRequest.IngateSurvey ?? null;
+                if (igSurveyRequest != null && !string.IsNullOrEmpty(igSurveyRequest?.guid ?? ""))
+                {
+                    var igSurvey = new in_gate_survey() { guid = igSurveyRequest?.guid };
+                    context.in_gate_survey.Attach(igSurvey);
+                    if (!string.IsNullOrEmpty(igSurveyRequest?.last_test_cv ?? ""))
+                        igSurvey.last_test_cv = igSurveyRequest?.last_test_cv;
+                    if (!string.IsNullOrEmpty(igSurveyRequest?.next_test_cv ?? ""))
+                        igSurvey.next_test_cv = igSurveyRequest?.next_test_cv;
+                    if (igSurveyRequest?.test_dt != 0)
+                        igSurvey.test_dt = igSurveyRequest?.test_dt;
+                    if (!string.IsNullOrEmpty(igSurveyRequest?.test_class_cv ?? ""))
+                        igSurvey.test_class_cv = igSurveyRequest?.test_class_cv;
+
+                    igSurvey.update_by = user;
+                    igSurvey.update_dt = currentDateTime;
+                }
+
+
+                //Tank info Handling
+                var tankInfoRequest = tankSummaryRequest.TankInfo ?? null;
+                if (tankInfoRequest != null && !string.IsNullOrEmpty(tankInfoRequest?.guid ?? "") && !string.IsNullOrEmpty(tankInfoRequest?.tank_no ?? ""))
+                {
+                    var tankInfo = new tank_info() { guid = tankInfoRequest?.guid, tank_no = tankInfoRequest?.tank_no };
+                    context.tank_info.Attach(tankInfo);
+                    if (!string.IsNullOrEmpty(tankInfoRequest?.owner_guid ?? ""))
+                        tankInfo.owner_guid = tankInfoRequest?.owner_guid;
+                    if (!string.IsNullOrEmpty(tankInfoRequest?.last_test_cv ?? ""))
+                        tankInfo.last_test_cv = tankInfoRequest?.last_test_cv;
+                    if (!string.IsNullOrEmpty(tankInfoRequest?.next_test_cv ?? ""))
+                        tankInfo.next_test_cv = tankInfoRequest?.next_test_cv;
+                    if (igSurveyRequest?.test_dt != 0)
+                        tankInfo.test_dt = tankInfoRequest?.test_dt;
+                    if (!string.IsNullOrEmpty(tankInfoRequest?.test_class_cv ?? ""))
+                        tankInfo.test_class_cv = tankInfoRequest?.test_class_cv;
+                    if (!string.IsNullOrEmpty(tankInfoRequest?.yard_cv ?? ""))
+                        tankInfo.yard_cv = tankInfoRequest?.yard_cv;
+
+                    tankInfo.update_by = user;
+                    tankInfo.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateTankDetails(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, TankDetailRequest tankDetailRequest)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (tankDetailRequest != null)
+                {
+                    //SOT Handling
+                    if (!string.IsNullOrEmpty(tankDetailRequest?.SOT?.guid ?? ""))
+                    {
+                        if (string.IsNullOrEmpty(tankDetailRequest?.SOT?.unit_type_guid ?? ""))
+                            throw new GraphQLException(new Error($"unit_type_guid cannot be null or empty", "ERROR"));
+
+                        var tank = new storing_order_tank() { guid = tankDetailRequest?.SOT?.guid };
+                        context.storing_order_tank.Attach(tank);
+                        var unit_type_guid = tankDetailRequest?.SOT?.unit_type_guid;
+                        tank.unit_type_guid = unit_type_guid;
+                        tank.update_by = user;
+                        tank.update_dt = currentDateTime;
+
+                        //affect steaming, unit_type changes                        
+                        var isFlatRate = await context.Set<tank>().Where(t => t.guid == unit_type_guid).Select(t => t.flat_rate).FirstOrDefaultAsync();
+                        if (isFlatRate == null)
+                            throw new GraphQLException(new Error($"The expected FlatRate cannot be found", "ERROR"));
+
+                        foreach (var item in tankDetailRequest?.Steaming ?? Enumerable.Empty<Steaming>())
+                        {
+                            var updateSteaming = new steaming() { guid = item.guid };
+                            context.steaming.Attach(updateSteaming);
+                            updateSteaming.flat_rate = isFlatRate;
+                            updateSteaming.update_by = user;
+                            updateSteaming.update_dt = currentDateTime;
+
+                            if (isFlatRate ?? false)
+                            {
+                                updateSteaming.est_cost = item?.cost ?? 0.0;
+                                updateSteaming.rate = item?.cost ?? 0.0;
+                                updateSteaming.total_hour = 1.0;
+                                updateSteaming.est_hour = 1.0;
+                            }
+                            else
+                            {
+                                updateSteaming.est_cost = item?.labour ?? 0.0;
+                                updateSteaming.rate = item?.labour ?? 0.0;
+                                updateSteaming.est_hour = 1.0;
+                                updateSteaming.total_hour = 0.0;
+                                //if hourly_rate --> total_hour updated after completed
+                            }
+                        }
+                    }
+
+                    //InGate Survey Handling
+                    var igSurveyRequest = tankDetailRequest?.IngateSurvey ?? null;
+                    if (igSurveyRequest != null && !string.IsNullOrEmpty(igSurveyRequest?.guid ?? ""))
+                    {
+                        var igSurvey = new in_gate_survey() { guid = igSurveyRequest?.guid };
+                        context.in_gate_survey.Attach(igSurvey);
+                        if (igSurveyRequest?.tare_weight != null && igSurveyRequest?.tare_weight > 0)
+                            igSurvey.tare_weight = igSurveyRequest?.tare_weight;
+                        if (igSurveyRequest?.capacity != null && igSurveyRequest?.capacity > 0)
+                            igSurvey.capacity = igSurveyRequest?.capacity;
+                        if (igSurveyRequest?.dom_dt != 0)
+                            igSurvey.dom_dt = igSurveyRequest?.dom_dt;
+                        if (!string.IsNullOrEmpty(igSurveyRequest?.cladding_cv ?? ""))
+                            igSurvey.cladding_cv = igSurveyRequest?.cladding_cv;
+                        if (!string.IsNullOrEmpty(igSurveyRequest?.btm_dis_comp_cv ?? ""))
+                            igSurvey.btm_dis_comp_cv = igSurveyRequest?.btm_dis_comp_cv;
+                        if (!string.IsNullOrEmpty(igSurveyRequest?.manufacturer_cv ?? ""))
+                            igSurvey.manufacturer_cv = igSurveyRequest?.manufacturer_cv;
+                        if (!string.IsNullOrEmpty(igSurveyRequest?.max_weight_cv ?? ""))
+                            igSurvey.max_weight_cv = igSurveyRequest?.max_weight_cv;
+                        if (!string.IsNullOrEmpty(igSurveyRequest?.walkway_cv ?? ""))
+                            igSurvey.walkway_cv = igSurveyRequest?.walkway_cv;
+
+
+                        if (!string.IsNullOrEmpty(igSurveyRequest?.tank_comp_guid ?? ""))
+                        {
+                            //Update the tank_comp_guid
+                            igSurvey.tank_comp_guid = igSurveyRequest?.tank_comp_guid;
+
+                            if (string.IsNullOrEmpty(tankDetailRequest?.SO?.customer_company_guid ?? ""))
+                                throw new GraphQLException(new Error($"SO.customer_company_guid cannot be null or empty", "ERROR"));
+
+                            if (string.IsNullOrEmpty(tankDetailRequest?.Cleaning?.guid ?? ""))
+                                throw new GraphQLException(new Error($"CleaningGuid cannot be null or empty", "ERROR"));
+
+                            //affect cleaning, buffer changes
+                            var customerGuid = tankDetailRequest?.SO?.customer_company_guid;
+                            var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == igSurveyRequest.tank_comp_guid)
+                                       .Select(b => b.cost).FirstOrDefaultAsync();
+
+                            if (bufferPrice == null)
+                                throw new GraphQLException(new Error($"Buffer cost not found", "ERROR"));
+
+                            var cleaning = new cleaning() { guid = tankDetailRequest?.Cleaning?.guid };
+                            context.cleaning.Attach(cleaning);
+                            cleaning.buffer_cost = bufferPrice;
+                            cleaning.update_by = user;
+                            cleaning.update_dt = currentDateTime;
+                        }
+
+                        igSurvey.update_by = user;
+                        igSurvey.update_dt = currentDateTime;
+
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateGateDetails(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, GateDetailRequest gateDetailRequest)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (gateDetailRequest.InGateDetail != null)
+                {
+                    //SOT Handling
+                    if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.SOT?.guid ?? ""))
+                    {
+                        if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.SOT?.job_no))
+                        {
+                            var tank = new storing_order_tank() { guid = gateDetailRequest.InGateDetail?.SOT?.guid };
+                            context.storing_order_tank.Attach(tank);
+                            tank.job_no = gateDetailRequest.InGateDetail?.SOT?.job_no;
+                            tank.update_by = user;
+                            tank.update_dt = currentDateTime;
+                        }
+                    }
+
+                    //SO Handling
+                    if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.OrderInfo?.guid ?? ""))
+                    {
+                        if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.OrderInfo?.haulier))
+                        {
+                            var so = new storing_order() { guid = gateDetailRequest.InGateDetail?.OrderInfo?.guid };
+                            context.storing_order.Attach(so);
+                            so.haulier = gateDetailRequest.InGateDetail?.OrderInfo?.haulier;
+                            so.update_by = user;
+                            so.update_dt = currentDateTime;
+                        }
+                    }
+
+                    //Gate Handling
+                    if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.GateInfo?.guid ?? ""))
+                    {
+                        var ingate = new in_gate() { guid = gateDetailRequest.InGateDetail?.GateInfo?.guid };
+                        context.in_gate.Attach(ingate);
+                        if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.GateInfo?.vehicle_no))
+                            ingate.vehicle_no = gateDetailRequest.InGateDetail?.GateInfo?.vehicle_no;
+                        if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.GateInfo?.driver_name))
+                            ingate.driver_name = gateDetailRequest.InGateDetail?.GateInfo?.driver_name;
+                        if (!string.IsNullOrEmpty(gateDetailRequest.InGateDetail?.GateInfo?.remarks))
+                            ingate.remarks = gateDetailRequest.InGateDetail?.GateInfo?.remarks;
+                        ingate.update_by = user;
+                        ingate.update_dt = currentDateTime;
+                    }
+                }
+
+                if (gateDetailRequest.OutGateDetail != null)
+                {
+                    //SOT Handling
+                    if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.SOT?.guid ?? ""))
+                    {
+                        if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.SOT?.release_job_no))
+                        {
+                            var tank = new storing_order_tank() { guid = gateDetailRequest.OutGateDetail?.SOT?.guid };
+                            context.storing_order_tank.Attach(tank);
+                            tank.release_job_no = gateDetailRequest.OutGateDetail?.SOT?.release_job_no;
+                            tank.update_by = user;
+                            tank.update_dt = currentDateTime;
+                        }
+                    }
+
+                    //SO Handling
+                    if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.OrderInfo?.guid ?? ""))
+                    {
+                        if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.OrderInfo?.haulier))
+                        {
+                            var ro = new release_order() { guid = gateDetailRequest.OutGateDetail?.OrderInfo?.guid };
+                            context.release_order.Attach(ro);
+                            ro.haulier = gateDetailRequest.OutGateDetail?.OrderInfo?.haulier;
+                            ro.update_by = user;
+                            ro.update_dt = currentDateTime;
+                        }
+                    }
+
+                    //Gate Handling
+                    if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.GateInfo?.guid ?? ""))
+                    {
+                        var outgate = new out_gate() { guid = gateDetailRequest.OutGateDetail?.GateInfo?.guid };
+                        context.out_gate.Attach(outgate);
+                        if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.GateInfo?.vehicle_no))
+                            outgate.vehicle_no = gateDetailRequest.OutGateDetail?.GateInfo?.vehicle_no;
+                        if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.GateInfo?.driver_name))
+                            outgate.driver_name = gateDetailRequest.OutGateDetail?.GateInfo?.driver_name;
+                        if (!string.IsNullOrEmpty(gateDetailRequest.OutGateDetail?.GateInfo?.remarks))
+                            outgate.remarks = gateDetailRequest.OutGateDetail?.GateInfo?.remarks;
+                        outgate.update_by = user;
+                        outgate.update_dt = currentDateTime;
+                    }
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateTankInfo(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+            [Service] IHttpContextAccessor httpContextAccessor, [Service]IMapper mapper, TankInfoRequest tankInfoRequest)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (tankInfoRequest != null && TankInfoAction.REOWNERSHIP.EqualsIgnore(tankInfoRequest?.action))
+                {
+                    //SOT Handling
+                    if (!string.IsNullOrEmpty(tankInfoRequest?.SOT?.guid ?? ""))
+                    {
+                        if (string.IsNullOrEmpty(tankInfoRequest?.SOT?.owner_guid ?? ""))
+                            throw new GraphQLException(new Error($"owner_guid cannot be null or empty", "ERROR"));
+
+                        var tank = new storing_order_tank() { guid = tankInfoRequest?.SOT?.guid };
+                        context.storing_order_tank.Attach(tank);
+                        tank.owner_guid = tankInfoRequest?.SOT?.owner_guid;
+                        tank.update_by = user;
+                        tank.update_dt = currentDateTime;
+
+
+                        var tankInfoObject = tankInfoRequest?.TankInfo;
+                        if (string.IsNullOrEmpty(tankInfoObject?.guid ?? "") || string.IsNullOrEmpty(tankInfoObject?.tank_no ?? ""))
+                            throw new GraphQLException(new Error($"tank_info guid/tank_no cannot be null or empty", "ERROR"));
+
+                        var tank_info = await context.tank_info.Where(t => t.guid == tankInfoObject.guid && t.tank_no == tankInfoObject.tank_no
+                                                                && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+
+                        if (tank_info != null)
+                        {
+                            tank_info.previous_owner_guid = tank_info.owner_guid;
+                            tank_info.owner_guid = tankInfoRequest?.SOT?.owner_guid;
+                            tank_info.update_by = user;
+                            tank_info.update_dt = currentDateTime;
+                        }
+                        else
+                            throw new GraphQLException(new Error($"tank info not found", "NOT FOUND"));
+                    }
+                }
+
+                if (tankInfoRequest != null && TankInfoAction.RENUMBER.EqualsIgnore(tankInfoRequest?.action))
+                {
+                    if (string.IsNullOrEmpty(tankInfoRequest?.SOT?.tank_no ?? ""))
+                        throw new GraphQLException(new Error($"tank_no cannot be null or empty", "ERROR"));
+
+                    var tank = new storing_order_tank() { guid = tankInfoRequest?.SOT?.guid };
+                    context.storing_order_tank.Attach(tank);
+                    tank.tank_no = tankInfoRequest?.SOT?.tank_no;
+                    tank.update_by = user;
+                    tank.update_dt = currentDateTime;
+
+
+                    var tankInfoObject = tankInfoRequest?.TankInfo;
+                    if (string.IsNullOrEmpty(tankInfoObject?.guid ?? "") || string.IsNullOrEmpty(tankInfoObject?.tank_no ?? ""))
+                        throw new GraphQLException(new Error($"tank_info guid/tank_no cannot be null or empty", "ERROR"));
+
+                    var oldTankInfo = await context.tank_info.Where(t => t.guid == tankInfoObject.guid && t.tank_no == tankInfoObject.tank_no
+                                                            && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
+
+                    if (oldTankInfo != null)
+                    {
+                        tank_info duplicateTankInfo = new tank_info();
+                        mapper.Map(oldTankInfo, duplicateTankInfo);
+
+                        duplicateTankInfo.guid = Util.GenerateGUID();
+                        duplicateTankInfo.previous_tank_no = oldTankInfo.tank_no;
+                        duplicateTankInfo.tank_no = tankInfoRequest?.SOT?.tank_no;
+                        duplicateTankInfo.update_by = user;
+                        duplicateTankInfo.update_dt = currentDateTime;
+                        await context.tank_info.AddAsync(duplicateTankInfo);
+
+                        oldTankInfo.update_by = user;
+                        oldTankInfo.update_dt = currentDateTime;
+                        oldTankInfo.delete_dt = currentDateTime;
+                    }
+                    else
+                        throw new GraphQLException(new Error($"tank info not found", "NOT FOUND"));
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
 
         #region Private Local Functions
+        //private async Task<SteamingPackageResult> SteamingCostHandling(ApplicationInventoryDBContext context, TankDetailRequest tankDetailRequest)
+        //{
+        //    //Added for later use
+        //    var unit_type_guid = tankDetailRequest?.unit_type_guid;
+        //    var isFlatRate = await context.Set<tank>().Where(t => t.guid == unit_type_guid).Select(t => t.flat_rate).FirstOrDefaultAsync();
+        //    var repTemp = tankDetailRequest?.required_temp;
+        //    var last_cargo_guid = tankDetailRequest?.last_cargo_guid;
+        //    var customerGuid = tankDetailRequest?.so_customer_company_guid;
+
+        //    bool isExclusive = false;
+        //    //First check whether have exclusive package cost
+        //    var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
+        //                .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
+        //                .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp && joined.t.tariff_cleaning_guid == last_cargo_guid)
+        //                .Select(joined => new SteamingPackageResult
+        //                {
+        //                    cost = joined.p.cost,  // Selecting cost
+        //                    labour = joined.p.labour, // Selecting labour
+        //                    steaming_guid = joined.p.steaming_exclusive_guid
+        //                })
+        //                .FirstOrDefaultAsync();
+        //    //If no exclusive found
+        //    if (result == null || string.IsNullOrEmpty(result.steaming_guid))
+        //    {
+        //        //we check the general package cost
+        //        result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
+        //                    .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
+        //                    .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+        //                    .Select(joined => new SteamingPackageResult
+        //                    {
+        //                        cost = joined.p.cost,  // Selecting cost
+        //                        labour = joined.p.labour, // Selecting labour
+        //                        steaming_guid = joined.p.tariff_steaming_guid
+        //                    })
+        //                    .FirstOrDefaultAsync();
+        //    }
+        //    else //the customer have exclusive package cost
+        //        isExclusive = true;
+
+        //    if (result == null || string.IsNullOrEmpty(result.steaming_guid))
+        //        throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
+
+        //    return result;
+        //}
 
         private async Task<int> RemoveCleaning(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
@@ -644,7 +1106,7 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         sot.purpose_cleaning = false;
                         sot.cleaning_remarks = tank.cleaning_remarks;
-                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
+                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck(context, sot);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
                         currentTankStatus = sot.tank_status_cv;
@@ -673,6 +1135,84 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
+
+        //private async Task<int> RemoveSteaming(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
+        //{
+        //    try
+        //    {
+        //        string currentTankStatus = tank.tank_status_cv;
+        //        if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
+        //        {
+        //            var steams = await context.steaming.Where(s => s.sot_guid == tank.guid && (s.delete_dt == null || s.delete_dt == 0)).ToListAsync();
+        //            foreach (var steam in steams)
+        //            {
+        //                steam.update_by = user;
+        //                steam.update_dt = currentDateTime;
+        //                steam.na_dt = currentDateTime;
+        //                steam.status_cv = CurrentServiceStatus.NO_ACTION;
+
+        //                var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == steam.guid)).ToListAsync();
+        //                foreach (var item in jobOrders)
+        //                {
+        //                    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
+        //                    {
+        //                        item.status_cv = CurrentServiceStatus.CANCELED;
+        //                        item.update_by = user;
+        //                        item.update_dt = currentDateTime;
+        //                    }
+        //                }
+
+        //                if (await StatusChangeConditionCheck(jobOrders))
+        //                {
+        //                    steam.status_cv = CurrentServiceStatus.COMPLETED;
+        //                    steam.complete_dt = currentDateTime;
+        //                }
+        //                else
+        //                    steam.status_cv = CurrentServiceStatus.NO_ACTION;
+        //            }
+
+        //            //Save the changes before do tank movement check
+        //            await context.SaveChangesAsync();
+
+        //            var sot = await context.storing_order_tank.FindAsync(tank.guid);
+        //            if (sot != null)
+        //            {
+        //                sot.purpose_steam = false;
+        //                sot.steaming_remarks = tank.steaming_remarks;
+        //                sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
+        //                sot.required_temp = null;
+        //                sot.update_by = user;
+        //                sot.update_dt = currentDateTime;
+        //                currentTankStatus = sot.tank_status_cv;
+        //            }
+        //            else
+        //                throw new GraphQLException(new Error("Tank not found.", "ERROR"));
+
+        //            //var res = await context.SaveChangesAsync();
+        //            //var curTankStatus = await GqlUtils.TankMovementConditionCheck(context, config, user, currentDateTime, tank.guid, PurposeType.STEAM, tank.steaming_remarks);
+        //            //return res;
+        //        }
+        //        else
+        //        {
+        //            var sot = new storing_order_tank() { guid = tank.guid };
+        //            context.Attach(sot);
+        //            sot.update_by = user;
+        //            sot.update_dt = currentDateTime;
+        //            sot.steaming_remarks = tank.steaming_remarks;
+        //            sot.required_temp = null;
+        //            sot.purpose_steam = false;
+        //        }
+
+        //        var res = await context.SaveChangesAsync();
+        //        await GqlUtils.NotificationHandling(config, PurposeType.STEAM, tank.guid, currentTankStatus);
+        //        return res;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
+
         private async Task<int> RemoveSteaming(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
             try
@@ -686,6 +1226,7 @@ namespace IDMS.Inventory.GqlTypes
                         steam.update_by = user;
                         steam.update_dt = currentDateTime;
                         steam.na_dt = currentDateTime;
+                        steam.delete_dt = currentDateTime;
                         steam.status_cv = CurrentServiceStatus.NO_ACTION;
 
                         var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == steam.guid)).ToListAsync();
@@ -696,16 +1237,9 @@ namespace IDMS.Inventory.GqlTypes
                                 item.status_cv = CurrentServiceStatus.CANCELED;
                                 item.update_by = user;
                                 item.update_dt = currentDateTime;
+                                item.delete_dt = currentDateTime;
                             }
                         }
-
-                        if (await StatusChangeConditionCheck(jobOrders))
-                        {
-                            steam.status_cv = CurrentServiceStatus.COMPLETED;
-                            steam.complete_dt = currentDateTime;
-                        }
-                        else
-                            steam.status_cv = CurrentServiceStatus.NO_ACTION;
                     }
 
                     //Save the changes before do tank movement check
@@ -716,7 +1250,7 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         sot.purpose_steam = false;
                         sot.steaming_remarks = tank.steaming_remarks;
-                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
+                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck(context, sot);
                         sot.required_temp = null;
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
@@ -724,10 +1258,6 @@ namespace IDMS.Inventory.GqlTypes
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
-
-                    //var res = await context.SaveChangesAsync();
-                    //var curTankStatus = await GqlUtils.TankMovementConditionCheck(context, config, user, currentDateTime, tank.guid, PurposeType.STEAM, tank.steaming_remarks);
-                    //return res;
                 }
                 else
                 {
@@ -749,6 +1279,7 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
+
         private async Task<int> RemoveRepair(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
             try
@@ -799,7 +1330,7 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         sot.purpose_repair_cv = null;
                         sot.repair_remarks = tank.repair_remarks;
-                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot, pendingJob);
+                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck(context, sot, pendingJob);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
                         currentTankStatus = sot.tank_status_cv;
@@ -839,7 +1370,7 @@ namespace IDMS.Inventory.GqlTypes
                     {
                         sot.storage_remarks = tank.storage_remarks;
                         sot.purpose_storage = false;
-                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
+                        sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck(context, sot);
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
                         currentTankStatus = sot.tank_status_cv;
