@@ -66,7 +66,7 @@ namespace IDMS.User.Authentication.API.Controllers
         }
 
         [HttpPost("GetUserClaims")]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<IActionResult> GetUserClaims([FromBody] UserClaimModel userClaimModel)
         {
             try
