@@ -146,7 +146,7 @@ namespace IDMS.Service.GqlTypes
         /// Update Job Order status to completed, update complete_dt
         /// </summary>
         public async Task<int> CompleteJobOrder(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<UpdateJobOrderRequest> jobOrderRequest)
+            [Service] IConfiguration config, List<UpdateJobOrderRequest> jobOrderRequest, steaming? steaming = null)
         {
             try
             {
@@ -175,8 +175,18 @@ namespace IDMS.Service.GqlTypes
                     jobNotification.job_status = JobStatus.COMPLETED;
                     notificationList.Add(jobNotification);
                 }
-                var res = await context.SaveChangesAsync();
 
+                //handling steaming process for total hour
+                if (steaming != null && ! string.IsNullOrEmpty(steaming.guid)) 
+                {
+                    var steam = new steaming() {guid = steaming.guid};
+                    context.Attach(steam);
+                    steam.total_hour = steaming.total_hour;
+                    steam.update_by = user;
+                    steam.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
                 //TODO
                 foreach (var item in notificationList)
                 {

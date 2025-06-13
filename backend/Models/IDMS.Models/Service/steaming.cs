@@ -42,6 +42,12 @@ namespace IDMS.Models.Service
         public double? total_material_cost { get; set; }
         public double? total_labour_cost { get; set; }
 
+        //Added for later use
+        public double? est_hour { get; set; }
+        public double? total_hour { get; set; }
+        public bool? flat_rate { get; set; }
+        public double? rate { get; set; }
+
         [NotMapped]
         public string action { get; set; }
 
