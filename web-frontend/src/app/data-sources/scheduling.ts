@@ -200,6 +200,17 @@ export const GET_SCHEDULING_FOR_RO = gql`
             tariff_cleaning {
               cargo
             }
+            tank_info {
+              last_eir_no
+              yard_cv
+            }
+            transfer(where: { delete_dt: { eq: null } }) {
+              location_from_cv
+              location_to_cv
+              transfer_out_dt
+              transfer_in_dt
+              create_dt
+            }
           }
         }
       }

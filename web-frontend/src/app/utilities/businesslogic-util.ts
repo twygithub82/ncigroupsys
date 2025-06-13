@@ -73,6 +73,30 @@ export class BusinessLogicUtil {
         return guid ? `COMMON-FORM.SAVE` : 'COMMON-FORM.UPDATE';
     }
 
+    static getLastLocation(sot: any, ig: any, tank_info: any, transfer?: any[]) {
+        if (sot.tank_status_cv === 'RELEASED') {
+            if (transfer?.length) {
+                return this.getLatestTransfer(transfer);
+            } else {
+                return ig?.yard_cv;
+            }
+        } else {
+            return tank_info?.yard_cv;
+        }
+    }
+
+    static getLatestTransfer(transfers: any[]) {
+        return transfers
+            .filter(t => t.transfer_in_dt != null) // exclude null/undefined
+            .slice()
+            .sort((a, b) => {
+                if (a.transfer_in_dt !== b.transfer_in_dt) {
+                    return b.transfer_in_dt - a.transfer_in_dt;
+                }
+                return (b.create_dt ?? 0) - (a.create_dt ?? 0);
+            })[0];
+    }
+
     static displayApproveQty(rep: RepairPartItem) {
         return (rep.approve_part ?? !this.is4X(rep.rp_damage_repair)) ? (rep.approve_qty !== null && rep.approve_qty !== undefined ? rep.approve_qty : rep.quantity) : 0;
     }

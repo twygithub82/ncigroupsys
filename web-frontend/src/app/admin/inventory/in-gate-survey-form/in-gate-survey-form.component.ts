@@ -1437,6 +1437,10 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return compartmentTypeFormChecks;
   }
 
+  canChangeTankNo() {
+    return !this.in_gate?.in_gate_survey?.guid;
+  }
+
   onSubmitCheck(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
@@ -1589,6 +1593,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   onChangeTankNo(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
+    if (!this.canChangeTankNo()) return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

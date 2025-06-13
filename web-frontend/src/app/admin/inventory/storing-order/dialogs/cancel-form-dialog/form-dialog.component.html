@@ -7,14 +7,14 @@
       <div formArrayName="storingOrder">
         @for (so of storingOrderArray().controls; track so; let index = $index) {
         <div [formGroupName]="index" [ngClass]="{'p-0 m-b-10': true, 'bg-light-grey': false}" matRipple>
-          <span class="font-bold text-decoration-underline text-normal">{{so.get('so_no')?.value}}</span>
+          <span class="tank-title font-bold text-decoration-underline text-normal">{{so.get('so_no')?.value}}</span>
           <div>
             <!-- @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
             @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
             <span>{{sot.get('tank_no')?.value}}</span>
             }
             } -->
-            <p class="text-normal">
+            <p class="text-normal tank-no-value">
               {{displayTargetedSot(getStoringOrderTanksArray(so))}}
             </p>
             <!-- <div class="row mt-3">

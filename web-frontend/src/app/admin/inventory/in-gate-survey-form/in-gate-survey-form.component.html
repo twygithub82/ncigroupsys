@@ -44,9 +44,12 @@
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex align-items-center">
                       <div class="d-flex align-items-center">
-                        <span class="value-display-info me-2">{{in_gate?.tank?.tank_no}}</span>
+                        <span [ngClass]="{'value-display-info me-2': true, 'cursor-pointer text-decoration-underline': canChangeTankNo()}"
+                          (click)="onChangeTankNo($event)">{{in_gate?.tank?.tank_no}}</span>
+                        <!-- @if (canChangeTankNo()) {
                         <mat-icon color="primary" class="cursor-pointer"
                           (click)="onChangeTankNo($event)">mode_edit</mat-icon>
+                        } -->
                       </div>
                     </div>
                   </div>

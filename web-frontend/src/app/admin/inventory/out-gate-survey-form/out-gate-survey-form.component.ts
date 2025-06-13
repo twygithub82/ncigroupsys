@@ -57,6 +57,8 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -232,13 +234,15 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     ARE_YOU_SURE_TO_SUBMIT: 'COMMON-FORM.ARE-YOU-SURE-TO-SUBMIT',
     YES: 'COMMON-FORM.YES',
     LITERS: 'COMMON-FORM.LITERS',
-    KG: 'COMMON-FORM.KG'
+    KG: 'COMMON-FORM.KG',
+    ARE_YOU_SURE_TO_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-PUBLISH',
   }
   private destroy$ = new Subject<void>();
 
   out_gate_guid: string | null | undefined;
   ro_sot_guid: string | null | undefined;
   out_gate: OutGateItem | null | undefined;
+  in_gate_survey: InGateSurveyItem | null | undefined;
   tank_info: TankInfoItem | null | undefined;
 
   surveyForm?: UntypedFormGroup;
@@ -250,6 +254,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   pbDS: PackageBufferDS;
   ogDS: OutGateDS;
   ogsDS: OutGateSurveyDS;
+  igDS: InGateDS;
   tiDS: TankInfoDS;
 
   customerCodeControl = new UntypedFormControl();
@@ -352,6 +357,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     this.pbDS = new PackageBufferDS(this.apollo);
     this.ogDS = new OutGateDS(this.apollo);
     this.ogsDS = new OutGateSurveyDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
     this.tiDS = new TankInfoDS(this.apollo);
 
     const breakpointObserver = inject(BreakpointObserver);
@@ -741,27 +747,52 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       this.subs.sink = this.ogDS.getOutGateByID(this.out_gate_guid, this.ro_sot_guid!).subscribe(data => {
         if (data?.length > 0) {
           this.out_gate = data[0];
+          this.tank_info = this.out_gate?.tank?.tank_info;
           console.log('out_gate:', this.out_gate);
-          this.tiDS.getTankInfoForOutGateSurvey(this.out_gate?.tank?.tank_no!).subscribe(data => {
-            if (data?.length > 0) {
-              this.tank_info = data[0];
-              this.populateOutGateForm(this.out_gate!, this.tank_info);
-              if (this.out_gate!.out_gate_survey?.guid) {
-                this.fileManagerService.getFileUrlByGroupGuid([this.out_gate!.out_gate_survey?.guid]).subscribe({
-                  next: (response) => {
-                    console.log('Files retrieved successfully:', response);
-                    this.populateImages(response)
-                  },
-                  error: (error) => {
-                    console.error('Error retrieving files:', error);
-                  },
-                  complete: () => {
-                    console.log('File retrieval process completed.');
-                  }
-                });
+          if (!this.out_gate?.out_gate_survey?.guid) {
+            this.sotDS.getStoringOrderTankByIDForOutGateSurvey(this.out_gate?.tank?.guid!).subscribe(data => {
+              if (data?.length > 0) {
+                this.in_gate_survey = this.igDS.getInGateItem(data?.[0]?.in_gate)?.in_gate_survey;
+                this.populateOutGateForm(this.out_gate!, this.tank_info!);
               }
-            }
-          });
+            });
+          } else {
+            this.populateOutGateForm(this.out_gate!, this.tank_info!);
+          }
+          if (this.out_gate!.out_gate_survey?.guid) {
+            this.fileManagerService.getFileUrlByGroupGuid([this.out_gate!.out_gate_survey?.guid]).subscribe({
+              next: (response) => {
+                console.log('Files retrieved successfully:', response);
+                this.populateImages(response)
+              },
+              error: (error) => {
+                console.error('Error retrieving files:', error);
+              },
+              complete: () => {
+                console.log('File retrieval process completed.');
+              }
+            });
+          }
+          // this.tiDS.getTankInfoForOutGateSurvey(this.out_gate?.tank?.tank_no!).subscribe(data => {
+          //   if (data?.length > 0) {
+          //     this.tank_info = data[0];
+          //     this.populateOutGateForm(this.out_gate!, this.tank_info);
+          //     if (this.out_gate!.out_gate_survey?.guid) {
+          //       this.fileManagerService.getFileUrlByGroupGuid([this.out_gate!.out_gate_survey?.guid]).subscribe({
+          //         next: (response) => {
+          //           console.log('Files retrieved successfully:', response);
+          //           this.populateImages(response)
+          //         },
+          //         error: (error) => {
+          //           console.error('Error retrieving files:', error);
+          //         },
+          //         complete: () => {
+          //           console.log('File retrieval process completed.');
+          //         }
+          //       });
+          //     }
+          //   }
+          // });
 
           this.getCustomerBufferPackage(this.out_gate.tank?.storing_order?.customer_company?.guid);
         }
@@ -1186,57 +1217,57 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       },
       compartment_type: {
         bottomFormGroup: {
-          btm_dis_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.btm_dis_comp_cv),
-          btm_dis_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.btm_dis_valve_cv),
-          btm_dis_valve_oth: og.out_gate_survey?.btm_dis_valve_oth,
-          btm_dis_valve_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.btm_dis_valve_spec_cv),
-          btm_dis_valve_spec_oth: og.out_gate_survey?.btm_dis_valve_spec_oth,
-          foot_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.foot_valve_cv),
-          foot_valve_oth: og.out_gate_survey?.foot_valve_oth,
-          btm_valve_brand_cv: og.out_gate_survey?.btm_valve_brand_cv,
+          btm_dis_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.btm_dis_comp_cv || this.in_gate_survey?.btm_dis_comp_cv),
+          btm_dis_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.btm_dis_valve_cv || this.in_gate_survey?.btm_dis_valve_cv),
+          btm_dis_valve_oth: og.out_gate_survey?.btm_dis_valve_oth || this.in_gate_survey?.btm_dis_valve_oth,
+          btm_dis_valve_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.btm_dis_valve_spec_cv || this.in_gate_survey?.btm_dis_valve_spec_cv),
+          btm_dis_valve_spec_oth: og.out_gate_survey?.btm_dis_valve_spec_oth || this.in_gate_survey?.btm_dis_valve_spec_oth,
+          foot_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.foot_valve_cv || this.in_gate_survey?.foot_valve_cv),
+          foot_valve_oth: og.out_gate_survey?.foot_valve_oth || this.in_gate_survey?.foot_valve_oth,
+          btm_valve_brand_cv: og.out_gate_survey?.btm_valve_brand_cv || this.in_gate_survey?.btm_valve_brand_cv,
           thermometer: og.out_gate_survey?.thermometer,
           thermometer_cv: this.patchStringToArrayValue(og.out_gate_survey?.thermometer_cv),
-          ladder: og.out_gate_survey?.ladder,
-          data_csc_transportplate: og.out_gate_survey?.data_csc_transportplate
+          ladder: og.out_gate_survey?.ladder || this.in_gate_survey?.ladder,
+          data_csc_transportplate: og.out_gate_survey?.data_csc_transportplate || this.in_gate_survey?.data_csc_transportplate
         },
         topFormGroup: {
-          top_dis_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.top_dis_comp_cv),
-          top_dis_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.top_dis_valve_cv),
-          top_dis_valve_oth: og.out_gate_survey?.top_dis_valve_oth,
-          top_dis_valve_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.top_dis_valve_spec_cv),
-          top_dis_valve_spec_oth: og.out_gate_survey?.top_dis_valve_spec_oth,
-          top_valve_brand_cv: og.out_gate_survey?.top_valve_brand_cv,
-          airline_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.airline_valve_cv),
-          airline_valve_oth: og.out_gate_survey?.airline_valve_oth,
-          airline_valve_pcs: og.out_gate_survey?.airline_valve_pcs,
-          airline_valve_dim: og.out_gate_survey?.airline_valve_dim,
-          airline_valve_conn_cv: this.patchStringToArrayValue(og.out_gate_survey?.airline_valve_conn_cv),
-          airline_valve_conn_oth: og.out_gate_survey?.airline_valve_conn_oth,
-          airline_valve_conn_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.airline_valve_conn_spec_cv),
-          airline_valve_conn_spec_oth: og.out_gate_survey?.airline_valve_conn_spec_oth,
+          top_dis_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.top_dis_comp_cv || this.in_gate_survey?.top_dis_comp_cv),
+          top_dis_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.top_dis_valve_cv || this.in_gate_survey?.top_dis_valve_cv),
+          top_dis_valve_oth: og.out_gate_survey?.top_dis_valve_oth || this.in_gate_survey?.top_dis_valve_oth,
+          top_dis_valve_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.top_dis_valve_spec_cv || this.in_gate_survey?.top_dis_valve_spec_cv),
+          top_dis_valve_spec_oth: og.out_gate_survey?.top_dis_valve_spec_oth || this.in_gate_survey?.top_dis_valve_spec_oth,
+          top_valve_brand_cv: og.out_gate_survey?.top_valve_brand_cv || this.in_gate_survey?.top_valve_brand_cv,
+          airline_valve_cv: this.patchStringToArrayValue(og.out_gate_survey?.airline_valve_cv || this.in_gate_survey?.airline_valve_cv),
+          airline_valve_oth: og.out_gate_survey?.airline_valve_oth || this.in_gate_survey?.airline_valve_oth,
+          airline_valve_pcs: og.out_gate_survey?.airline_valve_pcs || this.in_gate_survey?.airline_valve_pcs,
+          airline_valve_dim: og.out_gate_survey?.airline_valve_dim || this.in_gate_survey?.airline_valve_dim,
+          airline_valve_conn_cv: this.patchStringToArrayValue(og.out_gate_survey?.airline_valve_conn_cv || this.in_gate_survey?.airline_valve_conn_cv),
+          airline_valve_conn_oth: og.out_gate_survey?.airline_valve_conn_oth || this.in_gate_survey?.airline_valve_conn_oth,
+          airline_valve_conn_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.airline_valve_conn_spec_cv || this.in_gate_survey?.airline_valve_conn_spec_cv),
+          airline_valve_conn_spec_oth: og.out_gate_survey?.airline_valve_conn_spec_oth || this.in_gate_survey?.airline_valve_conn_spec_oth,
         },
         manlidFormGroup: {
-          manlid_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_comp_cv),
-          manlid_cover_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_cover_cv),
-          manlid_cover_oth: og.out_gate_survey?.manlid_cover_oth,
-          manlid_cover_pcs: og.out_gate_survey?.manlid_cover_pcs,
-          manlid_cover_pts: og.out_gate_survey?.manlid_cover_pts,
-          manlid_seal_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_seal_cv),
-          pv_type_cv: this.patchStringToArrayValue(og.out_gate_survey?.pv_type_cv),
-          pv_type_pcs: og.out_gate_survey?.pv_type_pcs,
-          pv_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.pv_spec_cv),
-          pv_spec_pcs: og.out_gate_survey?.pv_spec_pcs,
-          safety_handrail: og.out_gate_survey?.safety_handrail,
-          buffer_plate: og.out_gate_survey?.buffer_plate,
+          manlid_comp_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_comp_cv || this.in_gate_survey?.airline_valve_conn_spec_oth),
+          manlid_cover_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_cover_cv || this.in_gate_survey?.manlid_cover_cv),
+          manlid_cover_oth: og.out_gate_survey?.manlid_cover_oth || this.in_gate_survey?.manlid_cover_oth,
+          manlid_cover_pcs: og.out_gate_survey?.manlid_cover_pcs || this.in_gate_survey?.manlid_cover_pcs,
+          manlid_cover_pts: og.out_gate_survey?.manlid_cover_pts || this.in_gate_survey?.manlid_cover_pts,
+          manlid_seal_cv: this.patchStringToArrayValue(og.out_gate_survey?.manlid_seal_cv || this.in_gate_survey?.manlid_seal_cv),
+          pv_type_cv: this.patchStringToArrayValue(og.out_gate_survey?.pv_type_cv || this.in_gate_survey?.pv_type_cv),
+          pv_type_pcs: og.out_gate_survey?.pv_type_pcs || this.in_gate_survey?.pv_type_pcs,
+          pv_spec_cv: this.patchStringToArrayValue(og.out_gate_survey?.pv_spec_cv || this.in_gate_survey?.pv_spec_cv),
+          pv_spec_pcs: og.out_gate_survey?.pv_spec_pcs || this.in_gate_survey?.pv_spec_pcs,
+          safety_handrail: og.out_gate_survey?.safety_handrail || this.in_gate_survey?.safety_handrail,
+          buffer_plate: og.out_gate_survey?.buffer_plate || this.in_gate_survey?.buffer_plate,
           residue: og.out_gate_survey?.residue,
-          dipstick: og.out_gate_survey?.dipstick,
+          dipstick: og.out_gate_survey?.dipstick || this.in_gate_survey?.dipstick,
         }
       },
     });
     this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(og.out_gate_survey?.left_coord || '[]'));
     this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(og.out_gate_survey?.rear_coord || '[]'));
     this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(og.out_gate_survey?.right_coord || '[]'));
-    this.populateTopSideCells(JSON.parse(og.out_gate_survey?.top_coord || '{}'));
+    this.populateTopSideCells(JSON.parse(og.out_gate_survey?.top_coord || this.in_gate_survey?.top_coord || '{}'), !!this.in_gate_survey?.top_coord);
     this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(og.out_gate_survey?.front_coord || '[]'));
     this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(og.out_gate_survey?.bottom_coord || '[]'));
     this.detectChanges();
@@ -1282,13 +1313,13 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     return toUpdateCells;
   }
 
-  populateTopSideCells(topCoord: any) {
+  populateTopSideCells(topCoord: any, onlyWalkway: boolean) {
     const dmg = topCoord.dmg
     const walkwayTop = topCoord.walkwayTop
     const walkwayMiddle = topCoord.walkwayMiddle
     const walkwayBottom = topCoord.walkwayBottom
 
-    this.highlightedCellsTop = this.populateHighlightedCells(this.highlightedCellsTop, dmg);
+    this.highlightedCellsTop = this.populateHighlightedCells(this.highlightedCellsTop, !onlyWalkway ? dmg : []);
 
     this.highlightedCellsWalkwayTop = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayTop, walkwayTop);
     this.highlightedCellsWalkwayMiddle = this.populateHighlightedCellsWithoutReset(this.highlightedCellsWalkwayMiddle, walkwayMiddle);

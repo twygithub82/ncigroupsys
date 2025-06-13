@@ -1314,8 +1314,9 @@
     "IN-GATE-SURVEY-PENDING":"In Gate Survey: Pending",
     "CLEANING-PENDING":"Cleaning: Pending",
     "STEAMING-QUOTATION":"STEAMING QUOTATION",
-    "RESIDUE-QUOTATION": "RESIDU DISPOSAL QUOTATION",
-    "RENUMBER": "Renumber"
+    "RESIDUE-QUOTATION": "RESIDUE DISPOSAL QUOTATION",
+    "RENUMBER": "Renumber",
+    "REOWNERSHIP": "Reownership"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

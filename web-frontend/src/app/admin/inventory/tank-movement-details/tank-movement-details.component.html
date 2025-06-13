@@ -46,7 +46,7 @@
                     @if(allowPerformAction()) {
                     <div class="relative-menu">
                       @if (!(cvDS.loading$ | async) && (canOverwriteLastCargo() || canOverwriteCleanStatus() ||
-                      canOverwriteTankSummaryDetails())) {
+                      canOverwriteTankSummaryDetails() || canRenumberTank() || canReownership())) {
                       <button mat-mini-fab color="primary" [matMenuTriggerFor]="menu"
                         [disabled]="(pdDS.actionLoading$ | async)" class="me-2">
                         <mat-icon>edit</mat-icon>
@@ -55,6 +55,10 @@
                         @if (canRenumberTank()) {
                         <button mat-menu-item
                           (click)="renumberTankDialog($event)">{{translatedLangText.RENUMBER}}</button>
+                        }
+                        @if (canReownership()) {
+                        <button mat-menu-item
+                          (click)="reownerTankDialog($event)">{{translatedLangText.REOWNERSHIP}}</button>
                         }
                         @if (canOverwriteTankSummaryDetails()) {
                         <button mat-menu-item
@@ -1735,13 +1739,7 @@
                                   <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                     <span class="mobile-tab-label">{{translatedLangText.INVOICE}}:</span>
                                     <span>
-                                      @if (row.billing_guid) {
-                                      <!-- <mat-icon class="material-icons-two-tone col-green m-l-0">checked</mat-icon> -->
-                                      {{row.invoice_no}}
-                                      }
-                                      @else {
-                                      {{"-"}}
-                                      }
+                                      {{row.invoice_no || "-"}}
                                     </span>
                                   </mat-cell>
                                 </ng-container>
@@ -1756,7 +1754,7 @@
                                 </ng-container>
                                 <mat-header-row *matHeaderRowDef="displayedColumnsDepotCostDetails"></mat-header-row>
                                 <mat-row *matRowDef="let row; columns: displayedColumnsDepotCostDetails;"
-                                  (click)="repairDialog($event, row)" [style.cursor]="'pointer'" matRipple>
+                                  [style.cursor]="'pointer'" matRipple>
                                 </mat-row>
                               </table>
                             </div>

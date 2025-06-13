@@ -26,11 +26,9 @@ import { TankInfoItem } from 'app/data-sources/tank-info';
 import { TransferItem } from 'app/data-sources/transfer';
 import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
+import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
-import { combineLatest, debounceTime, startWith, tap } from 'rxjs';
 
 
 export interface DialogData {

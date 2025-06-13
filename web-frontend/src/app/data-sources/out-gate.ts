@@ -298,6 +298,7 @@ export const GET_OUT_GATE_BY_ID = gql`
             dom_dt
             guid
             height_cv
+            last_eir_no
             last_notify_dt
             last_release_dt
             last_test_cv
@@ -305,6 +306,8 @@ export const GET_OUT_GATE_BY_ID = gql`
             max_weight_cv
             next_test_cv
             owner_guid
+            previous_owner_guid
+            previous_tank_no
             tank_comp_guid
             tank_no
             tare_weight

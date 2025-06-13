@@ -1,0 +1,39 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix ps-1 ms-0">
+        <h4>{{dialogTitle}}</h4>
+      </div>
+    </div>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form" [formGroup]="tankForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.TANK_NO}}</mat-label>
+            <input matInput formControlName="tank_no" placeholder="EX: ABCD 123456-7" mask="AAAA 000000-0"
+              [showMaskTyped]="true" required />
+            @if (tankForm.get('tank_no')?.hasError('invalidCheckDigit')) {
+            <mat-error>
+              {{data.translatedLangText.TANK_NO}}: {{data.translatedLangText.INVALID}}
+            </mat-error>
+            }
+            @if (tankForm.get('tank_no')?.hasError('existed')) {
+            <mat-error>
+              {{data.translatedLangText.TANK_NO}}: {{data.translatedLangText.EXISTED}}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+      <div mat-dialog-actions [ngClass]="{'pt-2 d-flex justify-content-end': true}">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" class="me-2"
+          (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
+        }
+        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

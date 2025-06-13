@@ -92,6 +92,8 @@ import { EditSotSummaryFormDialogComponent } from './edit-sot-summary-form-dialo
 import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
 import { EditSotDetailsFormDialogComponent } from './edit-sot-details-form-dialog/edit-sot-details-form-dialog.component';
 import { OverwriteStorageFormDialogComponent } from './overwrite-storage-purpose-form-dialog/overwrite-storage-purpose-form-dialog.component';
+import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/renumber-tank-form-dialog.component';
+import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -496,6 +498,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     RENUMBER: 'COMMON-FORM.RENUMBER',
     DAMAGE: 'COMMON-FORM.DAMAGE',
     SUBGROUP: 'COMMON-FORM.SUBGROUP',
+    INVALID: 'COMMON-FORM.INVALID',
+    EXISTED: 'COMMON-FORM.EXISTED',
+    REOWNERSHIP: 'COMMON-FORM.REOWNERSHIP'
   }
 
   sot_guid: string | null | undefined;
@@ -934,20 +939,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     if (this.sot_guid) {
       // EDIT
-      this.loadDataHandling_sot(this.sot_guid);
-      this.loadDataHandling_igs(this.sot_guid);
-      this.loadDataHandling_ig(this.sot_guid);
-      this.loadDataHandling_ogs(this.sot_guid);
-      this.loadDataHandling_og(this.sot_guid);
-      this.loadDataHandling_steam(this.sot_guid);
-      this.loadDataHandling_residue(this.sot_guid);
-      this.loadDataHandling_cleaning(this.sot_guid);
-      this.loadDataHandling_repair(this.sot_guid);
-      this.loadDataHandling_booking(this.sot_guid);
-      this.loadDataHandling_scheduling(this.sot_guid);
-      this.loadDataHandling_surveyDetail(this.sot_guid);
-      this.loadDataHandling_transfer(this.sot_guid);
-      this.loadDataHandling_tariffDepot();
+      this.loadFullPage();
     }
   }
 
@@ -1501,22 +1493,25 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         newSot.free_storage = result.free_storage;
         newSot.depot_cost_remarks = result.depot_cost_remarks;
 
-        // Update current sot for display purpose
-        this.sot.billing_sot.tariff_depot_guid = result.tariff_depot_guid;
-        this.sot.billing_sot.preinspection = result.preinspection;
-        this.sot.billing_sot.preinspection_cost = result.preinspection_cost;
-        this.sot.billing_sot.lift_on = result.lift_on;
-        this.sot.billing_sot.lift_on_cost = result.lift_on_cost;
-        this.sot.billing_sot.lift_off = result.lift_off;
-        this.sot.billing_sot.lift_off_cost = result.lift_off_cost;
-        this.sot.billing_sot.gate_in = result.gate_in;
-        this.sot.billing_sot.gate_in_cost = result.gate_in_cost;
-        this.sot.billing_sot.gate_out = result.gate_out;
-        this.sot.billing_sot.gate_out_cost = result.gate_out_cost;
-        this.sot.billing_sot.storage_cal_cv = result.storage_cal_cv;
-        this.sot.billing_sot.storage_cost = result.storage_cost;
-        this.sot.billing_sot.free_storage = result.free_storage;
-        this.sot.billing_sot.depot_cost_remarks = result.depot_cost_remarks;
+        if (this.sot && this.sot.billing_sot) {
+          // Update current sot for display purpose
+          this.sot.billing_sot.tariff_depot_guid = result.tariff_depot_guid;
+          this.sot.billing_sot.preinspection = result.preinspection;
+          this.sot.billing_sot.preinspection_cost = result.preinspection_cost;
+          this.sot.billing_sot.lift_on = result.lift_on;
+          this.sot.billing_sot.lift_on_cost = result.lift_on_cost;
+          this.sot.billing_sot.lift_off = result.lift_off;
+          this.sot.billing_sot.lift_off_cost = result.lift_off_cost;
+          this.sot.billing_sot.gate_in = result.gate_in;
+          this.sot.billing_sot.gate_in_cost = result.gate_in_cost;
+          this.sot.billing_sot.gate_out = result.gate_out;
+          this.sot.billing_sot.gate_out_cost = result.gate_out_cost;
+          this.sot.billing_sot.storage_cal_cv = result.storage_cal_cv;
+          this.sot.billing_sot.storage_cost = result.storage_cost;
+          this.sot.billing_sot.free_storage = result.free_storage;
+          this.sot.billing_sot.depot_cost_remarks = result.depot_cost_remarks;
+          this.loadSotDepotCost();
+        }
 
         console.log(newSot)
         this.billDS.updateBillingSot(newSot).subscribe(result => {
@@ -1529,83 +1524,97 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   renumberTankDialog(event: Event) {
     this.preventDefault(event);
-
+    const action = 'renumber';
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(EditSotSummaryFormDialogComponent, {
+    const dialogRef = this.dialog.open(RenumberTankFormDialogComponent, {
       disableClose: true,
-      width: '50vw',
+      width: '500px',
       data: {
+        action: action,
         sot: this.sot,
-        ig: this.ig,
-        igs: this.igs,
-        ti: this.tiItem,
-        latestSurveyDetailItem: this.latestSurveyDetailItem,
         translatedLangText: this.translatedLangText,
         transferList: this.transferList,
-        ccDS: this.ccDS,
-        populateData: {
-          yardCvList: this.yardCvList,
-          testTypeCvList: this.testTypeCvList,
-          testClassCvList: this.testClassCvList,
-        }
+        sotDS: this.sotDS
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result && this.sot) {
+      if (result && this.sot && this.tiItem) {
         console.log(result)
-        let newIg: any = undefined;
-        let newIgs: any = undefined;
-        let newTi: any = undefined;
-
-        if (result.yard_cv) {
-          newIg = {
-            guid: this.ig?.guid,
-            yard_cv: result.yard_cv,
-          };
-        }
-
-        if (result.last_test_cv || result.next_test_cv || result.test_class_cv || result.test_dt) {
-          newIgs = {
-            guid: this.igs?.guid,
-            last_test_cv: result.last_test_cv,
-            next_test_cv: result.next_test_cv,
-            test_class_cv: result.test_class_cv,
-            test_dt: result.test_dt
-          };
-        }
-
-        if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
-          newTi = {
-            guid: this.tiItem?.guid,
-            tank_no: result?.tank_no,
-            yard_cv: result.ti_yard_cv,
-            last_test_cv: result.ti_last_test_cv,
-            test_dt: result.ti_test_dt,
-            next_test_cv: result.ti_next_test_cv,
-            test_class_cv: result.ti_test_class_cv,
-          };
-        }
-
-        const tankSummaryRequest = {
-          ...(newIg && { ingate: newIg }),
-          ...(newIgs && { ingateSurvey: newIgs }),
-          so: undefined,
-          sot: undefined,
-          ...(newTi && { tankInfo: newTi })
+        const newSot = {
+          guid: this.sot?.guid,
+          tank_no: result.tank_no,
         };
-        this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
+
+        const newTi = {
+          guid: this.tiItem?.guid,
+          tank_no: this.sot.tank_no,
+        }
+
+        const updateTankInfo = {
+          action: action,
+          sot: newSot,
+          tankInfo: newTi
+        };
+        this.tiDS.updateTankInfo(updateTankInfo).subscribe(result => {
           console.log(result)
-          this.handleSaveSuccess(result?.data?.updateTankSummaryDetails);
-          this.loadDataHandling_sot(this.sot_guid!);
-          this.loadDataHandling_igs(this.sot_guid!);
-          this.loadDataHandling_ig(this.sot_guid!);
+          this.handleSaveSuccess(result?.data?.updateTankInfo);
+          this.loadFullPage();
         });
+      }
+    });
+  }
+
+  reownerTankDialog(event: Event) {
+    this.preventDefault(event);
+    const action = 'reowner';
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ReownerTankFormDialogComponent, {
+      disableClose: true,
+      width: '500px',
+      data: {
+        action: action,
+        sot: this.sot,
+        translatedLangText: this.translatedLangText,
+        transferList: this.transferList,
+        sotDS: this.sotDS,
+        ccDS: this.ccDS
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot && this.tiItem) {
+        const newSot = {
+          guid: this.sot?.guid,
+          owner_guid: result.owner_guid,
+        };
+
+        const newTi = {
+          guid: this.tiItem?.guid,
+          owner_guid: result.owner_guid,
+        }
+
+        const updateTankInfo = {
+          action: action,
+          sot: newSot,
+          tankInfo: newTi
+        };
+        console.log(updateTankInfo)
+        // this.tiDS.updateTankInfo(updateTankInfo).subscribe(result => {
+        //   console.log(result)
+        //   this.handleSaveSuccess(result?.data?.updateTankInfo);
+        //   this.loadFullPage();
+        // });
       }
     });
   }
@@ -2697,12 +2706,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canRenumberTank() {
     // check is the eir_no same as the tank_info.last_eir_no. only when its same can do renumber
-    return true;
+    return false;
   }
 
   canReownership() {
     // check is the eir_no same as the tank_info.last_eir_no. only when its same can do reownership
-    return true;
+    return false;
   }
 
   canOverwriteTankSummaryDetails() {
@@ -3369,6 +3378,26 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       }
     } else {
       return false;
+    }
+  }
+
+  loadFullPage() {
+    if (this.sot_guid) {
+      // EDIT
+      this.loadDataHandling_sot(this.sot_guid);
+      this.loadDataHandling_igs(this.sot_guid);
+      this.loadDataHandling_ig(this.sot_guid);
+      this.loadDataHandling_ogs(this.sot_guid);
+      this.loadDataHandling_og(this.sot_guid);
+      this.loadDataHandling_steam(this.sot_guid);
+      this.loadDataHandling_residue(this.sot_guid);
+      this.loadDataHandling_cleaning(this.sot_guid);
+      this.loadDataHandling_repair(this.sot_guid);
+      this.loadDataHandling_booking(this.sot_guid);
+      this.loadDataHandling_scheduling(this.sot_guid);
+      this.loadDataHandling_surveyDetail(this.sot_guid);
+      this.loadDataHandling_transfer(this.sot_guid);
+      this.loadDataHandling_tariffDepot();
     }
   }
 }

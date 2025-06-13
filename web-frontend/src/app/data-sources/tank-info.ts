@@ -14,11 +14,14 @@ export class TankInfoGO {
   public cladding_cv?: string;
   public dom_dt?: number;
   public height_cv?: string;
+  public last_eir_no?: string;
   public last_test_cv?: string;
   public manufacturer_cv?: string;
   public max_weight_cv?: string;
   public next_test_cv?: string;
   public owner_guid?: string;
+  public previous_owner_guid?: string;
+  public previous_tank_no?: string;
   public tank_comp_guid?: string;
   public tank_no?: string;
   public tare_weight?: number;
@@ -41,11 +44,14 @@ export class TankInfoGO {
     this.cladding_cv = item.cladding_cv;
     this.dom_dt = item.dom_dt;
     this.height_cv = item.height_cv;
+    this.last_eir_no = item.last_eir_no;
     this.last_test_cv = item.last_test_cv;
     this.manufacturer_cv = item.manufacturer_cv;
     this.max_weight_cv = item.max_weight_cv;
     this.next_test_cv = item.next_test_cv;
     this.owner_guid = item.owner_guid;
+    this.previous_owner_guid = item.previous_owner_guid;
+    this.previous_tank_no = item.previous_tank_no;
     this.tank_comp_guid = item.tank_comp_guid;
     this.tank_no = item.tank_no;
     this.tare_weight = item.tare_weight;
@@ -93,12 +99,16 @@ export const GET_TANK_INFO_FOR_MOVEMENT = gql`
         dom_dt
         guid
         height_cv
+        last_eir_no
         last_notify_dt
+        last_release_dt
         last_test_cv
         manufacturer_cv
         max_weight_cv
         next_test_cv
         owner_guid
+        previous_owner_guid
+        previous_tank_no
         tank_comp_guid
         tank_no
         tare_weight
@@ -126,12 +136,16 @@ export const GET_TANK_INFO_FOR_LAST_TEST = gql`
         dom_dt
         guid
         height_cv
+        last_eir_no
         last_notify_dt
+        last_release_dt
         last_test_cv
         manufacturer_cv
         max_weight_cv
         next_test_cv
         owner_guid
+        previous_owner_guid
+        previous_tank_no
         tank_comp_guid
         tank_no
         tare_weight
@@ -142,7 +156,6 @@ export const GET_TANK_INFO_FOR_LAST_TEST = gql`
         update_dt
         walkway_cv
         yard_cv
-        last_release_dt
       }
     }
   }
@@ -160,12 +173,16 @@ export const GET_TANK_INFO_FOR_OUT_GATE_SURVEY = gql`
         dom_dt
         guid
         height_cv
+        last_eir_no
         last_notify_dt
+        last_release_dt
         last_test_cv
         manufacturer_cv
         max_weight_cv
         next_test_cv
         owner_guid
+        previous_owner_guid
+        previous_tank_no
         tank_comp_guid
         tank_no
         tare_weight
@@ -178,6 +195,12 @@ export const GET_TANK_INFO_FOR_OUT_GATE_SURVEY = gql`
         yard_cv
       }
     }
+  }
+`;
+
+export const UPDATE_TANK_INFO = gql`
+  mutation updateTankInfo($tankInfoRequest: TankInfoRequestInput!) {
+    updateTankInfo(tankInfoRequest: $tankInfoRequest)
   }
 `;
 
@@ -256,6 +279,20 @@ export class TankInfoDS extends BaseDataSource<TankInfoItem> {
         catchError(() => of({ items: [], totalCount: 0 })),
         finalize(() => this.loadingSubject.next(false))
       );
+  }
+
+  updateTankInfo(tankInfoRequest: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_TANK_INFO,
+      variables: {
+        tankInfoRequest
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   getNextTestCv(last_test_cv?: string): string | undefined {
