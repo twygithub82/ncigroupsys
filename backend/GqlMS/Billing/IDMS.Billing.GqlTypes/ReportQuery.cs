@@ -503,6 +503,9 @@ namespace IDMS.Billing.GqlTypes
         {
             try
             {
+
+                List<OpeningBalance> resultList = new List<OpeningBalance>();
+
                 List<OpeningBalance> inList = new List<OpeningBalance>();
                 List<OpeningBalance> outList = new List<OpeningBalance>();
 
@@ -551,16 +554,68 @@ namespace IDMS.Billing.GqlTypes
                     outList = result;
                 }
 
-                foreach (var item in openingBalances)
-                {
-                    if (inList.Count() != 0)
-                        item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
 
-                    if (outList.Count != 0)
-                        item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
+                //if (openingBalances.Any())
+                //    resultList = openingBalances;
+                if (inList.Any())
+                    resultList = inList;
+                else if (outList.Any())
+                    resultList = outList;
+
+                if (resultList.Any())
+                {
+                    foreach (var item in resultList)
+                    {
+                        item.in_count = inList.FirstOrDefault(i => i.yard == item.yard)?.in_count ?? 0;
+                        item.out_count = outList.FirstOrDefault(i => i.yard == item.yard)?.out_count ?? 0;
+                        item.open_balance = openingBalances.FirstOrDefault(i => i.yard == item.yard)?.open_balance ?? 0;
+                    }
+
+                    return resultList.OrderBy(i => i.yard).ToList();
                 }
 
-                return openingBalances.OrderBy(i => i.yard).ToList();
+                return resultList;
+
+                //if (openingBalances.Count > 0)
+                //{
+                //    foreach (var item in openingBalances)
+                //    {
+                //        if (inList.Count() != 0)
+                //            item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
+
+                //        if (outList.Count != 0)
+                //            item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
+                //    }
+
+                //    return openingBalances.OrderBy(i => i.yard).ToList();
+                //}
+                //else if (inList.Count > 0)
+                //{
+                //    foreach (var item in inList)
+                //    {
+                //        if (inList.Count() != 0)
+                //            item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
+
+                //        if (outList.Count != 0)
+                //            item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
+                //    }
+
+                //    return inList.OrderBy(i => i.yard).ToList();
+                //}
+                //else if (outList.Count > 0)
+                //{
+                //    foreach (var item in outList)
+                //    {
+                //        if (inList.Count() != 0)
+                //            item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
+
+                //        if (outList.Count != 0)
+                //            item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
+                //    }
+
+                //    return outList.OrderBy(i => i.yard).ToList();
+
+                //}
 
             }
             catch (Exception ex)
