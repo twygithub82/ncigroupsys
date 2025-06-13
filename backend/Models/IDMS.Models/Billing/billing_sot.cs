@@ -45,8 +45,12 @@ namespace IDMS.Models.Billing
         public string? remarks { get; set; }
         public string? depot_cost_remarks { get; set; }
 
+        [NotMapped]
+        public string? action {  get; set; }    
+
         [UseFiltering]
         public storing_order_tank? storing_order_tank { get; set; }
+
         [UseFiltering]
         public tariff_depot? tariff_depot { get; set; }
 
