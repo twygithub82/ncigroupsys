@@ -70,6 +70,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 //TODO
                 string evtId = EventId.NEW_SOT;
                 string evtName = EventName.NEW_SOT;
+
                 GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
