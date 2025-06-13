@@ -43,6 +43,9 @@ namespace IDMS.Models.Service
         public long? allocate_dt { get; set; }
         public string? overwrite_remarks { get; set; }
 
+        [NotMapped]
+        public string? action { get; set; }
+
         [ForeignKey("customer_company")]
         public string? bill_to_guid { get; set; }
 
