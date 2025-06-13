@@ -1280,4 +1280,13 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     return bRetval;
   }
+
+    GetTotalCostTypeLabel(){
+      var retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.LIFT_ON})`;
+       if (this.processType === "LIFT_OFF") {
+
+           retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.LIFT_OFF})`;
+        }
+      return retval;
+    }
 }

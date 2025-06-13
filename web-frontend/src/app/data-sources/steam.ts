@@ -802,6 +802,9 @@ export const GET_STEAM_BY_ID_FOR_STEAM_HEATING_LOG = gql`
           tank_no
           etr_dt
           required_temp
+          tariff_cleaning {
+            flash_point
+          }
           storing_order {
             customer_company_guid
             customer_company {

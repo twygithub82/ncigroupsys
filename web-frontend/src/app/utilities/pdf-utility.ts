@@ -42,19 +42,24 @@ export class PDFUtility {
   }
 
   static addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, 
-    topPosition: number, fontSize: number=14,underline: boolean = true,additionalBufferX: number = 0,textColor:string='#000000') {
+    topPosition: number, fontSize: number=14,underline: boolean = true,additionalBufferX: number = 0,
+    textColor:string='#000000',restrictPos:boolean=true) {
     pdf.setFontSize(fontSize); // Title font size 
     pdf.setTextColor(textColor);
     const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
     let titleX = (pageWidth - titleWidth) / 2; // Centering the title
 
-    if (topPosition <= 10) {
-      topPosition = 11; // sequence page report title
-    }
-    else if(topPosition>=40 &&topPosition<=50)
+    if(restrictPos)
     {
-      topPosition=40;
-    }
+        if (topPosition <= 10) {
+          topPosition = 11; // sequence page report title
+        }
+        else if(topPosition>=40 &&topPosition<=50)
+        {
+          topPosition=40;
+        }
+     }
+  
     titleX+=additionalBufferX;
     pdf.text(title, titleX, topPosition); // Position it at the top
 
@@ -751,8 +756,9 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
-    const posX1_img = leftMargin ;
-    const posY1_img = topMargin + 5;
+    const bufferX =110;
+    const posX1_img = leftMargin +bufferX ;
+    const posY1_img = topMargin ;
     const aspectRatio = height/width ;
     const w=80;
     const h=aspectRatio*w;
@@ -764,7 +770,7 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     // Set dashed line pattern
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-    var yPos=topMargin+30;
+    var yPos=topMargin+27;
     // Draw top line
    pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
 
@@ -785,7 +791,7 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
   var buffer =40
   var textColor='#666666';
   var IssDate = `${translatedLangText.ISSUE_DATE}: ${Utility.convertDateToStr(new Date())}`;
-  this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10,textColor);
+ // this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10,textColor);
  // var validDate=new Date();
   //validDate = this.addMonths(validDate, 2);
   //buffer+=5;

@@ -1305,7 +1305,7 @@
     "CATEGORY-NAME-SELECTED": "Category Name Selected",
     "FORMULA-DESCRIPTION-SELECTED": "Formula Description Selected",
     "ASSIGN-DATE": "Assign Date",
-    "HOUR-RATE": "Hour Rate $",
+    "HOUR-RATE": "Hourly Rate $",
     "FLAT": "Flat",
     "HOURLY": "Hourly",
     "APPROVED": "Approved",
@@ -1314,7 +1314,7 @@
     "IN-GATE-SURVEY-PENDING":"In Gate Survey: Pending",
     "CLEANING-PENDING":"Cleaning: Pending",
     "STEAMING-QUOTATION":"STEAMING QUOTATION",
-    "RESIDUE-QUOTATION": "RESIDUE QUOTATION",
+    "RESIDUE-QUOTATION": "RESIDUE DISPOSAL QUOTATION",
     "RENUMBER": "Renumber",
     "REOWNERSHIP": "Reownership"
   },
