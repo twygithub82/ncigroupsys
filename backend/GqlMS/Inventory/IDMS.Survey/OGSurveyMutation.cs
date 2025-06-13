@@ -352,7 +352,7 @@ namespace IDMS.Survey.GqlTypes
                 //last_notify_dt = null,
             };
 
-            await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);
+            await GqlUtils.TankInfoHandling(mapper, context, user, currentDateTime, tankInfo);
         }
     }
 }
