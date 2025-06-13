@@ -101,6 +101,7 @@ export const GET_TANK_INFO_FOR_MOVEMENT = gql`
         height_cv
         last_eir_no
         last_notify_dt
+        last_release_dt
         last_test_cv
         manufacturer_cv
         max_weight_cv
@@ -135,12 +136,16 @@ export const GET_TANK_INFO_FOR_LAST_TEST = gql`
         dom_dt
         guid
         height_cv
+        last_eir_no
         last_notify_dt
+        last_release_dt
         last_test_cv
         manufacturer_cv
         max_weight_cv
         next_test_cv
         owner_guid
+        previous_owner_guid
+        previous_tank_no
         tank_comp_guid
         tank_no
         tare_weight
@@ -151,7 +156,6 @@ export const GET_TANK_INFO_FOR_LAST_TEST = gql`
         update_dt
         walkway_cv
         yard_cv
-        last_release_dt
       }
     }
   }
@@ -169,12 +173,16 @@ export const GET_TANK_INFO_FOR_OUT_GATE_SURVEY = gql`
         dom_dt
         guid
         height_cv
+        last_eir_no
         last_notify_dt
+        last_release_dt
         last_test_cv
         manufacturer_cv
         max_weight_cv
         next_test_cv
         owner_guid
+        previous_owner_guid
+        previous_tank_no
         tank_comp_guid
         tank_no
         tare_weight

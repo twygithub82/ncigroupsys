@@ -1207,6 +1207,112 @@ const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE = gql`
   }
 `;
 
+const GET_STORING_ORDER_TANK_BY_ID_OUT_GATE_SURVEY = gql`
+  query getStoringOrderTanks($where: storing_order_tankFilterInput) {
+    sotList: queryStoringOrderTank(where: $where) {
+      nodes {
+        in_gate(where: { delete_dt: { eq: null } }) {
+          create_by
+          create_dt
+          delete_dt
+          driver_name
+          eir_dt
+          eir_no
+          eir_status_cv
+          guid
+          haulier
+          lolo_cv
+          preinspection_cv
+          remarks
+          so_tank_guid
+          update_by
+          update_dt
+          vehicle_no
+          yard_cv
+          in_gate_survey {
+            airline_valve_conn_cv
+            airline_valve_conn_spec_cv
+            airline_valve_cv
+            airline_valve_dim
+            airline_valve_pcs
+            btm_dis_comp_cv
+            btm_dis_valve_cv
+            btm_dis_valve_spec_cv
+            btm_valve_brand_cv
+            buffer_plate
+            capacity
+            cladding_cv
+            comments
+            create_by
+            create_dt
+            data_csc_transportplate
+            delete_dt
+            dipstick
+            dom_dt
+            foot_valve_cv
+            guid
+            height_cv
+            in_gate_guid
+            inspection_dt
+            ladder
+            last_test_cv
+            manlid_comp_cv
+            manlid_cover_cv
+            manlid_cover_pcs
+            manlid_cover_pts
+            manlid_seal_cv
+            manufacturer_cv
+            max_weight_cv
+            next_test_cv
+            pv_spec_cv
+            pv_spec_pcs
+            pv_type_cv
+            pv_type_pcs
+            residue
+            safety_handrail
+            take_in_reference
+            tank_comp_guid
+            tare_weight
+            test_class_cv
+            test_dt
+            thermometer
+            thermometer_cv
+            top_dis_comp_cv
+            top_dis_valve_cv
+            top_dis_valve_spec_cv
+            top_valve_brand_cv
+            update_by
+            update_dt
+            walkway_cv
+            top_coord
+            bottom_coord
+            front_coord
+            rear_coord
+            left_coord
+            right_coord
+            top_remarks
+            bottom_remarks
+            front_remarks
+            rear_remarks
+            left_remarks
+            right_remarks
+            airline_valve_conn_oth
+            airline_valve_conn_spec_oth
+            airline_valve_oth
+            btm_dis_valve_oth
+            btm_dis_valve_spec_oth
+            foot_valve_oth
+            manlid_cover_oth
+            top_dis_valve_oth
+            top_dis_valve_spec_oth
+          }
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
 const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -4451,7 +4557,27 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
- 
+  getStoringOrderTankByIDForOutGateSurvey(id: string): Observable<StoringOrderTankItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = { guid: { eq: id } }
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANK_BY_ID_OUT_GATE_SURVEY,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => {
+          const sotList = result?.data.sotList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(sotList.nodes);
+          this.totalCount = sotList.totalCount;
+          return sotList.nodes;
+        }),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+      );
+  }
+
   searchStoringOrderTanksForBooking(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
     return this.apollo
@@ -5063,9 +5189,9 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
 
-   getWaitingStoringOrderTankCount(): Observable<number> {
+  getWaitingStoringOrderTankCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = { status_cv: { in: ["WAITING","PREORDER"] } }
+    let where: any = { status_cv: { in: ["WAITING", "PREORDER"] } }
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5083,9 +5209,9 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-   getInCompleteCleaningCount(): Observable<number> {
+  getInCompleteCleaningCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = [{ clean_status_cv: { eq: "APPROVED" } },{tank_status_cv:{eq:"CLEANING"}}]
+    let where: any = [{ clean_status_cv: { eq: "APPROVED" } }, { tank_status_cv: { eq: "CLEANING" } }]
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
