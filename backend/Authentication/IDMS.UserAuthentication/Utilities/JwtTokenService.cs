@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace IDMS.User.Authentication.API.Utilities
 {
@@ -59,11 +60,18 @@ namespace IDMS.User.Authentication.API.Utilities
         }
         public JwtSecurityToken GetToken(int userType, string loginId, string email, IList<string> roles, string userId)
         {
-            var functionNames = from f in _dbContext.functions
-                                join rf in _dbContext.role_function
-                                on f.guid equals rf.function_guid
-                                where (from r in _dbContext.UserRoles where r.UserId == userId select r.RoleId).Contains(rf.role_guid)
-                                select f.name;
+            //var functionNames = from f in _dbContext.functions
+            //                    join rf in _dbContext.role_function
+            //                    on f.guid equals rf.function_guid
+            //                    where (from r in _dbContext.UserRoles where r.UserId == userId select r.RoleId).Contains(rf.role_guid)
+            //                    select f.name;
+
+            //var functionNamesNew = from f in _dbContext.functions_new
+            //                    join rf in _dbContext.role_functions_new
+            //                    on f.guid equals rf.functions_guid
+            //                    where (from r in _dbContext.user_role where r.user_guid == userId select r.role_guid).Contains(rf.role_guid)
+            //                    select f.code;
+
 
             var teams = from tu in _dbContext.team_user
                         join t in _dbContext.team
@@ -71,16 +79,14 @@ namespace IDMS.User.Authentication.API.Utilities
                         where (from u in _dbContext.Users where u.Id == userId select u.Id).Contains(tu.userId)
                         select new { t.description, department= t.department_cv };
 
-            JArray teamsArray = JArray.FromObject(teams);
-
-            JArray functionNamesArray = JArray.FromObject(functionNames);
-
+            JArray teamsArray =  JArray.FromObject(teams);
+            JArray functionNamesArray = new JArray(); //JArray.FromObject(functionNamesNew);
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
             //var exp = DateTime.Now.AddHours(_duration);
             //var exp = DateTime.Now.AddYears(1);
             var exp = DateTime.Now.AddMinutes(_duration);
-            List<Claim> authClaims = GetClaims(userType, loginId, email, roles, functionNamesArray, teamsArray);
+            List<Claim> authClaims = GetClaims(userType, userId, loginId, email, roles, functionNamesArray, teamsArray);
             var token = new JwtSecurityToken(
                   issuer: _issuer,
                   audience: _audience,
@@ -91,13 +97,14 @@ namespace IDMS.User.Authentication.API.Utilities
             return token;
         }
 
-         List<Claim> GetClaims(int userType, string loginId, string email, IList<string> roles, JArray functionsRight,JArray teams)
+         List<Claim> GetClaims(int userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight,JArray teams)
         {
             var authClaims = new List<Claim>();
 
             authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             authClaims.Add(new Claim(ClaimTypes.Name, loginId));
             authClaims.Add(new Claim(ClaimTypes.Email, email));
+            authClaims.Add(new Claim(ClaimTypes.Sid, userId));
             authClaims.Add(new Claim(ClaimTypes.UserData, functionsRight.ToString()));
             authClaims.Add(new Claim(ClaimTypes.UserData, teams.ToString()));
 
