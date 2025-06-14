@@ -549,7 +549,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     if (this.pcForm!.value["part_name"]) {
       const description: Text = this.pcForm!.value["part_name"];
       where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.part_name = { contains: description }
+      where.tariff_repair.alias = { contains: description }
     }
 
     // Handling material_cost
@@ -736,20 +736,13 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         // Navigate backward
         last = pageSize;
         before = this.startCursor;
-      }
-      else if (pageIndex == this.pageIndex) {
-
+      } else if (pageIndex == this.pageIndex) {
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
 
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
@@ -790,6 +783,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   removeSelectedRows() {
 
   }
+
   public loadData() {
     this.trfRepairDS.searchDistinctLength(undefined, undefined).subscribe(data => {
       this.lengthItems = data;
@@ -804,7 +798,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      //    { alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
       { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
       { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
@@ -814,13 +807,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
       const subqueries: any[] = [];
       data.map(d => {
-
         if (d.child_code) {
           let q = { alias: d.child_code, codeValType: d.child_code };
           const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
           if (!hasMatch) {
             subqueries.push(q);
-
           }
         }
       });
@@ -980,16 +971,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeValueChange() {
-    // this.groupNameControl.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     this.trfRepairDS.searchDistinctPartName(undefined, undefined, value).subscribe(data => {
-    //       this.partNameList = data
-    //     });
-    //   })
-    // ).subscribe();
-
     this.pcForm?.get('group_name_cv')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -1015,8 +996,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       })
     ).subscribe();
 
-
-
     this.pcForm?.get('sub_group_name_cv')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -1032,7 +1011,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       })
     ).subscribe();
   }
-
 
   add(event: MatChipInputEvent): void {
     const input = event.input;
@@ -1056,11 +1034,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
-  // displayCustomerCompanyFn(customer: any): string {
-  //   if (!customer) return '';
-  //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
-  // }
-
   private updateFormControl(): void {
     // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
   }
@@ -1080,7 +1053,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-
   getSelectedCustomersDisplay(): string {
     var retval: string = "";
     if (this.selectedCustomers?.length > 1) {
@@ -1095,7 +1067,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
   }
-
 
   selected(event: MatAutocompleteSelectedEvent): void {
     const customer = event.option.value;
@@ -1114,16 +1085,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     if (this.custInput) {
       this.searchCustomerCompanyList('');
       this.custInput.nativeElement.value = '';
-
     }
-    // this.updateFormControl();
-    //this.customerCodeControl.setValue(null);
-    //this.pcForm?.patchValue({ customer_code: null });
   }
 
   onCheckboxClicked(row: CustomerCompanyItem) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
-
   }
 }
