@@ -1721,7 +1721,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       height: '80vh',
       data: {
         type: "in",
-        in_gate_survey_guid: this.in_gate?.in_gate_survey?.guid,
+        gate_survey_guid: this.in_gate?.in_gate_survey?.guid,
         eir_no: this.in_gate?.eir_no,
         igsDS: this.igsDS,
         cvDS: this.cvDS,

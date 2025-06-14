@@ -25,11 +25,13 @@ import { AuthService } from '@core';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import autoTable, { Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
 
 export interface DialogData {
   type: string;
-  in_gate_survey_guid: string;
+  gate_survey_guid: string;
   igsDS: InGateSurveyDS;
+  ogsDS: OutGateSurveyDS;
   igDS: InGateDS;
   cvDS: CodeValuesDS;
   eirPdf?: any;
@@ -57,9 +59,11 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
+    RO_NO: 'COMMON-FORM.RO-NO',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
+    RO_DATE: 'COMMON-FORM.RO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
@@ -197,18 +201,16 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     DELIVERY_COURIER: 'COMMON-FORM.DELIVERY-COURIER',
     DAMAGED: 'COMMON-FORM.DAMAGED',
     TYPE: 'COMMON-FORM.TYPE',
+    OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    RELEASE_REFERENCE: 'COMMON-FORM.RELEASE-REFERENCE',
   }
   @Output() publishedEir = new EventEmitter<any>();
-  // @Input() type?: string | null;
-  // @Input() igsDS: InGateSurveyDS;
-  // @Input() cvDS: CodeValuesDS;
-  // @Input() in_gate_survey_guid?: string | null;
-  // @Input() populateCodeValues?: any;
   type?: string | null;
   igsDS: InGateSurveyDS;
-  igDS: InGateDS;
+  ogsDS: OutGateSurveyDS;
+  // igDS: InGateDS;
   cvDS: CodeValuesDS;
-  in_gate_survey_guid?: string | null;
+  gate_survey_guid?: string | null;
   eir_no?: string | null;
 
   customerInfo: any = customerInfo;
@@ -295,9 +297,10 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.translateLangText();
     this.type = data.type;
     this.igsDS = data.igsDS || new InGateSurveyDS(this.apollo);
-    this.igDS = data.igDS || new InGateDS(this.apollo);
+    this.ogsDS = data.ogsDS || new OutGateSurveyDS(this.apollo);
+    // this.igDS = data.igDS || new InGateDS(this.apollo);
     this.cvDS = data.cvDS || new CodeValuesDS(this.apollo);
-    this.in_gate_survey_guid = data.in_gate_survey_guid;
+    this.gate_survey_guid = data.gate_survey_guid;
     this.eir_no = data.eir_no;
     this.eirPdf = data.eirPdf;
     this.cells = Array(this.rowSize * this.colSize).fill(0);
@@ -315,13 +318,13 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     this.eirTitle = this.type === "in" ? this.translatedLangText.IN_GATE : this.translatedLangText.OUT_GATE;
 
     // Await the data fetching
-    const data = await this.getInGateSurveyData();
+    const data = this.isInGate() ? await this.getInGateSurveyData() : await this.getOutGateSurveyData();
     if (data?.length > 0) {
       this.eirDetails = data[0];
       console.log(this.eirDetails);
       await this.getCodeValuesData();
       this.last_test_desc = this.getLastTest(this.eirDetails);
-      this.publish_by = this.eirDetails?.in_gate?.publish_by || this.authService.currentUserName;
+      this.publish_by = this.getGate()?.publish_by || this.authService.currentUserName;
       this.highlightedCellsLeft = this.populateHighlightedCells(this.highlightedCellsLeft, JSON.parse(this.eirDetails?.left_coord || '[]'));
       this.highlightedCellsRear = this.populateHighlightedCells(this.highlightedCellsRear, JSON.parse(this.eirDetails?.rear_coord || '[]'));
       this.highlightedCellsRight = this.populateHighlightedCells(this.highlightedCellsRight, JSON.parse(this.eirDetails?.right_coord || '[]'));
@@ -343,6 +346,13 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     }
   }
 
+  isInGate() {
+    return this.type === "in";
+  }
+
+  getGate() {
+    return this.isInGate() ? this.eirDetails?.in_gate : this.eirDetails?.out_gate;
+  }
 
   showPDF(): void {
     // const element = document.getElementById('eir-form-template');
@@ -476,24 +486,24 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
-    const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.create_dt)}`; // Replace with your actual cutoff date
+    const cutoffDate = `${this.translatedLangText.TAKE_IN_DATE}: ${this.displayDate(this.getGate()?.create_dt)}`; // Replace with your actual cutoff date
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
     PDFUtility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 5, 8);
     PDFUtility.addText(pdf, this.translatedLangText.EQUIPMENT_INTERCHANGE_RECEIPT, lastTableFinalY + 5, leftMargin, 8);
 
     var data = [
       [
-        { content: `${this.translatedLangText.SO_NO}: ${this.eirDetails?.in_gate?.tank?.storing_order?.so_no}` },
-        { content: `${this.translatedLangText.SO_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.tank?.storing_order?.create_dt)}` },
-        { content: `${this.translatedLangText.LAST_CARGO}: ${(this.eirDetails?.in_gate?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 }
+        { content: `${this.getNoLabel()}: ${this.getGate()?.tank?.storing_order?.so_no}` },
+        { content: `${this.getDateLabel()}: ${this.displayDate(this.getGate()?.tank?.storing_order?.create_dt)}` },
+        { content: `${this.translatedLangText.LAST_CARGO}: ${(this.getGate()?.tank?.tariff_cleaning?.cargo)}`, colSpan: 2 }
       ],
-      [`${this.translatedLangText.TANK_NO}: ${this.eirDetails?.in_gate?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.eirDetails?.in_gate?.eir_no}`,
-      `${this.translatedLangText.TAKE_IN_REFERENCE}: ${this.eirDetails?.in_gate?.tank?.job_no}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
-      [`${this.translatedLangText.OPERATOR}: ${this.eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.eirDetails?.in_gate?.tank?.customer_company?.name}`,
-      `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.eirDetails?.in_gate?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
-      [`${this.translatedLangText.UNIT_TYPE}: ${this.eirDetails?.in_gate?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}:${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
-      `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.eirDetails?.in_gate?.tank?.clean_status_cv)}`],
-      [`${this.translatedLangText.CAPACITY}: ${this.eirDetails?.capacity} L`, `${this.translatedLangText.TARE_WEIGHT}:${this.eirDetails?.tare_weight} KG`,
+      [`${this.translatedLangText.TANK_NO}: ${this.getGate()?.tank?.tank_no}`, `${this.translatedLangText.EIR_NO}: ${this.getGate()?.eir_no}`,
+      `${this.getJobReferenceLabel()}: ${this.getGate()?.tank?.job_no}`, `${this.translatedLangText.DATE_OF_INSPECTION}: ${this.displayDateTime(this.eirDetails?.create_dt)}`],
+      [`${this.translatedLangText.OPERATOR}: ${this.getGate()?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.getGate()?.tank?.customer_company?.name}`,
+      `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.getGate()?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
+      [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
+      `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
+      [`${this.translatedLangText.CAPACITY}: ${this.eirDetails?.capacity} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.eirDetails?.tare_weight} KG`,
       `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`, `${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
     ];
 
@@ -564,11 +574,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     startRectY += rectBoxHeight + 2;
     textContent = `${this.translatedLangText.PURPOSE}:`;
     PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + 2, 8, true);
-    textContent = this.displayTankPurpose(this.eirDetails?.in_gate?.tank);
+    textContent = this.displayTankPurpose(this.getGate()?.tank);
     PDFUtility.addText(pdf, textContent, startRectY + 5, leftMargin + bufferLabel, 8);
     await PDFUtility.drawRectangleBox(pdf, leftMargin, startRectY, chartContentWidth, rectBoxHeight);
-    // textContent = this.eirDetails?.in_gate?.tank?.remarks || ''
-    // PDFUtility.addText(pdf, textContent, startRectY + 8, leftMargin + 2, 8);
     startRectY += rectBoxHeight + 2;
     rectBoxHeight = pageHeight - rectBoxHeight - startRectY + 2;
 
@@ -583,7 +591,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     PDFUtility.addText(pdf, textContent, startRectY + 5, leftRectBoxStartX, 8, true);
 
 
-    textContent = `${this.translatedLangText.FOR} ${this.eirDetails?.in_gate?.tank?.storing_order?.customer_company?.name}`;
+    textContent = `${this.translatedLangText.FOR} ${this.getGate()?.tank?.storing_order?.customer_company?.name}`;
     PDFUtility.addText(pdf, textContent, startRectY + 5, rightRectBoxStartX, 8, true);
 
 
@@ -625,13 +633,13 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX + gapLabel, 8, true);
 
     gapLabel = (textWrapWidth / 3);
-    textContent = `${this.eirDetails?.in_gate?.tank?.storing_order?.haulier}`;
+    textContent = `${this.getGate()?.tank?.storing_order?.haulier}`;
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, true);
 
-    textContent = `${this.eirDetails?.in_gate?.vehicle_no}`;
+    textContent = `${this.getGate()?.vehicle_no}`;
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel), 8, true);
 
-    textContent = `${this.eirDetails?.in_gate?.driver_name}`;
+    textContent = `${this.getGate()?.driver_name}`;
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8, true);
 
     lastTableFinalY = startRectY + bufferLabelY;
@@ -1625,7 +1633,17 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   getInGateSurveyData(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.subs.sink = this.igsDS.getInGateSurveyByIDForEirPdf(this.in_gate_survey_guid!)
+      this.subs.sink = this.igsDS.getInGateSurveyByIDForEirPdf(this.gate_survey_guid!)
+        .subscribe({
+          next: (data) => resolve(data),
+          error: (err) => reject(err),
+        });
+    });
+  }
+
+  getOutGateSurveyData(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.subs.sink = this.ogsDS.getOutGateSurveyByIDForEirPdf(this.gate_survey_guid!)
         .subscribe({
           next: (data) => resolve(data),
           error: (err) => reject(err),
@@ -1785,13 +1803,13 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     return this.getLastTestIGS(igs);
   }
 
-  getLastTestIGS(igs: any): string | undefined {
-    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !igs) return "";
+  getLastTestIGS(gs: any): string | undefined {
+    if (!this.testTypeCvList?.length || !this.testClassCvList?.length || !gs) return "";
 
-    if (igs && igs.last_test_cv && igs.test_class_cv && igs.test_dt) {
-      const test_type = igs.last_test_cv;
-      const test_class = igs.test_class_cv;
-      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(igs.test_dt as number, 'MM/YYYY') + " - " + test_class;
+    if (gs && gs.last_test_cv && gs.test_class_cv && gs.test_dt) {
+      const test_type = gs.last_test_cv;
+      const test_class = gs.test_class_cv;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(gs.test_dt as number, 'MM/YYYY') + " - " + test_class;
     }
     return "";
   }
@@ -1872,7 +1890,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   getReportTitle(): string {
     var title: string = '';
-    title = `EIR-${this.eirDetails?.in_gate?.eir_no}.pdf`
+    title = `EIR-${this.getGate()?.eir_no}.pdf`
     return `${title}`
   }
 
@@ -1981,5 +1999,21 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   isSelectedOthers(selectedValue: string | undefined, codeVal: string | undefined) {
     return selectedValue && this.isOthers(selectedValue) && this.isOthers(codeVal)
+  }
+
+  getNoLabel() {
+    return this.isInGate() ? this.translatedLangText.SO_NO : this.translatedLangText.RO_NO;
+  }
+
+  getDateLabel() {
+    return this.isInGate() ? this.translatedLangText.SO_DATE : this.translatedLangText.RO_DATE;
+  }
+
+  getJobReferenceLabel() {
+    return this.isInGate() ? this.translatedLangText.TAKE_IN_REFERENCE : this.translatedLangText.RELEASE_REFERENCE;
+  }
+
+  getJobNo() {
+    return this.isInGate() ? this.getGate()?.tank?.job_no : this.getGate()?.tank?.release_job_no;
   }
 }

@@ -3422,7 +3422,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  onDownloadEir() {
+  onDownloadEir(isInGate: boolean = true) {
     let tempDirection: Direction;
 
     if (localStorage.getItem('isRtl') === 'true') {
@@ -3436,8 +3436,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       width: '794px',
       height: '80vh',
       data: {
-        type: "in",
-        in_gate_survey_guid: this.igs?.guid,
+        type: isInGate ? "in" : "out",
+        gate_survey_guid: isInGate ? this.igs?.guid : this.ogs?.guid,
         eir_no: this.ig?.eir_no,
         igsDS: this.igsDS,
         cvDS: this.cvDS

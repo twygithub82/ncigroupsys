@@ -2012,10 +2012,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   getTotal(repairPartList: any[] | undefined): any {
-    const totalSums = repairPartList?.filter(data => !data.delete_dt && (data.approve_part ?? true))?.reduce((totals: any, owner) => {
+    const totalSums = repairPartList?.filter(data => !data.delete_dt && (data.approve_part ?? true))?.reduce((totals: any, part) => {
       return {
-        hour: (totals.hour ?? 0) + (owner.approve_hour ?? owner.hour ?? 0),
-        total_mat_cost: totals.total_mat_cost + (((owner.approve_qty !== null && owner.approve_qty !== undefined ? owner.approve_qty : owner.quantity ?? 0) * (owner.approve_cost !== null && owner.approve_cost !== undefined ? owner.approve_cost : owner.material_cost ?? 0)))
+        hour: (totals.hour ?? 0) + (part.approve_hour ?? part.hour ?? 0),
+        total_mat_cost: totals.total_mat_cost + (((part.approve_qty !== null && part.approve_qty !== undefined ? part.approve_qty : part.quantity ?? 0) * (part.approve_cost !== null && part.approve_cost !== undefined ? part.approve_cost : part.material_cost ?? 0)))
       };
     }, { hour: 0, total_mat_cost: 0 }) || 0;
     return totalSums;
