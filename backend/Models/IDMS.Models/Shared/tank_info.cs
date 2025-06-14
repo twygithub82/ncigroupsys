@@ -41,14 +41,17 @@ namespace IDMS.Models.Shared
         public long? last_notify_dt { get; set; }
         public long? last_release_dt { get; set; }
         public string? yard_cv { get; set; }
-        
+        public string? previous_tank_no { get; set; }
+        public string? previous_owner_guid { get; set; }
+        public string? last_eir_no { get; set; }
+
         [UseFiltering]
-        public tank? tank { get; set; }
+        public virtual tank? tank { get; set; }
         [UseFiltering]
-        public customer_company? customer_company { get; set; }
+        public virtual customer_company? customer_company { get; set; }
         [UseFiltering]
-        public tariff_buffer? tariff_buffer { get; set; }
+        public virtual tariff_buffer? tariff_buffer { get; set; }
         [UseFiltering]
-        public IEnumerable<storing_order_tank?>? storing_order_tank { get; set; }
+        public virtual IEnumerable<storing_order_tank?>? storing_order_tank { get; set; }
     }
 }

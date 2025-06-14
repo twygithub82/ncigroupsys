@@ -4078,6 +4078,12 @@ export const UPDATE_TANK_DETAILS = gql`
   }
 `;
 
+export const UPDATE_SOT_TANK_INFO = gql`
+  mutation updateTankInfo($tankInfoRequest: TankInfoRequestInput!) {
+    updateTankInfo(tankInfoRequest: $tankInfoRequest)
+  }
+`;
+
 export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   filterChange = new BehaviorSubject('');
   constructor(private apollo: Apollo) {
@@ -5135,6 +5141,20 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
     );
   }
+  
+    updateSotTankInfo(tankInfoRequest: any): Observable<any> {
+      this.actionLoadingSubject.next(true);
+      return this.apollo.mutate({
+        mutation: UPDATE_SOT_TANK_INFO,
+        variables: {
+          tankInfoRequest
+        }
+      }).pipe(
+        finalize(() => {
+          this.actionLoadingSubject.next(false);
+        })
+      );
+    }
 
   subscribeToSotPurposeChange(sot_guid: string): Observable<any> {
     return this.apollo.subscribe({

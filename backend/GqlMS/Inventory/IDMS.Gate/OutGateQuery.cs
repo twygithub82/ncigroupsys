@@ -18,7 +18,7 @@ namespace IDMS.Gate.GqlTypes
     {
         // [Authorize]
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
-        // [UseProjection]
+        [UseProjection]
         [UseFiltering]
         [UseSorting]
         public IQueryable<out_gate> QueryOutGates(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
@@ -29,17 +29,20 @@ namespace IDMS.Gate.GqlTypes
 
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 query = context.out_gate.Where(i => i.delete_dt == null || i.delete_dt == 0)
-                    .Include(s => s.tank).Where(i => i.tank != null).Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0)
-                    .Include(s => s.tank.storing_order)
-                        .ThenInclude(c => c.customer_company)
-                    .Include(s => s.tank.tariff_cleaning)
-                    .Include(s => s.tank.tariff_cleaning.cleaning_method)
-                    .Include(s => s.tank.tariff_cleaning.cleaning_category)
-                    .Include(s => s.out_gate_survey)
-                    .Include(s => s.tank.release_order_sot)
-                        .ThenInclude(r => r.release_order);
-                //.Include(s => s.in_gate_survey);
-                // .Include(s=>s.tank.tariff_cleaning.cleaning_method);
+                                        .Where(i => i.tank != null && (i.tank.delete_dt == null || i.tank.delete_dt == 0))
+                .Include(s => s.tank)
+                    //.ThenInclude(t => t.tank_info)
+                //.Include(s => s.tank.storing_order)
+                //    .ThenInclude(c => c.customer_company)
+                //.Include(s => s.tank.tariff_cleaning)
+                //.Include(s => s.tank.tariff_cleaning.cleaning_method)
+                //.Include(s => s.tank.tariff_cleaning.cleaning_category)
+                //.Include(s => s.tank.in_gate)
+                //    .ThenInclude(i => i.in_gate_survey)
+                //.Include(s => s.out_gate_survey)
+                .Include(s => s.tank.release_order_sot)
+                    .ThenInclude(r => r.release_order).AsSplitQuery();
+
                 foreach (var q in query)
                 {
                     if (q.tank != null)

@@ -36,7 +36,8 @@ namespace IDMS.Models.Package.GqlTypes
                 foreach (var cc in dbPackageCleans)
                 {
                     cc.adjusted_price = adjusted_price;
-                    cc.remarks = remarks;
+                    if (!string.IsNullOrEmpty(cc.guid))
+                        cc.remarks = remarks;
                     cc.update_by = uid;
                     cc.update_dt = GqlUtils.GetNowEpochInSec();
                 }
@@ -651,7 +652,7 @@ namespace IDMS.Models.Package.GqlTypes
                     var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     var currentDateTime = DateTime.Now.ToEpochTime();
 
-                    var dbPackRepairs = await context.package_repair.Where(i => package_repair_guid.Contains(i.guid) && 
+                    var dbPackRepairs = await context.package_repair.Where(i => package_repair_guid.Contains(i.guid) &&
                                                                             i.delete_dt == null || i.delete_dt == 0).ToListAsync();
                     //if (customer_company_guids?.Length > 0)
                     //{
@@ -694,7 +695,7 @@ namespace IDMS.Models.Package.GqlTypes
                     //    retval = await context.Database.ExecuteSqlRawAsync(sql);
                     //}
 
-                    if(dbPackRepairs != null && dbPackRepairs.Count > 0)
+                    if (dbPackRepairs != null && dbPackRepairs.Count > 0)
                     {
                         var guids = dbPackRepairs.Select(p => p.guid).ToList();
                         string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));

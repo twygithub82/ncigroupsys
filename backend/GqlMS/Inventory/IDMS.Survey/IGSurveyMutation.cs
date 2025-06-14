@@ -99,7 +99,7 @@ namespace IDMS.Survey.GqlTypes
 
 
                     //Tank info handling
-                    await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
+                    await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "", inGateRequest.eir_no ?? "");
 
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
@@ -196,7 +196,7 @@ namespace IDMS.Survey.GqlTypes
 
 
                 //Tank info handling
-                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "");
+                await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "", inGateRequest.eir_no ?? "");
             }
             catch (Exception ex)
             {
@@ -495,7 +495,7 @@ namespace IDMS.Survey.GqlTypes
 
 
         private async Task AddTankInfo(ApplicationInventoryDBContext context, IMapper mapper, string user, long currentDateTime,
-                                        storing_order_tank sot, in_gate_survey ingateSurvey, string yard)
+                                        storing_order_tank sot, in_gate_survey ingateSurvey, string yard, string eirNo)
         {
             //populate the tank_info details
             var tankInfo = new tank_info()
@@ -518,10 +518,10 @@ namespace IDMS.Survey.GqlTypes
                 test_dt = ingateSurvey.test_dt,
                 test_class_cv = ingateSurvey.test_class_cv,
                 yard_cv = yard,
-                //last_notify_dt = null,
+                last_eir_no = eirNo,
             };
 
-            await GqlUtils.UpdateTankInfo(mapper, context, user, currentDateTime, tankInfo);
+            await GqlUtils.TankInfoHandling(mapper, context, user, currentDateTime, tankInfo);
         }
 
         //public async Task<int> UpdateTankInfo([Service] IMapper mapper, ApplicationInventoryDBContext context, string user, long currentDateTime, tank_info tankInfo)

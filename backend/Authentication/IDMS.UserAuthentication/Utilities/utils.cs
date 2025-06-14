@@ -30,8 +30,8 @@ namespace IDMS.User.Authentication.API.Utilities
         {
             try
             {
-                var functionNames = from f in _dbContext.functions_new
-                                    join rf in _dbContext.role_functions_new
+                var functionNames = from f in _dbContext.functions
+                                    join rf in _dbContext.role_functions
                                     on f.guid equals rf.functions_guid
                                     where (from r in _dbContext.user_role where r.user_guid == userId select r.role_guid).Contains(rf.role_guid)
                                     select f.code;

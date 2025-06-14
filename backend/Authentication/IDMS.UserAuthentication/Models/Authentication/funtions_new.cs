@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.User.Authentication.API.Models.Authentication
 {
-    public class functions_new
+    public class functions
     {
         [Key]
         public string? guid { get; set; }
@@ -11,7 +11,7 @@ namespace IDMS.User.Authentication.API.Models.Authentication
         public string? submodule { get; set; }
         public string? action { get; set; }
         public string? code { get; set; }
-        public virtual IEnumerable<role_function>? role_functions_new { get; set; }
+        public virtual IEnumerable<role_functions>? role_functions_new { get; set; }
     }
 
     public class role
@@ -22,11 +22,11 @@ namespace IDMS.User.Authentication.API.Models.Authentication
         public string? position { get; set; }
         public string? code { get; set; }
         public string? description { get; set; }
-        public virtual IEnumerable<role_function>? role_functions_new { get; set; }
+        public virtual IEnumerable<role_functions>? role_functions { get; set; }
     }
 
 
-    public class role_functions_new: base_date
+    public class role_functions: base_date
     {
         [Key]
         public string? guid { get; set; }
@@ -41,7 +41,6 @@ namespace IDMS.User.Authentication.API.Models.Authentication
     {
         [Key]
         public string guid { get; set; }
-        [ForeignKey("functions")]
         public string user_guid { get; set; }
 
         [ForeignKey("role")]

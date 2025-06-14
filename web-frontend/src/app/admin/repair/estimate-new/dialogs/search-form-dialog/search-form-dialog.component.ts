@@ -136,7 +136,8 @@ export class SearchFormDialogComponent {
       ...this.selected_repair_part,
       tariff_repair_guid: row?.tariff_repair_guid,
       tariff_repair: row?.tariff_repair,
-      material_cost: row?.material_cost
+      material_cost: row?.material_cost,
+      hour: row?.labour_hour
     }
     const returnDialog: DialogData = {
       selected_repair_part: rep

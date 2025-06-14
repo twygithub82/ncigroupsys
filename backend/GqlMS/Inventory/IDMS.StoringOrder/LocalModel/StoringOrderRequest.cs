@@ -18,9 +18,5 @@ namespace IDMS.StoringOrder.GqlTypes.LocalModel
         public string? so_no { get; set; }
         public string? so_notes { get; set; }
         public string? remarks { get; set; }
-
-        //public customer_company customer_company { get; set; }
-
-        //public IEnumerable<storing_order_tank>? storing_order_tank { get; set; }
     }
 }

@@ -1154,7 +1154,7 @@ namespace IDMS.Billing.GqlTypes
                     }
 
 
-                    if (item.EqualsIgnore("gate"))
+                    if (item.EqualsIgnore("in_out"))
                     {
                         //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
                         var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);

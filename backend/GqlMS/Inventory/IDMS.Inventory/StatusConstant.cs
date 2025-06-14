@@ -104,7 +104,14 @@ namespace IDMS.Inventory.GqlTypes
     {
         public const string ADD = "ADD";
         public const string REMOVE = "REMOVE";
+    }
 
+    public static class TankInfoAction
+    {
+        public const string RENUMBER = "RENUMBER";
+        public const string REOWNERSHIP = "REOWNERSHIP";
+        public const string RECUSTOMER = "RECUSTOMER";
+        public const string OVERWRITE = "OVERWRITE";
     }
 
     public static class SurveyStatus

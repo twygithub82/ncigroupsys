@@ -31,7 +31,7 @@ namespace IDMS.Steaming.GqlTypes
                 newSteaming.status_cv = CurrentServiceStatus.PENDING;
                 newSteaming.estimate_by = user;
                 newSteaming.estimate_dt = currentDateTime;
-              
+
                 foreach (var item in steaming.steaming_part)
                 {
                     item.guid = Util.GenerateGUID();
@@ -73,14 +73,20 @@ namespace IDMS.Steaming.GqlTypes
                 if (steaming == null || string.IsNullOrEmpty(steaming.guid))
                     throw new GraphQLException(new Error($"Steaming object or guid cannot be null", "ERROR"));
 
-                var approveSteam = new steaming() { guid = steaming.guid };
-                context.steaming.Attach(approveSteam);
+                var approveSteam = await context.steaming.FindAsync(steaming.guid);
+                if (approveSteam == null)
+                    throw new GraphQLException(new Error($"Steaming object not found", "ERROR"));
+
                 approveSteam.update_by = user;
                 approveSteam.update_dt = currentDateTime;
-                approveSteam.est_cost = steaming.est_cost;
+                if (steaming.est_cost != null)
+                    approveSteam.est_cost = steaming.est_cost;
                 approveSteam.total_cost = steaming.total_cost;
                 approveSteam.total_material_cost = steaming.total_material_cost;
                 approveSteam.total_labour_cost = steaming.total_labour_cost;
+                approveSteam.total_hour = steaming.total_hour;
+                approveSteam.flat_rate = steaming.flat_rate;
+                approveSteam.rate = steaming.rate;
 
                 if (CurrentServiceStatus.PENDING.EqualsIgnore(steaming.status_cv))
                 {
@@ -98,16 +104,24 @@ namespace IDMS.Steaming.GqlTypes
 
                         if (item.action.EqualsIgnore(ObjectAction.EDIT))
                         {
-                            var part = new steaming_part() { guid = item.guid };
-                            context.steaming_part.Attach(part);
+                            var part = await context.steaming_part.FindAsync(item.guid);
+                            if (part != null)
+                            {
+                                part.description = item.description;
+                                part.approve_part = item.approve_part;
+                                part.approve_qty = item.approve_qty;
+                                part.approve_labour = item.approve_labour;
+                                part.approve_cost = item.approve_cost;
 
-                            part.description = item.description;
-                            part.approve_part = item.approve_part;
-                            part.approve_qty = item.approve_qty;
-                            part.approve_labour = item.approve_labour;
-                            part.approve_cost = item.approve_cost;
-                            part.update_by = user;
-                            part.update_dt = currentDateTime;
+                                part.approve_part = item.approve_part;
+                                part.approve_qty = item.approve_qty;
+                                part.approve_labour = item.approve_labour;
+                                part.approve_cost = item.approve_cost;
+
+                                part.update_by = user;
+                                part.update_dt = currentDateTime;
+                            }
+
                         }
                         else if (item.action.EqualsIgnore(ObjectAction.NEW))
                         {
@@ -173,16 +187,22 @@ namespace IDMS.Steaming.GqlTypes
                 //For Overwrite
                 if (steaming.action != null && steaming.action.EqualsIgnore(ObjectAction.OVERWRITE))
                 {
-                    updateSteaming.overwrite_remarks = steaming.overwrite_remarks; 
+                    updateSteaming.overwrite_remarks = steaming.overwrite_remarks;
                     updateSteaming.total_cost = steaming.total_cost;
+     
                 }
                 else
                 {   //For normal update
                     updateSteaming.est_cost = steaming.est_cost;
+                    updateSteaming.est_hour = steaming.est_hour;
+                    updateSteaming.rate = steaming.rate;
+                    updateSteaming.flat_rate = steaming.flat_rate;
                     updateSteaming.total_cost = steaming.total_cost;
                     updateSteaming.remarks = steaming.remarks;
-                    updateSteaming.total_labour_cost = steaming.total_labour_cost;
-                    updateSteaming.total_material_cost = steaming.total_material_cost;
+                    if (steaming.total_labour_cost != null)
+                        updateSteaming.total_labour_cost = steaming.total_labour_cost;
+                    if (steaming.total_material_cost != null)
+                        updateSteaming.total_material_cost = steaming.total_material_cost;
                 }
                 //Handling For steaming_part
                 foreach (var item in steaming.steaming_part)
@@ -200,16 +220,21 @@ namespace IDMS.Steaming.GqlTypes
                         if (string.IsNullOrEmpty(item.guid))
                             throw new GraphQLException(new Error($"Steaming part guid cannot be null or empty for update", "ERROR"));
 
-                        var part = new steaming_part() { guid = item.guid };
-                        context.steaming_part.Attach(part);
-
-                        part.update_by = user;
-                        part.update_dt = currentDateTime;
-                        part.quantity = item.quantity;
-                        part.cost = item.cost;
-                        part.labour = item.labour;
-                        part.description = item.description;
-                        part.tariff_steaming_guid = item.tariff_steaming_guid;
+                        var part = await context.steaming_part.FindAsync(item.guid);
+                        if (part != null)
+                        {
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                            part.quantity = item.quantity;
+                            part.cost = item.cost;
+                            part.labour = item.labour;
+                            part.description = item.description;
+                            part.tariff_steaming_guid = item.tariff_steaming_guid;
+                            part.approve_part = item.approve_part;
+                            part.approve_qty = item.approve_qty;
+                            part.approve_labour = item.approve_labour;
+                            part.approve_cost = item.approve_cost;
+                        }
                     }
                     else if (ObjectAction.CANCEL.EqualsIgnore(item.action))
                     {
@@ -219,7 +244,7 @@ namespace IDMS.Steaming.GqlTypes
                         part.update_dt = currentDateTime;
                         part.delete_dt = currentDateTime;
                     }
-                    else if (ObjectAction.OVERWRITE.EqualsIgnore(item.action)) 
+                    else if (ObjectAction.OVERWRITE.EqualsIgnore(item.action))
                     {
                         var part = new steaming_part() { guid = item.guid };
                         context.steaming_part.Attach(part);
@@ -228,7 +253,7 @@ namespace IDMS.Steaming.GqlTypes
                         part.update_dt = currentDateTime;
                         part.approve_part = item.approve_part;
                         part.approve_qty = item.approve_qty;
-                        part.approve_cost  = item.approve_cost; 
+                        part.approve_cost = item.approve_cost;
                         part.approve_labour = item.approve_labour;
                     }
                 }
@@ -256,7 +281,7 @@ namespace IDMS.Steaming.GqlTypes
                 {
                     if (item != null && !string.IsNullOrEmpty(item.guid))
                     {
-                        var rollbackSteaming = new steaming() { guid = item.guid }; 
+                        var rollbackSteaming = new steaming() { guid = item.guid };
                         context.steaming.Attach(rollbackSteaming);
 
                         rollbackSteaming.update_by = user;
@@ -450,7 +475,8 @@ namespace IDMS.Steaming.GqlTypes
                         {
                             var steamPart = new steaming_part() { guid = item.guid };
                             context.steaming_part.Attach(steamPart);
-                            steamPart.approve_part = false;
+                            steamPart.approve_part = null;
+                            context.Entry(steamPart).Property(e => e.approve_part).IsModified = true;
                             steamPart.update_dt = currentDateTime;
                             steamPart.update_by = user;
                         }
@@ -596,7 +622,6 @@ namespace IDMS.Steaming.GqlTypes
                             rollbackSteaming.status_cv = CurrentServiceStatus.ASSIGNED;
                     }
 
-
                     if (!string.IsNullOrEmpty(item.remarks))
                         rollbackSteaming.remarks = item.remarks;
 
@@ -718,6 +743,64 @@ namespace IDMS.Steaming.GqlTypes
                     var jobOrders = await context.job_order.Where(j => j.sot_guid == sotGuid & j.job_type_cv == JobType.STEAM).ToListAsync();
                     if (!jobOrders.Any(j => j.status_cv.Contains(JobStatus.IN_PROGRESS)))
                         sot.tank_status_cv = TankMovementStatus.STEAM;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> RollbackAssignedSteaming(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<string>? steamingGuid)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (steamingGuid == null || !steamingGuid.Any())
+                    throw new GraphQLException(new Error($"Steaming guid cannot be null or emptry", "ERROR"));
+
+
+                foreach (var item in steamingGuid)
+                {
+                    //Residue handling
+                    var rollbackSteaming = await context.steaming
+                        .Include(r => r.steaming_part)
+                            .ThenInclude(rp => rp.job_order)
+                        .Where(r => r.guid == item).FirstOrDefaultAsync();
+
+                    if (rollbackSteaming == null)
+                        throw new GraphQLException(new Error($"Steaming estimate not found", "ERROR"));
+
+                    rollbackSteaming.update_by = user;
+                    rollbackSteaming.update_dt = currentDateTime;
+                    rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+
+                    //Parts handking
+                    var steamParts = rollbackSteaming.steaming_part;
+                    if (steamParts != null)
+                    {
+                        foreach (var part in steamParts)
+                        {
+                            //Job Order Handling, must perform before set part.job_order_guid to null
+                            if (part.job_order != null)
+                            {
+                                part.job_order.delete_dt = currentDateTime;
+                                part.job_order.update_dt = currentDateTime;
+                                part.job_order.update_by = user;
+                            }
+
+                            part.job_order_guid = null;
+                            context.Entry(part).Property(e => e.job_order_guid).IsModified = true;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();

@@ -1561,7 +1561,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           sot: newSot,
           tankInfo: newTi
         };
-        this.tiDS.updateTankInfo(updateTankInfo).subscribe(result => {
+        this.sotDS.updateSotTankInfo(updateTankInfo).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateTankInfo);
           this.loadFullPage();
@@ -1572,7 +1572,56 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   reownerTankDialog(event: Event) {
     this.preventDefault(event);
-    const action = 'reowner';
+    const action = 'reownership';
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ReownerTankFormDialogComponent, {
+      disableClose: true,
+      width: '500px',
+      data: {
+        action: action,
+        sot: this.sot,
+        translatedLangText: this.translatedLangText,
+        transferList: this.transferList,
+        sotDS: this.sotDS,
+        ccDS: this.ccDS
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && this.sot && this.tiItem) {
+        const newSot = {
+          guid: this.sot?.guid,
+          owner_guid: result.owner_guid,
+        };
+
+        const newTi = {
+          guid: this.tiItem?.guid,
+          tank_no: this.sot.tank_no,
+        }
+
+        const updateTankInfo = {
+          action: action,
+          sot: newSot,
+          tankInfo: newTi
+        };
+        console.log(updateTankInfo)
+        this.sotDS.updateSotTankInfo(updateTankInfo).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateTankInfo);
+          this.loadFullPage();
+        });
+      }
+    });
+  }
+
+  changeCustomerTankDialog(event: Event) {
+    this.preventDefault(event);
+    const action = 'changecustomer';
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -2706,12 +2755,42 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canRenumberTank() {
     // check is the eir_no same as the tank_info.last_eir_no. only when its same can do renumber
-    return false;
+    return this.ig?.eir_no === this.tiItem?.last_eir_no
   }
 
   canReownership() {
     // check is the eir_no same as the tank_info.last_eir_no. only when its same can do reownership
-    return false;
+    return this.ig?.eir_no === this.tiItem?.last_eir_no;
+  }
+
+  canChangeCustomer() {
+    // check whether any billing done
+    const billing_sot = this.sot?.billing_sot;
+    if (billing_sot?.lon_billing_guid || billing_sot?.loff_billing_guid || billing_sot?.preinsp_billing_guid || billing_sot?.gin_billing_guid || billing_sot?.gout_billing_guid) {
+      return false;
+    }
+    
+    const steamList = this.steamItem?.filter(x => {
+      !!x.customer_billing_guid || !!x.owner_billing_guid
+    }) ?? [];
+
+    const repairList = this.repairItem?.filter(x => {
+      !!x.customer_billing_guid || !!x.owner_billing_guid
+    }) ?? [];
+
+    const cleanList = this.cleaningItem?.filter(x => {
+      !!x.customer_billing_guid || !!x.owner_billing_guid
+    }) ?? [];
+    
+    const residueList = this.residueItem.filter(x => {
+      !!x.customer_billing_guid || !!x.owner_billing_guid
+    }) ?? [];
+    
+    if (steamList.length || repairList.length || cleanList.length || residueList.length) {
+      return false
+    }
+
+    return true;
   }
 
   canOverwriteTankSummaryDetails() {
@@ -3149,18 +3228,22 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           this.pdItem = data[0];
         });
         // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
-        this.tiDS.getTankInfoForMovement(this.sot?.tank_no!).subscribe(data => {
-          console.log(`tankInfo: `, data)
-          this.tiItem = data[0];
-          this.last_test_desc = this.getLastTest();
-          this.next_test_desc = this.getNextTest();
-        });
+        this.loadDataHandling_ti(this.sot?.tank_no!);
         this.loadDataHandling_LastPeriodicTestDetail(this.sot?.tank_no!);
         this.loadDataHandling_branch();
         // if (this.sot?.in_gate?.length) {
         //   this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
         // }
       }
+    });
+  }
+
+  loadDataHandling_ti(tank_no: string) {
+    this.tiDS.getTankInfoForMovement(tank_no).subscribe(data => {
+      console.log(`tankInfo: `, data)
+      this.tiItem = data[0];
+      this.last_test_desc = this.getLastTest();
+      this.next_test_desc = this.getNextTest();
     });
   }
 
@@ -3339,7 +3422,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
   }
 
-  onDownloadEir() {
+  onDownloadEir(isInGate: boolean = true) {
     let tempDirection: Direction;
 
     if (localStorage.getItem('isRtl') === 'true') {
@@ -3353,8 +3436,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       width: '794px',
       height: '80vh',
       data: {
-        type: "in",
-        in_gate_survey_guid: this.igs?.guid,
+        type: isInGate ? "in" : "out",
+        gate_survey_guid: isInGate ? this.igs?.guid : this.ogs?.guid,
         eir_no: this.ig?.eir_no,
         igsDS: this.igsDS,
         cvDS: this.cvDS

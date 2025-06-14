@@ -73,12 +73,14 @@ export class TankInfoItem extends TankInfoGO {
   public customer_company?: CustomerCompanyItem; // owner
   public tank?: TankItem; // unit type
   public tariff_buffer?: TariffBufferItem;
+  public previous_customer_company?: CustomerCompanyItem;
 
   constructor(item: Partial<TankInfoItem> = {}) {
     super(item);
     this.customer_company = item.customer_company;
     this.tank = item.tank;
     this.tariff_buffer = item.tariff_buffer;
+    this.previous_customer_company = item.previous_customer_company;
   }
 }
 
@@ -119,6 +121,11 @@ export const GET_TANK_INFO_FOR_MOVEMENT = gql`
         update_dt
         walkway_cv
         yard_cv
+        previous_customer_company {
+          code
+          name
+          guid
+        }
       }
     }
   }
@@ -198,12 +205,6 @@ export const GET_TANK_INFO_FOR_OUT_GATE_SURVEY = gql`
   }
 `;
 
-export const UPDATE_TANK_INFO = gql`
-  mutation updateTankInfo($tankInfoRequest: TankInfoRequestInput!) {
-    updateTankInfo(tankInfoRequest: $tankInfoRequest)
-  }
-`;
-
 export class TankInfoDS extends BaseDataSource<TankInfoItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -279,20 +280,6 @@ export class TankInfoDS extends BaseDataSource<TankInfoItem> {
         catchError(() => of({ items: [], totalCount: 0 })),
         finalize(() => this.loadingSubject.next(false))
       );
-  }
-
-  updateTankInfo(tankInfoRequest: any): Observable<any> {
-    this.actionLoadingSubject.next(true);
-    return this.apollo.mutate({
-      mutation: UPDATE_TANK_INFO,
-      variables: {
-        tankInfoRequest
-      }
-    }).pipe(
-      finalize(() => {
-        this.actionLoadingSubject.next(false);
-      })
-    );
   }
 
   getNextTestCv(last_test_cv?: string): string | undefined {

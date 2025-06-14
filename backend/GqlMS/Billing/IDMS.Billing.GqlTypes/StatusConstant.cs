@@ -6,6 +6,7 @@ namespace IDMS.Billing.GqlTypes
         public const string NEW = "NEW";
         public const string EDIT = "EDIT";
         public const string CANCEL = "CANCEL";
+        public const string OVERWRITE = "OVERWRITE";
     }
 
     public class StorageDetailState

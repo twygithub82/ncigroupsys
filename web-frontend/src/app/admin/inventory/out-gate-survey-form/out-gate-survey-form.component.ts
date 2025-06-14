@@ -38,6 +38,8 @@ import { PreviewImageDialogComponent } from '@shared/components/preview-image-di
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { OutGate, OutGateDS, OutGateGO, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyGO } from 'app/data-sources/out-gate-survey';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
@@ -48,6 +50,7 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -57,8 +60,6 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -1588,9 +1589,38 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       this.ogDS.publishOutGateSurvey(outGateRequest).subscribe(result => {
         console.log(result)
         this.handleSaveSuccess(result.data?.publishOutGateSurvey)
-        this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+        this.onDownload();
       });
     }
+  }
+
+  onDownload() {
+    let tempDirection: Direction;
+
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(EirFormComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: "in",
+        gate_survey_guid: this.out_gate?.out_gate_survey?.guid,
+        eir_no: this.out_gate?.eir_no,
+        ogsDS: this.ogsDS,
+        cvDS: this.cvDS,
+      },
+      direction: tempDirection
+    });
+    this.fileManagerService.actionLoadingSubject.next(true);
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.fileManagerService.actionLoadingSubject.next(false);
+      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+    });
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup | undefined): void {

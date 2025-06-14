@@ -95,11 +95,16 @@ namespace IDMS.Residue.GqlTypes
 
                 updatedResidue.update_by = user;
                 updatedResidue.update_dt = currentDateTime;
+
                 updatedResidue.job_no = residue.job_no;
                 updatedResidue.bill_to_guid = residue.bill_to_guid;
                 updatedResidue.remarks = residue.remarks;
-                updatedResidue.est_cost = residue.est_cost;
                 updatedResidue.total_cost = residue.total_cost;
+
+                if (ObjectAction.OVERWRITE.EqualsIgnore(residue.action))
+                    updatedResidue.overwrite_remarks = residue.overwrite_remarks;
+                else
+                    updatedResidue.est_cost = residue.est_cost;
 
                 //Handling For Template_est_part
                 foreach (var item in residue.residue_part)
@@ -135,6 +140,18 @@ namespace IDMS.Residue.GqlTypes
                         part.update_by = user;
                         part.update_dt = currentDateTime;
                         part.delete_dt = currentDateTime;
+                    }
+                    else if (ObjectAction.OVERWRITE.EqualsIgnore(item.action))
+                    {
+                        var part = new residue_part() { guid = item.guid };
+                        context.residue_part.Attach(part);
+
+                        part.update_by = user;
+                        part.update_dt = currentDateTime;
+                        part.approve_part = item.approve_part;
+                        part.approve_qty = item.approve_qty;
+                        part.approve_cost = item.approve_cost;
+                        part.qty_unit_type_cv = item.qty_unit_type_cv;
                     }
                 }
 
@@ -688,14 +705,36 @@ namespace IDMS.Residue.GqlTypes
                     rollbackResidue.update_dt = currentDateTime;
                     rollbackResidue.status_cv = CurrentServiceStatus.APPROVED;
 
+                    //Parts handking
                     var residueParts = rollbackResidue.residue_part;
-                    var jobGuidString = string.Join(",", residueParts.Select(j => j.job_order_guid).Distinct().ToList().Select(g => $"'{g}'"));
+                    if(residueParts != null)
+                    {
+                        foreach (var part in residueParts)
+                        {
+                            //Job Order Handling, must perform before set part.job_order_guid to null
+                            if(part.job_order  != null)
+                            {
+                                part.job_order.delete_dt = currentDateTime;
+                                part.job_order.update_dt = currentDateTime;
+                                part.job_order.update_by = user;
+                            }
 
-                    string sql = "";
-                    sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
-                            $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
-                   
-                    context.Database.ExecuteSqlRaw(sql);
+                            part.job_order_guid = null;
+                            context.Entry(part).Property(e => e.job_order_guid).IsModified = true;
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
+                    }
+
+                    //Job Order Handling
+                    //var residueParts = rollbackResidue.residue_part;
+                    //var jobGuidString = string.Join(",", residueParts.Select(j => j.job_order_guid).Distinct().ToList().Select(g => $"'{g}'"));
+
+                    //string sql = "";
+                    //sql = $"UPDATE job_order SET team_guid = '', update_dt = {currentDateTime}, " +
+                    //        $"update_by = '{user}' WHERE guid IN ({jobGuidString})";
+
+                    //context.Database.ExecuteSqlRaw(sql);
                 }
 
                 var res = await context.SaveChangesAsync();

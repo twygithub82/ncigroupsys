@@ -36,6 +36,8 @@ namespace IDMS.Models.Service
         public string? customer_billing_guid { get; set; }
         //[ForeignKey("owner_billing")]
         public string? owner_billing_guid { get; set; }
+        [NotMapped]
+        public string? action { get; set; }
 
         [UseFiltering]
         public customer_company? customer_company { get; set; }
