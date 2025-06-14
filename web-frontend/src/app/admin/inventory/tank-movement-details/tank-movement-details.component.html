@@ -61,8 +61,8 @@
                           (click)="reownerTankDialog($event)">{{translatedLangText.REOWNERSHIP}}</button>
                         }
                         @if (canChangeCustomer()) {
-                        <button mat-menu-item
-                          (click)="changeCustomerTankDialog($event)">{{translatedLangText.UPDATE}} {{translatedLangText.CUSTOMER}}</button>
+                        <button mat-menu-item (click)="changeCustomerTankDialog($event)">{{translatedLangText.UPDATE}}
+                          {{translatedLangText.CUSTOMER}}</button>
                         }
                         @if (canOverwriteTankSummaryDetails()) {
                         <button mat-menu-item
@@ -90,6 +90,9 @@
                           <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                             <span class="value-display-info">
                               {{sot?.tank_no}}
+                              @if (tiItem?.previous_tank_no) {
+                              (<span class="previous-label">{{tiItem?.previous_tank_no}}</span>)
+                              }
                             </span>
                           </div>
                         </div>
@@ -123,6 +126,9 @@
                           <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
                             <span class="value-display-info">
                               {{ccDS.displayName(sot?.customer_company)}}
+                              @if (tiItem?.previous_customer_company) {
+                              (<span class="previous-label">{{tiItem?.previous_customer_company?.code}}</span>)
+                              }
                             </span>
                           </div>
                         </div>
