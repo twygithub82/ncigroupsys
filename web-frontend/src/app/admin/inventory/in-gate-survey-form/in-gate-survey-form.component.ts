@@ -1671,6 +1671,41 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
+  onFormSubmitAndPublish(event: Event) {
+    this.preventDefault(event);  // Prevents the form submission
+    if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
+      const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
+      // to handle prompt confirmation for save and publish
+      if (compartmentTypeFormChecks.length || true) {
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
+          width: '500px',
+          data: {
+            action: 'submit',
+            translatedLangText: this.translatedLangText,
+            confirmForm: compartmentTypeFormChecks
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result?.confirmed) {
+            this.onFormSubmit();
+          }
+        });
+      } else {
+        this.onFormSubmit();
+      }
+    } else {
+      console.log('Invalid soForm', this.surveyForm?.value);
+      this.markFormGroupTouched(this.surveyForm);
+    }
+  }
+
   onDownload() {
     let tempDirection: Direction;
 

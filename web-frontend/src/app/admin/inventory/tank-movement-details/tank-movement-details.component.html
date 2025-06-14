@@ -60,6 +60,10 @@
                         <button mat-menu-item
                           (click)="reownerTankDialog($event)">{{translatedLangText.REOWNERSHIP}}</button>
                         }
+                        @if (canChangeCustomer()) {
+                        <button mat-menu-item
+                          (click)="changeCustomerTankDialog($event)">{{translatedLangText.UPDATE}} {{translatedLangText.CUSTOMER}}</button>
+                        }
                         @if (canOverwriteTankSummaryDetails()) {
                         <button mat-menu-item
                           (click)="overwriteTankSummaryDialog($event)">{{translatedLangText.OVERWRITE}}
