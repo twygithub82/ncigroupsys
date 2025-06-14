@@ -1126,17 +1126,4 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.selected(fakeEvent);
 
   }
-
 }
-// export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
-//   // Check if the list already contains the default value
-//   const containsDefault = list.some(item => item.code_val === val);
-
-//   // If the default value is not present, add it to the list
-//   if (!containsDefault) {
-//     // Create a new array with the default option added at the beginning
-//     return [{ code_val: val, description: desc }, ...list];
-//   }
-
-//   return list;
-// }

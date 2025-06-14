@@ -252,7 +252,7 @@
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.PART_NAME
-                          }}:</span>{{row.tariff_repair.part_name}}</mat-cell>
+                          }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="group">
