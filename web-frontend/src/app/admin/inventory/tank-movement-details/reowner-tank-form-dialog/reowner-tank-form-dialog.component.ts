@@ -74,7 +74,7 @@ export class ReownerTankFormDialogComponent {
   ) {
     // Set the defaults
     this.action = data.action!;
-    if (this.action === 'changecustomer') {
+    if (this.action === 'recustomer') {
       this.dialogTitle = `${data.translatedLangText?.UPDATE} ${data.translatedLangText?.CUSTOMER}`;
     } else {
       this.dialogTitle = `${data.translatedLangText?.REOWNERSHIP}`;
@@ -89,7 +89,7 @@ export class ReownerTankFormDialogComponent {
     const formGroup = this.fb.group({
       owner: this.customerCodeControl,
     });
-    if (this.action === 'changecustomer') {
+    if (this.action === 'recustomer') {
     this.customerCodeControl.setValue(this.sot?.storing_order?.customer_company);
     } else {
     this.customerCodeControl.setValue(this.sot?.customer_company);

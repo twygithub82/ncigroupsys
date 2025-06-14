@@ -115,10 +115,12 @@ export class EditSotDetailsFormDialogComponent {
   createForm(): UntypedFormGroup {
     this.initialDt = Utility.convertDate(this.igs.dom_dt) as Date;
     this.maxManuDOMDt = Utility.getLaterDate(Utility.convertDate(this.igs.dom_dt) as Date, new Date());
+    const a = this.patchStringToArrayValue(this.igs?.btm_dis_comp_cv);
     const formGroup = this.fb.group({
+      unit_type_guid: this.sot?.unit_type_guid,
       cladding_cv: this.igs?.cladding_cv,
       tare_weight: this.igs?.tare_weight,
-      btm_dis_comp_cv: this.patchStringToArrayValue(this.igs?.btm_dis_comp_cv),
+      btm_dis_comp_cv: [this.patchStringToArrayValue(this.igs?.btm_dis_comp_cv)],
       manufacturer_cv: this.igs?.manufacturer_cv,
       dom_dt: Utility.convertDateMoment(this.igs?.dom_dt),
       capacity: this.igs?.capacity,
@@ -134,6 +136,7 @@ export class EditSotDetailsFormDialogComponent {
 
   submit() {
     if (this.overwriteForm?.valid) {
+      const unit_type_guid = this.overwriteForm.get('unit_type_guid')?.value;
       const cladding_cv = this.overwriteForm.get('cladding_cv')?.value;
       const tare_weight = this.overwriteForm.get('tare_weight')?.value;
       const btm_dis_comp_cv = this.overwriteForm.get('btm_dis_comp_cv')?.value?.[0];
@@ -142,8 +145,9 @@ export class EditSotDetailsFormDialogComponent {
       const capacity = this.overwriteForm.get('capacity')?.value;
       const max_weight_cv = this.overwriteForm.get('max_weight_cv')?.value;
       const walkway_cv = this.overwriteForm.get('walkway_cv')?.value;
-
+      
       const returnDialog: any = {
+        unit_type_guid: unit_type_guid,
         cladding_cv: cladding_cv,
         tare_weight: Utility.convertNumber(tare_weight),
         btm_dis_comp_cv: btm_dis_comp_cv,
