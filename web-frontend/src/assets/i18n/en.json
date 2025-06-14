@@ -1313,10 +1313,13 @@
     "GATE-IN-PENDING" : "Gate In: Pending",
     "IN-GATE-SURVEY-PENDING":"In Gate Survey: Pending",
     "CLEANING-PENDING":"Cleaning: Pending",
+    "RESIDUE-PENDING":"Residue: Pending",
     "STEAMING-QUOTATION":"STEAMING QUOTATION",
     "RESIDUE-QUOTATION": "RESIDUE DISPOSAL QUOTATION",
     "RENUMBER": "Renumber",
-    "REOWNERSHIP": "Reownership"
+    "REOWNERSHIP": "Reownership",
+    "ESTIMATE-CUSTOMER-APPROVAL-PENDING" : "Estimate Approval: Pending",
+    "REPAIR-ESTIMATE-PENDING" : "Repair Estimate : Pending"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

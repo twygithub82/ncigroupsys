@@ -722,7 +722,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
             { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
             { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
             { content: `${this.translatedLangText.ESTIMATE_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-            { content: `${this.displayDate(item?.create_dt)}` }
+            { content: `${this.displayDate(Utility.getTodayDateInEpoch())}` }
           ]
         ];
     
@@ -1117,7 +1117,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                     { content: `${this.translatedLangText.CARGO_NAME}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
                     { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
                     { content: `${this.translatedLangText.QUOTATION_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-                    { content: `${this.displayDate(item?.create_dt)}` }
+                    { content: `${this.displayDate(Utility.getTodayDateInEpoch())}` }
                   ]
                 ];
             

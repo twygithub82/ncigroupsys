@@ -5211,7 +5211,11 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getInCompleteCleaningCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = [{ clean_status_cv: { eq: "APPROVED" } }, { tank_status_cv: { eq: "CLEANING" } }]
+    let where: any ={and: [
+      { purpose_cleaning: { eq: true } }, 
+      { tank_status_cv: { eq: "CLEANING" } },
+      { cleaning: { any: true } }
+    ]};
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5229,6 +5233,79 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
+   getInCompleteResidueCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = {and:[
+      { purpose_cleaning: { eq: true } }, 
+      { tank_status_cv: { eq: "CLEANING" } },
+      { residue: { any: true } }
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
+
+   getRepairCustomerApprovalWaitingCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = {and:[
+      { purpose_repair: { eq: true } }, 
+      { tank_status_cv: { eq: "REPAIR" } },
+      { repair: { any: true } },
+      { status_cv: { in: ["PENDING"] } }
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
+   getRepairEstimateWaitingCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = {and:[
+      { purpose_repair: { eq: true } }, 
+      { tank_status_cv: { eq: "REPAIR" } },
+      { repair: { any: false } }
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
 
 
 }

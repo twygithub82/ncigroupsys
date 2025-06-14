@@ -16,21 +16,36 @@
       @else if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
       <div class="dashboard-content-info">
         <div class="row">
-          <div class="col-md-6 col-xl-3">
+          <div class="col-md-6 col-xl-4">
             <div class="card info-card">
              <dashboard-ingate-survey-waiting/>
             </div>
           </div>
-          <div class="col-md-6 col-xl-3">
+          <div class="col-md-6 col-xl-4">
             <div class="card info-card">
               <dashboard-gatein-waiting/>
             </div>
           </div>
-          <div class="col-md-6 col-xl-3">
-          <div class="card info-card">
-          <dashboard-cleaning-waiting/>
+          <div class="col-md-6 col-xl-4">
+            <div class="card info-card">
+              <dashboard-cleaning-waiting/>
+            </div>
           </div>
-        </div>
+          <div class="col-md-6 col-xl-4">
+            <div class="card info-card">
+              <dashboard-residue-waiting/>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-4">
+            <div class="card info-card">
+              <dashboard-repair-customer-approval-waiting/>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-4">
+            <div class="card info-card">
+              <dashboard-repair-estimate-waiting/>
+            </div>
+          </div>
          <!-- <div class="col-md-6 col-xl-3">
           <div class="card info-card">
           <app-test1/>

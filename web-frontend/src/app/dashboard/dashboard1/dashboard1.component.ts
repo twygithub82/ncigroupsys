@@ -28,6 +28,9 @@ import {Test1Component} from '../components/test1/test1.component';
 import { GateInWaitingComponent } from '../components/sot/waiting/gate_in/gatein_waiting.component';
 import {InGateSurveyWaitingComponent} from '../components/sot/notsurvey/in_gate_survey_waiting.component';
 import {CleaningWaitingComponent} from '../components/sot/waiting/cleaning/cleaning_waiting.component';
+import { ResidueWaitingComponent } from '../components/sot/waiting/residue/residue_waiting.component';
+import { RepairEstimateWaitingComponent } from '../components/sot/waiting/repair/estimate/estimate_waiting.component';
+import { RepairCustomerApprovalWaitingComponent } from '../components/sot/waiting/repair/customer_approval/customer_approval_waiting.component';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -75,7 +78,10 @@ export type ChartOptions = {
     Test1Component,
     InGateSurveyWaitingComponent,
     GateInWaitingComponent,
-    CleaningWaitingComponent
+    CleaningWaitingComponent,
+    ResidueWaitingComponent,
+    RepairEstimateWaitingComponent,
+    RepairCustomerApprovalWaitingComponent
   ],
 })
 

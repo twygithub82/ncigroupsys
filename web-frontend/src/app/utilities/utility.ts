@@ -868,6 +868,7 @@ export class Utility {
     translateService: TranslateService // Inject TranslateService
   ): Promise<void> {
 
+    //await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
     await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
 
   }
@@ -1210,6 +1211,10 @@ export class Utility {
 
   static IsAllowAutoSearch(): boolean {
     return false;
+  }
+
+  static getTodayDateInEpoch(): number {
+    return Math.floor(Date.now() / 1000);
   }
 }
 
