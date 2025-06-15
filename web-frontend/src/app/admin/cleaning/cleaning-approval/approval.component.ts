@@ -524,7 +524,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   NoActionTank(row: InGateCleaningItem) {
-    this.popupDialogForm(row, "no_action" , false);
+    this.popupDialogForm(row, "no_action", false);
   }
 
   KIVTank(row: InGateCleaningItem) {
@@ -644,12 +644,12 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       direction: tempDirection
     });
 
-      dialogRef.updatePosition({
-        top: '-9999px',  // Move far above the screen
-        left: '-9999px'  // Move far to the left of the screen
-      });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-       
+
     });
   }
 }

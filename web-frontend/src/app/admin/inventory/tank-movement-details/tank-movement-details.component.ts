@@ -1648,27 +1648,20 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot && this.tiItem) {
-        const newSot = {
-          guid: this.sot?.guid,
-          owner_guid: result.owner_guid,
+        const newSot: any = {
+          guid: this.sot.guid,
+          action: action
         };
-
-        const newTi = {
-          guid: this.tiItem?.guid,
-          owner_guid: result.owner_guid,
-        }
-
-        const updateTankInfo = {
-          action: action,
-          sot: newSot,
-          tankInfo: newTi
+        const newSo: any = {
+          guid: this.sot?.storing_order?.guid,
+          customer_company_guid: result.owner_guid
         };
-        console.log(updateTankInfo)
-        // this.tiDS.updateTankInfo(updateTankInfo).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.updateTankInfo);
-        //   this.loadFullPage();
-        // });
+        console.log('changeCustomerTankDialog(updateStoringOrderTank): ', newSot);
+        console.log('changeCustomerTankDialog(updateStoringOrderTank): ', newSo);
+        this.sotDS.updateStoringOrderTank(newSot, newSo, this.igs?.tank_comp_guid).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateStoringOrderTank);
+        });
       }
     });
   }
