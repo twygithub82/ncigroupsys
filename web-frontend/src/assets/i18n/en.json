@@ -261,7 +261,6 @@
         "PENDING-DETAIL": "Pending Detail",
         "PENDING": "Pending Invoices",
         "CUSTOMER-INVOICE": "Customer Invoice"
-       
       }
     },
     "SURVEY": {
@@ -783,7 +782,6 @@
     "APPROVAL-STATUS": "Approval Status",
     "METHOD": "Method",
     "LAST-CARGO-CLEANING-QUOTATION": "CLEANING QUOTATION",
-
     "TEAM-DETAILS": "Team Details",
     "TEAM": "Team",
     "UPDATE-BY": "Update By",
@@ -1083,6 +1081,7 @@
     "COMPARTMENT-TYPE-TOP-EMPTY": "Compartment Type (Top) is empty",
     "COMPARTMENT-TYPE-MANLID-EMPTY": "Compartment Type (Manlid) is empty",
     "ARE-YOU-SURE-TO-SUBMIT": "Submit?",
+    "ARE-YOU-SURE-TO-SAVE-AND-PUBLISH": "Save & Publish?",
     "NOT-DUE": "Not Due",
     "DUE": "Due",
     "DUES": "Due (S)",
@@ -1310,21 +1309,22 @@
     "FLAT": "Flat",
     "HOURLY": "Hourly",
     "APPROVED": "Approved",
-    "BY-HOUR":"By Hour",
-    "GATE-IN-PENDING" : "Gate In: Pending",
-    "IN-GATE-SURVEY-PENDING":"In Gate Survey: Pending",
-    "CLEANING-PENDING":"Cleaning: Pending",
-    "RESIDUE-PENDING":"Residue: Pending",
-    "STEAMING-QUOTATION":"STEAMING QUOTATION",
+    "BY-HOUR": "By Hour",
+    "GATE-IN-PENDING": "Gate In: Pending",
+    "IN-GATE-SURVEY-PENDING": "In Gate Survey: Pending",
+    "CLEANING-PENDING": "Cleaning: Pending",
+    "RESIDUE-PENDING": "Residue: Pending",
+    "STEAMING-QUOTATION": "STEAMING QUOTATION",
     "RESIDUE-QUOTATION": "RESIDUE DISPOSAL QUOTATION",
     "RENUMBER": "Renumber",
     "REOWNERSHIP": "Reownership",
-    "ESTIMATE-CUSTOMER-APPROVAL-PENDING" : "Estimate Approval: Pending",
-    "REPAIR-ESTIMATE-PENDING" : "Repair Estimate : Pending",
+    "ESTIMATE-CUSTOMER-APPROVAL-PENDING": "Estimate Approval: Pending",
+    "REPAIR-ESTIMATE-PENDING": "Repair Estimate : Pending",
+    "SAVE-AND-PUBLISH": "Save & Publish",
     "PENDING-STATUS": "Pending Status",
     "ESTIMATE-APPROVAL": "Estimate Approval",
     "REPAIR-QC-PENDING": "Repair QC: Pending",
-    "REPAIR-QC":"Repair QC"
+    "REPAIR-QC": "Repair QC"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
