@@ -699,4 +699,12 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_DELETE']);
   }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_VIEW']);
+  }
+
+  canCancel(row: any) {
+    return this.isAllowDelete() && this.soDS.canCancel(row);
+  }
 }

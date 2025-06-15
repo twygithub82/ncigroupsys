@@ -272,7 +272,7 @@
                               <span>{{translatedLangText.DELETE}}</span>
                             </button>
                             }
-                            @if (!row.actions.includes('cancel') && sotDS.canCancel(row)) {
+                            @if (!row.actions.includes('cancel') && sotDS.canCancel(row) && isAllowDelete()) {
                             <button mat-menu-item (click)="cancelItem($event, row)">
                               <mat-icon>cancel</mat-icon>
                               <span>{{sotSelection.hasValue() ? translatedLangText.BULK + " " :
@@ -355,13 +355,13 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (soDS.canAdd(storingOrderItem)) {
+                  @if (isAllowAdd() && soDS.canAdd(storingOrderItem)) {
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addOrderDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ORDER_DETAILS}}
                   </button>
                   }
-                  @if (soDS.canAdd(storingOrderItem) || anyEdited()) {
+                  @if ((soDS.canAdd(storingOrderItem) || anyEdited()) && (isAllowAdd() || isAllowEdit())) {
                   <button mat-flat-button color="primary" [disabled]="(soDS.actionLoading$ | async)">
                     <mat-icon>
                       @if (!(soDS.actionLoading$ | async)) {

@@ -44,7 +44,8 @@
                     </div>
                     <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex align-items-center">
                       <div class="d-flex align-items-center">
-                        <span [ngClass]="{'value-display-info me-2': true, 'cursor-pointer text-decoration-underline': canChangeTankNo()}"
+                        <span
+                          [ngClass]="{'value-display-info me-2': true, 'cursor-pointer text-decoration-underline': canChangeTankNo()}"
                           (click)="onChangeTankNo($event)">{{in_gate?.tank?.tank_no}}</span>
                         <!-- @if (canChangeTankNo()) {
                         <mat-icon color="primary" class="cursor-pointer"
@@ -2390,9 +2391,24 @@
                             {{translatedLangText.PUBLISH}}
                           </button>
                           }
+                          @if (true) {
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
-                            (click)="onSubmitCheck($event)">
+                            (click)="onSubmitCheck($event, true)">
+                            <mat-icon>
+                              @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
+                              save
+                              } @else {
+                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                              }
+                            </mat-icon>
+                            {{translatedLangText.SAVE_AND_PUBLISH}}
+                          </button>
+                          }
+                          @if (false) {
+                          <button mat-raised-button matStepperNext color="primary" class="msr-2"
+                            [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
+                            (click)="onSubmitCheck($event, false)">
                             <mat-icon>
                               @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
                               save
@@ -2402,6 +2418,7 @@
                             </mat-icon>
                             {{translatedLangText.SAVE}}
                           </button>
+                          }
                         </div>
                       </div>
                     </form>

@@ -298,18 +298,14 @@ export class FormDialogComponent {
     }
   }
 
-
-
   save() {
-
     if (!this.pcForm?.valid) return;
-
     let cc: CleaningCategoryItem = new CleaningCategoryItem(this.selectedItem);
     // tc.guid='';
     cc.name = this.pcForm.value['name'];
     cc.description = this.pcForm.value['description'];
-    cc.cost = this.pcForm.value['adjusted_cost'];
-
+    cc.cost = Utility.convertNumber(this.pcForm.value['adjusted_cost'], 2);
+    delete cc.tariff_cleanings
 
     const where: any = {};
     if (this.pcForm!.value['name']) {
@@ -319,22 +315,17 @@ export class FormDialogComponent {
     this.catDS.search(where).subscribe(p => {
       if (p.length == 0) {
         if (this.selectedItem.guid) {
-
           this.catDS.updateCleaningCategory(cc).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.updateCleaningCategory);
           });
-
-        }
-        else {
+        } else {
           this.catDS.addCleaningCategory(cc).subscribe(result => {
             console.log(result)
             this.handleSaveSuccess(result?.data?.addCleaningCategory);
           });
         }
-
-      }
-      else {
+      } else {
         var allowUpdate = true;
         for (let i = 0; i < p.length; i++) {
           if (p[i].guid != this.selectedItem.guid) {
@@ -343,14 +334,11 @@ export class FormDialogComponent {
           }
         }
         if (allowUpdate) {
-
           if (this.selectedItem.guid) {
-
             this.catDS.updateCleaningCategory(cc).subscribe(result => {
               console.log(result)
               this.handleSaveSuccess(result?.data?.updateCleaningCategory);
             });
-
           }
         }
         else {

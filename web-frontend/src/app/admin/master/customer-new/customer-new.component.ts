@@ -269,10 +269,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    this.initializeFilter();
     this.initializeValueChange();
     this.loadData();
-    this.SetCostDecimal();
 
     this.countryCodes = Utility.getCountryCodes();
   }
@@ -288,23 +286,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     //     });
     //   }
     // });
-  }
-
-  SetCostDecimal() {
-    this.ccForm?.get('material_discount_amount')?.valueChanges.subscribe(value => {
-      if (value !== null && value !== '') {
-        // Ensure the value has two decimal places
-        const formattedValue = parseFloat(value).toFixed(2);
-        this.ccForm?.get('material_discount_amount')?.setValue(formattedValue, { emitEvent: false });
-      }
-    });
-  }
-
-  GetNetCost(): string {
-    var val: number = 0;
-
-    val = Number(this.ccForm?.get("total_cost")?.value) - Number(this.ccForm?.get("labour_discount_amount")?.value) - Number(this.ccForm?.get("material_discount_amount")?.value)
-    return val.toFixed(2);
   }
 
   initializeValueChange() {
@@ -352,9 +333,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       remarks: [''],
       repList: []
     });
-  }
-
-  initializeFilter() {
   }
 
   SortRepairEstPart(items: TemplateEstPartItem[]): TemplateEstPartItem[] {
@@ -441,9 +419,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     else {
       this.refreshBillingBranches();
     }
-
   }
-
 
   public loadData() {
     this.initializeFilterCustomerCompany();
@@ -503,26 +479,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     });
   }
 
-  GetRepairOrDamage(repairDamageList: TepDamageRepairItem[], codeType: Number): any[] {
-    var retval: any[] = [];
-    var result = repairDamageList.filter((item) => item.code_type == codeType)
-    retval = result?.filter((item: Partial<TepDamageRepairItem> | undefined): item is Partial<TepDamageRepairItem> => item !== undefined)
-      .map((item: Partial<TepDamageRepairItem>) => {
-        return {
-          guid: item.guid,
-          rep_guid: item.tep_guid,
-          code_cv: item.code_cv,
-          create_dt: item.create_dt,
-          code_type: item.code_type,
-          create_by: item.create_by,
-          update_dt: item.update_dt,
-          update_by: item.update_by,
-          delete_dt: item.delete_dt,
-        } as RepairPartItem;
-      }) ?? [];
-    return retval.sort((a, b) => (a.code_cv ?? 0) - (b.code_cv ?? 0));
-  }
-
   populateSOT(rep: any[]) {
     if (rep?.length) {
       this.updateData(rep);
@@ -535,20 +491,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   displayCountryCodeFn(cc: any): string {
     return cc && cc.country ? `${cc.iso?.toUpperCase()} ${cc.code}` : '';
-  }
-
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
   }
 
   addContactPerson(event: Event, row?: ContactPersonItem) {
@@ -587,7 +529,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       }
     });
   }
-
 
   editContactPerson(event: Event, row: ContactPersonItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
@@ -630,7 +571,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   deleteItem(row: StoringOrderTankItem, index: number) {
-    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

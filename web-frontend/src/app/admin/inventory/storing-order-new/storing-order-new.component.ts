@@ -222,13 +222,17 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   initSOForm() {
     this.soForm = this.fb.group({
       guid: [''],
-      customer_company_guid: ['', Validators.required],
-      customer_code: [{ value: this.customerCodeControl }, [Validators.required]],
+      customer_company_guid: [{ value: '', disabled: !this.isAllowAdd() && !this.isAllowEdit() }, Validators.required],
+      customer_code: [{ value: this.customerCodeControl, disabled: !this.isAllowAdd() && !this.isAllowEdit() }, [Validators.required]],
       so_no: [''],
-      so_notes: [''],
-      haulier: [''],
+      so_notes: [{ value: '', disabled: !this.isAllowAdd() && !this.isAllowEdit() }],
+      haulier: [{ value: '', disabled: !this.isAllowAdd() && !this.isAllowEdit() }],
       sotList: ['']
     });
+
+    if (!this.isAllowAdd() && !this.isAllowEdit()) {
+      this.customerCodeControl?.disable();
+    }
   }
 
   displayColumnChanged() {
@@ -342,7 +346,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.populateSOT(so.storing_order_tank);
     }
 
-    if (!this.soDS.canAdd(this.storingOrderItem)) {
+    if (!this.isAllowAdd() && !this.isAllowEdit() && !this.soDS.canAdd(this.storingOrderItem)) {
       this.customerCodeControl?.disable();
       this.soForm?.get('so_notes')?.disable();
       this.soForm?.get('haulier')?.disable();
@@ -419,6 +423,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
+    if (!this.isAllowView()) return;
+    
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -795,7 +801,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     return (
       this.soDS.canAdd(this.storingOrderItem) ||
       this.sotDS.canAddRemove(row) ||
-      (!row.actions.includes('cancel') && this.sotDS.canCancel(row)) ||
+      (!row.actions.includes('cancel') && this.sotDS.canCancel(row) && this.isAllowDelete()) ||
       (!row.actions.includes('rollback') && this.sotDS.canRollbackStatus(row)) ||
       row.actions.includes('cancel') ||
       row.actions.includes('rollback')
@@ -845,5 +851,21 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   getSaveBtnDescription(): string {
     return Utility.getSaveBtnDescription(this.so_guid);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_DELETE']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_VIEW']);
   }
 }
