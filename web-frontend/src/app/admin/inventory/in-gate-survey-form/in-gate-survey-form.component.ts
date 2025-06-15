@@ -48,6 +48,7 @@ import { TankInfoDS } from 'app/data-sources/tank-info';
 import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -359,6 +360,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
     private fileManagerService: FileManagerService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -406,32 +408,32 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   initForm() {
     this.surveyForm = this.fb.group({
       tank_details: this.fb.group({
-        unit_type_guid: [''],
+        unit_type_guid: [{ value: '', disabled: !this.canEdit() }],
         owner: this.ownerControl,
-        owner_guid: [''],
-        manufacturer_cv: [''],
-        dom_dt: [''],
-        cladding_cv: [''],
-        capacity: [''],
-        tare_weight: [''],
-        max_weight_cv: [''],
-        height_cv: [''],
-        walkway_cv: [''],
-        tank_comp_guid: [''],
-        comments: [''],
-        last_release_dt: ['']
+        owner_guid: [{ value: '', disabled: !this.canEdit() }],
+        manufacturer_cv: [{ value: '', disabled: !this.canEdit() }],
+        dom_dt: [{ value: '', disabled: !this.canEdit() }],
+        cladding_cv: [{ value: '', disabled: !this.canEdit() }],
+        capacity: [{ value: '', disabled: !this.canEdit() }],
+        tare_weight: [{ value: '', disabled: !this.canEdit() }],
+        max_weight_cv: [{ value: '', disabled: !this.canEdit() }],
+        height_cv: [{ value: '', disabled: !this.canEdit() }],
+        walkway_cv: [{ value: '', disabled: !this.canEdit() }],
+        tank_comp_guid: [{ value: '', disabled: !this.canEdit() }],
+        comments: [{ value: '', disabled: !this.canEdit() }],
+        last_release_dt: [{ value: '', disabled: !this.canEdit() }]
       }),
       periodic_test: this.fb.group({
-        last_test_cv: [''],
-        next_test_cv: [''],
-        test_class_cv: [''],
-        test_dt: [''],
+        last_test_cv: [{ value: '', disabled: !this.canEdit() }],
+        next_test_cv: [{ value: '', disabled: !this.canEdit() }],
+        test_class_cv: [{ value: '', disabled: !this.canEdit() }],
+        test_dt: [{ value: '', disabled: !this.canEdit() }],
       }),
       in_gate_details: this.fb.group({
-        vehicle_no: [''],
-        driver_name: [''],
-        haulier: [''],
-        in_gate_remarks: [''],
+        vehicle_no: [{ value: '', disabled: !this.canEdit() }],
+        driver_name: [{ value: '', disabled: !this.canEdit() }],
+        haulier: [{ value: '', disabled: !this.canEdit() }],
+        in_gate_remarks: [{ value: '', disabled: !this.canEdit() }],
       }),
       frame_type: this.fb.group({
         leftRemarks: [''],
@@ -448,64 +450,59 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         bottomImage: this.createImageForm('BOTTOM_SIDE', '', undefined),
         dmgImages: this.fb.array([]),
       }),
-      // photos: this.fb.group({
-      //   leftImage: this.createImageForm('LEFT_SIDE', '', undefined),
-      //   rearImage: this.createImageForm('REAR_SIDE', '', undefined),
-      //   rightImage: this.createImageForm('RIGHT_SIDE', '', undefined),
-      //   topImage: this.createImageForm('TOP_SIDE', '', undefined),
-      //   frontImage: this.createImageForm('FRONT_SIDE', '', undefined),
-      //   bottomImage: this.createImageForm('BOTTOM_SIDE', '', undefined),
-      //   dmgImages: this.fb.array([]),
-      // }),
       compartment_type: this.fb.group({
         bottomFormGroup: this.fb.group({
-          btm_dis_comp_cv: [''],
-          btm_dis_valve_cv: [''],
-          btm_dis_valve_oth: [''],
-          btm_dis_valve_spec_cv: [''],
-          btm_dis_valve_spec_oth: [''],
-          foot_valve_cv: [''],
-          foot_valve_oth: [''],
-          btm_valve_brand_cv: [''],
-          thermometer: [''],
-          thermometer_cv: [''],
-          ladder: [''],
-          data_csc_transportplate: [''],
+          btm_dis_comp_cv: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_spec_oth: [{ value: '', disabled: !this.canEdit() }],
+          foot_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          foot_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          btm_valve_brand_cv: [{ value: '', disabled: !this.canEdit() }],
+          thermometer: [{ value: '', disabled: !this.canEdit() }],
+          thermometer_cv: [{ value: '', disabled: !this.canEdit() }],
+          ladder: [{ value: '', disabled: !this.canEdit() }],
+          data_csc_transportplate: [{ value: '', disabled: !this.canEdit() }],
         }),
         topFormGroup: this.fb.group({
-          top_dis_comp_cv: [''],
-          top_dis_valve_cv: [''],
-          top_dis_valve_oth: [''],
-          top_dis_valve_spec_cv: [''],
-          top_dis_valve_spec_oth: [''],
-          top_valve_brand_cv: [''],
-          airline_valve_cv: [''],
-          airline_valve_oth: [''],
-          airline_valve_pcs: [''],
-          airline_valve_dim: [''],
-          airline_valve_conn_cv: [''],
-          airline_valve_conn_oth: [''],
-          airline_valve_conn_spec_cv: [''],
-          airline_valve_conn_spec_oth: [''],
+          top_dis_comp_cv: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_spec_oth: [{ value: '', disabled: !this.canEdit() }],
+          top_valve_brand_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_pcs: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_dim: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_oth: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_spec_oth: [{ value: '', disabled: !this.canEdit() }],
         }),
         manlidFormGroup: this.fb.group({
-          manlid_comp_cv: [''],
-          manlid_cover_cv: [''],
-          manlid_cover_oth: [''],
-          manlid_cover_pcs: [''],
-          manlid_cover_pts: [''],
-          manlid_seal_cv: [''],
-          pv_type_cv: [''],
-          pv_type_pcs: [''],
-          pv_spec_cv: [''],
-          pv_spec_pcs: [''],
-          safety_handrail: [''],
-          buffer_plate: [''],
-          residue: [''],
-          dipstick: [''],
+          manlid_comp_cv: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_cv: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_oth: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_pcs: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_pts: [{ value: '', disabled: !this.canEdit() }],
+          manlid_seal_cv: [{ value: '', disabled: !this.canEdit() }],
+          pv_type_cv: [{ value: '', disabled: !this.canEdit() }],
+          pv_type_pcs: [{ value: '', disabled: !this.canEdit() }],
+          pv_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          pv_spec_pcs: [{ value: '', disabled: !this.canEdit() }],
+          safety_handrail: [{ value: '', disabled: !this.canEdit() }],
+          buffer_plate: [{ value: '', disabled: !this.canEdit() }],
+          residue: [{ value: '', disabled: !this.canEdit() }],
+          dipstick: [{ value: '', disabled: !this.canEdit() }],
         })
       }),
     });
+
+    if (!this.canEdit()) {
+      this.ownerControl?.disable();
+    }
 
     this.initValueChanges();
   }
@@ -1440,7 +1437,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   canChangeTankNo() {
-    return !this.in_gate?.in_gate_survey?.guid;
+    return this.isAllowEdit() && !this.in_gate?.in_gate_survey?.guid;
   }
 
   onSubmitCheck(event: Event, toPublish: boolean) {
@@ -1790,6 +1787,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   startDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
     this.isDrawing = true;
     event.preventDefault(); // Prevent default dragging behavior
+    if (!this.isAllowEdit()) return;
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
     if (dataIndex !== null) {
@@ -1802,6 +1800,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   startDrawingWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
     this.isDrawing = true;
     event.preventDefault(); // Prevent default dragging behavior
+    if (!this.isAllowEdit()) return;
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
     if (dataIndex !== null) {
@@ -2299,5 +2298,33 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   patchStringToArrayValue(arrayVal: string | undefined) {
     return Utility.patchStringToArrayValue(arrayVal)
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_EDIT']);
+  }
+
+  isAllowPublish() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_PUBLISH']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_VIEW']);
+  }
+
+  canEdit() {
+    return this.isAllowEdit() && (!this.in_gate?.eir_status_cv || this.in_gate?.eir_status_cv === 'PENDING' || this.in_gate?.eir_status_cv === 'YET_TO_SURVEY');
+  }
+
+  triggerFileInputIfAllowed(inputRef: HTMLInputElement, formPath?: string): void {
+    if (!this.isAllowEdit()) return;
+
+    const previewVal = formPath
+      ? this.surveyForm?.get(formPath)?.get('preview')?.value
+      : null;
+
+    if (!previewVal) {
+      inputRef.click();
+    }
   }
 }
