@@ -34,6 +34,7 @@ export class ConsolidatedWaitingComponent {
   result_residue:string = "-";
   result_repair_estimate:string = "-";
   result_estimate_approval:string = "-";
+  result_repair_qc_incomplete:string = "-";
 
   igDS: InGateDS;
 
@@ -46,6 +47,7 @@ export class ConsolidatedWaitingComponent {
     CLEANING:'COMMON-FORM.CLEANING',
     ESTIMATE_APPROVAL:'COMMON-FORM.ESTIMATE-APPROVAL',
     REPAIR_ESTIMATE:'COMMON-FORM.REPAIR-ESTIMATE',
+    REPAIR_QC: 'COMMON-FORM.REPAIR-QC',
    };
 
   constructor(private notificationService:SingletonNotificationService, 
@@ -88,7 +90,7 @@ export class ConsolidatedWaitingComponent {
   });
   }
 
- onIconClick(event: MouseEvent, transactionType: string, amount: number) {
+ onIconClick(event: MouseEvent, transactionType: string, amount: string) {
     event.stopPropagation(); // Prevent event bubbling
     
     console.log(`Icon clicked - Type: ${transactionType}, Amount: ${amount}`);
@@ -102,7 +104,7 @@ export class ConsolidatedWaitingComponent {
     setTimeout(() => iconBox.classList.remove('icon-clicked'), 200);
   }
 
-  showTransactionDetails(type: string, amount: number) {
+  showTransactionDetails(type: string, amount: string) {
     // Implement your logic to show details
     alert(`Transaction Details:\nType: ${type}\nAmount: ${amount}`);
   }
@@ -132,6 +134,10 @@ export class ConsolidatedWaitingComponent {
 
       this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
       this.result_gate_in = String(data);
+    });
+
+     this.sotDS.getRepairQCWaitingCount().subscribe(data => {
+      this.result_repair_qc_incomplete = String(data);
     });
   }
 

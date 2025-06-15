@@ -5281,7 +5281,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
    getRepairCustomerApprovalWaitingCount(): Observable<number> {
     this.loadingSubject.next(true);
     let where: any = {and:[
-      { purpose_repair: { eq: true } }, 
+      { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
       { tank_status_cv: { eq: "REPAIR" } },
       { repair: { any: true } },
       { status_cv: { in: ["PENDING"] } }
@@ -5306,7 +5306,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
    getRepairEstimateWaitingCount(): Observable<number> {
     this.loadingSubject.next(true);
     let where: any = {and:[
-      { purpose_repair: { eq: true } }, 
+      { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
       { tank_status_cv: { eq: "REPAIR" } },
       { repair: { any: false } }
     ]};
@@ -5326,6 +5326,31 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         })
       );
   }
+
+  getRepairQCWaitingCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = {and:[
+      { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
+      { tank_status_cv: { eq: "REPAIR" } },
+      { repair: { some: {status_cv: { in: ["COMPLETED"] }} } }
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
 
 
 }

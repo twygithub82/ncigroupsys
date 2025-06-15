@@ -1322,7 +1322,9 @@
     "ESTIMATE-CUSTOMER-APPROVAL-PENDING" : "Estimate Approval: Pending",
     "REPAIR-ESTIMATE-PENDING" : "Repair Estimate : Pending",
     "PENDING-STATUS": "Pending Status",
-    "ESTIMATE-APPROVAL": "Estimate Approval"
+    "ESTIMATE-APPROVAL": "Estimate Approval",
+    "REPAIR-QC-PENDING": "Repair QC: Pending",
+    "REPAIR-QC":"Repair QC"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

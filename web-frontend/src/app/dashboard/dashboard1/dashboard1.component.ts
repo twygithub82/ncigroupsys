@@ -32,6 +32,7 @@ import { ResidueWaitingComponent } from '../components/sot/waiting/residue/resid
 import { RepairEstimateWaitingComponent } from '../components/sot/waiting/repair/estimate/estimate_waiting.component';
 import { RepairCustomerApprovalWaitingComponent } from '../components/sot/waiting/repair/customer_approval/customer_approval_waiting.component';
 import {ConsolidatedWaitingComponent} from '../components/sot/waiting/consolidated/consolidated_waiting.component';
+import {RepairQCWaitingComponent} from '../components/sot/waiting/repair/qc_incomplete/qc_waiting.component';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -83,7 +84,8 @@ export type ChartOptions = {
     ResidueWaitingComponent,
     RepairEstimateWaitingComponent,
     RepairCustomerApprovalWaitingComponent,
-    ConsolidatedWaitingComponent
+    ConsolidatedWaitingComponent,
+    RepairQCWaitingComponent
   ],
 })
 
