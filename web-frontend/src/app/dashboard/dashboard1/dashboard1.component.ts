@@ -33,6 +33,7 @@ import { RepairEstimateWaitingComponent } from '../components/sot/waiting/repair
 import { RepairCustomerApprovalWaitingComponent } from '../components/sot/waiting/repair/customer_approval/customer_approval_waiting.component';
 import {ConsolidatedWaitingComponent} from '../components/sot/waiting/consolidated/consolidated_waiting.component';
 import {RepairQCWaitingComponent} from '../components/sot/waiting/repair/qc_incomplete/qc_waiting.component';
+import {DashboardGateIOComponent} from '../components/gate/gateio.component';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -85,7 +86,8 @@ export type ChartOptions = {
     RepairEstimateWaitingComponent,
     RepairCustomerApprovalWaitingComponent,
     ConsolidatedWaitingComponent,
-    RepairQCWaitingComponent
+    RepairQCWaitingComponent,
+    DashboardGateIOComponent
   ],
 })
 

@@ -1,0 +1,60 @@
+.card-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 500px;
+    margin: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .card-separator {
+  width: 1px;
+  background-color: #e9e5e5;
+  padding-top:10px;
+  height: 150px; /* Adjust as needed */
+}
+
+  .card-box {
+    flex: 1;
+    background: transparent;
+    border:0px;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    min-width:100px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    margin: auto;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-blue {
+    background-color: #e0e8ff;
+    color: #3f51b5;
+  }
+
+  .icon-green {
+    background-color: #e6f4ea;
+    color: #4caf50;
+  }
+
+  .card-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .card-label {
+    font-size: 0.9rem;
+    color: #888;
+  }
