@@ -70,6 +70,11 @@ namespace IDMS.Models.DB
             modelBuilder.Entity<tank_info>()
                 .HasIndex(t => t.tank_no)
                 .IsUnique();  // Ensure that TankNo is unique in TankInfo
+
+            modelBuilder.Entity<tank_info>()
+                .HasOne(t => t.previous_customer_company)
+                .WithOne()
+                .HasForeignKey<tank_info>(t => t.previous_owner_guid);
         }
     }
 }

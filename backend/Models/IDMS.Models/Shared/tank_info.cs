@@ -50,6 +50,9 @@ namespace IDMS.Models.Shared
         [UseFiltering]
         public virtual customer_company? customer_company { get; set; }
         [UseFiltering]
+        public virtual customer_company? previous_customer_company { get; set; }
+
+        [UseFiltering]
         public virtual tariff_buffer? tariff_buffer { get; set; }
         [UseFiltering]
         public virtual IEnumerable<storing_order_tank?>? storing_order_tank { get; set; }

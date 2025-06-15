@@ -34,6 +34,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
+import { PreviewRepairEstFormDialog } from '@shared/preview/preview_repair_estimate/preview-repair-estimate.component';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingSOTGo } from 'app/data-sources/billing';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
@@ -47,19 +48,24 @@ import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
 import { OutGateSurveyDS, OutGateSurveyItem } from 'app/data-sources/out-gate-survey';
 import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buffer';
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
+import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
+import { ResidueEstPartGO } from 'app/data-sources/residue-part';
+import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
-import { SteamPartGO } from 'app/data-sources/steam-part';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { SteamPartGO } from 'app/data-sources/steam-part';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail';
-import { TankDS } from 'app/data-sources/tank';
+import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { TariffCleaningDS, TariffCleaningGO } from 'app/data-sources/tariff-cleaning';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TransferDS, TransferItem } from 'app/data-sources/transfer';
+import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heating-pdf/steam-heating-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
@@ -72,28 +78,22 @@ import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
+import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
+import { EditSotDetailsFormDialogComponent } from './edit-sot-details-form-dialog/edit-sot-details-form-dialog.component';
+import { EditSotSummaryFormDialogComponent } from './edit-sot-summary-form-dialog/edit-sot-summary-form-dialog.component';
 import { OverwriteCleaningApprovalFormDialogComponent } from './overwrite-clean-appr-form-dialog/overwrite-clean-appr-form-dialog.component';
-import { OverwriteSteamingApprovalFormDialogComponent } from './overwrite-steam-appr-form-dialog/overwrite-steam-appr-form-dialog.component';
-import { OverwriteResidueApprovalFormDialogComponent } from './overwrite-residue-appr-form-dialog/overwrite-residue-appr-form-dialog.component';
 import { OverwriteCleanStatusFormDialogComponent } from './overwrite-clean-status-form-dialog/overwrite-clean-status-form-dialog.component';
 import { OverwriteDepotCostFormDialogComponent } from './overwrite-depot-cost-form-dialog/overwrite-depot-cost-form-dialog.component';
 import { OverwriteJobNoFormDialogComponent } from './overwrite-job-no-form-dialog/overwrite-job-no-form-dialog.component';
 import { OverwriteLastCargoFormDialogComponent } from './overwrite-last-cargo-form-dialog/overwrite-last-cargo-form-dialog.component';
-import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
-import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
-import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
-import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { ResidueEstPartGO } from 'app/data-sources/residue-part';
 import { OverwriteRepairApprovalFormDialogComponent } from './overwrite-repair-appr-form-dialog/overwrite-repair-appr-form-dialog.component';
-import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
-import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
-import { PreviewRepairEstFormDialog } from '@shared/preview/preview_repair_estimate/preview-repair-estimate.component';
-import { EditSotSummaryFormDialogComponent } from './edit-sot-summary-form-dialog/edit-sot-summary-form-dialog.component';
-import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
-import { EditSotDetailsFormDialogComponent } from './edit-sot-details-form-dialog/edit-sot-details-form-dialog.component';
+import { OverwriteResidueApprovalFormDialogComponent } from './overwrite-residue-appr-form-dialog/overwrite-residue-appr-form-dialog.component';
+import { OverwriteSteamingApprovalFormDialogComponent } from './overwrite-steam-appr-form-dialog/overwrite-steam-appr-form-dialog.component';
 import { OverwriteStorageFormDialogComponent } from './overwrite-storage-purpose-form-dialog/overwrite-storage-purpose-form-dialog.component';
 import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/renumber-tank-form-dialog.component';
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
+import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
+import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -520,6 +520,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   surveyList: SurveyDetailItem[] = [];
   transferList: TransferItem[] = [];
   latestSurveyDetailItem: SurveyDetailItem[] = [];
+  unit_typeList: TankItem[] = []
   allowAddPurposeTankStatuses: string[] = [
     'SO_GENERATED',
     'IN_GATE',
@@ -912,6 +913,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.cvDS.connectAlias('repairCodeCv').subscribe(data => {
       this.repairCodeCvList = data;
+    });
+
+    this.subs.sink = this.tDS.search({ tariff_depot_guid: { neq: null } }, null, 100).subscribe(data => {
+      this.unit_typeList = data
     });
 
     this.cvDS.connectAlias('groupNameCv').subscribe(data => {
@@ -1621,7 +1626,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   changeCustomerTankDialog(event: Event) {
     this.preventDefault(event);
-    const action = 'changecustomer';
+    const action = 'recustomer';
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1643,27 +1648,20 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot && this.tiItem) {
-        const newSot = {
-          guid: this.sot?.guid,
-          owner_guid: result.owner_guid,
+        const newSot: any = {
+          guid: this.sot.guid,
+          action: action
         };
-
-        const newTi = {
-          guid: this.tiItem?.guid,
-          owner_guid: result.owner_guid,
-        }
-
-        const updateTankInfo = {
-          action: action,
-          sot: newSot,
-          tankInfo: newTi
+        const newSo: any = {
+          guid: this.sot?.storing_order?.guid,
+          customer_company_guid: result.owner_guid
         };
-        console.log(updateTankInfo)
-        // this.tiDS.updateTankInfo(updateTankInfo).subscribe(result => {
-        //   console.log(result)
-        //   this.handleSaveSuccess(result?.data?.updateTankInfo);
-        //   this.loadFullPage();
-        // });
+        console.log('changeCustomerTankDialog(updateStoringOrderTank): ', newSot);
+        console.log('changeCustomerTankDialog(updateStoringOrderTank): ', newSo);
+        this.sotDS.updateStoringOrderTank(newSot, newSo, this.igs?.tank_comp_guid).subscribe(result => {
+          console.log(result)
+          this.handleSaveSuccess(result?.data?.updateStoringOrderTank);
+        });
       }
     });
   }
@@ -1779,7 +1777,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           disCompCvList: this.disCompCvList,
           manufacturerCvList: this.manufacturerCvList,
           maxGrossWeightCvList: this.maxGrossWeightCvList,
-          walkwayCvList: this.walkwayCvList
+          walkwayCvList: this.walkwayCvList,
+          unit_typeList: this.unit_typeList
         }
       },
       direction: tempDirection
@@ -1787,6 +1786,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result && this.sot) {
         console.log(result)
+        const newSot = {
+          guid: this.sot?.guid,
+          unit_type_guid: result?.unit_type_guid
+        }
         const newIgs = {
           guid: this.igs?.guid,
           cladding_cv: result?.cladding_cv,
@@ -1802,13 +1805,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           cleaning: undefined,
           ingateSurvey: newIgs,
           so: undefined,
-          sot: undefined,
+          sot: newSot,
           steaming: undefined
         }
         console.log(`updateTankDetails: `, tankDetailRequest)
         this.sotDS.updateTankDetails(tankDetailRequest).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateTankDetails);
+          this.loadDataHandling_sot(this.sot_guid!);
           this.loadDataHandling_igs(this.sot_guid!);
         });
       }
@@ -2769,7 +2773,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (billing_sot?.lon_billing_guid || billing_sot?.loff_billing_guid || billing_sot?.preinsp_billing_guid || billing_sot?.gin_billing_guid || billing_sot?.gout_billing_guid) {
       return false;
     }
-    
+
     const steamList = this.steamItem?.filter(x => {
       !!x.customer_billing_guid || !!x.owner_billing_guid
     }) ?? [];
@@ -2781,11 +2785,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const cleanList = this.cleaningItem?.filter(x => {
       !!x.customer_billing_guid || !!x.owner_billing_guid
     }) ?? [];
-    
+
     const residueList = this.residueItem.filter(x => {
       !!x.customer_billing_guid || !!x.owner_billing_guid
     }) ?? [];
-    
+
     if (steamList.length || repairList.length || cleanList.length || residueList.length) {
       return false
     }

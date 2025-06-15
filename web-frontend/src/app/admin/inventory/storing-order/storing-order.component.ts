@@ -687,4 +687,16 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_DELETE']);
+  }
 }

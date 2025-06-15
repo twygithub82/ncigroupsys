@@ -110,7 +110,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
-  billingItems:any[]=[];
+  billingItems: any[] = [];
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -202,7 +202,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CANNOT_EXCEED: "COMMON-FORM.CANNOT-EXCEED",
     CANNOT_SMALLER: "COMMON-FORM.CANNOT-SMALLER",
     SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
-    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
+    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED'
   };
 
 
@@ -221,12 +221,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // Set the defaults
     super();
     this.selectedItem = data.selectedItem;
-    this.langText=data.langText;
-    this.billingItems=this.transformList(this.selectedItem)
+    this.langText = data.langText;
+    this.billingItems = this.transformList(this.selectedItem)
     this.pcForm = this.createPackageRepair();
     this.packRepairDS = new PackageRepairDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
-    this.igDS= new InGateDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
@@ -280,61 +280,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   loadData() {
 
     const queries = [
-          // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
-          // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-          // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
-          // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
-          { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE' },
-        ];
-        this.CodeValuesDS?.getCodeValuesByType(queries);
-    
-        this.CodeValuesDS?.connectAlias('invoiceTypeCv').subscribe(data => {
-          this.invoiceTypeCvList = data;
-        });
-        // this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-        //   this.tankStatusCvList = data;
-        // });
-        // this.cvDS.connectAlias('depotCv').subscribe(data => {
-        //   this.depotCvList = addDefaultSelectOption(data, 'All');
-        // });
-    
-        // const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-        // const savedPagination = this.searchStateService.getPagination(this.pageStateType);
-    
-        // if (savedCriteria) {
-        //   this.searchForm?.patchValue(savedCriteria);
-        //   this.constructSearchCriteria();
-        // }
-    
-        // if (savedPagination) {
-        //   this.pageIndex = savedPagination.pageIndex;
-        //   this.pageSize = savedPagination.pageSize;
-    
-        //   this.performSearch(
-        //     savedPagination.pageSize,
-        //     savedPagination.pageIndex,
-        //     savedPagination.first,
-        //     savedPagination.after,
-        //     savedPagination.last,
-        //     savedPagination.before
-        //   );
-        // }
-    // if (this.selectedItems.length == 1) {
-    //   var pckRepairItem = this.selectedItems[0];
+      // { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
+      // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
+      // { alias: 'tankStatusCv', codeValType: 'TANK_STATUS' },
+      // { alias: 'depotCv', codeValType: 'DEPOT_STATUS' },
+      { alias: 'invoiceTypeCv', codeValType: 'INVOICE_TYPE' },
+    ];
+    this.CodeValuesDS?.getCodeValuesByType(queries);
 
-    //   this.pcForm.patchValue({
-    //     material_cost: pckRepairItem.material_cost?.toFixed(2),
-    //     labour_hour: pckRepairItem.labour_hour,
-    //     remarks: pckRepairItem.remarks
-    //     //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-    //   });
-
-
-    // }
-
-
-
-
+    this.CodeValuesDS?.connectAlias('invoiceTypeCv').subscribe(data => {
+      this.invoiceTypeCvList = data;
+    });
   }
 
   queryDepotCost() {
@@ -358,7 +314,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-EnableValidator(path: string) {
+  EnableValidator(path: string) {
     this.pcForm.get(path)?.setValidators([
       Validators.min(this.minMaterialCost),
       Validators.max(this.maxMaterialCost),
@@ -371,7 +327,7 @@ EnableValidator(path: string) {
     this.pcForm.get(path)?.clearValidators();
     this.pcForm.get(path)?.updateValueAndValidity();
   }
-  
+
 
   canEdit() {
     return false;
@@ -436,7 +392,7 @@ EnableValidator(path: string) {
     //   });
     // }
 
-   
+
 
   }
 
@@ -454,87 +410,81 @@ EnableValidator(path: string) {
     this.dialogRef.close();
   }
 
-  getMaterialCostLabel(){
+  getMaterialCostLabel() {
     //var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'($)':'');
     var lbl = this.translatedLangText.MATERIAL_COST + ' $';
     return lbl;
   }
 
-  getLabourHourLabel(){
+  getLabourHourLabel() {
     //var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
     var lbl = this.translatedLangText.LABOUR_HOUR;
     return lbl;
   }
 
-   displayDate(input: number | undefined): string | undefined {
-      if (input === null) return "-";
-      return Utility.convertEpochToDateStr(input);
-    }
+  displayDate(input: number | undefined): string | undefined {
+    if (input === null) return "-";
+    return Utility.convertEpochToDateStr(input);
+  }
 
 
-    displayNumber(value: number) {
+  displayNumber(value: number) {
     return Utility.formatNumberDisplay(value);
   }
 
-    transformList(item:any):any[]{
-  
-         var transformedList: any[] = [];
-         if(item.gin_billing)
-      {
-         transformedList.push({
-                guid:`${item.guid}-1`,
-                billing_type: "GATE_IN",
-                invoice_no: item.gin_billing?.invoice_no || '',
-                invoice_dt: item.gin_billing?.invoice_dt || 0,
-                gate_cost: (item.gin_billing)?this.displayNumber(item.gate_in_cost!):'-'
-            });
-      }
+  transformList(item: any): any[] {
 
-      //if (item.gout_billing) 
-       if(item.gout_billing)
-      {
-        transformedList.push({
-                guid:`${item.guid}-2`,
-                billing_type: "GATE_OUT",
-                invoice_no: item.gout_billing?.invoice_no || '',
-                invoice_dt: item.gout_billing?.invoice_dt || 0,
-                gate_cost: (item.gout_billing)?this.displayNumber(item.gate_out_cost!):'-'
-            });
-      }
-
-      return transformedList;
+    var transformedList: any[] = [];
+    if (item.gin_billing) {
+      transformedList.push({
+        guid: `${item.guid}-1`,
+        billing_type: "GATE_IN",
+        invoice_no: item.gin_billing?.invoice_no || '',
+        invoice_dt: item.gin_billing?.invoice_dt || 0,
+        gate_cost: (item.gin_billing) ? this.displayNumber(item.gate_in_cost!) : '-'
+      });
     }
 
-     DisplayEirNo(row: any) 
-  {
+    //if (item.gout_billing) 
+    if (item.gout_billing) {
+      transformedList.push({
+        guid: `${item.guid}-2`,
+        billing_type: "GATE_OUT",
+        invoice_no: item.gout_billing?.invoice_no || '',
+        invoice_dt: item.gout_billing?.invoice_dt || 0,
+        gate_cost: (item.gout_billing) ? this.displayNumber(item.gate_out_cost!) : '-'
+      });
+    }
+
+    return transformedList;
+  }
+
+  DisplayEirNo(row: any) {
     //if (row.billing_type == "GATE_IN") {
-      return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no
+    return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no
     // }
     // else {
     //   return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_no
     // }
   }
 
-   DisplayEirDate( row: any) 
-  {
+  DisplayEirDate(row: any) {
     //if (row.billing_type == "GATE_IN") {
-      return this.displayDate(this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt);
+    return this.displayDate(this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt);
     // }
     // else {
     //   return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_dt
     // }
   }
-  
-  DisplayCost(row: any)
-  {
-     return row.gate_cost;
-   
+
+  DisplayCost(row: any) {
+    return row.gate_cost;
+
   }
 
-  DisplayTankNo(row: any)
-  {
-     return row.storing_order_tank?.tank_no||"-";
-   
+  DisplayTankNo(row: any) {
+    return row.storing_order_tank?.tank_no || "-";
+
   }
 
   DisplayBillingType(billing_type: string) {

@@ -4027,8 +4027,8 @@ export const ROLLBACK_STORING_ORDER_TANK = gql`
 `;
 
 export const UPDATE_STORING_ORDER_TANK = gql`
-  mutation updateStoringOrderTank($soTank: StoringOrderTankRequestInput!) {
-    updateStoringOrderTank(soTank: $soTank)
+  mutation updateStoringOrderTank($soTank: StoringOrderTankRequestInput!, $storingOrder: StoringOrderRequestInput, $tankCompGuid: String) {
+    updateStoringOrderTank(soTank: $soTank, storingOrder: $storingOrder, tankCompGuid: $tankCompGuid)
   }
 `;
 
@@ -5044,12 +5044,12 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     );
   }
 
-  updateStoringOrderTank(soTank: any): Observable<any> {
+  updateStoringOrderTank(soTank: any, storingOrder?: any, tankCompGuid?: any): Observable<any> {
     this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_STORING_ORDER_TANK,
       variables: {
-        soTank
+        soTank, storingOrder, tankCompGuid
       }
     }).pipe(
       finalize(() => {
