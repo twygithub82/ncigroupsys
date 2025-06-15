@@ -267,7 +267,7 @@
                       class="tbl-action-btn">
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                     </button> -->
-                        @if (soDS.canCancel(row)) {
+                        @if (canCancel(row)) {
                         <button mat-icon-button color="warn" (click)="$event.stopPropagation()"
                           (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL" class="tbl-action-btn">
                           <mat-icon>cancel</mat-icon>
@@ -277,7 +277,7 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;"
-                      [routerLink]="isAllowEdit() ? ['/admin/inventory/storing-order/edit', row.guid] : null"
+                      [routerLink]="(isAllowEdit() || isAllowView()) ? ['/admin/inventory/storing-order/edit', row.guid] : null"
                       [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>

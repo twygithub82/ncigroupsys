@@ -464,7 +464,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return this.sotDS.canEdit(this.storingOrderTank) || (!this.sotDS.canRollbackStatus(this.storingOrderTank) && ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback'));
+    return (this.isAllowEdit() || this.isAllowAdd()) && (this.sotDS.canEdit(this.storingOrderTank) || (!this.sotDS.canRollbackStatus(this.storingOrderTank) && ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback')));
   }
 
   updateValidators(validOptions: any[]) {
@@ -497,5 +497,21 @@ export class FormDialogComponent {
 
   getSaveBtnDescription(): string {
     return Utility.getSaveBtnDescription(this.storingOrderTank?.guid);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_DELETE']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_STORING_ORDER_VIEW']);
   }
 }
