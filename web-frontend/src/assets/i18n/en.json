@@ -261,6 +261,7 @@
         "PENDING-DETAIL": "Pending Detail",
         "PENDING": "Pending Invoices",
         "CUSTOMER-INVOICE": "Customer Invoice"
+       
       }
     },
     "SURVEY": {
@@ -1319,7 +1320,9 @@
     "RENUMBER": "Renumber",
     "REOWNERSHIP": "Reownership",
     "ESTIMATE-CUSTOMER-APPROVAL-PENDING" : "Estimate Approval: Pending",
-    "REPAIR-ESTIMATE-PENDING" : "Repair Estimate : Pending"
+    "REPAIR-ESTIMATE-PENDING" : "Repair Estimate : Pending",
+    "PENDING-STATUS": "Pending Status",
+    "ESTIMATE-APPROVAL": "Estimate Approval"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
