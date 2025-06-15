@@ -2768,6 +2768,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canChangeCustomer() {
+    return false;
     // check whether any billing done
     const billing_sot = this.sot?.billing_sot;
     if (billing_sot?.lon_billing_guid || billing_sot?.loff_billing_guid || billing_sot?.preinsp_billing_guid || billing_sot?.gin_billing_guid || billing_sot?.gout_billing_guid) {
