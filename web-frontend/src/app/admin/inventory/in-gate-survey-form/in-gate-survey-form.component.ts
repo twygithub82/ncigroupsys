@@ -235,11 +235,13 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     SAVE: 'COMMON-FORM.SAVE',
     DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
     ARE_YOU_SURE_TO_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-PUBLISH',
+    ARE_YOU_SURE_TO_SAVE_AND_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-SAVE-AND-PUBLISH',
     LITERS: 'COMMON-FORM.LITERS',
     KG: 'COMMON-FORM.KG',
     UPDATE: 'COMMON-FORM.UPDATE',
     INVALID: 'COMMON-FORM.INVALID',
-    EXISTED: 'COMMON-FORM.EXISTED'
+    EXISTED: 'COMMON-FORM.EXISTED',
+    SAVE_AND_PUBLISH: 'COMMON-FORM.SAVE-AND-PUBLISH'
   }
   private destroy$ = new Subject<void>();
 
@@ -1441,33 +1443,35 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return !this.in_gate?.in_gate_survey?.guid;
   }
 
-  onSubmitCheck(event: Event) {
+  onSubmitCheck(event: Event, toPublish: boolean) {
     this.preventDefault(event);  // Prevents the form submission
     if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
       const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
-      if (compartmentTypeFormChecks.length) {
+      if (compartmentTypeFormChecks.length || toPublish) {
         let tempDirection: Direction;
         if (localStorage.getItem('isRtl') === 'true') {
           tempDirection = 'rtl';
         } else {
           tempDirection = 'ltr';
         }
+        const dialogTitle = !toPublish ? this.translatedLangText?.ARE_YOU_SURE_TO_SUBMIT : this.translatedLangText?.ARE_YOU_SURE_TO_SAVE_AND_PUBLISH;
         const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
           width: '500px',
           data: {
             action: 'submit',
             translatedLangText: this.translatedLangText,
-            confirmForm: compartmentTypeFormChecks
+            confirmForm: compartmentTypeFormChecks,
+            dialogTitle: dialogTitle
           },
           direction: tempDirection
         });
         this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
           if (result?.confirmed) {
-            this.onFormSubmit();
+            this.onFormSubmit(toPublish);
           }
         });
       } else {
-        this.onFormSubmit();
+        this.onFormSubmit(toPublish);
       }
     } else {
       console.log('Invalid soForm', this.surveyForm?.value);
@@ -1475,7 +1479,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
   }
 
-  onFormSubmit() {
+  onFormSubmit(toPublish: boolean) {
     // TODO :: Need save and publish
     if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
       let sot: StoringOrderTank = new StoringOrderTank(this.in_gate?.tank);
@@ -1491,7 +1495,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       ig.in_gate_survey = undefined;
       ig.tank = sot;
 
-      let igs: InGateSurveyGO = new InGateSurveyGO(this.in_gate?.in_gate_survey);
+      let igs: any = new InGateSurveyGO(this.in_gate?.in_gate_survey);
       igs.guid = this.in_gate?.in_gate_survey?.guid;
       igs.in_gate_guid = this.in_gate?.in_gate_survey?.in_gate_guid || this.in_gate?.guid;
       igs.last_test_cv = this.surveyForm.get('periodic_test.last_test_cv')?.value;
@@ -1577,11 +1581,15 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           }
         });
       } else {
+        if (toPublish) {
+          igs.action = "published";
+        }
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
           const record = result.data.record
           if (record?.affected) {
             this.uploadImages(record.guid[0]);
+            this.onDownload(record.guid[0]);
           }
         });
       }
@@ -1642,7 +1650,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         data: {
           action: 'publish',
           translatedLangText: this.translatedLangText,
-          confirmForm: compartmentTypeFormChecks
+          confirmForm: compartmentTypeFormChecks,
+          dialogTitle: this.translatedLangText?.ARE_YOU_SURE_TO_PUBLISH
         },
         direction: tempDirection
       });
@@ -1666,47 +1675,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
         console.log(result)
         this.handleSaveSuccess(result.data?.publishIngateSurvey);
-        this.onDownload();
+        this.onDownload(this.in_gate?.in_gate_survey?.guid);
       });
     }
   }
 
-  onFormSubmitAndPublish(event: Event) {
-    this.preventDefault(event);  // Prevents the form submission
-    if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
-      const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
-      // to handle prompt confirmation for save and publish
-      if (compartmentTypeFormChecks.length || true) {
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
-          width: '500px',
-          data: {
-            action: 'submit',
-            translatedLangText: this.translatedLangText,
-            confirmForm: compartmentTypeFormChecks
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result?.confirmed) {
-            this.onFormSubmit();
-          }
-        });
-      } else {
-        this.onFormSubmit();
-      }
-    } else {
-      console.log('Invalid soForm', this.surveyForm?.value);
-      this.markFormGroupTouched(this.surveyForm);
-    }
-  }
-
-  onDownload() {
+  onDownload(igs_guid?: string) {
     let tempDirection: Direction;
 
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1721,7 +1695,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       height: '80vh',
       data: {
         type: "in",
-        gate_survey_guid: this.in_gate?.in_gate_survey?.guid,
+        gate_survey_guid: igs_guid,
         eir_no: this.in_gate?.eir_no,
         igsDS: this.igsDS,
         cvDS: this.cvDS,

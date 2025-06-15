@@ -23,6 +23,7 @@ export interface DialogData {
   action?: string;
   translatedLangText?: any;
   confirmForm?: any[];
+  dialogTitle?: string;
 }
 
 @Component({
@@ -66,11 +67,12 @@ export class EmptyFormConfirmationDialogComponent {
   ) {
     // Set the defaults
     this.action = data.action!;
-    if (this.action === 'submit') {
-      this.dialogTitle = data.translatedLangText?.ARE_YOU_SURE_TO_SUBMIT;
-    } else {
-      this.dialogTitle = data.translatedLangText?.ARE_YOU_SURE_TO_PUBLISH;
-    }
+    this.dialogTitle = data.dialogTitle || '';
+    // if (this.action === 'submit') {
+    //   this.dialogTitle = data.translatedLangText?.ARE_YOU_SURE_TO_SUBMIT;
+    // } else {
+    //   this.dialogTitle = data.translatedLangText?.ARE_YOU_SURE_TO_PUBLISH;
+    // }
     this.description = data.confirmForm;
   }
 
