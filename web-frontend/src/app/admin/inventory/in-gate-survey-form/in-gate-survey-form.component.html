@@ -2079,7 +2079,7 @@
                             {{translatedLangText.SAVE_AND_PUBLISH}}
                           </button>
                           }
-                          @if (isAllowEdit()) {
+                          @else if (isAllowEdit()) {
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async)"
                             (click)="onSubmitCheck($event, false)">
