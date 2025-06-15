@@ -7,6 +7,8 @@ using IDMS.Inventory.GqlTypes;
 using IDMS.Inventory.GqlTypes.LocalModel;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
+using IDMS.Models.Service;
+using IDMS.Models.Shared;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
 
 
@@ -15,6 +17,7 @@ using IDMS.StoringOrder.GqlTypes.LocalModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -39,8 +42,8 @@ namespace IDMS.StoringOrder.GqlTypes
 
 
         public async Task<int> UpdateStoringOrderTank([Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, StoringOrderTankRequest soTank, StoringOrderRequest? storingOrder,
-            ApplicationInventoryDBContext context)
+            [Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context, 
+            StoringOrderTankRequest soTank, StoringOrderRequest? storingOrder, string? tankCompGuid = "")
         {
             try
             {
@@ -61,7 +64,7 @@ namespace IDMS.StoringOrder.GqlTypes
                     sot.tank_no = soTank.tank_no;
                 }
                 else
-                {
+                {   
                     sot.tank_note = soTank.tank_note;
                     sot.release_note = soTank.release_note;
                 }
@@ -69,7 +72,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 sot.update_dt = currentDateTime;
 
                 //Overwrite handling------------------------
-                if (soTank.action.EqualsIgnore(TankInfoAction.RECUSTOMER))
+                if (!string.IsNullOrEmpty(soTank?.action) && soTank.action.EqualsIgnore(TankInfoAction.RECUSTOMER))
                 {
                     if (storingOrder == null)
                         throw new GraphQLException(new Error($"Storing order object cannot be emptry or null", "ERROR"));
@@ -77,11 +80,16 @@ namespace IDMS.StoringOrder.GqlTypes
                     if (string.IsNullOrEmpty(storingOrder.customer_company_guid) || string.IsNullOrEmpty(storingOrder.guid))
                         throw new GraphQLException(new Error($"SO guid/customer_guid cannot be emptry or null", "ERROR"));
 
+                    if(string.IsNullOrEmpty(tankCompGuid))
+                        throw new GraphQLException(new Error($"TankCompGuid cannot be emptry or null", "ERROR"));
+
                     var so = new storing_order() { guid = storingOrder.guid };
                     context.storing_order.Attach(so);
                     so.customer_company_guid = storingOrder.customer_company_guid;
                     so.update_by = user;
                     so.update_dt = currentDateTime;
+
+                    await OverwriteProcessCostHandling(context, soTank.guid, storingOrder.customer_company_guid, tankCompGuid, user, currentDateTime);
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -100,80 +108,136 @@ namespace IDMS.StoringOrder.GqlTypes
 
             try
             {
-                //Cleaning handling
+                
                 var sotDB = context.storing_order_tank.Where(s => s.guid == sotGuid)
                                                       .Include(s => s.cleaning.Where(c => c.delete_dt == null || c.delete_dt == 0))
                                                       .Include(s => s.residue.Where(r => r.delete_dt == null || r.delete_dt == 0))
                                                       .Include(s => s.steaming.Where(st => st.delete_dt == null || st.delete_dt == 0))
                                                       .Include(s => s.repair.Where(rp => rp.delete_dt == null || rp.delete_dt == 0));
 
-
-                var clean = await sotDB?.SelectMany(s => s.cleaning)?.ToListAsync();
-                foreach (var item in clean)
+                //Cleaning handling
+                var cleanings = await sotDB?.SelectMany(s => s.cleaning)?.ToListAsync();
+                foreach (var clean in cleanings)
                 {
                     var categoryGuid = await sotDB?.Select(t => t.tariff_cleaning.cleaning_category_guid)?.FirstOrDefaultAsync() ?? "";
-                    var adjustedPrice = await GqlUtils.GetCustomerCleaningCostAsync(context, customerGuid, categoryGuid);
-                    item.cleaning_cost = adjustedPrice;
-                    item.est_cleaning_cost = adjustedPrice;
+                    var adjustedPrice = await GqlUtils.GetPackageCleaningCostAsync(context, customerGuid, categoryGuid);
+                    clean.cleaning_cost = adjustedPrice;
+                    clean.est_cleaning_cost = adjustedPrice;
 
-                    var bufferCost = await GqlUtils.GetCustomerBufferCostAsync(context, customerGuid, tariffBufferGuid);
-                    item.buffer_cost = bufferCost;
-                    item.est_buffer_cost = bufferCost;
+                    var bufferCost = await GqlUtils.GetPackageBufferCostAsync(context, customerGuid, tariffBufferGuid);
+                    clean.buffer_cost = bufferCost;
+                    clean.est_buffer_cost = bufferCost;
 
-                    item.update_by = user;
-                    item.update_dt = currentDateTime;
-
+                    clean.update_by = user;
+                    clean.update_dt = currentDateTime;
                 }
 
-                //foreach (var item in clean)
-                //{
-                //    var categoryGuid = await sotDB?.Select(t => t.tariff_cleaning.cleaning_category_guid)?.FirstOrDefaultAsync() ?? "";
-                //    var adjustedPrice = await GqlUtils.GetCustomerCleaningCostAsync(context, customerGuid, categoryGuid);
-                //    item.cleaning_cost = adjustedPrice;
-                //    item.est_cleaning_cost = adjustedPrice;
 
-                //    var bufferCost = await GqlUtils.GetCustomerBufferCostAsync(context, customerGuid, tariffBufferGuid);
-                //    item.buffer_cost = bufferCost;
-                //    item.est_buffer_cost = bufferCost;
-
-                //    item.update_by = user;
-                //    item.update_dt = currentDateTime;
-
-                //}
-
-
-                var steaming = await sotDB?.SelectMany(s => s.steaming)?.ToListAsync();
-                foreach (var item in steaming)
+                var residues = await sotDB?.SelectMany(s => s.residue)?.ToListAsync();
+                foreach (var residue in residues)
                 {
+                    if (residue == null) continue;
+                    var newEstCost = 0.0;
+                    var partList = residue.residue_part.Where(r => !string.IsNullOrEmpty(r.tariff_residue_guid) && r.delete_dt == null);
+
+                    foreach (var part in partList)
+                    {
+                        if (part == null) continue;
+                        var cost = await GqlUtils.GetPackageResidueCostAsync(context, customerGuid, part?.tariff_residue_guid ?? "");
+                        //update the new package residue cost
+                        part.cost = cost;
+                        part.update_by = user;
+                        part.update_dt = currentDateTime;
+
+                        //only include those approved part as sum up of estimate cost
+                        if (part.approve_part ?? false)
+                            newEstCost = newEstCost + (cost * part?.quantity ?? 0);
+                    }
+                    residue.est_cost = newEstCost;
+                    residue.update_by = user;
+                    residue.update_dt = currentDateTime;
+                }
+
+
+                var steamings = await sotDB?.SelectMany(s => s.steaming)?.ToListAsync();
+                foreach (var steam in steamings)
+                {
+                    if (steam == null) continue;
                     var lastCargoGuid = await sotDB?.Select(t => t.last_cargo_guid)?.FirstOrDefaultAsync() ?? "";
                     var reqTemp = await sotDB?.Select(t => t.required_temp)?.FirstOrDefaultAsync() ?? 0;
 
                     (var result, bool isExclusive) = await GqlUtils.GetTankPackageSteamingAsync(context, customerGuid, reqTemp, lastCargoGuid);
                     if (result != null && !string.IsNullOrEmpty(result.steaming_guid))
                     {
-                        if (item?.flat_rate ?? false)
-                            item.rate = item.est_cost = item.total_cost = result?.cost ?? 0.0;
+                        if (steam?.flat_rate ?? false)
+                            steam.rate = steam.est_cost = steam.total_cost = result?.cost ?? 0.0;
                         else
-                            item.rate = item.est_cost = item.total_cost = result?.labour ?? 0.0;
+                            steam.rate = steam.est_cost = steam.total_cost = result?.labour ?? 0.0;
+
+                        steam.update_by = user;
+                        steam.update_dt = currentDateTime;
+
+                        if (steam.steaming_part == null) continue;
+                        foreach (var part in steam.steaming_part)
+                        {
+                            part.labour = part.approve_labour = result?.labour ?? 0.0;
+                            part.cost = part.approve_cost = result?.cost ?? 0.0;
+                            if (isExclusive)
+                            {
+                                part.steaming_exclusive_guid = result?.steaming_guid;
+                                part.tariff_steaming_guid = null;
+                                context.Entry(part).Property(p => p.tariff_steaming_guid).IsModified = true;
+                            }
+                            else
+                            {
+                                part.tariff_steaming_guid = result?.steaming_guid;
+                                part.steaming_exclusive_guid = null;
+                                context.Entry(part).Property(p => p.steaming_exclusive_guid).IsModified = true;
+                            }
+                            part.update_by = user;
+                            part.update_dt = currentDateTime;
+                        }
                     }
-                    //    item.cleaning_cost = adjustedPrice;
-                    //item.est_cleaning_cost = adjustedPrice;
+                }
 
-                    //var bufferCost = await GqlUtils.GetCustomerBufferCostAsync(context, customerGuid, tariffBufferGuid);
-                    //item.buffer_cost = bufferCost;
-                    //item.est_buffer_cost = bufferCost;
 
-                    item.update_by = user;
-                    item.update_dt = currentDateTime;
+                var repairs = await sotDB?.SelectMany(s => s.repair)?.ToListAsync();
+                foreach (var repair in repairs)
+                {
+                    if (repair == null) continue;
+                    var newMaterialCost = 0.0;
+                    var partList = repair.repair_part.Where(r => !string.IsNullOrEmpty(r.tariff_repair_guid) && r.delete_dt == null);
 
+                    foreach (var part in partList)
+                    {
+                        if (part == null) continue;
+
+                        var result = await GqlUtils.GetPackageRepairCostAsync(context, customerGuid, part?.tariff_repair_guid ?? "");
+                        if (result == null) continue;
+                        //update the new package repair material cost
+                        part.material_cost = result?.cost;
+                        //part.hour = result?.labour_hour;
+                        part.update_by = user;
+                        part.update_dt = currentDateTime;
+
+                        //only include those approved part as sum up of estimate cost
+                        if (part.approve_part ?? false)
+                            newMaterialCost = newMaterialCost + (result?.cost * part?.quantity ?? 0);
+                    }
+
+                    var labourCost = await GqlUtils.GetPackageLabourCostAsync(context, customerGuid, "");
+
+                    repair.est_cost = newMaterialCost;
+                    repair.labour_cost = labourCost;
+                    repair.total_labour_cost = repair?.total_hour * labourCost;
+                    repair.update_by = user;
+                    repair.update_dt = currentDateTime;
                 }
             }
             catch (Exception ex)
             {
-
+                throw ex;
             }
-
-
 
             return 1;
 

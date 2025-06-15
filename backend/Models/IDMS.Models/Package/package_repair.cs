@@ -29,9 +29,9 @@ namespace IDMS.Models.Package
 
         public string? remarks { get; set; }
 
-        public tariff_repair? tariff_repair { get; set; }
+        public virtual tariff_repair? tariff_repair { get; set; }
 
         [UseFiltering]
-        public customer_company? customer_company { get; set; }
+        public virtual customer_company? customer_company { get; set; }
     }
 }

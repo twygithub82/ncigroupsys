@@ -14,4 +14,11 @@ namespace IDMS.Inventory.GqlTypes.LocalModel
         public double? labour { get; set; }
         public string? steaming_guid { get; set; }
     }
+
+    [NotMapped]
+    public class RepairPackageResult
+    {
+        public double? cost { get; set; }
+        public double? labour_hour { get; set; }
+    }
 }

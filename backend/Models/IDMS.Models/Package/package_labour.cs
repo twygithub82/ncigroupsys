@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models.Package
 {
-    public class package_labour:Dates
+    public class package_labour : Dates
     {
         [Key]
         public string guid { get; set; }
@@ -25,7 +25,7 @@ namespace IDMS.Models.Package
 
         public string? remarks { get; set; }
 
-        public tariff_labour? tariff_labour { get; set; }
-        public customer_company? customer_company { get; set; }
+        public virtual tariff_labour? tariff_labour { get; set; }
+        public virtual customer_company? customer_company { get; set; }
     }
 }
