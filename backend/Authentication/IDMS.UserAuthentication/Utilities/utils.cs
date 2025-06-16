@@ -33,7 +33,10 @@ namespace IDMS.User.Authentication.API.Utilities
                 var functionNames = from f in _dbContext.functions
                                     join rf in _dbContext.role_functions
                                     on f.guid equals rf.functions_guid
-                                    where (from r in _dbContext.user_role where r.user_guid == userId select r.role_guid).Contains(rf.role_guid)
+                                    where f.delete_dt == null && rf.delete_dt == null &&
+                                    (from r in _dbContext.user_role 
+                                           where r.user_guid == userId 
+                                           select r.role_guid).Contains(rf.role_guid)
                                     select f.code;
 
                 JArray functionNamesArray = JArray.FromObject(functionNames);
@@ -53,8 +56,7 @@ namespace IDMS.User.Authentication.API.Utilities
                 var roleNames = from r in _dbContext.role
                                     join ur in _dbContext.user_role
                                     on r.guid equals ur.role_guid
-                                //where (from r in _dbContext.user_role where r.user_guid == userId select r.role_guid).Contains(ur.role_guid)
-                                    where ur.user_guid == userId 
+                                    where ur.user_guid == userId && r.delete_dt == null && ur.delete_dt == null
                                     select r.code;
 
                 JArray roleNamesArray = JArray.FromObject(roleNames);

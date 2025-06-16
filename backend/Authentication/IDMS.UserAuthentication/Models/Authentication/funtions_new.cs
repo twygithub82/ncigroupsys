@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.User.Authentication.API.Models.Authentication
 {
-    public class functions
+    public class functions: base_date
     {
         [Key]
         public string? guid { get; set; }
@@ -14,7 +14,7 @@ namespace IDMS.User.Authentication.API.Models.Authentication
         public virtual IEnumerable<role_functions>? role_functions_new { get; set; }
     }
 
-    public class role
+    public class role: base_date
     {
         [Key]
         public string? guid { get; set; }
