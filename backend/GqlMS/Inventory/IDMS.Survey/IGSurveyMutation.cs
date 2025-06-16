@@ -61,6 +61,17 @@ namespace IDMS.Survey.GqlTypes
                         ingate.eir_status_cv = EirStatus.PENDING;
                         ingate.update_by = user;
                         ingate.update_dt = currentDateTime;
+
+
+                        //-------------------------------------------------------
+                        if (!string.IsNullOrEmpty(inGateSurveyRequest?.action ?? "")
+                            && inGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
+                        {
+                            ingate.eir_status_cv = EirStatus.PUBLISHED;
+                            ingate.publish_by = user;
+                            ingate.publish_dt = currentDateTime;
+                        }
+                        //--------------------------------------------------------
                     }
 
                     if (inGateRequest.tank == null || string.IsNullOrEmpty(inGateRequest.tank.guid))
@@ -80,16 +91,29 @@ namespace IDMS.Survey.GqlTypes
                     sot.update_by = user;
                     sot.update_dt = currentDateTime;
 
+                    //----------------------------------------------------------------------
+                    if (!string.IsNullOrEmpty(inGateSurveyRequest?.action ?? "")
+                         && inGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
+                    {
+                        if (sot.purpose_steam ?? false)
+                        {
+                            sot.tank_status_cv = TankMovementStatus.STEAM;
+                            await AddSteaming(context, sot, ingate.create_dt);
+                        }
+                        else if (sot.purpose_cleaning ?? false)
+                        {
+                            sot.tank_status_cv = TankMovementStatus.CLEANING;
+                            await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
+                        }
+                        else if (!string.IsNullOrEmpty(sot.purpose_repair_cv))
+                            sot.tank_status_cv = TankMovementStatus.REPAIR;
+                        else
+                            sot.tank_status_cv = TankMovementStatus.STORAGE;
+                    }
+                    //----------------------------------------------------------------------------
+
                     //Add the newly created guid into list for return
                     retGuids.Add(ingateSurvey.guid);
-
-                    ////Add steaming by auto
-                    //if (tank.purpose_steam ?? false)
-                    //    await AddSteaming(context, sot, ingate.create_dt);
-
-                    ////Add cleaning by auto
-                    //if (tank.purpose_cleaning ?? false)
-                    //    await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
 
                     retval = await context.SaveChangesAsync();
                     //TODO
@@ -352,8 +376,7 @@ namespace IDMS.Survey.GqlTypes
                                .Select(c => c.adjusted_price).FirstOrDefaultAsync();
                 ingateCleaning.cleaning_cost = adjustedPrice;
 
-                //var tariffBufferGuid = await context.Set<tariff_buffer>().Where(t => t.buffer_type.ToUpper() == baffleType.ToUpper())
-                //                                    .Select(t => t.guid).FirstOrDefaultAsync();
+
                 var bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
                                                    .Select(b => b.cost).FirstOrDefaultAsync();
                 ingateCleaning.buffer_cost = bufferPrice;
@@ -425,7 +448,7 @@ namespace IDMS.Survey.GqlTypes
 
                 var defQty = 1;
                 //var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
- 
+
                 //steaming handling
                 var newSteam = new steaming();
                 newSteam.guid = Util.GenerateGUID();
