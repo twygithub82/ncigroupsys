@@ -64,7 +64,8 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt"  [max]="maxManuDOMDt">
+                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt"
+                    [max]="maxManuDOMDt">
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-datepicker #eir_picker></mat-datepicker>
                 </mat-form-field>
@@ -72,7 +73,8 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" formControlName="cutoff_dt" [max]="maxManuDOMDt">
+                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" formControlName="cutoff_dt"
+                    [max]="maxManuDOMDt">
                   <mat-datepicker-toggle matSuffix [for]="cutoff_picker"></mat-datepicker-toggle>
                   <mat-datepicker #cutoff_picker></mat-datepicker>
                 </mat-form-field>
@@ -136,7 +138,8 @@
                 </mat-form-field>
               </div>
               <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 col-xs-12 d-flex align-items-center">
-                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced" (change)="onToggleInvoiced($event)"> 
+                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced"
+                  (change)="onToggleInvoiced($event)">
                   {{translatedLangText.INVOICED}}
                 </mat-slide-toggle>
               </div>
@@ -260,21 +263,22 @@
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                  [checked]="isItemSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                  (change)="$event ? toggleRow(row) : null" [checked]="isItemSelected(row)" [ngClass]="'tbl-checkbox'"
+                  [hidden]="CheckBoxDisable(row)">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
             <!-- ID Column -->
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5'">
                 {{translatedLangText.TANK_NO}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5'">
                 <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
               </mat-cell>
             </ng-container>
@@ -316,7 +320,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_cargo">
-              <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-2_5'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2_5'">
                 {{translatedLangText.LAST_CARGO}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -361,10 +365,10 @@
             </ng-container>
 
             <ng-container matColumnDef="invoice_date">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
                 {{translatedLangText.INVOICE_DATE}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
                 @if(row.invoiced)
                 {
                 <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>
