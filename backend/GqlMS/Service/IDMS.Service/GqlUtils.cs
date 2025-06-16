@@ -1,11 +1,11 @@
 ﻿using CommonUtil.Core.Service;
 using HotChocolate;
+using IDMS.Models;
 using IDMS.Models.Notification;
 using IDMS.Models.Service;
 using IDMS.Models.Service.GqlTypes.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
@@ -105,44 +105,93 @@ namespace IDMS.Service.GqlTypes
             return uid;
         }
 
-        public static async Task SendJobNotification([Service] IConfiguration config, JobNotification jobNotification, int type)
+        public static async Task SendJobNotification([Service] IConfiguration config, JobNotification jobNotification, string type)
         {
             try
             {
                 string httpURL = $"{config["GlobalNotificationURL"]}";
+
                 if (!string.IsNullOrEmpty(httpURL))
                 {
-                    var query = @"query sendJobNotification($jobNotification: JobNotificationInput!, $type: Int!) 
-                                    {sendJobNotification(jobNotification: $jobNotification, type: $type)}";
-
-                    //// Define the variables for the query
-                    // Variables for the query
-                    var variables = new
+                    string jsonString = JsonConvert.SerializeObject(jobNotification);
+                    var message = new
                     {
-                        jobNotification = jobNotification,
-                        type = type  // Dynamic value for type
+                        topic = jobNotification?.job_order_guid ?? Util.GenerateGUID(),
+                        count = 1,
+                        event_id = Util.GenerateGUID(),
+                        event_name = type,
+                        event_dt = DateTime.Now.ToEpochTime(),
+                        payload = jsonString
                     };
 
-                    // Create the GraphQL request payload
-                    var requestPayload = new
+
+                    var graphqlQuery = new
                     {
-                        query = query,
-                        variables = variables
+                        query = @"
+                        query SendMessage($message: Message_r1Input!) {
+                          sendMessage_r1(message: $message)
+                        }",
+                        variables = new
+                        {
+                            message
+                        }
                     };
 
                     // Serialize the payload to JSON
-                    var jsonPayload = JsonConvert.SerializeObject(requestPayload);
+                    var jsonPayload = JsonConvert.SerializeObject(graphqlQuery);
+                    //string jsonPayload = JObject.FromObject(requestPayload).ToString(Newtonsoft.Json.Formatting.None);
 
                     HttpClient _httpClient = new();
-                    string queryStatement = JsonConvert.SerializeObject(query);
+                    //string queryStatement = Newtonsoft.Json.JsonConvert.SerializeObject(query);
                     var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                     var data = await _httpClient.PostAsync(httpURL, content);
                     Console.WriteLine(data);
                 }
+
             }
             catch (Exception ex)
             { }
         }
+
+        //public static async Task SendJobNotification([Service] IConfiguration config, JobNotification jobNotification, int type)
+        //{
+        //    try
+        //    {
+        //        string httpURL = $"{config["GlobalNotificationURL"]}";
+        //        if (!string.IsNullOrEmpty(httpURL))
+        //        {
+        //            var query = @"query sendJobNotification($jobNotification: JobNotificationInput!, $type: Int!) 
+        //                            {sendJobNotification(jobNotification: $jobNotification, type: $type)}";
+
+        //            //// Define the variables for the query
+        //            // Variables for the query
+        //            var variables = new
+        //            {
+        //                jobNotification = jobNotification,
+        //                type = type  // Dynamic value for type
+        //            };
+
+        //            // Create the GraphQL request payload
+        //            var requestPayload = new
+        //            {
+        //                query = query,
+        //                variables = variables
+        //            };
+
+        //            // Serialize the payload to JSON
+        //            var jsonPayload = JsonConvert.SerializeObject(requestPayload);
+
+        //            HttpClient _httpClient = new();
+        //            string queryStatement = JsonConvert.SerializeObject(query);
+        //            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        //            var data = await _httpClient.PostAsync(httpURL, content);
+        //            Console.WriteLine(data);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    { }
+        //}
+
 
         //public static async Task<bool> TankMovementCheck(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
         //{
@@ -170,7 +219,6 @@ namespace IDMS.Service.GqlTypes
         //        throw ex;
         //    }
         //}
-
 
         public static async Task JobOrderHandling(ApplicationServiceDBContext context, string processType, string user, long currentDateTime, string action, string? processGuid = "", List<job_order>? jobOrders = null)
         {

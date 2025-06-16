@@ -16,6 +16,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { provideNgxMask } from 'ngx-mask';
 
 
@@ -65,7 +66,7 @@ export class FormDialogComponent {
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
-
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     this.action = data.action!;
@@ -81,7 +82,7 @@ export class FormDialogComponent {
 
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
-      remarks: [this.previousRemarks],
+      remarks: [{ value: this.previousRemarks, disabled: !this.isAllowEdit() }],
     });
     return formGroup;
   }
@@ -113,5 +114,9 @@ export class FormDialogComponent {
 
   canEdit(): boolean {
     return true;
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_EDIT']);
   }
 }

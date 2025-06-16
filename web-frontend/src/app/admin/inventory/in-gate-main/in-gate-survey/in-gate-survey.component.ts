@@ -18,7 +18,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -33,6 +33,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -144,7 +145,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -475,5 +477,21 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   onTabFocused() {
     this.resetForm();
     this.search();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_EDIT']);
+  }
+
+  isAllowPublish() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_PUBLISH']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_DELETE']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_VIEW']);
   }
 }

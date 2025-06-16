@@ -9,6 +9,8 @@ using IDMS.Service.GqlTypes.LocalModel;
 using IDMS.Models.Notification;
 using System.Globalization;
 using System.Linq;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -190,7 +192,7 @@ namespace IDMS.Service.GqlTypes
                 //TODO
                 foreach (var item in notificationList)
                 {
-                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.COMPLETE_JOB);
+                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.onJobCompleted.ToString());
                 }
 
                 return res;
@@ -289,7 +291,7 @@ namespace IDMS.Service.GqlTypes
                 //TODO
                 foreach (var item in notificationList)
                 {
-                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.START_JOB);
+                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.onJobStarted.ToString());
                 }
 
                 return res;
@@ -347,7 +349,7 @@ namespace IDMS.Service.GqlTypes
                 //TODO
                 foreach (var item in notificationList)
                 {
-                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.STOP_JOB);
+                    await GqlUtils.SendJobNotification(config, item, JobNotificationType.onJobStopped.ToString());
                 }
                 return res;
             }
@@ -434,6 +436,96 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+
+
+        //private async Task<int> SendNotification(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+        //    [Service] IConfiguration config, string eventId, string eventName, int count, JobNotification jobNotification)
+        //{
+        //    try
+        //    {
+        //        string httpURL = "http://localhost:5114/graphql/"; //$"{config["GlobalNotificationURL"]}";
+
+
+        //        if (!string.IsNullOrEmpty(httpURL))
+        //        {
+        //            //string jsonString = JsonSerializer.Serialize(jobNotification);
+        //            string jsonString = JsonConvert.SerializeObject(jobNotification);
+        //            var message = new
+        //            {
+        //                topic = jobNotification?.job_order_guid ?? Util.GenerateGUID(),
+        //                count = count,
+        //                event_id = Util.GenerateGUID(),
+        //                event_name = eventName,
+        //                event_dt = DateTime.Now.ToEpochTime(),
+        //                payload = jsonString
+        //            };
+
+
+        //            var graphqlQuery = new
+        //            {
+        //                query = @"
+        //                    query SendMessage($message: Message_r1Input!) {
+        //                      sendMessage_r1(message: $message)
+        //                    }",
+        //                variables = new
+        //                {
+        //                    message
+        //                }
+        //            };
+
+        //            // Serialize the payload to JSON
+        //            //var jsonPayload = JsonSerializer.Serialize(graphqlQuery);
+        //            var jsonPayload = JsonConvert.SerializeObject(graphqlQuery);
+        //            //string jsonPayload = JObject.FromObject(requestPayload).ToString(Newtonsoft.Json.Formatting.None);
+
+        //            HttpClient _httpClient = new();
+        //            //string queryStatement = Newtonsoft.Json.JsonConvert.SerializeObject(query);
+        //            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        //            var data = await _httpClient.PostAsync(httpURL, content);
+        //            Console.WriteLine(data);
+        //        }
+
+
+
+
+        //        //    using var httpClient = new HttpClient();
+
+        //        //    var query = @"
+        //        //query {
+        //        //  sendMessage_r1(
+        //        //    message: {
+        //        //      topic: ""onStart""
+        //        //      count: 1
+        //        //      event_dt: 123
+        //        //      event_id: ""1""
+        //        //      event_name: ""notification""
+        //        //      payload: ""{ \""name\"": \""Edmund\"" }""
+        //        //    }
+        //        //  )
+        //        //}";
+
+        //        //    var requestPayload = new
+        //        //    {
+        //        //        query = query,
+        //        //        //variables = variables
+        //        //    };
+
+        //        //    var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
+
+        //        //    // Replace with your actual GraphQL endpoint
+        //        //    var response = await httpClient.PostAsync("https://your-graphql-endpoint.com/graphql", content);
+
+        //        //    var responseString = await response.Content.ReadAsStringAsync();
+        //        //    Console.WriteLine(responseString);
+
+
+        //        return 1;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return 0;
+        //    }
+        //}
 
         private async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid)
         {

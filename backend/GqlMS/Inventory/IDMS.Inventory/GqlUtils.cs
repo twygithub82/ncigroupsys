@@ -420,7 +420,7 @@ namespace IDMS.Inventory.GqlTypes
                     //}
                     //else
                     //    curTankStatus = sot.tank_status_cv;
-                    curTankStatus = await TankMovementConditionCheck1(context, tank);
+                    curTankStatus = await TankMovementConditionCheck(context, tank);
                     retval = retval + await context.SaveChangesAsync();
 
                     // Commit the transaction if all operations succeed
@@ -452,37 +452,42 @@ namespace IDMS.Inventory.GqlTypes
                     var last_cargo_guid = sot?.last_cargo_guid;
                     var last_cargo = await context.Set<tariff_cleaning>().Where(x => x.guid == last_cargo_guid).Select(x => x.cargo).FirstOrDefaultAsync();
                     var description = $"Steaming/Heating cost of ({last_cargo})";
-
                     var repTemp = sot?.required_temp;
+
+                    //Added for later use
+                    var unit_type_guid = sot?.unit_type_guid;
+                    var isFlatRate = await context.Set<tank>().Where(t => t.guid == unit_type_guid).Select(t => t.flat_rate).FirstOrDefaultAsync();
+
                     bool isExclusive = false;
                     bool isNew = true;
-                    string newSteamingGuid = "";
+                    string steamingGuid = "";
+
                     //First check whether have exclusive package cost
                     var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
-                                .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
-                                .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp && joined.t.tariff_cleaning_guid == last_cargo_guid)
-                                .Select(joined => new SteamingPackageResult
-                                {
-                                    cost = joined.p.cost,  // Selecting cost
-                                    labour = joined.p.labour, // Selecting labour
-                                    steaming_guid = joined.p.steaming_exclusive_guid
-                                })
-                                .FirstOrDefaultAsync();
+                           .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
+                           .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp && joined.t.tariff_cleaning_guid == last_cargo_guid)
+                           .Select(joined => new SteamingPackageResult
+                           {
+                               cost = joined.p.cost,  // Selecting cost
+                               labour = joined.p.labour, // Selecting labour
+                               steaming_guid = joined.p.steaming_exclusive_guid
+                           })
+                           .FirstOrDefaultAsync();
 
                     //If no exclusive found
                     if (result == null || string.IsNullOrEmpty(result.steaming_guid))
                     {
                         //we check the general package cost
                         result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
-                                    .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
-                                    .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
-                                    .Select(joined => new SteamingPackageResult
-                                    {
-                                        cost = joined.p.cost,  // Selecting cost
-                                        labour = joined.p.labour, // Selecting labour
-                                        steaming_guid = joined.p.tariff_steaming_guid
-                                    })
-                                    .FirstOrDefaultAsync();
+                               .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
+                               .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+                               .Select(joined => new SteamingPackageResult
+                               {
+                                   cost = joined.p.cost,  // Selecting cost
+                                   labour = joined.p.labour, // Selecting labour
+                                   steaming_guid = joined.p.tariff_steaming_guid
+                               })
+                               .FirstOrDefaultAsync();
                     }
                     else //the customer have exclusive package cost
                         isExclusive = true;
@@ -491,9 +496,25 @@ namespace IDMS.Inventory.GqlTypes
                         throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
 
                     var defQty = 1;
-                    var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
+                    //var totalCost = defQty * (result?.cost ?? 0) + (result?.labour ?? 0);
 
-                    var curSteaming = await context.steaming.Where(s => s.sot_guid == sot.guid && s.delete_dt == null).FirstOrDefaultAsync();
+                    double rate = 0.0;
+                    double cost = 0.0;
+                    double? est_hour = 1.0;
+                    double? total_hour = null;
+
+                    if (isFlatRate ?? false)
+                    {
+                        rate = cost = result?.cost ?? 0.0;
+                        total_hour = 1.0;
+                    }
+                    else
+                    {
+                        rate = cost = result?.labour ?? 0.0;
+                        // totalHour might be updated later
+                    }
+
+                    var curSteaming = await context.steaming.Where(s => s.sot_guid == sot.guid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefaultAsync();
                     if (curSteaming == null)
                     {
                         //steaming handling
@@ -505,24 +526,31 @@ namespace IDMS.Inventory.GqlTypes
                         newSteam.status_cv = CurrentServiceStatus.APPROVED;
                         newSteam.job_no = newJob_no; //sot?.job_no;
                         newSteam.bill_to_guid = customerGuid;
-                        newSteam.est_cost = totalCost;
-                        newSteam.total_cost = totalCost;
+
+                        newSteam.rate = rate;
+                        newSteam.est_cost = cost;
+                        newSteam.total_cost = cost;
+                        newSteam.flat_rate = isFlatRate;
+
                         newSteam.approve_dt = currentDateTime;//Change to this after daniel request //ingate_date;
                         newSteam.approve_by = "system";
                         newSteam.estimate_by = "system";
                         newSteam.estimate_dt = ingate_date;
                         await context.AddAsync(newSteam);
-
-                        newSteamingGuid = newSteam.guid;
+                        steamingGuid = newSteam.guid;
                     }
                     else
                     {
                         curSteaming.status_cv = CurrentServiceStatus.APPROVED;
                         curSteaming.update_by = user;
                         curSteaming.update_dt = currentDateTime;
-                        curSteaming.est_cost = totalCost;
-                        curSteaming.total_cost = totalCost;
+
+                        curSteaming.rate = rate;
+                        curSteaming.est_cost = cost;
+                        curSteaming.total_cost = cost;
+                        curSteaming.flat_rate = isFlatRate;
                         isNew = false;
+                        steamingGuid = curSteaming.guid;
                     }
 
 
@@ -531,8 +559,10 @@ namespace IDMS.Inventory.GqlTypes
                     steamingPart.guid = Util.GenerateGUID();
                     steamingPart.create_by = "system";
                     steamingPart.create_dt = currentDateTime;
-                    if (isNew)
-                        steamingPart.steaming_guid = newSteamingGuid;
+                    //if (isNew)
+                    //  steamingPart.steaming_guid = newSteamingGuid;
+                    steamingPart.steaming_guid = steamingGuid;
+
                     if (isExclusive)
                         steamingPart.steaming_exclusive_guid = result?.steaming_guid;
                     else
@@ -631,142 +661,7 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
-        [Obsolete]
-        public static async Task<string> TankMovementConditionCheck(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string sotGuid, string processType, string remark)
-        {
-            try
-            {
-                //first check tank purpose
-                var tank = await context.storing_order_tank.Where(t => t.guid == sotGuid & (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
-                tank.update_by = user;
-                tank.update_dt = currentDateTime;
-
-                if (processType.EqualsIgnore(PurposeType.STEAM))
-                {
-                    tank.purpose_steam = false;
-                    tank.steaming_remarks = remark;
-                }
-
-                else if (processType.EqualsIgnore(PurposeType.CLEAN) || (processType.EqualsIgnore(PurposeType.RESIDUE)))
-                    tank.cleaning_remarks = remark;
-                else if (processType.EqualsIgnore(PurposeType.REPAIR))
-                    tank.repair_remarks = remark;
-                else if (processType.EqualsIgnore(PurposeType.STORAGE))
-                    tank.storage_remarks = remark;
-
-
-
-                if (tank != null)
-                {
-                    var completedStatuses = new[] { CurrentServiceStatus.COMPLETED, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
-                    var qcCompletedStatuses = new[] { CurrentServiceStatus.QC, CurrentServiceStatus.CANCELED, CurrentServiceStatus.NO_ACTION };
-
-                    //check if tank have any steaming purpose
-                    if (tank.purpose_steam ?? false)
-                    {
-                        var res = await context.steaming.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                        if (res.Any())
-                        {
-                            if (res.Any(t =>
-                                        (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                        (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                        )
-                            {
-                                tank.tank_status_cv = TankMovementStatus.STEAM;
-                                goto ProceesUpdate;
-                            }
-                        }
-                        else
-                        {
-                            tank.tank_status_cv = TankMovementStatus.STEAM;
-                            goto ProceesUpdate;
-                        }
-                    }
-
-                    //check if tank have any cleaning purpose
-                    if (tank.purpose_cleaning ?? false)
-                    {
-                        var res = await context.cleaning.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                        if (res.Any())
-                        {
-                            if (res.Any(t =>
-                                        (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                        (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                        )
-                            {
-                                tank.tank_status_cv = TankMovementStatus.CLEANING;
-                                goto ProceesUpdate;
-                            }
-                            else
-                            {
-                                //Else, check if tank have any residue estimate already created but pending
-                                //res.Clear();
-                                var resd = await context.residue.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                                if (resd.Any())
-                                {
-                                    if (resd.Any(t =>
-                                                (t.approve_by == "system" && !qcCompletedStatuses.Contains(t.status_cv)) ||
-                                                (t.approve_by != "system" && !completedStatuses.Contains(t.status_cv)))
-                                                )
-                                    {
-                                        tank.tank_status_cv = TankMovementStatus.CLEANING;
-                                        goto ProceesUpdate;
-                                    }
-                                }
-                                else
-                                {
-                                    tank.tank_status_cv = TankMovementStatus.CLEANING;
-                                    goto ProceesUpdate;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            tank.tank_status_cv = TankMovementStatus.CLEANING;
-                            goto ProceesUpdate;
-                        }
-                    }
-
-                    //check if tank have any repair purpose
-                    if (!string.IsNullOrEmpty(tank.purpose_repair_cv))
-                    {
-                        var res = await context.repair.Where(t => t.sot_guid == sotGuid && (t.delete_dt == null || t.delete_dt == 0)).ToListAsync();
-                        if (res.Any())
-                        {
-                            if (res.Any(t => !qcCompletedStatuses.Contains(t.status_cv)))
-                            {
-                                tank.tank_status_cv = TankMovementStatus.REPAIR;
-                                goto ProceesUpdate;
-                            }
-                        }
-                        else
-                        {
-                            tank.tank_status_cv = TankMovementStatus.REPAIR;
-                            goto ProceesUpdate;
-                        }
-                    }
-
-                    if (tank.purpose_storage ?? false)
-                    {
-                        tank.status_cv = TankMovementStatus.STORAGE;
-                    }
-
-                ProceesUpdate:
-                    var ret = await context.SaveChangesAsync();
-
-                    await NotificationHandling(config, processType, sotGuid, tank.status_cv);
-
-                    return tank.status_cv;
-                }
-                return "";
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        public static async Task<string> TankMovementConditionCheck1(ApplicationInventoryDBContext context, storing_order_tank tank, bool pendingJob = false)
+        public static async Task<string> TankMovementConditionCheck(ApplicationInventoryDBContext context, storing_order_tank tank, bool pendingJob = false)
         {
             try
             {
@@ -865,7 +760,7 @@ namespace IDMS.Inventory.GqlTypes
             await SendPurposeChangeNotification(config, purposeNotification);
         }
 
-        public static async Task<int> UpdateTankInfo(IMapper mapper, ApplicationInventoryDBContext context, string user, long currentDateTime, tank_info tankInfo)
+        public static async Task<int> TankInfoHandling(IMapper mapper, ApplicationInventoryDBContext context, string user, long currentDateTime, tank_info tankInfo)
         {
             try
             {
@@ -895,6 +790,165 @@ namespace IDMS.Inventory.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
+
+
+        public static async Task<double> GetPackageBufferCostAsync(ApplicationInventoryDBContext context, string customerGuid, string tariffBufferGuid)
+        {
+            double bufferPrice = 0;
+            try
+            {
+                bufferPrice = await context.Set<package_buffer>().Where(b => b.customer_company_guid == customerGuid && b.tariff_buffer_guid == tariffBufferGuid)
+                                    .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return bufferPrice;
+        }
+
+        public static async Task<double> GetPackageLabourCostAsync(ApplicationInventoryDBContext context, string customerGuid, string tariffLabourGuid)
+        {
+            double cost = 0;
+            try
+            {
+                if (!string.IsNullOrEmpty(customerGuid))
+                    cost = await context.Set<package_labour>().Where(b => b.customer_company_guid == customerGuid && b.tariff_labour_guid == tariffLabourGuid)
+                                        .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
+                else
+                    cost = await context.Set<package_labour>().Where(b => b.customer_company_guid == customerGuid)
+                                        .Select(b => b.cost).FirstOrDefaultAsync() ?? 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return cost;
+        }
+
+        public static async Task<double> GetPackageCleaningCostAsync(ApplicationInventoryDBContext context, string customerGuid, string categoryGuid)
+        {
+            double adjustedPrice = 0;
+            try
+            {
+                adjustedPrice = await context.Set<customer_company_cleaning_category>().Where(c => c.customer_company_guid == customerGuid && c.cleaning_category_guid == categoryGuid)
+                                        .Select(c => c.adjusted_price).FirstOrDefaultAsync() ?? 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return adjustedPrice;
+        }
+
+        public static async Task<double> GetPackageResidueCostAsync(ApplicationInventoryDBContext context, string customerGuid, string tariffResidueGuid)
+        {
+            double cost = 0;
+            try
+            {
+                cost = await context.Set<package_residue>().Where(c => c.customer_company_guid == customerGuid && c.tariff_residue_guid == tariffResidueGuid)
+                                        .Select(c => c.cost).FirstOrDefaultAsync() ?? 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return cost;
+        }
+
+        public static async Task<RepairPackageResult> GetPackageRepairCostAsync(ApplicationInventoryDBContext context, string customerGuid, string tariffRepairGuid)
+        {
+
+            try
+            {
+                var result = await context.Set<package_repair>().Where(c => c.customer_company_guid == customerGuid && c.tariff_repair_guid == tariffRepairGuid)
+                                        .Select(c => new RepairPackageResult
+                                        {
+                                            cost = c.material_cost,
+                                            labour_hour = c.labour_hour,
+                                        })
+                                       .FirstOrDefaultAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async Task<(SteamingPackageResult?, bool)> GetTankPackageSteamingAsync(ApplicationInventoryDBContext context, string customerGuid, float reqTemp, string lastCargoGuid)
+        {
+            try
+            {
+                bool isExclusive = false;
+                //First check whether is exclusive or not
+                var result = await GetPackageSteamingExclusiveAsync(context, customerGuid, reqTemp, lastCargoGuid);
+                if (result == null || string.IsNullOrEmpty(result.steaming_guid))
+                {
+                    result = await GetPackageSteamingAsync(context, customerGuid, reqTemp, lastCargoGuid);
+
+                    if (result == null || string.IsNullOrEmpty(result.steaming_guid))
+                        throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
+                }
+                else
+                    isExclusive = true;
+
+                return (result, isExclusive);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static async Task<SteamingPackageResult?> GetPackageSteamingExclusiveAsync(ApplicationInventoryDBContext context, string customerGuid, float reqTemp, string lastCargoGuid)
+        {
+            try
+            {
+                //First check whether is exclusive or not
+                var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
+                              .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
+                              .Where(joined => joined.t.temp_min <= reqTemp && joined.t.temp_max >= reqTemp && joined.t.tariff_cleaning_guid == lastCargoGuid)
+                              .Select(joined => new SteamingPackageResult
+                              {
+                                  cost = joined.p.cost,  // Selecting cost
+                                  labour = joined.p.labour, // Selecting labour
+                                  steaming_guid = joined.p.steaming_exclusive_guid
+                              })
+                              .FirstOrDefaultAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static async Task<SteamingPackageResult?> GetPackageSteamingAsync(ApplicationInventoryDBContext context, string customerGuid, float repTemp, string last_cargo_guid)
+        {
+            try
+            {
+                var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
+                              .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
+                              .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
+                              .Select(joined => new SteamingPackageResult
+                              {
+                                  cost = joined.p.cost,  // Selecting cost
+                                  labour = joined.p.labour, // Selecting labour
+                                  steaming_guid = joined.p.tariff_steaming_guid
+                              })
+                              .FirstOrDefaultAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
 
         //private static bool AnyJobInProgress(ApplicationInventoryDBContext context, string processGuid)
         //{
