@@ -43,11 +43,11 @@ export class SteamGO {
   public delete_dt?: number;
 
   public est_cost?: number;
-  public est_hour?:number;
+  public est_hour?: number;
 
-  public rate?:number;
-  public flat_rate?:boolean;
-  
+  public rate?: number;
+  public flat_rate?: boolean;
+
   public total_material_cost?: number;
   public total_labour_cost?: number;
   public overwrite_remarks?: string;
@@ -80,8 +80,8 @@ export class SteamGO {
     this.na_dt = item.na_dt;
     this.est_cost = item.est_cost;
     this.est_hour = item.est_hour;
-    this.flat_rate=item.flat_rate;
-    this.rate = item.rate;  
+    this.flat_rate = item.flat_rate;
+    this.rate = item.rate;
     this.total_cost = item.total_cost;
     this.total_hour = item.total_hour;
     this.total_material_cost = item.total_material_cost;
@@ -708,6 +708,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         update_by
         update_dt
         customer_billing_guid
+        owner_billing_guid
         steaming_part {
           approve_cost
           approve_labour
@@ -1252,7 +1253,7 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canRollbackEstimate(re: SteamItem): boolean {
     const validStatus = ['NO_ACTION']
-    if(BusinessLogicUtil.isAutoApproveSteaming(re)) return false;
+    if (BusinessLogicUtil.isAutoApproveSteaming(re)) return false;
     return validStatus.includes(re?.status_cv!);
   }
   canRollback(re: SteamItem): boolean {
@@ -1473,12 +1474,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   }
 
   IsSteamRepair(steam: SteamItem | undefined) {
-    var retval=true;
-    if(steam)
-    {
-        retval = !BusinessLogicUtil.isAutoApproveSteaming(steam);
+    var retval = true;
+    if (steam) {
+      retval = !BusinessLogicUtil.isAutoApproveSteaming(steam);
     }
-   // retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
+    // retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
     return retval;
   }
 }

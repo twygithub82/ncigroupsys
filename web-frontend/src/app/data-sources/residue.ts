@@ -554,6 +554,8 @@ export const GET_RESIDUE_FOR_MOVEMENT = gql`
         status_cv
         update_by
         update_dt
+        customer_billing_guid
+        owner_billing_guid
         residue_part {
           action
           approve_part

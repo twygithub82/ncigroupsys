@@ -424,7 +424,7 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
   }
 `;
 
-const GET_IN_GATE_CLEANING_BY_SOT = gql`
+const GET_IN_GATE_CLEANING_BY_SOT_FOR_MOVEMENT = gql`
   query queryInGateCleaning($where: cleaningFilterInput) {
     resultList: queryCleaning(where: $where) {
       totalCount
@@ -458,6 +458,7 @@ const GET_IN_GATE_CLEANING_BY_SOT = gql`
         update_by
         update_dt
         customer_billing_guid
+        owner_billing_guid
         job_order {
           team {
             create_by
@@ -664,7 +665,7 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
     const where = this.addDeleteDtCriteria({ sot_guid: { eq: sot_guid }, status_cv: { in: ["NO_ACTION", "APPROVED", "COMPLETED", "JOB_IN_PROGRESS"] } })
     return this.apollo
       .query<any>({
-        query: GET_IN_GATE_CLEANING_BY_SOT,
+        query: GET_IN_GATE_CLEANING_BY_SOT_FOR_MOVEMENT,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

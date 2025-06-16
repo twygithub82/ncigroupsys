@@ -1156,6 +1156,8 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
         allocate_by
         complete_dt
         job_no
+        customer_billing_guid
+        owner_billing_guid
         repair_part(where: { delete_dt: { eq: null } }) {
           action
           create_by
