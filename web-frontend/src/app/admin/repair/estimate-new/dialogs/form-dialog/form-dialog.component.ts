@@ -545,11 +545,23 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
   }
 
-  validateExistedPart(toValidatePart: RepairPartItem): boolean | undefined {
-    return this.existedPart?.some((part: RepairPartItem) => {
-      const existingPart = this.extractDescription(part);
-      const newPart = this.extractDescription(toValidatePart);
-      return ((!!part.guid && toValidatePart.guid !== part.guid) || !part.guid) && existingPart === newPart;
+  validateExistedPart(toValidatePart: any): boolean {
+    return this.existedPart?.some((part: any) => {
+      const existingPartDesc = this.extractDescription(part);
+      const newPartDesc = this.extractDescription(toValidatePart);
+
+      const isSameDescription = existingPartDesc === newPartDesc;
+      if (!isSameDescription) return false;
+
+      if (this.action === 'edit') {
+        const sameGuid = part.guid && toValidatePart.guid && part.guid === toValidatePart.guid;
+        const sameIndex = toValidatePart.index === part.index;
+
+        // If it's the same item (same guid or same index), skip
+        if (sameGuid || (!part.guid && sameIndex)) return false;
+      }
+
+      return true;
     }) || false;
   }
 

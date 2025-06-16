@@ -31,7 +31,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
@@ -82,7 +82,6 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
     MatLabel,
     MatTableModule,
     MatProgressSpinnerModule,
-    RouterLink,
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
@@ -481,7 +480,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.testClassCvList = data;
     });
     this.cvDS.connectAlias('partLocationCv').subscribe(data => {
-      this.partLocationCvList = data;
+      this.partLocationCvList = addDefaultSelectOption(data, '--Select--');
     });
     this.cvDS.connectAlias('damageCodeCv').subscribe(data => {
       this.damageCodeCvList = data;
@@ -594,7 +593,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       labour_cost_discount: this.repairItem!.labour_cost_discount,
       material_cost_discount: this.repairItem!.material_cost_discount
     });
-    
+
     if (!this.canEdit()) {
       this.repairForm?.get('surveyor_id')?.disable();
       this.repairForm?.get('labour_cost_discount')?.disable();
