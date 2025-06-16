@@ -24,7 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { Router,ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -210,6 +210,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   previous_endCursor: any;
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -423,31 +424,52 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       this.processStatusCvList = data;
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+     var actionId= this.route.snapshot.paramMap.get('id');
+    if(!actionId)
+    {
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
-    }
+        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
+        if (savedCriteria) {
+          this.searchForm?.patchValue(savedCriteria);
+          this.constructSearchCriteria();
+        }
 
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
+        if (savedPagination) {
+          this.pageIndex = savedPagination.pageIndex;
+          this.pageSize = savedPagination.pageSize;
 
-    if (!savedCriteria && !savedPagination) {
-      this.search();
-    }
+          this.performSearch(
+            savedPagination.pageSize,
+            savedPagination.pageIndex,
+            savedPagination.first,
+            savedPagination.after,
+            savedPagination.last,
+            savedPagination.before
+          );
+        }
+
+        if (!savedCriteria && !savedPagination) {
+          this.search();
+        }
+      }
+      else if(actionId==="pending")
+      {
+          const where ={
+            and:[
+                 { purpose_cleaning: { eq: true } }, 
+                { tank_status_cv: { eq: "CLEANING" } },
+                { residue: { some: {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }} } }        
+            ]
+          };
+
+          this.lastSearchCriteria = where;
+          this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+            this.updatePageSelection();
+          });
+          console.log("search pending records");
+      }
   }
 
   handleCancelSuccess(count: any) {

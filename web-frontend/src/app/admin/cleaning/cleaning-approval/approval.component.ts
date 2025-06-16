@@ -41,6 +41,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { RouterLink,ActivatedRoute,Router } from '@angular/router';
 
 @Component({
   selector: 'app-in-gate',
@@ -181,6 +182,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
   previous_endCursor: any;
 
   constructor(
+    private route: ActivatedRoute,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -281,30 +283,50 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
       this.processStatusCvList = data;
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
+    var actionId= this.route.snapshot.paramMap.get('id');
+    if(!actionId)
+    {
+
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
+      }
+
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
+
+        this.searchData(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
+      }
+
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
     }
+    else if(actionId==='pending')
+    {
+       const where ={
+        and:[
+            { storing_order_tank: { purpose_cleaning: { eq: true } }},
+            {storing_order_tank: {  tank_status_cv: { eq: "CLEANING" } }},
+            {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }}          
+        ]
+       };
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
-
-      this.searchData(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
-
-    if (!savedCriteria && !savedPagination) {
-      this.search();
+       this.lastSearchCriteria = where;
+       this.searchData(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+      console.log("search pending records");
     }
   }
 

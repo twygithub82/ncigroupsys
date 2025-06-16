@@ -5235,7 +5235,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     let where: any ={and: [
       { purpose_cleaning: { eq: true } }, 
       { tank_status_cv: { eq: "CLEANING" } },
-      { cleaning: { any: true } }
+      { cleaning: { some: {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }} } }
     ]};
     return this.apollo
       .query<any>({
@@ -5259,7 +5259,8 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     let where: any = {and:[
       { purpose_cleaning: { eq: true } }, 
       { tank_status_cv: { eq: "CLEANING" } },
-      { residue: { any: true } }
+      { residue: { some: {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }} } }
+      // { residue: { any: true } }
     ]};
     return this.apollo
       .query<any>({
@@ -5352,16 +5353,42 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-
-  getGateOutWaitingCount(): Observable<number> {
+getTotalGateInTodayCount(): Observable<number> {
     this.loadingSubject.next(true);
     var starDt=Utility.convertDate(new Date());
     var endDt=Utility.convertDate(new Date(),true,true);
     let where: any = {and:[
-     // { out_gate: { some:{eir_dt: { gte: starDt, lte: endDt  } }}}, 
+     { in_gate: { some:{eir_dt: { gte: starDt, lte: endDt  } }}}, 
      // {or:[{ out_gate: { some:{eir_dt: { neq: 0 } }}}, { out_gate: { some:{eir_dt: { neq: null } }}}]},
-     { out_gate:{some:{eir_status_cv:{in:['PUBLISHED']}}}},
-      { tank_status_cv: { neq: "RELEASED" } }
+     { in_gate:{some:{eir_status_cv:{in:['PUBLISHED']}}}},
+     // { tank_status_cv: { eq: "RELEASED" } }
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
+  getTotalGateOutTodayCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    var starDt=Utility.convertDate(new Date());
+    var endDt=Utility.convertDate(new Date(),true,true);
+    let where: any = {and:[
+     { out_gate: { some:{eir_dt: { gte: starDt, lte: endDt  } }}}, 
+     // {or:[{ out_gate: { some:{eir_dt: { neq: 0 } }}}, { out_gate: { some:{eir_dt: { neq: null } }}}]},
+     //{ out_gate:{some:{eir_status_cv:{in:['PUBLISHED']}}}},
+      { tank_status_cv: { eq: "RELEASED" } }
     ]};
     return this.apollo
       .query<any>({

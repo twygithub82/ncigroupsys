@@ -11,6 +11,12 @@ export const CLEANING_ROUTE: Routes = [
     data: { expectedFunctions: ['CLEANING_APPROVAL_EDIT', 'CLEANING_APPROVAL_DELETE', 'CLEANING_APPROVAL_VIEW'] }
   },
   {
+    path: "approval/:id",
+    component: CleaningApprovalComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['CLEANING_APPROVAL_EDIT', 'CLEANING_APPROVAL_DELETE', 'CLEANING_APPROVAL_VIEW'] }
+  },
+  {
     path: "job-order",
     component: JobOrderCleaningComponent,
     canActivate: [AuthGuard],

@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { InGateDS } from 'app/data-sources/in-gate';
@@ -96,6 +96,14 @@ export class Dashboard1Component implements OnInit {
   translatedLangText: any = {};
   langText = {
     DASHBOARD: 'COMMON-FORM.DASHBOARD',
+    IN_GATE_SURVEY_PENDING: 'COMMON-FORM.IN-GATE-SURVEY-PENDING',
+    GATE_IN_PENDING: 'COMMON-FORM.GATE-IN-PENDING',
+    ESTIMATE_CUSTOMER_APPROVAL_PENDING: 'COMMON-FORM.ESTIMATE-CUSTOMER-APPROVAL-PENDING',
+    REPAIR_ESTIMATE_PENDING: 'COMMON-FORM.REPAIR-ESTIMATE-PENDING',
+    REPAIR_QC_PENDING: 'COMMON-FORM.REPAIR-QC-PENDING',
+    CLEANING_PENDING: 'COMMON-FORM.CLEANING-PENDING',
+    RESIDUE_PENDING: 'COMMON-FORM.RESIDUE-PENDING',
+    GATEIO_PENDING:'COMMON-FORM.GATEIO-PENDING',
   }
   pageTitle = ''
   breadcrumsMiddleList = [
@@ -112,6 +120,7 @@ export class Dashboard1Component implements OnInit {
   
   
   constructor(
+    private router: Router,
     private apollo: Apollo,
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
@@ -120,6 +129,7 @@ export class Dashboard1Component implements OnInit {
    // this.igDS = new InGateDS(this.apollo);
    // this.sotDS = new StoringOrderTankDS(this.apollo);
     //constructor
+    this.translateLangText();
   }
 
   ngOnInit() {
@@ -513,5 +523,53 @@ export class Dashboard1Component implements OnInit {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
+  }
+
+   onIconClick(event: MouseEvent, transactionType: string) {
+    event.stopPropagation(); // Prevent event bubbling
+    
+    console.log(`Icon clicked - Type: ${transactionType}`);
+    var urlLink="";
+    var module={};
+    switch(transactionType)
+    {
+      case this.translatedLangText.IN_GATE_SURVEY_PENDING: 
+        module={};
+      break;
+      case this.translatedLangText.GATE_IN_PENDING: 
+        module={ queryParams: { tabIndex: 'app-in-gate' } };
+        urlLink="admin/inventory/in-gate-main";
+      break;
+      case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
+      
+      break;
+      case this.translatedLangText.REPAIR_ESTIMATE_PENDING: 
+      
+      //  urlLink="admin/repair/estimate";
+      break;
+      case this.translatedLangText.REPAIR_QC_PENDING: 
+      
+      break;
+      case this.translatedLangText.CLEANING_PENDING: 
+       urlLink="admin/cleaning/approval";
+      break;
+       case this.translatedLangText.RESIDUE_PENDING: 
+        urlLink="admin/residue-disposal/estimate-approval/"
+      break;
+      case this.translatedLangText.GATEIO_PENDING: 
+        
+      break;
+    }
+    if(urlLink)
+    {
+     this.router.navigate([`${urlLink}`,'pending'],module);
+     }
+    // // Add your custom logic here
+    // this.showTransactionDetails(transactionType, amount);
+    
+    // // Optional: Add visual feedback
+    // const iconBox = event.target as HTMLElement;
+    // iconBox.classList.add('icon-clicked');
+    // setTimeout(() => iconBox.classList.remove('icon-clicked'), 200);
   }
 }

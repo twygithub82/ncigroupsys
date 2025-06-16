@@ -1319,12 +1319,13 @@
     "RENUMBER": "Renumber",
     "REOWNERSHIP": "Reownership",
     "ESTIMATE-CUSTOMER-APPROVAL-PENDING": "Estimate Approval: Pending",
-    "REPAIR-ESTIMATE-PENDING": "Repair Estimate : Pending",
+    "REPAIR-ESTIMATE-PENDING": "Repair Estimate: Pending",
     "SAVE-AND-PUBLISH": "Save & Publish",
     "PENDING-STATUS": "Pending Status",
     "ESTIMATE-APPROVAL": "Estimate Approval",
     "REPAIR-QC-PENDING": "Repair QC: Pending",
-    "REPAIR-QC": "Repair QC"
+    "REPAIR-QC": "Repair QC",
+    "GATEIO-PENDING":"GateIO: Pending"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

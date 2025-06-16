@@ -24,7 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { RouterLink,ActivatedRoute,Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -44,6 +44,7 @@ import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+
 
 @Component({
   selector: 'app-approval',
@@ -211,7 +212,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     private apollo: Apollo,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    public modulePackageService: ModulePackageService
+    public modulePackageService: ModulePackageService,
+    
   ) {
     super();
     this.translateLangText();

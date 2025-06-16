@@ -75,11 +75,11 @@ export class DashboardGateIOComponent {
     //   this.sot_waiting = String(data);
     // });
 
-    this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
+    this.sotDS.getTotalGateInTodayCount().subscribe(data => {
       this.result_gate_in = String(data);
     });
 
-    this.sotDS.getGateOutWaitingCount().subscribe(data => {
+    this.sotDS.getTotalGateOutTodayCount().subscribe(data => {
       this.result_gate_out = String(data);
     });
   }
