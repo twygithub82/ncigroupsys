@@ -53,13 +53,23 @@ namespace IDMS.Service.GqlTypes
         public const string STEAM = "STEAM";
     }
 
-    public static class JobNotificationType
+    //public static class JobNotificationType
+    //{
+    //    public const int START_JOB = 1;
+    //    public const int STOP_JOB = 2;
+    //    public const int COMPLETE_JOB = 3;
+    //    public const int COMPLETE_ITEM = 4;
+    //}
+
+
+    public enum JobNotificationType
     {
-        public const int START_JOB = 1;
-        public const int STOP_JOB = 2;
-        public const int COMPLETE_JOB = 3;
-        public const int COMPLETE_ITEM = 4;
+        onJobStarted = 1,
+        onJobStopped = 2,
+        onJobCompleted = 3,
+        onItemCompleted = 4
     }
+
     public static class TankMovementStatus
     {
         public const string CLEANING = "CLEANING";
