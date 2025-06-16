@@ -14,6 +14,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
@@ -26,6 +27,7 @@ import { debounceTime, merge, startWith, tap } from 'rxjs';
 export interface DialogData {
   action?: string;
   item: StoringOrderTankItem;
+  soItem?: StoringOrderItem;
   translatedLangText?: any;
   populateData?: any;
   index: number;
@@ -76,6 +78,7 @@ export class FormDialogComponent {
 
   tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
+  soDS: StoringOrderDS;
   lastCargoControl: UntypedFormControl;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -84,10 +87,9 @@ export class FormDialogComponent {
     private apollo: Apollo,
     public modulePackageService: ModulePackageService
   ) {
-    // Set the defaults
-
     this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.soDS = new StoringOrderDS(this.apollo);
     this.action = data.action!;
     this.sotExistedList = data.sotExistedList;
     if (this.action === 'edit') {
@@ -245,8 +247,9 @@ export class FormDialogComponent {
       this.storingOrderTankForm?.get('unit_type_guid')!.valueChanges,
       this.storingOrderTankForm?.get('tank_no')!.valueChanges
     ).subscribe(() => {
-      const value = this.storingOrderTankForm?.get('tank_no')!.value
-      this.isPreOrder = false; // Reset PREORDER flag
+      const value = this.storingOrderTankForm?.get('tank_no')!.value;
+      let actions = Array.isArray(this.storingOrderTank.actions!) ? [...this.storingOrderTank.actions!] : [];
+      this.isPreOrder = actions?.includes("preorder"); // Reset PREORDER flag
       if (value) {
         const uppercaseValue = value.toUpperCase();
         this.storingOrderTankForm.get('tank_no')?.setValue(uppercaseValue, { emitEvent: false });
@@ -464,7 +467,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return (this.isAllowEdit() || this.isAllowAdd()) && (this.sotDS.canEdit(this.storingOrderTank) || (!this.sotDS.canRollbackStatus(this.storingOrderTank) && ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback')));
+    return (this.isAllowEdit() || this.isAllowAdd()) && ((this.soDS.canAdd(this.data.soItem!)) && (this.sotDS.canEdit(this.storingOrderTank) || !this.sotDS.canRollbackStatus(this.storingOrderTank)) && (!this.storingOrderTank.actions?.length || ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback')));
   }
 
   updateValidators(validOptions: any[]) {

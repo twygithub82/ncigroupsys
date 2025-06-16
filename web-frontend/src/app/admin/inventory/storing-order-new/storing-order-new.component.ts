@@ -346,7 +346,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.populateSOT(so.storing_order_tank);
     }
 
-    if (!this.isAllowAdd() && !this.isAllowEdit() && !this.soDS.canAdd(this.storingOrderItem)) {
+    if (!(this.isAllowAdd() || this.isAllowEdit()) || !this.soDS.canAdd(this.storingOrderItem)) {
       this.customerCodeControl?.disable();
       this.soForm?.get('so_notes')?.disable();
       this.soForm?.get('haulier')?.disable();
@@ -392,6 +392,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       disableClose: true,
       data: {
         item: row ? row : addSot,
+        soItem: this.storingOrderItem,
         action: 'new',
         translatedLangText: this.translatedLangText,
         populateData: {
@@ -424,7 +425,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   editOrderDetails(event: Event, row: StoringOrderTankItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
     if (!this.isAllowView()) return;
-    
+
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -435,6 +436,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       disableClose: true,
       data: {
         item: row,
+        soItem: this.storingOrderItem,
         action: 'edit',
         translatedLangText: this.translatedLangText,
         populateData: {
