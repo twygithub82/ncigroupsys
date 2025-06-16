@@ -354,7 +354,7 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       { alias: 'partLocationCv', codeValType: 'PART_LOCATION' },
       { alias: 'damageCodeCv', codeValType: 'DAMAGE_CODE' },
       { alias: 'repairCodeCv', codeValType: 'REPAIR_CODE' },
-      { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
+      { alias: 'unitTypeCv', codeValType: 'RESIDUE_UNIT' },
     ];
     this.cvDS.getCodeValuesByType(queries);
 
