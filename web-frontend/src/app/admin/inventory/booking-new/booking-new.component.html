@@ -240,7 +240,7 @@
                           </div>
                           <div class="">
                             <span class="font-bold">{{translatedLangText.YARD}}:</span>
-                            {{getYardDescription(row?.tank_info?.yard_cv)}}
+                            {{getYardDescription(getLastLocation(row))}}
                           </div>
                         </mat-panel-description>
                       </mat-expansion-panel-header>

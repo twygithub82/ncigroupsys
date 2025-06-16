@@ -297,6 +297,7 @@ export class FormDialogComponent {
         {
           scheduling_sot: {
             some: {
+              delete_dt: { eq: null },
               storing_order_tank: {
                 status_cv: { eq: "ACCEPTED" },
                 tank_status_cv: {

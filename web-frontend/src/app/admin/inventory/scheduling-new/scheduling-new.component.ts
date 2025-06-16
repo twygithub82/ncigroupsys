@@ -284,12 +284,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       this.bookingStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
-
-      var filterList = data.filter(x => this.availableStatuses.includes(x.code_val!));
-      filterList.sort((a, b) => {
-        return this.availableStatuses.indexOf(a.code_val!) - this.availableStatuses.indexOf(b.code_val!);
-      });
-      this.tankStatusCvList = addDefaultSelectOption(filterList, 'All');
+      this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
     this.search();
   }
