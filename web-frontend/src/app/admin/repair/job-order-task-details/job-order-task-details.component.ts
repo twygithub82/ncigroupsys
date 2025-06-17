@@ -50,6 +50,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 
 @Component({
   selector: 'job-order-task-details',
@@ -245,6 +246,8 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   teamList?: TeamItem[];
 
+  private joSubscriptions = new Map<string, Subscription>();
+
   customerCodeControl = new UntypedFormControl();
 
   sotDS: StoringOrderTankDS;
@@ -270,7 +273,8 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private notificationService: SingletonNotificationService
   ) {
     super();
     this.translateLangText();
@@ -415,10 +419,33 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.subs.sink = this.joDS.getJobOrderByIDForRepair(this.job_order_guid).subscribe(jo => {
         if (jo?.length) {
           console.log(jo)
+          const newGuids = new Set<string>();
           this.jobOrderItem = jo[0];
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
+          const guid = this.jobOrderItem.guid!;
+          newGuids.add(guid);
+
+          if (this.joSubscriptions.has(guid)) {
+            // Already subscribed — skip to avoid duplication
+            return;
+          }
+
+          const sub = this.notificationService.subscribe(guid, (msg) => {
+            this.processJobStatusChange(msg);
+          });
+
+          this.joSubscriptions.set(guid, sub);
+
+          // Unsubscribe and remove old subscriptions no longer needed
+          Array.from(this.joSubscriptions.keys()).forEach(guid => {
+            if (!newGuids.has(guid)) {
+              this.joSubscriptions.get(guid)!.unsubscribe();
+              this.joSubscriptions.delete(guid);
+            }
+          });
+
+          // this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
+          // this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
+          // this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
           if (this.repair_guid) {
             this.repairDS.getRepairByIDForJobOrder(this.repair_guid, this.job_order_guid!).subscribe(repair => {
               if (repair?.length) {
@@ -567,29 +594,10 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
         index: index
       }));
 
-      this.repList.forEach(item => {
-        this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "REPAIR")
-      })
+      // this.repList.forEach(item => {
+      //   this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "REPAIR")
+      // })
     }
-  }
-
-  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
-    //this.stopEventTrigger(event);
-    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
-    newSot.unit_type_guid = row.unit_type_guid;
-    newSot.last_cargo_guid = row.last_cargo_guid;
-    newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
-    newSot.clean_status_cv = row.clean_status_cv;
-    newSot.certificate_cv = row.certificate_cv;
-    newSot.so_guid = row.so_guid;
-    newSot.eta_dt = row.eta_dt;
-    newSot.etr_dt = row.etr_dt;
-    //this.addEstDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {
@@ -1028,61 +1036,29 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.jobOrderSubscriptions.push(subscription);
   }
 
-  private subscribeToJobItemEvent(
-    subscribeFn: (guid: string, job_type: string) => Observable<any>,
-    item_guid: string,
-    job_type: string
-  ) {
-    const subscription = subscribeFn(item_guid, job_type).subscribe({
-      next: (response) => {
-        console.log('Received data:', response);
-        const data = response.data
+  processJobStatusChange(response: any) {
+    // console.log('Received data:', response);
+    const event_name = response.event_name;
+    const data = response.payload
 
-        let jobData: any;
-        let eventType: any;
+    if (data) {
+      if (this.jobOrderItem) {
+        this.jobOrderItem.status_cv = data.job_status;
+        this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? data.start_time;
+        this.jobOrderItem.time_table ??= [];
 
-        // if (data?.onJobStopped) {
-        //   jobData = data.onJobStopped;
-        //   eventType = 'jobStopped';
-        // } else if (data?.onJobStarted) {
-        //   jobData = data.onJobStarted;
-        //   eventType = 'jobStarted';
-        // } else if (data?.onJobCompleted) {
-        //   jobData = data.onJobCompleted;
-        //   eventType = 'onJobCompleted';
-        // }
-
-        // if (jobData) {
-        //   if (this.jobOrderItem) {
-        //     this.jobOrderItem.status_cv = jobData.job_status;
-        //     this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
-        //     this.jobOrderItem.time_table ??= [];
-
-        //     const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
-        //     if (eventType === 'jobStarted') {
-        //       if (foundTimeTable?.length) {
-        //         foundTimeTable[0].start_time = jobData.start_time
-        //         console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //       } else {
-        //         const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
-        //         this.jobOrderItem.time_table?.push(startNew)
-        //         console.log(`Updated JobOrder ${eventType} :`, startNew);
-        //       }
-        //     } else if (eventType === 'jobStopped') {
-        //       foundTimeTable[0].stop_time = jobData.stop_time;
-        //       console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //     }
-        //   }
-        // }
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      },
-      complete: () => {
-        console.log('Subscription completed');
+        if (event_name === 'onJobStarted') {
+          const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === data.time_table_guid);
+          if (foundTimeTable?.length) {
+            foundTimeTable[0].start_time = data.start_time
+          } else {
+            this.jobOrderItem.time_table?.push(new TimeTableItem({ guid: data.time_table_guid, start_time: data.start_time, stop_time: data.stop_time, job_order_guid: data.job_order_guid }))
+          }
+        } else if (event_name === 'onJobStopped') {
+          this.jobOrderItem.time_table = this.jobOrderItem.time_table?.filter(x => x.guid !== data.time_table_guid);
+        }
+        console.log(`Updated JobOrder ${event_name} :`, this.jobOrderItem);
       }
-    });
-
-    this.jobOrderSubscriptions.push(subscription);
+    }
   }
 }
