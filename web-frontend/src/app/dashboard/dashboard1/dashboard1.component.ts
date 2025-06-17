@@ -534,7 +534,8 @@ export class Dashboard1Component implements OnInit {
     switch(transactionType)
     {
       case this.translatedLangText.IN_GATE_SURVEY_PENDING: 
-        module={};
+        module={ queryParams: { tabIndex: 'app-in-gate-survey' } };
+        urlLink="admin/inventory/in-gate-main";
       break;
       case this.translatedLangText.GATE_IN_PENDING: 
         module={ queryParams: { tabIndex: 'app-in-gate' } };

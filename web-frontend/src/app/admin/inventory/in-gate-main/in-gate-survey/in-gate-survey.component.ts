@@ -38,6 +38,7 @@ import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-in-gate-survey',
@@ -139,6 +140,8 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   hasPreviousPage = false;
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -212,31 +215,48 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
-
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
+     var actionId= this.route.snapshot.paramMap.get('id');
+    if(actionId==="pending")
+    {
+      this.loadData_Pending();
     }
+    else
+    {
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
+      }
 
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
+
+        this.performSearch(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
+      }
+
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
     }
+  }
 
-    if (!savedCriteria && !savedPagination) {
-      this.search();
-    }
+  public loadData_Pending()
+  {
+       const where :any =  { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
+
+       this.lastSearchCriteria = where;
+       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+      console.log("search pending records");
   }
 
   // export table data in excel file

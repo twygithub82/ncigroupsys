@@ -32,6 +32,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { Utility } from 'app/utilities/utility';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-in-gate',
@@ -116,6 +117,8 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   hasPreviousPage = false;
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -154,33 +157,50 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   }
 
   public loadData() {
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
+    var actionId= this.route.snapshot.paramMap.get('id');
+    if(actionId==="pending")
+    {
+      this.loadData_Pending();
     }
+    else
+    {
+        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
+        if (savedCriteria) {
+          this.searchForm?.patchValue(savedCriteria);
+          this.constructSearchCriteria();
+        }
 
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
+        if (savedPagination) {
+          this.pageIndex = savedPagination.pageIndex;
+          this.pageSize = savedPagination.pageSize;
 
-    if (!savedCriteria && !savedPagination) {
-      this.search();
-    }
+          this.performSearch(
+            savedPagination.pageSize,
+            savedPagination.pageIndex,
+            savedPagination.first,
+            savedPagination.after,
+            savedPagination.last,
+            savedPagination.before
+          );
+        }
+
+        if (!savedCriteria && !savedPagination) {
+          this.search();
+        }
+      }
   }
 
+  public loadData_Pending()
+  {
+       const where :any = { status_cv: { in: ["WAITING"] } }
+
+       this.lastSearchCriteria = where;
+       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+      console.log("search pending records");
+  }
   // export table data in excel file
   exportExcel() {
     // key name with space add in brackets

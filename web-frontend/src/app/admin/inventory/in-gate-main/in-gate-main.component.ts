@@ -112,9 +112,11 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   selectedTabIndex = 0;
-
-  @ViewChild('inGateComp') inGateComp?: InGateComponent;
-  @ViewChild('inGateSurveyComp') inGateSurveyComp?: InGateSurveyComponent;
+  // tabComponent:string='';
+  @ViewChild('inGateComp', { static: false }) inGateComp?: InGateComponent;
+  @ViewChild('inGateSurveyComp', { static: false }) inGateSurveyComp?: InGateSurveyComponent;
+  // @ViewChild('inGateComp') inGateComp?: InGateComponent;
+  // @ViewChild('inGateSurveyComp') inGateSurveyComp?: InGateSurveyComponent;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -125,6 +127,7 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
   ) {
     super();
     this.translateLangText();
+    
   }
 
   ngOnInit() {
@@ -132,8 +135,17 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       const tabComponent = params['tabIndex'];
       const index = this.allowedTabs.findIndex(t => t.component === tabComponent);
       this.selectedTabIndex = index >= 0 ? index : 0;
+      // this.tabComponent=tabComponent
     });
   }
+  // ngAfterViewInit(){
+  //   // this.route.queryParams.subscribe(params => {
+  //   //   const tabComponent = params['tabIndex'];
+  //   //   const index = this.allowedTabs.findIndex(t => t.component === tabComponent);
+  //   //   this.selectedTabIndex = index >= 0 ? index : 0;
+  //     this.loadData(this.tabComponent);
+  //   // });
+  // }
 
   onTabChange(index: number): void {
     const tabComponent = this.allowedTabs[index]?.component;
@@ -150,4 +162,19 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       this.translatedLangText = translations;
     });
   }
+
+  // loadData(tabName:String)
+  // {
+  //   var actionId= this.route.snapshot.paramMap.get('id');
+  //   if(actionId==="pending")
+  //   {
+
+  //    if (tabName === "app-in-gate" && this.inGateComp) {
+  //     this.inGateComp.loadData_Pending();
+  //   } else if (tabName === "app-in-gate-survey" && this.inGateSurveyComp) {
+  //     this.inGateSurveyComp.loadData_Pending();
+  //   }
+     
+  //   }
+  // }
 }
