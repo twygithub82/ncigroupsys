@@ -808,8 +808,8 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
   calculateCost() {
     const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
     const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
-    const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
+    const labourDiscount = this.repairForm?.getRawValue()?.labour_cost_discount;
+    const matDiscount = this.repairForm?.getRawValue()?.material_cost_discount;
 
     let total_hour = 0;
     let total_labour_cost = 0;
