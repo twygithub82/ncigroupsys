@@ -5212,7 +5212,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getWaitingStoringOrderTankCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = { status_cv: { in: ["WAITING", "PREORDER"] } }
+    let where: any = { status_cv: { in: ["WAITING"] } }
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
