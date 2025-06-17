@@ -1634,7 +1634,12 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   onPublishCheck(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
-    if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
+    const isSurveyValid = this.validateAllControlsRaw(this.surveyForm!);
+    const isTopValid = this.validateAllControlsRaw(this.getTopFormGroup());
+    const isBottomValid = this.validateAllControlsRaw(this.getBottomFormGroup());
+    const isManlidValid = this.validateAllControlsRaw(this.getManlidFormGroup());
+
+    if (isSurveyValid && isTopValid && isBottomValid && isManlidValid) {
       const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
       let tempDirection: Direction;
       if (localStorage.getItem('isRtl') === 'true') {
@@ -1785,9 +1790,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   startDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
-    this.isDrawing = true;
     event.preventDefault(); // Prevent default dragging behavior
-    if (!this.isAllowEdit()) return;
+    if (!this.canEdit()) return;
+    this.isDrawing = true;
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
     if (dataIndex !== null) {
@@ -1798,9 +1803,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   startDrawingWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
-    this.isDrawing = true;
     event.preventDefault(); // Prevent default dragging behavior
-    if (!this.isAllowEdit()) return;
+    if (!this.canEdit()) return;
+    this.isDrawing = true;
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
     if (dataIndex !== null) {
@@ -1955,6 +1960,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         remarksTitle: remarksTitle,
         previousRemarks: remarksValue.value,
         action: 'edit',
+        in_gate: this.in_gate,
         translatedLangText: this.translatedLangText,
       },
       direction: tempDirection
@@ -2195,7 +2201,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   canPublish() {
-    return this.in_gate?.in_gate_survey?.guid;
+    return !this.isAllowEdit() && this.isAllowPublish() && this.in_gate?.in_gate_survey?.guid;
   }
 
   canDownload() {
@@ -2317,7 +2323,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   triggerFileInputIfAllowed(inputRef: HTMLInputElement, formPath?: string): void {
-    if (!this.isAllowEdit()) return;
+    if (!this.canEdit()) return;
 
     const previewVal = formPath
       ? this.surveyForm?.get(formPath)?.get('preview')?.value
@@ -2326,5 +2332,9 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     if (!previewVal) {
       inputRef.click();
     }
+  }
+
+  validateAllControlsRaw(form: UntypedFormGroup): boolean {
+    return BusinessLogicUtil.validateAllControlsRaw(form);
   }
 }

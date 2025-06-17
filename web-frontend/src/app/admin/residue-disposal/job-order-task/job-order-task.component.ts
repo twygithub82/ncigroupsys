@@ -294,7 +294,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   constructSearchCriteria() {
     const where: any = {
       job_type_cv: { eq: "RESIDUE" }
-
     };
 
     if (this.filterJobOrderForm!.get('filterJobOrder')?.value) {

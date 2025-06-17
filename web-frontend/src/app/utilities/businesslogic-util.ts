@@ -4,6 +4,7 @@ import { RPDamageRepairItem } from "app/data-sources/rp-damage-repair";
 import { modulePackage } from "environments/environment";
 import { ESTIMATE_APPROVED_STATUS, Utility } from "./utility";
 import { SurveyDetailItem } from "app/data-sources/survey-detail";
+import { UntypedFormGroup } from "@angular/forms";
 
 export class BusinessLogicUtil {
     static isOthers(value: string | string[]): boolean {
@@ -175,5 +176,21 @@ export class BusinessLogicUtil {
             needUpdate,
             latestItem
         };
+    }
+
+    static validateAllControlsRaw(form: UntypedFormGroup): boolean {
+        let isValid = true;
+
+        Object.keys(form.controls).forEach(key => {
+            const control = form.controls[key];
+
+            const errors = control.validator?.(control);
+            if (errors) {
+                control.setErrors(errors); // Manually apply error
+                isValid = false;
+            }
+        });
+
+        return isValid;
     }
 }
