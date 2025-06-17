@@ -51,6 +51,7 @@ import { Observable, Subscription } from 'rxjs';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 
 @Component({
   selector: 'job-order-task-details',
@@ -267,7 +268,7 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   ttDS: TimeTableDS;
   isOwner = false;
 
-  private jobOrderSubscriptions: Subscription[] = [];
+  private joSubscriptions = new Map<string, Subscription>();
 
   constructor(
     public httpClient: HttpClient,
@@ -277,7 +278,8 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private notificationService: SingletonNotificationService
   ) {
     super();
     this.translateLangText();
@@ -304,6 +306,15 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
   ngOnInit() {
     this.initializeValueChanges();
     this.loadData();
+  }
+
+  override ngOnDestroy(): void {
+    // Unsubscribe all job order subscriptions
+    this.joSubscriptions.forEach(sub => sub.unsubscribe());
+    this.joSubscriptions.clear();
+
+    // Unsubscribe other component-level subscriptions (if using SubSink or similar)
+    this.subs.unsubscribe();
   }
 
   initForm() {
@@ -426,11 +437,33 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     if (this.job_order_guid) {
       this.subs.sink = this.joDS.getJobOrderByID(this.job_order_guid).subscribe(jo => {
         if (jo?.length) {
+          const newGuids = new Set<string>();
           this.jobOrderItem = jo[0];
           this.jobOrderItem.time_table = this.jobOrderItem.time_table?.filter(d => d.delete_dt == null || d.delete_dt == 0);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
+          const guid = this.jobOrderItem.guid!;
+          newGuids.add(guid);
+
+          if (this.joSubscriptions.has(guid)) {
+            // Already subscribed — skip to avoid duplication
+            return;
+          }
+
+          const sub = this.notificationService.subscribe(guid, (msg) => {
+            this.processJobStatusChange(msg);
+          });
+
+          this.joSubscriptions.set(guid, sub);
+
+          // Unsubscribe and remove old subscriptions no longer needed
+          Array.from(this.joSubscriptions.keys()).forEach(guid => {
+            if (!newGuids.has(guid)) {
+              this.joSubscriptions.get(guid)!.unsubscribe();
+              this.joSubscriptions.delete(guid);
+            }
+          });
+          // this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), this.job_order_guid!);
+          // this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), this.job_order_guid!);
+          // this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), this.job_order_guid!);
           if (this.residue_guid) {
             this.residueDS.getResidueIDForJobOrder(this.residue_guid, this.job_order_guid!).subscribe(residue => {
               if (residue?.length) {
@@ -579,9 +612,9 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
         index: index
       }));
 
-      this.deList.forEach(item => {
-        this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "RESIDUE")
-      })
+      // this.deList.forEach(item => {
+      //   this.subscribeToJobItemEvent(this.joDS.subscribeToJobItemCompleted.bind(this.joDS), item.guid!, "RESIDUE")
+      // })
     }
   }
 
@@ -908,119 +941,87 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
   }
 
-  private subscribeToJobOrderEvent(
-    subscribeFn: (guid: string) => Observable<any>,
-    job_order_guid: string
-  ) {
-    const subscription = subscribeFn(job_order_guid).subscribe({
-      next: (response) => {
-        console.log('Received data:', response);
-        const data = response.data
+  // private subscribeToJobOrderEvent(
+  //   subscribeFn: (guid: string) => Observable<any>,
+  //   job_order_guid: string
+  // ) {
+  //   const subscription = subscribeFn(job_order_guid).subscribe({
+  //     next: (response) => {
+  //       console.log('Received data:', response);
+  //       const data = response.data
 
-        let jobData: any;
-        let eventType: any;
+  //       let jobData: any;
+  //       let eventType: any;
 
-        if (data?.onJobStopped) {
-          jobData = data.onJobStopped;
-          eventType = 'jobStopped';
-        } else if (data?.onJobStarted) {
-          jobData = data.onJobStarted;
-          eventType = 'jobStarted';
-        } else if (data?.onJobCompleted) {
-          jobData = data.onJobCompleted;
-          eventType = 'onJobCompleted';
-        }
+  //       if (data?.onJobStopped) {
+  //         jobData = data.onJobStopped;
+  //         eventType = 'jobStopped';
+  //       } else if (data?.onJobStarted) {
+  //         jobData = data.onJobStarted;
+  //         eventType = 'jobStarted';
+  //       } else if (data?.onJobCompleted) {
+  //         jobData = data.onJobCompleted;
+  //         eventType = 'onJobCompleted';
+  //       }
 
-        if (jobData) {
-          if (this.jobOrderItem) {
-            this.jobOrderItem.status_cv = jobData.job_status;
-            this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
-            this.jobOrderItem.time_table ??= [];
+  //       if (jobData) {
+  //         if (this.jobOrderItem) {
+  //           this.jobOrderItem.status_cv = jobData.job_status;
+  //           this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
+  //           this.jobOrderItem.time_table ??= [];
 
-            const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
-            if (eventType === 'jobStarted') {
-              if (foundTimeTable?.length) {
-                foundTimeTable[0].start_time = jobData.start_time
-                console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-              } else {
-                const startNew = new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid });
-                this.jobOrderItem.time_table?.push(startNew)
-                console.log(`Updated JobOrder ${eventType} :`, startNew);
-              }
-            } else if (eventType === 'jobStopped') {
-              foundTimeTable[0].stop_time = jobData.stop_time;
-              console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-            }
+  //           const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
+  //           if (eventType === 'jobStarted') {
+  //             if (foundTimeTable?.length) {
+  //               foundTimeTable[0].start_time = jobData.start_time
+  //               console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+  //             } else {
+  //               const startNew = new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid });
+  //               this.jobOrderItem.time_table?.push(startNew)
+  //               console.log(`Updated JobOrder ${eventType} :`, startNew);
+  //             }
+  //           } else if (eventType === 'jobStopped') {
+  //             foundTimeTable[0].stop_time = jobData.stop_time;
+  //             console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
+  //           }
+  //         }
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Error:', error);
+  //     },
+  //     complete: () => {
+  //       console.log('Subscription completed');
+  //     }
+  //   });
+
+  //   this.jobOrderSubscriptions.push(subscription);
+  // }
+
+  processJobStatusChange(response: any) {
+    // console.log('Received data:', response);
+    const event_name = response.event_name;
+    const data = response.payload
+
+    if (data) {
+      if (this.jobOrderItem) {
+        this.jobOrderItem.status_cv = data.job_status;
+        this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? data.start_time;
+        this.jobOrderItem.time_table ??= [];
+
+        if (event_name === 'onJobStarted') {
+          const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === data.time_table_guid);
+          if (foundTimeTable?.length) {
+            foundTimeTable[0].start_time = data.start_time
+          } else {
+            this.jobOrderItem.time_table?.push(new TimeTableItem({ guid: data.time_table_guid, start_time: data.start_time, stop_time: data.stop_time, job_order_guid: data.job_order_guid }))
           }
+        } else if (event_name === 'onJobStopped') {
+          this.jobOrderItem.time_table = this.jobOrderItem.time_table?.filter(x => x.guid !== data.time_table_guid);
         }
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      },
-      complete: () => {
-        console.log('Subscription completed');
+        console.log(`Updated JobOrder ${event_name} :`, this.jobOrderItem);
       }
-    });
-
-    this.jobOrderSubscriptions.push(subscription);
-  }
-
-  private subscribeToJobItemEvent(
-    subscribeFn: (guid: string, job_type: string) => Observable<any>,
-    item_guid: string,
-    job_type: string
-  ) {
-    const subscription = subscribeFn(item_guid, job_type).subscribe({
-      next: (response) => {
-        console.log('Received data:', response);
-        const data = response.data
-
-        let jobData: any;
-        let eventType: any;
-
-        // if (data?.onJobStopped) {
-        //   jobData = data.onJobStopped;
-        //   eventType = 'jobStopped';
-        // } else if (data?.onJobStarted) {
-        //   jobData = data.onJobStarted;
-        //   eventType = 'jobStarted';
-        // } else if (data?.onJobCompleted) {
-        //   jobData = data.onJobCompleted;
-        //   eventType = 'onJobCompleted';
-        // }
-
-        // if (jobData) {
-        //   if (this.jobOrderItem) {
-        //     this.jobOrderItem.status_cv = jobData.job_status;
-        //     this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? jobData.start_time;
-        //     this.jobOrderItem.time_table ??= [];
-
-        //     const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === jobData.time_table_guid);
-        //     if (eventType === 'jobStarted') {
-        //       if (foundTimeTable?.length) {
-        //         foundTimeTable[0].start_time = jobData.start_time
-        //         console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //       } else {
-        //         const startNew = new TimeTableItem({guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid});
-        //         this.jobOrderItem.time_table?.push(startNew)
-        //         console.log(`Updated JobOrder ${eventType} :`, startNew);
-        //       }
-        //     } else if (eventType === 'jobStopped') {
-        //       foundTimeTable[0].stop_time = jobData.stop_time;
-        //       console.log(`Updated JobOrder ${eventType} :`, foundTimeTable[0]);
-        //     }
-        //   }
-        // }
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      },
-      complete: () => {
-        console.log('Subscription completed');
-      }
-    });
-
-    this.jobOrderSubscriptions.push(subscription);
+    }
   }
 
   getFooterBackgroundColor(): string {

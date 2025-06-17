@@ -178,8 +178,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   teamList: TeamItem[] = [];
 
-  private jobOrderSubscriptions: Subscription[] = [];
-
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
