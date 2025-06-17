@@ -170,8 +170,8 @@ export class OverwriteRepairApprovalFormDialogComponent {
     this.isOwnerChanged();
     const formGroup = this.fb.group({
       surveyor_id: [''],
-      labour_cost_discount: [this.repairItem.labour_cost_discount],
-      material_cost_discount: [this.repairItem.material_cost_discount],
+      labour_cost_discount: [{ value: this.repairItem.labour_cost_discount, disabled: !this.canEdit() }],
+      material_cost_discount: [{ value: this.repairItem.material_cost_discount, disabled: !this.canEdit() }],
       // cost
       total_owner_hour: [0],
       total_lessee_hour: [0],
@@ -293,7 +293,7 @@ export class OverwriteRepairApprovalFormDialogComponent {
   }
 
   canEdit(): boolean {
-    return !this.repairItem?.customer_billing_guid;
+    return !this.repairItem?.customer_billing_guid && !this.repairItem?.owner_billing_guid;
   }
 
   isDisabled(): boolean {
@@ -471,9 +471,9 @@ export class OverwriteRepairApprovalFormDialogComponent {
     const packageCheck = (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage());
     const repairCheck = !this.repairDS.canApproveOverwrite(this.repairItem);
     const repairPartCheck = (this.repairPartDS.is4X(repairPart?.rp_damage_repair) ?? true) || !(repairPart?.approve_part ?? true);
-    // const isBilled = (!this.repairItem?.customer_billing_guid && !this.repairItem?.customer_billing_guid);
-    // return (packageCheck) || (repairCheck || repairPartCheck || isBilled)
-    return (packageCheck) || (repairCheck || repairPartCheck)
+    const isBilled = !!this.repairItem?.customer_billing_guid || !!this.repairItem?.owner_billing_guid;
+    return (packageCheck) || (repairCheck || repairPartCheck || isBilled)
+    // return (packageCheck) || (repairCheck || repairPartCheck)
   }
 
   calculateCost(form: UntypedFormGroup) {

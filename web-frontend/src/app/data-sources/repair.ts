@@ -1156,6 +1156,8 @@ const GET_REPAIR_FOR_MOVEMENT = gql`
         allocate_by
         complete_dt
         job_no
+        customer_billing_guid
+        owner_billing_guid
         repair_part(where: { delete_dt: { eq: null } }) {
           action
           create_by
@@ -1966,7 +1968,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canApproveOverwrite(re: RepairItem | undefined): boolean {
-    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'COMPLETED' || re?.status_cv === 'QC_COMPLETED');
+    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS' || re?.status_cv === 'COMPLETED' || re?.status_cv === 'QC_COMPLETED');
   }
 
   canCancel(re: RepairItem | undefined): boolean {

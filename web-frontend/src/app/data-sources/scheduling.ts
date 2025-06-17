@@ -102,7 +102,7 @@ export const GET_SCHEDULING = gql`
                 name
               }
             }
-            in_gate {
+            in_gate(where: { delete_dt: { eq: null } }) {
               eir_no
               eir_dt
               yard_cv
@@ -114,6 +114,17 @@ export const GET_SCHEDULING = gql`
             }
             tariff_cleaning {
               cargo
+            }
+            tank_info {
+              yard_cv
+              last_eir_no
+            }
+            transfer(where: { delete_dt: { eq: null } }) {
+              location_from_cv
+              location_to_cv
+              transfer_out_dt
+              transfer_in_dt
+              create_dt
             }
           }
         }

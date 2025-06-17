@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { BaseDataSource } from 'app/data-sources/base-ds';
-import { catchError, finalize, map, Observable, of } from 'rxjs';
+import { catchError, finalize, map, Observable, of, Subscription } from 'rxjs';
 import { ApolloError } from '@apollo/client/errors';
 const NEW_MESSAGES_R1_SUBSCRIPTION = gql`
   subscription {
@@ -16,7 +16,6 @@ const NEW_MESSAGES_R1_SUBSCRIPTION = gql`
     }
   }
 `;
-
 
 const NEW_MESSAGES_SUBSCRIPTION = gql`
   subscription {
@@ -34,6 +33,7 @@ const NEW_MESSAGES_SUBSCRIPTION = gql`
 })
 
 export class SingletonNotificationService extends BaseDataSource<MessageItem> {
+  private emitterMap = new Map<string, EventEmitter<MessageItem>>();
   subscribers: Array<{
     topic: string;
     event: Subscriber;
@@ -44,26 +44,43 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
     this.subscribeToMessages();
   }
 
-  public subscribe(topic: string, handler: (message: MessageItem) => void) {
-    const emitter = new EventEmitter<MessageItem>();
-    emitter.subscribe({
+  public subscribe(topic: string, handler: (message: MessageItem) => void): Subscription {
+    let emitter = this.emitterMap.get(topic);
+    if (!emitter) {
+      emitter = new EventEmitter<MessageItem>();
+      this.emitterMap.set(topic, emitter);
+    }
+
+    const existing = this.subscribers.find(
+      sub => sub.topic === topic && sub.event.emitter === emitter && !sub.event.closed
+    );
+
+    // Optional: avoid duplicate handlers for same topic
+    if (existing) {
+      console.warn(`[NotificationService] Duplicate subscription ignored for topic: ${topic}`);
+      const subscription = emitter.subscribe({ next: handler });
+      return new Subscription(() => {
+        subscription.unsubscribe();
+      });
+    }
+
+    const subscription = emitter.subscribe({
       next: handler,
       complete: () => {
-        sub.event.closed = true;
+        const s = this.subscribers.find(sub => sub.topic === topic && sub.event.emitter === emitter);
+        if (s) s.event.closed = true;
       }
     });
 
-    const sub: any = {
-      topic,
-      event: {
-        emitter,
-        closed: false
-      }
-    };
+    this.subscribers.push({ topic, event: { emitter, closed: false } });
 
-    this.subscribers.push(sub);
+    return new Subscription(() => {
+      subscription.unsubscribe();
+      this.subscribers = this.subscribers.filter(
+        sub => !(sub.topic === topic && sub.event.emitter === emitter)
+      );
+    });
   }
-
 
   private subscribeToMessages() {
     this.apollo.subscribe({
@@ -78,12 +95,17 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
   }
 
   private broadcastMessage(message: MessageItem) {
-
     this.subscribers = this.subscribers.filter(sub => {
       const active = !sub.event.closed && this.topicMatches(sub.topic, message?.topic!);
       if (active) {
-        const jsonString = `${message.payload}`;
-        message.payload = JSON.parse(jsonString);
+        if (typeof message.payload === 'string') {
+          message.payload = JSON.parse(message.payload);
+        } else if (typeof message.payload === 'object') {
+          // already a JS object – no action needed
+        } else {
+          // optionally handle unexpected formats
+          console.log('Unsupported payload type:', typeof message.payload);
+        }
         sub.event.emitter.emit(message);
       }
       return !sub.event.closed; // Keep only active ones

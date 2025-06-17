@@ -39,6 +39,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tank-movement',
@@ -173,7 +174,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

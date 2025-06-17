@@ -2872,9 +2872,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '') && !this.cleaningItem?.[0]?.customer_billing_guid;
   }
 
-  canOverwriteResidueApproval(row: SteamItem) {
+  canOverwriteResidueApproval(row: ResidueItem) {
     const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED'];
-    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
+    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
   canOverwriteRepairApproval(row: SteamItem) {
@@ -3487,5 +3487,189 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.loadDataHandling_transfer(this.sot_guid);
       this.loadDataHandling_tariffDepot();
     }
+  }
+
+  getLastLocation() {
+    return BusinessLogicUtil.getLastLocation(this.sot, this.ig, this?.tiItem, this.transferList)
+  }
+
+  isAllowTankMovementView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_VIEW']);
+  }
+
+  isAllowTankMovementEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_EDIT']);
+  }
+
+  isAllowTankNo() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TANK_NO']);
+  }
+
+  isAllowTankMovementCustomer() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CUSTOMER']);
+  }
+
+  isAllowLastCargo() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_LAST_CARGO']);
+  }
+
+  isAllowTankOwner() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_OWNER']);
+  }
+
+  isAllowCleanStatus() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEAN_STATUS']);
+  }
+
+  isAllowEirDate() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_EIR_DATE']);
+  }
+
+  isAllowLastTest() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_LAST_TEST']);
+  }
+
+  isAllowYard() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_YARD']);
+  }
+
+  isAllowUnitType() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_UNIT_TYPE']);
+  }
+
+  isAllowCladding() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLADDING']);
+  }
+
+  isAllowTareWeight() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TARE_WEIGHT']);
+  }
+
+  isAllowDischargeType() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_DISCHARGE_TYPE']);
+  }
+
+  isAllowNotes() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_NOTES']);
+  }
+
+  isAllowReleaseNotes() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RELEASE_NOTES']);
+  }
+
+  isAllowManufacturer() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_MANUFACTURER']);
+  }
+
+  isAllowCapacity() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CAPACITY']);
+  }
+
+  isAllowGrossWeight() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_GROSS_WEIGHT']);
+  }
+
+  isAllowCompartmentType() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_COMPARTMENT_TYPE']);
+  }
+
+  isAllowWalkway() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_WALKWAY']);
+  }
+
+  isAllowGateOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_GATE_OVERWRITE']);
+  }
+
+  isAllowStorageOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STORAGE_OVERWRITE']);
+  }
+
+  isAllowSteamAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_ADD']);
+  }
+
+  isAllowSteamRemove() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_REMOVE']);
+  }
+
+  isAllowSteamReinstate() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_REINSTATE']);
+  }
+
+  isAllowSteamOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_OVERWRITE']);
+  }
+
+  isAllowResidueAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_ADD']);
+  }
+
+  isAllowResidueRemove() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_REMOVE']);
+  }
+
+  isAllowResidueReinstate() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_REINSTATE']);
+  }
+
+  isAllowResidueOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_OVERWRITE']);
+  }
+
+  isAllowCleaningAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_ADD']);
+  }
+
+  isAllowCleaningRemove() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_REMOVE']);
+  }
+
+  isAllowCleaningReinstate() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_REINSTATE']);
+  }
+
+  isAllowCleaningOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_OVERWRITE']);
+  }
+
+  isAllowRepairAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_REPAIR_ADD']);
+  }
+
+  isAllowRepairRemove() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_REPAIR_REMOVE']);
+  }
+
+  isAllowRepairReinstate() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_REPAIR_REINSTATE']);
+  }
+
+  isAllowRepairOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_REPAIR_OVERWRITE']);
+  }
+
+  isAllowDepotJobOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_DEPOT_JOB_OVERWRITE']);
+  }
+
+  isAllowDepotCostOverwrite() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_DEPOT_COST_OVERWRITE']);
+  }
+
+  isAllowBooking() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_BOOKING']);
+  }
+
+  isAllowScheduling() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_SCHEDULING']);
+  }
+
+  isAllowSurvey() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_SURVEY']);
+  }
+
+  isAllowTransfer() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TRANSFER']);
   }
 }

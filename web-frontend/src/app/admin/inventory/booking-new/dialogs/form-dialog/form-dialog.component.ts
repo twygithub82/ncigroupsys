@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -26,7 +26,6 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 
@@ -328,5 +327,9 @@ export class FormDialogComponent {
 
   getSaveBtnDescription(): string {
     return Utility.getSaveBtnDescription(this.action === 'edit' ? 'edit' : '');
+  }
+
+  getLastLocation(row: any) {
+    return BusinessLogicUtil.getLastLocation(row, this.igDS.getInGateItem(row.in_gate), row.tank_info, row.transfer)
   }
 }

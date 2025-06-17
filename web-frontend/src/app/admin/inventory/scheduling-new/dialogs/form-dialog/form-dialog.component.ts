@@ -27,6 +27,7 @@ import { SchedulingDS, SchedulingGO, SchedulingItem } from 'app/data-sources/sch
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
@@ -132,7 +133,7 @@ export class FormDialogComponent {
 
   createForm(): void {
     const customerCompanyGuid = this.storingOrderTank[0]?.storing_order?.customer_company_guid || '';
-
+    
     // 1. Create an empty form with empty FormArray
     this.schedulingForm = this.fb.group({
       reference: [''],
@@ -184,7 +185,7 @@ export class FormDialogComponent {
       capacity: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.capacity],
       tare_weight: [this.igDS.getInGateItem(tank.in_gate)?.in_gate_survey?.tare_weight],
       tank_status_cv: [tank.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(tank.in_gate)?.yard_cv],
+      yard_cv: [this.getLastLocation(tank)],
       reference: [''],
       scheduling_dt: ['', Validators.required],
       booked: [this.checkBooking(tank.booking)],
@@ -205,7 +206,7 @@ export class FormDialogComponent {
       capacity: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.in_gate_survey?.capacity],
       tare_weight: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.in_gate_survey?.tare_weight],
       tank_status_cv: [schedulingSot.storing_order_tank?.tank_status_cv],
-      yard_cv: [this.igDS.getInGateItem(schedulingSot.storing_order_tank?.in_gate)?.yard_cv],
+      yard_cv: [this.getLastLocation(schedulingSot.storing_order_tank)],
       reference: [schedulingSot.reference],
       scheduling_dt: [Utility.convertDateMoment(schedulingSot.scheduling_dt)],
       startDate: [Utility.getEarlierDate(Utility.convertDate(schedulingSot.scheduling_dt) as Date, this.startDateToday)]
@@ -478,5 +479,9 @@ export class FormDialogComponent {
 
   getSaveBtnDescription(): string {
     return Utility.getSaveBtnDescription(this.action === 'edit' ? 'edit' : '');
+  }
+
+  getLastLocation(row: any) {
+    return BusinessLogicUtil.getLastLocation(row, this.igDS.getInGateItem(row.in_gate), row.tank_info, row.transfer)
   }
 }

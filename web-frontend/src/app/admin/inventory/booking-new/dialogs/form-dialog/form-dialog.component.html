@@ -89,7 +89,7 @@
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl'">
                   <span
-                    class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(igDS.getInGateItem(row.get('sot')?.value?.in_gate)?.yard_cv)}}
+                    class="mobile-label">{{data.translatedLangText.YARD}}:</span>{{getYardDescription(getLastLocation(row.get('sot')?.value))}}
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="reference">

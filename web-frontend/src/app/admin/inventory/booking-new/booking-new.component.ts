@@ -45,6 +45,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-booking-new',
@@ -898,6 +899,10 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
+  }
+
+  getLastLocation(row: any) {
+    return BusinessLogicUtil.getLastLocation(row, this.igDS.getInGateItem(row.in_gate), row.tank_info, row.transfer)
   }
 
   isAllowEdit() {

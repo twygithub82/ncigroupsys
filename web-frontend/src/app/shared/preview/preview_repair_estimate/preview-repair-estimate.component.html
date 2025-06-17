@@ -276,7 +276,7 @@
                           @if (isOwner) {
                           <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
                           <mat-checkbox color="primary" (click)="selectOwner($event, row)" [checked]="row.owner"
-                            [ngClass]="'tbl-checkbox'">
+                            [ngClass]="'tbl-checkbox'" [disabled]="true">
                           </mat-checkbox>
                           }
                         </mat-cell>
@@ -347,7 +347,7 @@
               }
               @if (!(sotDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width">
@@ -387,7 +387,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-8-5 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row p-l-5 p-r-10">
                     <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
                       <div class="row">
