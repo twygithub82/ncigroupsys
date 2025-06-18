@@ -1325,7 +1325,8 @@
     "ESTIMATE-APPROVAL": "Estimate Approval",
     "REPAIR-QC-PENDING": "Repair QC: Pending",
     "REPAIR-QC": "Repair QC",
-    "GATEIO-PENDING":"GateIO: Pending"
+    "GATEIO-PENDING": "GateIO: Pending",
+    "ACTION-SUCCESS": "Action Successful"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

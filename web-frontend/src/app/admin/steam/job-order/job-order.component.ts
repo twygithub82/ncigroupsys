@@ -130,7 +130,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
@@ -287,34 +287,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //         let successMsg = this.langText.CANCELED_SUCCESS;
-    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //           successMsg = res;
-    //           ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-    //           this.refreshTable();
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
   }
 
   public loadData() {
