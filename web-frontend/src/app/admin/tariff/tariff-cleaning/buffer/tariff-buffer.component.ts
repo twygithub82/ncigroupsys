@@ -648,4 +648,8 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     this.resetForm();
     this.search();
   }
+
+  parse2Decimal(figure: number | string) {
+    return Utility.formatNumberDisplay(figure)
+  }
 }
