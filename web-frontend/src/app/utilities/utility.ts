@@ -686,6 +686,20 @@ export class Utility {
     return result;
   }
 
+  static removeTypenameFields(obj: any): void {
+    if (Array.isArray(obj)) {
+      obj.forEach(item => this.removeTypenameFields(item));
+    } else if (obj !== null && typeof obj === 'object') {
+      for (const key in obj) {
+        if (key === '__typename') {
+          delete obj[key];
+        } else {
+          this.removeTypenameFields(obj[key]);
+        }
+      }
+    }
+  }
+
   static getFlagUrl(iso: string): string {
     const knownUnavailable = ['ac', 'xk', 'eu', 'ta']; // unsupported emoji or flagcdn
     if (knownUnavailable.includes(iso.toLowerCase())) {

@@ -187,6 +187,7 @@ export class FormDialogComponent {
   save() {
     if (!this.pcForm?.valid) return;
     let cf: CleaningFormulaItem = new CleaningFormulaItem(this.selectedItem);
+    Utility.removeTypenameFields(cf)
     cf.duration = this.pcForm.value['duration'];
     cf.description = this.pcForm.value['description'];
 
@@ -231,10 +232,6 @@ export class FormDialogComponent {
         // }
       }
     });
-
-
-
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -247,8 +244,8 @@ export class FormDialogComponent {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
-
 }
