@@ -135,7 +135,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
     CLOSE: 'COMMON-FORM.CLOSE',
     INVALID: 'COMMON-FORM.INVALID',
@@ -700,7 +700,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         action: 'new',
       },
       direction: tempDirection
