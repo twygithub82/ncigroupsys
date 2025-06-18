@@ -943,7 +943,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {

@@ -528,7 +528,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     ]);
   }
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   getCurrency(guid: string): CurrencyItem | undefined {

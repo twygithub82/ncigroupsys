@@ -373,7 +373,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayPartNameFn(pn: string): string {

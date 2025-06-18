@@ -487,7 +487,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayCountryCodeFn(cc: any): string {

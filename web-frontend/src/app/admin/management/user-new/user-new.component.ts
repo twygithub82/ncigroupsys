@@ -572,7 +572,7 @@ export class UserNewComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   showNotification(

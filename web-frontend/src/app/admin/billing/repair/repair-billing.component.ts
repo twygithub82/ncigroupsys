@@ -608,7 +608,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {

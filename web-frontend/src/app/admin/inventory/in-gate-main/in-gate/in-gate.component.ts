@@ -309,7 +309,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {

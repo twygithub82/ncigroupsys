@@ -34,7 +34,7 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -378,7 +378,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayTankPurpose(sot: StoringOrderTankItem) {

@@ -1716,7 +1716,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayTankPurpose(sot: StoringOrderTankItem) {

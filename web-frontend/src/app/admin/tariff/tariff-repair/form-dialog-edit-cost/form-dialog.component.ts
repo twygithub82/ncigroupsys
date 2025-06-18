@@ -436,7 +436,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   handleSaveSuccess(count: any) {

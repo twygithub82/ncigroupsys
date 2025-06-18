@@ -302,7 +302,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     return lc ? `${lc.cargo}` : '';
   }
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   GetButtonCaption() {

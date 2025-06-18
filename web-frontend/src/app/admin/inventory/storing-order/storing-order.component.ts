@@ -590,7 +590,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   // }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {

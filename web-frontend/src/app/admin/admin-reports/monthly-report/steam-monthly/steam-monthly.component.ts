@@ -405,7 +405,7 @@ export class SteamMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {

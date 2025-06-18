@@ -103,6 +103,10 @@ export class CancelFormDialogComponent {
   getStoringOrderTanksArray(so: AbstractControl<any, any>): UntypedFormArray {
     return so.get('storing_order_tank') as UntypedFormArray;
   }
+  displayTargetedSo(soList: UntypedFormArray) {
+    return soList.controls.map(so => so.get('so_no')?.value)
+      .join(', ')
+  }
   displayTargetedSot(sotList: UntypedFormArray) {
     return sotList.controls.filter(sot => sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER')
       .map(sot => sot.get('tank_no')?.value)

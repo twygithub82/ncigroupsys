@@ -318,7 +318,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   refresh() {

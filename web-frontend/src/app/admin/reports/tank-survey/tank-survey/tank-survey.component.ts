@@ -469,7 +469,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
   performSearch(dailytankSurveyReq: any, date: string) {
     this.subs.sink = this.repDS.searchTankSurveySummaryReport(dailytankSurveyReq, { survey_dt: 'ASC' })

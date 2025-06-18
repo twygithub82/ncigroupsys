@@ -426,7 +426,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
 
