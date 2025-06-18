@@ -137,7 +137,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -150,7 +150,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -213,7 +213,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     UNIT_PRICE: 'COMMON-FORM.UNIT-PRICE',
     COST: 'COMMON-FORM.COST',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     APPROVE: 'COMMON-FORM.APPROVE',
     ABORT: 'COMMON-FORM.ABORT',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
@@ -514,7 +514,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   selectOwner($event: Event, row: RepairPartItem) {

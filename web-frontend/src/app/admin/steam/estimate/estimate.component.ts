@@ -36,7 +36,7 @@ import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
@@ -127,8 +127,8 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
@@ -202,7 +202,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
   copiedSteamEst?: SteamItem;
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: "ASC" } };
   endCursor: string | undefined = undefined;
@@ -625,7 +625,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {

@@ -41,7 +41,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
@@ -124,7 +124,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
@@ -198,7 +198,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   pageStateType = 'ResidueDisposalJobAllocation'
   previous_endCursorResidue: string | undefined = undefined;
   pageIndexResidue = 0;
-  pageSizeResidue = 10;
+  pageSizeResidue = pageSizeInfo.defaultSize;
   lastSearchCriteriaResidue: any;
   lastOrderByResidue: any = { storing_order_tank: { tank_no: "DESC" } };
   endCursorResidue: string | undefined = undefined;
@@ -274,34 +274,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //         let successMsg = this.langText.CANCELED_SUCCESS;
-    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //           successMsg = res;
-    //           ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-    //           this.refreshTable();
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
   }
 
   public loadData() {
@@ -506,7 +478,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {

@@ -83,7 +83,7 @@
           <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.COST }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{this.translatedLangText.COST
-              }}:</span>{{row.tariff_buffer?.cost}}</mat-cell>
+              }}:</span>{{parse2Decimal(row.tariff_buffer?.cost)}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="email">
           <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
@@ -126,7 +126,7 @@
       </mat-progress-spinner>
     </div>
     }
-    <mat-paginator #paginator [length]="tariffBufferDS.totalCount" [pageIndex]="0" [pageSize]="10"
+    <mat-paginator #paginator [length]="tariffBufferDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
       [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
     </mat-paginator>
   </div>

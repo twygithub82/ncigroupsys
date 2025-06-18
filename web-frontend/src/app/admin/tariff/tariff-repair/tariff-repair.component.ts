@@ -39,7 +39,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
@@ -126,8 +126,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   dimensionItems: string[] = [];
   partNameList: string[] = []
 
+  pageSizeInfo = pageSizeInfo
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { tariff_repair: { part_name: "ASC" } };
   endCursor: string | undefined = undefined;
@@ -179,7 +180,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -192,7 +193,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
@@ -242,8 +243,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
     PART_SELECTED: 'COMMON-FORM.PART-SELECTED',
-    
-    
   }
 
   @ViewChild('partInput', { static: true })
@@ -304,8 +303,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-
-
   initializeValueChanges() {
     this.partNameControl!.valueChanges.pipe(
       startWith(''),
@@ -352,7 +349,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   refresh() {
@@ -622,8 +619,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if(this.selectedParts.length > 0) {
-      const tariff_repair: any = { part_name: { in:this.selectedParts} };
+    if (this.selectedParts.length > 0) {
+      const tariff_repair: any = { part_name: { in: this.selectedParts } };
       where.and.push({ tariff_repair: tariff_repair });
     }
     // if (this.pcForm!.value["part_name"]) {
@@ -650,9 +647,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-   
+
     this.lastSearchCriteria = where;
-    
+
     this.subs.sink = this.trfRepairDS.SearchTariffRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.trfRepairItems = data;
       this.previous_endCursor = undefined;
@@ -990,30 +987,17 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const part = event.option.value;
     const index = this.selectedParts.findIndex(c => c === part);
 
-      if (this.partInput) {
-      // this.searchCustomerCompanyList('');
+    if (this.partInput) {
       this.partInput.nativeElement.value = '';
       this.partNameControl.setValue('');
-      //this.searchDistinctPartName('');
     }
 
     if (!(index >= 0)) {
       this.selectedParts.push(part);
-     // this.search();
     }
     else {
       this.selectedParts.splice(index, 1);
-     // this.search();
     }
-
-    // if (this.partInput) {
-    //   //this.searchCustomerCompanyList('');
-    //   this.partInput.nativeElement.value = '';
-
-    // }
-    // this.updateFormControl();
-    //this.customerCodeControl.setValue(null);
-    //this.pcForm?.patchValue({ customer_code: null });
   }
 
 
@@ -1041,53 +1025,33 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedParts.findIndex(c => c.code === cust.code);
     if (index >= 0) {
       this.selectedParts.splice(index, 1);
-
     }
   }
-
 
   removeSelectedParts(pro: any): void {
     const index = this.selectedParts.findIndex(c => c.guid === pro.guid);
     if (index >= 0) {
       this.selectedParts.splice(index, 1);
-
     }
   }
-
 
   selectedPart(event: MatAutocompleteSelectedEvent): void {
     const part = event.option.value;
     const index = this.selectedParts.findIndex(c => c === part);
 
-
-
-      if (this.partInput) {
-      // this.searchCustomerCompanyList('');
+    if (this.partInput) {
       this.partInput.nativeElement.value = '';
-
     }
-
 
     if (!(index >= 0)) {
       this.selectedParts.push(part);
-
-    }
-    else {
+    } else {
       this.selectedParts.splice(index, 1);
     }
-
-  
-    // this.updateFormControl();
-    //this.customerCodeControl.setValue(null);
-    //this.pcForm?.patchValue({ customer_code: null });
   }
 
-   onCheckboxClicked(row: any) {
+  onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
-
   }
-
-  
 }
-  

@@ -428,7 +428,7 @@
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="clnDS.totalCount" [pageIndex]="0" [pageSize]="10"
+        <mat-paginator #paginator [length]="clnDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>

@@ -122,7 +122,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
     BRANCH_NAME: 'COMMON-FORM.BRANCH-NAME',
@@ -159,7 +159,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     BACK: 'COMMON-FORM.BACK',
     ACCEPT: 'COMMON-FORM.ACCEPT',
     EIR_FORM: 'COMMON-FORM.EIR-FORM',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     RESET: 'COMMON-FORM.RESET',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
@@ -182,7 +182,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
     ADD: 'COMMON-FORM.ADD',
     TRANSFER_IN: 'COMMON-FORM.TRANSFER-IN',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CONFIRM_CANCEL: 'COMMON-FORM.CONFIRM-CANCEL',
     UPDATE: 'COMMON-FORM.UPDATE',
     CONFIRM_ROLLBACK: 'COMMON-FORM.CONFIRM-ROLLBACK',
@@ -306,7 +306,7 @@ export class TransferDetailsComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayDateTime(input: number | undefined): string | undefined {

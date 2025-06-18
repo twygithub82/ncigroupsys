@@ -41,7 +41,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
@@ -130,7 +130,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
@@ -206,7 +206,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   pageStateType = 'SteamJobAllocation'
   previous_endCursorSteam: string | undefined = undefined;
   pageIndexSteam = 0;
-  pageSizeSteam = 10;
+  pageSizeSteam = pageSizeInfo.defaultSize;
   lastSearchCriteriaSteam: any;
   lastOrderBySteam: any = { storing_order_tank: { tank_no: "DESC" } };
   endCursorSteam: string | undefined = undefined;
@@ -287,34 +287,6 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //       if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //         let successMsg = this.langText.CANCELED_SUCCESS;
-    //         this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //           successMsg = res;
-    //           ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-    //           this.refreshTable();
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
   }
 
   public loadData() {
@@ -519,7 +491,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {

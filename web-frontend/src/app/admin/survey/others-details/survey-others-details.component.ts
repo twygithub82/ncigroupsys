@@ -39,7 +39,7 @@ import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
@@ -114,7 +114,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
@@ -135,7 +135,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
     SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     SURVEY_DATE: 'COMMON-FORM.SURVEY-DATE',
     BOOKED: 'COMMON-FORM.BOOKED',
@@ -145,7 +145,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     EXISTED: 'COMMON-FORM.EXISTED',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     LAST_TEST: 'COMMON-FORM.LAST-TEST',
     CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
@@ -190,7 +190,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -342,7 +342,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {

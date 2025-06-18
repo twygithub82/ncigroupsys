@@ -40,7 +40,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
@@ -116,7 +116,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
@@ -137,7 +137,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
     SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     SCHEDULING_DETAILS: 'COMMON-FORM.SCHEDULING-DETAILS',
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
@@ -149,7 +149,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     DATE: 'COMMON-FORM.DATE',
     EXISTED: 'COMMON-FORM.EXISTED',
     REMARKS: 'COMMON-FORM.REMARKS',
-    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SAVE: 'COMMON-FORM.SAVE',
@@ -197,7 +197,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -601,7 +601,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {

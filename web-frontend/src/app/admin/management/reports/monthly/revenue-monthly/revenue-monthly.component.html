@@ -346,7 +346,7 @@
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="0" [pageSize]="10"
+        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>

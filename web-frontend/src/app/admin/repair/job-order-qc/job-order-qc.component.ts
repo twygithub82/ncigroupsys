@@ -39,7 +39,7 @@ import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS } from 'app/data-sources/time-table';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -103,7 +103,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
@@ -151,7 +151,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   customer_companyList?: CustomerCompanyItem[];
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
+  pageSizeJobOrder = pageSizeInfo.defaultSize;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
@@ -436,7 +436,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {

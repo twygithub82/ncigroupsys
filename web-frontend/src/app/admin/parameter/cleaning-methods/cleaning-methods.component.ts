@@ -1,5 +1,5 @@
 import { Direction } from '@angular/cdk/bidi';
-import { SelectionModel } from '@angular/cdk/collections';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormContro
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
@@ -26,22 +27,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
-import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
-import { CodeValuesItem } from 'app/data-sources/code-values';
-import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
-import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-cleaning-methods',
@@ -115,7 +111,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
@@ -126,7 +122,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     LAST_UPDATED: 'COMMON-FORM.LAST-UPDATED',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEANING_METHOD: 'COMMON-FORM.PROCESS-NAME',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
@@ -149,7 +145,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   mthAutoCompleteDS: CleaningMethodDS;
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { description: "ASC" };
   endCursor: string | undefined = undefined;
@@ -214,7 +210,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     this.searchForm = this.fb.group({
       name: [''],
       description: [''],
-
+      processName: this.processNameControl
     });
   }
 
@@ -224,9 +220,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       updatedt = r.create_dt;
     }
     return this.displayDate(updatedt);
-
   }
-
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
@@ -239,34 +233,14 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     //   return this.soDS.canCancel(this.soList[index]);
     // });
   }
-  cancelSelectedRows(row: StoringOrderItem[]) {
 
+  cancelSelectedRows(row: StoringOrderItem[]) {
   }
 
   public loadData() {
     this.translateLangText();
     this.search();
-    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-    //   if (this.soDS.totalCount > 0) {
-    //     this.soList = data;
-    //   }
-    // });
   }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
-  }
-
-
 
   // export table data in excel file
   exportExcel() {
@@ -538,7 +512,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       if (result.data.deleteCleaningMethod) {
         this.handleSaveSuccess(result.data.deleteCleaningMethod);
         this.pageIndex = 0;
-        //this.search();
+        this.search();
       }
     })
   }

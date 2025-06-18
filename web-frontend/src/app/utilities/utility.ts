@@ -686,6 +686,20 @@ export class Utility {
     return result;
   }
 
+  static removeTypenameFields(obj: any): void {
+    if (Array.isArray(obj)) {
+      obj.forEach(item => this.removeTypenameFields(item));
+    } else if (obj !== null && typeof obj === 'object') {
+      for (const key in obj) {
+        if (key === '__typename') {
+          delete obj[key];
+        } else {
+          this.removeTypenameFields(obj[key]);
+        }
+      }
+    }
+  }
+
   static getFlagUrl(iso: string): string {
     const knownUnavailable = ['ac', 'xk', 'eu', 'ta']; // unsupported emoji or flagcdn
     if (knownUnavailable.includes(iso.toLowerCase())) {
@@ -1249,3 +1263,5 @@ export const BOOLEAN_YES_NO = [
 ];
 
 export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 'sg', flagUrl: 'https://flagcdn.com/24x18/sg.png' };
+
+export const pageSizeInfo = {pageSize: [25, 50, 75, 100], defaultSize: 25};

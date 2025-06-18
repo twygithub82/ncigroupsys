@@ -264,7 +264,7 @@
           <mat-header-cell *matHeaderCellDef>{{translatedLangText.CARGO_COST}}</mat-header-cell>
           <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label ">{{translatedLangText.CARGO_COST}}:</span>
-            {{row.tariff_cleaning?.cleaning_category_with_tariff?.cost}}
+            {{parse2Decimal(row.tariff_cleaning?.cleaning_category_with_tariff?.cost)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="actions">
@@ -302,7 +302,7 @@
       </mat-progress-spinner>
     </div>
     }
-    <mat-paginator #paginator [length]="tcDS.totalCount" [pageIndex]="0" [pageSize]="10"
+    <mat-paginator #paginator [length]="tcDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
       [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
     </mat-paginator>
   </div>

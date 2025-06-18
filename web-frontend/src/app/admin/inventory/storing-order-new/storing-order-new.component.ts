@@ -138,7 +138,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -150,7 +150,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.REINSTATE',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
@@ -346,6 +346,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.populateSOT(so.storing_order_tank);
     }
 
+    if (!(!this.storingOrderItem?.status_cv || this.storingOrderItem?.status_cv === 'PENDING')) {
+      this.customerCodeControl.disable()
+    }
+
     if (!(this.isAllowAdd() || this.isAllowEdit()) || !this.soDS.canAdd(this.storingOrderItem)) {
       this.customerCodeControl?.disable();
       this.soForm?.get('so_notes')?.disable();
@@ -361,7 +365,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   showNotification(

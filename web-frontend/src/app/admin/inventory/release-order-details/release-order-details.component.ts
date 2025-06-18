@@ -127,7 +127,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -138,7 +138,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
@@ -407,7 +407,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   showNotification(
@@ -522,48 +522,6 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   rollbackSelectedRows(row: StoringOrderTankItem[]) {
-    // //this.preventDefault(event);  // Prevents the form submission
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     action: "rollback",
-    //     item: [...row],
-    //     translatedLangText: this.translatedLangText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     const data = [...this.schedulingList.data];
-    //     result.item.forEach((newItem: StoringOrderTankItem) => {
-    //       const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-    //       if (index !== -1) {
-    //         data[index] = {
-    //           ...data[index],
-    //           ...newItem,
-    //           actions: Array.isArray(data[index].actions!)
-    //             ? [...new Set([...data[index].actions!, 'rollback'])]
-    //             : ['rollback']
-    //         };
-    //       }
-    //     });
-    //     this.updateData(data);
-    //     // const sot = result.item.map((item: StoringOrderTankItem) => new StoringOrderTankGO(item));
-    //     // this.sotDS.rollbackStoringOrderTank(sot).subscribe(result => {
-    //     //   if ((result?.data?.rollbackStoringOrderTank ?? 0) > 0) {
-    //     //     let successMsg = this.translatedLangText.CANCELED_SUCCESS;
-    //     //     ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-    //     //     this.reloadSOT();
-    //     //   }
-    //     // });
-    //   }
-    // });
   }
 
   undoTempAction(row: UntypedFormControl[], actionToBeRemove: string) {

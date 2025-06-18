@@ -129,7 +129,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -141,7 +141,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -204,7 +204,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     APPROVE: 'COMMON-FORM.APPROVE',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     TEAM_ALLOCATION: 'COMMON-FORM.TEAM-ALLOCATION',
     ASSIGN: 'COMMON-FORM.ASSIGN',
     TEAM: 'COMMON-FORM.TEAM',
@@ -466,7 +466,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
 

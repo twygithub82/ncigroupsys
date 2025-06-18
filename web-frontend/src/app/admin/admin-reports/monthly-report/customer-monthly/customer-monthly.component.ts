@@ -39,7 +39,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
@@ -116,7 +116,7 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: 'COMMON-FORM.SEARCH',
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
@@ -135,7 +135,7 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     INVOICED: 'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE: 'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
@@ -409,7 +409,7 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
@@ -649,5 +649,9 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   onTabFocused() {
     this.resetForm();
+  }
+
+  get pageSizeInfo() {
+    return pageSizeInfo
   }
 }

@@ -43,7 +43,7 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -126,7 +126,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     REFRESH: 'COMMON-FORM.REFRESH',
     EXPORT: 'COMMON-FORM.EXPORT',
@@ -160,7 +160,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     UNASSIGN: 'COMMON-FORM.UNASSIGN',
     CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
     TEAM_UNASSIGNED_SUCCESS: 'COMMON-FORM.TEAM-UNASSIGN-SUCCESS',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
   }
 
   selectedTabIndex = 0;
@@ -199,7 +199,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   pageStateType = 'RepairJobAllocation'
   pageIndexRepair = 0;
-  pageSizeRepair = 10;
+  pageSizeRepair = pageSizeInfo.defaultSize;
   lastSearchCriteriaRepair: any;
   lastOrderByRepair: any = { estimate_no: "DESC" };
   endCursorRepair: string | undefined = undefined;
@@ -601,7 +601,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {

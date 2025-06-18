@@ -43,7 +43,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -107,7 +107,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
@@ -159,7 +159,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageStateType = 'ResidueDisposalJobOrder'
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
+  pageSizeJobOrder = pageSizeInfo.defaultSize;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
@@ -421,7 +421,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {
