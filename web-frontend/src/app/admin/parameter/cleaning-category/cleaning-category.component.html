@@ -179,7 +179,7 @@
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                         ngClass="'justify-content-center'">
-                        <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.cost.toFixed(2)}}
+                        <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{parse2Decimal(row.cost)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">

@@ -729,7 +729,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   description_onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.description_selected(fakeEvent);
-
   }
 
   description_add(event: MatChipInputEvent): void {
@@ -745,5 +744,9 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       input.value = '';
     }
     cnt?.setValue(null);
+  }
+
+  parse2Decimal(figure: number | string) {
+    return Utility.formatNumberDisplay(figure)
   }
 }
