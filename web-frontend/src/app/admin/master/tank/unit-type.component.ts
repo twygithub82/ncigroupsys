@@ -39,7 +39,7 @@ import { TariffRepairDS, TariffRepairLengthItem } from 'app/data-sources/tariff-
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { maxTankCount } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -238,7 +238,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
   pageStateType = 'UnitType'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { unit_type: "ASC" };
   endCursor: string | undefined = undefined;

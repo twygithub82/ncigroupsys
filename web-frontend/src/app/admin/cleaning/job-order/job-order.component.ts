@@ -29,7 +29,7 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
@@ -208,7 +208,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   last_cargoList?: TariffCleaningItem[];
 
   pageIndexClean = 0;
-  pageSizeClean = 10;
+  pageSizeClean = pageSizeInfo.defaultSize;
   lastSearchCriteriaClean: any;
   lastOrderByClean: any = { create_dt: "ASC" };
   endCursorClean: string | undefined = undefined;
@@ -218,7 +218,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   previous_endCursorClean: string | undefined = undefined;
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
+  pageSizeJobOrder = pageSizeInfo.defaultSize;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { job_order_no: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
@@ -440,8 +440,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.filterCleanForm?.get('eir_dt_start')?.value || this.filterCleanForm?.get('eir_dt_end')?.value) {
       const igSearch: any = {}
-      igSearch.eir_dt = { gte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_start']), lte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_end'],true) };
-      igSearch.delete_dt ={eq:null};
+      igSearch.eir_dt = { gte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_start']), lte: Utility.convertDate(this.filterCleanForm!.value['eir_dt_end'], true) };
+      igSearch.delete_dt = { eq: null };
       where.and.push({
         storing_order_tank: { in_gate: { some: igSearch } }
       });

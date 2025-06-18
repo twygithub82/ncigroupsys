@@ -1263,3 +1263,5 @@ export const BOOLEAN_YES_NO = [
 ];
 
 export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 'sg', flagUrl: 'https://flagcdn.com/24x18/sg.png' };
+
+export const pageSizeInfo = {pageSize: [25, 50, 75, 100], defaultSize: 25};

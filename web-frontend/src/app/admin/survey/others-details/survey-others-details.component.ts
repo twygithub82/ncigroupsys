@@ -39,7 +39,7 @@ import { SurveyDetailDS, SurveyDetailItem } from 'app/data-sources/survey-detail
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
@@ -190,7 +190,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;

@@ -38,7 +38,7 @@ import { StoringOrderDS } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 //import { ResidueDS, ResidueItem, ResidueStatusRequest } from 'app/data-sources/residue';
@@ -156,7 +156,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageStateType = 'SteamJobOrder'
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
+  pageSizeJobOrder = pageSizeInfo.defaultSize;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { create_dt: "DESC" };
   endCursorJobOrder: string | undefined = undefined;

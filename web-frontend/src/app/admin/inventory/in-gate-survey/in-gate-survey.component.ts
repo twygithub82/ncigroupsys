@@ -133,7 +133,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   tankStatusCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;

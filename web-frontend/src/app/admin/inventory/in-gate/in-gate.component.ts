@@ -109,7 +109,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   sotList: StoringOrderTankItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: "DESC" } };
   endCursor: string | undefined = undefined;

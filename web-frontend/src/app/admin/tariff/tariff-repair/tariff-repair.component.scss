@@ -15,7 +15,7 @@ table.advance-table mat-cell {
 
 
 .checkbox-item {
- // margin-top: 4px;
+  // margin-top: 4px;
   flex-shrink: 0;
 }
 
@@ -59,10 +59,26 @@ mat-chip-row[color="primary"] {
 /* Ensure text wraps properly */
 .option-text {
   margin-top: 4px;
-  white-space: normal;    /* Allow text wrapping */
-  line-height: 1.5;       /* Improve readability */
+  white-space: normal;
+  /* Allow text wrapping */
+  line-height: 1.5;
+  /* Improve readability */
 }
 
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
- display:none
+  display: none
+}
+
+.truncate-one-wrap {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* allows max 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  line-height: 1.2em;
+  /* optional, adjust if needed */
+  max-height: 2.4em;
+  /* = line-height * number of lines */
 }

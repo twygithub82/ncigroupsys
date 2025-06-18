@@ -37,7 +37,7 @@ import { PackageSteamingItem } from 'app/data-sources/package-steam';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -112,7 +112,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   packageSteamItems: PackageSteamingItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "ASC" };
   endCursor: string | undefined = undefined;

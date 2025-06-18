@@ -39,7 +39,7 @@ import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sourc
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
@@ -178,7 +178,7 @@ export class SteamApprovalComponent extends UnsubscribeOnDestroyAdapter implemen
   last_cargoList?: TariffCleaningItem[];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { estimate_no: "DESC" };
   endCursor: string | undefined = undefined;

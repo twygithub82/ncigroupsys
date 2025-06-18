@@ -33,7 +33,7 @@ import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 
 @Component({
@@ -98,7 +98,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
   // cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { description: "ASC" };
   endCursor: string | undefined = undefined;

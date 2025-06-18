@@ -273,6 +273,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     this.loadData();
 
     this.countryCodes = Utility.getCountryCodes();
+    this.countryCodesFiltered = [...this.countryCodes];
   }
 
   ngAfterViewInit(): void {

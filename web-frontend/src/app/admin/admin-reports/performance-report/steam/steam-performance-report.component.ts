@@ -40,7 +40,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { SteamPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/steam/steam-detail.component';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -730,5 +730,9 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
 
   onTabFocused() {
     this.resetForm();
+  }
+
+  get pageSizeInfo() {
+    return pageSizeInfo
   }
 }

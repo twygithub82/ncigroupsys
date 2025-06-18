@@ -41,7 +41,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
@@ -206,7 +206,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   pageStateType = 'SteamJobAllocation'
   previous_endCursorSteam: string | undefined = undefined;
   pageIndexSteam = 0;
-  pageSizeSteam = 10;
+  pageSizeSteam = pageSizeInfo.defaultSize;
   lastSearchCriteriaSteam: any;
   lastOrderBySteam: any = { storing_order_tank: { tank_no: "DESC" } };
   endCursorSteam: string | undefined = undefined;

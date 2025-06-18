@@ -35,7 +35,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -145,7 +145,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   mthAutoCompleteDS: CleaningMethodDS;
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { description: "ASC" };
   endCursor: string | undefined = undefined;

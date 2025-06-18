@@ -35,7 +35,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -131,7 +131,6 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   cvDS: CodeValuesDS;
   tcDS: TariffCleaningDS;
 
-
   sotList: StoringOrderTankItem[] = [];
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -142,7 +141,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
   yardCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -323,7 +322,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       where.storing_order = soSearch;
     }
 
-    
+
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);

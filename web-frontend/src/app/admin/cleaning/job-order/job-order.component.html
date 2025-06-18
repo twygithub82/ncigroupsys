@@ -229,7 +229,7 @@
                       </mat-progress-spinner>
                     </div>
                     }
-                    <mat-paginator #paginator [length]="cleanDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                    <mat-paginator #paginator [length]="cleanDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeClean"
                       [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventClean($event)">
                     </mat-paginator>
                   </div>

@@ -41,7 +41,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
@@ -198,7 +198,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   pageStateType = 'ResidueDisposalJobAllocation'
   previous_endCursorResidue: string | undefined = undefined;
   pageIndexResidue = 0;
-  pageSizeResidue = 10;
+  pageSizeResidue = pageSizeInfo.defaultSize;
   lastSearchCriteriaResidue: any;
   lastOrderByResidue: any = { storing_order_tank: { tank_no: "DESC" } };
   endCursorResidue: string | undefined = undefined;

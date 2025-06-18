@@ -42,7 +42,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { DailyApprovalPdfComponent } from 'app/document-template/pdf/admin-reports/daily/approval/daily-approval-pdf.component';
 import { DailyQCDetailPdfComponent } from 'app/document-template/pdf/admin-reports/daily/qc-detail/daily-qc-detail-pdf.component';
 import { DailyRevenuePdfComponent } from 'app/document-template/pdf/admin-reports/daily/revenue/daily-revenue-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -921,4 +921,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     // }
   }
 
+  get pageSizeInfo() {
+    return pageSizeInfo
+  }
 }

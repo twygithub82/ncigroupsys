@@ -33,7 +33,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -106,7 +106,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   tariffBufferItems: TariffBufferItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { tariff_buffer: { buffer_type: "ASC" } };
   endCursor: string | undefined = undefined;

@@ -43,7 +43,7 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -199,7 +199,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
 
   pageStateType = 'RepairJobAllocation'
   pageIndexRepair = 0;
-  pageSizeRepair = 10;
+  pageSizeRepair = pageSizeInfo.defaultSize;
   lastSearchCriteriaRepair: any;
   lastOrderByRepair: any = { estimate_no: "DESC" };
   endCursorRepair: string | undefined = undefined;

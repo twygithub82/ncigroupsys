@@ -117,7 +117,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
   sotList: StoringOrderTankItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: "DESC" } };
   endCursor: string | undefined = undefined;

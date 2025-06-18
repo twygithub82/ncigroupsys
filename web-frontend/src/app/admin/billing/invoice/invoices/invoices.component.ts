@@ -44,7 +44,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer-invoices-pdf/customer-invoices-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { UpdateInvoicesDialogComponent } from '../form-dialog/update-invoices.component';
@@ -174,7 +174,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { invoice_dt: "DESC" };
   endCursor: string | undefined = undefined;

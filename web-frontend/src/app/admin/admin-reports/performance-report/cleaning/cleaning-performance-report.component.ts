@@ -43,7 +43,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { UserDS } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { CleanerPerformanceDetailPdfComponent } from 'app/document-template/pdf/admin-reports/performance/cleaner/cleaner-detail-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
@@ -761,13 +761,15 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
   }
 
-
-
   displayCargoFn(row: TariffCleaningItem) {
     return `${row.cargo || ''}`;
   }
 
   onTabFocused() {
     this.resetForm();
+  }
+
+  get pageSizeInfo() {
+    return pageSizeInfo
   }
 }

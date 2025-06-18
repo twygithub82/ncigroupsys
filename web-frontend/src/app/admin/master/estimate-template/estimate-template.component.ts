@@ -37,7 +37,7 @@ import { MasterEstimateTemplateDS, MasterTemplateItem, TemplateEstPartItem } fro
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
@@ -176,7 +176,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
   pageStateType = 'EstimateTemplate'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { template_name: "ASC" };
   endCursor: string | undefined = undefined;

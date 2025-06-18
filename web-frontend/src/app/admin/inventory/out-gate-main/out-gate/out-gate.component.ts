@@ -32,7 +32,7 @@ import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { InGateDS } from 'app/data-sources/in-gate';
 
 @Component({
@@ -118,7 +118,7 @@ export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
   pageStateType = 'OutGate'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: "DESC" } };
   endCursor: string | undefined = undefined;

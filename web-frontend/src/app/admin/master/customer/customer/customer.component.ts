@@ -39,7 +39,7 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -214,7 +214,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
   pageStateType = 'Customer'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { customer_company: { code: "ASC" } };
   endCursor: string | undefined = undefined;

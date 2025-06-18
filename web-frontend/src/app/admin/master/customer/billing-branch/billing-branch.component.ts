@@ -37,7 +37,7 @@ import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
@@ -216,7 +216,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   pageStateType = 'Branch'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { code: "ASC" };
   endCursor: string | undefined = undefined;
