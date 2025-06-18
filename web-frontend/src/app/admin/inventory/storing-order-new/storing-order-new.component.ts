@@ -346,6 +346,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.populateSOT(so.storing_order_tank);
     }
 
+    if (!(!this.storingOrderItem?.status_cv || this.storingOrderItem?.status_cv === 'PENDING')) {
+      this.customerCodeControl.disable()
+    }
+
     if (!(this.isAllowAdd() || this.isAllowEdit()) || !this.soDS.canAdd(this.storingOrderItem)) {
       this.customerCodeControl?.disable();
       this.soForm?.get('so_notes')?.disable();
