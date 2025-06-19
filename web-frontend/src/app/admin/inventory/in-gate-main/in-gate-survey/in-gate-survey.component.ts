@@ -39,6 +39,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-in-gate-survey',
@@ -69,6 +70,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

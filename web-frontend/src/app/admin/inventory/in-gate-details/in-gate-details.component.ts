@@ -38,6 +38,7 @@ import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -77,6 +78,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
     MatTabsModule,
     MatGridListModule,
     MatRadioModule,
+    GlobalMaxCharDirective
   ]
 })
 export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

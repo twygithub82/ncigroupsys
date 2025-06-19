@@ -33,6 +33,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { ActivatedRoute, Router } from '@angular/router';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-in-gate',
@@ -63,6 +64,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

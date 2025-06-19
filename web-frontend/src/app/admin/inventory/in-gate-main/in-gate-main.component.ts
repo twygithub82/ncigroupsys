@@ -28,6 +28,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { InGateSurveyComponent } from './in-gate-survey/in-gate-survey.component';
 import { InGateComponent } from './in-gate/in-gate.component';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-in-gate-main',

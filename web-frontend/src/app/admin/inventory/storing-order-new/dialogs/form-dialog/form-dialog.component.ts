@@ -17,6 +17,7 @@ import { Apollo } from 'apollo-angular';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
@@ -58,7 +59,8 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     NgxMaskDirective,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    GlobalMaxCharDirective
   ],
 })
 export class FormDialogComponent {

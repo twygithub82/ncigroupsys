@@ -25,6 +25,7 @@ import { SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TankInfoItem } from 'app/data-sources/tank-info';
 import { TransferItem } from 'app/data-sources/transfer';
 import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -72,7 +73,8 @@ export interface DialogData {
     MatCardModule,
     NumericTextDirective,
     MatButtonToggleModule,
-    ExclusiveToggleDirective
+    ExclusiveToggleDirective,
+    GlobalMaxCharDirective
   ],
 })
 export class EditSotDetailsFormDialogComponent {
@@ -145,7 +147,7 @@ export class EditSotDetailsFormDialogComponent {
       const capacity = this.overwriteForm.get('capacity')?.value;
       const max_weight_cv = this.overwriteForm.get('max_weight_cv')?.value;
       const walkway_cv = this.overwriteForm.get('walkway_cv')?.value;
-      
+
       const returnDialog: any = {
         unit_type_guid: unit_type_guid,
         cladding_cv: cladding_cv,

@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { Utility } from 'app/utilities/utility';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
@@ -54,6 +55,7 @@ export interface DialogData {
     MatDividerModule,
     MatCardModule,
     NgxMaskDirective,
+    GlobalMaxCharDirective
   ],
 })
 export class RenumberTankFormDialogComponent {

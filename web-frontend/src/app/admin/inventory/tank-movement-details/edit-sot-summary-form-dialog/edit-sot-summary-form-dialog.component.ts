@@ -23,6 +23,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TankInfoItem } from 'app/data-sources/tank-info';
 import { TransferItem } from 'app/data-sources/transfer';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -69,6 +70,7 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
 })
 export class EditSotSummaryFormDialogComponent {
@@ -179,7 +181,7 @@ export class EditSotSummaryFormDialogComponent {
       const lastTestCv = this.overwriteForm.get('last_test_cv')?.value;
       const nextTestCv = this.overwriteForm.get('next_test_cv')?.value;
       const testClassCv = this.overwriteForm.get('test_class_cv')?.value;
-      
+
       const shouldUpdate = this.latestSurveyDetailItem?.filter(x => x.status_cv === 'ACCEPTED')?.length === 0;
 
       const returnDialog: any = {

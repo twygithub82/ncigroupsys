@@ -43,6 +43,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-storing-order-new',
@@ -76,6 +77,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
     MatRadioModule,
     MatDividerModule,
     MatMenuModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

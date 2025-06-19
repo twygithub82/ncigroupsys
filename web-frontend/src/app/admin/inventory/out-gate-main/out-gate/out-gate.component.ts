@@ -34,6 +34,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-out-gate',
@@ -64,6 +65,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

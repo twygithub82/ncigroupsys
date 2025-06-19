@@ -20,6 +20,7 @@ import { InGateItem } from 'app/data-sources/in-gate';
 import { OutGateItem } from 'app/data-sources/out-gate';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -58,6 +59,7 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
 })
 export class EditGateDetailsFormDialogComponent {

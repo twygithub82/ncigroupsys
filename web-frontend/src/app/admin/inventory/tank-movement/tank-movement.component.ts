@@ -71,7 +71,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

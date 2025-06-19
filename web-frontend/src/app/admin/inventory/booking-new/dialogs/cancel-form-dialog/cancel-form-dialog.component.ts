@@ -12,6 +12,7 @@ import { Apollo } from 'apollo-angular';
 import { BookingItem } from 'app/data-sources/booking';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 export interface DialogData {
   action?: string;
@@ -39,6 +40,7 @@ export interface DialogData {
     MatDividerModule,
     FormsModule,
     ReactiveFormsModule,
+    GlobalMaxCharDirective
   ],
 })
 export class CancelFormDialogComponent {

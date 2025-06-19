@@ -61,6 +61,7 @@ import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -96,7 +97,8 @@ import { ModulePackageService } from 'app/services/module-package.service';
     MatRadioModule,
     PreventNonNumericDirective,
     MatButtonToggleModule,
-    ExclusiveToggleDirective
+    ExclusiveToggleDirective,
+    GlobalMaxCharDirective
   ],
   providers: [
     {
