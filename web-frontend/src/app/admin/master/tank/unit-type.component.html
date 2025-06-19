@@ -171,8 +171,10 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
-                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                  <mat-header-cell *matHeaderCellDef
+                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'d-flex justify-content-center'">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED_DT}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
                 </ng-container>

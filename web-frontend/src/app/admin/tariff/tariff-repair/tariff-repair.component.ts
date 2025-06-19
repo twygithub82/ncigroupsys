@@ -967,6 +967,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
+
   // removeSelectedParts(): void {
   //   this.selectedParts = [];
   //  }
