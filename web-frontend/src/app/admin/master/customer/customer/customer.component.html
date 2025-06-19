@@ -91,8 +91,8 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CODE
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
@@ -126,10 +126,10 @@
                 {{this.displayLastUpdated(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'" *matCellDef="let row">
+              <mat-cell [ngClass]="'tbl-col-width-per-3-xl'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.customer_company?.tank?.unit_type}}</mat-cell>
             </ng-container>

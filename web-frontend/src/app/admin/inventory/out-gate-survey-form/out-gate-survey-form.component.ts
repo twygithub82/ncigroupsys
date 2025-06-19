@@ -60,6 +60,7 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-out-gate-survey-form',
@@ -131,7 +132,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
@@ -205,7 +206,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
     TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
     FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
     LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
@@ -220,7 +221,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
-    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
     PHOTOS: 'COMMON-FORM.PHOTOS',
     PUBLISH: 'COMMON-FORM.PUBLISH',
@@ -237,6 +238,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     LITERS: 'COMMON-FORM.LITERS',
     KG: 'COMMON-FORM.KG',
     ARE_YOU_SURE_TO_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-PUBLISH',
+    ARE_YOU_SURE_TO_SAVE_AND_PUBLISH: 'COMMON-FORM.ARE-YOU-SURE-TO-SAVE-AND-PUBLISH',
+    SAVE_AND_PUBLISH: 'COMMON-FORM.SAVE-AND-PUBLISH'
   }
   private destroy$ = new Subject<void>();
 
@@ -347,7 +350,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     private router: Router,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
-    private fileManagerService: FileManagerService
+    private fileManagerService: FileManagerService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -389,39 +393,39 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   initForm() {
     this.surveyForm = this.fb.group({
       tank_details: this.fb.group({
-        unit_type_guid: [''],
+        unit_type_guid: [{ value: '', disabled: !this.canEdit() }],
         owner: this.ownerControl,
-        owner_guid: [''],
-        manufacturer_cv: [''],
-        dom_dt: [''],
-        cladding_cv: [''],
-        capacity: [''],
-        tare_weight: [''],
-        max_weight_cv: [''],
-        height_cv: [''],
-        walkway_cv: [''],
-        tank_comp_guid: [''],
-        comments: [''],
+        owner_guid: [{ value: '', disabled: !this.canEdit() }],
+        manufacturer_cv: [{ value: '', disabled: !this.canEdit() }],
+        dom_dt: [{ value: '', disabled: !this.canEdit() }],
+        cladding_cv: [{ value: '', disabled: !this.canEdit() }],
+        capacity: [{ value: '', disabled: !this.canEdit() }],
+        tare_weight: [{ value: '', disabled: !this.canEdit() }],
+        max_weight_cv: [{ value: '', disabled: !this.canEdit() }],
+        height_cv: [{ value: '', disabled: !this.canEdit() }],
+        walkway_cv: [{ value: '', disabled: !this.canEdit() }],
+        tank_comp_guid: [{ value: '', disabled: !this.canEdit() }],
+        comments: [{ value: '', disabled: !this.canEdit() }],
       }),
       periodic_test: this.fb.group({
-        last_test_cv: [''],
-        next_test_cv: [''],
-        test_class_cv: [''],
-        test_dt: [''],
+        last_test_cv: [{ value: '', disabled: !this.canEdit() }],
+        next_test_cv: [{ value: '', disabled: !this.canEdit() }],
+        test_class_cv: [{ value: '', disabled: !this.canEdit() }],
+        test_dt: [{ value: '', disabled: !this.canEdit() }],
       }),
       out_gate_details: this.fb.group({
-        vehicle_no: [''],
-        driver_name: [''],
-        haulier: [''],
-        in_gate_remarks: [''],
+        vehicle_no: [{ value: '', disabled: !this.canEdit() }],
+        driver_name: [{ value: '', disabled: !this.canEdit() }],
+        haulier: [{ value: '', disabled: !this.canEdit() }],
+        in_gate_remarks: [{ value: '', disabled: !this.canEdit() }],
       }),
       frame_type: this.fb.group({
-        leftRemarks: [''],
-        rearRemarks: [''],
-        rightRemarks: [''],
-        topRemarks: [''],
-        frontRemarks: [''],
-        bottomRemarks: [''],
+        leftRemarks: [{ value: '', disabled: !this.canEdit() }],
+        rearRemarks: [{ value: '', disabled: !this.canEdit() }],
+        rightRemarks: [{ value: '', disabled: !this.canEdit() }],
+        topRemarks: [{ value: '', disabled: !this.canEdit() }],
+        frontRemarks: [{ value: '', disabled: !this.canEdit() }],
+        bottomRemarks: [{ value: '', disabled: !this.canEdit() }],
         leftImage: this.createImageForm('LEFT_SIDE', '', undefined),
         rearImage: this.createImageForm('REAR_SIDE', '', undefined),
         rightImage: this.createImageForm('RIGHT_SIDE', '', undefined),
@@ -441,53 +445,57 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       // }),
       compartment_type: this.fb.group({
         bottomFormGroup: this.fb.group({
-          btm_dis_comp_cv: [''],
-          btm_dis_valve_cv: [''],
-          btm_dis_valve_oth: [''],
-          btm_dis_valve_spec_cv: [''],
-          btm_dis_valve_spec_oth: [''],
-          foot_valve_cv: [''],
-          foot_valve_oth: [''],
-          btm_valve_brand_cv: [''],
-          thermometer: [''],
-          thermometer_cv: [''],
-          ladder: [''],
-          data_csc_transportplate: [''],
+          btm_dis_comp_cv: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          btm_dis_valve_spec_oth: [{ value: '', disabled: !this.canEdit() }],
+          foot_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          foot_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          btm_valve_brand_cv: [{ value: '', disabled: !this.canEdit() }],
+          thermometer: [{ value: '', disabled: !this.canEdit() }],
+          thermometer_cv: [{ value: '', disabled: !this.canEdit() }],
+          ladder: [{ value: '', disabled: !this.canEdit() }],
+          data_csc_transportplate: [{ value: '', disabled: !this.canEdit() }],
         }),
         topFormGroup: this.fb.group({
-          top_dis_comp_cv: [''],
-          top_dis_valve_cv: [''],
-          top_dis_valve_oth: [''],
-          top_dis_valve_spec_cv: [''],
-          top_dis_valve_spec_oth: [''],
-          top_valve_brand_cv: [''],
-          airline_valve_cv: [''],
-          airline_valve_oth: [''],
-          airline_valve_pcs: [''],
-          airline_valve_dim: [''],
-          airline_valve_conn_cv: [''],
-          airline_valve_conn_oth: [''],
-          airline_valve_conn_spec_cv: [''],
-          airline_valve_conn_spec_oth: [''],
+          top_dis_comp_cv: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          top_dis_valve_spec_oth: [{ value: '', disabled: !this.canEdit() }],
+          top_valve_brand_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_oth: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_pcs: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_dim: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_oth: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          airline_valve_conn_spec_oth: [{ value: '', disabled: !this.canEdit() }],
         }),
         manlidFormGroup: this.fb.group({
-          manlid_comp_cv: [''],
-          manlid_cover_cv: [''],
-          manlid_cover_oth: [''],
-          manlid_cover_pcs: [''],
-          manlid_cover_pts: [''],
-          manlid_seal_cv: [''],
-          pv_type_cv: [''],
-          pv_type_pcs: [''],
-          pv_spec_cv: [''],
-          pv_spec_pcs: [''],
-          safety_handrail: [''],
-          buffer_plate: [''],
-          residue: [''],
-          dipstick: [''],
+          manlid_comp_cv: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_cv: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_oth: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_pcs: [{ value: '', disabled: !this.canEdit() }],
+          manlid_cover_pts: [{ value: '', disabled: !this.canEdit() }],
+          manlid_seal_cv: [{ value: '', disabled: !this.canEdit() }],
+          pv_type_cv: [{ value: '', disabled: !this.canEdit() }],
+          pv_type_pcs: [{ value: '', disabled: !this.canEdit() }],
+          pv_spec_cv: [{ value: '', disabled: !this.canEdit() }],
+          pv_spec_pcs: [{ value: '', disabled: !this.canEdit() }],
+          safety_handrail: [{ value: '', disabled: !this.canEdit() }],
+          buffer_plate: [{ value: '', disabled: !this.canEdit() }],
+          residue: [{ value: '', disabled: !this.canEdit() }],
+          dipstick: [{ value: '', disabled: !this.canEdit() }],
         })
       }),
     });
+
+    if (!this.canEdit()) {
+      this.ownerControl?.disable();
+    }
 
     this.initValueChanges();
   }
@@ -1368,71 +1376,102 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   compartmentTypeFormCheck(): any[] {
-    const compartmentTypeFormChecks = [];
+    const checks: string[] = [];
 
-    const bottomFormGroup = this.getBottomFormGroup();
-    if (!(bottomFormGroup.get('btm_dis_comp_cv')?.value?.length || bottomFormGroup.get('btm_dis_valve_cv')?.value?.length
-      || bottomFormGroup.get('btm_dis_valve_spec_cv')?.value?.length || bottomFormGroup.get('foot_valve_cv')?.value?.length
-      || bottomFormGroup.get('btm_valve_brand_cv')?.value || bottomFormGroup.get('thermometer')?.value
-      || bottomFormGroup.get('thermometer_cv')?.value?.length || bottomFormGroup.get('ladder')?.value
-      || bottomFormGroup.get('data_csc_transportplate')?.value)) {
-      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_BTM_EMPTY);
+    const bottomRaw = this.getBottomFormGroup().getRawValue();
+    const hasBottomValues = [
+      bottomRaw.btm_dis_comp_cv?.length,
+      bottomRaw.btm_dis_valve_cv?.length,
+      bottomRaw.btm_dis_valve_spec_cv?.length,
+      bottomRaw.foot_valve_cv?.length,
+      bottomRaw.btm_valve_brand_cv,
+      bottomRaw.thermometer,
+      bottomRaw.thermometer_cv?.length,
+      bottomRaw.ladder,
+      bottomRaw.data_csc_transportplate
+    ].some(v => !!v);
+
+    if (!hasBottomValues) {
+      checks.push(this.translatedLangText.COMPARTMENT_TYPE_BTM_EMPTY);
     }
 
-    const topFormGroup = this.getTopFormGroup();
-    if (!(topFormGroup.get('top_dis_comp_cv')?.value?.length || topFormGroup.get('top_dis_valve_cv')?.value?.length
-      || topFormGroup.get('top_dis_valve_spec_cv')?.value?.length || topFormGroup.get('top_valve_brand_cv')?.value
-      || topFormGroup.get('airline_valve_cv')?.value?.length || topFormGroup.get('airline_valve_pcs')?.value
-      || topFormGroup.get('airline_valve_dim')?.value || topFormGroup.get('airline_valve_conn_cv')?.value?.length
-      || topFormGroup.get('airline_valve_conn_spec_cv')?.value?.length)) {
-      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_TOP_EMPTY);
+    const topRaw = this.getTopFormGroup().getRawValue();
+    const hasTopValues = [
+      topRaw.top_dis_comp_cv?.length,
+      topRaw.top_dis_valve_cv?.length,
+      topRaw.top_dis_valve_spec_cv?.length,
+      topRaw.top_valve_brand_cv,
+      topRaw.airline_valve_cv?.length,
+      topRaw.airline_valve_pcs,
+      topRaw.airline_valve_dim,
+      topRaw.airline_valve_conn_cv?.length,
+      topRaw.airline_valve_conn_spec_cv?.length
+    ].some(v => !!v);
+
+    if (!hasTopValues) {
+      checks.push(this.translatedLangText.COMPARTMENT_TYPE_TOP_EMPTY);
     }
 
-    const manlidFormGroup = this.getManlidFormGroup();
-    if (!(manlidFormGroup.get('manlid_comp_cv')?.value?.length || manlidFormGroup.get('manlid_cover_cv')?.value?.length
-      || manlidFormGroup.get('manlid_cover_pcs')?.value || manlidFormGroup.get('manlid_cover_pts')?.value
-      || manlidFormGroup.get('manlid_seal_cv')?.value?.length || manlidFormGroup.get('pv_type_cv')?.value?.length
-      || manlidFormGroup.get('pv_type_pcs')?.value || manlidFormGroup.get('pv_spec_cv')?.value?.length
-      || manlidFormGroup.get('pv_spec_pcs')?.value || manlidFormGroup.get('safety_handrail')?.value
-      || manlidFormGroup.get('buffer_plate')?.value || manlidFormGroup.get('residue')?.value
-      || manlidFormGroup.get('dipstick')?.value)) {
-      compartmentTypeFormChecks.push(this.translatedLangText.COMPARTMENT_TYPE_MANLID_EMPTY);
+    const manlidRaw = this.getManlidFormGroup().getRawValue();
+    const hasManlidValues = [
+      manlidRaw.manlid_comp_cv?.length,
+      manlidRaw.manlid_cover_cv?.length,
+      manlidRaw.manlid_cover_pcs,
+      manlidRaw.manlid_cover_pts,
+      manlidRaw.manlid_seal_cv?.length,
+      manlidRaw.pv_type_cv?.length,
+      manlidRaw.pv_type_pcs,
+      manlidRaw.pv_spec_cv?.length,
+      manlidRaw.pv_spec_pcs,
+      manlidRaw.safety_handrail,
+      manlidRaw.buffer_plate,
+      manlidRaw.residue,
+      manlidRaw.dipstick
+    ].some(v => !!v);
+
+    if (!hasManlidValues) {
+      checks.push(this.translatedLangText.COMPARTMENT_TYPE_MANLID_EMPTY);
     }
 
-    return compartmentTypeFormChecks;
+    return checks;
   }
 
-  onSubmitCheck(event: Event) {
+  onSubmitCheck(event: Event, toPublish: boolean) {
     this.preventDefault(event);  // Prevents the form submission
-    const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
+    if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
+      const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
 
-    if (compartmentTypeFormChecks.length) {
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-      const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
-        width: '500px',
-        data: {
-          action: 'edit',
-          translatedLangText: this.translatedLangText,
-          confirmForm: compartmentTypeFormChecks
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result?.confirmed) {
-          this.onFormSubmit();
+      if (compartmentTypeFormChecks.length || toPublish) {
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
         }
-      });
+        const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
+          width: '500px',
+          data: {
+            action: 'edit',
+            translatedLangText: this.translatedLangText,
+            confirmForm: compartmentTypeFormChecks
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result?.confirmed) {
+            this.onFormSubmit(toPublish);
+          }
+        });
+      } else {
+        this.onFormSubmit(toPublish);
+      }
     } else {
-      this.onFormSubmit();
+      console.log('Invalid soForm', this.surveyForm?.value);
+      this.markFormGroupTouched(this.surveyForm);
     }
   }
 
-  onFormSubmit() {
+  onFormSubmit(toPublish: boolean) {
     if (this.surveyForm?.valid) {
       let sot: StoringOrderTank = new StoringOrderTank(this.out_gate?.tank);
       sot.unit_type_guid = this.surveyForm.get('tank_details.unit_type_guid')?.value;
@@ -1450,7 +1489,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       og.in_gate_survey = undefined;
 
       const periodicTestFormGroup = this.getBottomFormGroup();
-      let ogs: OutGateSurveyGO = new OutGateSurveyGO(this.out_gate?.out_gate_survey);
+      let ogs: any = new OutGateSurveyGO(this.out_gate?.out_gate_survey);
       ogs.guid = this.out_gate?.out_gate_survey?.guid;
       ogs.out_gate_guid = this.out_gate?.out_gate_survey?.out_gate_guid || this.out_gate?.guid;
       ogs.last_test_cv = this.surveyForm.get('periodic_test.last_test_cv')?.value;
@@ -1536,11 +1575,15 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
           }
         });
       } else {
+        if (toPublish) {
+          ogs.action = "published";
+        }
         this.ogsDS.addOutGateSurvey(ogs, og).subscribe(result => {
           console.log(result)
           const record = result.data.record
           if (record?.affected) {
             this.uploadImages(record.guid[0]);
+            this.onDownload(record.guid[0]);
           }
         });
       }
@@ -1552,7 +1595,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   onPublishCheck(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
-    if (this.surveyForm?.valid && this.getTopFormGroup()?.valid && this.getBottomFormGroup()?.valid && this.getManlidFormGroup()?.valid) {
+    const isSurveyValid = this.validateAllControlsRaw(this.surveyForm!);
+    const isTopValid = this.validateAllControlsRaw(this.getTopFormGroup());
+    const isBottomValid = this.validateAllControlsRaw(this.getBottomFormGroup());
+    const isManlidValid = this.validateAllControlsRaw(this.getManlidFormGroup());
+
+    if (isSurveyValid && isTopValid && isBottomValid && isManlidValid) {
       const compartmentTypeFormChecks = this.compartmentTypeFormCheck();
       let tempDirection: Direction;
       if (localStorage.getItem('isRtl') === 'true') {
@@ -1589,12 +1637,12 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       this.ogDS.publishOutGateSurvey(outGateRequest).subscribe(result => {
         console.log(result)
         this.handleSaveSuccess(result.data?.publishOutGateSurvey)
-        this.onDownload();
+        this.onDownload(this.out_gate?.out_gate_survey?.guid);
       });
     }
   }
 
-  onDownload() {
+  onDownload(ogs_guid?: string) {
     let tempDirection: Direction;
 
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1608,8 +1656,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       width: '794px',
       height: '80vh',
       data: {
-        type: "in",
-        gate_survey_guid: this.out_gate?.out_gate_survey?.guid,
+        type: "out",
+        gate_survey_guid: ogs_guid,
         eir_no: this.out_gate?.eir_no,
         ogsDS: this.ogsDS,
         cvDS: this.cvDS,
@@ -1668,7 +1716,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayTankPurpose(sot: StoringOrderTankItem) {
@@ -1698,8 +1746,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   startDrawing(highlightedCells: boolean[], event: MouseEvent | TouchEvent): void {
-    this.isDrawing = true;
     event.preventDefault(); // Prevent default dragging behavior
+    if (!this.canEdit()) return;
+    this.isDrawing = true;
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
     if (dataIndex !== null) {
@@ -1710,8 +1759,9 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   startDrawingWalkway(highlightedCells: boolean[], damageCells: boolean[], event: MouseEvent | TouchEvent): void {
-    this.isDrawing = true;
     event.preventDefault(); // Prevent default dragging behavior
+    if (!this.canEdit()) return;
+    this.isDrawing = true;
     const target = this.getEventTarget(event) as HTMLElement;
     const dataIndex = target?.getAttribute('data-index');
     if (dataIndex !== null) {
@@ -1866,6 +1916,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         remarksTitle: remarksTitle,
         previousRemarks: remarksValue.value,
         action: 'edit',
+        out_gate: this.out_gate,
         translatedLangText: this.translatedLangText,
       },
       direction: tempDirection
@@ -2106,7 +2157,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   canPublish() {
-    return this.out_gate?.out_gate_survey?.guid;
+    return !this.isAllowEdit() && this.isAllowPublish() && this.out_gate?.out_gate_survey?.guid;
   }
 
   chosenYearHandler(normalizedYear: Moment) {
@@ -2193,5 +2244,37 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   patchStringToArrayValue(arrayVal: string | undefined) {
     return Utility.patchStringToArrayValue(arrayVal)
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_OUT_GATE_SURVEY_EDIT']);
+  }
+
+  isAllowPublish() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_OUT_GATE_SURVEY_PUBLISH']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_OUT_GATE_SURVEY_VIEW']);
+  }
+
+  canEdit() {
+    return this.isAllowEdit() && (!this.out_gate?.eir_status_cv || this.out_gate?.eir_status_cv === 'PENDING' || this.out_gate?.eir_status_cv === 'YET_TO_SURVEY');
+  }
+
+  triggerFileInputIfAllowed(inputRef: HTMLInputElement, formPath?: string): void {
+    if (!this.canEdit()) return;
+
+    const previewVal = formPath
+      ? this.surveyForm?.get(formPath)?.get('preview')?.value
+      : null;
+
+    if (!previewVal) {
+      inputRef.click();
+    }
+  }
+
+  validateAllControlsRaw(form: UntypedFormGroup): boolean {
+    return BusinessLogicUtil.validateAllControlsRaw(form);
   }
 }

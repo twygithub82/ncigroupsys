@@ -35,7 +35,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -109,7 +109,7 @@ export class BilledTankComponent extends UnsubscribeOnDestroyAdapter implements 
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: 'COMMON-FORM.SEARCH',
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
@@ -141,7 +141,7 @@ export class BilledTankComponent extends UnsubscribeOnDestroyAdapter implements 
   yardCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -425,7 +425,7 @@ export class BilledTankComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {

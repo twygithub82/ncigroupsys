@@ -16,6 +16,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
+import { InGateItem } from 'app/data-sources/in-gate';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -25,6 +26,7 @@ export interface DialogData {
   translatedLangText?: any;
   remarksTitle?: string;
   previousRemarks?: string;
+  in_gate: InGateItem;
 }
 
 @Component({
@@ -60,6 +62,7 @@ export class FormDialogComponent {
   dialogTitle: string;
   remarksTitle?: string;
   remarksForm: UntypedFormGroup;
+  in_gate: InGateItem;
 
   previousRemarks?: string;
   constructor(
@@ -72,6 +75,7 @@ export class FormDialogComponent {
     this.action = data.action!;
     this.remarksTitle = data.remarksTitle;
     this.previousRemarks = data.previousRemarks;
+    this.in_gate = data.in_gate;
     if (this.action === 'edit') {
       this.dialogTitle = 'Edit Remarks';
     } else {
@@ -112,8 +116,8 @@ export class FormDialogComponent {
     }
   }
 
-  canEdit(): boolean {
-    return true;
+  canEdit() {
+    return this.isAllowEdit() && (!this.in_gate?.eir_status_cv || this.in_gate?.eir_status_cv === 'PENDING' || this.in_gate?.eir_status_cv === 'YET_TO_SURVEY');
   }
 
   isAllowEdit() {

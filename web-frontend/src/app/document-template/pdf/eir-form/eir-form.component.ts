@@ -75,7 +75,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
@@ -149,7 +149,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
     TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
     FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
     LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
@@ -164,7 +164,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
-    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
     PHOTOS: 'COMMON-FORM.PHOTOS',
     PUBLISH: 'COMMON-FORM.PUBLISH',
@@ -1948,23 +1948,6 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
           ];
           this.publishedEir.emit({ type: 'uploaded', eirPdf: this.eirPdf });
 
-          // if (this.eirDetails?.in_gate?.eir_status_cv === 'PENDING') {
-          //   // const sotItem = new StoringOrderTankGO(this.eirDetails?.in_gate?.tank);
-          //   const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.eirDetails?.tank_comp_guid });
-          //   const inGateItem: any = new InGate(this.eirDetails?.in_gate);
-          //   // inGateItem.tank = sotItem
-          //   inGateItem.in_gate_survey = inGateSurveyItem
-          //   console.log('publishInGateSurvey: ', inGateItem)
-          //   this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
-          //     console.log(result)
-          //     if (result.data?.publishIngateSurvey) {
-          //       this.eirDetails.in_gate.eir_status_cv = 'PUBLISHED'; // to avoid republish with PENDING status (first time publish then click republish)
-          //       this.publishedEir.emit({ type: 'published' });
-          //       let successMsg = this.translatedLangText.PUBLISH_SUCCESS;
-          //       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-          //     }
-          //   });
-          // }
         }
       },
       error: (error) => {

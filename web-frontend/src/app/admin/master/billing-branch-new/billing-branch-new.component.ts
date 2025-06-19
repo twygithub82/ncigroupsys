@@ -139,7 +139,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -151,7 +151,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
@@ -517,7 +517,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayCountryCodeFn(cc: any): string {

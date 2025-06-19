@@ -35,7 +35,7 @@ import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
@@ -109,7 +109,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
 
   pageStateType = 'TariffDepot'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { tariff_depot: { profile_name: "ASC" } };
   endCursor: string | undefined = undefined;
@@ -159,7 +159,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SEARCH: 'COMMON-FORM.SEARCH',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
@@ -173,7 +173,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
@@ -257,7 +257,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayUnitTypeFn(tnk?: TankItem): string {

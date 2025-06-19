@@ -156,7 +156,9 @@ export class FormDialogComponent {
           this.schedulingFilteredList = this.schedulingList
             .map(x => ({
               ...x,
-              scheduling_sot: x.scheduling_sot?.filter(ss => ss.storing_order_tank?.tank_no?.toLowerCase().includes(value.toLowerCase()))
+              scheduling_sot: (x.scheduling_sot || []).filter(ss =>
+                ss.storing_order_tank?.tank_no?.toLowerCase().includes(value.trim().toLowerCase())
+              )
             }))
             .filter(x => x.scheduling_sot && x.scheduling_sot.length > 0);
           // .filter(ss => ss?.storing_order_tank?.tank_no?.toLowerCase().includes(value.toLowerCase()))

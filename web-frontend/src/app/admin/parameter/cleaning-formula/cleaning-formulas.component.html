@@ -138,11 +138,11 @@
                     </ng-container>
                     <ng-container matColumnDef="category_description">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.DESCRIPTION }}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                        [ngClass]="'pr-0 tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
                       </mat-cell>
                     </ng-container>
@@ -199,7 +199,7 @@
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="fmlDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                <mat-paginator #paginator [length]="fmlDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
               </div>

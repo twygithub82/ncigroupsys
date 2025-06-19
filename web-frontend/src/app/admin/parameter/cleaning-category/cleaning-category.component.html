@@ -179,7 +179,7 @@
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                         ngClass="'justify-content-center'">
-                        <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{row.cost.toFixed(2)}}
+                        <span class="mobile-label">{{langText.CATEGORY_COST | translate}}:</span>{{parse2Decimal(row.cost)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">
@@ -226,7 +226,7 @@
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="catDS.totalCount" [pageIndex]="0" [pageSize]="10"
+                <mat-paginator #paginator [length]="catDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
                   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
               </div>

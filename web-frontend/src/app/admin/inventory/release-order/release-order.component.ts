@@ -36,7 +36,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
@@ -115,7 +115,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     NEW: 'COMMON-FORM.NEW',
     REFRESH: 'COMMON-FORM.REFRESH',
@@ -160,7 +160,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   pageStateType = 'ReleaseOrder'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { ro_no: "DESC" };
   endCursor: string | undefined = undefined;
@@ -618,7 +618,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
     //return this.ccDS.displayName(cc);
   }
 

@@ -231,7 +231,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     UPDATE: 'COMMON-FORM.UPDATE',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
@@ -308,7 +308,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
     TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
     FILL_IN_REMARKS: 'COMMON-FORM.FILL-IN-REMARKS',
     LEFT_REMARKS: 'COMMON-FORM.LEFT-REMARKS',
@@ -323,7 +323,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     PREVIEW: 'COMMON-FORM.PREVIEW',
     DELETE: 'COMMON-FORM.DELETE',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
-    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     PREVIEW_PHOTOS: 'COMMON-FORM.PREVIEW-PHOTOS',
     TANK_SUMMARY_DETAILS: 'COMMON-FORM.TANK-SUMMARY-DETAILS',
     BOTTOM_DIS_TYPE: 'COMMON-FORM.BOTTOM-DIS-TYPE',
@@ -465,7 +465,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     REINSTATE: 'COMMON-FORM.REINSTATE',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
-    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
     APPLY_ALL: 'COMMON-FORM.APPLY-ALL',
     DURATION: 'COMMON-FORM.DURATION',
@@ -1036,7 +1036,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayTankPurpose(sot: StoringOrderTankItem) {

@@ -910,7 +910,7 @@
                                         </div>
                                       </div>
                                       <div class="image-preview"
-                                        (click)="!surveyForm?.get('frame_type.leftImage')?.get('preview')?.value && fileInputLeft.click()">
+                                        (click)="triggerFileInputIfAllowed(fileInputLeft, 'frame_type.leftImage')">
                                         <input type="file" #fileInputLeft class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.leftImage'))">
                                         @if (!(isImageLoading$ | async)) {
@@ -949,7 +949,7 @@
                                         </div>
                                       </div>
                                       <div class="image-preview"
-                                        (click)="!surveyForm?.get('frame_type.rearImage')?.get('preview')?.value && fileInputRear.click()">
+                                        (click)="triggerFileInputIfAllowed(fileInputRear, 'frame_type.rearImage')">
                                         <input type="file" #fileInputRear class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.rearImage'))">
                                         @if (!(isImageLoading$ | async)) {
@@ -988,7 +988,7 @@
                                         </div>
                                       </div>
                                       <div class="image-preview"
-                                        (click)="!surveyForm?.get('frame_type.rightImage')?.get('preview')?.value && fileInputRight.click()">
+                                        (click)="triggerFileInputIfAllowed(fileInputRight, 'frame_type.rightImage')">
                                         <input type="file" #fileInputRight class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.rightImage'))">
                                         @if (!(isImageLoading$ | async)) {
@@ -1027,7 +1027,7 @@
                                         </div>
                                       </div>
                                       <div class="image-preview"
-                                        (click)="!surveyForm?.get('frame_type.topImage')?.get('preview')?.value && fileInputTop.click()">
+                                        (click)="triggerFileInputIfAllowed(fileInputTop, 'frame_type.topImage')">
                                         <input type="file" #fileInputTop class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.topImage'))">
                                         @if (!(isImageLoading$ | async)) {
@@ -1066,7 +1066,7 @@
                                         </div>
                                       </div>
                                       <div class="image-preview"
-                                        (click)="!surveyForm?.get('frame_type.frontImage')?.get('preview')?.value && fileInputFront.click()">
+                                        (click)="triggerFileInputIfAllowed(fileInputFront, 'frame_type.frontImage')">
                                         <input type="file" #fileInputFront class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.frontImage'))">
                                         @if (!(isImageLoading$ | async)) {
@@ -1105,7 +1105,7 @@
                                         </div>
                                       </div>
                                       <div class="image-preview"
-                                        (click)="!surveyForm?.get('frame_type.bottomImage')?.get('preview')?.value && fileInputBottom.click()">
+                                        (click)="triggerFileInputIfAllowed(fileInputBottom, 'frame_type.bottomImage')">
                                         <input type="file" #fileInputBottom class="default d-none" accept="image/*"
                                           (change)="onFileSelectedTankSide($event, surveyForm?.get('frame_type.bottomImage'))">
                                         @if (!(isImageLoading$ | async)) {
@@ -1149,7 +1149,8 @@
                               <h2 class="d-flex">
                                 {{translatedLangText.DAMAGE_PHOTOS}}
                                 <div class="m-l-10">
-                                  <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()">
+                                  <button mat-mini-fab class="bg-purple msr-2"
+                                    (click)="triggerFileInputIfAllowed(fileInput)">
                                     <i class="material-icons">attach_file</i>
                                   </button>
                                   <input type="file" #fileInput class="default d-none" multiple accept="image/*"
@@ -2361,9 +2362,24 @@
                             {{translatedLangText.PUBLISH}}
                           </button>
                           }
+                          @if (isAllowPublish() && isAllowEdit()) {
                           <button mat-raised-button matStepperNext color="primary" class="msr-2"
                             [disabled]="(ogsDS.actionLoading$| async) || (isFileActionLoading$| async)"
-                            (click)="onFormSubmit()">
+                            (click)="onSubmitCheck($event, true)">
+                            <mat-icon>
+                              @if (!(ogsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
+                              save
+                              } @else {
+                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                              }
+                            </mat-icon>
+                            {{translatedLangText.SAVE_AND_PUBLISH}}
+                          </button>
+                          }
+                          @else if (isAllowEdit()) {
+                          <button mat-raised-button matStepperNext color="primary" class="msr-2"
+                            [disabled]="(ogsDS.actionLoading$| async) || (isFileActionLoading$| async)"
+                            (click)="onSubmitCheck($event, false)">
                             <mat-icon>
                               @if (!(ogsDS.actionLoading$ | async) && !(isFileActionLoading$| async)) {
                               save
@@ -2373,6 +2389,7 @@
                             </mat-icon>
                             {{translatedLangText.SAVE}}
                           </button>
+                          }
                         </div>
                       </div>
                     </form>

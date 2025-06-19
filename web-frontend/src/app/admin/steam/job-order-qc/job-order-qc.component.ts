@@ -106,7 +106,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
@@ -400,7 +400,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {

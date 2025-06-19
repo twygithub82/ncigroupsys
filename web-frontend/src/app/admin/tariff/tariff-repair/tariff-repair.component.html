@@ -249,8 +249,6 @@
                 </mat-expansion-panel>
               </mat-accordion>
               <div class="body">
-
-
                 <div class="responsive_table">
                   <table mat-table [dataSource]="trfRepairItems" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl curve-table">
@@ -277,7 +275,8 @@
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="''">
                         <span class="mobile-label">{{this.translatedLangText.PART_NAME
-                          }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
+                          }}:</span><span
+                          class="truncate-one-wrap">{{getTariffRepairAlias(row.tariff_repair)}}</span></mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="dimension">
                       <mat-header-cell *matHeaderCellDef
@@ -390,8 +389,8 @@
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="trfRepairDS.totalCount" [pageIndex]="0" [pageSize]="10"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                <mat-paginator #paginator [length]="trfRepairDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                  [pageSizeOptions]="pageSizeInfo.pageSize" (page)="onPageEvent($event)">
                 </mat-paginator>
 
               </div>

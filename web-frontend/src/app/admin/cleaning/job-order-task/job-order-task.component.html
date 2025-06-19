@@ -59,7 +59,7 @@
   <table mat-table [dataSource]="jobOrderList" matSort
     class="mat-cell advance-tab-table striped-rows hover-highlight dark-header">
     <ng-container matColumnDef="id">
-      <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
     </ng-container>
     <ng-container matColumnDef="tank_no">
@@ -90,8 +90,7 @@
       </mat-header-cell>
       <mat-cell mat-cell *matCellDef="let row"
         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-        <span
-          class="mobile-tab-label">{{translatedLangText.JOB_NO}}:</span>{{row.cleaning?.[0]?.job_no}}
+        <span class="mobile-tab-label">{{translatedLangText.JOB_NO}}:</span>{{row.cleaning?.[0]?.job_no}}
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="allocate_dt">
@@ -135,8 +134,8 @@
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;"
-      [routerLink]="['/admin/cleaning/job-order/task', row.guid, row.cleaning?.[0]?.guid]"
-      [style.cursor]="'pointer'" matRipple>
+      [routerLink]="['/admin/cleaning/job-order/task', row.guid, row.cleaning?.[0]?.guid]" [style.cursor]="'pointer'"
+      matRipple>
     </mat-row>
   </table>
 </div>
@@ -154,7 +153,7 @@
   </mat-progress-spinner>
 </div>
 }
-<mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="0" [pageSize]="10"
+<mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
   [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
 </mat-paginator>
 <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">

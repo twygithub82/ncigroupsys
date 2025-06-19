@@ -40,7 +40,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
@@ -117,7 +117,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     EIR_NO: "COMMON-FORM.EIR-NO",
     EIR_DATE: "COMMON-FORM.EIR-DATE",
@@ -138,7 +138,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     BOOKING_DETAILS: "COMMON-FORM.BOOKING-DETAILS",
     SAVE_AND_SUBMIT: "COMMON-FORM.SAVE",
     SO_REQUIRED: "COMMON-FORM.IS-REQUIRED",
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
     REPAIR_COMPLETION_DATE: 'COMMON-FORM.REPAIR-COMPLETION-DATE',
     BOOKED: 'COMMON-FORM.BOOKED',
@@ -148,7 +148,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     EXISTED: 'COMMON-FORM.EXISTED',
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CONFIRM_CLEAR_ALL: 'COMMON-FORM.CONFIRM-CLEAR-ALL',
-    DELETE_SUCCESS: 'COMMON-FORM.DELETE-SUCCESS',
+    DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SAVE: 'COMMON-FORM.SAVE',
     UPDATE: 'COMMON-FORM.UPDATE'
@@ -195,7 +195,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
@@ -642,7 +642,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {

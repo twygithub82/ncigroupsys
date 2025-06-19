@@ -135,8 +135,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
-    APPROVE_SUCCESS: 'COMMON-FORM.APPROVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    APPROVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -148,8 +148,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
-    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
@@ -954,7 +954,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   handleRollbackSuccess(count: any) {
     if ((count ?? 0) > 0) {
-      let successMsg = this.translatedLangText.REINSTATE_SUCCESS;
+      let successMsg = this.translatedLangText.ROLLBACK_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
       this.router.navigate(['/admin/repair/approval']);
     }

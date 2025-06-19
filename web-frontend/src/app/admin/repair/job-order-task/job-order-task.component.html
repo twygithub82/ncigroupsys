@@ -198,7 +198,7 @@
       </mat-progress-spinner>
     </div>
     }
-    <mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="0" [pageSize]="10"
+    <mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
       [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
     </mat-paginator>
     <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">

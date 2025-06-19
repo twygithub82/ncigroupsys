@@ -149,10 +149,10 @@
             </ng-container> -->
 
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2_5-xl justify-content-center'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-2_5-xl'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-2_5-xl justify-content-center'" *matCellDef="let row"
+              <mat-cell [ngClass]="'tbl-col-width-per-2_5-xl'" *matCellDef="let row"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.tank?.unit_type}}</mat-cell>
@@ -201,7 +201,7 @@
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="ccDS.totalCount" [pageIndex]="0" [pageSize]="10"
+        <mat-paginator #paginator [length]="ccDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
           [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>

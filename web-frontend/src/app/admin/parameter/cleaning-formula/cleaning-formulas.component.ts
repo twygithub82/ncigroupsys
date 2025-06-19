@@ -37,7 +37,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -114,7 +114,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     CLOSE: 'COMMON-FORM.CLOSE',
     DELETE: 'COMMON-FORM.DELETE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
@@ -125,7 +125,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     LAST_UPDATED: 'COMMON-FORM.LAST-UPDATED',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEANING_METHOD: 'COMMON-FORM.CLEANING-PROCESS',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     METHOD_NAME: "COMMON-FORM.METHOD-NAME",
@@ -156,10 +156,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   mthDS: CleaningMethodDS;
   fmlDS: CleaningFormulaDS;
 
-
-
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { description: "ASC" };
   endCursor: string | undefined = undefined;
@@ -396,7 +394,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {

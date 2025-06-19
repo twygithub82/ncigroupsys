@@ -16,6 +16,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
+import { OutGateItem } from 'app/data-sources/out-gate';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { provideNgxMask } from 'ngx-mask';
 
 
@@ -24,6 +26,7 @@ export interface DialogData {
   translatedLangText?: any;
   remarksTitle?: string;
   previousRemarks?: string;
+  out_gate: OutGateItem;
 }
 
 @Component({
@@ -59,18 +62,21 @@ export class FormDialogComponent {
   dialogTitle: string;
   remarksTitle?: string;
   remarksForm: UntypedFormGroup;
+  out_gate: OutGateItem;
 
   previousRemarks?: string;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
+    private modulePackageService: ModulePackageService
 
   ) {
     // Set the defaults
     this.action = data.action!;
     this.remarksTitle = data.remarksTitle;
     this.previousRemarks = data.previousRemarks;
+    this.out_gate = data.out_gate;
     if (this.action === 'edit') {
       this.dialogTitle = 'Edit Remarks';
     } else {
@@ -81,7 +87,7 @@ export class FormDialogComponent {
 
   createForm(): UntypedFormGroup {
     const formGroup = this.fb.group({
-      remarks: [this.previousRemarks],
+      remarks: [{ value: this.previousRemarks, disabled: !this.isAllowEdit() }],
     });
     return formGroup;
   }
@@ -111,7 +117,11 @@ export class FormDialogComponent {
     }
   }
 
-  canEdit(): boolean {
-    return true;
+  canEdit() {
+    return this.isAllowEdit() && (!this.out_gate?.eir_status_cv || this.out_gate?.eir_status_cv === 'PENDING' || this.out_gate?.eir_status_cv === 'YET_TO_SURVEY');
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_OUT_GATE_SURVEY_EDIT']);
   }
 }

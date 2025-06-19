@@ -109,7 +109,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: 'COMMON-FORM.SEARCH',
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
@@ -142,7 +142,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
   tankStatusCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -441,7 +441,7 @@ export class OutGateSurveyComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {

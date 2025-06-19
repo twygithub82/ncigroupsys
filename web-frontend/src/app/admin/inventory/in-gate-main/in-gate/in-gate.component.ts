@@ -31,7 +31,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -94,7 +94,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH"
   }
 
@@ -108,7 +108,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
   pageStateType = 'InGate'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: "DESC" } };
   endCursor: string | undefined = undefined;
@@ -309,7 +309,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {

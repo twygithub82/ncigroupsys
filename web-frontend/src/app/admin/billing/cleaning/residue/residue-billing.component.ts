@@ -40,7 +40,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -115,7 +115,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: 'COMMON-FORM.SEARCH',
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
@@ -135,7 +135,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     CLEAR: 'COMMON-FORM.CLEAR',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     INVOICED: 'COMMON-FORM.INVOICED',
     CONFIRM_UPDATE_INVOICE: 'COMMON-FORM.CONFIRM-UPDATE-INVOICE',
     CONFIRM_INVALID_ESTIMATE: 'COMMON-FORM.CONFIRM-INVALID-ESTIMATE',
@@ -178,7 +178,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   depotCvList: CodeValuesItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
@@ -552,7 +552,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   displayLastCargoFn(tc: TariffCleaningItem): string {

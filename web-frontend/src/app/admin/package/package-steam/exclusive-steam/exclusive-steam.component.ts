@@ -37,7 +37,7 @@ import { PackageSteamingItem } from 'app/data-sources/package-steam';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -112,7 +112,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   packageSteamItems: PackageSteamingItem[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { create_dt: "ASC" };
   endCursor: string | undefined = undefined;
@@ -168,7 +168,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
@@ -180,7 +180,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     SELECT_ATLEAST_ONE: 'COMMON-FORM.SELECT-ATLEAST-ONE',
     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     BULK: 'COMMON-FORM.BULK',
@@ -285,7 +285,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   refresh() {

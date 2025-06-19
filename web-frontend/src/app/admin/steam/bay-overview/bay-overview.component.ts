@@ -41,7 +41,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { NgxGaugeModule } from 'ngx-gauge';
 import { Observable, Subscription } from 'rxjs';
@@ -109,7 +109,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     EXPORT: 'COMMON-FORM.EXPORT',
     REMARKS: 'COMMON-FORM.REMARKS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
@@ -131,7 +131,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     CLEANING_METHOD: "COMMON-FORM.CLEANING-PROCESS",
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
-    ROLLBACK_SUCCESS: 'COMMON-FORM.ROLLBACK-SUCCESS',
+    ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     OWNER: 'COMMON-FORM.OWNER',
     EIR_NO: 'COMMON-FORM.EIR-NO',
     EIR_DATE: 'COMMON-FORM.EIR-DATE',
@@ -178,7 +178,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   customer_companyList?: CustomerCompanyItem[];
 
   pageIndexJobOrder = 0;
-  pageSizeJobOrder = 10;
+  pageSizeJobOrder = pageSizeInfo.defaultSize;
   lastSearchCriteriaJobOrder: any;
   lastOrderByJobOrder: any = { job_order_no: "DESC" };
   endCursorJobOrder: string | undefined = undefined;
@@ -363,7 +363,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeValueChanges() {

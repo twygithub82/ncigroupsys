@@ -39,7 +39,7 @@ import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cl
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -113,7 +113,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ADD: 'COMMON-FORM.ADD',
     NEW: 'COMMON-FORM.NEW',
     REFRESH: 'COMMON-FORM.REFRESH',
@@ -133,7 +133,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     TARIFF_CARGO_ASSIGNED: 'COMMON-FORM.TARIFF-CARGO-ASSIGNED',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     DELETE: 'COMMON-FORM.DELETE',
     SEARCH: "COMMON-FORM.SEARCH",
     CARGO_SELECTED: 'COMMON-FORM.CARGO-SELECTED',
@@ -174,7 +174,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   pageStateType = 'TariffCleaning'
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { tariff_cleaning: { cargo: "DESC" } };
   endCursor: string | undefined = undefined;
@@ -268,13 +268,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   public loadData() {
     this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
-        this.cCategoryList =  addDefaultSelectOption(data, 'All');
+        this.cCategoryList = addDefaultSelectOption(data, 'All');
       }
     });
 
     this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
-        this.cMethodList =  addDefaultSelectOption(data, 'All');
+        this.cMethodList = addDefaultSelectOption(data, 'All');
       }
     });
 
@@ -483,7 +483,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
     //return this.ccDS.displayName(cc);
   }
 
@@ -816,7 +816,11 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   displayCategoryName(row: any): string {
     //if()
-    if(row.description) return row.description;
+    if (row.description) return row.description;
     else return row.name;
+  }
+
+  parse2Decimal(figure: number | string) {
+    return Utility.formatNumberDisplay(figure)
   }
 }

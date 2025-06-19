@@ -35,7 +35,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -113,7 +113,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
-    CANCELED_SUCCESS: 'COMMON-FORM.CANCELED-SUCCESS',
+    CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SEARCH: "COMMON-FORM.SEARCH",
     NAME: "COMMON-FORM.NAME",
     DESCRIPTION: "COMMON-FORM.DESCRIPTION",
@@ -124,7 +124,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     LAST_UPDATED: 'COMMON-FORM.LAST-UPDATED',
-    SAVE_SUCCESS: 'COMMON-FORM.SAVE-SUCCESS',
+    SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     CATEGORY_DESCRIPTION_SELECTED: 'COMMON-FORM.CATEGORY-DESCRIPTION-SELECTED',
     CATEGORY_NAME_SELECTED: 'COMMON-FORM.CATEGORY-NAME-SELECTED'
@@ -147,7 +147,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   nameList: string[] = [];
 
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { sequence: "ASC" };
   endCursor: string | undefined = undefined;
@@ -241,34 +241,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-    //   data: {
-    //     item: [...row],
-    //     langText: this.langText
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result?.action === 'confirmed') {
-    //     // const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-    //     // this.soDS.cancelStoringOrder(so).subscribe(result => {
-    //     //   if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-    //     //     let successMsg = this.langText.CANCELED_SUCCESS;
-    //     //     this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-    //     //       successMsg = res;
-    //     //       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-    //     //       this.loadData();
-    //     //     });
-    //     //   }
-    //     // });
-    //   }
-    // });
   }
 
   public loadData() {
@@ -423,7 +395,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} (${cc.name})` : '';
+    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
   initializeFilterCustomerCompany() {
@@ -729,7 +701,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   description_onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.description_selected(fakeEvent);
-
   }
 
   description_add(event: MatChipInputEvent): void {
@@ -745,5 +716,9 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       input.value = '';
     }
     cnt?.setValue(null);
+  }
+
+  parse2Decimal(figure: number | string) {
+    return Utility.formatNumberDisplay(figure)
   }
 }
