@@ -36,11 +36,10 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
         <div class="row">
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.NAME}}</mat-label>
               <mat-chip-grid #chipGrid>
-                <!-- @for (cust of selectedCustomers; track cust) { -->
                 @if(this.selectedCargo.length>0){
                 <mat-chip-row color="primary" (click)="removeAllSelectedCargo()">
                   <span> {{getSelectedCargoDisplay()}}</span>
@@ -49,9 +48,6 @@
                   </button>
                 </mat-chip-row>
                 }
-
-                <!-- } -->
-
                 <input #custInput formControlName="last_cargo" [matAutocomplete]="cargoCode"
                   [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                   (matChipInputTokenEnd)="add($event)">
@@ -71,7 +67,7 @@
               </mat-chip-grid>
             </mat-form-field>
           </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-2">
+          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
               <mat-select formControlName="class_no" [compareWith]="compareObjects">
@@ -92,13 +88,13 @@
                   </mat-autocomplete> -->
             </mat-form-field>
           </div>
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_UN_NO }}</mat-label>
               <input matInput formControlName="un_no" (input)="onNumericOnly($event, 'un_no')">
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-2">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_METHOD }}</mat-label>
               <mat-select formControlName="method" [compareWith]="compareObjects">
@@ -118,7 +114,7 @@
                   </mat-autocomplete> -->
             </mat-form-field>
           </div>
-          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_CATEGORY }}</mat-label>
               <mat-select formControlName="category" [compareWith]="compareObjects">
@@ -147,7 +143,7 @@
                 </mat-form-field>
               </div> -->
 
-          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
+          <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
               <mat-select formControlName="ban_type">
