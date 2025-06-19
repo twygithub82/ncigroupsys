@@ -12,6 +12,8 @@ import { AuthService } from '@core/service/auth.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize, merge } from 'rxjs';
+import { environment } from 'environments/environment';
+import { MatDividerModule } from '@angular/material/divider';
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
@@ -25,6 +27,7 @@ import { finalize, merge } from 'rxjs';
     MatIconModule,
     MatButtonModule,
     RouterLink,
+    MatDividerModule,
   ],
 })
 export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -44,7 +47,8 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
     ENTER_NEW_PASSWORD_FOR: 'COMMON-FORM.ENTER-NEW-PASSWORD-FOR',
     DOES_NOT_MATCH: 'COMMON-FORM.DOES-NOT-MATCH',
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    FAILED_TO_CHANGE_PASSWORD: 'COMMON-FORM.FAILED-TO-CHANGE-PASSWORD'
+    FAILED_TO_CHANGE_PASSWORD: 'COMMON-FORM.FAILED-TO-CHANGE-PASSWORD',
+    AUTH_CAPTION: 'LANDING-SIGNIN.AUTH-CAPTION',
   }
 
   authForm!: UntypedFormGroup;
@@ -161,5 +165,9 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
   handleTokenEmailInvalid() {
     let successMsg = this.translatedLangText.FAILED_TO_CHANGE_PASSWORD;
     ComponentUtil.showCustomNotification('check_circle', 'snackbar-error', successMsg, 'top', 'center', this.snackBar)
+  }
+
+  get caption() {
+    return environment.companyNameShort;
   }
 }
