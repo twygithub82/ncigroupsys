@@ -205,6 +205,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
   // ]
 
   constructor(
+    private route: ActivatedRoute,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -380,31 +381,51 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       this.repairOptionCvList = data;
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
-    }
+     var actionId= this.route.snapshot.paramMap.get('id');
+    if(!actionId)
+    {
+        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
+        if (savedCriteria) {
+          this.searchForm?.patchValue(savedCriteria);
+          this.constructSearchCriteria();
+        }
 
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
+        if (savedPagination) {
+          this.pageIndex = savedPagination.pageIndex;
+          this.pageSize = savedPagination.pageSize;
 
-    if (!savedCriteria && !savedPagination) {
-      this.search();
-    }
+          this.performSearch(
+            savedPagination.pageSize,
+            savedPagination.pageIndex,
+            savedPagination.first,
+            savedPagination.after,
+            savedPagination.last,
+            savedPagination.before
+          );
+        }
+
+        if (!savedCriteria && !savedPagination) {
+          this.search();
+        }
+      }
+      else if(actionId==="pending")
+      {
+          const where: any = {and:[
+        { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
+        { storing_order_tank:{ tank_status_cv: { eq: "REPAIR" } }},
+        { status_cv: { in: ["PENDING"] } }
+      ]};
+
+
+        this.lastSearchCriteria = where;
+          this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+            this.updatePageSelection();
+          });
+        console.log("search pending records");
+      }
   }
 
   // export table data in excel file

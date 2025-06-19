@@ -24,7 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -210,6 +210,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   constructor(
+    private route: ActivatedRoute,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -416,31 +417,53 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       this.repairOptionCvList = data;
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+    var actionId= this.route.snapshot.paramMap.get('id');
+    if(!actionId)
+    {
+        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
+        if (savedCriteria) {
+          this.searchForm?.patchValue(savedCriteria);
+          this.constructSearchCriteria();
+        }
+
+        if (savedPagination) {
+          this.pageIndex = savedPagination.pageIndex;
+          this.pageSize = savedPagination.pageSize;
+
+          this.performSearch(
+            savedPagination.pageSize,
+            savedPagination.pageIndex,
+            savedPagination.first,
+            savedPagination.after,
+            savedPagination.last,
+            savedPagination.before
+          );
+        }
+
+        if (!savedCriteria && !savedPagination) {
+          this.search();
+        }
+     }
+     else if(actionId==='pending')
+    {
+       const where ={
+        and:[
+            { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
+            { tank_status_cv: { eq: "REPAIR" } },
+            { or:[ {repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }] }    
+        ]
+       };
+
+
+       this.lastSearchCriteria = where;
+        this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+          this.updatePageSelection();
+        });
+      console.log("search pending records");
     }
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
-
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
-
-    if (!savedCriteria && !savedPagination) {
-      this.search();
-    }
   }
 
   handleCancelSuccess(count: any) {

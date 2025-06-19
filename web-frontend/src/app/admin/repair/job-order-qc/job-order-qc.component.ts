@@ -25,7 +25,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
@@ -169,6 +169,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   ]
 
   constructor(
+    private route: ActivatedRoute,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -212,7 +213,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   public loadData() {
-    this.onFilter();
+   
 
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -233,6 +234,23 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+    var actionId= this.route.snapshot.paramMap.get('id');
+    if(!actionId)
+    {
+       this.onFilter();
+    }
+    else if (actionId==='pending')
+    {
+
+      const where: any = {and:[
+          {storing_order_tank: { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
+          {storing_order_tank: { tank_status_cv: { eq: "REPAIR" } }},
+          { status_cv: { in: ["COMPLETED"] }} 
+        ]};
+      this.lastSearchCriteriaJobOrder = where;
+       this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+    }
   }
 
   showNotification(

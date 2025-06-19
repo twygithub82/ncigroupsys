@@ -5310,7 +5310,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     let where: any = {and:[
       { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
       { tank_status_cv: { eq: "REPAIR" } },
-      { repair: { any: false } }
+      { or:[ {repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }] }
     ]};
     return this.apollo
       .query<any>({

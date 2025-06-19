@@ -8,6 +8,7 @@ import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
+import { RepairDS } from 'app/data-sources/repair';
 
 @Component({
     selector: 'dashboard-repair-qc-waiting',
@@ -23,7 +24,7 @@ import { Utility } from 'app/utilities/utility';
 export class RepairQCWaitingComponent {
 
   topic :string ="SOT_UPDATED";
-  sotDS: StoringOrderTankDS;
+  rpDS: RepairDS;
   msgReceived: string='';
   sot_waiting: string = "-";
   translatedLangText: any = {}
@@ -36,7 +37,7 @@ export class RepairQCWaitingComponent {
     private translate: TranslateService,
     public modulePackageService: ModulePackageService) {
     this.initializeSubscription();
-    this.sotDS= new StoringOrderTankDS(this.apollo);
+    this.rpDS= new RepairDS(this.apollo);
     
   }
 
@@ -54,7 +55,7 @@ export class RepairQCWaitingComponent {
 
   private loadData() {
     this.sot_waiting ="-";
-    this.sotDS.getRepairQCWaitingCount().subscribe(data => {
+    this.rpDS.getRepairQCWaitingCount().subscribe(data => {
       this.sot_waiting = String(data);
     });
   }

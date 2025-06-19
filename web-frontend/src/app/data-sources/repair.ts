@@ -2221,4 +2221,58 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     // Convert the epoch time to a readable date string
     return latestQcDt;
   }
+  
+   getRepairCustomerApprovalWaitingCount(): Observable<number> {
+      this.loadingSubject.next(true);
+      let where: any = {and:[
+        { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
+        { storing_order_tank:{ tank_status_cv: { eq: "REPAIR" } }},
+        { status_cv: { in: ["PENDING"] } }
+      ]};
+      return this.apollo
+        .query<any>({
+          query: GET_REPAIR,
+          variables: { where },
+          fetchPolicy: 'no-cache' // Ensure fresh data
+        })
+        .pipe(
+          map((result) => result.data),
+          catchError(() => of({ soList: [] })),
+          finalize(() => this.loadingSubject.next(false)),
+          map((result) => {
+            const sotList = result.resultList || { nodes: [], totalCount: 0 };
+            return sotList.totalCount;
+          })
+        );
+    }
+
+     getRepairQCWaitingCount(): Observable<number> {
+        this.loadingSubject.next(true);
+        let where: any = {and:[
+          {storing_order_tank: { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
+          {storing_order_tank: { tank_status_cv: { eq: "REPAIR" } }},
+          { status_cv: { in: ["COMPLETED"] }} 
+        ]};
+        return this.apollo
+          .query<any>({
+            query: GET_REPAIR_FOR_QC,
+            variables: { where },
+            fetchPolicy: 'no-cache' // Ensure fresh data
+          })
+          .pipe(
+            map((result) => result.data),
+            catchError(() => of({ soList: [] })),
+            finalize(() => this.loadingSubject.next(false)),
+            map((result) => {
+              const sotList = result.resultList || { nodes: [], totalCount: 0 };
+              return sotList.totalCount;
+            })
+          );
+      }
+
+  
+  
+    
+  
+   
 }

@@ -8,6 +8,7 @@ import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
+import { RepairDS } from 'app/data-sources/repair';
 
 @Component({
     selector: 'dashboard-repair-customer-approval-waiting',
@@ -23,12 +24,12 @@ import { Utility } from 'app/utilities/utility';
 export class RepairCustomerApprovalWaitingComponent {
 
   topic :string ="SOT_UPDATED";
-  sotDS: StoringOrderTankDS;
+  rpDS: RepairDS;
   msgReceived: string='';
   sot_waiting: string = "-";
   translatedLangText: any = {}
    langText = {
-    ESTIMATE_CUSTOMER_APPROVA_PENDING: 'COMMON-FORM.ESTIMATE-CUSTOMER-APPROVAL-PENDING',
+    ESTIMATE_CUSTOMER_APPROVAL_PENDING: 'COMMON-FORM.ESTIMATE-CUSTOMER-APPROVAL-PENDING',
    };
 
   constructor(private notificationService:SingletonNotificationService, 
@@ -36,7 +37,7 @@ export class RepairCustomerApprovalWaitingComponent {
     private translate: TranslateService,
     public modulePackageService: ModulePackageService) {
     this.initializeSubscription();
-    this.sotDS= new StoringOrderTankDS(this.apollo);
+    this.rpDS= new RepairDS(this.apollo);
     
   }
 
@@ -54,7 +55,7 @@ export class RepairCustomerApprovalWaitingComponent {
 
   private loadData() {
     this.sot_waiting ="-";
-    this.sotDS.getRepairCustomerApprovalWaitingCount().subscribe(data => {
+    this.rpDS.getRepairCustomerApprovalWaitingCount().subscribe(data => {
       this.sot_waiting = String(data);
     });
   }

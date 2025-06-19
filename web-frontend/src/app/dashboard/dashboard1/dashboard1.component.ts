@@ -103,7 +103,7 @@ export class Dashboard1Component implements OnInit {
     REPAIR_QC_PENDING: 'COMMON-FORM.REPAIR-QC-PENDING',
     CLEANING_PENDING: 'COMMON-FORM.CLEANING-PENDING',
     RESIDUE_PENDING: 'COMMON-FORM.RESIDUE-PENDING',
-    GATEIO_PENDING:'COMMON-FORM.GATEIO-PENDING',
+    GATEIO:'COMMON-FORM.GATEIO',
   }
   pageTitle = ''
   breadcrumsMiddleList = [
@@ -542,14 +542,14 @@ export class Dashboard1Component implements OnInit {
         urlLink="admin/inventory/in-gate-main";
       break;
       case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
-      
+        urlLink="admin/repair/approval";
       break;
       case this.translatedLangText.REPAIR_ESTIMATE_PENDING: 
-      
-      //  urlLink="admin/repair/estimate";
+        urlLink="admin/repair/estimate";
       break;
       case this.translatedLangText.REPAIR_QC_PENDING: 
-      
+        module={ queryParams: { tabIndex: 'app-job-qc' } };
+        urlLink="admin/repair/job-order";
       break;
       case this.translatedLangText.CLEANING_PENDING: 
        urlLink="admin/cleaning/approval";
@@ -557,9 +557,9 @@ export class Dashboard1Component implements OnInit {
        case this.translatedLangText.RESIDUE_PENDING: 
         urlLink="admin/residue-disposal/estimate-approval/"
       break;
-      case this.translatedLangText.GATEIO_PENDING: 
+      // case this.translatedLangText.GATEIO_PENDING: 
         
-      break;
+      // break;
     }
     if(urlLink)
     {
@@ -573,4 +573,39 @@ export class Dashboard1Component implements OnInit {
     // iconBox.classList.add('icon-clicked');
     // setTimeout(() => iconBox.classList.remove('icon-clicked'), 200);
   }
+
+  AllowToView(cardName: string) {
+    var retval:boolean =false;;
+     switch(cardName)
+    {
+      case this.translatedLangText.IN_GATE_SURVEY_PENDING: 
+       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.GATE_IN_PENDING: 
+       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
+       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.REPAIR_ESTIMATE_PENDING: 
+      retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.REPAIR_QC_PENDING: 
+       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.CLEANING_PENDING: 
+       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+       case this.translatedLangText.RESIDUE_PENDING: 
+        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.GATEIO: 
+        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+    }
+    return retval;
+  }
+
+   
+  
 }
