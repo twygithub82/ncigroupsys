@@ -877,17 +877,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     const reportTitle = this.GetReportTitle();
     const headers = [this.GetReportColumnsHeader()];
-    // const headers = [[
-    //   this.translatedLangText.NO,
-    //   this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
-    //   this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
-    //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
-    //   this.translatedLangText.CLEAN_COST, this.translatedLangText.REPAIR_COST,
-    //   this.translatedLangText.PREINSP_COST, this.translatedLangText.LOLO_COST,
-    //   this.translatedLangText.DAYS, this.translatedLangText.STORAGE_COST,
-    //   this.translatedLangText.STEAM_COST, this.translatedLangText.RESIDUE_COST,
-    //   this.translatedLangText.GATEIO_S, this.translatedLangText.TOTAL
-    // ]];
+   
 
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {

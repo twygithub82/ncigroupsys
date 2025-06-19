@@ -866,7 +866,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       ...(showPreinspectSurcharge?[this.translatedLangText.PREINSPECTION]:[]),
       ...(showLoloSurcharge? [  this.translatedLangText.LOLO]:[]),
       ...(showStorageSurcharge? [this.translatedLangText.STORAGE]:[]),
-      ...(showGateSurcharge? [this.translatedLangText.IN_OUT]:[]),
+      ...(showGateSurcharge? [this.translatedLangText.GATE_SURCHARGE]:[]),
       ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
       ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
       ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),

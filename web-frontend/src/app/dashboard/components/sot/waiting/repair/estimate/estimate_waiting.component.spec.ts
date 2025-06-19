@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { GateInWaitingComponent } from "./gatein_waiting.component";
-describe("GateInWaitingComponent", () => {
-  let component: GateInWaitingComponent;
-  let fixture: ComponentFixture<GateInWaitingComponent>;
+import { RepairEstimateWaitingComponent } from "./estimate_waiting.component";
+describe("RepairEstimateWaitingComponent", () => {
+  let component: RepairEstimateWaitingComponent;
+  let fixture: ComponentFixture<RepairEstimateWaitingComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [GateInWaitingComponent],
+    imports: [RepairEstimateWaitingComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(GateInWaitingComponent);
+    fixture = TestBed.createComponent(RepairEstimateWaitingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

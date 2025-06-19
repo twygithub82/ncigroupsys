@@ -8,6 +8,7 @@ import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
+import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
     selector: 'dashboard-cleaning-waiting',
@@ -23,7 +24,7 @@ import { Utility } from 'app/utilities/utility';
 export class CleaningWaitingComponent {
 
   topic :string ="SOT_UPDATED";
-  sotDS: StoringOrderTankDS;
+  clnDS: InGateCleaningDS;
   msgReceived: string='';
   sot_waiting: string = "-";
   translatedLangText: any = {}
@@ -36,7 +37,7 @@ export class CleaningWaitingComponent {
     private translate: TranslateService,
     public modulePackageService: ModulePackageService) {
     this.initializeSubscription();
-    this.sotDS= new StoringOrderTankDS(this.apollo);
+    this.clnDS= new InGateCleaningDS(this.apollo);
     
   }
 
@@ -54,7 +55,7 @@ export class CleaningWaitingComponent {
 
   private loadData() {
     this.sot_waiting ="-";
-    this.sotDS.getInCompleteCleaningCount().subscribe(data => {
+    this.clnDS.getInCompleteCleaningCount().subscribe(data => {
       this.sot_waiting = String(data);
     });
   }

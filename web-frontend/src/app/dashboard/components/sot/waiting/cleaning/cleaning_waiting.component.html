@@ -2,13 +2,13 @@
   <i class="material-icons bg-blue card1-icon"> water_drop</i>
   <!-- <i class="material-icons bg-orange card1-icon">people</i> -->
   <h5 class="col-blue font-bold">{{translatedLangText.CLEANING_PENDING}}</h5>
-  @if (sotDS.loading$ | async) {
+  @if (clnDS.loading$ | async) {
   <div class="tbl-spinner">
     <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
     </mat-progress-spinner>
   </div>
   }
-  @if (!(sotDS.loading$ | async)) {
+  @if (!(clnDS.loading$ | async)) {
   <h2>{{this.sot_waiting}}</h2>
   }
 </div>
