@@ -45,6 +45,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { InGateDS } from 'app/data-sources/in-gate';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-out-gate-details',
@@ -79,6 +80,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
     MatTabsModule,
     MatGridListModule,
     MatRadioModule,
+    GlobalMaxCharDirective
   ]
 })
 export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {

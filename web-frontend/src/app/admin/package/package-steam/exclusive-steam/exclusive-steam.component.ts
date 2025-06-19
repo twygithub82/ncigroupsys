@@ -229,7 +229,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     SEARCH: 'COMMON-FORM.SEARCH',
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
     HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
-    CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
   }
 
   @ViewChild('custInput', { static: true })

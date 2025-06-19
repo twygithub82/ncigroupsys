@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -17,19 +17,14 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
-import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { InGateDS, InGateItem } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { PackageLabourItem } from 'app/data-sources/package-labour';
 import { SteamItem } from 'app/data-sources/steam';
-import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 
 export interface DialogData {

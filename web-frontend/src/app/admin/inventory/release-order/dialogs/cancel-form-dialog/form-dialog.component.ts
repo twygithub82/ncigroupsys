@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ReleaseOrderItem } from 'app/data-sources/release-order';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 export interface DialogData {
   action?: string;
@@ -36,6 +37,7 @@ export interface DialogData {
     FormsModule,
     ReactiveFormsModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
 })
 export class CancelFormDialogComponent {

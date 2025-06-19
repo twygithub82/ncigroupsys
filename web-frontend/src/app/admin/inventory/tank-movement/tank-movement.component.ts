@@ -71,7 +71,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -124,8 +124,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     YARD: 'COMMON-FORM.YARD',
-    CUSTOMERS_SELECTED: 'COMMON-FORM.CUSTOMERS-SELECTED',
-    CARGO_SELECTED: 'COMMON-FORM.CARGO-SELECTED',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    CARGO_SELECTED: 'COMMON-FORM.SELECTED',
   }
 
   availableProcessStatus: string[] = [

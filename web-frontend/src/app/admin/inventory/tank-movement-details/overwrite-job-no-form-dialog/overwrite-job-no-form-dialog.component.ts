@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { provideNgxMask } from 'ngx-mask';
 
 
@@ -52,6 +53,7 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
 })
 export class OverwriteJobNoFormDialogComponent {

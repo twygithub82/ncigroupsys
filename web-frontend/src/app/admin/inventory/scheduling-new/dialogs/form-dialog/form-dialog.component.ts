@@ -27,6 +27,7 @@ import { SchedulingDS, SchedulingGO, SchedulingItem } from 'app/data-sources/sch
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -70,6 +71,7 @@ export interface DialogData {
     MatCardModule,
     MatTooltipModule,
     TlxFormFieldComponent,
+    GlobalMaxCharDirective
   ],
 })
 export class FormDialogComponent {

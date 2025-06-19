@@ -59,6 +59,7 @@ import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank-no-dialog.component';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-in-gate',
@@ -94,7 +95,8 @@ import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank
     MatRadioModule,
     PreventNonNumericDirective,
     MatButtonToggleModule,
-    ExclusiveToggleDirective
+    ExclusiveToggleDirective,
+    GlobalMaxCharDirective
   ],
   providers: [
     {

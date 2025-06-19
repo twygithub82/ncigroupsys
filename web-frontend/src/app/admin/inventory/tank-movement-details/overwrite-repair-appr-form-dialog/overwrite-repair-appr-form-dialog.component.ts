@@ -38,6 +38,7 @@ import { provideNgxMask } from 'ngx-mask';
 
 import { debounceTime, startWith, tap } from 'rxjs';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 export interface DialogData {
   action?: string;
@@ -86,8 +87,9 @@ export interface DialogData {
     TlxFormFieldComponent,
     PreventNonNumericDirective,
     MatTooltipModule,
-    NumericTextDirective
+    NumericTextDirective,
     // PreventNonNumDirective,
+    GlobalMaxCharDirective
   ],
 })
 export class OverwriteRepairApprovalFormDialogComponent {

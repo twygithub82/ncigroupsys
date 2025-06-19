@@ -242,7 +242,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     ADD: 'COMMON-FORM.ADD',
     GROUP_ADJUSTMENT: 'COMMON-FORM.GROUP-ADJUSTMENT',
     MULTIPLE: 'COMMON-FORM.MULTIPLE',
-    PART_SELECTED: 'COMMON-FORM.PART-SELECTED',
+    PART_SELECTED: 'COMMON-FORM.SELECTED',
   }
 
   @ViewChild('partInput', { static: true })
@@ -966,6 +966,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     return retval;
   }
+
 
   // removeSelectedParts(): void {
   //   this.selectedParts = [];

@@ -45,6 +45,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -77,6 +78,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

@@ -23,6 +23,7 @@ import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -67,6 +68,7 @@ export interface DialogData {
     MatDividerModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    GlobalMaxCharDirective
   ],
 })
 export class OverwriteCleaningApprovalFormDialogComponent {

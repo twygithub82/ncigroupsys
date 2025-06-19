@@ -30,22 +30,23 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { BookingDS, BookingGO, BookingItem } from 'app/data-sources/booking';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-booking-new',
@@ -78,6 +79,7 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
     MatDividerModule,
     MatCardModule,
     PreventNonNumericDirective,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

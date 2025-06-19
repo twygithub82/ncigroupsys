@@ -18,6 +18,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { BillingSOTItem } from 'app/data-sources/billing';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { BOOLEAN_YES_NO, Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -56,6 +57,7 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
 })
 export class OverwriteDepotCostFormDialogComponent {

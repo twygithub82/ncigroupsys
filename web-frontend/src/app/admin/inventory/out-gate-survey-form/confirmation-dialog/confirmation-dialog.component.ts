@@ -16,6 +16,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { provideNgxMask } from 'ngx-mask';
 
 

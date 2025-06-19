@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
@@ -57,6 +58,7 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
 })
 export class OverwriteCleanStatusFormDialogComponent {

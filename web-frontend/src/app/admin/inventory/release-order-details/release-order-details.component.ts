@@ -48,6 +48,7 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-release-order-details',
@@ -82,6 +83,7 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

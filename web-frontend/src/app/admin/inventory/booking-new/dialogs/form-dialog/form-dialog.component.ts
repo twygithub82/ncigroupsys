@@ -23,6 +23,7 @@ import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
@@ -64,6 +65,7 @@ export interface DialogData {
     MatDividerModule,
     MatTooltipModule,
     TlxFormFieldComponent,
+    GlobalMaxCharDirective
   ],
 })
 export class FormDialogComponent {

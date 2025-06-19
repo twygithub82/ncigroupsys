@@ -136,7 +136,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     DELETE: 'COMMON-FORM.DELETE',
     SEARCH: "COMMON-FORM.SEARCH",
-    CARGO_SELECTED: 'COMMON-FORM.CARGO-SELECTED',
+    CARGO_SELECTED: 'COMMON-FORM.SELECTED',
   }
 
   @ViewChild('custInput', { static: true })

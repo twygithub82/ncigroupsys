@@ -12,18 +12,18 @@ export interface DialogData {
 }
 
 @Component({
-    selector: 'app-release-order-details-delete',
-    templateUrl: './delete.component.html',
-    styleUrls: ['./delete.component.scss'],
-    standalone: true,
-    imports: [
-        MatDialogTitle,
-        MatDialogContent,
-        MatDialogActions,
-        MatButtonModule,
-        MatDialogClose,
-        TranslateModule,
-    ],
+  selector: 'app-release-order-details-delete',
+  templateUrl: './delete.component.html',
+  styleUrls: ['./delete.component.scss'],
+  standalone: true,
+  imports: [
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatButtonModule,
+    MatDialogClose,
+    TranslateModule,
+  ],
 })
 export class DeleteDialogComponent {
   roSot: ReleaseOrderSotUpdateItem;

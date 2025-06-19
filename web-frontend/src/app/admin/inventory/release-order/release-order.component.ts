@@ -40,6 +40,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-release-order',
@@ -71,6 +72,7 @@ import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-p
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

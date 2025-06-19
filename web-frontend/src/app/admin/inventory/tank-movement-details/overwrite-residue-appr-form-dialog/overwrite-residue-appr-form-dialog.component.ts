@@ -27,6 +27,7 @@ import { ResidueItem } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
@@ -75,7 +76,8 @@ export interface DialogData {
     MatCardModule,
     MatProgressSpinnerModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    GlobalMaxCharDirective
   ],
 })
 export class OverwriteResidueApprovalFormDialogComponent {

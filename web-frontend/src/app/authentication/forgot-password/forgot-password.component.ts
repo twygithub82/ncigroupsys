@@ -12,6 +12,8 @@ import { AuthService } from '@core/service/auth.service';
 import { finalize } from 'rxjs';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { environment } from 'environments/environment';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
@@ -25,6 +27,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatIconModule,
     MatButtonModule,
     RouterLink,
+    MatDividerModule,
   ],
 })
 export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -39,7 +42,8 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     LOGIN: 'COMMON-FORM.LOGIN',
     EMAIL_NOT_FOUND: 'COMMON-FORM.EMAIL-NOT-FOUND',
     SOMETHING_WENT_WRONG_TRY_AGAIN_LATER: 'COMMON-FORM.SOMETHING-WENT-WRONG-TRY-AGAIN-LATER',
-    EMAIL_SENT: 'COMMON-FORM.EMAIL-SENT'
+    EMAIL_SENT: 'COMMON-FORM.EMAIL-SENT',
+    AUTH_CAPTION: 'LANDING-SIGNIN.AUTH-CAPTION'
   }
 
   authForm!: UntypedFormGroup;
@@ -109,5 +113,9 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
           });
       }
     }
+  }
+
+  get caption() {
+    return environment.companyNameShort;
   }
 }

@@ -30,7 +30,7 @@ import { Apollo } from 'apollo-angular';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility } from 'app/utilities/utility';
 
 @Component({
   selector: 'app-in-gate',

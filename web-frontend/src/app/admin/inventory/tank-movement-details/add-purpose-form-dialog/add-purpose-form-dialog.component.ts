@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -55,7 +56,8 @@ export interface DialogData {
     MatTableModule,
     MatDividerModule,
     MatCardModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    GlobalMaxCharDirective
   ],
 })
 export class AddPurposeFormDialogComponent {

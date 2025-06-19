@@ -94,6 +94,7 @@ import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/ren
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -128,6 +129,7 @@ import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-f
     MatStepperModule,
     MatRadioModule,
     MatTabsModule,
+    GlobalMaxCharDirective
   ]
 })
 export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
