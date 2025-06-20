@@ -21,7 +21,7 @@ import { TankItem } from './tank';
 import { TankInfoItem } from './tank-info';
 import { TariffCleaningItem } from './tariff-cleaning';
 import { TransferItem } from './transfer';
-import { Utility } from 'app/utilities/utility';
+import { Utility,TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -173,6 +173,15 @@ export interface StoringOrderResult {
 const GET_STORING_ORDER_TANKS_COUNT = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
     sotList: queryStoringOrderTankCount(where: $where) {
+      nodes {
+      takein_job_no
+      tank_no
+      steaming {
+      
+        estimate_dt
+        estimate_no
+        }
+      }
       totalCount
     }
   }
@@ -5389,6 +5398,62 @@ getTotalGateInTodayCount(): Observable<number> {
      // {or:[{ out_gate: { some:{eir_dt: { neq: 0 } }}}, { out_gate: { some:{eir_dt: { neq: null } }}}]},
      //{ out_gate:{some:{eir_status_cv:{in:['PUBLISHED']}}}},
       { tank_status_cv: { eq: "RELEASED" } }
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
+  getTotalTankInYardCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    var starDt=Utility.convertDate(new Date());
+    var endDt=Utility.convertDate(new Date(),true,true);
+    let where: any = {and:[
+      {or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+      { tank_status_cv: { in: TANK_STATUS_IN_YARD  } }
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
+  getTotalTankInSteamingCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    var starDt=Utility.convertDate(new Date());
+    var endDt=Utility.convertDate(new Date(),true,true);
+    let where: any = {and:[
+      { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+      { purpose_steam:{eq:true}},
+      { tank_status_cv: { eq: 'STEAM'  } },
+      { steaming: { some: {and: [
+            { status_cv: { in: ["JOB_IN_PROGRESS"] } },
+            { estimate_no: { startsWith: "SE" } }
+          ]}}
+      }
     ]};
     return this.apollo
       .query<any>({

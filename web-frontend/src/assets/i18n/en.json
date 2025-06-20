@@ -1313,6 +1313,7 @@
     "BY-HOUR": "By Hour",
     "GATE-IN-PENDING": "Gate In: Pending",
     "IN-GATE-SURVEY-PENDING": "In Gate Survey: Pending",
+    "OUT-GATE-SURVEY-PENDING": "Out Gate Survey: Pending",
     "CLEANING-PENDING": "Cleaning: Pending",
     "RESIDUE-PENDING": "Residue: Pending",
     "STEAMING-QUOTATION": "STEAMING QUOTATION",
@@ -1327,7 +1328,9 @@
     "REPAIR-QC-PENDING": "Repair QC: Pending",
     "REPAIR-QC": "Repair QC",
     "GATEIO-PENDING": "GateIO: Pending",
-    "ACTION-SUCCESS": "Action Successful"
+    "ACTION-SUCCESS": "Action Successful",
+    "TANK-IN-YARD":"Tank In Yard",
+    "TANK-IN-STEAMING":"Tank In Steaming"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

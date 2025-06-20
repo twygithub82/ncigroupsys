@@ -23,6 +23,13 @@
             </div>
           </div>
         }
+         @if (AllowToView(translatedLangText.OUT_GATE_SURVEY_PENDING)) {
+          <div class="col-md-6 col-xl-3 " >
+            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.OUT_GATE_SURVEY_PENDING)">
+             <dashboard-outgate-survey-waiting/>
+            </div>
+          </div>
+        }
         @if (AllowToView(translatedLangText.GATE_IN_PENDING)) {
           <div class="col-md-6 col-xl-3">
             <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.GATE_IN_PENDING)">
@@ -70,6 +77,23 @@
           <div class="col-md-6 col-xl-3">
             <div class="card info-card " >
              <dashboard-gateio/>
+            </div>
+          </div>
+             }
+        @if (AllowToView(translatedLangText.TANK_IN_YARD)) {
+           
+          <div class="col-md-6 col-xl-3">
+            <div class="card info-card " >
+             <dashboard-tank-in-yard/>
+            </div>
+          </div>
+             }
+
+          @if (AllowToView(translatedLangText.TANK_IN_STEAMING)) {
+           
+          <div class="col-md-6 col-xl-3">
+            <div class="card info-card " >
+             <dashboard-tank-in-steaming/>
             </div>
           </div>
              }

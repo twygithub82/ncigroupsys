@@ -454,6 +454,15 @@ export const PUBLISH_OUT_GATE = gql`
   }
 `;
 
+
+export const GET_OUT_GATE_YET_TO_SURVEY_COUNT = gql`
+ query queryOutGateCount($where: out_gateFilterInput) {
+    outGates: queryOutGates(where: $where) {
+      totalCount
+  }
+}
+`;
+
 export class OutGateDS extends BaseDataSource<OutGateItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -615,6 +624,30 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
   getOutGateItem(out_gates: OutGateItem[] | undefined): OutGateItem | undefined {
     return out_gates?.find(og => og.eir_status_cv !== 'CANCELED' && !(og.delete_dt));
   }
+
+   getOutGateCountForYetToSurvey(): Observable<number> {
+      this.loadingSubject.next(true);
+      let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
+      return this.apollo
+        .query<any>({
+          query: GET_OUT_GATE_YET_TO_SURVEY_COUNT,
+          variables: { where },
+          fetchPolicy: 'no-cache' // Ensure fresh data
+        })
+        .pipe(
+          map((result) => result.data),
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            return of(0); // Return an empty array on error
+          }),
+          finalize(() => this.loadingSubject.next(false)),
+          map((result) => {
+            const retResult = result.outGates || { nodes: [], totalCount: 0 };
+  
+            return retResult.totalCount;
+          })
+        );
+    }
 }
 
 

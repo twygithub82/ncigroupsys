@@ -84,6 +84,14 @@ export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
 }
 `;
 
+export const GET_OUT_GATE_YET_TO_SURVEY_COUNT = gql`
+ query queryOutGateCount($where: out_gateFilterInput) {
+    inGates: queryOutGates(where: $where) {
+      totalCount
+  }
+}
+`;
+
 export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
   query queryInGateForSurvey($where: in_gateFilterInput, $order: [in_gateSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     inGates: queryInGates(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -510,6 +518,30 @@ export class InGateDS extends BaseDataSource<InGateItem> {
     return this.apollo
       .query<any>({
         query: GET_IN_GATE_YET_TO_SURVEY_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const retResult = result.inGates || { nodes: [], totalCount: 0 };
+
+          return retResult.totalCount;
+        })
+      );
+  }
+
+   getOutGateCountForYetToSurvey(): Observable<number> {
+    this.loadingSubject.next(true);
+    let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
+    return this.apollo
+      .query<any>({
+        query: GET_OUT_GATE_YET_TO_SURVEY_COUNT,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

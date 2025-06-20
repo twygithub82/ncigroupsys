@@ -26,14 +26,17 @@ import { debounceTime, take } from 'rxjs/operators';
 import {TestComponent} from '../components/test/test.component';
 import {Test1Component} from '../components/test1/test1.component';
 import { GateInWaitingComponent } from '../components/sot/waiting/gate_in/gatein_waiting.component';
-import {InGateSurveyWaitingComponent} from '../components/sot/notsurvey/in_gate_survey_waiting.component';
+import {InGateSurveyWaitingComponent} from '../components/sot/notsurvey/in_gate/in_gate_survey_waiting.component';
 import {CleaningWaitingComponent} from '../components/sot/waiting/cleaning/cleaning_waiting.component';
 import { ResidueWaitingComponent } from '../components/sot/waiting/residue/residue_waiting.component';
 import { RepairEstimateWaitingComponent } from '../components/sot/waiting/repair/estimate/estimate_waiting.component';
 import { RepairCustomerApprovalWaitingComponent } from '../components/sot/waiting/repair/customer_approval/customer_approval_waiting.component';
 import {ConsolidatedWaitingComponent} from '../components/sot/waiting/consolidated/consolidated_waiting.component';
 import {RepairQCWaitingComponent} from '../components/sot/waiting/repair/qc_incomplete/qc_waiting.component';
-import {DashboardGateIOComponent} from '../components/gate/gateio.component';
+import {DashboardGateIOComponent} from '../components/gate/io/gateio.component';
+import { TankInYardComponent } from '../components/sot/in-yard/tank-in-yard.component';
+import { TankInSteamingComponent } from '../components/sot/steaming/tank-in-steaming.component';
+import { OutGateSurveyWaitingComponent } from '../components/sot/notsurvey/out_gate/out_gate_survey_waiting.component';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -80,6 +83,7 @@ export type ChartOptions = {
     TestComponent,
     Test1Component,
     InGateSurveyWaitingComponent,
+    OutGateSurveyWaitingComponent,
     GateInWaitingComponent,
     CleaningWaitingComponent,
     ResidueWaitingComponent,
@@ -87,7 +91,9 @@ export type ChartOptions = {
     RepairCustomerApprovalWaitingComponent,
     ConsolidatedWaitingComponent,
     RepairQCWaitingComponent,
-    DashboardGateIOComponent
+    DashboardGateIOComponent,
+    TankInYardComponent,
+    TankInSteamingComponent
   ],
 })
 
@@ -104,6 +110,7 @@ export class Dashboard1Component implements OnInit {
     CLEANING_PENDING: 'COMMON-FORM.CLEANING-PENDING',
     RESIDUE_PENDING: 'COMMON-FORM.RESIDUE-PENDING',
     GATEIO:'COMMON-FORM.GATEIO',
+    TANK_IN_YARD:'COMMON-FORM.TANK-IN-YARD',
   }
   pageTitle = ''
   breadcrumsMiddleList = [
@@ -600,6 +607,12 @@ export class Dashboard1Component implements OnInit {
         retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.GATEIO: 
+        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.TANK_IN_YARD: 
+        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.TANK_IN_STEAMING: 
         retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
       break;
     }

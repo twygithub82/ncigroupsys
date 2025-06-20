@@ -1,0 +1,18 @@
+ <div class="info-box8">
+    <!-- <i class="material-icons bg-black card1-icon">assessment</i> -->
+    <i class="material-icons bg-teal card1-icon far fa-calendar-check"></i>
+    <h5 class="col-teal font-bold"> {{translatedLangText.OUT_GATE_SURVEY_PENDING}}</h5>
+    @if (ogDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
+    @if (!(ogDS.loading$ | async)) {
+    <h2>{{this.out_gate_yet_to_survey}}</h2>
+    }
+    <!-- <div>
+    <i class="material-icons col-red float-start me-1 ms-1">trending_down</i>
+    <p class="float-start m-0"><span class="col-orange">10%</span> Decrease
+  </div> -->
+  </div>
