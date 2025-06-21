@@ -434,7 +434,7 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.DATE}}</mat-label>
-                                <input matInput formControlName="test_dt" [matDatepicker]="test_dt_picker" required>
+                                <input matInput formControlName="test_dt" [matDatepicker]="test_dt_picker" [max]="this.getMaxDate()" required>
                                 <mat-datepicker-toggle matSuffix [for]="test_dt_picker"></mat-datepicker-toggle>
                                 <mat-datepicker #test_dt_picker></mat-datepicker>
                                 <!-- <mat-datepicker-toggle matSuffix [for]="test_dt_picker"></mat-datepicker-toggle>

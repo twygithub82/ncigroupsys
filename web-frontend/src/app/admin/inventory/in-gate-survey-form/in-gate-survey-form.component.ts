@@ -2339,4 +2339,8 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   validateAllControlsRaw(form: UntypedFormGroup): boolean {
     return BusinessLogicUtil.validateAllControlsRaw(form);
   }
+
+    getMaxDate() {
+    return new Date();
+  }
 }
