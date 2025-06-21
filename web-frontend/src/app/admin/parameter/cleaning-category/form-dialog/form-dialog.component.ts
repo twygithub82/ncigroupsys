@@ -22,17 +22,14 @@ import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/clean
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: CleaningCategoryItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -61,7 +58,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    // PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent {
@@ -224,7 +222,7 @@ export class FormDialogComponent {
   createCleaningCategory(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: this.selectedItem,
-      adjusted_cost: this.selectedItem.cost?.toFixed(2),
+      adjusted_cost: Utility.convertNumber(this.selectedItem.cost, 2),
       name: this.selectedItem.name,
       description: this.selectedItem.description,
       remarks: ['']
