@@ -52,7 +52,6 @@
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.NAME}}</mat-label>
                           <mat-chip-grid #name_chipGrid>
-
                             @if(this.selectedNames.length>0){
                             <mat-chip-row color="primary" (click)="name_removeAllSelected()">
                               <span> {{name_getSelectedDisplay()}}</span>
@@ -61,7 +60,7 @@
                               </button>
                             </mat-chip-row>
                             }
-                            <input #nameInput [matAutocomplete]="processName" formControlName="name"
+                            <input #nameInput [matAutocomplete]="processName" formControlName="name" 
                               [matChipInputFor]="name_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                               (matChipInputTokenEnd)="name_add($event)">
                             <mat-autocomplete #processName="matAutocomplete" (optionSelected)="name_selected($event)">
