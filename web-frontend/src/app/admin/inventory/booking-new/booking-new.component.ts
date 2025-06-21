@@ -329,20 +329,6 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
   }
 
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
-  }
-
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const selectedItems = this.selectedItemsPerPage[this.pageIndex] || new Set<string>();

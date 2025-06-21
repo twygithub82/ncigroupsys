@@ -323,7 +323,8 @@
     "REMEMBER": "Remember me",
     "FORGOTPASSWORD": "Forgot password?",
     "LOGIN": "Login",
-    "AUTH-CAPTION": "Software Platform by"
+    "AUTH-CAPTION": "Software Platform by",
+    "FAILED-TO-LOGIN": "Incorrect Password to login"
   },
   "COMMON-FORM": {
     "TARIFF-CLEANING": "Cleaning",
@@ -1021,7 +1022,7 @@
     "SUMMARY": "Summary",
     "RENEW": "Renew",
     "LOGOUT": "Logout",
-    "CONFIRM-LOGOUT": "Logout Confirmation",
+    "CONFIRM-LOGOUT": "Logout?",
     "RELEASE-BOOKING": "Release Booking",
     "CLEANING-COST": "Cleaning Cost",
     "BUFFER-COST": "Buffer Cost",
@@ -1315,7 +1316,7 @@
     "IN-GATE-SURVEY-PENDING": "In Gate Survey: Pending",
     "OUT-GATE-SURVEY-PENDING": "Out Gate Survey: Pending",
     "CLEANING-PENDING": "Cleaning: Pending",
-    "STEAMING-PENDING":"Steaming: Pending",
+    "STEAMING-PENDING": "Steaming: Pending",
     "RESIDUE-PENDING": "Residue: Pending",
     "STEAMING-QUOTATION": "STEAMING QUOTATION",
     "RESIDUE-QUOTATION": "RESIDUE DISPOSAL QUOTATION",
@@ -1330,10 +1331,12 @@
     "REPAIR-QC": "Repair QC",
     "GATEIO-PENDING": "GateIO: Pending",
     "ACTION-SUCCESS": "Action Successful",
-    "TANK-IN-YARD":"Tank In Yard",
-    "TANK-IN-STEAMING":"Tank In Steaming",
-    "TANK-PERIODIC-TEST-DUE":"Periodic Test Due",
-    "CLEANING-KIV": "KIV Cleaning"
+    "TANK-IN-YARD": "Tank In Yard",
+    "TANK-IN-STEAMING": "Tank In Steaming",
+    "TANK-PERIODIC-TEST-DUE": "Periodic Test Due",
+    "CLEANING-KIV": "KIV Cleaning",
+    "ERROR": "Error",
+    "FORGOT-PASSWORD-CAPTION": "Please enter the email address you would like to reset the password."
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

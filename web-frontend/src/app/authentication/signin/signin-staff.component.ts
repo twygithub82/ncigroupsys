@@ -1,3 +1,4 @@
+import { Direction } from '@angular/cdk/bidi';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,10 +8,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
 import { environment } from 'environments/environment';
 @Component({
   selector: 'app-signin-staff',
@@ -37,19 +42,22 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
   error = '';
   hide = true;
 
-  SOFTWARE_NAME = 'SOFTWARE-NAME.TEXT'
-  SIGNIN = 'LANDING-SIGNIN.SIGNIN'
-  WELCOME = 'LANDING-SIGNIN.WELCOME'
-  ADMIN = 'LANDING-SIGNIN.ADMIN'
-  PORTAL = 'LANDING-SIGNIN.PORTAL'
-  USERNAME = 'LANDING-SIGNIN.USERNAME'
-  PASSWORD = 'LANDING-SIGNIN.PASSWORD'
-  REMEMBER = 'LANDING-SIGNIN.REMEMBER'
-  FORGOTPASSWORD = 'LANDING-SIGNIN.FORGOTPASSWORD'
-  LOGIN = 'LANDING-SIGNIN.LOGIN'
-  AUTH_CAPTION = 'LANDING-SIGNIN.AUTH-CAPTION'
-
-  PROCEDURE_REQUIRED = 'COMMON-FORM.IS-REQUIRED'
+  translatedLangText: any = {};
+  langText = {
+    SOFTWARE_NAME: 'SOFTWARE-NAME.TEXT',
+    SIGNIN: 'LANDING-SIGNIN.SIGNIN',
+    WELCOME: 'LANDING-SIGNIN.WELCOME',
+    ADMIN: 'LANDING-SIGNIN.ADMIN',
+    PORTAL: 'LANDING-SIGNIN.PORTAL',
+    USERNAME: 'LANDING-SIGNIN.USERNAME',
+    PASSWORD: 'LANDING-SIGNIN.PASSWORD',
+    REMEMBER: 'LANDING-SIGNIN.REMEMBER',
+    FORGOTPASSWORD: 'LANDING-SIGNIN.FORGOTPASSWORD',
+    LOGIN: 'LANDING-SIGNIN.LOGIN',
+    AUTH_CAPTION: 'LANDING-SIGNIN.AUTH-CAPTION',
+    PROCEDURE_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
+    FAILED_TO_LOGIN: 'LANDING-SIGNIN.FAILED-TO-LOGIN'
+  }
 
   rememberMe = false;
 
@@ -58,9 +66,12 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private translate: TranslateService,
   ) {
     super();
+    this.translateLangText();
   }
 
   ngOnInit() {
@@ -83,6 +94,12 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     this.dialog.closeAll();
   }
 
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
+    });
+  }
+
   get f() {
     return this.authForm.controls;
   }
@@ -103,12 +120,17 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
             if (token) {
               this.router.navigate(['/']);
             } else {
-              this.error = 'Invalid Login';
+              // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
+              // this.error = 'Invalid Login';
+              this.errorDialog();
             }
           },
           error: (error) => {
-            console.log(error);
-            this.error = 'Error login';
+            // this.error = 'Error login';
+            const username = error?.error?.username;
+            console.log(username)
+            this.errorDialog();
+            // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
             this.submitted = false;
             this.loading = false;
           },
@@ -118,5 +140,23 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
 
   get caption() {
     return environment.companyNameShort;
+  }
+
+  errorDialog() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      data: {
+        messageText: this.translatedLangText.FAILED_TO_LOGIN,
+        action: 'error',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
 }
