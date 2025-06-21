@@ -5535,5 +5535,36 @@ getTotalGateInTodayCount(): Observable<number> {
       );
   }
 
+  getTotalReleaseOrderPendingCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    const today = new Date();
+    const pastLimit = new Date(today);
+   
+    pastLimit.setDate(pastLimit.getDate() + 3); // 0.5 year = 6 months
+    var dueDt=Utility.convertDate(pastLimit,true,true);
+    
+    let where: any = {and:[
+      { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+      {release_order_sot: { some: { release_order: { release_dt: {lte:dueDt } } } } }
+      
+     
+    ]};
+    return this.apollo
+      .query<any>({
+        query: GET_STORING_ORDER_TANKS_COUNT,
+        variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.sotList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
+
 
 }

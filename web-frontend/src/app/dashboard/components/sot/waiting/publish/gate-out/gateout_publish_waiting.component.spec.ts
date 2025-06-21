@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { CleaningKIVComponent } from "./cleaning_kiv.component";
-describe("CleaningKIVComponent", () => {
-  let component: CleaningKIVComponent;
-  let fixture: ComponentFixture<CleaningKIVComponent>;
+import { GateOutPublishWaitingComponent } from "./gateout_publish_waiting.component";
+describe("GateOutPublishWaitingComponent", () => {
+  let component: GateOutPublishWaitingComponent;
+  let fixture: ComponentFixture<GateOutPublishWaitingComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [CleaningKIVComponent],
+    imports: [GateOutPublishWaitingComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(CleaningKIVComponent);
+    fixture = TestBed.createComponent(GateOutPublishWaitingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BreadcrumbComponent } from 'app/shared/components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {SingletonNotificationService,MessageItem} from 'app/core/service/singletonNotification.service';
+import {SingletonNotificationService,MessageItem} from '@core/service/singletonNotification.service';
 import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ModulePackageService } from 'app/services/module-package.service';
@@ -72,7 +72,7 @@ export class InGateSurveyWaitingComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
-    if(message.event_name==="2020")
+    if(message.event_id==="2020")
     {
       var changedValue=(message.payload?.Pending_Cleaning_Count||-1);
       if(changedValue>=0)

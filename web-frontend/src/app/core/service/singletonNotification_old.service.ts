@@ -4,7 +4,6 @@ import gql from 'graphql-tag';
 import { BaseDataSource } from 'app/data-sources/base-ds';
 import { catchError, finalize, map, Observable, of, Subscription } from 'rxjs';
 import { ApolloError } from '@apollo/client/errors';
-
 const NEW_MESSAGES_R1_SUBSCRIPTION = gql`
   subscription {
     messageReceived_r1 {
@@ -32,10 +31,11 @@ const NEW_MESSAGES_SUBSCRIPTION = gql`
 @Injectable({
   providedIn: 'root',
 })
-export class SingletonNotificationService extends BaseDataSource<MessageItem> {
+
+export class SingletonNotificationService_old extends BaseDataSource<MessageItem> {
   private emitterMap = new Map<string, EventEmitter<MessageItem>>();
   subscribers: Array<{
-    topics: string[];  // Changed from single topic to array of topics
+    topic: string;
     event: Subscriber;
   }> = [];
 
@@ -44,68 +44,42 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
     this.subscribeToMessages();
   }
 
-  public subscribe(topics: string | string[], handler: (message: MessageItem) => void): Subscription {
-    // Normalize to array if single topic provided
-    const topicArray = Array.isArray(topics) ? topics : [topics];
-    
-    // Create or get emitters for each topic
-    const emitters: EventEmitter<MessageItem>[] = [];
-    
-    topicArray.forEach(topic => {
-      let emitter = this.emitterMap.get(topic);
-      if (!emitter) {
-        emitter = new EventEmitter<MessageItem>();
-        this.emitterMap.set(topic, emitter);
-      }
-      emitters.push(emitter);
-    });
+  public subscribe(topic: string, handler: (message: MessageItem) => void): Subscription {
+    let emitter = this.emitterMap.get(topic);
+    if (!emitter) {
+      emitter = new EventEmitter<MessageItem>();
+      this.emitterMap.set(topic, emitter);
+    }
 
-    // Check for existing subscription with the exact same topics
     const existing = this.subscribers.find(
-      sub => this.arraysEqual(sub.topics, topicArray) && !sub.event.closed
+      sub => sub.topic === topic && sub.event.emitter === emitter && !sub.event.closed
     );
 
+    // Optional: avoid duplicate handlers for same topic
     if (existing) {
-      console.warn(`[NotificationService] Duplicate subscription ignored for topics: ${topicArray.join(', ')}`);
-      const subscriptions = emitters.map(emitter => 
-        emitter.subscribe({ next: handler })
-      );
-      
+      console.warn(`[NotificationService] Duplicate subscription ignored for topic: ${topic}`);
+      const subscription = emitter.subscribe({ next: handler });
       return new Subscription(() => {
-        subscriptions.forEach(sub => sub.unsubscribe());
+        subscription.unsubscribe();
       });
     }
 
-    // Create new subscriptions
-    const subscriptions = emitters.map(emitter => 
-      emitter.subscribe({
-        next: handler,
-        complete: () => {
-          const s = this.subscribers.find(sub => this.arraysEqual(sub.topics, topicArray));
-          if (s) s.event.closed = true;
-        }
-      })
-    );
-
-    this.subscribers.push({ 
-      topics: topicArray, 
-      event: { 
-        emitters,  // Changed from single emitter to array of emitters
-        closed: false 
-      } 
+    const subscription = emitter.subscribe({
+      next: handler,
+      complete: () => {
+        const s = this.subscribers.find(sub => sub.topic === topic && sub.event.emitter === emitter);
+        if (s) s.event.closed = true;
+      }
     });
+
+    this.subscribers.push({ topic, event: { emitter, closed: false } });
 
     return new Subscription(() => {
-      subscriptions.forEach(sub => sub.unsubscribe());
+      subscription.unsubscribe();
       this.subscribers = this.subscribers.filter(
-        sub => !this.arraysEqual(sub.topics, topicArray)
+        sub => !(sub.topic === topic && sub.event.emitter === emitter)
       );
     });
-  }
-
-  private arraysEqual(a: string[], b: string[]): boolean {
-    if (a.length !== b.length) return false;
-    return a.every((val, index) => val === b[index]);
   }
 
   private subscribeToMessages() {
@@ -122,31 +96,17 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
 
   private broadcastMessage(message: MessageItem) {
     this.subscribers = this.subscribers.filter(sub => {
-      // Check if any of the subscribed topics match the message topic
-      const hasMatchingTopic = sub.topics.some(topic => 
-        this.topicMatches(topic, message?.topic!)
-      );
-      
-      const active = !sub.event.closed && hasMatchingTopic;
-      
+      const active = !sub.event.closed && this.topicMatches(sub.topic, message?.topic!);
       if (active) {
         if (typeof message.payload === 'string') {
           message.payload = JSON.parse(message.payload);
         } else if (typeof message.payload === 'object') {
-          // already a JS object - no action needed
+          // already a JS object – no action needed
         } else {
           // optionally handle unexpected formats
           console.log('Unsupported payload type:', typeof message.payload);
         }
-        
-        // Emit the message through all matching emitters
-        sub.event.emitters.forEach(emitter => {
-          if (sub.topics.some(topic => 
-            this.topicMatches(topic, message?.topic!)
-          )) {
-            emitter.emit(message);
-          }
-        });
+        sub.event.emitter.emit(message);
       }
       return !sub.event.closed; // Keep only active ones
     });
@@ -178,8 +138,8 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
 }
 
 interface Subscriber {
-  emitters: EventEmitter<MessageItem>[];  // Changed to array of emitters
-  closed?: boolean;
+  emitter: EventEmitter<MessageItem>;
+  closed?: boolean; // You manage this manually
 }
 
 export class MessageItem {
@@ -199,3 +159,4 @@ export class MessageItem {
     this.topic = item.topic;
   }
 }
+

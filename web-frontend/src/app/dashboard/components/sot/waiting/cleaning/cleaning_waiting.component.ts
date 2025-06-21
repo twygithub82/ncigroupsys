@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BreadcrumbComponent } from 'app/shared/components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {SingletonNotificationService,MessageItem} from 'app/core/service/singletonNotification.service';
+import {SingletonNotificationService,MessageItem} from '@core/service/singletonNotification.service';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -74,7 +74,7 @@ export class CleaningWaitingComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
-     if(message.event_name==="2020")
+    if(message.event_id==="2020")
     {
       var changedValue=(message.payload?.Pending_Cleaning_Count||-1);
       if(changedValue>=0)
@@ -87,11 +87,8 @@ export class CleaningWaitingComponent {
 
         // remove blink class after animation ends to allow retrigger
         setTimeout(() => this.blinkClass = '', 1500);
-
-        //  this.sot_waiting = String((message.payload?.Pending_Residue_Count||0));
       }
     }
-    // this.loadData();
   });
   }
 

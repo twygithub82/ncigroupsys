@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { BreadcrumbComponent } from 'app/shared/components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SingletonNotificationService, MessageItem } from 'app/core/service/singletonNotification.service'
+import {SingletonNotificationService,MessageItem} from '@core/service/singletonNotification.service';
 @Component({
   selector: 'app-test1',
   templateUrl: './test1.component.html',

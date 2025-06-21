@@ -84,13 +84,7 @@ export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
 }
 `;
 
-export const GET_OUT_GATE_YET_TO_SURVEY_COUNT = gql`
- query queryOutGateCount($where: out_gateFilterInput) {
-    inGates: queryOutGates(where: $where) {
-      totalCount
-  }
-}
-`;
+
 
 export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
   query queryInGateForSurvey($where: in_gateFilterInput, $order: [in_gateSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -536,12 +530,12 @@ export class InGateDS extends BaseDataSource<InGateItem> {
       );
   }
 
-   getOutGateCountForYetToSurvey(): Observable<number> {
+ getInGateCountForYetToPublish(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
+    let where: any = { eir_status_cv: { eq: 'PENDING' } }
     return this.apollo
       .query<any>({
-        query: GET_OUT_GATE_YET_TO_SURVEY_COUNT,
+        query: GET_IN_GATE_YET_TO_SURVEY_COUNT,
         variables: { where },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
@@ -558,7 +552,7 @@ export class InGateDS extends BaseDataSource<InGateItem> {
           return retResult.totalCount;
         })
       );
-  }
+  }  
 
   addInGate(inGate: any): Observable<any> {
     this.actionLoadingSubject.next(true);

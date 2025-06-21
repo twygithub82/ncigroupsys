@@ -1317,6 +1317,7 @@
     "CLEANING-PENDING": "Cleaning: Pending",
     "STEAMING-PENDING":"Steaming: Pending",
     "RESIDUE-PENDING": "Residue: Pending",
+    "RELEASE-PENDING":"Release Order: Pending",
     "STEAMING-QUOTATION": "STEAMING QUOTATION",
     "RESIDUE-QUOTATION": "RESIDUE DISPOSAL QUOTATION",
     "RENUMBER": "Renumber",
@@ -1333,7 +1334,10 @@
     "TANK-IN-YARD":"Tank In Yard",
     "TANK-IN-STEAMING":"Tank In Steaming",
     "TANK-PERIODIC-TEST-DUE":"Periodic Test Due",
-    "CLEANING-KIV": "KIV Cleaning"
+    "CLEANING-KIV": "KIV Cleaning",
+    "GATE-OUT-PUBLISH-PENDING": "Gate Out Publish: Pending",
+    "GATE-IN-PUBLISH-PENDING": "Gate In Publish: Pending"
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

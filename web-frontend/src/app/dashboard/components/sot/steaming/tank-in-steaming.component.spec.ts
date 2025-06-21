@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { TankInYardComponent } from "./tank-in-yard.component";
-describe("TankInYardComponent", () => {
-  let component: TankInYardComponent;
-  let fixture: ComponentFixture<TankInYardComponent>;
+import { TankInSteamingComponent } from "./tank-in-steaming.component";
+describe("TankInSteamingComponent", () => {
+  let component: TankInSteamingComponent;
+  let fixture: ComponentFixture<TankInSteamingComponent>;
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [TankInYardComponent],
+    imports: [TankInSteamingComponent],
 }).compileComponents();
     })
   );
   beforeEach(() => {
-    fixture = TestBed.createComponent(TankInYardComponent);
+    fixture = TestBed.createComponent(TankInSteamingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

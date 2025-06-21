@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { BreadcrumbComponent } from 'app/shared/components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {SingletonNotificationService,MessageItem} from 'app/core/service/singletonNotification.service'
+import {SingletonNotificationService,MessageItem} from '@core/service/singletonNotification.service'
 import { Apollo } from 'apollo-angular';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -69,7 +69,7 @@ export class DashboardGateIOComponent {
     })} message Received`;
     console.log(this.msgReceived);
 
-     if(message.event_name==="2020")
+     if(message.event_id==="2020")
     {
       var changedValueInGate=(message.payload?.Pending_Cleaning_Count||-1);
       if(changedValueInGate>=0)

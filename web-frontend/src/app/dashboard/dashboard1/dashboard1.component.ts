@@ -25,7 +25,7 @@ import { AuthService } from '@core/service/auth.service';
 import { debounceTime, take } from 'rxjs/operators';
 import {TestComponent} from '../components/test/test.component';
 import {Test1Component} from '../components/test1/test1.component';
-import { GateInWaitingComponent } from '../components/sot/waiting/gate_in/gatein_waiting.component';
+import { GateInWaitingComponent } from '../components/sot/waiting/gate-in/gatein_waiting.component';
 import {InGateSurveyWaitingComponent} from '../components/sot/notsurvey/in_gate/in_gate_survey_waiting.component';
 import {CleaningWaitingComponent} from '../components/sot/waiting/cleaning/cleaning_waiting.component';
 import { ResidueWaitingComponent } from '../components/sot/waiting/residue/residue_waiting.component';
@@ -40,6 +40,10 @@ import { OutGateSurveyWaitingComponent } from '../components/sot/notsurvey/out_g
 import {SteamingWaitingComponent} from '../components/sot/waiting/steaming/steaming-waiting.component';
 import { TankTestDueComponent } from '../components/sot/due/test/tank-test-due.component';
 import { CleaningKIVComponent } from '../components/sot/KIV/cleaning/cleaning_kiv.component';
+import {ReleaseWaitingComponent} from '../components/sot/waiting/release/release-waiting.component';
+import {GateOutPublishWaitingComponent} from '../components/sot/waiting/publish/gate-out/gateout_publish_waiting.component';
+import {GateInPublishWaitingComponent} from '../components/sot/waiting/publish/gate-in/gatein_publish_waiting.component';
+
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -99,7 +103,10 @@ export type ChartOptions = {
     TankInSteamingComponent,
     SteamingWaitingComponent,
     TankTestDueComponent,
-    CleaningKIVComponent
+    CleaningKIVComponent,
+    ReleaseWaitingComponent,
+    GateOutPublishWaitingComponent,
+    GateInPublishWaitingComponent
   ],
 })
 
@@ -120,6 +127,9 @@ export class Dashboard1Component implements OnInit {
     STEAMING_PENDING: 'COMMON-FORM.STEAMING-PENDING',
     TANK_PERIODIC_TEST_DUE:'COMMON-FORM.TANK-PERIODIC-TEST-DUE',
     CLEANING_KIV: 'COMMON-FORM.CLEANING-KIV',
+    RELEASE_PENDING: 'COMMON-FORM.RELEASE-PENDING',
+    GATE_OUT_PUBLISH_PENDING: 'COMMON-FORM.GATE-OUT-PUBLISH-PENDING',
+    GATE_IN_PUBLISH_PENDING: 'COMMON-FORM.GATE-IN-PUBLISH-PENDING',
   }
   pageTitle = ''
   breadcrumsMiddleList = [
@@ -577,6 +587,12 @@ export class Dashboard1Component implements OnInit {
       break;
       case this.translatedLangText.CLEANING_KIV:
       break;
+      case this.translatedLangText.RELEASE_PENDING:
+      break;
+      case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
+      break;
+      case this.translatedLangText.GATE_IN_PUBLISH_PENDING:
+      break;
       // case this.translatedLangText.GATEIO_PENDING: 
         
       // break;
@@ -636,6 +652,15 @@ export class Dashboard1Component implements OnInit {
       break;
       case this.translatedLangText.CLEANING_KIV:
          retval=this.modulePackageService.hasFunctions(['DASHBOARD_KIV_CLEANING_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.RELEASE_PENDING:
+        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+       case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
+        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+       case this.translatedLangText.GATE_IN_PUBLISH_PENDING:
+        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
     }
     return retval;

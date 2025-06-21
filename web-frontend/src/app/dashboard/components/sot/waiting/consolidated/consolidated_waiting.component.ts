@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BreadcrumbComponent } from 'app/shared/components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {SingletonNotificationService,MessageItem} from 'app/core/service/singletonNotification.service';
+import {SingletonNotificationService,MessageItem} from '@core/service/singletonNotification.service';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';

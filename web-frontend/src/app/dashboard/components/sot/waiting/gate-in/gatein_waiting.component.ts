@@ -8,12 +8,11 @@ import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
-import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
-    selector: 'dashboard-cleaning-kiv',
-    templateUrl: './cleaning_kiv.component.html',
-    styleUrls: ['./cleaning_kiv.component.scss'],
+    selector: 'dashboard-gatein-waiting',
+    templateUrl: './gatein_waiting.component.html',
+    styleUrls: ['./gatein_waiting.component.scss'],
     standalone: true,
     imports: [
       CommonModule,
@@ -21,17 +20,16 @@ import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
       MatProgressSpinnerModule
     ],
 })
-export class CleaningKIVComponent {
+export class GateInWaitingComponent {
 
   topic :string ="SOT_UPDATED";
-  clnDS: InGateCleaningDS;
+  sotDS: StoringOrderTankDS;
   msgReceived: string='';
   sot_waiting: string = "-";
   translatedLangText: any = {}
    langText = {
-    CLEANING_KIV: 'COMMON-FORM.CLEANING-KIV',
+    GATE_IN_PENDING: 'COMMON-FORM.GATE-IN-PENDING',
    };
-
   prevSotWaiting: String = '';
   blinkClass = '';
   constructor(private notificationService:SingletonNotificationService, 
@@ -39,7 +37,7 @@ export class CleaningKIVComponent {
     private translate: TranslateService,
     public modulePackageService: ModulePackageService) {
     this.initializeSubscription();
-    this.clnDS= new InGateCleaningDS(this.apollo);
+    this.sotDS= new StoringOrderTankDS(this.apollo);
     
   }
 
@@ -56,8 +54,7 @@ export class CleaningKIVComponent {
   
 
   private loadData() {
-    this.sot_waiting ="-";
-    this.clnDS.getKIVCleaningCount().subscribe(data => {
+    this.sotDS.getWaitingStoringOrderTankCount().subscribe(data => {
       this.sot_waiting = String(data);
     });
   }
@@ -76,7 +73,7 @@ export class CleaningKIVComponent {
     console.log(this.msgReceived);
     if(message.event_id==="2020")
     {
-      var changedValue=(message.payload?.Pending_Cleaning_Count||-1);
+      var changedValue=(message.payload?.Pending_Estimate_Count||-1);
       if(changedValue>=0)
       {
 
