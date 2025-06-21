@@ -21,6 +21,7 @@ import { Apollo } from 'apollo-angular';
 import { CleaningFormulaDS, CleaningFormulaItem } from 'app/data-sources/cleaning-formulas';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -59,7 +60,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    GlobalMaxCharDirective
   ],
 })
 export class FormDialogComponent {

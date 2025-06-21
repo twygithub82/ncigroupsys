@@ -143,6 +143,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   catList: CleaningCategoryItem[] = [];
   soList: StoringOrderItem[] = [];
   catDS: CleaningCategoryDS;
+  catDSList: CleaningCategoryDS;
   descList: string[] = [];
   nameList: string[] = [];
 
@@ -169,6 +170,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     this.translateLangText();
     this.initSearchForm();
     this.catDS = new CleaningCategoryDS(this.apollo);
+    this.catDSList = new CleaningCategoryDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -197,7 +199,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       startWith(''),
       debounceTime(300),
       tap(value => {
-        this.catDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
+        this.catDSList.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
           this.nameList = data.map(i => i.name || '');
         });
       })
@@ -207,7 +209,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       startWith(''),
       debounceTime(300),
       tap(value => {
-        this.catDS.search({ description: { contains: value } }, { description: "ASC" }, 100).subscribe(data => {
+        this.catDSList.search({ description: { contains: value } }, { description: "ASC" }, 100).subscribe(data => {
           this.descList = data.map(i => i.description || '');
         });
       })
@@ -625,6 +627,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   name_add(event: MatChipInputEvent): void {
     var cnt = this.searchForm?.get('name');
+    debugger
     const input = event.input;
     const value = event.value;
     // Add our fruit

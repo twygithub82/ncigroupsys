@@ -6,25 +6,25 @@
       <div class="left-img">
         <img src="assets/images/logo2.png" alt="bg-01" />
         <mat-divider class="divider"></mat-divider>
-        <h6 class="caption">{{AUTH_CAPTION | translate}} {{caption}}</h6>
+        <h6 class="caption">{{translatedLangText.AUTH_CAPTION}} {{caption}}</h6>
       </div>
     </div>
     <div class="col-sm-6 auth-form-section">
       <div class="form-section">
         <div class="auth-wrapper">
-          <h2 class="welcome-msg mb-3 align-center">{{WELCOME | translate}} {{SOFTWARE_NAME | translate}} {{PORTAL |
-            translate}}</h2>
+          <h2 class="welcome-msg mb-3 align-center">{{translatedLangText.WELCOME}} {{translatedLangText.SOFTWARE_NAME}}
+            {{translatedLangText.PORTAL}}</h2>
           <!-- <h3 class="login-title">{{SIGNIN | translate}}</h3> -->
           <form class="validate-form" [formGroup]="authForm" (ngSubmit)="onSubmit()">
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>{{USERNAME | translate}}</mat-label>
+                  <mat-label>{{translatedLangText.USERNAME}}</mat-label>
                   <input matInput formControlName="username" />
                   <mat-icon class="material-icons-two-tone color-icon p-3" matSuffix>face</mat-icon>
                   @if (authForm.get('username')?.hasError('required')) {
                   <mat-error>
-                    {{USERNAME | translate}} {{PROCEDURE_REQUIRED | translate}}
+                    {{translatedLangText.USERNAME}} {{translatedLangText.PROCEDURE_REQUIRED}}
                   </mat-error>
                   }
                 </mat-form-field>
@@ -33,7 +33,7 @@
             <div class="row">
               <div class="col-xl-12col-lg-12 col-md-12 col-sm-12 mb-2">
                 <mat-form-field class="example-full-width" appearance="outline">
-                  <mat-label>{{PASSWORD | translate}}</mat-label>
+                  <mat-label>{{translatedLangText.PASSWORD}}</mat-label>
                   <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
                   <a href="#" onClick="return false;" matSuffix (click)="hide = !hide"
                     [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
@@ -42,7 +42,7 @@
                   </a>
                   @if (authForm.get('password')?.hasError('required')) {
                   <mat-error>
-                    {{PASSWORD | translate}} {{PROCEDURE_REQUIRED | translate}}
+                    {{translatedLangText.PASSWORD}} {{translatedLangText.PROCEDURE_REQUIRED}}
                   </mat-error>
                   }
                 </mat-form-field>
@@ -52,21 +52,21 @@
               <div class="form-check">
                 <label class="form-check-label">
                   <input class="form-check-input" type="checkbox" [(ngModel)]="rememberMe"
-                    [ngModelOptions]="{standalone: true}"> {{REMEMBER | translate}}
+                    [ngModelOptions]="{standalone: true}"> {{translatedLangText.REMEMBER}}
                   <span class="form-check-sign">
                     <span class="check"></span>
                   </span>
                 </label>
               </div>
-              <a class="txt1" routerLink="/authentication/forgot-password">{{FORGOTPASSWORD | translate}}</a>
+              <a class="txt1" routerLink="/authentication/forgot-password">{{translatedLangText.FORGOTPASSWORD}}</a>
             </div>
             @if (error) {
             <div class="alert alert-danger mt-3 mb-0">{{error}}</div>
             }
             <div class="container-auth-form-btn">
               <div style="text-align:center">
-                <button mat-raised-button color="primary" [class.auth-spinner]="loading"
-                  class="auth-form-btn" [disabled]="loading || !authForm.valid " type="submit">{{LOGIN | translate}}</button>
+                <button mat-raised-button color="primary" [class.auth-spinner]="loading" class="auth-form-btn"
+                  [disabled]="loading || !authForm.valid " type="submit">{{translatedLangText.LOGIN}}</button>
               </div>
             </div>
           </form>

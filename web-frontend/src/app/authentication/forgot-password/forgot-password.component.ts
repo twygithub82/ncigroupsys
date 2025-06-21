@@ -34,7 +34,7 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
   translatedLangText: any = {};
   langText = {
     FORGOT_PASSWORD: 'COMMON-FORM.FORGOT-PASSWORD',
-    LET_US_HELP_YOU: 'COMMON-FORM.LET-US-HELP-YOU',
+    FORGOT_PASSWORD_CAPTION: 'COMMON-FORM.FORGOT-PASSWORD-CAPTION',
     ENTER_EMAIL: 'COMMON-FORM.ENTER-EMAIL',
     EMAIL: 'COMMON-FORM.EMAIL',
     INVALID_EMAIL: 'COMMON-FORM.INVALID-EMAIL',

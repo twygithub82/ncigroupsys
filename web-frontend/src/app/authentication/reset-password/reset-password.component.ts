@@ -55,6 +55,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
   returnUrl!: string;
   token: string = '';
   email: string = '';
+  username: string = '';
   loading: boolean = false;
   hidePsw = true;
   hideCPsw = true;
@@ -76,6 +77,7 @@ export class ResetPasswordComponent extends UnsubscribeOnDestroyAdapter implemen
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
       this.email = params['email'];
+      this.username = params['username'];
 
       // Optionally validate or trigger password reset logic here
       console.log('Token:', this.token);
