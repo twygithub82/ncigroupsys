@@ -9,7 +9,7 @@
     </div>
     }
     @if (!(igDS.loading$ | async)) {
-    <h2>{{this.in_gate_yet_to_survey}}</h2>
+     <h2 [ngClass]="blinkClass">{{ this.in_gate_yet_to_survey }}</h2>
     }
     <!-- <div>
     <i class="material-icons col-red float-start me-1 ms-1">trending_down</i>

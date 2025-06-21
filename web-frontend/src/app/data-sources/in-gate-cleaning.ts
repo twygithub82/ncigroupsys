@@ -779,6 +779,30 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
           })
         );
     }
+
+    getKIVCleaningCount(): Observable<number> {
+      this.loadingSubject.next(true);
+      let where: any ={and: [
+        { storing_order_tank:{purpose_cleaning: { eq: true } }}, 
+       // { storing_order_tank:{tank_status_cv: { eq: "CLEANING" } }},
+        { status_cv: { in: ["KIV"]}}
+      ]};
+      return this.apollo
+        .query<any>({
+          query: GET_IN_GATE_CLEANING_BY_SOT_FOR_MOVEMENT,
+          variables: { where },
+          fetchPolicy: 'no-cache' // Ensure fresh data
+        })
+        .pipe(
+          map((result) => result.data),
+          catchError(() => of({ soList: [] })),
+          finalize(() => this.loadingSubject.next(false)),
+          map((result) => {
+            const sotList = result.resultList || { nodes: [], totalCount: 0 };
+            return sotList.totalCount;
+          })
+        );
+    }
 }
 
 

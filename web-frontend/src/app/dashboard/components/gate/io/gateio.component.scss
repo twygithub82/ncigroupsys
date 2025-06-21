@@ -59,3 +59,12 @@
     font-size: 0.7rem;
     color: #888;
   }
+
+ @keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink {
+  animation: blink 0.5s ease-in-out 2; /* adjust duration and repeat count */
+}

@@ -44,10 +44,17 @@
             </div>
           </div>
              }
-        @if (AllowToView(translatedLangText.RESIDUE_PENDING)) {
+             @if (AllowToView(translatedLangText.CLEANING_PENDING)) {
           <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
-              <dashboard-residue-waiting/>
+            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.CLEANING_PENDING)">
+              <dashboard-cleaning-waiting/>
+            </div>
+          </div>
+             }
+        @if (AllowToView(translatedLangText.CLEANING_PENDING)) {
+          <div class="col-md-6 col-xl-3">
+            <div class="card info-card pointer" >
+              <dashboard-cleaning-kiv/>
             </div>
           </div>
              }
@@ -94,6 +101,15 @@
           <div class="col-md-6 col-xl-3">
             <div class="card info-card " >
              <dashboard-tank-in-steaming/>
+            </div>
+          </div>
+             }
+             
+          @if (AllowToView(translatedLangText.TANK_PERIODIC_TEST_DUE)){
+           
+          <div class="col-md-6 col-xl-3">
+            <div class="card info-card " >
+             <dashboard-tank-test-due/>
             </div>
           </div>
              }

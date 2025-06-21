@@ -37,6 +37,9 @@ import {DashboardGateIOComponent} from '../components/gate/io/gateio.component';
 import { TankInYardComponent } from '../components/sot/in-yard/tank-in-yard.component';
 import { TankInSteamingComponent } from '../components/sot/steaming/tank-in-steaming.component';
 import { OutGateSurveyWaitingComponent } from '../components/sot/notsurvey/out_gate/out_gate_survey_waiting.component';
+import {SteamingWaitingComponent} from '../components/sot/waiting/steaming/steaming-waiting.component';
+import { TankTestDueComponent } from '../components/sot/due/test/tank-test-due.component';
+import { CleaningKIVComponent } from '../components/sot/KIV/cleaning/cleaning_kiv.component';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -93,7 +96,10 @@ export type ChartOptions = {
     RepairQCWaitingComponent,
     DashboardGateIOComponent,
     TankInYardComponent,
-    TankInSteamingComponent
+    TankInSteamingComponent,
+    SteamingWaitingComponent,
+    TankTestDueComponent,
+    CleaningKIVComponent
   ],
 })
 
@@ -111,6 +117,9 @@ export class Dashboard1Component implements OnInit {
     RESIDUE_PENDING: 'COMMON-FORM.RESIDUE-PENDING',
     GATEIO:'COMMON-FORM.GATEIO',
     TANK_IN_YARD:'COMMON-FORM.TANK-IN-YARD',
+    STEAMING_PENDING: 'COMMON-FORM.STEAMING-PENDING',
+    TANK_PERIODIC_TEST_DUE:'COMMON-FORM.TANK-PERIODIC-TEST-DUE',
+    CLEANING_KIV: 'COMMON-FORM.CLEANING-KIV',
   }
   pageTitle = ''
   breadcrumsMiddleList = [
@@ -561,8 +570,12 @@ export class Dashboard1Component implements OnInit {
       case this.translatedLangText.CLEANING_PENDING: 
        urlLink="admin/cleaning/approval";
       break;
-       case this.translatedLangText.RESIDUE_PENDING: 
+      case this.translatedLangText.RESIDUE_PENDING: 
         urlLink="admin/residue-disposal/estimate-approval/"
+      break;
+      case this.translatedLangText.TANK_TEST_DUE:
+      break;
+      case this.translatedLangText.CLEANING_KIV:
       break;
       // case this.translatedLangText.GATEIO_PENDING: 
         
@@ -586,34 +599,43 @@ export class Dashboard1Component implements OnInit {
      switch(cardName)
     {
       case this.translatedLangText.IN_GATE_SURVEY_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_IN_SURVEY_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+       case this.translatedLangText.OUT_GATE_SURVEY_PENDING: 
+       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_OUT_SURVEY_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.GATE_IN_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_GATE_IN_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_APPROVAL_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.REPAIR_ESTIMATE_PENDING: 
-      retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_ESTIMATE_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.REPAIR_QC_PENDING: 
        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.CLEANING_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_CLEANING_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
        case this.translatedLangText.RESIDUE_PENDING: 
-        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RESIDUE_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.GATEIO: 
-        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_GATE_IN_VIEW','DASHBOARD_PENDING_GATE_OUT_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
       case this.translatedLangText.TANK_IN_YARD: 
-        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_IN_YARD_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
-      case this.translatedLangText.TANK_IN_STEAMING: 
-        retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+      case this.translatedLangText.STEAMING_PENDING: 
+        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_STEAMING_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.TANK_PERIODIC_TEST_DUE:
+         retval=this.modulePackageService.hasFunctions(['DASHBOARD_DUE_PERIODIC_TEST_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
+      break;
+      case this.translatedLangText.CLEANING_KIV:
+         retval=this.modulePackageService.hasFunctions(['DASHBOARD_KIV_CLEANING_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
       break;
     }
     return retval;

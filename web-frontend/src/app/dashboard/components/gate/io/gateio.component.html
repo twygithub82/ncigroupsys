@@ -11,7 +11,8 @@
         </div>
         }
         @else if (!(sotDS.loading$ | async)) {
-           <div class="card-number">{{result_gate_in}}</div>
+           <div [ngClass]="blinkClass_InGate" class="card-number">{{result_gate_in}}</div>
+          
         } 
       <!-- <div class="card-number">85,246</div> -->
       <div class="card-label">{{this.translatedLangText.GATE_IN}}</div>
@@ -28,7 +29,7 @@
         </div>
         }
         @else if (!(sotDS.loading$ | async)) {
-           <div class="card-number">{{result_gate_out}}</div>
+           <div [ngClass]="blinkClass_OutGate" class="card-number">{{result_gate_out}}</div>
         } 
       
       <div class="card-label">{{this.translatedLangText.GATE_OUT}}</div>

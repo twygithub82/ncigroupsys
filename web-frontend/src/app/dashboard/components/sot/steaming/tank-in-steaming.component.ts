@@ -31,7 +31,8 @@ export class TankInSteamingComponent {
    langText = {
     TANK_IN_STEAMING: 'COMMON-FORM.TANK-IN-STEAMING',
    };
-
+  prevSotWaiting: String = '';
+  blinkClass = '';
   constructor(private notificationService:SingletonNotificationService, 
     private apollo: Apollo,
     private translate: TranslateService,
@@ -72,7 +73,21 @@ export class TankInSteamingComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
-    this.loadData();
+     if(message.event_name==="2020")
+    {
+      var changedValue=(message.payload?.Pending_Cleaning_Count||-1);
+      if(changedValue>=0)
+      {
+
+        const newValue =String(changedValue);
+        this.prevSotWaiting = this.sot_waiting;
+        this.sot_waiting = newValue;
+        this.blinkClass = 'blink';
+
+        // remove blink class after animation ends to allow retrigger
+        setTimeout(() => this.blinkClass = '', 1500);
+      }
+    }
   });
   }
 

@@ -1,7 +1,9 @@
 <div class="info-box8">
-  <i class="material-icons bg-orange card1-icon fas fa-stopwatch"></i>
+  <i class="material-icons bg-purple card1-icon"> <span class="material-symbols-outlined" >
+credit_card_clock
+</span></i>
   <!-- <i class="material-icons bg-orange card1-icon">people</i> -->
-  <h5 class="col-orange font-bold">{{translatedLangText.GATE_IN_PENDING}}</h5>
+  <h5 class="col-purple font-bold">{{translatedLangText.TANK_PERIODIC_TEST_DUE}}</h5>
   @if (sotDS.loading$ | async) {
   <div class="tbl-spinner">
     <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">

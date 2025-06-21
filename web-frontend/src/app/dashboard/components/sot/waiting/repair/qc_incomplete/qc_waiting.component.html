@@ -9,6 +9,6 @@
   </div>
   }
   @if (!(rpDS.loading$ | async)) {
-  <h2>{{this.sot_waiting}}</h2>
+   <h2 [ngClass]="blinkClass">{{ this.sot_waiting }}</h2>
   }
 </div>

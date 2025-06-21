@@ -11,9 +11,9 @@ import { Utility } from 'app/utilities/utility';
 import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
-    selector: 'dashboard-cleaning-waiting',
-    templateUrl: './cleaning_waiting.component.html',
-    styleUrls: ['./cleaning_waiting.component.scss'],
+    selector: 'dashboard-steaming-waiting',
+    templateUrl: './steaming-waiting.component.html',
+    styleUrls: ['./steaming-waiting.component.scss'],
     standalone: true,
     imports: [
       CommonModule,
@@ -21,17 +21,16 @@ import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
       MatProgressSpinnerModule
     ],
 })
-export class CleaningWaitingComponent {
+export class SteamingWaitingComponent {
 
   topic :string ="SOT_UPDATED";
-  clnDS: InGateCleaningDS;
+  sotDS: StoringOrderTankDS;
   msgReceived: string='';
   sot_waiting: string = "-";
   translatedLangText: any = {}
    langText = {
-    CLEANING_PENDING: 'COMMON-FORM.CLEANING-PENDING',
+    STEAMING_PENDING: 'COMMON-FORM.STEAMING-PENDING',
    };
-
   prevSotWaiting: String = '';
   blinkClass = '';
   constructor(private notificationService:SingletonNotificationService, 
@@ -39,7 +38,7 @@ export class CleaningWaitingComponent {
     private translate: TranslateService,
     public modulePackageService: ModulePackageService) {
     this.initializeSubscription();
-    this.clnDS= new InGateCleaningDS(this.apollo);
+    this.sotDS= new StoringOrderTankDS(this.apollo);
     
   }
 
@@ -57,7 +56,7 @@ export class CleaningWaitingComponent {
 
   private loadData() {
     this.sot_waiting ="-";
-    this.clnDS.getInCompleteCleaningCount().subscribe(data => {
+    this.sotDS.getTotalSteamingWaitingCount().subscribe(data => {
       this.sot_waiting = String(data);
     });
   }
@@ -74,9 +73,9 @@ export class CleaningWaitingComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
-     if(message.event_name==="2020")
+    if(message.event_name==="2020")
     {
-      var changedValue=(message.payload?.Pending_Cleaning_Count||-1);
+      var changedValue=(message.payload?.Pending_Steaming_Count||-1);
       if(changedValue>=0)
       {
 
@@ -87,8 +86,6 @@ export class CleaningWaitingComponent {
 
         // remove blink class after animation ends to allow retrigger
         setTimeout(() => this.blinkClass = '', 1500);
-
-        //  this.sot_waiting = String((message.payload?.Pending_Residue_Count||0));
       }
     }
     // this.loadData();

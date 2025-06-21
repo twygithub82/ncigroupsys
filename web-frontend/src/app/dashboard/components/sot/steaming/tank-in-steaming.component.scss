@@ -1,3 +1,12 @@
 .card1-icon .material-symbols-outlined {
     font-size: 48px; /* Adjust size as needed */
   }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink {
+  animation: blink 0.5s ease-in-out 2; /* adjust duration and repeat count */
+}

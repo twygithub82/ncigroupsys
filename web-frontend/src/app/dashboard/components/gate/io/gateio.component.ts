@@ -32,7 +32,10 @@ export class DashboardGateIOComponent {
     GATE_IN: 'COMMON-FORM.GATE-IN',
     GATE_OUT: 'COMMON-FORM.GATE-OUT',
    };
-
+  prevInGateValue: String = '';
+  prevOutGateValue: String = '';
+  blinkClass_InGate = '';
+  blinkClass_OutGate = '';
   constructor(private notificationService:SingletonNotificationService, 
       private apollo: Apollo,
       private translate: TranslateService,
@@ -54,7 +57,7 @@ export class DashboardGateIOComponent {
 
 
   initializeSubscription() {
-     this.notificationService.subscribe('GATEIO_UPDATE', (message: MessageItem) => {
+     this.notificationService.subscribe(this.topic, (message: MessageItem) => {
     // Handle the message here
    this.msgReceived = `${new Date().toLocaleString(undefined, {
       year: 'numeric',
@@ -65,6 +68,35 @@ export class DashboardGateIOComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
+
+     if(message.event_name==="2020")
+    {
+      var changedValueInGate=(message.payload?.Pending_Cleaning_Count||-1);
+      if(changedValueInGate>=0)
+      {
+
+        const newValue =String(changedValueInGate);
+        this.prevInGateValue = this.result_gate_in;
+        this.result_gate_in = newValue;
+        this.blinkClass_InGate = 'blink';
+
+        // remove blink class after animation ends to allow retrigger
+        setTimeout(() => this.blinkClass_InGate = '', 1500);
+      }
+
+      var changedValueOutGate=(message.payload?.Pending_Cleaning_Count||-1);
+      if(changedValueOutGate>=0)
+      {
+
+        const newValue =String(changedValueOutGate);
+        this.prevOutGateValue = this.result_gate_out;
+        this.result_gate_out = newValue;
+        this.blinkClass_OutGate = 'blink';
+
+        // remove blink class after animation ends to allow retrigger
+        setTimeout(() => this.blinkClass_OutGate = '', 1500);
+      }
+    }
   });
   }
 

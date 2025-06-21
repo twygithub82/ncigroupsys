@@ -1315,6 +1315,7 @@
     "IN-GATE-SURVEY-PENDING": "In Gate Survey: Pending",
     "OUT-GATE-SURVEY-PENDING": "Out Gate Survey: Pending",
     "CLEANING-PENDING": "Cleaning: Pending",
+    "STEAMING-PENDING":"Steaming: Pending",
     "RESIDUE-PENDING": "Residue: Pending",
     "STEAMING-QUOTATION": "STEAMING QUOTATION",
     "RESIDUE-QUOTATION": "RESIDUE DISPOSAL QUOTATION",
@@ -1330,7 +1331,9 @@
     "GATEIO-PENDING": "GateIO: Pending",
     "ACTION-SUCCESS": "Action Successful",
     "TANK-IN-YARD":"Tank In Yard",
-    "TANK-IN-STEAMING":"Tank In Steaming"
+    "TANK-IN-STEAMING":"Tank In Steaming",
+    "TANK-PERIODIC-TEST-DUE":"Periodic Test Due",
+    "CLEANING-KIV": "KIV Cleaning"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

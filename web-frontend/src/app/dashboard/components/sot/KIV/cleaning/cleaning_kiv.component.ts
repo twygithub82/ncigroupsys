@@ -11,9 +11,9 @@ import { Utility } from 'app/utilities/utility';
 import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 
 @Component({
-    selector: 'dashboard-cleaning-waiting',
-    templateUrl: './cleaning_waiting.component.html',
-    styleUrls: ['./cleaning_waiting.component.scss'],
+    selector: 'dashboard-cleaning-kiv',
+    templateUrl: './cleaning_kiv.component.html',
+    styleUrls: ['./cleaning_kiv.component.scss'],
     standalone: true,
     imports: [
       CommonModule,
@@ -21,7 +21,7 @@ import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
       MatProgressSpinnerModule
     ],
 })
-export class CleaningWaitingComponent {
+export class CleaningKIVComponent {
 
   topic :string ="SOT_UPDATED";
   clnDS: InGateCleaningDS;
@@ -29,7 +29,7 @@ export class CleaningWaitingComponent {
   sot_waiting: string = "-";
   translatedLangText: any = {}
    langText = {
-    CLEANING_PENDING: 'COMMON-FORM.CLEANING-PENDING',
+    CLEANING_KIV: 'COMMON-FORM.CLEANING-KIV',
    };
 
   prevSotWaiting: String = '';
@@ -57,7 +57,7 @@ export class CleaningWaitingComponent {
 
   private loadData() {
     this.sot_waiting ="-";
-    this.clnDS.getInCompleteCleaningCount().subscribe(data => {
+    this.clnDS.getKIVCleaningCount().subscribe(data => {
       this.sot_waiting = String(data);
     });
   }
@@ -74,7 +74,7 @@ export class CleaningWaitingComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
-     if(message.event_name==="2020")
+    if(message.event_name==="2020")
     {
       var changedValue=(message.payload?.Pending_Cleaning_Count||-1);
       if(changedValue>=0)
@@ -87,11 +87,8 @@ export class CleaningWaitingComponent {
 
         // remove blink class after animation ends to allow retrigger
         setTimeout(() => this.blinkClass = '', 1500);
-
-        //  this.sot_waiting = String((message.payload?.Pending_Residue_Count||0));
       }
     }
-    // this.loadData();
   });
   }
 

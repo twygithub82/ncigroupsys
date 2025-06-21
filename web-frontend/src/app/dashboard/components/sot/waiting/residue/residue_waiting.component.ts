@@ -31,6 +31,8 @@ export class ResidueWaitingComponent {
     RESIDUE_PENDING: 'COMMON-FORM.RESIDUE-PENDING',
    };
 
+  prevSotWaiting: String = '';
+  blinkClass = '';
   constructor(private notificationService:SingletonNotificationService, 
     private apollo: Apollo,
     private translate: TranslateService,
@@ -71,7 +73,23 @@ export class ResidueWaitingComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
-    this.loadData();
+    if(message.event_name==="2020")
+    {
+      var changedValue=(message.payload?.Pending_Residue_Count||-1);
+      if(changedValue>=0)
+      {
+        const newValue =String(changedValue);
+        this.prevSotWaiting = this.sot_waiting;
+        this.sot_waiting = newValue;
+        this.blinkClass = 'blink';
+
+        // remove blink class after animation ends to allow retrigger
+        setTimeout(() => this.blinkClass = '', 1500);
+
+        //  this.sot_waiting = String((message.payload?.Pending_Residue_Count||0));
+      }
+    }
+    //this.loadData();
   });
   }
 

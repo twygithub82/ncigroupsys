@@ -24,7 +24,7 @@ import { OutGateDS } from 'app/data-sources/out-gate';
 export class OutGateSurveyWaitingComponent {
 
   topic :string ="SOT_UPDATED";
-  out_gate_yet_to_survey?: number = 0;
+  out_gate_yet_to_survey: string = '0';
   ogDS: OutGateDS;
   msgReceived: string='';
   sot_waiting: string = "-";
@@ -32,7 +32,8 @@ export class OutGateSurveyWaitingComponent {
    langText = {
     OUT_GATE_SURVEY_PENDING: 'COMMON-FORM.OUT-GATE-SURVEY-PENDING',
    };
-
+  prevSotWaiting: String = '';
+  blinkClass = '';
   constructor(private notificationService:SingletonNotificationService, 
     private apollo: Apollo,
     private translate: TranslateService,
@@ -56,7 +57,7 @@ export class OutGateSurveyWaitingComponent {
 
   private loadData() {
     this.ogDS.getOutGateCountForYetToSurvey().subscribe(data => {
-      this.out_gate_yet_to_survey = data;
+      this.out_gate_yet_to_survey = String(data);
     });
   }
 
@@ -72,7 +73,21 @@ export class OutGateSurveyWaitingComponent {
       second: '2-digit',
     })} message Received`;
     console.log(this.msgReceived);
-    this.loadData();
+    if(message.event_name==="2020")
+    {
+      var changedValue=(message.payload?.Pending_Cleaning_Count||-1);
+      if(changedValue>=0)
+      {
+
+        const newValue =String(changedValue);
+        this.prevSotWaiting = this.out_gate_yet_to_survey;
+        this.out_gate_yet_to_survey = newValue;
+        this.blinkClass = 'blink';
+
+        // remove blink class after animation ends to allow retrigger
+        setTimeout(() => this.blinkClass = '', 1500);
+      }
+    }
   });
   }
 
