@@ -139,10 +139,10 @@
               }
               @if (!(joDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-2-75 col-lg-2-75 col-md-12 col-sm-12 ms-2 m-b-10 p-l-0">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 ms-2 m-b-10 p-l-0">
                   {{translatedLangText.JOB_ORDER_NO}}: <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
                 </div>
-                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-10">
+                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-10 ms-1">
                   {{translatedLangText.STATUS}}: <span
                     class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
                 </div>
@@ -155,7 +155,7 @@
                   </button>
                   <button mat-flat-button (click)="toggleJobState($event, isStarted())"
                     [disabled]="!canStartJob()"
-                    [ngClass]="{'m-r-10': true, 'yellow-button': canStartJob() && isStarted(), 'bg-red': canStartJob() && !isStarted()}">
+                    [ngClass]="{'m-r-10': true, 'yellow-button': canStartJob() && isStarted(), 'red-button': canStartJob() && !isStarted()}">
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.PAUSE_JOB : translatedLangText.START_JOB }}
                   </button>
@@ -334,7 +334,7 @@
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                  <div class="row p-l-5 p-r-10">
+                  <div class="row p-l-10 p-r-10">
                     <div class="col-xl-1-5 col-lg-1-5 col-md-2 col-sm-2 m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border div-bg-blue">
@@ -356,32 +356,32 @@
                     </div>
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.UPDATE_BY}}</span>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-center border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
                             {{residueItem?.update_by}}
                           </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-center border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
                             {{residueItem?.approve_by}}
                           </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-center border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
                             {{residueItem?.allocate_by}}
                           </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-center border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">-</div>
                         </div>
                       </div>
                     </div>
                     <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.UPDATE_DATE}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
@@ -399,28 +399,28 @@
                             {{displayDate(residueItem?.allocate_dt)}}
                           </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-center border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">-</div>
                         </div>
                       </div>
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-6-5 col-sm-6-5 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.REMARKS}}</span>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                           <div class="table-label">
                             {{residueItem?.remarks}}
                           </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                           <div class="table-label">-</div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                           <div class="table-label">-</div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
                           <div class="table-label">-</div>
                         </div>
                       </div>

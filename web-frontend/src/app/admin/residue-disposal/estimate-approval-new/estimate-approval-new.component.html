@@ -240,9 +240,9 @@
             <form class="ms-0" [formGroup]="residueEstForm!" #formDirective="ngForm">
               <mat-card-content>
                 <div class="row">
-                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
                           <mat-select formControlName="bill_to" required>
@@ -253,8 +253,10 @@
                         </mat-form-field>
                       </div>
                     </div>
+                  </div>
+                  <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
                           <input matInput formControlName="job_no"
@@ -263,7 +265,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                     <!-- <div class="row">
                       <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                         <div class="contact-detail-info font-bold">
@@ -281,7 +283,7 @@
                       </div>
                     </div> -->
                     <div class="row">
-                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                           <input matInput formControlName="remarks"
@@ -321,7 +323,7 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                  <input matInput [formControl]="newDesc" [matAutocomplete]="description" required="true">
+                  <input matInput [formControl]="newDesc" [matAutocomplete]="description" required="true"  maxlength="150">
                   <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
                     @for (cc of displayPackResidueList; track cc) {
                     <mat-option [value]="cc">
@@ -612,7 +614,7 @@
             <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 align-right">
               @if (canExport()) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
-                class="m-r-5 accent-darker" (click)="onExport($event)">
+                class="m-r-5 orange-button" (click)="onExport($event)">
                 <span class="icon-wrapper">
                   @if (!(residueDS.loading$ | async)&&!(isExportingPDF)) {
                   <i class="fas fa-file-export"></i>
@@ -644,7 +646,7 @@
               @if (canApprove()) {
               <button mat-flat-button color="basic"
                 [disabled]="(residueDS.loading$ | async) ||(!IsAbleToApprove())||(isExportingPDF)"
-                class="m-r-5 bg-green" (click)="approveRow($event)">
+                class="m-r-5 green-button" (click)="approveRow($event)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
                   check
@@ -669,8 +671,8 @@
               </button>
               }
               @if (residueDS.canCancel(residueItem!)) {
-              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
-                class="m-r-5" (click)="onCancel($event)">
+              <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
+                class="m-r-5 red-button" (click)="onCancel($event)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
                   close
@@ -682,8 +684,8 @@
               </button>
               }
               @if (residueDS.canNoAction(residueItem!)) {
-              <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
-                class="m-r-5" (click)="onNoAction($event,residueItem!)">
+              <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
+                class="m-r-5 red-button" (click)="onNoAction($event,residueItem!)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
                   close

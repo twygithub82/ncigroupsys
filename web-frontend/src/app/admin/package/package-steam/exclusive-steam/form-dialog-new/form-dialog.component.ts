@@ -89,6 +89,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   action: string;
   index?: number;
   dialogTitle?: string;
+  flashPoint?: number;
 
 
   pckSteamExclusiveDS: PackageSteamingExclusiveDS;

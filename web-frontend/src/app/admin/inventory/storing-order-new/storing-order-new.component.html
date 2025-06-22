@@ -32,7 +32,7 @@
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of ccDS.connect() | async; track cc) {
                       <mat-option [value]="cc">
-                        {{ccDS.displayName(cc)}}
+                        {{ccDS.displayCodeDashName(cc)}}
                       </mat-option>
                       }
                     </mat-autocomplete>

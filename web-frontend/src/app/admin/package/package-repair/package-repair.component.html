@@ -236,20 +236,20 @@
                     </ng-container> -->
                     <ng-container matColumnDef="custCompanyName">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_5-xl'">{{translatedLangText.CUSTOMER
+                        [ngClass]="'tbl-col-width-per-1-xl'">{{translatedLangText.CUSTOMER_CODE
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_5-xl'"
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
                         (contextmenu)="onContextMenu($event, row)">
-                        <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>
+                        <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE}}:</span>
                         <!-- {{custCompDS.displayName(row.customer_company)}} -->
-                        {{row.customer_company.name}}
+                        {{row.customer_company.code}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="PartName">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_75-xl'">{{translatedLangText.PART_NAME
+                        [ngClass]="'tbl-col-width-per-3-xl'">{{translatedLangText.PART_NAME
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2_75-xl'"
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3-xl'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.PART_NAME
                           }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>

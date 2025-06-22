@@ -524,6 +524,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       disableClose: true,
+      width: '380px',
       data: {
         action: "cancel",
         item: [...row],
@@ -564,6 +565,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       disableClose: true,
+      width: "380px",
       data: {
         action: "rollback",
         item: [...row],

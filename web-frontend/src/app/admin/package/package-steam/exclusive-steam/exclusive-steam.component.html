@@ -72,7 +72,7 @@
                             <mat-checkbox color="primary"
                               (click)="onCheckboxClicked(cc);$event.stopPropagation()"
                               [checked]="itemSelected(cc) || false"></mat-checkbox>
-                            <div class="option-text"> {{ccDS.displayName(cc)}}</div>
+                            <div class="option-text"> {{ccDS.displayCodeDashName(cc)}}</div>
                           </div>
                         </mat-option>
                         }
@@ -126,7 +126,7 @@
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-3'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER
-                  }}:</span>{{ccDS.displayName(row.package_steaming?.customer_company)}}</mat-cell>
+                  }}:</span>{{row.package_steaming?.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastCargo">
               <mat-header-cell *matHeaderCellDef

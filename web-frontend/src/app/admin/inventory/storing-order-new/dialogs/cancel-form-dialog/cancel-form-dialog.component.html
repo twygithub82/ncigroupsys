@@ -1,15 +1,17 @@
 <div class="container">
-  <div class="modalHeader ps-0">
+  <!-- <div class="modalHeader ps-0">
     <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0">{{data.action === 'cancel' ?
       data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
-  </div>
+  </div> -->
+  <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0 align-center">{{data.action === 'cancel' ?
+    data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-0">
     <form class="register-form" [formGroup]="storingOrderTankForm" #formDirective="ngForm">
       <div formArrayName="storingOrderTank">
         @for (sot of getStoringOrderTanksArray().controls; track sot; let index = $index) {
         <div [formGroupName]="index" [class]="'row'">
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 clearfix">
-            <p class="text-normal tank-no-value">
+            <p class="text-normal tank-title">
               {{sot.get('tank_no')?.value}}
             </p>
           </div>
@@ -31,8 +33,8 @@
       </div>
     </form>
   </div>
-  <div mat-dialog-actions class="pt-2 mb-3 align-center">
-    <button mat-flat-button color="warn" class="me-1" (click)="confirm()">
+  <div mat-dialog-actions class="mb-3 align-center">
+    <button mat-flat-button color="warn" class="me-2" (click)="confirm()">
       {{data.translatedLangText.CONFIRM | translate}}
     </button>
     <button mat-stroked-button (click)="onNoClick()" tabindex="-1">

@@ -2133,25 +2133,41 @@ $grid-breakpoints: (
 }
 
 .yellow-timer-icon {
-  color: #FFC107; //#25D366 //#0ec955b4; /* any custom color */
+  color: lighten(#dfa805, 25%); //#25D366 //#0ec955b4; /* any custom color */
 }
 
 .green-timer-icon {
-  color: #25D366 //#0ec955b4; /* any custom color */
+  color: lighten(#25D366, 10%); //#0ec955b4; /* any custom color */
+}
+
+.red-timer-icon {
+  color: lighten(#f51111, 18%); //#0ec955b4; /* any custom color */
+}
+
+
+.yellow-button {
+  background-color: lighten(#dfa805, 25%) !important;
+  /* Material green */
+  color: white !important;
 }
 
 .green-button {
-  background-color: #25D366 !important;
+  background-color: lighten(#25D366, 10%) !important;
   /* Material green */
   color: white !important;
 }
 
-.yellow-button {
-  background-color: #FFC107 !important;
+.red-button {
+  background-color: lighten(#f51111, 18%) !important;
   /* Material green */
   color: white !important;
 }
 
+.orange-button {
+  background-color: lighten(#f5752a, 15%) !important;
+  /* Material green */
+  color: white !important;
+}
 
 .relative-menu {
   position: absolute;

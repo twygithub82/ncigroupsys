@@ -1092,4 +1092,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
   }
+
+  roundUpToNextCent(value: number): number {
+   return Math.ceil(value * 20) / 20;
+  }
 }

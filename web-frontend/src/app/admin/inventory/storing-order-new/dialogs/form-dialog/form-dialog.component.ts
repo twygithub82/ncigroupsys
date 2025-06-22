@@ -95,10 +95,10 @@ export class FormDialogComponent {
     this.action = data.action!;
     this.sotExistedList = data.sotExistedList;
     if (this.action === 'edit') {
-      this.dialogTitle = 'Edit Record';
+      this.dialogTitle = 'Edit Order';
       this.storingOrderTank = data.item;
     } else {
-      this.dialogTitle = 'New Record';
+      this.dialogTitle = 'New Order';
       this.storingOrderTank = data.item ? data.item : new StoringOrderTankItem();
     }
     this.index = data.index;
