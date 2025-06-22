@@ -355,13 +355,13 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (isAllowAdd() && soDS.canAdd(storingOrderItem)) {
+                  @if (canEdit() && soDS.canAdd(storingOrderItem)) {
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                     (click)="addOrderDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ORDER_DETAILS}}
                   </button>
                   }
-                  @if ((soDS.canAdd(storingOrderItem) || anyEdited()) && (isAllowAdd() || isAllowEdit())) {
+                  @if ((soDS.canAdd(storingOrderItem) || anyEdited()) && (canEdit())) {
                   <button mat-flat-button color="primary" [disabled]="(soDS.actionLoading$ | async)">
                     <mat-icon>
                       @if (!(soDS.actionLoading$ | async)) {

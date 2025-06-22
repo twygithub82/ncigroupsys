@@ -541,6 +541,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   CanDelete(row: CleaningCategoryItem): boolean {
+    if (!this.isAllowDelete()) return false;
     var bRetval: boolean = false;
 
     if (!bRetval) {

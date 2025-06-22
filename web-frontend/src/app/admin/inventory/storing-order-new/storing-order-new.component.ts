@@ -224,15 +224,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
   initSOForm() {
     this.soForm = this.fb.group({
       guid: [''],
-      customer_company_guid: [{ value: '', disabled: !this.isAllowAdd() && !this.isAllowEdit() }, Validators.required],
-      customer_code: [{ value: this.customerCodeControl, disabled: !this.isAllowAdd() && !this.isAllowEdit() }, [Validators.required]],
+      customer_company_guid: [''],
+      customer_code: this.customerCodeControl,
       so_no: [''],
-      so_notes: [{ value: '', disabled: !this.isAllowAdd() && !this.isAllowEdit() }],
-      haulier: [{ value: '', disabled: !this.isAllowAdd() && !this.isAllowEdit() }],
+      so_notes: [''],
+      haulier: [''],
       sotList: ['']
     });
 
-    if (!this.isAllowAdd() && !this.isAllowEdit()) {
+    if (!this.canEdit()) {
       this.customerCodeControl?.disable();
     }
   }
@@ -309,6 +309,7 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
         this.customer_companyList = data
       });
+      this.populateSOForm(this.storingOrderItem);
     }
     const queries = [
       { alias: 'clean_statusCv', codeValType: 'CLEAN_STATUS' },
@@ -337,22 +338,22 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   populateSOForm(so: StoringOrderItem): void {
     this.soForm!.patchValue({
-      guid: so.guid,
-      customer_company_guid: so.customer_company_guid,
-      so_no: so.so_no,
-      so_notes: so.so_notes,
-      haulier: so.haulier
+      guid: so?.guid,
+      customer_company_guid: so?.customer_company_guid,
+      so_no: so?.so_no,
+      so_notes: so?.so_notes,
+      haulier: so?.haulier
     });
-    this.customerCodeControl.setValue(so.customer_company);
-    if (so.storing_order_tank) {
-      this.populateSOT(so.storing_order_tank);
+    this.customerCodeControl.setValue(so?.customer_company);
+    if (so?.storing_order_tank) {
+      this.populateSOT(so?.storing_order_tank);
     }
 
     if (!(!this.storingOrderItem?.status_cv || this.storingOrderItem?.status_cv === 'PENDING')) {
       this.customerCodeControl.disable()
     }
 
-    if (!(this.isAllowAdd() || this.isAllowEdit()) || !this.soDS.canAdd(this.storingOrderItem)) {
+    if (!this.canEdit() || !this.soDS.canAdd(this.storingOrderItem)) {
       this.customerCodeControl?.disable();
       this.soForm?.get('so_notes')?.disable();
       this.soForm?.get('haulier')?.disable();
@@ -861,6 +862,14 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   getSaveBtnDescription(): string {
     return Utility.getSaveBtnDescription(this.so_guid);
+  }
+
+  canEdit() {
+    return (!!this.so_guid && this.isAllowEdit()) || (!this.so_guid && this.isAllowAdd());
+  }
+
+  canAdd() {
+    return (!this.so_guid && this.isAllowAdd());
   }
 
   isAllowEdit() {

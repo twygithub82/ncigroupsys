@@ -499,6 +499,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   CanDelete(row: CleaningMethodItem): boolean {
+    if (!this.isAllowDelete()) return false;
     var bRetval: boolean = false;
 
     if (!bRetval) {
@@ -683,5 +684,17 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       input.value = '';
     }
     cnt?.setValue(null);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_DELETE']);
   }
 }

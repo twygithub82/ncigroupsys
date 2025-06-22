@@ -23,6 +23,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -134,25 +135,29 @@ export class FormDialogComponent {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     this.selectedItem = data.selectedItem;
     this.pcForm = this.createCleaningFormula();
     this.fmlDS = new CleaningFormulaDS(this.apollo);
     this.action = data.action!;
+    
+    const a = (!!this.selectedItem?.guid && this.isAllowEdit());
+    const b = (!this.selectedItem?.guid && this.isAllowAdd());
+
     this.translateLangText();
   }
 
   createCleaningFormula(): UntypedFormGroup {
     return this.fb.group({
-      selectedItem: this.selectedItem,
-      duration: this.selectedItem?.duration || [''],
-      description: this.selectedItem?.description || [''],
+      duration: [{ value: this.selectedItem?.duration, disabled: !this.canEdit() }],
+      description: [{ value: this.selectedItem?.description, disabled: !this.canEdit() }],
     });
   }
 
   GetButtonCaption() {
-    if (this.selectedItem.description !== undefined) {
+    if (this.selectedItem.guid) {
       return this.translatedLangText.UPDATE;
     }
     else {
@@ -161,7 +166,7 @@ export class FormDialogComponent {
   }
 
   GetTitle() {
-    if (this.selectedItem.description !== undefined) {
+    if (this.selectedItem.guid) {
       return this.translatedLangText.UPDATE + " " + this.translatedLangText.FORMULA;
     }
     else {
@@ -176,7 +181,7 @@ export class FormDialogComponent {
   }
 
   canEdit() {
-    return true;
+    return (!!this.selectedItem?.guid && this.isAllowEdit()) || (!this.selectedItem?.guid && this.isAllowAdd());
   }
 
   handleSaveSuccess(count: any) {
@@ -249,5 +254,13 @@ export class FormDialogComponent {
 
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_ADD']);
   }
 }

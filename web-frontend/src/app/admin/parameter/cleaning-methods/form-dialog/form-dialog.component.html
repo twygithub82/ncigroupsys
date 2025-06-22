@@ -56,7 +56,8 @@
                 <mat-label>{{translatedLangText.CLEANING_FORMULA}}</mat-label>
                 <input matInput formControlName="formula" [formControl]="cleanFormulaControl"
                   [matAutocomplete]="formulaCode">
-                <mat-autocomplete #formulaCode="matAutocomplete" [displayWith]="displayCleaningFormulaFn" (optionSelected)="selected($event)">
+                <mat-autocomplete #formulaCode="matAutocomplete" [displayWith]="displayCleaningFormulaFn"
+                  (optionSelected)="selected($event)">
                   @for (cf of cleanFormulaList; track cf) {
                   <mat-option [value]="cf">
                     {{cf.description}} - {{cf.duration}} mins
@@ -66,7 +67,7 @@
               </mat-form-field>
             </div>
             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 mb-1" hidden>
-              <button mat-mini-fab color="primary" (click)="$event.stopPropagation()" (click)="AddCleaningStep()" 
+              <button mat-mini-fab color="primary" (click)="$event.stopPropagation()" (click)="AddCleaningStep()"
                 [matTooltip]="translatedLangText.ADD" [disabled]="!canAddFormula()">
                 <mat-icon class="col-white">add</mat-icon>
               </button>
@@ -82,14 +83,16 @@
                   @if (updatedMethodFormulaLinkList.length) {
                   <div cdkDropList class="steps-list" (cdkDropListDropped)="drop2($event)">
                     @for (movie of updatedMethodFormulaLinkList; let i = $index; track movie) {
-                    <div class="step-box cursor-pointer p-2 mb-2 rounded" cdkDrag>
+                    <div class="step-box cursor-pointer p-2 mb-2 rounded" [cdkDragDisabled]="!canEdit()" cdkDrag>
                       <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
                       <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
                         mins</span>
+                      @if (canEdit()) {
                       <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem($event, i)"
                         [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
                         <mat-icon>close</mat-icon>
                       </button>
+                      }
                     </div>
                     }
                   </div>
