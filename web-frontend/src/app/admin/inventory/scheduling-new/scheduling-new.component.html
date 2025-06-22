@@ -444,7 +444,7 @@
                 </div>
                 }
                 <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                  [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
                 <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
                   <div class="legend-item d-flex align-items-center me-4 mb-0">

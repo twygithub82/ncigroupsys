@@ -113,6 +113,11 @@ export class CancelFormDialogComponent {
     return this.cancelForm.get('cancelItemList') as UntypedFormArray;
   }
 
+  //   displayTargetedSo(soList: UntypedFormArray) {
+  //   return soList.controls.map(so => so.get('so_no')?.value)
+  //     .join(', ')
+  // }
+
   initializeValuesChange() {
     this.cancelForm!.get('remarks')!.valueChanges.pipe(
       startWith(''),

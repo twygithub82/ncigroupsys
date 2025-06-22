@@ -315,7 +315,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
@@ -366,7 +366,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
@@ -377,7 +377,6 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-
         const reList = result.item.map((item: any) => {
           const ResidueEstimateRequestInput = {
             customer_guid: item.customer_company_guid,

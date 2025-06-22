@@ -199,7 +199,7 @@
     </div>
     }
     <mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
-      [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEventJobOrder($event)">
+      [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEventJobOrder($event)">
     </mat-paginator>
     <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
       <div class="legend-item d-flex align-items-center me-4 mb-0">

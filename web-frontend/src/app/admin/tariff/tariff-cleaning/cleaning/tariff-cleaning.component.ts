@@ -85,7 +85,7 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'cargo',
-    'desc',
+    //'desc',
     'class',
     'un_no',
     'method',
