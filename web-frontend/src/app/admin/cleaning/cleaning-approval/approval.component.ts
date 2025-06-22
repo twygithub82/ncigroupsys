@@ -314,15 +314,18 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
         this.search();
       }
     }
-    else if(actionId==='pending')
+    else if(['pending','kiv'].includes(actionId))
     {
-       const where ={
-        and:[
-            { storing_order_tank: { purpose_cleaning: { eq: true } }},
-            {storing_order_tank: {  tank_status_cv: { eq: "CLEANING" } }},
-            {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }}          
+       const status = actionId === "kiv" ? ["KIV"] : ["JOB_IN_PROGRESS", "APPROVED"];
+       const where = {
+        and: [
+          { storing_order_tank: { purpose_cleaning: { eq: true } } },
+            ...(actionId !== "kiv"
+              ? [{ storing_order_tank: { tank_status_cv: { eq: "CLEANING" } } }]
+              : []),
+          { status_cv: { in: status } }
         ]
-       };
+      };
 
        this.lastSearchCriteria = where;
        this.searchData(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);

@@ -556,6 +556,7 @@ export class Dashboard1Component implements OnInit {
     
     console.log(`Icon clicked - Type: ${transactionType}`);
     var urlLink="";
+    var actionId="pending";
     var module={};
     switch(transactionType)
     {
@@ -583,15 +584,29 @@ export class Dashboard1Component implements OnInit {
       case this.translatedLangText.RESIDUE_PENDING: 
         urlLink="admin/residue-disposal/estimate-approval/"
       break;
-      case this.translatedLangText.TANK_TEST_DUE:
+      case this.translatedLangText.STEAMING_PENDING:
+        urlLink="admin/steam/estimate-approval/";
+        break;
+      case this.translatedLangText.TANK_PERIODIC_TEST_DUE:
+        actionId="due";
+        urlLink="admin/survey/periodic-test/";
       break;
       case this.translatedLangText.CLEANING_KIV:
+         actionId="kiv";
+         urlLink="admin/cleaning/approval";
       break;
       case this.translatedLangText.RELEASE_PENDING:
+        urlLink="admin/inventory/release-order";
       break;
       case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
+        actionId="publish";
+        module={ queryParams: { tabIndex: 'out-gate-survey' } };
+        urlLink="admin/inventory/out-gate-main";
       break;
       case this.translatedLangText.GATE_IN_PUBLISH_PENDING:
+        actionId="publish";
+        module={ queryParams: { tabIndex: 'app-in-gate-survey' } };
+        urlLink="admin/inventory/in-gate-main";
       break;
       // case this.translatedLangText.GATEIO_PENDING: 
         
@@ -599,7 +614,7 @@ export class Dashboard1Component implements OnInit {
     }
     if(urlLink)
     {
-     this.router.navigate([`${urlLink}`,'pending'],module);
+     this.router.navigate([`${urlLink}`,actionId],module);
      }
     // // Add your custom logic here
     // this.showTransactionDetails(transactionType, amount);

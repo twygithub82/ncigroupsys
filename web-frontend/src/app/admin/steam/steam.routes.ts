@@ -18,6 +18,12 @@ export const STEAM_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_ADD', 'STEAMING_ESTIMATE_APPROVAL_DELETE', 'STEAMING_ESTIMATE_APPROVAL_EDIT', 'STEAMING_ESTIMATE_APPROVAL_VIEW'] }
   },
+   {
+    path: "estimate-approval/:id",
+    component: SteamEstimateApprovalComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['STEAMING_ESTIMATE_APPROVAL_ADD', 'STEAMING_ESTIMATE_APPROVAL_DELETE', 'STEAMING_ESTIMATE_APPROVAL_EDIT', 'STEAMING_ESTIMATE_APPROVAL_VIEW'] }
+  },
   {
     path: "estimate-approval/new/:id",
     component: SteamEstimateApprovalNewComponent,

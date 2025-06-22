@@ -79,6 +79,10 @@ export interface InGateResult {
 export const GET_IN_GATE_YET_TO_SURVEY_COUNT = gql`
  query queryInGateCount($where: in_gateFilterInput) {
     inGates: queryInGatesCount(where: $where) {
+      nodes{
+      guid
+      delete_dt
+      }
       totalCount
   }
 }
@@ -159,6 +163,7 @@ export const SEARCH_IN_GATE_FOR_SURVEY_QUERY = gql`
           }
         }
       }
+      totalCount
     }
   }
 `;

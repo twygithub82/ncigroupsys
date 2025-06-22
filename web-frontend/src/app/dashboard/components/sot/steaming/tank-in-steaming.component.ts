@@ -17,7 +17,6 @@ import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
     standalone: true,
     imports: [
       CommonModule,
-      BreadcrumbComponent,
       MatProgressSpinnerModule
     ],
 })

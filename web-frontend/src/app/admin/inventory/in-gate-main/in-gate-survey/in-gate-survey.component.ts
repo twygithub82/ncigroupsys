@@ -218,9 +218,12 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     });
 
      var actionId= this.route.snapshot.paramMap.get('id');
-    if(actionId==="pending")
+    if(["pending","publish"].includes(actionId!))
     {
-      this.loadData_Pending();
+      var eirStatusCv = 'YET_TO_SURVEY';
+      if(actionId=="publish") eirStatusCv='PENDING';
+      this.loadData_dashboard_query(eirStatusCv);
+      
     }
     else
     {
@@ -252,9 +255,15 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-  public loadData_Pending()
+  public loadData_dashboard_query( eirStatusCv:string)
   {
-       const where :any =  { eir_status_cv: { eq: 'YET_TO_SURVEY' } }
+       const where :any = 
+       {and:[
+        { eir_status_cv: { eq: eirStatusCv } },
+        { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+
+       ]};
+        
 
        this.lastSearchCriteria = where;
        this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);

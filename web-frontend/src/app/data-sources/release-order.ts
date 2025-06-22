@@ -5,6 +5,7 @@ import { catchError, finalize, map } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { CustomerCompanyItem } from './customer-company';
 import { ReleaseOrderSotItem } from './release-order-sot';
+import { Utility } from 'app/utilities/utility';
 
 export class ReleaseOrderGO {
   public guid?: string;
@@ -49,6 +50,7 @@ export class ReleaseOrderItem extends ReleaseOrderGO {
     this.release_order_sot = item.release_order_sot;
   }
 }
+
 
 export const GET_RELEASE_ORDERS = gql`
   query QueryReleaseOrder($where: release_orderFilterInput, $order: [release_orderSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
@@ -379,4 +381,37 @@ export class ReleaseOrderDS extends BaseDataSource<ReleaseOrderItem> {
   canAddTank(ro: any): boolean {
     return !ro || !ro.status_cv || ro.status_cv === 'PENDING';
   }
+
+
+   getTotalReleaseOrderPendingCount(): Observable<number> {
+      this.loadingSubject.next(true);
+      const today = new Date();
+      const pastLimit = new Date(today);
+     
+      pastLimit.setDate(pastLimit.getDate() + 3); // 0.5 year = 6 months
+      var dueDt=Utility.convertDate(pastLimit,true,true);
+      
+      let where: any = {and:[
+        { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+        {release_dt: {lte:dueDt  } },
+        {status_cv:{in:['PENDING','PROCESSING']}}         
+      ]};
+
+      return this.apollo
+        .query<any>({
+          query: GET_RELEASE_ORDERS,
+          variables: { where },
+          fetchPolicy: 'no-cache' // Ensure fresh data
+        })
+        .pipe(
+          map((result) => result.data),
+          catchError(() => of({ roList: [] })),
+          finalize(() => this.loadingSubject.next(false)),
+          map((result) => {
+            const roList = result.roList || { nodes: [], totalCount: 0 };
+            return roList.totalCount;
+          })
+        );
+    }
+    
 }

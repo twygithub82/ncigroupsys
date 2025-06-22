@@ -17,7 +17,6 @@ import { OutGateDS } from 'app/data-sources/out-gate';
     standalone: true,
     imports: [
       CommonModule,
-      BreadcrumbComponent,
       MatProgressSpinnerModule
     ],
 })

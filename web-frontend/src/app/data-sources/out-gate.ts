@@ -666,7 +666,7 @@ export class OutGateDS extends BaseDataSource<OutGateItem> {
             }),
             finalize(() => this.loadingSubject.next(false)),
             map((result) => {
-              const retResult = result.inGates || { nodes: [], totalCount: 0 };
+              const retResult = result.outGates || { nodes: [], totalCount: 0 };
     
               return retResult.totalCount;
             })

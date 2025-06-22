@@ -25,6 +25,12 @@ export const SURVEY_ROUTE: Routes = [
     data: { expectedFunctions: ['SURVEY_PERIODIC_TEST_SURVEY_VIEW', 'SURVEY_PERIODIC_TEST_SURVEY_EDIT', 'SURVEY_PERIODIC_TEST_SURVEY_DELETE'] }
   },
   {
+    path: "periodic-test/:id",
+    component: SurveyPeriodicTestComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['SURVEY_PERIODIC_TEST_SURVEY_VIEW', 'SURVEY_PERIODIC_TEST_SURVEY_EDIT', 'SURVEY_PERIODIC_TEST_SURVEY_DELETE'] }
+  },
+  {
     path: "periodic-test/details/:id",
     component: SurveyPeriodicTestDetailsComponent,
     canActivate: [AuthGuard],

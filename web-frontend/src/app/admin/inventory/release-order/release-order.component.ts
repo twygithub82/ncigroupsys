@@ -41,7 +41,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
-
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-release-order',
   standalone: true,
@@ -177,6 +177,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
   todayDt = new Date();
 
   constructor(
+    private route: ActivatedRoute,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -449,30 +450,41 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       this.roStatusCvList = data;
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
-
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
+     var actionId= this.route.snapshot.paramMap.get('id');
+    if(["pending","publish"].includes(actionId!))
+    {
+      
+      
+      this.loadData_dashboard_query();
+      
     }
+    else
+    {
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
+      }
 
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
 
-    if (!savedCriteria && !savedPagination) {
-      this.search();
+        this.performSearch(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
+      }
+
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
     }
   }
 
@@ -659,5 +671,25 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       release_dt: '',
     });
     this.customerCodeControl.reset('');
+  }
+
+  public loadData_dashboard_query()
+  {
+    const today = new Date();
+      const pastLimit = new Date(today);
+     
+      pastLimit.setDate(pastLimit.getDate() + 3); // 0.5 year = 6 months
+      var dueDt=Utility.convertDate(pastLimit,true,true);
+      
+         const where: any = {and:[
+        { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+        {release_dt: {lte:dueDt  } },
+        {status_cv:{in:['PENDING','PROCESSING']}}         
+      ]};
+        
+
+       this.lastSearchCriteria = where;
+       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+      console.log("search pending records");
   }
 }

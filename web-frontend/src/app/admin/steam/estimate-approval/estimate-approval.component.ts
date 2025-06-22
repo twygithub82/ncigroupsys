@@ -24,7 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -220,6 +220,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   plDS: PackageLabourDS;
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -414,31 +415,55 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       this.processStatusCvList = data;
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+      var actionId= this.route.snapshot.paramMap.get('id');
+    if(!actionId)
+    {
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
-    }
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
+      }
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
 
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
+        this.performSearch(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
+      }
 
-    if (!savedCriteria && !savedPagination) {
-      this.search();
-    }
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
+   }
+   else if(['pending'].includes(actionId))
+   {
+     const status = ["PENDING"];
+       const where: any = {and:[
+        { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+        { purpose_steam:{eq:true}},
+        { tank_status_cv: { eq: 'STEAM'  } },
+        { steaming: { some: {and: [
+              { status_cv: { in: status } },
+            ]}}
+        }
+      ]};
+
+       this.lastSearchCriteria = where;
+      this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+        this.updatePageSelection();
+      });
+      console.log("search pending records");
+
+   }
   }
 
   handleCancelSuccess(count: any) {

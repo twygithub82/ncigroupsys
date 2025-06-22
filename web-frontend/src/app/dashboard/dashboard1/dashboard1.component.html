@@ -46,7 +46,7 @@
              }
         @if (AllowToView(translatedLangText.CLEANING_KIV)) {
           <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer" >
+            <div class="card info-card pointer"  (click)="onIconClick($event, translatedLangText.CLEANING_KIV)" >
               <dashboard-cleaning-kiv/>
             </div>
           </div>
@@ -89,19 +89,19 @@
           </div>
              }
 
-          @if (AllowToView(translatedLangText.TANK_IN_STEAMING)) {
+          @if (AllowToView(translatedLangText.STEAMING_PENDING)) {
            
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card " >
-             <dashboard-tank-in-steaming/>
+          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">
+            <div class="card info-card pointer" >
+             <dashboard-steaming-waiting/>
             </div>
           </div>
              }
              
           @if (AllowToView(translatedLangText.TANK_PERIODIC_TEST_DUE)){
            
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card " >
+          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.TANK_PERIODIC_TEST_DUE)">
+            <div class="card info-card pointer" >
              <dashboard-tank-test-due/>
             </div>
           </div>
@@ -109,36 +109,44 @@
 
           @if (AllowToView(translatedLangText.RELEASE_PENDING)){
            
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card " >
+          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.RELEASE_PENDING)">
+            <div class="card info-card pointer" >
              <dashboard-release-waiting/>
             </div>
           </div>
              }
         
-              @if (AllowToView(translatedLangText.TANK_IN_STEAMING)){
+              @if (AllowToView(translatedLangText.GATE_IN_PUBLISH_PENDING)){
            
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card " >
+          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.GATE_IN_PUBLISH_PENDING)">
+            <div class="card info-card pointer" >
              <dashboard-gatein-publish-waiting/>
             </div>
           </div>
              }
 
-           @if (AllowToView(translatedLangText.TANK_IN_STEAMING)){
+           @if (AllowToView(translatedLangText.GATE_OUT_PUBLISH_PENDING)){
            
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card " >
+          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.GATE_OUT_PUBLISH_PENDING)">
+            <div class="card info-card pointer" >
              <dashboard-gateout-publish-waiting/>
             </div>
           </div>
              }
         
-          <div class="col-md-6 col-xl-5" hidden>
+             <!-- @if (AllowToView(translatedLangText.TANK_IN_STEAMING)) {
+           
+          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.TANK_IN_STEAMING)">
+            <div class="card info-card " >
+             <dashboard-tank-in-steaming/>
+            </div>
+          </div>
+             } -->
+          <!-- <div class="col-md-6 col-xl-5" hidden>
             <div class="card info-card ">
               <dashboard-consolidated-waiting/>
             </div>
-          </div>
+          </div> -->
          <!-- <div class="col-md-6 col-xl-3">
           <div class="card info-card">
           <app-test1/>

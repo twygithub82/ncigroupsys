@@ -172,8 +172,9 @@ export interface StoringOrderResult {
 
 const GET_STORING_ORDER_TANKS_COUNT = gql`
   query getStoringOrderTanks($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTankCount(where: $where) {
+    sotList: queryStoringOrderTankCount(where: $where ,first:100) {
       nodes {
+      guid
       takein_job_no
       tank_no
       steaming {
@@ -181,7 +182,11 @@ const GET_STORING_ORDER_TANKS_COUNT = gql`
         estimate_dt
         estimate_no
         }
+       tank_info{
+        test_dt
+       }
       }
+
       totalCount
     }
   }

@@ -24,7 +24,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -189,6 +189,7 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
   availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE", "RELEASED"];
 
   constructor(
+    private route: ActivatedRoute,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -282,30 +283,57 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       this.depotCvList = addDefaultSelectOption(data, 'All');
     });
 
-    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+ var actionId= this.route.snapshot.paramMap.get('id');
+    if(!actionId)
+    {
 
-    if (savedCriteria) {
-      this.searchForm?.patchValue(savedCriteria);
-      this.constructSearchCriteria();
+
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
+      }
+
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
+
+        this.performSearch(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
+      }
+
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
     }
+    else if(["due"].includes(actionId))
+    {
 
-    if (savedPagination) {
-      this.pageIndex = savedPagination.pageIndex;
-      this.pageSize = savedPagination.pageSize;
+        const today = new Date();
+        const pastLimit = new Date(today);
+        pastLimit.setFullYear(today.getFullYear() - 2);
+        pastLimit.setMonth(pastLimit.getMonth() - 6); // 0.5 year = 6 months
+        var dueDt=Utility.convertDate(pastLimit,true,true);
+        
+        let where: any = {and:[
+          { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+          { tank_info:
+            {test_dt:{lte:dueDt}}
+          }
+        ]};
+        this.lastSearchCriteria=where;
+       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+        this.updatePageSelection();
+      });
 
-      this.performSearch(
-        savedPagination.pageSize,
-        savedPagination.pageIndex,
-        savedPagination.first,
-        savedPagination.after,
-        savedPagination.last,
-        savedPagination.before
-      );
-    }
-
-    if (!savedCriteria && !savedPagination) {
-      this.search();
     }
   }
 

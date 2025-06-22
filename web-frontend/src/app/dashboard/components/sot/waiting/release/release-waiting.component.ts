@@ -8,7 +8,8 @@ import { Apollo } from 'apollo-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
-import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
+import { ReleaseOrderDS } from 'app/data-sources/release-order';
+
 
 @Component({
     selector: 'dashboard-release-waiting',
@@ -24,7 +25,7 @@ import { InGateCleaningDS } from 'app/data-sources/in-gate-cleaning';
 export class ReleaseWaitingComponent {
 
   topic :string ="SOT_UPDATED";
-  sotDS: StoringOrderTankDS;
+  roDS: ReleaseOrderDS;
   msgReceived: string='';
   sot_waiting: string = "-";
   translatedLangText: any = {}
@@ -38,7 +39,7 @@ export class ReleaseWaitingComponent {
     private translate: TranslateService,
     public modulePackageService: ModulePackageService) {
     this.initializeSubscription();
-    this.sotDS= new StoringOrderTankDS(this.apollo);
+    this.roDS= new ReleaseOrderDS(this.apollo);
     
   }
 
@@ -56,7 +57,7 @@ export class ReleaseWaitingComponent {
 
   private loadData() {
     this.sot_waiting ="-";
-    this.sotDS.getTotalReleaseOrderPendingCount().subscribe(data => {
+    this.roDS.getTotalReleaseOrderPendingCount().subscribe(data => {
       this.sot_waiting = String(data);
     });
   }

@@ -17,7 +17,6 @@ import { InGateDS } from 'app/data-sources/in-gate';
     standalone: true,
     imports: [
       CommonModule,
-      BreadcrumbComponent,
       MatProgressSpinnerModule
     ],
 })
