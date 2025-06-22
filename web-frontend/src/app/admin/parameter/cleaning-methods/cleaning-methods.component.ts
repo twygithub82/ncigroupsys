@@ -477,7 +477,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   deleteItem(row: CleaningMethodItem) {
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -549,8 +548,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     return retval;
   }
 
-
-
   name_removeAllSelected(): void {
     this.selectedNames = [];
   }
@@ -603,8 +600,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     cnt?.setValue(null);
   }
 
-
-
   @ViewChild('descInput', { static: true })
   descInput?: ElementRef<HTMLInputElement>;
   selectedDescs: any[] = [];
@@ -615,9 +610,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     retval = (index >= 0);
     return retval;
   }
-
-
-
 
   description_getSelectedDisplay(): string {
     var itm = this.selectedDescs;

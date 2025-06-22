@@ -236,7 +236,7 @@ export class FormDialogComponent {
   // }
 
   canEdit() {
-    return (!!this.selectedItem?.guid && this.isAllowEdit()) || (!this.selectedItem?.guid && this.isAllowAdd());
+    return ((!!this.selectedItem?.guid && this.isAllowEdit()) || (!this.selectedItem?.guid && this.isAllowAdd()));
   }
 
   handleSaveSuccess(count: any) {
