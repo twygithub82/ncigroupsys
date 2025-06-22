@@ -22,17 +22,15 @@ import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/clean
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
+import { ModulePackageService } from 'app/services/module-package.service';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: CleaningCategoryItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -61,7 +59,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    // PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent {
@@ -99,29 +98,9 @@ export class FormDialogComponent {
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
@@ -147,31 +126,6 @@ export class FormDialogComponent {
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
     CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST: 'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
-    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     CATEGORY_NAME: "COMMON-FORM.CATEGORY-NAME",
     CATEGORY_DESCRIPTION: "COMMON-FORM.CATEGORY-DESCRIPTION",
     CATEGORY_COST: "COMMON-FORM.CARGO-COST",
@@ -191,6 +145,7 @@ export class FormDialogComponent {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    public modulePackageService: ModulePackageService,
   ) {
     // Set the defaults
 
@@ -223,10 +178,10 @@ export class FormDialogComponent {
 
   createCleaningCategory(): UntypedFormGroup {
     return this.fb.group({
-      selectedItem: this.selectedItem,
-      adjusted_cost: this.selectedItem.cost?.toFixed(2),
-      name: this.selectedItem.name,
-      description: this.selectedItem.description,
+      selectedItem: [{ value: this.selectedItem, disabled: !this.canEdit() }],
+      adjusted_cost: [{ value: Utility.convertNumber(this.selectedItem.cost, 2), disabled: !this.canEdit() }],
+      name: [{ value: this.selectedItem.name, disabled: !this.canEdit() }],
+      description: [{ value: this.selectedItem.description, disabled: !this.canEdit() }],
       remarks: ['']
     });
   }
@@ -281,7 +236,7 @@ export class FormDialogComponent {
   // }
 
   canEdit() {
-    return true;
+    return this.isAllowEdit() || (!this.selectedItem.guid && this.isAllowAdd());
   }
 
   handleSaveSuccess(count: any) {
@@ -375,8 +330,21 @@ export class FormDialogComponent {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_DELETE']);
   }
 
 }

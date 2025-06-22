@@ -724,4 +724,16 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   parse2Decimal(figure: number | string) {
     return Utility.formatNumberDisplay(figure)
   }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_DELETE']);
+  }
 }

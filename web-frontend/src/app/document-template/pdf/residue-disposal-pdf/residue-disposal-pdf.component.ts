@@ -1090,8 +1090,8 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                 var cc= item.storing_order_tank?.storing_order?.customer_company;
                 await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin-5, bottomMargin, leftMargin, rightMargin, this.translate,cc);
       
-                 startY=43;
-                PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false,1
+                startY=43;
+                PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY-2,12,false,1
                   ,'#000000',false);
                 startY+=8;
                var data: any[][] = [
@@ -1181,7 +1181,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                 await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
       
                  //var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
-                this.downloadFile(pdf.output('blob'), this.getReportTitle())
+                this.downloadFile(pdf.output('blob'), this.estimate_no!)
                  this.dialogRef.close(); 
               }
 

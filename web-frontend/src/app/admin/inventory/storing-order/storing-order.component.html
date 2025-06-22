@@ -43,9 +43,9 @@
                         @if(isAllowDelete() &&(modulePackageService.isGrowthPackage() ||
                         modulePackageService.isCustomizedPackage())){
                         <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
-                          <button mat-mini-fab color="warn" (click)="cancelSelectedRows(soSelection.selected)"
+                          <button mat-mini-fab class="red-button" (click)="cancelSelectedRows(soSelection.selected)"
                             [disabled]="canCancelSelectedRows()">
-                            <mat-icon class="col-white">cancel</mat-icon>
+                            <mat-icon class="col-white">close</mat-icon>
                           </button>
                         </div>
                         <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
@@ -192,7 +192,7 @@
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row">
                         <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}
+                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="no_of_tanks">

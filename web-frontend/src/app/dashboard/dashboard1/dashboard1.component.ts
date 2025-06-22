@@ -23,26 +23,26 @@ import { FeatherIconsComponent } from '../../shared/components/feather-icons/fea
 import { ModulePackageService } from 'app/services/module-package.service';
 import { AuthService } from '@core/service/auth.service';
 import { debounceTime, take } from 'rxjs/operators';
-import {TestComponent} from '../components/test/test.component';
-import {Test1Component} from '../components/test1/test1.component';
+import { TestComponent } from '../components/test/test.component';
+import { Test1Component } from '../components/test1/test1.component';
 import { GateInWaitingComponent } from '../components/sot/waiting/gate-in/gatein_waiting.component';
-import {InGateSurveyWaitingComponent} from '../components/sot/notsurvey/in_gate/in_gate_survey_waiting.component';
-import {CleaningWaitingComponent} from '../components/sot/waiting/cleaning/cleaning_waiting.component';
+import { InGateSurveyWaitingComponent } from '../components/sot/notsurvey/in_gate/in_gate_survey_waiting.component';
+import { CleaningWaitingComponent } from '../components/sot/waiting/cleaning/cleaning_waiting.component';
 import { ResidueWaitingComponent } from '../components/sot/waiting/residue/residue_waiting.component';
 import { RepairEstimateWaitingComponent } from '../components/sot/waiting/repair/estimate/estimate_waiting.component';
 import { RepairCustomerApprovalWaitingComponent } from '../components/sot/waiting/repair/customer_approval/customer_approval_waiting.component';
-import {ConsolidatedWaitingComponent} from '../components/sot/waiting/consolidated/consolidated_waiting.component';
-import {RepairQCWaitingComponent} from '../components/sot/waiting/repair/qc_incomplete/qc_waiting.component';
-import {DashboardGateIOComponent} from '../components/gate/io/gateio.component';
+import { ConsolidatedWaitingComponent } from '../components/sot/waiting/consolidated/consolidated_waiting.component';
+import { RepairQCWaitingComponent } from '../components/sot/waiting/repair/qc_incomplete/qc_waiting.component';
+import { DashboardGateIOComponent } from '../components/gate/io/gateio.component';
 import { TankInYardComponent } from '../components/sot/in-yard/tank-in-yard.component';
 import { TankInSteamingComponent } from '../components/sot/steaming/tank-in-steaming.component';
 import { OutGateSurveyWaitingComponent } from '../components/sot/notsurvey/out_gate/out_gate_survey_waiting.component';
-import {SteamingWaitingComponent} from '../components/sot/waiting/steaming/steaming-waiting.component';
+import { SteamingWaitingComponent } from '../components/sot/waiting/steaming/steaming-waiting.component';
 import { TankTestDueComponent } from '../components/sot/due/test/tank-test-due.component';
 import { CleaningKIVComponent } from '../components/sot/KIV/cleaning/cleaning_kiv.component';
-import {ReleaseWaitingComponent} from '../components/sot/waiting/release/release-waiting.component';
-import {GateOutPublishWaitingComponent} from '../components/sot/waiting/publish/gate-out/gateout_publish_waiting.component';
-import {GateInPublishWaitingComponent} from '../components/sot/waiting/publish/gate-in/gatein_publish_waiting.component';
+import { ReleaseWaitingComponent } from '../components/sot/waiting/release/release-waiting.component';
+import { GateOutPublishWaitingComponent } from '../components/sot/waiting/publish/gate-out/gateout_publish_waiting.component';
+import { GateInPublishWaitingComponent } from '../components/sot/waiting/publish/gate-in/gatein_publish_waiting.component';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -122,10 +122,10 @@ export class Dashboard1Component implements OnInit {
     REPAIR_QC_PENDING: 'COMMON-FORM.REPAIR-QC-PENDING',
     CLEANING_PENDING: 'COMMON-FORM.CLEANING-PENDING',
     RESIDUE_PENDING: 'COMMON-FORM.RESIDUE-PENDING',
-    GATEIO:'COMMON-FORM.GATEIO',
-    TANK_IN_YARD:'COMMON-FORM.TANK-IN-YARD',
+    GATEIO: 'COMMON-FORM.GATEIO',
+    TANK_IN_YARD: 'COMMON-FORM.TANK-IN-YARD',
     STEAMING_PENDING: 'COMMON-FORM.STEAMING-PENDING',
-    TANK_PERIODIC_TEST_DUE:'COMMON-FORM.TANK-PERIODIC-TEST-DUE',
+    TANK_PERIODIC_TEST_DUE: 'COMMON-FORM.TANK-PERIODIC-TEST-DUE',
     CLEANING_KIV: 'COMMON-FORM.CLEANING-KIV',
     RELEASE_PENDING: 'COMMON-FORM.RELEASE-PENDING',
     GATE_OUT_PUBLISH_PENDING: 'COMMON-FORM.GATE-OUT-PUBLISH-PENDING',
@@ -143,17 +143,17 @@ export class Dashboard1Component implements OnInit {
   messageSubscription?: Subscription;
   in_gate_yet_to_survey?: number = 0;
   sot_waiting?: number = 0;
-  
-  
+
+
   constructor(
     private router: Router,
     private apollo: Apollo,
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
   ) {
-   // this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
-   // this.igDS = new InGateDS(this.apollo);
-   // this.sotDS = new StoringOrderTankDS(this.apollo);
+    // this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
+    // this.igDS = new InGateDS(this.apollo);
+    // this.sotDS = new StoringOrderTankDS(this.apollo);
     //constructor
     this.translateLangText();
   }
@@ -163,8 +163,8 @@ export class Dashboard1Component implements OnInit {
     // this.chart3();
     // this.chart2();
     // this.chart4();
-  //  this.messageSubscribe();
-   // this.loadData();
+    //  this.messageSubscribe();
+    // this.loadData();
 
   }
 
@@ -551,9 +551,9 @@ export class Dashboard1Component implements OnInit {
     });
   }
 
-   onIconClick(event: MouseEvent, transactionType: string) {
+  onIconClick(event: MouseEvent, transactionType: string) {
     event.stopPropagation(); // Prevent event bubbling
-    
+
     console.log(`Icon clicked - Type: ${transactionType}`);
     var urlLink="";
     var actionId="pending";
@@ -609,7 +609,7 @@ export class Dashboard1Component implements OnInit {
         urlLink="admin/inventory/in-gate-main";
       break;
       // case this.translatedLangText.GATEIO_PENDING: 
-        
+
       // break;
     }
     if(urlLink)
@@ -618,7 +618,7 @@ export class Dashboard1Component implements OnInit {
      }
     // // Add your custom logic here
     // this.showTransactionDetails(transactionType, amount);
-    
+
     // // Optional: Add visual feedback
     // const iconBox = event.target as HTMLElement;
     // iconBox.classList.add('icon-clicked');
@@ -626,61 +626,60 @@ export class Dashboard1Component implements OnInit {
   }
 
   AllowToView(cardName: string) {
-    var retval:boolean =false;;
-     switch(cardName)
-    {
-      case this.translatedLangText.IN_GATE_SURVEY_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_IN_SURVEY_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-       case this.translatedLangText.OUT_GATE_SURVEY_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_OUT_SURVEY_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.GATE_IN_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_GATE_IN_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_APPROVAL_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.REPAIR_ESTIMATE_PENDING: 
-      retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_ESTIMATE_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.REPAIR_QC_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.CLEANING_PENDING: 
-       retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_CLEANING_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-       case this.translatedLangText.RESIDUE_PENDING: 
-        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RESIDUE_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.GATEIO: 
-        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_GATE_IN_VIEW','DASHBOARD_PENDING_GATE_OUT_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.TANK_IN_YARD: 
-        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_IN_YARD_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-      case this.translatedLangText.STEAMING_PENDING: 
-        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_STEAMING_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
+    var retval: boolean = false;;
+    switch (cardName) {
+      case this.translatedLangText.IN_GATE_SURVEY_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_IN_SURVEY_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.OUT_GATE_SURVEY_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_OUT_SURVEY_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.GATE_IN_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_GATE_IN_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_APPROVAL_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.REPAIR_ESTIMATE_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_ESTIMATE_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.REPAIR_QC_PENDING:
+        retval = this.modulePackageService.hasFunctions(['EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.CLEANING_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_CLEANING_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.RESIDUE_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RESIDUE_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.GATEIO:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_GATE_IN_VIEW', 'DASHBOARD_PENDING_GATE_OUT_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.TANK_IN_YARD:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_IN_YARD_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.STEAMING_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_STEAMING_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
       case this.translatedLangText.TANK_PERIODIC_TEST_DUE:
-         retval=this.modulePackageService.hasFunctions(['DASHBOARD_DUE_PERIODIC_TEST_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_DUE_PERIODIC_TEST_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
       case this.translatedLangText.CLEANING_KIV:
-         retval=this.modulePackageService.hasFunctions(['DASHBOARD_KIV_CLEANING_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_KIV_CLEANING_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
       case this.translatedLangText.RELEASE_PENDING:
-        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-       case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
-        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
-       case this.translatedLangText.GATE_IN_PUBLISH_PENDING:
-        retval=this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW','EXCLUSIVE_DASHBOARD_VIEW']);
-      break;
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
+      case this.translatedLangText.GATE_IN_PUBLISH_PENDING:
+        retval = this.modulePackageService.hasFunctions(['DASHBOARD_PENDING_RELEASE_ORDER_VIEW', 'EXCLUSIVE_DASHBOARD_VIEW']);
+        break;
     }
     return retval;
   }
 
-   
-  
+
+
 }
