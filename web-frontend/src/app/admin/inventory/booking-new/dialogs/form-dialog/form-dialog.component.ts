@@ -292,7 +292,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return this.isAllowEdit() && this.booking.status_cv !== 'CANCELLED';
+    return ((!!this.booking?.guid && this.isAllowEdit()) || (!this.booking?.guid && this.isAllowAdd())) && this.booking.status_cv !== 'CANCELLED';
   }
 
   getTankStatusDescription(codeValType: string | undefined): string | undefined {
@@ -313,6 +313,10 @@ export class FormDialogComponent {
 
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_ADD']);
   }
 
   displayCodeValueFn(cv: CodeValuesItem): string {

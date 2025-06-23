@@ -477,7 +477,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   deleteItem(row: CleaningMethodItem) {
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -499,6 +498,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   }
 
   CanDelete(row: CleaningMethodItem): boolean {
+    if (!this.isAllowDelete()) return false;
     var bRetval: boolean = false;
 
     if (!bRetval) {
@@ -547,8 +547,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     }
     return retval;
   }
-
-
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
@@ -602,8 +600,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     cnt?.setValue(null);
   }
 
-
-
   @ViewChild('descInput', { static: true })
   descInput?: ElementRef<HTMLInputElement>;
   selectedDescs: any[] = [];
@@ -614,9 +610,6 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     retval = (index >= 0);
     return retval;
   }
-
-
-
 
   description_getSelectedDisplay(): string {
     var itm = this.selectedDescs;
@@ -683,5 +676,17 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       input.value = '';
     }
     cnt?.setValue(null);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_DELETE']);
   }
 }

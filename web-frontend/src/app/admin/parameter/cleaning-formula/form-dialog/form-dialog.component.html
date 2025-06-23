@@ -5,9 +5,6 @@
         <h4>{{GetTitle()}}</h4>
       </div>
     </div>
-    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
-      <mat-icon>close</mat-icon>
-    </button> -->
   </div>
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
@@ -15,46 +12,42 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
-                <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.DESCRIPTION | translate}}</mat-label>
-                    <input matInput formControlName="description" type="text" required>
-                    <!-- @if (pcForm.get('description')?.hasError('required')) {
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
+                <input matInput formControlName="description" type="text" required>
+                <!-- @if (pcForm.get('description')?.hasError('required')) {
                       <mat-error>
                         {{langText.DESCRIPTION | translate}} {{langText.CARGO_REQUIRED | translate}}
                       </mat-error>
                       } -->
-                      @if (pcForm.get('description')?.hasError('existed')) {
-                        <mat-error>
-                          {{langText.DESCRIPTION | translate}}: {{langText.EXISTED | translate}}
-                        </mat-error>
-                        }
-                  </mat-form-field>
+                @if (pcForm.get('description')?.hasError('existed')) {
+                <mat-error>
+                  {{translatedLangText.DESCRIPTION}}: {{translatedLangText.EXISTED}}
+                </mat-error>
+                }
+              </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
-                  <mat-label>{{translatedLangText.DURATION}}</mat-label>
-                  <input matInput formControlName="duration" type="number" min="0" required>
-                  <!-- @if (pcForm.get('duration')?.hasError('required')) {
+                <mat-label>{{translatedLangText.DURATION}}</mat-label>
+                <input matInput formControlName="duration" type="number" min="0" required>
+                <!-- @if (pcForm.get('duration')?.hasError('required')) {
                     <mat-error>
                       {{langText.DURATION | translate}} {{langText.CARGO_REQUIRED | translate}}
                     </mat-error>
                     } -->
-                </mat-form-field>
+              </mat-form-field>
             </div>
-          
           </div>
-         
-        
         </div>
-        
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-          <button mat-flat-button color="primary" class="me-1" (click)="save()">
-            <mat-icon>
-              save
-            </mat-icon>
-            {{GetButtonCaption()}}</button>
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">
+          <mat-icon>
+            save
+          </mat-icon>
+          {{GetButtonCaption()}}</button>
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>
