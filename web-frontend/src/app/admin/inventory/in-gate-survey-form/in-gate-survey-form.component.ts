@@ -1576,18 +1576,22 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
           if (result?.data?.updateInGateSurvey) {
-            this.uploadImages(igs.guid!);
+            const wantPublish = toPublish && ig.eir_status_cv !== "PUBLISHED";
+            this.uploadImages(igs.guid!, !wantPublish);
+            if (wantPublish) {
+              this.onPublish();
+            }
           }
         });
       } else {
-        if (toPublish) {
+        if (toPublish && ig.eir_status_cv !== "PUBLISHED") {
           igs.action = "published";
         }
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
           const record = result.data.record
           if (record?.affected) {
-            this.uploadImages(record.guid[0]);
+            this.uploadImages(record.guid[0], true);
             this.onDownload(record.guid[0]);
           }
         });
@@ -2143,7 +2147,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  uploadImages(guid: string) {
+  uploadImages(guid: string, redirect: boolean) {
     const leftImg = this.surveyForm?.get('frame_type.leftImage')?.value;
     const rearImg = this.surveyForm?.get('frame_type.rearImage')?.value;
     const rightImg = this.surveyForm?.get('frame_type.rightImage')?.value;
@@ -2193,12 +2197,16 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         },
         complete: () => {
           console.log('Upload process completed.');
-          this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+          if (redirect) {
+            this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+          }
         }
       });
     } else {
       this.handleSaveSuccess(1);
-      this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      if (redirect) {
+        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      }
     }
   }
 
@@ -2340,7 +2348,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     return BusinessLogicUtil.validateAllControlsRaw(form);
   }
 
-    getMaxDate() {
+  getMaxDate() {
     return new Date();
   }
 }
