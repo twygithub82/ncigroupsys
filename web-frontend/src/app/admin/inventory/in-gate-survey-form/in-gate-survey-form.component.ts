@@ -1455,7 +1455,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         }
         const dialogTitle = !toPublish ? this.translatedLangText?.ARE_YOU_SURE_TO_SUBMIT : this.translatedLangText?.ARE_YOU_SURE_TO_SAVE_AND_PUBLISH;
         const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
-          width: '500px',
+          // width: '500px',
           data: {
             action: 'submit',
             translatedLangText: this.translatedLangText,
@@ -1576,7 +1576,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
         this.igsDS.updateInGateSurvey(igs, ig).subscribe(result => {
           console.log(result)
           if (result?.data?.updateInGateSurvey) {
-            const wantPublish = toPublish && ig.eir_status_cv !== "PUBLISHED";
+            const wantPublish = toPublish && ig?.eir_status_cv !== "PUBLISHED";
             this.uploadImages(igs.guid!, !wantPublish);
             if (wantPublish) {
               this.onPublish();
@@ -1584,7 +1584,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           }
         });
       } else {
-        if (toPublish && ig.eir_status_cv !== "PUBLISHED") {
+        if (toPublish && ig?.eir_status_cv !== "PUBLISHED") {
           igs.action = "published";
         }
         this.igsDS.addInGateSurvey(igs, ig).subscribe(result => {

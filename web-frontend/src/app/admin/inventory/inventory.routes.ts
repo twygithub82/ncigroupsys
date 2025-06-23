@@ -42,7 +42,7 @@ export const INVENTORY_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['INVENTORY_IN_GATE_VIEW', 'INVENTORY_IN_GATE_EDIT', 'INVENTORY_IN_GATE_DELETE', 'INVENTORY_IN_GATE_SURVEY_VIEW', 'INVENTORY_IN_GATE_SURVEY_EDIT', 'INVENTORY_IN_GATE_SURVEY_DELETE', 'INVENTORY_IN_GATE_SURVEY_PUBLISH'] }
   },
-   {
+  {
     path: "in-gate-main/:id",
     component: InGateMainComponent,
     canActivate: [AuthGuard],
@@ -130,17 +130,17 @@ export const INVENTORY_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['INVENTORY_RELEASE_ORDER_VIEW'] }
   },
-   {
-    path: "release-order/:id",
-    component: ReleaseOrderComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['INVENTORY_RELEASE_ORDER_VIEW'] }
-  },
   {
     path: "release-order/new",
     component: ReleaseOrderDetailsComponent,
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['INVENTORY_RELEASE_ORDER_VIEW', 'INVENTORY_RELEASE_ORDER_EDIT', 'INVENTORY_RELEASE_ORDER_DELETE', 'INVENTORY_RELEASE_ORDER_ADD'] }
+  },
+  {
+    path: "release-order/:id",
+    component: ReleaseOrderComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['INVENTORY_RELEASE_ORDER_VIEW'] }
   },
   {
     path: "release-order/edit/:id",

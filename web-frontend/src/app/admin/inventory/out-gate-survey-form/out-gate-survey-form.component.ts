@@ -1450,12 +1450,14 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         } else {
           tempDirection = 'ltr';
         }
+        const dialogTitle = !toPublish ? this.translatedLangText?.ARE_YOU_SURE_TO_SUBMIT : this.translatedLangText?.ARE_YOU_SURE_TO_SAVE_AND_PUBLISH;
         const dialogRef = this.dialog.open(EmptyFormConfirmationDialogComponent, {
-          width: '500px',
+          // width: '500px',
           data: {
             action: 'edit',
             translatedLangText: this.translatedLangText,
-            confirmForm: compartmentTypeFormChecks
+            confirmForm: compartmentTypeFormChecks,
+            dialogTitle: dialogTitle
           },
           direction: tempDirection
         });
@@ -1573,18 +1575,22 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         this.ogsDS.updateOutGateSurvey(ogs, og).subscribe(result => {
           console.log(result)
           if (result?.data?.updateOutGateSurvey) {
-            this.uploadImages(ogs.guid!);
+            const wantPublish = toPublish && og?.eir_status_cv !== "PUBLISHED";
+            this.uploadImages(ogs.guid!, !wantPublish);
+            if (wantPublish) {
+              this.onPublish();
+            }
           }
         });
       } else {
-        if (toPublish) {
+        if (toPublish && og?.eir_status_cv !== "PUBLISHED") {
           ogs.action = "published";
         }
         this.ogsDS.addOutGateSurvey(ogs, og).subscribe(result => {
           console.log(result)
           const record = result.data.record
           if (record?.affected) {
-            this.uploadImages(record.guid[0]);
+            this.uploadImages(record.guid[0], true);
             this.onDownload(record.guid[0]);
           }
         });
@@ -1615,7 +1621,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         data: {
           action: 'publish',
           translatedLangText: this.translatedLangText,
-          confirmForm: compartmentTypeFormChecks
+          confirmForm: compartmentTypeFormChecks,
+          dialogTitle: this.translatedLangText?.ARE_YOU_SURE_TO_PUBLISH
         },
         direction: tempDirection
       });
@@ -2099,7 +2106,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
     });
   }
 
-  uploadImages(guid: string) {
+  uploadImages(guid: string, redirect: boolean) {
     const leftImg = this.surveyForm?.get('frame_type.leftImage')?.value;
     const rearImg = this.surveyForm?.get('frame_type.rearImage')?.value;
     const rightImg = this.surveyForm?.get('frame_type.rightImage')?.value;
@@ -2149,12 +2156,16 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
         },
         complete: () => {
           console.log('Upload process completed.');
-          this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+          if (redirect) {
+            this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+          }
         }
       });
     } else {
       this.handleSaveSuccess(1);
-      this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      if (redirect) {
+        this.router.navigate(['/admin/inventory/out-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      }
     }
   }
 

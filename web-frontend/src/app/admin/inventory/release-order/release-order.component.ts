@@ -450,16 +450,10 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       this.roStatusCvList = data;
     });
 
-     var actionId= this.route.snapshot.paramMap.get('id');
-    if(["pending","publish"].includes(actionId!))
-    {
-      
-      
+    var actionId = this.route.snapshot.paramMap.get('id');
+    if (["pending", "publish"].includes(actionId!)) {
       this.loadData_dashboard_query();
-      
-    }
-    else
-    {
+    } else {
       const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
       const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
@@ -673,23 +667,24 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     this.customerCodeControl.reset('');
   }
 
-  public loadData_dashboard_query()
-  {
+  public loadData_dashboard_query() {
     const today = new Date();
-      const pastLimit = new Date(today);
-     
-      pastLimit.setDate(pastLimit.getDate() + 3); // 0.5 year = 6 months
-      var dueDt=Utility.convertDate(pastLimit,true,true);
-      
-         const where: any = {and:[
-        { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-        {release_dt: {lte:dueDt  } },
-        {status_cv:{in:['PENDING','PROCESSING']}}         
-      ]};
-        
+    const pastLimit = new Date(today);
 
-       this.lastSearchCriteria = where;
-       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
-      console.log("search pending records");
+    pastLimit.setDate(pastLimit.getDate() + 3); // 0.5 year = 6 months
+    var dueDt = Utility.convertDate(pastLimit, true, true);
+
+    const where: any = {
+      and: [
+        { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
+        { release_dt: { lte: dueDt } },
+        { status_cv: { in: ['PENDING', 'PROCESSING'] } }
+      ]
+    };
+
+
+    this.lastSearchCriteria = where;
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+    console.log("search pending records");
   }
 }
