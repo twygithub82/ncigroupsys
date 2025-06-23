@@ -63,4 +63,12 @@ export class SearchStateService {
       }
     }
   }
+
+  clearOtherPagesKeys(currentPageKey: string[]): void {
+    for (const key in this.searchStates) {
+      if (!currentPageKey.includes(key)) {
+        delete this.searchStates[key];
+      }
+    }
+  }
 }

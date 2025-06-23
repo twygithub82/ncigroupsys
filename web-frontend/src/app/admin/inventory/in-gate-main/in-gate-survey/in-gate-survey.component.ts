@@ -169,7 +169,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
   ngOnInit() {
     this.initSearchForm();
     this.initializeValueChanges();
-    this.searchStateService.clearOtherPages(this.pageStateType);
+    this.searchStateService.clearOtherPagesKeys([this.pageStateType, 'InGate']);
     this.loadData();
   }
 
@@ -223,7 +223,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     //   var eirStatusCv = 'YET_TO_SURVEY';
     //   if(actionId=="publish") eirStatusCv='PENDING';
     //   this.loadData_dashboard_query(eirStatusCv);
-      
+
     // }
     // else
     {
@@ -255,19 +255,20 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
     }
   }
 
-  public loadData_dashboard_query( eirStatusCv:string)
-  {
-       const where :any = 
-       {and:[
+  public loadData_dashboard_query(eirStatusCv: string) {
+    const where: any =
+    {
+      and: [
         { eir_status_cv: { eq: eirStatusCv } },
-        { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+        { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
 
-       ]};
-        
+      ]
+    };
 
-       this.lastSearchCriteria = where;
-       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
-      console.log("search pending records");
+
+    this.lastSearchCriteria = where;
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+    console.log("search pending records");
   }
 
   // export table data in excel file
@@ -391,7 +392,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       last,
       before
     });
-    console.log(this.searchStateService.getPagination(this.pageStateType))
+    console.log(this.searchStateService.getCriteria(this.pageStateType))
     this.subs.sink = this.igDS.searchInGateForSurvey(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.inGateList = data;

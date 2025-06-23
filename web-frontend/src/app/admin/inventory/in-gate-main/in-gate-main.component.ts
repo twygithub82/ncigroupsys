@@ -92,18 +92,23 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
     IN_GATE_SURVEY: "COMMON-FORM.IN-GATE-SURVEY"
   }
 
+  @ViewChild('inGateComp', { static: false }) inGateComp?: InGateComponent;
+  @ViewChild('inGateSurveyComp', { static: false }) inGateSurveyComp?: InGateSurveyComponent;
+
   tabConfig = [
     {
       label: this.translatedLangText.IN_GATE,
       component: 'app-in-gate',
       modulePackage: ['growth', 'customized'],
-      expectedFunctions: ['INVENTORY_IN_GATE_VIEW', 'INVENTORY_IN_GATE_EDIT', 'INVENTORY_IN_GATE_DELETE']
+      expectedFunctions: ['INVENTORY_IN_GATE_VIEW', 'INVENTORY_IN_GATE_EDIT', 'INVENTORY_IN_GATE_DELETE'],
+      componentRef: this.inGateComp
     },
     {
       label: this.translatedLangText.IN_GATE_SURVEY,
       component: 'app-in-gate-survey',
       modulePackage: ['starter', 'growth', 'customized'],
-      expectedFunctions: ['INVENTORY_IN_GATE_SURVEY_VIEW', 'INVENTORY_IN_GATE_SURVEY_EDIT', 'INVENTORY_IN_GATE_SURVEY_DELETE', 'INVENTORY_IN_GATE_SURVEY_PUBLISH']
+      expectedFunctions: ['INVENTORY_IN_GATE_SURVEY_VIEW', 'INVENTORY_IN_GATE_SURVEY_EDIT', 'INVENTORY_IN_GATE_SURVEY_DELETE', 'INVENTORY_IN_GATE_SURVEY_PUBLISH'],
+      componentRef: this.inGateSurveyComp
     }
   ];
 
@@ -114,22 +119,16 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   selectedTabIndex = 0;
-  // tabComponent:string='';
-  @ViewChild('inGateComp', { static: false }) inGateComp?: InGateComponent;
-  @ViewChild('inGateSurveyComp', { static: false }) inGateSurveyComp?: InGateSurveyComponent;
-  // @ViewChild('inGateComp') inGateComp?: InGateComponent;
-  // @ViewChild('inGateSurveyComp') inGateSurveyComp?: InGateSurveyComponent;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService,
-     private searchStateService: SearchStateService,  ) {
+    private modulePackageService: ModulePackageService,) {
     super();
     this.translateLangText();
-    
+
   }
 
   ngOnInit() {
@@ -139,7 +138,7 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       this.selectedTabIndex = index >= 0 ? index : 0;
       // this.tabComponent=tabComponent
     });
-    
+
   }
   // ngAfterViewInit(){
   //   // this.route.queryParams.subscribe(params => {
@@ -151,12 +150,21 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
   // }
 
   onTabChange(index: number): void {
-    const tabComponent = this.allowedTabs[index]?.component;
+    const tabComponent = this.allowedTabs[index];
     if (tabComponent) {
       this.router.navigate([], {
-        queryParams: { tabIndex: tabComponent },
+        queryParams: { tabIndex: tabComponent?.component },
         queryParamsHandling: 'merge'
       });
+
+      switch (tabComponent.component) {
+        case 'app-in-gate':
+          this.inGateComp?.onTabFocused(); // example method
+          break;
+        case 'app-in-gate-survey':
+          this.inGateSurveyComp?.onTabFocused(); // example method
+          break;
+      }
     }
   }
 
@@ -177,7 +185,7 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
   //   } else if (tabName === "app-in-gate-survey" && this.inGateSurveyComp) {
   //     this.inGateSurveyComp.loadData_Pending();
   //   }
-     
+
   //   }
   // }
 }
