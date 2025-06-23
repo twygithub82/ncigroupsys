@@ -469,7 +469,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return (this.isAllowEdit() || this.isAllowAdd()) && ((this.soDS.canAdd(this.data.soItem!)) && (this.sotDS.canEdit(this.storingOrderTank) || !this.sotDS.canRollbackStatus(this.storingOrderTank)) && (!this.storingOrderTank.actions?.length || ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback')));
+    return ((!!this.data?.soItem?.guid && this.isAllowEdit()) || (!this.data?.soItem?.guid && this.isAllowAdd())) && ((this.soDS.canAdd(this.data.soItem!)) && (this.sotDS.canEdit(this.storingOrderTank) || !this.sotDS.canRollbackStatus(this.storingOrderTank)) && (!this.storingOrderTank.actions?.length || ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback')));
   }
 
   updateValidators(validOptions: any[]) {

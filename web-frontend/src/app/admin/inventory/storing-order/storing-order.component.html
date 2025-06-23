@@ -43,7 +43,8 @@
                         @if(isAllowDelete() &&(modulePackageService.isGrowthPackage() ||
                         modulePackageService.isCustomizedPackage())){
                         <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
-                          <button mat-mini-fab class="red-button" (click)="cancelSelectedRows(soSelection.selected)"
+                          <button mat-mini-fab (click)="cancelSelectedRows(soSelection.selected)"
+                            [class.red-button]="!canCancelSelectedRows()"
                             [disabled]="canCancelSelectedRows()">
                             <mat-icon class="col-white">close</mat-icon>
                           </button>
@@ -297,7 +298,7 @@
                 </div>
                 }
                 <mat-paginator #paginator [length]="soDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                  [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
               </div>
             </div>

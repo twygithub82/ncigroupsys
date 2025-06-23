@@ -381,7 +381,7 @@
                   {{translatedLangText.EXPORT}}
                 </button>
                 } -->
-                @if (residueDS.canAbort(residueItem, deList)) {
+                <!-- @if (residueDS.canAbort(residueItem, deList)) {
                 <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
                   (click)="onAbort($event)">
                   <mat-icon>
@@ -393,8 +393,8 @@
                   </mat-icon>
                   {{translatedLangText.ABORT}}
                 </button>
-                }
-                <!-- <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 align-right"> -->
+                } -->
+
                 @if(canSave())
                 {
                 <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5"

@@ -1,40 +1,40 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="card p-0 tab-card-container">
-      <mat-accordion>
-        <mat-expansion-panel [expanded]="true">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-            </mat-panel-title>
-            <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                  <mat-icon>search</mat-icon>
-                </button>
-              </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
-                  <mat-icon>clear_all</mat-icon>
-                </button>
-              </div>
-              @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-              <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' +translatedLangText.EDIT">
-                <button mat-mini-fab class="primary-light" (click)="adjustCost()" (click)="$event.stopPropagation()">
-                  <mat-icon class="col-white">edit</mat-icon>
-                </button>
-              </div>
-              }
-              @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-              <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+      <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+        <mat-accordion>
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+              </mat-panel-title>
+              <mat-panel-description>
+                <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                  <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                    <mat-icon>search</mat-icon>
+                  </button>
+                </div>
+                <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                  <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                    <mat-icon>clear_all</mat-icon>
+                  </button>
+                </div>
+                @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' +translatedLangText.EDIT">
+                  <button mat-mini-fab class="primary-light" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                    <mat-icon class="col-white">edit</mat-icon>
+                  </button>
+                </div>
+                }
+                @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                 matTooltip={{translatedLangText.EXPORT}}>
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />
               </div> -->
-              }
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
-            <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+                }
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
@@ -65,8 +65,6 @@
                     </mat-chip-grid>
                   </mat-form-field>
                 </div>
-
-
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
@@ -95,8 +93,6 @@
                     </mat-chip-grid>
                   </mat-form-field>
                 </div>
-
-
                 <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
@@ -126,10 +122,10 @@
                   </mat-form-field>
                 </div> -->
               </div>
-            </form>
-          </div>
-        </mat-expansion-panel>
-      </mat-accordion>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </form>
       <div class="body overflow-auto">
         <div class="responsive_table">
           <table mat-table [dataSource]="packDepotItems" matSort
@@ -263,7 +259,7 @@
         </div>
         }
         <mat-paginator #paginator [length]="packDepotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-          [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+          [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>
     </div>

@@ -35,7 +35,7 @@
               <div class="row">
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                    <mat-label>{{translatedLangText.MAIN_CUSTOMER}}</mat-label>
                     <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
                       [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
@@ -108,26 +108,26 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.MAIN_CUSTOMER
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.MAIN_CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
                   }}:</span>{{this.getMainCustomerCode(row)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.BRANCH_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE }}:</span>{{row.code}}</mat-cell>
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-center'">
+                <span class="mobile-label">{{this.translatedLangText.BRANCH_CODE }}:</span>{{row.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-3_5-xl'">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+                [ngClass]="'tbl-col-width-per-4-xl'">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl'"
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-4-xl'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.name}}</mat-cell>
@@ -149,10 +149,10 @@
             </ng-container> -->
 
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2_5-xl'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-2_75-xl'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-2_5-xl'" *matCellDef="let row"
+              <mat-cell [ngClass]="'tbl-col-width-per-2_75-xl'" *matCellDef="let row"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.tank?.unit_type}}</mat-cell>
@@ -202,7 +202,7 @@
         </div>
         }
         <mat-paginator #paginator [length]="ccDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-          [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+          [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>
     </div>

@@ -91,16 +91,18 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CODE
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell [ngClass]="''" *matHeaderCellDef>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+              <mat-header-cell class="left-padding-cell" [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-3_5-lg'" 
+                *matHeaderCellDef>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="''" *matCellDef="let row">
+              <mat-cell class="left-padding-cell" [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-3_5-lg'" 
+                *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company?.name}}</mat-cell>
             </ng-container>
@@ -118,27 +120,27 @@
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl justify-content-center'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'"
                 *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-2-xl justify-content-center'" *matCellDef="let row">
+              <mat-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-2_5-xl'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-3-xl'" *matCellDef="let row">
+              <mat-cell [ngClass]="'tbl-col-width-per-2_5-xl'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.customer_company?.tank?.unit_type}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="actions">
               <mat-header-cell
-                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row; let i=index;"
-                [ngClass]="'justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                [ngClass]="'justify-content-end tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 @if (isShowDeleteIcon(row)) {
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.customer_company)"
                   [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
@@ -168,7 +170,7 @@
         </div>
         }
         <mat-paginator #paginator [length]="ccDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-          [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+          [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>
     </div>

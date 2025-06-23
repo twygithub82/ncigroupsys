@@ -69,11 +69,6 @@ export class EmptyFormConfirmationDialogComponent {
     // Set the defaults
     this.action = data.action!;
     this.dialogTitle = data.dialogTitle || '';
-    // if (this.action === 'submit') {
-    //   this.dialogTitle = data.translatedLangText?.ARE_YOU_SURE_TO_SUBMIT;
-    // } else {
-    //   this.dialogTitle = data.translatedLangText?.ARE_YOU_SURE_TO_PUBLISH;
-    // }
     this.description = data.confirmForm;
   }
 

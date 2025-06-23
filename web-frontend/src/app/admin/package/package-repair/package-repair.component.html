@@ -38,7 +38,7 @@
                         @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                         <!-- <div class="m-l-10" [matTooltip]="translatedLangText.EDIT +' '+ translatedLangText.MATERIAL_COST"> -->
                         <div class="m-l-10" [matTooltip]="translatedLangText.GROUP_ADJUSTMENT">
-                          <button mat-mini-fab class="accent-darker" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                          <button mat-mini-fab class="orange-button" (click)="adjustCost()" (click)="$event.stopPropagation()">
                             <mat-icon class="col-white">percent</mat-icon>
                           </button>
                         </div>
@@ -331,7 +331,7 @@
                 </div>
                 }
                 <mat-paginator #paginator [length]="packRepairDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                  [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
               </div>
             </div>

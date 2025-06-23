@@ -2,7 +2,7 @@ import { CdkDrag, CdkDragDrop, CdkDragPlaceholder, CdkDropList, moveItemInArray 
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule,MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
@@ -26,6 +26,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 import { CleaningStepItem } from 'app/data-sources/cleaning-steps';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningGO, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
@@ -115,34 +116,12 @@ export class FormDialogComponent {
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
-    REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
-    STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
@@ -177,13 +156,6 @@ export class FormDialogComponent {
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
@@ -203,10 +175,7 @@ export class FormDialogComponent {
     CATEGORY: "COMMON-FORM.CATEGORY"
   };
 
-
   selectedItem: CleaningMethodItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -215,10 +184,8 @@ export class FormDialogComponent {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
-    // Set the defaults
-
-
     this.selectedItem = data.selectedItem;
     this.updatedMethodFormulaLinkList = JSON.parse(JSON.stringify(this.selectedItem.cleaning_method_formula || []));
     this.mthDS = new CleaningMethodDS(this.apollo);
@@ -229,7 +196,6 @@ export class FormDialogComponent {
     this.translateLangText();
     this.loadData();
     this.initializeValueChanges();
-
   }
 
   loadData() {
@@ -244,6 +210,12 @@ export class FormDialogComponent {
         });
       }
     });
+    if (!this.canEdit()) {
+      this.pcForm.get('name')?.disable();
+      this.pcForm.get('description')?.disable();
+      this.pcForm.get('category')?.disable();
+      this.cleanFormulaControl.disable();
+    }
   }
 
   initializeValueChanges() {
@@ -263,7 +235,6 @@ export class FormDialogComponent {
         });
       })
     ).subscribe();
-
   }
 
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
@@ -271,28 +242,27 @@ export class FormDialogComponent {
       AutocompleteSelectionValidator(validOptions)
     ]);
   }
+
   createCleaningCategory(): UntypedFormGroup {
     return this.fb.group({
-      selectedItem: this.selectedItem,
       name: this.selectedItem.name,
       description: this.selectedItem.description,
-      selected_formulas: this.selectedItem,
       formula: this.cleanFormulaControl,
-      remarks: [''],
       category: ['']
     });
   }
 
   GetButtonCaption() {
-    if (this.selectedItem.name !== undefined) {
+    if (!!this.selectedItem.guid) {
       return this.translatedLangText.UPDATE;
     }
     else {
       return this.translatedLangText.SAVE_AND_SUBMIT;
     }
   }
+
   GetTitle() {
-    if (this.selectedItem.name !== undefined) {
+    if (!!this.selectedItem.guid) {
       return this.translatedLangText.UPDATE + " " + this.translatedLangText.PROCESS;
     }
     else {
@@ -306,9 +276,8 @@ export class FormDialogComponent {
     });
   }
 
-
   canEdit() {
-    return true;
+    return ((!!this.selectedItem?.guid && this.isAllowEdit()) || (!this.selectedItem?.guid && this.isAllowAdd()));
   }
 
   handleSaveSuccess(count: any) {
@@ -318,8 +287,6 @@ export class FormDialogComponent {
       this.dialogRef.close(count);
     }
   }
-
-
 
   save() {
     if (!this.pcForm?.valid) return;
@@ -378,7 +345,6 @@ export class FormDialogComponent {
         }
       }
     });
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -482,27 +448,35 @@ export class FormDialogComponent {
     return 'Total ' + totalDuration + ' mins';
   }
 
-   selected(event: MatAutocompleteSelectedEvent): void {
-      //const process = event.option.value;
-      this.AddCleaningStep();
-      // const index = this.selectedCargo.findIndex(c => c.guid === cargo.guid);
-      // if (!(index >= 0)) {
-      //   this.selectedCargo.push(cargo);
-      //   // this.search();
-      // }
-      // else {
-      //   this.selectedCargo.splice(index, 1);
-      //   // this.search();
-      // }
-  
-      // if (this.custInput) {
-  
-      //   this.custInput.nativeElement.value = '';
-      //   this.searchForm?.get('cargo_name')?.setValue('');
-      //   this.searchCargoList('');
-      // }
-      // this.updateFormControl();
-      //this.customerCodeControl.setValue(null);
-      //this.pcForm?.patchValue({ customer_code: null });
-    }
+  selected(event: MatAutocompleteSelectedEvent): void {
+    //const process = event.option.value;
+    this.AddCleaningStep();
+    // const index = this.selectedCargo.findIndex(c => c.guid === cargo.guid);
+    // if (!(index >= 0)) {
+    //   this.selectedCargo.push(cargo);
+    //   // this.search();
+    // }
+    // else {
+    //   this.selectedCargo.splice(index, 1);
+    //   // this.search();
+    // }
+
+    // if (this.custInput) {
+
+    //   this.custInput.nativeElement.value = '';
+    //   this.searchForm?.get('cargo_name')?.setValue('');
+    //   this.searchCargoList('');
+    // }
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_ADD']);
+  }
 }

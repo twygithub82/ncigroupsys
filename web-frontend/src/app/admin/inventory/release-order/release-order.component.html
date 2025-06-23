@@ -40,10 +40,6 @@
                             <mat-icon class="col-white">cancel</mat-icon>
                           </button>
                         </div>
-                        <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
-                      <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
-                        (click)="$event.stopPropagation()" />
-                    </div> -->
                         }
                         @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
                         <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
@@ -86,45 +82,7 @@
                           <input matInput formControlName="job_no">
                         </mat-form-field>
                       </div>
-                      <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="etr_picker">
-                        <input matStartDate placeholder="Start date" formControlName="etr_dt_start">
-                        <input matEndDate placeholder="End date" formControlName="etr_dt_end">
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="etr_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #etr_picker></mat-date-range-picker>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                      <input matInput formControlName="eir_no">
-                    </mat-form-field>
-                  </div>
-                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
-                      <mat-select multiple formControlName="purpose">
-                        @for (codeValue of purposeOptionCvList; track codeValue) {
-                        <mat-option [value]="codeValue.code_val">
-                          {{codeValue.description}}
-                        </mat-option>
-                        }
-                      </mat-select>
-                    </mat-form-field>
-                  </div> -->
                       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                        <!-- <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
-                      <mat-date-range-input [rangePicker]="booking_picker">
-                        <input matStartDate placeholder="Start date" formControlName="release_dt_start">
-                        <input matEndDate placeholder="End date" formControlName="release_dt_end">
-                      </mat-date-range-input>
-                      <mat-datepicker-toggle matSuffix [for]="booking_picker"></mat-datepicker-toggle>
-                      <mat-date-range-picker #booking_picker></mat-date-range-picker>
-                    </mat-form-field> -->
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.RELEASE_DATE}}</mat-label>
                           <input matInput formControlName="release_dt" [matDatepicker]="release_dt_picker"
@@ -145,16 +103,6 @@
                           </mat-select>
                         </mat-form-field>
                       </div>
-                      <!-- <div
-                    class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end pe-4">
-                    <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
-                      <mat-icon>search</mat-icon>
-                    </button>
-                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-                      matTooltip={{translatedLangText.CLEAR_ALL}}>
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
-                  </div> -->
                     </div>
                   </mat-expansion-panel>
                 </mat-accordion>
@@ -297,7 +245,7 @@
                 </div>
                 }
                 <mat-paginator #paginator [length]="roDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-                  [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)">
+                  [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
               </div>
             </div>

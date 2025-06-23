@@ -527,6 +527,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   CanDelete(row: CleaningFormulaItem): boolean {
+    if (!this.isAllowDelete()) return false;
     var bRetval: boolean = false;
 
     if (!bRetval) {
@@ -701,4 +702,15 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     cnt?.setValue(null);
   }
 
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_DELETE']);
+  }
 }

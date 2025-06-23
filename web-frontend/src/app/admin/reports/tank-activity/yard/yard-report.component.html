@@ -349,7 +349,7 @@
         </div>
         }
         <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-          [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageEvent($event)" hidden>
+          [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>
     </div>

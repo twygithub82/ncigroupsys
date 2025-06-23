@@ -40,13 +40,8 @@
                           @else{
                           {{team.description}}
                           }
-
-
                         </span>
-
-
                       </button>
-
                       }
                     </div>
                   </div>
@@ -60,13 +55,12 @@
                       <span>{{translatedLangText.ROLLBACK}}</span>
                     </button>
                     }
-
+                    <!-- 
                     @if(canAbort())
                     {
-
                     <button mat-flat-button color="warn" (click)="onAbort($event)"
                       class="m-r-5">{{translatedLangText.ABORT}}</button>
-                    }
+                    } -->
 
                     @if (canEdit() && !buttonViewOnly()) {
                     <button mat-flat-button color="primary" (click)="save()" [disabled]="!canSave()"

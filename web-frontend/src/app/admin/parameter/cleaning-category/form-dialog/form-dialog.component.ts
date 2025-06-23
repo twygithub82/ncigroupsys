@@ -236,7 +236,7 @@ export class FormDialogComponent {
   // }
 
   canEdit() {
-    return this.isAllowEdit() || (!this.selectedItem.guid && this.isAllowAdd());
+    return ((!!this.selectedItem?.guid && this.isAllowEdit()) || (!this.selectedItem?.guid && this.isAllowAdd()));
   }
 
   handleSaveSuccess(count: any) {
@@ -346,5 +346,4 @@ export class FormDialogComponent {
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_DELETE']);
   }
-
 }
