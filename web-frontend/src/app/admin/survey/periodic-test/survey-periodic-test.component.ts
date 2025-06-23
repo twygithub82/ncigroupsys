@@ -237,7 +237,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       survey_dt_end: [''],
       certificate_cv: [''],
       depot_status_cv: [''],
-      status_cv: ['']
+      status_cv: [''],
+      test_dt:['']
     });
   }
 
@@ -283,8 +284,8 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
       this.depotCvList = addDefaultSelectOption(data, 'All');
     });
 
- var actionId= this.route.snapshot.paramMap.get('id');
-    if(!actionId)
+//  var actionId= this.route.snapshot.paramMap.get('id');
+//     if(!actionId)
     {
 
 
@@ -314,27 +315,27 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
         this.search();
       }
     }
-    else if(["due"].includes(actionId))
-    {
+    // else if(["due"].includes(actionId))
+    // {
 
-        const today = new Date();
-        const pastLimit = new Date(today);
-        pastLimit.setFullYear(today.getFullYear() - 2);
-        pastLimit.setMonth(pastLimit.getMonth() - 6); // 0.5 year = 6 months
-        var dueDt=Utility.convertDate(pastLimit,true,true);
+    //     const today = new Date();
+    //     const pastLimit = new Date(today);
+    //     pastLimit.setFullYear(today.getFullYear() - 2);
+    //     pastLimit.setMonth(pastLimit.getMonth() - 6); // 0.5 year = 6 months
+    //     var dueDt=Utility.convertDate(pastLimit,true,true);
         
-        let where: any = {and:[
-          { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-          { tank_info:
-            {test_dt:{lte:dueDt}}
-          }
-        ]};
-        this.lastSearchCriteria=where;
-       this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-        this.updatePageSelection();
-      });
+    //     let where: any = {and:[
+    //       { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+    //       { tank_info:
+    //         {test_dt:{lte:dueDt}}
+    //       }
+    //     ]};
+    //     this.lastSearchCriteria=where;
+    //    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+    //     this.updatePageSelection();
+    //   });
 
-    }
+    // }
   }
 
   showNotification(
@@ -478,6 +479,20 @@ export class SurveyPeriodicTestComponent extends UnsubscribeOnDestroyAdapter imp
         }
       ]
     };
+
+    if (this.searchForm!.get('test_dt')?.value) {
+      const dueDt = this.searchForm!.get('test_dt')?.value;
+      //var testCriteria = {test_dt:{ lte:testDt}};
+       where.and=[
+      { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+      { tank_info:
+        {test_dt:{lte:dueDt}}
+      }
+    ]
+      //where.and.push({ tank_info: testCriteria });
+    }
+
+
 
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;

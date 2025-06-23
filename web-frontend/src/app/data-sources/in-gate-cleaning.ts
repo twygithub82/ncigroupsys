@@ -760,8 +760,8 @@ export class InGateCleaningDS extends BaseDataSource<InGateCleaningItem> {
       this.loadingSubject.next(true);
       let where: any ={and: [
         { storing_order_tank:{purpose_cleaning: { eq: true } }}, 
-        { storing_order_tank:{tank_status_cv: { eq: "CLEANING" } }},
-        { status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"]}}
+        { storing_order_tank:{tank_status_cv: { in: ["CLEANING", 'STORAGE'] } }},
+        { status_cv: { in: ["APPROVED"]}}
       ]};
       return this.apollo
         .query<any>({

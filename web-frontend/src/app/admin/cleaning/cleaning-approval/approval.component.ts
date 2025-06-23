@@ -284,8 +284,8 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     });
 
 
-    var actionId= this.route.snapshot.paramMap.get('id');
-    if(!actionId)
+    // var actionId= this.route.snapshot.paramMap.get('id');
+    // if(!actionId)
     {
 
       const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
@@ -314,23 +314,23 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
         this.search();
       }
     }
-    else if(['pending','kiv'].includes(actionId))
-    {
-       const status = actionId === "kiv" ? ["KIV"] : ["JOB_IN_PROGRESS", "APPROVED"];
-       const where = {
-        and: [
-          { storing_order_tank: { purpose_cleaning: { eq: true } } },
-            ...(actionId !== "kiv"
-              ? [{ storing_order_tank: { tank_status_cv: { eq: "CLEANING" } } }]
-              : []),
-          { status_cv: { in: status } }
-        ]
-      };
+    // else if(['pending','kiv'].includes(actionId))
+    // {
+    //    const status = actionId === "kiv" ? ["KIV"] : ["JOB_IN_PROGRESS", "APPROVED"];
+    //    const where = {
+    //     and: [
+    //       { storing_order_tank: { purpose_cleaning: { eq: true } } },
+    //         ...(actionId !== "kiv"
+    //           ? [{ storing_order_tank: { tank_status_cv: { eq: "CLEANING" } } }]
+    //           : []),
+    //       { status_cv: { in: status } }
+    //     ]
+    //   };
 
-       this.lastSearchCriteria = where;
-       this.searchData(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
-      console.log("search pending records");
-    }
+    //    this.lastSearchCriteria = where;
+    //    this.searchData(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
+    //   console.log("search pending records");
+    // }
   }
 
   // export table data in excel file

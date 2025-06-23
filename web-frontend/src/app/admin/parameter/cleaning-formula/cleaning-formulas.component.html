@@ -76,11 +76,12 @@
                                 <mat-option [value]="pn" class="checkbox-option"
                                   [class.mdc-list-item--selected]="description_itemSelected(pn)">
                                   <div class="horizontal-container">
-                                    <mat-checkbox color="primary"
+                                    <mat-checkbox  color="primary"
                                       (click)="description_onCheckboxClicked(pn); $event.stopPropagation()"
-                                      [checked]="description_itemSelected(pn) || false">
+                                      [checked]="description_itemSelected(pn)">
                                     </mat-checkbox>
-                                    <div class="option-text">{{ pn }}</div>
+                                    <div class="option-text">{{ pn }}
+                                    </div>
                                   </div>
                                 </mat-option>
                                 }

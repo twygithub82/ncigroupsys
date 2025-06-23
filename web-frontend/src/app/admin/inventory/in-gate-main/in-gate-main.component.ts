@@ -29,6 +29,7 @@ import { Utility } from 'app/utilities/utility';
 import { InGateSurveyComponent } from './in-gate-survey/in-gate-survey.component';
 import { InGateComponent } from './in-gate/in-gate.component';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-in-gate-main',
@@ -124,8 +125,8 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService
-  ) {
+    private modulePackageService: ModulePackageService,
+     private searchStateService: SearchStateService,  ) {
     super();
     this.translateLangText();
     
@@ -138,6 +139,7 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       this.selectedTabIndex = index >= 0 ? index : 0;
       // this.tabComponent=tabComponent
     });
+    
   }
   // ngAfterViewInit(){
   //   // this.route.queryParams.subscribe(params => {

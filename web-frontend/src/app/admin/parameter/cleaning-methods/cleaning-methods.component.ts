@@ -38,6 +38,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { Third1Component } from 'app/multilevel/thirdlevel/third1/third1.component';
+
 
 @Component({
   selector: 'app-cleaning-methods',
@@ -146,8 +148,9 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
+  pageSizeOptions = pageSizeInfo.pageSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { description: "ASC" };
+  lastOrderBy: any = { name: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -292,7 +295,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     // if (this.descriptionControl?.value) {
     //   where.description = { contains: this.descriptionControl?.value };
     // }
-    this.searchData(where, order, undefined, undefined, undefined, undefined, this.pageIndex, undefined);
+    this.searchData(where, order, this.pageSize, undefined, undefined, undefined, this.pageIndex, undefined);
 
     // if(this.searchForm!.value['min_cost']){
     //   where.cost ={gte: Number(this.searchForm!.value['min_cost'])}
@@ -321,10 +324,12 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.mthDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.clnMethodItem = data.map(i => {
-        i.cleaning_method_formula?.sort((a, b) => a.sequence! - b.sequence!);
-        return i;
-      });
+      this.clnMethodItem =data.sort( (a,b)=> Utility.naturalSort(a.name!, b.name!) );
+      // data.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      // this.clnMethodItem = data.map(i => {
+      //   i.cleaning_method_formula?.sort((a, b) => a.sequence! - b.sequence!);
+      //   return i;
+      // });
       this.endCursor = this.mthDS.pageInfo?.endCursor;
       this.startCursor = this.mthDS.pageInfo?.startCursor;
       this.hasNextPage = this.mthDS.pageInfo?.hasNextPage ?? false;

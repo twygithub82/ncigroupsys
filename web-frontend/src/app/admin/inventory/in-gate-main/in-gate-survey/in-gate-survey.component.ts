@@ -217,15 +217,15 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
       this.tankStatusCvList = addDefaultSelectOption(data, 'All');
     });
 
-     var actionId= this.route.snapshot.paramMap.get('id');
-    if(["pending","publish"].includes(actionId!))
-    {
-      var eirStatusCv = 'YET_TO_SURVEY';
-      if(actionId=="publish") eirStatusCv='PENDING';
-      this.loadData_dashboard_query(eirStatusCv);
+    //  var actionId= this.route.snapshot.paramMap.get('id');
+    // if(["pending","publish"].includes(actionId!))
+    // {
+    //   var eirStatusCv = 'YET_TO_SURVEY';
+    //   if(actionId=="publish") eirStatusCv='PENDING';
+    //   this.loadData_dashboard_query(eirStatusCv);
       
-    }
-    else
+    // }
+    // else
     {
       const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
       const savedPagination = this.searchStateService.getPagination(this.pageStateType);

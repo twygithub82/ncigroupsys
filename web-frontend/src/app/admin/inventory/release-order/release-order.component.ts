@@ -225,6 +225,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       etr_dt_end: [''],
       purpose: [''],
       release_dt: [''],
+      due_dt:['']
     });
   }
 
@@ -554,6 +555,15 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
 
   constructSearchCriteria() {
     const where: any = {};
+
+    if (this.searchForm!.get('due_dt')?.value) {
+       var dueDt = this.searchForm!.get('due_dt')?.value;
+       where.and = [
+        // { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+        {release_dt: {lte:dueDt  } },
+        {status_cv:{in:['PENDING','PROCESSING']}}]  
+    
+  }
 
     if (this.searchForm!.get('ro_no')?.value) {
       where.ro_no = { contains: this.searchForm!.get('ro_no')?.value?.trim() };

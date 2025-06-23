@@ -44,6 +44,7 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-cleaning-formulas',
@@ -167,6 +168,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   hasPreviousPage = false;
 
   constructor(
+    
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -551,9 +553,12 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   selectedDescs: any[] = [];
   description_itemSelected(row: any): boolean {
     var itm = this.selectedDescs;
-    var retval: boolean = false;
-    const index = itm.findIndex(c => c === row);
-    retval = (index >= 0);
+    var retval: boolean =this.selectedDescs.includes(row);
+    //const index = itm.findIndex(c => c === row);
+//this.cdRef.detectChanges(); // Force update
+   // retval = (index >= 0);
+  console.log('Checked for', row, ':', retval);
+   // retval = (index >= 0);
     return retval;
   }
 
@@ -573,36 +578,110 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   description_removeAllSelected(): void {
     this.selectedDescs = [];
+    this.resetDescriptionValue();
   }
 
-  description_selected(event: MatAutocompleteSelectedEvent): void {
-    var itm = this.selectedDescs;
-    var cnt = this.searchForm?.get('description');
-    var elmInput = this.descInput;
-    const val = event.option.value;
-    const index = itm.findIndex(c => c === val);
-    if (!(index >= 0)) {
-      itm.push(val);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
-    }
-    else {
-      itm.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
-    }
+   checkboxCalled:boolean=false;
+  description_selected(event: MatAutocompleteSelectedEvent , checked:boolean=true): void {
+      var itm = this.selectedDescs;
+        var cnt = this.searchForm?.get('description');
+        var elmInput = this.descInput;
+        
+        const val = event.option.value;
+        const index = itm.findIndex(c => c === val);
+        if (!(index >= 0)) {
+          itm.push(val);
+          // if (Utility.IsAllowAutoSearch())this.search();
+        }
+        else {
+          itm.splice(index, 1);
 
+           //if (Utility.IsAllowAutoSearch()) this.search();
+        }
+    
+        if (elmInput) {
+          elmInput.nativeElement.value = '';
+          cnt?.setValue('');
+        }
+
+      if (Utility.IsAllowAutoSearch())  
+      {
+         this.search();
+        // var interval = 300;
+        // setTimeout(() => {
+        //   this.search();
+        // },interval);
+      }
+
+  //   // if(event.source===undefined) 
+  //   // { 
+  //   //   var itm = this.selectedDescs;
+  //   //    const val = event.option.value;
+  //   //      const index = itm.findIndex(c => c === val);
+  //   //    if(checked && !(index >= 0))
+  //   //    {
+  //   //       itm.push(val);
+
+  //   //    }
+  //   //    else
+  //   //    {
+  //   //      itm.splice(index, 1);
+  //   //    }
+  //   //     //this.checkboxCalled=false;
+  //   //     // this.resetDescriptionValue();
+  //   //     return;
+  //   // }
+  //   // this.checkboxCalled = (event.source===undefined);
+  //   var itm = this.selectedDescs;
+  //   var cnt = this.searchForm?.get('description');
+   
+  //   const val = event.option.value;
+  //   const index = itm.findIndex(c => c === val);
+  //   var dataChanged=false;
+  //   if (!(index >= 0)) {
+  //     itm.push(val);
+  //     dataChanged=true;
+  //     // if (Utility.IsAllowAutoSearch())
+  //     //   this.search();
+  //   }
+  //   else {
+  //     itm.splice(index, 1);
+  //     dataChanged=true;
+     
+  //   }
+  //   //  this.resetDescriptionValue();
+    
+
+  //   if (Utility.IsAllowAutoSearch() && dataChanged)  
+  //     {
+         
+  //       setTimeout(() => {
+  //         this.search();
+         
+  //       })
+        
+  //     }
+  //  //  if (Utility.IsAllowAutoSearch() && dataChanged)  this.search();
+  //   // this.updateFormControl();
+  //   //this.customerCodeControl.setValue(null);
+  //   //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  resetDescriptionValue()
+  {
+     var elmInput = this.descInput;
     if (elmInput) {
-      elmInput.nativeElement.value = '';
-      cnt?.setValue('');
-    }
-    // this.updateFormControl();
-    //this.customerCodeControl.setValue(null);
-    //this.pcForm?.patchValue({ customer_code: null });
+            elmInput.nativeElement.value = '';
+           this.searchForm?.patchValue({
+            description: ''
+           });
+          }
   }
 
   description_onCheckboxClicked(row: any) {
-    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    // const checkbox = event.target as HTMLInputElement;
+    // const isChecked = checkbox.checked;
+    const fakeEvent = { option: { value: row} } as MatAutocompleteSelectedEvent;
     this.description_selected(fakeEvent);
 
   }

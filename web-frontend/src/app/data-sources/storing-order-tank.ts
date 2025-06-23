@@ -5272,8 +5272,8 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     this.loadingSubject.next(true);
     let where: any = {and:[
       { purpose_cleaning: { eq: true } }, 
-      { tank_status_cv: { eq: "CLEANING" } },
-      { residue: { some: {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }} } }
+      { tank_status_cv: { in: ["CLEANING","STORAGE" ]} },
+      { residue: { some: {status_cv: { in: ["PENDING","APPROVED"] }} } }
       // { residue: { any: true } }
     ]};
     return this.apollo
@@ -5484,9 +5484,9 @@ getTotalGateInTodayCount(): Observable<number> {
     let where: any = {and:[
       { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
       { purpose_steam:{eq:true}},
-      { tank_status_cv: { eq: 'STEAM'  } },
+      { tank_status_cv: { in: ['STEAM', 'STORAGE']  } },
       { steaming: { some: {and: [
-            { status_cv: { in: ["PENDING"] } },
+            { status_cv: { in: ["PENDING","APPROVED"] } },
             // { estimate_no: { startsWith: "SE" } }
           ]}}
       }

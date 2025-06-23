@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CleaningMethodsComponent } from './cleaning-methods.component';
+import { CleaningFormulasComponent } from './cleaning-formulas.component';
 
-describe('CleaningMethodsComponent', () => {
-  let component: CleaningMethodsComponent;
-  let fixture: ComponentFixture<CleaningMethodsComponent>;
+describe('CleaningFormulasComponent', () => {
+  let component: CleaningFormulasComponent;
+  let fixture: ComponentFixture<CleaningFormulasComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CleaningMethodsComponent]
+      imports: [CleaningFormulasComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(CleaningMethodsComponent);
+    fixture = TestBed.createComponent(CleaningFormulasComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

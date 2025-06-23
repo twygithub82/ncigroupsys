@@ -151,6 +151,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   initSearchForm() {
     this.searchForm = this.fb.group({
       search_field: [''],
+      status_cv:['']
     });
   }
 
@@ -160,12 +161,12 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
   public loadData() {
 
-    var actionId= this.route.snapshot.paramMap.get('id');
-    if(actionId==="pending")
-    {
-      this.loadData_Pending();
-    }
-    else
+    // var actionId= this.route.snapshot.paramMap.get('id');
+    // if(actionId==="pending")
+    // {
+    //   this.loadData_Pending();
+    // }
+    // else
     {
         const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
         const savedPagination = this.searchStateService.getPagination(this.pageStateType);
@@ -235,9 +236,11 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
 
   constructSearchCriteria() {
     const searchField = this.searchForm?.get('search_field')?.value?.trim();
+    var status_cv = this.searchForm?.get('status_cv')?.value||["WAITING"];
+
     const where: any = {
       and: [
-        { status_cv: { eq: "WAITING" } },
+        { status_cv: { in: status_cv } },
         {
           or: [
             { storing_order: { so_no: { contains: searchField } } },

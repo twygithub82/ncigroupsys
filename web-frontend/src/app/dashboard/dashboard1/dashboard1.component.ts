@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { Utility } from 'app/utilities/utility';
+import { Utility,pageSizeInfo } from 'app/utilities/utility';
 import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid, ApexLegend, ApexMarkers, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, NgApexchartsModule } from 'ng-apexcharts';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { Subscription } from 'rxjs';
@@ -43,6 +43,7 @@ import { CleaningKIVComponent } from '../components/sot/KIV/cleaning/cleaning_ki
 import { ReleaseWaitingComponent } from '../components/sot/waiting/release/release-waiting.component';
 import { GateOutPublishWaitingComponent } from '../components/sot/waiting/publish/gate-out/gateout_publish_waiting.component';
 import { GateInPublishWaitingComponent } from '../components/sot/waiting/publish/gate-in/gatein_publish_waiting.component';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -150,6 +151,7 @@ export class Dashboard1Component implements OnInit {
     private apollo: Apollo,
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
+    private searchStateService: SearchStateService,
   ) {
     // this.graphqlNotificationService = new GraphqlNotificationService(this.apollo);
     // this.igDS = new InGateDS(this.apollo);
@@ -558,14 +560,20 @@ export class Dashboard1Component implements OnInit {
     var urlLink="";
     var actionId="pending";
     var module={};
+    var criteria :any={};
+    var pageStateType='';
     switch(transactionType)
     {
       case this.translatedLangText.IN_GATE_SURVEY_PENDING: 
         module={ queryParams: { tabIndex: 'app-in-gate-survey' } };
+        pageStateType = 'InGateSurvey';
+        criteria.eir_status_cv=[ 'YET_TO_SURVEY'];
         urlLink="admin/inventory/in-gate-main";
       break;
       case this.translatedLangText.GATE_IN_PENDING: 
         module={ queryParams: { tabIndex: 'app-in-gate' } };
+        pageStateType = 'InGate';
+        //criteria.status_cv=[ 'YET_TO_SURVEY']
         urlLink="admin/inventory/in-gate-main";
       break;
       case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
@@ -579,23 +587,45 @@ export class Dashboard1Component implements OnInit {
         urlLink="admin/repair/job-order";
       break;
       case this.translatedLangText.CLEANING_PENDING: 
+        criteria.approval_status=["APPROVED"];
+        pageStateType = 'CleaningApproval';
        urlLink="admin/cleaning/approval";
       break;
       case this.translatedLangText.RESIDUE_PENDING: 
+        pageStateType = 'ResidueDisposalEstimateApproval'
+        criteria.est_status_cv=["PENDING","APPROVED"];
         urlLink="admin/residue-disposal/estimate-approval/"
       break;
       case this.translatedLangText.STEAMING_PENDING:
+        pageStateType = 'SteamEstimateApproval'
+        criteria.est_status_cv=["PENDING","APPROVED"];
         urlLink="admin/steam/estimate-approval/";
         break;
       case this.translatedLangText.TANK_PERIODIC_TEST_DUE:
+        const today = new Date();
+        const pastLimit = new Date(today);
+        pastLimit.setFullYear(today.getFullYear() - 2);
+        pastLimit.setMonth(pastLimit.getMonth() - 6); // 0.5 year = 6 months
+        var dueDt=Utility.convertDate(pastLimit,true,true);
+        criteria.test_dt=dueDt;
+        pageStateType = 'PeriodicTest'
         actionId="due";
         urlLink="admin/survey/periodic-test/";
       break;
       case this.translatedLangText.CLEANING_KIV:
+         pageStateType = 'CleaningApproval';
+         criteria.approval_status=["KIV"];
          actionId="kiv";
          urlLink="admin/cleaning/approval";
       break;
       case this.translatedLangText.RELEASE_PENDING:
+        const tdy = new Date();
+        const limit = new Date(tdy);
+        limit.setDate(limit.getDate() + 3); // 0.5 year = 6 months
+        var dueDt=Utility.convertDate(limit,true,true);
+      
+        pageStateType = 'ReleaseOrder'
+        criteria.due_dt=dueDt;
         urlLink="admin/inventory/release-order";
       break;
       case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
@@ -606,6 +636,8 @@ export class Dashboard1Component implements OnInit {
       case this.translatedLangText.GATE_IN_PUBLISH_PENDING:
         actionId="publish";
         module={ queryParams: { tabIndex: 'app-in-gate-survey' } };
+        pageStateType = 'InGateSurvey';
+        criteria.eir_status_cv=[ 'PENDING'];
         urlLink="admin/inventory/in-gate-main";
       break;
       // case this.translatedLangText.GATEIO_PENDING: 
@@ -614,7 +646,15 @@ export class Dashboard1Component implements OnInit {
     }
     if(urlLink)
     {
-     this.router.navigate([`${urlLink}`,actionId],module);
+      var pageSize = pageSizeInfo.defaultSize ;
+      var pageIndex =0; var first = pageSize; var after = undefined;
+      var last = undefined;var before = undefined;
+
+      this.searchStateService.setPagination(pageStateType, 
+      {pageSize, pageIndex, first, after,  last, before});
+
+      this.searchStateService.setCriteria(pageStateType, criteria);
+      this.router.navigate([`${urlLink}`],module);
      }
     // // Add your custom logic here
     // this.showTransactionDetails(transactionType, amount);

@@ -1224,11 +1224,35 @@ export class Utility {
   }
 
   static IsAllowAutoSearch(): boolean {
-    return false;
+    return true;
   }
 
   static getTodayDateInEpoch(): number {
     return Math.floor(Date.now() / 1000);
+  }
+
+  static naturalSort(a: string, b: string): number {
+  // Split into parts: letters and numbers
+    const aParts = a.split(/(\d+)/);
+    const bParts = b.split(/(\d+)/);
+
+    for (let i = 0; i < Math.min(aParts.length, bParts.length); i++) {
+      const aPart = aParts[i];
+      const bPart = bParts[i];
+
+      // If both parts are numbers, compare numerically
+      if (!isNaN(Number(aPart))) {
+        const numA = parseInt(aPart, 10);
+        const numB = parseInt(bPart, 10);
+        if (numA !== numB) return numA - numB;
+      }
+      // Otherwise, compare as strings (case-insensitive)
+      else if (aPart.toLowerCase() !== bPart.toLowerCase()) {
+        return aPart.localeCompare(bPart);
+      }
+    }
+
+    return a.length - b.length;
   }
 }
 

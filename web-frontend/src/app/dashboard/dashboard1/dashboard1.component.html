@@ -89,6 +89,14 @@
           </div>
              }
 
+          @if (AllowToView(translatedLangText.RESIDUE_PENDING)) {
+           
+          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
+            <div class="card info-card pointer" >
+             <dashboard-residue-waiting/>
+            </div>
+          </div>
+             }
           @if (AllowToView(translatedLangText.STEAMING_PENDING)) {
            
           <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">

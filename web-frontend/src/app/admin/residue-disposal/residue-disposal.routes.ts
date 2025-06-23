@@ -17,12 +17,12 @@ export const RESIDUE_DISPOSAL_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD'] }
   },
-   {
-    path: "estimate-approval/:id",
-    component: ResidueDisposalEstimateApprovalComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD'] }
-  },
+  //  {
+  //   path: "estimate-approval/:id",
+  //   component: ResidueDisposalEstimateApprovalComponent,
+  //   canActivate: [AuthGuard],
+  //   data: { expectedFunctions: ['RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_VIEW', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_EDIT', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_DELETE', 'RESIDUE_DISPOSAL_ESTIMATE_APPROVAL_ADD'] }
+  // },
   {
     path: "estimate-approval/new/:id",
     component: ResidueDisposalEstimateApprovalNewComponent,
