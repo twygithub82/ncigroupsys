@@ -1,5 +1,5 @@
 <div class="card p-0 tab-card-container">
-  <form [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
+  <form [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilter()" #formDirective="ngForm">
     <mat-accordion>
       <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
@@ -7,7 +7,7 @@
           </mat-panel-title>
           <mat-panel-description>
             <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-              <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" (click)="$event.stopPropagation()">
+              <button mat-mini-fab color="primary" (click)="onFilter()" (click)="$event.stopPropagation()">
                 <mat-icon>search</mat-icon>
               </button>
             </div>

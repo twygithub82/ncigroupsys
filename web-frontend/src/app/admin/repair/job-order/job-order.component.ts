@@ -84,10 +84,10 @@ import { ComponentUtil } from 'app/utilities/component-util';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    JobOrderQCComponent,
     MatBadgeModule,
     MatButtonToggleModule,
-    JobOrderTaskComponent
+    JobOrderTaskComponent,
+    JobOrderQCComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -234,6 +234,9 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     );
   }
 
+  @ViewChild('repairJobOrderTask', { static: false }) repairJobOrderTask?: JobOrderTaskComponent;
+  @ViewChild('repairJobOrderQC', { static: false }) repairJobOrderQC?: JobOrderQCComponent;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -259,12 +262,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     this.joDS = new JobOrderDS(this.apollo);
     this.ttDS = new TimeTableDS(this.apollo);
   }
-  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort!: MatSort;
-  @ViewChild('filter', { static: true }) filter!: ElementRef;
-  @ViewChild(MatMenuTrigger)
-  contextMenu?: MatMenuTrigger;
-  contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       const tabComponent = params['tabIndex'];
@@ -272,7 +269,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       this.selectedTabIndex = index >= 0 ? index : 0;
     });
     this.initializeValueChanges();
-    this.searchStateService.clearOtherPages(this.pageStateType);
+    this.searchStateService.clearOtherPagesKeys([this.pageStateType, 'RepairTask', 'RepairQC']);
     this.loadData();
   }
 
@@ -701,7 +698,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     // });
   }
 
-    getMaxDate(){
+  getMaxDate() {
     return new Date();
   }
 
@@ -768,8 +765,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     return this.modulePackageService.hasFunctions(['REPAIR_JOB_ALLOCATION_DELETE']);
   }
 
-  @ViewChild('repairJobOrderTask') repairJobOrderTask!: JobOrderTaskComponent;
-  @ViewChild('repairJobOrderQC') repairJobOrderQC!: JobOrderQCComponent;
   onTabSelected(event: MatTabChangeEvent): void {
     console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
     var tabLabel = event.tab.textLabel;

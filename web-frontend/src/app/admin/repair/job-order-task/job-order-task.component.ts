@@ -42,6 +42,7 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { SearchStateService } from 'app/services/search-criteria.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { Observable, Subscription } from 'rxjs';
@@ -162,6 +163,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   private joSubscriptions = new Map<string, Subscription>();
 
+  pageStateType = 'RepairTask'
   pageIndexJobOrder = 0;
   pageSizeJobOrder = pageSizeInfo.defaultSize;
   lastSearchCriteriaJobOrder: any;
@@ -186,6 +188,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private apollo: Apollo,
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
+    private searchStateService: SearchStateService,
     private notificationService: SingletonNotificationService
   ) {
     super();
@@ -210,6 +213,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
     this.initializeValueChanges();
+    this.searchStateService.clearOtherPagesKeys([this.pageStateType, 'RepairJobAllocation', 'RepairQC']);
     this.loadData();
   }
 
@@ -234,8 +238,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   public loadData() {
-    this.onFilterJobOrder();
-
     const queries = [
       { alias: 'soStatusCv', codeValType: 'SO_STATUS' },
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
@@ -286,6 +288,32 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         'actions'
       ];
     }
+
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.filterJobOrderForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndexJobOrder = savedPagination.pageIndex;
+      this.pageSizeJobOrder = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.onFilter();
+    }
   }
 
   showNotification(
@@ -302,7 +330,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     });
   }
 
-  onFilterJobOrder() {
+  constructSearchCriteria() {
     const where: any = {
       job_type_cv: { eq: "REPAIR" }
     };
@@ -370,10 +398,23 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
-  performSearchJobOrder(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+  onFilter() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.filterJobOrderForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
     this.subs.sink = this.joDS.searchJobOrderForRepair(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
         const newGuids = new Set<string>();
@@ -425,7 +466,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       tempDirection = 'ltr';
     }
     this.resetForm();
-    this.onFilterJobOrder();
+    this.onFilter();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
@@ -480,7 +521,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       }
     }
 
-    this.performSearchJobOrder(pageSize, pageIndex, first, after, last, before, () => { });
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => { });
   }
 
   triggerCurrentSearch() {
@@ -500,7 +541,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     // Perform the search
-    this.performSearchJobOrder(
+    this.performSearch(
       this.pageSizeJobOrder,
       this.pageIndexJobOrder,
       first,
@@ -693,7 +734,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         }
       }
     });
-    this.performSearchJobOrder(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
+    this.performSearch(this.pageSizeJobOrder, this.pageIndexJobOrder, this.pageSizeJobOrder, undefined, undefined, undefined, () => { });
   }
 
   processJobStatusChange(response: any) {
@@ -735,6 +776,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   onTabFocused() {
     this.resetForm();
-    this.onFilterJobOrder();
+    this.onFilter();
   }
 }

@@ -144,7 +144,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   ngOnInit() {
     this.initSearchForm();
     this.initializeFilterCustomerCompany();
-    this.searchStateService.clearOtherPages(this.pageStateType);
+    this.searchStateService.clearOtherPagesKeys([this.pageStateType, 'InGateSurvey']);
     this.loadData();
   }
 
