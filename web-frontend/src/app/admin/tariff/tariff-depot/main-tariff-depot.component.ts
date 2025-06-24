@@ -29,6 +29,7 @@ import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
 import { TariffDepotComponent } from './depot/tariff-depot.component';
 import { TariffLabourComponent } from './labour/tariff-labour.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-tariff-main-clean',
   standalone: true,
@@ -129,13 +130,35 @@ export class MainTariffDepotComponent extends UnsubscribeOnDestroyAdapter implem
     TARIFF_DEPOT: 'MENUITEMS.TARIFF.LIST.TARIFF-DEPOT'
   }
 
+  tabConfig = [
+    {
+      label: this.translatedLangText.TARIFF_DEPOT,
+      component: 'app-tariff-depot',
+      modulePackage: ['starter', 'growth', 'customized'],
+      expectedFunctions: ['TARIFF_DEPOT_COST_VIEW', 'TARIFF_DEPOT_COST_EDIT', 'TARIFF_DEPOT_COST_DELETE', 'TARIFF_DEPOT_COST_ADD'],
+    },
+    {
+      label: this.translatedLangText.TARIFF_LABOUR,
+      component: 'app-tariff-labour',
+      modulePackage: ['starter', 'growth', 'customized'],
+      expectedFunctions: ['TARIFF_LABOUR_COST_VIEW', 'TARIFF_LABOUR_COST_EDIT', 'TARIFF_LABOUR_COST_DELETE', 'TARIFF_LABOUR_COST_ADD'],
+    }
+  ];
+
+  get allowedTabs() {
+    return this.tabConfig.filter(tab => {
+      return this.modulePackageService.hasFunctions(tab.expectedFunctions)
+    });
+  }
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();

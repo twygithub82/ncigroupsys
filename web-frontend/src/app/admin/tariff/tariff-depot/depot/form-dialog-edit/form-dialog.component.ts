@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,32 +17,23 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
-import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Utility } from 'app/utilities/utility';
-import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
-import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TankDS, TankItem } from 'app/data-sources/tank';
+import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { Utility } from 'app/utilities/utility';
+import { provideNgxMask } from 'ngx-mask';
+
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: TariffDepotItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
-interface Condition {
-  guid: { eq: string };
-  tariff_depot_guid: { eq: null };
-}
-
-
 
 @Component({
   selector: 'app-tariff-depot-form-dialog',
@@ -73,17 +64,11 @@ interface Condition {
     PreventNonNumericDirective
   ],
 })
-export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
+export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'fName',
     'lName',
     'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   action: string;
@@ -101,8 +86,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -174,13 +157,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
@@ -201,8 +177,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
 
   selectedItem: TariffDepotItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit>,
@@ -211,6 +185,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();
@@ -224,16 +199,29 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
     const where: any = {};
     where.tariff_depot_guid = { or: [{ eq: null }, { eq: '' }] };
-    const order:any={unit_type:'ASC'};
+    const order: any = { unit_type: 'ASC' };
     this.subs.sink = this.tnkDS.search(where, order).subscribe(data => {
       if (this.selectedItem?.tanks) {
         data.unshift(...this.selectedItem.tanks);
       }
       this.tnkItems = data;
       this.unit_type_control.setValue(this.selectedItem.tanks);
-    }
+    });
+  }
 
-    );
+  ngOnInit() {
+    if (!this.canEdit()) {
+      this.pcForm?.get('name')?.disable()
+      this.pcForm?.get('description')?.disable()
+      this.pcForm?.get('preinspection_cost')?.disable()
+      this.pcForm?.get('lolo_cost')?.disable()
+      this.pcForm?.get('storage_cost')?.disable()
+      this.pcForm?.get('free_storage')?.disable()
+      this.pcForm?.get('gate_in_cost')?.disable()
+      this.pcForm?.get('gate_out_cost')?.disable()
+      this.unit_type_control?.disable()
+      this.pcForm?.get('last_updated')?.disable()
+    }
   }
 
   createTariffDepot(): UntypedFormGroup {
@@ -250,25 +238,15 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       gate_out_cost: this.selectedItem.gate_out_cost,
       unit_types: this.unit_type_control,
       last_updated: ['']
-
     });
   }
 
-
   GetButtonCaption() {
-    // if(this.pcForm!.value['action']== "view")
-    //   {
-    //     return this.translatedLangText.CLOSE ;      
-    //   }
-    //   else
-    //   {
     return this.translatedLangText.CANCEL;
-    // }
   }
+
   GetTitle() {
-
     return this.translatedLangText.EDIT + " " + this.translatedLangText.PROFILE;
-
   }
 
   translateLangText() {
@@ -277,9 +255,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-
   canEdit() {
-    return true;
+    return this.isAllowEdit() && !!this.selectedItem?.guid;
   }
 
   handleSaveSuccess(count: any) {
@@ -291,7 +268,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   update() {
-
     if (!this.pcForm?.valid) return;
 
     let where: any = {};
@@ -300,7 +276,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     }
 
     this.subs.sink = this.trfDepotDS.SearchTariffDepot(where).subscribe(data => {
-
       let update = true;
       if (data.length > 0) {
         var queriedRec = data[0];
@@ -308,7 +283,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
           update = false;
           this.pcForm?.get('name')?.setErrors({ existed: true });
         }
-
       }
       if (update) {
         let conditions: any[] = [];
@@ -343,163 +317,24 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
               updatedTD.tanks = unit_types;
               this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result => {
                 this.handleSaveSuccess(result?.data?.updateTariffDepot);
-
               });
-            }
-            else {
+            } else {
               this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
             }
-
           });
-
         }
       }
-
-
-
-      //   }
-      //   if(insert)
-      //   {
-      //     let newDepot = new TariffDepotItem();
-      //     newDepot.lolo_cost= Number(this.pcForm!.value['lolo_cost']);
-      //     newDepot.free_storage= Number(this.pcForm.value['free_storage']);
-      //     newDepot.description= String(this.pcForm.value['description']);
-      //     newDepot.preinspection_cost= Number(this.pcForm.value['preinspection_cost']);
-      //     newDepot.profile_name= String(this.pcForm.value['name']);
-      //     newDepot.storage_cost= Number(this.pcForm.value['storage_cost']);
-      //     newDepot.tanks=unit_types;
-      //     this.trfDepotDS.addNewTariffDepot(newDepot).subscribe(result=>{
-
-      //       this.handleSaveSuccess(result?.data?.addTariffDepot);
-      //     });
-      //   }
-
-
-
-      // }
-      // else
-      // {
-      //     this.pcForm?.get('name')?.setErrors({ existed: true });
-      // }
-
-
     });
-
-
-
-
-
-  }
-
-  save() {
-
-    if (!this.pcForm?.valid) return;
-
-    // let cc: CleaningCategoryItem = new CleaningCategoryItem(this.selectedItem);
-    // // tc.guid='';
-    //  cc.name = this.pcForm.value['name'];
-    //  cc.description= this.pcForm.value['description'];
-    //  cc.cost = this.pcForm.value['adjusted_cost'];
-
-
-    const where: any = {};
-    if (this.pcForm!.value['name']) {
-      where.name = { contains: this.pcForm!.value['name'] };
-    }
-
-    // this.catDS.search(where).subscribe(p=>{
-    //    if(p.length==0)
-    //    {
-    //     if (this.selectedItem.guid) {
-
-    //       this.catDS.updateCleaningCategory(cc).subscribe(result => {
-    //         console.log(result)
-    //         this.handleSaveSuccess(result?.data?.updateCleaningCategory);
-    //         });
-
-    //     }
-    //     else
-    //     {
-    //      this.catDS.addCleaningCategory(cc).subscribe(result => {
-    //       console.log(result)
-    //       this.handleSaveSuccess(result?.data?.addCleaningCategory);
-    //       });
-    //     }
-
-    //    }
-    //    else
-    //    {
-    //       var allowUpdate=true;
-    //       for (let i = 0; i < p.length; i++) {
-    //         if (p[i].guid != this.selectedItem.guid) {
-    //           allowUpdate = false;
-    //           break;  // Exit the loop
-    //         }
-    //       }
-    //       if(allowUpdate)
-    //       {
-
-    //         if (this.selectedItem.guid) {
-
-    //           this.catDS.updateCleaningCategory(cc).subscribe(result => {
-    //             console.log(result)
-    //             this.handleSaveSuccess(result?.data?.updateCleaningCategory);
-    //             });
-
-    //         }
-    //       }
-    //       else
-    //       {
-    //          this.pcForm?.get('name')?.setErrors({ existed: true });
-    //       }
-    //    }
-    // });
-    // let pc_guids:string[] = this.selectedItems
-    // .map(cc => cc.guid)
-    // .filter((guid): guid is string => guid !== undefined);
-
-    // var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
-    // var remarks = this.pcForm!.value["remarks"];
-
-    // this.custCompClnCatDS.updatePackageCleanings(pc_guids,remarks,adjusted_price).subscribe(result => {
-    //   console.log(result)
-    //   if(result.data.updatePackageCleans>0)
-    //   {
-    //       //this.handleSaveSuccess(result?.data?.updateTariffClean);
-    //       const returnDialog: DialogData = {
-    //         selectedValue:result.data.updatePackageCleans,
-    //         selectedItems:[]
-    //       }
-    //       console.log('valid');
-    //       this.dialogRef.close(returnDialog);
-    //   }
-    // });
-
-
-
   }
 
   displayLastUpdated(r: TariffDepotItem) {
-    var updatedt = r.update_dt;
-    if (updatedt === null) {
-      updatedt = r.create_dt;
-    }
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();
-
-    // Replace the '/' with '-' to get the required format
-
-
-    return `${day}/${month}/${year}`;
-
+    return Utility.convertEpochToDateStr(r.update_dt || r.create_dt)
   }
 
   onAlphaNumericWithSpace(event: Event, controlName: string): void {
     Utility.onAlphaNumericWithSpace(event, this.pcForm?.get(controlName)!);
   }
-  
+
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
@@ -511,8 +346,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
 
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_EDIT']);
+  }
 }

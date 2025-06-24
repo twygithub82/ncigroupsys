@@ -14,12 +14,14 @@
                 <mat-icon>clear_all</mat-icon>
               </button>
             </div>
+            @if (isAllowAdd()) {
             <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
               <button mat-mini-fab class="primary-light" color="" (click)="addCall()"
                 (click)="$event.stopPropagation()">
                 <mat-icon class="col-white">add</mat-icon>
               </button>
             </div>
+            }
             <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                 <button mat-mini-fab class="primary-light" color="" (click)="refresh()" (click)="$event.stopPropagation()" matTooltip={{translatedLangText.REFRESH}}>
                   <mat-icon>refresh</mat-icon>
@@ -77,10 +79,9 @@
               }}:</span>{{row.tariff_depot?.description}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="mobile">
-          <mat-header-cell *matHeaderCellDef>{{CLEANING_LAST_UPDATED_DT |
-            translate}}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef>{{translatedLangText.CLEANING_LAST_UPDATED_DT}}</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <span class="mobile-label">{{CLEANING_LAST_UPDATED_DT | translate}}:</span>
+            <span class="mobile-label">{{translatedLangText.CLEANING_LAST_UPDATED_DT}}:</span>
             {{this.displayLastUpdated(row.tariff_depot)}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="actions">
@@ -89,7 +90,7 @@
             *matHeaderCellDef></mat-header-cell>
           <mat-cell *matCellDef="let row; let i=index;"
             [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            @if (!row.tank_count) {
+            @if (isAllowDelete() && !row.tank_count) {
             <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_depot)"
               [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
               <mat-icon>delete_forever</mat-icon>

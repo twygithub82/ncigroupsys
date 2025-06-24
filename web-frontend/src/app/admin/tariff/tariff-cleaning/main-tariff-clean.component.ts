@@ -216,33 +216,13 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     super();
     this.translateLangText();
   }
-  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort!: MatSort;
-  @ViewChild('filter', { static: true }) filter!: ElementRef;
-  @ViewChild(MatMenuTrigger)
-  contextMenu?: MatMenuTrigger;
-  contextMenuPosition = { x: '0px', y: '0px' };
+  
   ngOnInit() {
-    // this.initializeFilterCustomerCompany();
-    // this.loadData();
-    this.route.queryParams.subscribe(params => {
-      const tabComponent = params['tabIndex'];
-      const index = this.allowedTabs.findIndex(t => t.component === tabComponent);
-      this.selectedTabIndex = index >= 0 ? index : 0;
-    });
   }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
-    });
-  }
-
-  sortList(itemList: any[]) {
-    itemList.sort((a: any, b: any) => {
-      const numA = parseInt(a.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
-      const numB = parseInt(b.description.replace(/[^\d]/g, ""), 10); // Remove all non-digit characters
-      return numA - numB;
     });
   }
 

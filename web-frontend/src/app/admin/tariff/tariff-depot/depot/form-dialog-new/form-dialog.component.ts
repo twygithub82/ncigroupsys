@@ -22,7 +22,6 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TankDS, TankItem } from 'app/data-sources/tank';
@@ -32,12 +31,8 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: TariffDepotItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 interface Condition {
@@ -412,8 +407,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
-
 }

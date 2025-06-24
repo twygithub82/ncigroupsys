@@ -607,8 +607,4 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_DELETE']);
   }
-
-  isAllowView() {
-    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_VIEW']);
-  }
 }

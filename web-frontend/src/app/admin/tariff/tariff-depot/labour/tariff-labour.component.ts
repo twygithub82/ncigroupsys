@@ -35,6 +35,7 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tariff-labour',
@@ -73,30 +74,14 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'select',
-    // 'img',
     'fName',
     'lName',
     'email',
-    //  'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
-  customerCodeControl = new UntypedFormControl();
-  categoryControl = new UntypedFormControl();
-
-  // ccDS: CustomerCompanyDS;
-  // clnCatDS:CleaningCategoryDS;
-  // custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   tariffLabourDS: TariffLabourDS;
 
   tariffLabourItems: TariffLabourItem[] = [];
-
-  // custCompClnCatItems : CustomerCompanyCleaningCategoryItem[]=[];
-  // customer_companyList1?: CustomerCompanyItem[];
-  // cleaning_categoryList?: CleaningCategoryItem[];
-
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
@@ -116,35 +101,8 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
-    HEADER: 'COMMON-FORM.CARGO-DETAILS',
-    HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
-    CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
     CANCEL: 'COMMON-FORM.CANCEL',
     STORING_ORDER: 'MENUITEMS.INVENTORY.LIST.STORING-ORDER',
@@ -167,32 +125,6 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST: 'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
-    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     COST: 'COMMON-FORM.COST',
     COST_DETAILS: 'COMMON-FORM.COST-DETAILS',
@@ -207,14 +139,11 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
-
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.initTcForm();
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.tariffLabourDS = new TariffLabourDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -236,9 +165,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
 
   initTcForm() {
     this.pcForm = this.fb.group({
-      guid: [{ value: '' }],
-      // customer_code: this.customerCodeControl,
-      // cleaning_category:this.categoryControl,
+      guid: [''],
       description: [''],
       cost: [''],
       remarks: [''],
@@ -253,6 +180,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+
   addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -260,29 +188,16 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-
   }
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
 
-  displayLastUpdated() {
-    if (this.dbMasterLabourCost === null) return '';
-    var updatedt = this.dbMasterLabourCost?.update_dt;
-    if (updatedt === null) {
-      updatedt = this.dbMasterLabourCost?.create_dt;
-    }
-    const date = new Date(updatedt! * 1000);
-
-    return this.displayDate(updatedt);
-
-  }
-
-
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
   }
+
   adjustCost() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -313,64 +228,6 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-
-
-  deleteItem(row: any) {
-    // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-    //   data: row,
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // for delete we use splice in order to remove single object from DataService
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'snackbar-danger',
-    //         'Delete Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
-  }
-  private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
-  }
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.tariffLabourItems.length;
-    return numSelected === numRows;
-  }
-
-  isSelected(option: any): boolean {
-    return this.customerCodeControl.value.includes(option);
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.tariffLabourItems.forEach((row) =>
-        this.selection.select(row)
-      );
-  }
-
-
-
   search() {
     const where: any = {};
 
@@ -396,13 +253,12 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
       this.startCursor = this.tariffLabourDS.pageInfo?.startCursor;
       this.hasNextPage = this.tariffLabourDS.pageInfo?.hasNextPage ?? false;
       this.hasPreviousPage = this.tariffLabourDS.pageInfo?.hasPreviousPage ?? false;
-      // this.pageIndex = 0;
-      // this.paginator.pageIndex = 0;
       this.selection.clear();
       if (!this.hasPreviousPage)
         this.previous_endCursor = undefined;
     });
   }
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -439,20 +295,12 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
         // Navigate backward
         last = pageSize;
         before = this.startCursor;
-      }
-      else if (pageIndex == this.pageIndex) {
-
+      } else if (pageIndex == this.pageIndex) {
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
-
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
@@ -490,29 +338,9 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
     this.searchCriteriaService.setCriteria(sCriteria);
   }
 
-  removeSelectedRows() {
-    // const totalSelect = this.selection.selected.length;
-    // this.selection.selected.forEach((item) => {
-    //   const index: number = this.dataSource.renderedData.findIndex(
-    //     (d) => d === item
-    //   );
-    //   // console.log(this.dataSource.renderedData.findIndex((d) => d === item));
-    //   this.exampleDatabase?.dataChange.value.splice(index, 1);
-    //   this.refreshTable();
-    //   this.selection = new SelectionModel<AdvanceTable>(true, []);
-    // });
-    // this.showNotification(
-    //   'snackbar-danger',
-    //   totalSelect + ' Record Delete Successfully...!!!',
-    //   'bottom',
-    //   'center'
-    // );
-  }
   public loadData() {
     this.dbMasterLabourCost = undefined;
-
     this.tariffLabourDS.SearchTariffLabour().subscribe(data => {
-
       if (this.tariffLabourDS.totalCount > 0) {
         this.dbMasterLabourCost = data[0];
 
@@ -520,37 +348,9 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
           description: this.dbMasterLabourCost.description,
           cost: this.dbMasterLabourCost.cost,
           remarks: this.dbMasterLabourCost.remarks,
-          lastUpdated: this.displayLastUpdated()
-
+          lastUpdated: this.displayDate(this.dbMasterLabourCost?.update_dt || this.dbMasterLabourCost?.create_dt)
         });
-
       }
-    });
-    // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //  // this.customer_companyList1 = data
-    // });
-
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
-
-    // });
-
-
-  }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
     });
   }
 
@@ -593,7 +393,10 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
   }
 
   onTabFocused() {
-    
     this.search();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_LABOUR_COST_EDIT']);
   }
 }

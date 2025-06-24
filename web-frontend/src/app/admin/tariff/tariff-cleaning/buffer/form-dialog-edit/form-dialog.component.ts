@@ -284,6 +284,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
   }
 
   isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_EDIT1']);
+    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_EDIT']);
   }
 }
