@@ -415,8 +415,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       this.processStatusCvList = data;
     });
 
-      var actionId= this.route.snapshot.paramMap.get('id');
-    if(!actionId)
+    //   var actionId= this.route.snapshot.paramMap.get('id');
+    // if(!actionId)
     {
       const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
       const savedPagination = this.searchStateService.getPagination(this.pageStateType);
@@ -444,26 +444,26 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
         this.search();
       }
    }
-   else if(['pending'].includes(actionId))
-   {
-     const status = ["PENDING"];
-       const where: any = {and:[
-        { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-        { purpose_steam:{eq:true}},
-        { tank_status_cv: { eq: 'STEAM'  } },
-        { steaming: { some: {and: [
-              { status_cv: { in: status } },
-            ]}}
-        }
-      ]};
+  //  else if(['pending'].includes(actionId))
+  //  {
+  //    const status = ["PENDING"];
+  //      const where: any = {and:[
+  //       { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+  //       { purpose_steam:{eq:true}},
+  //       { tank_status_cv: { eq: 'STEAM'  } },
+  //       { steaming: { some: {and: [
+  //             { status_cv: { in: status } },
+  //           ]}}
+  //       }
+  //     ]};
 
-       this.lastSearchCriteria = where;
-      this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-        this.updatePageSelection();
-      });
-      console.log("search pending records");
+  //      this.lastSearchCriteria = where;
+  //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+  //       this.updatePageSelection();
+  //     });
+  //     console.log("search pending records");
 
-   }
+  //  }
   }
 
   handleCancelSuccess(count: any) {

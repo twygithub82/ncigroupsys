@@ -32,6 +32,7 @@ const NEW_MESSAGES_SUBSCRIPTION = gql`
 @Injectable({
   providedIn: 'root',
 })
+
 export class SingletonNotificationService extends BaseDataSource<MessageItem> {
   private emitterMap = new Map<string, EventEmitter<MessageItem>>();
   subscribers: Array<{
