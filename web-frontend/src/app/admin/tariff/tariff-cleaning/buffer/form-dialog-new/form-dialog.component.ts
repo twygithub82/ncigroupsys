@@ -23,6 +23,7 @@ import { PackageBufferItem } from 'app/data-sources/package-buffer';
 import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -154,13 +155,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
@@ -182,11 +176,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     BUFFER_TYPE: "COMMON-FORM.BUFFER-TYPE",
     BUFFER_CLEANING: 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
   };
-  unit_type_control = new UntypedFormControl();
 
+  unit_type_control = new UntypedFormControl();
   selectedItem: TariffDepotItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
@@ -195,6 +187,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();
@@ -204,7 +197,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
-
   }
 
   createTariffBuffer(): UntypedFormGroup {
@@ -218,42 +210,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   public loadData() {
-
-    // const where: any = {};
-    // where.tariff_depot_guid={or:[{eq:null},{eq:''}]};
-    // this.subs.sink = this.tnkDS.search(where,{}).subscribe(data=>{
-    //   this.tnkItems=data;
-    // }
-
-    // );
-
-    // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //   this.customer_companyList = data
-    // });
-
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
-
-    // });
-
-
   }
 
-  GetButtonCaption() {
-    if (this.pcForm!.value['action'] == "view") {
-      return this.translatedLangText.CLOSE;
-    }
-    else {
-      return this.translatedLangText.CANCEL;
-    }
-  }
   GetTitle() {
-
     return this.translatedLangText.NEW + " " + this.translatedLangText.BUFFER_TYPE;
-
   }
 
   translateLangText() {
@@ -262,23 +222,18 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-
   canEdit() {
-    return this.pcForm!.value['action'] == "new";
+    return this.pcForm!.value['action'] == "new" && this.isAllowAdd() && !this.selectedItem?.guid;
   }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-
       console.log('valid');
       this.dialogRef.close(count);
     }
   }
 
-
-
   save() {
-
     if (!this.pcForm?.valid) return;
 
     let where: any = {};
@@ -294,21 +249,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         newBuffer.cost = Number(this.pcForm.value['cost']);
         newBuffer.package_buffer = new PackageBufferItem();
         this.trfBufferDS.addNewTariffBuffer(newBuffer).subscribe(result => {
-
           this.handleSaveSuccess(result?.data?.addTariffBuffer);
         });
-      }
-      else {
+      } else {
         this.pcForm?.get('buffer_type')?.setErrors({ existed: true });
       }
-
-
     });
-
-
-
-
-
   }
 
   displayLastUpdated(r: TariffDepotItem) {
@@ -322,10 +268,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     const year = date.getFullYear();
 
     // Replace the '/' with '-' to get the required format
-
-
     return `${day}/${month}/${year}`;
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -338,8 +281,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
 
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_ADD']);
+  }
 }

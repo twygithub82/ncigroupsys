@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -17,15 +17,14 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { Apollo } from 'apollo-angular';
 import { CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -182,32 +181,35 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     {
       label: this.translatedLangText.TARIFF_CLEANING,
       component: 'app-tariff-cleaning',
-      modulePackage: ['starter', 'growth', 'customized']
+      modulePackage: ['starter', 'growth', 'customized'],
+      expectedFunctions: ['TARIFF_CLEANING_VIEW', 'TARIFF_CLEANING_EDIT', 'TARIFF_CLEANING_DELETE', 'TARIFF_CLEANING_ADD'],
     },
     {
       label: this.translatedLangText.TARIFF_BUFFER,
       component: 'app-tariff-buffer',
-      modulePackage: ['growth', 'customized']
+      modulePackage: ['growth', 'customized'],
+      expectedFunctions: ['TARIFF_BUFFER_CLEANING_VIEW', 'TARIFF_BUFFER_CLEANING_EDIT', 'TARIFF_BUFFER_CLEANING_DELETE', 'TARIFF_BUFFER_CLEANING_ADD'],
     },
     {
       label: this.translatedLangText.TARIFF_RESIDUE,
       component: 'app-tariff-residue',
-      modulePackage: ['growth', 'customized']
+      modulePackage: ['growth', 'customized'],
+      expectedFunctions: ['TARIFF_RESIDUE_DISPOSAL_VIEW', 'TARIFF_RESIDUE_DISPOSAL_EDIT', 'TARIFF_CLETARIFF_RESIDUE_DISPOSAL_DELETENING_DELETE', 'TARIFF_RESIDUE_DISPOSAL_ADD'],
     }
   ];
 
   get allowedTabs() {
-    return this.tabConfig.filter(tab =>
-      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
-    );
+    return this.tabConfig.filter(tab => {
+      return this.modulePackageService.hasFunctions(tab.expectedFunctions)
+    });
   }
 
+  selectedTabIndex = 0;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private fb: UntypedFormBuilder,
-    private apollo: Apollo,
+    private route: ActivatedRoute,
+    private router: Router,
     private translate: TranslateService,
     public modulePackageService: ModulePackageService
   ) {
@@ -223,6 +225,11 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
   ngOnInit() {
     // this.initializeFilterCustomerCompany();
     // this.loadData();
+    this.route.queryParams.subscribe(params => {
+      const tabComponent = params['tabIndex'];
+      const index = this.allowedTabs.findIndex(t => t.component === tabComponent);
+      this.selectedTabIndex = index >= 0 ? index : 0;
+    });
   }
 
   translateLangText() {

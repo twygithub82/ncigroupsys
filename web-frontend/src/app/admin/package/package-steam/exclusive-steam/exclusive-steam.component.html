@@ -216,7 +216,7 @@
         }
 
         <mat-paginator #paginator [length]="packSteamExclDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-          [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageEvent($event)">
+          [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
         </mat-paginator>
       </div>
     </div>

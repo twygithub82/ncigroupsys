@@ -41,6 +41,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -228,13 +229,11 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.initTcForm();
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.tariffResidueDS = new TariffResidueDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
   }
@@ -755,6 +754,22 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   onTabFocused() {
     this.resetForm();
     this.search();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_DELETE']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_VIEW']);
   }
 }
 

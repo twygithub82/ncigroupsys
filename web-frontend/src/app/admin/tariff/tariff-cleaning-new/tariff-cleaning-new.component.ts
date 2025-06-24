@@ -40,6 +40,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { BehaviorSubject, debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 
 @Component({
@@ -247,7 +248,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private fileManagerService: FileManagerService
+    private fileManagerService: FileManagerService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -261,8 +263,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.cMethodDS = new CleaningMethodDS(this.apollo);
     this.selectedFileLoading = new BehaviorSubject<boolean>(false);
     this.submitForSaving = new BehaviorSubject<boolean>(false);
-
-
   }
 
   initializeValueChanges() {
@@ -293,7 +293,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   initTcForm() {
     this.tcForm = this.fb.group({
-      guid: [{ value: '' }],
+      guid: [''],
       cargo_name: [''],
       cargo_alias: [''],
       cargo_description: [''],
@@ -317,7 +317,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   ngOnInit() {
     //this.initializeFilter();
     this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
-
       if (value && !value.startsWith(this.prefix) && value != '-') {
         // Remove existing prefix before adding a new one
         const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
@@ -326,7 +325,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
         }
       }
-
       this.CheckUnNoValidity();
     });
     this.loadData();
@@ -334,29 +332,24 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   populatetcForm(tc: TariffCleaningItem): void {
     //this.tcForm!.patchValue({
-    this.tcForm = this.fb.group({
+    this.tcForm?.patchValue({
       guid: tc.guid,
       cargo_name: tc.cargo,
       cargo_alias: tc.alias,
       cargo_description: tc.description,
-      class_no: { value: tc.class_cv, disabled: false },
-      method: { value: tc.cleaning_method_guid, disabled: false },
-      category: { value: tc.cleaning_category_guid, disabled: false },
-      hazard_level: { value: tc.hazard_level_cv, disabled: false },
-      ban_type: { value: tc.ban_type_cv, disabled: false },
-
-      open_gate: { value: tc.open_on_gate_cv, disabled: false },
+      class_no: tc.class_cv,
+      method: tc.cleaning_method_guid,
+      category: tc.cleaning_category_guid,
+      hazard_level: tc.hazard_level_cv,
+      ban_type: tc.ban_type_cv,
+      open_gate: tc.open_on_gate_cv,
       flash_point: tc.flash_point,
-      un_no: [tc.un_no, [Validators.required, this.onlyNumbersDashValidator]],
-      nature: { value: tc.nature_cv, disabled: false },
+      un_no: tc.un_no,
+      nature: tc.nature_cv,
       in_gate_alert: tc.in_gate_alert,
       depot_note: tc.depot_note,
-      sds_file: [''],
-      file_size: [0, [Validators.required, this.onlyFileSizeValidator]],
       remarks: tc.remarks
     });
-
-
   }
 
   public loadData() {
@@ -364,14 +357,12 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       if (this.cCategoryDS.totalCount > 0) {
         this.cCategoryList = data;
       }
-
     });
 
     this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }, 100).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
         this.cMethodList = data;
       }
-
     });
 
     const queries = [
@@ -402,41 +393,52 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     this.historyState = history.state;
     this.tc_guid = this.route.snapshot.paramMap.get('id');
     if (this.tc_guid) {
-      {
-        const where: any = {};
-        where.guid = { eq: this.tc_guid };
+      const where: any = {};
+      where.guid = { eq: this.tc_guid };
 
-        // EDIT
-        this.subs.sink = this.tcDS.SearchTariffCleaning(where).subscribe(data => {
-          if (this.tcDS.totalCount > 0) {
-            this.tariffCleaningItem = data[0];
-            this.populatetcForm(this.tariffCleaningItem);
-            this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
-            this.initializeValueChanges();
-            this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
-
-              if (value && !value.startsWith(this.prefix) && value != '-') {
-                // Remove existing prefix before adding a new one
-                const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
-                if (numericPart && !isNaN(Number(numericPart))) {
-                  const newValue = this.prefix + value.replace(this.prefix, '');
-                  this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
-                }
+      // EDIT
+      this.subs.sink = this.tcDS.SearchTariffCleaning(where).subscribe(data => {
+        if (this.tcDS.totalCount > 0) {
+          this.tariffCleaningItem = data[0];
+          this.populatetcForm(this.tariffCleaningItem);
+          this.QueryAllFilesInGroup(this.tariffCleaningItem.guid!);
+          this.initializeValueChanges();
+          this.tcForm!.get('un_no')?.valueChanges.subscribe(value => {
+            if (value && !value.startsWith(this.prefix) && value != '-') {
+              // Remove existing prefix before adding a new one
+              const numericPart = value.replace(/[^0-9]/g, ''); // Extract numeric part of the value
+              if (numericPart && !isNaN(Number(numericPart))) {
+                const newValue = this.prefix + value.replace(this.prefix, '');
+                this.tcForm!.get('un_no')?.setValue(newValue, { emitEvent: false });
               }
-
-              this.CheckUnNoValidity();
-            });
+            }
             this.CheckUnNoValidity();
-          }
-        });
-
-      }
-    }
-    else {
+          });
+          this.CheckUnNoValidity();
+        }
+      });
+    } else {
       this.initializeValueChanges();
     }
 
-
+    if (!this.canEdit()) {
+      this.tcForm?.get('guid')?.disable();
+      this.tcForm?.get('cargo_name')?.disable();
+      this.tcForm?.get('cargo_alias')?.disable();
+      this.tcForm?.get('cargo_description')?.disable();
+      this.tcForm?.get('flash_point')?.disable();
+      this.tcForm?.get('un_no')?.disable();
+      this.tcForm?.get('nature')?.disable();
+      this.tcForm?.get('in_gate_alert')?.disable();
+      this.tcForm?.get('depot_note')?.disable();
+      this.tcForm?.get('remarks')?.disable();
+      this.classNoControl.disable();
+      this.methodControl.disable();
+      this.categoryControl.disable();
+      this.hazardLevelControl.disable();
+      this.banTypeControl.disable();
+      this.openGateControl.disable();
+    }
   }
 
   CheckUnNoValidity() {
@@ -959,6 +961,18 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   isLoadingSdsFile(): Boolean {
     return this.sdsFileLoading;
+  }
+
+  canEdit(): boolean {
+    return ((!!this.tc_guid && this.isAllowEdit()) || (!this.tc_guid && this.isAllowAdd()));
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_CLEANING_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_CLEANING_ADD']);
   }
 }
 

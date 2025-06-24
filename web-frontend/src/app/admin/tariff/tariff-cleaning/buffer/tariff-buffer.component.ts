@@ -36,6 +36,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tariff-buffer',
@@ -208,13 +209,11 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.initTcForm();
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.tariffBufferDS = new TariffBufferDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
   }
@@ -237,9 +236,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
 
   initTcForm() {
     this.pcForm = this.fb.group({
-      guid: [{ value: '' }],
-      // customer_code: this.customerCodeControl,
-      // cleaning_category:this.categoryControl,
+      guid: [''],
       buffer_type: [''],
       min_cost: [''],
       max_cost: ['']
@@ -253,6 +250,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   refresh() {
     this.loadData();
   }
+
   addCall() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -337,11 +335,10 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       width: '600px',
       data: {
-        action: 'new',
+        action: 'edit',
         langText: this.langText,
         selectedItem: row
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -354,40 +351,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  deleteItem(row: any) {
-    // this.id = row.id;
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // const dialogRef = this.dialog.open(DeleteDialogComponent, {
-    //   data: row,
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     const foundIndex = this.exampleDatabase?.dataChange.value.findIndex(
-    //       (x) => x.id === this.id
-    //     );
-    //     // for delete we use splice in order to remove single object from DataService
-    //     if (foundIndex != null && this.exampleDatabase) {
-    //       this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-    //       this.refreshTable();
-    //       this.showNotification(
-    //         'snackbar-danger',
-    //         'Delete Record Successfully...!!!',
-    //         'bottom',
-    //         'center'
-    //       );
-    //     }
-    //   }
-    // });
-  }
-  private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
-  }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -429,19 +392,6 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.lastSearchCriteria = where;
-    // this.subs.sink = this.tariffBufferDS.SearchTariffBuffer(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-    //   this.tariffBufferItems = data;
-    //   this.previous_endCursor = undefined;
-    //   this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
-    //   this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
-    //   this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
-    //   this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
-    //   this.pageIndex = 0;
-    //   this.paginator.pageIndex = 0;
-    //   this.selection.clear();
-    //   if (!this.hasPreviousPage)
-    //     this.previous_endCursor = undefined;
-    // });
     this.subs.sink = this.tariffBufferDS.SearchTariffBufferWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.tariffBufferItems = data;
       this.previous_endCursor = undefined;
@@ -492,20 +442,13 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
         // Navigate backward
         last = pageSize;
         before = this.startCursor;
-      }
-      else if (pageIndex == this.pageIndex) {
-
+      } else if (pageIndex == this.pageIndex) {
         first = pageSize;
         after = this.previous_endCursor;
-
-
-        //this.paginator.pageIndex=this.pageIndex;
-
       }
     }
 
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
@@ -651,5 +594,21 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
 
   parse2Decimal(figure: number | string) {
     return Utility.formatNumberDisplay(figure)
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_DELETE']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_VIEW']);
   }
 }

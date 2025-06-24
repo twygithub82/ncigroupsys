@@ -22,23 +22,20 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { setThrowInvalidWriteToSignalError } from '@angular/core/primitives/signals';
 
 
 export interface DialogData {
   action?: string;
-  selectedValue?:number;
-  // item: StoringOrderTankItem;
-   langText?: any;
-   selectedItem:TariffResidueItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
+  selectedValue?: number;
+  langText?: any;
+  selectedItem: TariffResidueItem;
 }
 
 interface Condition {
@@ -78,25 +75,17 @@ interface Condition {
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-      // 'img',
-       'fName',
-       'lName',
-       'email',
-      // 'gender',
-      // 'bDate',
-      // 'mobile',
-      // 'actions',
-    ];
+    'fName',
+    'lName',
+    'email',
+  ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
- 
-  
   trfResidueDS: TariffResidueDS;
-  
-  tnkItems?:TankItem[];
+
+  tnkItems?: TankItem[];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -104,8 +93,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -113,30 +100,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
-    CUSTOMER_COMPANY_NAME:'COMMON-FORM.COMPANY-NAME',
-    SO_NO: 'COMMON-FORM.SO-NO',
-    SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
-    ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
-    UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    TANK_NO: 'COMMON-FORM.TANK-NO',
-    PURPOSE: 'COMMON-FORM.PURPOSE',
-    STORAGE: 'COMMON-FORM.STORAGE',
-    STEAM: 'COMMON-FORM.STEAM',
-    CLEANING: 'COMMON-FORM.CLEANING',
-    REPAIR: 'COMMON-FORM.REPAIR',
-    LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
-    CLEAN_STATUS: 'COMMON-FORM.CLEAN-STATUS',
-    CERTIFICATE: 'COMMON-FORM.CERTIFICATE',
-    REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
-    FLASH_POINT: 'COMMON-FORM.FLASH-POINT',
-    JOB_NO: 'COMMON-FORM.JOB-NO',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
+    CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     REMARKS: 'COMMON-FORM.REMARKS',
-    ETR_DATE: 'COMMON-FORM.ETR-DATE',
-    ST: 'COMMON-FORM.ST',
-    O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
-    OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     STATUS: 'COMMON-FORM.STATUS',
     UPDATE: 'COMMON-FORM.UPDATE',
@@ -145,7 +110,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     BACK: 'COMMON-FORM.BACK',
-    SEARCH:'COMMON-FORM.SEARCH',
+    SEARCH: 'COMMON-FORM.SEARCH',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE',
     ARE_YOU_SURE_DELETE: 'COMMON-FORM.ARE-YOU-SURE-DELETE',
     DELETE: 'COMMON-FORM.DELETE',
@@ -162,55 +127,53 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     BULK: 'COMMON-FORM.BULK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     UNDO: 'COMMON-FORM.UNDO',
-    CARGO_NAME:'COMMON-FORM.CARGO-NAME',
-    CARGO_ALIAS:'COMMON-FORM.CARGO-ALIAS',
-    CARGO_DESCRIPTION:'COMMON-FORM.CARGO-DESCRIPTION',
-    CARGO_CLASS:'COMMON-FORM.CARGO-CLASS',
-    CARGO_CLASS_SELECT:'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO:'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD:'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY:'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT:'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST :'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL:'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE:'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE:'COMMON-FORM.CARGO-NATURE',
+    CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
+    CARGO_ALIAS: 'COMMON-FORM.CARGO-ALIAS',
+    CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
+    CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
+    CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
+    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
+    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
+    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
+    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
+    CARGO_COST: 'COMMON-FORM.CARGO-COST',
+    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
+    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
+    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NOTE :'COMMON-FORM.CARGO-NOTE',
-    CARGO_CLASS_1 :"COMMON-FORM.CARGO-CALSS-1",
-    CARGO_CLASS_1_4 :"COMMON-FORM.CARGO-CALSS-1-4",
-    CARGO_CLASS_1_5 :"COMMON-FORM.CARGO-CALSS-1-5",
-    CARGO_CLASS_1_6 :"COMMON-FORM.CARGO-CALSS-1-6",
-    CARGO_CLASS_2_1 :"COMMON-FORM.CARGO-CALSS-2-1",
-    CARGO_CLASS_2_2 :"COMMON-FORM.CARGO-CALSS-2-2",
-    CARGO_CLASS_2_3 :"COMMON-FORM.CARGO-CALSS-2-3",
-    PACKAGE_MIN_COST : 'COMMON-FORM.PACKAGE-MIN-COST',
-    PACKAGE_MAX_COST : 'COMMON-FORM.PACKAGE-MAX-COST',
-    PACKAGE_DETAIL:'COMMON-FORM.PACKAGE-DETAIL',
-    PACKAGE_CLEANING_ADJUSTED_COST:"COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    PROFILE_NAME:'COMMON-FORM.PROFILE-NAME',
-    VIEW:'COMMON-FORM.VIEW',
-    DEPOT_PROFILE:'COMMON-FORM.DEPOT-PROFILE',
-    DESCRIPTION:'COMMON-FORM.DESCRIPTION',
-    PREINSPECTION_COST:"COMMON-FORM.PREINSPECTION-COST",
-    LOLO_COST:"COMMON-FORM.LOLO-COST",
-    STORAGE_COST:"COMMON-FORM.STORAGE-COST",
-    FREE_STORAGE:"COMMON-FORM.FREE-STORAGE",
-    LAST_UPDATED_DT : 'COMMON-FORM.LAST-UPDATED',
-    ASSIGNED : 'COMMON-FORM.ASSIGNED',
+    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
+    CARGO_CLASS_1: "COMMON-FORM.CARGO-CALSS-1",
+    CARGO_CLASS_1_4: "COMMON-FORM.CARGO-CALSS-1-4",
+    CARGO_CLASS_1_5: "COMMON-FORM.CARGO-CALSS-1-5",
+    CARGO_CLASS_1_6: "COMMON-FORM.CARGO-CALSS-1-6",
+    CARGO_CLASS_2_1: "COMMON-FORM.CARGO-CALSS-2-1",
+    CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
+    CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
+    PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
+    PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
+    PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
+    PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    ASSIGNED: 'COMMON-FORM.ASSIGNED',
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
-    COST : 'COMMON-FORM.COST',
-    LAST_UPDATED:"COMMON-FORM.LAST-UPDATED",
-    BUFFER_TYPE:"COMMON-FORM.BUFFER-TYPE",
-    TARIFF_RESIDUE:'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE',
+    COST: 'COMMON-FORM.COST',
+    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    BUFFER_TYPE: "COMMON-FORM.BUFFER-TYPE",
+    TARIFF_RESIDUE: 'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE',
   };
   unit_type_control = new UntypedFormControl();
-  
+
   selectedItem: TariffResidueItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
-  
+
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -218,94 +181,32 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();
     this.selectedItem = data.selectedItem;
-    
-    this.trfResidueDS=new TariffResidueDS(this.apollo);
+
+    this.trfResidueDS = new TariffResidueDS(this.apollo);
 
     this.pcForm = this.createTariffResidue();
-    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-   // this.catDS= new CleaningCategoryDS(this.apollo);
-
-  
-   this.tnkItems=[];
+    this.tnkItems = [];
     this.action = data.action!;
     this.translateLangText();
-    this.loadData()
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
-
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
   }
 
   createTariffResidue(): UntypedFormGroup {
     return this.fb.group({
       selectedItem: null,
-      action:"new",
-      description:[''],
-      cost:[''],
-      remarks:['']
-      
+      action: "new",
+      description: [''],
+      cost: [''],
+      remarks: ['']
     });
   }
- 
-  public loadData() {
 
-    // const where: any = {};
-    // where.tariff_depot_guid={or:[{eq:null},{eq:''}]};
-    // this.subs.sink = this.tnkDS.search(where,{}).subscribe(data=>{
-    //   this.tnkItems=data;
-    // }
-
-    // );
-
-    // this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }).subscribe(data => {
-    //   this.customer_companyList = data
-    // });
-
-    // this.clnCatDS.loadItems({ name: { neq: null }},{ sequence: 'ASC' }).subscribe(data=>{
-    //   if(this.clnCatDS.totalCount>0)
-    //   {
-    //     this.cleaning_categoryList=data;
-    //   }
-
-    // });
-
-  
-  }
-  
-  GetButtonCaption()
-  {
-    if(this.pcForm!.value['action']== "view")
-      {
-        return this.translatedLangText.CLOSE ;      
-      }
-      else
-      {
-        return this.translatedLangText.CANCEL ;
-      }
-  }
-  GetTitle()
-  {
-   
-      return this.translatedLangText.NEW + " " + this.translatedLangText.TARIFF_RESIDUE;      
-    
+  GetTitle() {
+    return this.translatedLangText.NEW + " " + this.translatedLangText.TARIFF_RESIDUE;
   }
 
   translateLangText() {
@@ -313,11 +214,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       this.translatedLangText = translations;
     });
   }
-  
 
-  canEdit()
-  {
-    return this.pcForm!.value['action']=="new";
+  canEdit() {
+    return this.pcForm!.value['action'] == "new" && this.isAllowAdd() && !this.selectedItem?.guid;
   }
 
   handleSaveSuccess(count: any) {
@@ -328,56 +227,51 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  
-
   save() {
 
     if (!this.pcForm?.valid) return;
-    
+
     let where: any = {};
     if (this.pcForm!.value['description']) {
       where.description = { eq: this.pcForm!.value['description'] };
     }
 
-    this.subs.sink= this.trfResidueDS.SearchTariffResidue(where).subscribe(data=>{
-        if(data.length==0)
-        {
-            let newResidue = new TariffResidueItem();
-            newResidue.cost= Number(this.pcForm!.value['cost']);
-            newResidue.remarks= String(this.pcForm.value['remarks']);
-            newResidue.description= String(this.pcForm.value['description']);
-            this.trfResidueDS.addNewTariffResidue(newResidue).subscribe(result=>{
+    this.subs.sink = this.trfResidueDS.SearchTariffResidue(where).subscribe(data => {
+      if (data.length == 0) {
+        let newResidue = new TariffResidueItem();
+        newResidue.cost = Number(this.pcForm!.value['cost']);
+        newResidue.remarks = String(this.pcForm.value['remarks']);
+        newResidue.description = String(this.pcForm.value['description']);
+        this.trfResidueDS.addNewTariffResidue(newResidue).subscribe(result => {
 
-              this.handleSaveSuccess(result?.data?.addTariffResidue);
-            });
-        }
-        else
-        {
-            this.pcForm?.get('description')?.setErrors({ existed: true });
-        }
+          this.handleSaveSuccess(result?.data?.addTariffResidue);
+        });
+      }
+      else {
+        this.pcForm?.get('description')?.setErrors({ existed: true });
+      }
 
 
     });
 
-   
 
-   
+
+
 
   }
-  
+
   displayLastUpdated(r: TariffDepotItem) {
-    var updatedt= r.update_dt;
-    if(updatedt===null)
-    {
-      updatedt= r.create_dt;
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
     }
     const date = new Date(updatedt! * 1000);
     const day = String(date.getDate()).padStart(2, '0');
     const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();   
+    const year = date.getFullYear();
 
-   // Replace the '/' with '-' to get the required format
- 
+    // Replace the '/' with '-' to get the required format
+
 
     return `${day}/${month}/${year}`;
 
@@ -393,8 +287,24 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
-  
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_DELETE']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_VIEW']);
+  }
 }

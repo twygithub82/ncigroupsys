@@ -16,11 +16,14 @@
                 <mat-icon>clear_all</mat-icon>
               </button>
             </div>
+            @if (isAllowAdd()) {
             <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
               <button mat-mini-fab class="primary-light" color="" [routerLink]="['/admin/tariff/tariff-cleaning/new']">
                 <mat-icon>add</mat-icon>
               </button>
             </div>
+
+            }
             <!-- <div class="m-l-10" [matTooltip]="translatedLangText.REFRESH">
                 <button mat-mini-fab class="primary-light" color="" (click)="refresh()"
                   (click)="$event.stopPropagation()">
@@ -179,9 +182,11 @@
           <mat-cell *matCellDef="let row">{{row.tariff_cleaning?.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="cargo">
-          <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          <mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.NAME }}</mat-header-cell>
-          <mat-cell mat-cell [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" 
+          <mat-cell mat-cell
+            [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
             *matCellDef="let row">
             <span class="mobile-label">{{translatedLangText.NAME }}:</span>{{row.tariff_cleaning?.cargo}}
           </mat-cell>
@@ -270,7 +275,7 @@
             *matHeaderCellDef></mat-header-cell>
           <mat-cell *matCellDef="let row; let i=index;"
             [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            @if (!row.tank_count) {
+            @if (isAllowDelete() && !row.tank_count) {
             <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row.tariff_cleaning)"
               [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
               <mat-icon>delete_forever</mat-icon>

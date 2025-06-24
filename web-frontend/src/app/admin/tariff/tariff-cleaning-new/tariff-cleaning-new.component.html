@@ -337,24 +337,17 @@
                 <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK }}
               </button>
             </div>
-            
+
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
               @if (!(submitForSaving | async)) {
+              @if (canEdit()) {
               <button mat-flat-button color="primary" type="submit">
                 <mat-icon>
                   save
                 </mat-icon>
-               {{ this.tc_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
-                <!-- @if(submitForSaving)
-                {
-                  <mat-icon>save</mat-icon>
-                  {{ translatedLangText.SAVE_AND_SUBMIT}}
-                }
-                else
-                {
-                  <mat-icon class="spinner">autorenew</mat-icon>
-                } -->
+                {{ this.tc_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT }}
               </button>
+              }
               } @else{
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>

@@ -168,8 +168,8 @@
                 </mat-progress-spinner>
               </div>
               }
-              <mat-paginator #paginator [length]="tariffSteamDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-                [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageEvent($event)">
+              <mat-paginator #paginator [length]="tariffSteamDS.totalCount" [pageIndex]="pageIndex"
+                [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
               </mat-paginator>
             </div>
           </div>

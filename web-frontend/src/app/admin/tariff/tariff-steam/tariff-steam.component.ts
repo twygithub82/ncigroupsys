@@ -230,9 +230,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initTcForm();
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.tariffSteamDS = new TariffSteamingDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
