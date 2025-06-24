@@ -263,6 +263,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       approval_dt_start: [''],
       approval_dt_end: [''],
       est_status_cv: [''],
+      est_pending: ['']
     });
   }
 
@@ -417,9 +418,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       this.repairOptionCvList = data;
     });
 
-    var actionId= this.route.snapshot.paramMap.get('id');
-    if(!actionId)
-    {
+    // var actionId= this.route.snapshot.paramMap.get('id');
+    // if(!actionId)
+    // {
         const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
         const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
@@ -445,24 +446,24 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
         if (!savedCriteria && !savedPagination) {
           this.search();
         }
-     }
-     else if(actionId==='pending')
-    {
-       const where ={
-        and:[
-            { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
-            { tank_status_cv: { eq: "REPAIR" } },
-            { or:[ {repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }] }    
-        ]
-       };
+    //  }
+    //  else if(actionId==='pending')
+    // {
+    //    const where ={
+    //     and:[
+    //         { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
+    //         { tank_status_cv: { eq: "REPAIR" } },
+    //         { or:[ {repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }] }    
+    //     ]
+    //    };
 
 
-       this.lastSearchCriteria = where;
-        this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-          this.updatePageSelection();
-        });
-      console.log("search pending records");
-    }
+    //    this.lastSearchCriteria = where;
+    //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+    //       this.updatePageSelection();
+    //     });
+    //   console.log("search pending records");
+    // }
 
   }
 
@@ -519,6 +520,11 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tank_status_cv: { in: ['REPAIR', 'STORAGE'] },
       purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
+
+    if(this.searchForm!.get('est_pending')?.value)
+    {
+       where.or=[{repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }];
+    }
 
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;

@@ -212,7 +212,8 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
       customer: this.customerCodeControl,
       complete_dt_start: [''],
       complete_dt_end: [''],
-      repairOptionCv: ''
+      repairOptionCv: '',
+      
     });
   }
 
@@ -297,6 +298,7 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
 
   constructSearchCriteria() {
     const where: any = {};
+
 
     if (this.filterJobOrderForm!.get('filterRepair')?.value) {
       const tankNo = this.filterJobOrderForm!.get('filterRepair')?.value;

@@ -570,6 +570,12 @@ export class Dashboard1Component implements OnInit {
         criteria.eir_status_cv=[ 'YET_TO_SURVEY'];
         urlLink="admin/inventory/in-gate-main";
       break;
+      case this.translatedLangText.OUT_GATE_SURVEY_PENDING: 
+        module={ queryParams: { tabIndex: 'out-gate-survey' } };
+        pageStateType = 'OutGateSurvey';
+        criteria.eir_status_cv=[ 'YET_TO_SURVEY'];
+        urlLink="admin/inventory/out-gate-main";
+      break;
       case this.translatedLangText.GATE_IN_PENDING: 
         module={ queryParams: { tabIndex: 'app-in-gate' } };
         pageStateType = 'InGate';
@@ -577,13 +583,20 @@ export class Dashboard1Component implements OnInit {
         urlLink="admin/inventory/in-gate-main";
       break;
       case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
+        pageStateType = 'RepairApproval';
+        criteria.est_status_cv=['PENDING'];
+        criteria.repair_option_cv=["OFFHIRE","REPAIR"];
         urlLink="admin/repair/approval";
       break;
-      case this.translatedLangText.REPAIR_ESTIMATE_PENDING: 
+      case this.translatedLangText.REPAIR_ESTIMATE_PENDING:
+        pageStateType = 'RepairEstimate';
+        criteria.est_pending=true;
         urlLink="admin/repair/estimate";
       break;
       case this.translatedLangText.REPAIR_QC_PENDING: 
         module={ queryParams: { tabIndex: 'app-job-qc' } };
+        pageStateType = 'RepairQC';
+         criteria.jobStatusCv=['COMPLETED'];
         urlLink="admin/repair/job-order";
       break;
       case this.translatedLangText.CLEANING_PENDING: 
@@ -623,7 +636,6 @@ export class Dashboard1Component implements OnInit {
         const limit = new Date(tdy);
         limit.setDate(limit.getDate() + 3); // 0.5 year = 6 months
         var dueDt=Utility.convertDate(limit,true,true);
-      
         pageStateType = 'ReleaseOrder'
         criteria.due_dt=dueDt;
         urlLink="admin/inventory/release-order";
@@ -631,6 +643,8 @@ export class Dashboard1Component implements OnInit {
       case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
         actionId="publish";
         module={ queryParams: { tabIndex: 'out-gate-survey' } };
+        pageStateType = 'OutGateSurvey';
+        criteria.eir_status_cv=[ 'PENDING'];
         urlLink="admin/inventory/out-gate-main";
       break;
       case this.translatedLangText.GATE_IN_PUBLISH_PENDING:

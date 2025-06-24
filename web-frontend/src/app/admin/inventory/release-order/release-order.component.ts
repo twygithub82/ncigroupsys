@@ -555,7 +555,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
        where.and = [
         // { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
         {release_dt: {lte:dueDt  } },
-        {status_cv:{in:['PENDING','PROCESSING']}}]  
+        {status_cv:{in:['PENDING']}}]  
     
   }
 

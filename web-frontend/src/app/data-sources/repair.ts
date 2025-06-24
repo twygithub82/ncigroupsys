@@ -2224,15 +2224,16 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   
    getRepairCustomerApprovalWaitingCount(): Observable<number> {
       this.loadingSubject.next(true);
+      var first=100;
       let where: any = {and:[
         { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
-        { storing_order_tank:{ tank_status_cv: { eq: "REPAIR" } }},
+        // { storing_order_tank:{ tank_status_cv: { in: ["REPAIR","STORAGE"] } }},
         { status_cv: { in: ["PENDING"] } }
       ]};
       return this.apollo
         .query<any>({
           query: GET_REPAIR,
-          variables: { where },
+          variables: { where,first },
           fetchPolicy: 'no-cache' // Ensure fresh data
         })
         .pipe(
@@ -2248,15 +2249,16 @@ export class RepairDS extends BaseDataSource<RepairItem> {
 
      getRepairQCWaitingCount(): Observable<number> {
         this.loadingSubject.next(true);
+        var first =100;
         let where: any = {and:[
           {storing_order_tank: { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
-          {storing_order_tank: { tank_status_cv: { eq: "REPAIR" } }},
+          // {storing_order_tank: { tank_status_cv: {in: ["REPAIR","STORAGE"]} }},
           { status_cv: { in: ["COMPLETED"] }} 
         ]};
         return this.apollo
           .query<any>({
             query: GET_REPAIR_FOR_QC,
-            variables: { where },
+            variables: { where,first },
             fetchPolicy: 'no-cache' // Ensure fresh data
           })
           .pipe(

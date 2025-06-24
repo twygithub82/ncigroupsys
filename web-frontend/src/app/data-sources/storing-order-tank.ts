@@ -5298,7 +5298,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     this.loadingSubject.next(true);
     let where: any = {and:[
       { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
-      { tank_status_cv: { eq: "REPAIR" } },
+      // { tank_status_cv: { eq: "REPAIR" } },
       { repair: { any: true } },
       { status_cv: { in: ["PENDING"] } }
     ]};
@@ -5323,7 +5323,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     this.loadingSubject.next(true);
     let where: any = {and:[
       { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
-      { tank_status_cv: { eq: "REPAIR" } },
+      { tank_status_cv: { in: ["REPAIR","STORAGE"] } },
       { or:[ {repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }] }
     ]};
     return this.apollo

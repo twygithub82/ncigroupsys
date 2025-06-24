@@ -382,8 +382,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     });
 
 
-     var actionId= this.route.snapshot.paramMap.get('id');
-    if(!actionId)
+    //  var actionId= this.route.snapshot.paramMap.get('id');
+    // if(!actionId)
     {
         const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
         const savedPagination = this.searchStateService.getPagination(this.pageStateType);
@@ -411,21 +411,21 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
           this.search();
         }
       }
-      else if(actionId==="pending")
-      {
-          const where: any = {and:[
-        { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
-        { storing_order_tank:{ tank_status_cv: { eq: "REPAIR" } }},
-        { status_cv: { in: ["PENDING"] } }
-      ]};
+      // else if(actionId==="pending")
+      // {
+      //     const where: any = {and:[
+      //   { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
+      //   { storing_order_tank:{ tank_status_cv: { eq: "REPAIR" } }},
+      //   { status_cv: { in: ["PENDING"] } }
+      // ]};
 
 
-        this.lastSearchCriteria = where;
-          this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-            this.updatePageSelection();
-          });
-        console.log("search pending records");
-      }
+      //   this.lastSearchCriteria = where;
+      //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+      //       this.updatePageSelection();
+      //     });
+      //   console.log("search pending records");
+      // }
   }
 
   // export table data in excel file
