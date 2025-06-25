@@ -416,7 +416,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           na_dt: this.displayDate(inGateClnItem.na_dt),
           cleaning_cost: inGateClnItem.cleaning_cost,
           buffer_cost: inGateClnItem.buffer_cost,
-          remarks: this.viewOnly? inGateClnItem.remarks : "",
+          remarks: this.viewOnly ? inGateClnItem.remarks : "",
         });
         this.PatchBillingParty(inGateClnItem);
         this.createCleaningChargesItem();

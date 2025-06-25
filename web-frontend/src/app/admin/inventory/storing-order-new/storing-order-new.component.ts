@@ -728,13 +728,15 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     newSot.unit_type_guid = row.unit_type_guid;
     newSot.last_cargo_guid = row.last_cargo_guid;
     newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
+    newSot.purpose_cleaning = row.purpose_cleaning;
+    newSot.purpose_storage = row.purpose_storage;
+    newSot.purpose_repair_cv = row.purpose_repair_cv;
+    newSot.purpose_steam = row.purpose_steam;
+    newSot.required_temp = row.required_temp;
     newSot.clean_status_cv = row.clean_status_cv;
     newSot.certificate_cv = row.certificate_cv;
+    newSot.job_no = row.job_no;
+    newSot.remarks = row.remarks;
     newSot.so_guid = row.so_guid;
     newSot.eta_dt = row.eta_dt;
     newSot.etr_dt = row.etr_dt;
@@ -862,6 +864,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
 
   getSaveBtnDescription(): string {
     return Utility.getSaveBtnDescription(this.so_guid);
+  }
+
+  isCustomerSelected() {
+    return !!this.customerCodeControl?.value;
   }
 
   canEdit() {
