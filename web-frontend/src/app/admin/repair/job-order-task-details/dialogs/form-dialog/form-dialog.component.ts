@@ -91,15 +91,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.cvDS = new CodeValuesDS(this.apollo);
     this.action = data.action!;
     this.dialogTitle = `${data.translatedLangText.TIME_HISTORY}`;
-    this.timeTableList = data.item ?? [];
+    this.timeTableList = this.sortByStartTime(data.item) ?? [];
     this.index = data.index;
     this.partNameControl = new UntypedFormControl('', [Validators.required]);
-    this.initializeValueChange();
-    this.patchForm();
-    this.initializePartNameValueChange();
   }
-
-  patchForm() { }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
@@ -116,12 +111,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
-  initializeValueChange() {
-  }
-
-  initializePartNameValueChange() {
-  }
-
   displayDateTime(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateTimeStr(input);
   }
@@ -134,5 +123,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const minutes = Math.floor((timeTakenMs % 3600) / 60);
 
     return `${hours} hr ${minutes} min`;
+  }
+
+  sortByStartTime(items: any): any {
+    return items.sort((a: any, b: any) => a.start_time - b.start_time);
   }
 }

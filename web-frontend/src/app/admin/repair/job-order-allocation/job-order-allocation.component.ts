@@ -442,6 +442,10 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
       labour_cost_discount: repair.labour_cost_discount,
       material_cost_discount: repair.material_cost_discount
     });
+
+    if (!this.canEdit()) {
+      this.repairForm?.get('team_allocation')?.disable()
+    }
   }
 
   autoAssignTeam() {
