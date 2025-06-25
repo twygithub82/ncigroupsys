@@ -213,7 +213,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
         : '';
 
-      let prefix = (`${this.getLocationDescription(rep.location_cv)}` + ' ' + (rep.comment ? rep.comment : '')).trim();
+      let prefix = (`${rep.location_cv ? this.getLocationDescription(rep.location_cv) : ''}` + ' ' + (rep.comment ? rep.comment : '')).trim();
       prefix = prefix ? `${prefix} - ` : '';
 
       rep.description = `${prefix}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
