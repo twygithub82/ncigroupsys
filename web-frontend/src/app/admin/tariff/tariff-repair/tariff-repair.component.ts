@@ -914,7 +914,21 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   resetForm() {
     this.removeAllSelectedParts();
-    this.initPcForm();
+    this.pcForm?.patchValue({
+      group_name_cv: '',
+      sub_group_name_cv: '',
+      len: '',
+      dimension: '',
+      part_name: this.partControl,
+      min_len: '',
+      max_len: '',
+      min_labour: '',
+      max_labour: '',
+      min_cost: '',
+      max_cost: '',
+      handled_item_cv: ''
+    });
+    this.partControl?.setValue('');
   }
 
   stopEventTrigger(event: Event) {
