@@ -2371,7 +2371,7 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
 
 .watermark {
   position: relative;
-  z-index: 1;
+  // z-index: 1;
 }
 
 .watermark::after {
@@ -2379,14 +2379,12 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   position: absolute;
   inset: 0;
   background-image: url('/assets/images/landing-logo.png');
-  /* 🔁 your image path */
   background-repeat: no-repeat;
   background-size: 1000px auto;
   background-position: center;
   opacity: 0.08;
-  /* 🔧 adjust transparency */
   pointer-events: none;
-  z-index: 2;
+   z-index: -1;
 }
 
 .mat-mdc-row.bg-warn-row {
