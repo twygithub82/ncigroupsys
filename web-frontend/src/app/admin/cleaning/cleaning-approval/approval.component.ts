@@ -85,7 +85,7 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     'eir_dt',
     'last_cargo',
     'method',
-    'purpose',
+    //'purpose',
     'status_cv',
     // 'tank_status_cv',
     'actions'
