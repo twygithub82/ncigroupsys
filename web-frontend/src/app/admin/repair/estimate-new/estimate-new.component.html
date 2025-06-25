@@ -316,7 +316,7 @@
                         <mat-cell *matCellDef="let row" [ngClass]="''">
                           @if (isOwner) {
                           <span class="mobile-label">{{translatedLangText.OWNER}}:</span>
-                          <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner"
+                          <mat-checkbox color="primary" (click)="selectOwner($event, row)" [checked]="row.owner"
                             [ngClass]="'tbl-checkbox'">
                           </mat-checkbox>
                           }
