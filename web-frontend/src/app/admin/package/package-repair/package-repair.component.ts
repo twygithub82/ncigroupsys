@@ -118,6 +118,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   groupNameControl = new UntypedFormControl();
   subGroupNameControl = new UntypedFormControl();
   partNameControl = new UntypedFormControl();
+  handleItemControl = new UntypedFormControl();
 
   lengthItems: TariffRepairLengthItem[] = [];
   dimensionItems: string[] = [];
@@ -312,9 +313,10 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       part_name: this.partNameControl,
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
+      handled_item_cv: this.handleItemControl,
       labour_hour: [''],
       material_cost: [''],
-      handled_item_cv: ['']
+      //handled_item_cv: ['']
     });
   }
 
@@ -557,6 +559,18 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       const selectedCost: number = Number(this.pcForm!.value["material_cost"]);
       where.material_cost = { eq: selectedCost }
     }
+
+
+    // if (this.pcForm!.value["handled_item_cv"]) {
+    //   const handled = this.pcForm!.value["handled_item_cv"];
+    //   if (handled.code_val === 'HANDLED') {
+    //     where.and.push({ tank_count: { gt: 0 } })
+    //   } else if (handled.code_val === 'NON_HANDLED') {
+    //     where.and.push({ tank_count: { lte: 0 } })
+    //   }
+    // }
+
+
     // if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
     //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
     //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
@@ -803,8 +817,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('groupName').subscribe(data => {
-      this.groupNameCvList = this.sortByDescription(data);
-
+      var sortedData = this.sortByDescription(data);
+      this.groupNameCvList = addDefaultSelectOption(sortedData, 'All');;
       const subqueries: any[] = [];
       data.map(d => {
         if (d.child_code) {
@@ -829,7 +843,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     //   this.subGroupNameCvList = this.sortByDescription(data);
     // });
     this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-
       this.handledItemCvList = addDefaultSelectOption(data, 'All');
     });
     this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
@@ -964,9 +977,10 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.partNameControl.reset('');
     this.groupNameControl.reset('');
     this.subGroupNameControl.reset('');
+    this.handleItemControl.reset('');
     this.pcForm?.get('labour_hour')?.reset('');
     this.pcForm?.get('material_cost')?.reset('');
-    this.pcForm?.get('handled_item_cv')?.reset('');
+    //this.pcForm?.get('handled_item_cv')?.reset('');
     this.selectedCustomers = [];
   }
 

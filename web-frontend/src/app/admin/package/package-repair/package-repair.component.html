@@ -186,7 +186,7 @@
                             <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
                             <mat-select formControlName="handled_item_cv">
                               @for (cn of handledItemCvList; track cn) {
-                              <mat-option [value]="cn.code_val">
+                              <mat-option [value]="cn">
                                 {{cn.description}}
                               </mat-option>
                               }
