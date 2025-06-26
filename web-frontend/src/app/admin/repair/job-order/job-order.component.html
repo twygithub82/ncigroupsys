@@ -98,22 +98,22 @@
                         </ng-container>
                         <ng-container matColumnDef="tank_no">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.TANK_NO}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="customer">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-4_25xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.CUSTOMER}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-3_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
                           </mat-cell>
@@ -141,18 +141,18 @@
                         </ng-container>
                         <ng-container matColumnDef="status_cv">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.STATUS}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_25-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="actions">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
