@@ -126,7 +126,7 @@
           </mat-header-cell>
           <mat-cell *matCellDef="let row; let i=index;"
             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-            @if (canStartJob(row)) {
+            @if (canStartJob(row) && !isStarted(row)) {
             <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
               <!-- <mat-icon [color]="row.time_table?.length ? null : 'warn'" -->
               <mat-icon [ngClass]="{
@@ -137,7 +137,7 @@
               </mat-icon>
             </button>
             }
-            @if (canCompleteJob(row, isStarted(row))) {
+            @if (canCompleteJob(row)) {
             <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
               <mat-icon class="green-timer-icon">check_box</mat-icon>
             </button>
