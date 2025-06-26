@@ -22,3 +22,29 @@
   .left-padding-cell {
   padding-left: 5%; /* or margin-left: 16px; depending on your layout needs */
 }
+
+
+
+::ng-deep .truncate-one-line {
+   display: block;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+::ng-deep .truncate-three-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ::ng-deep mat-option .mat-option-text {
+//   display: flex;
+//   align-items: center;
+// }
+
+// ::ng-deep .mat-option-text .truncate-one-line {
+//   flex: 1 1 auto;
+// }

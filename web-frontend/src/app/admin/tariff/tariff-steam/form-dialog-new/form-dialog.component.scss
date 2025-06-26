@@ -54,3 +54,18 @@
 //   .mat-tab-labels{ 
 //     flex-wrap: wrap;
 //    }
+
+.mat-mdc-form-field-subscript-wrapper.mat-mdc-form-field-bottom-align {
+  align-items: flex-start !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.mat-mdc-form-field-hint-wrapper,
+.mat-mdc-form-field-error-wrapper {
+  margin-top: 0 !important;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  background-color: rgba(255, 0, 0, 0.1); // for testing
+}

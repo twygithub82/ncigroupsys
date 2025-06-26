@@ -236,6 +236,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   countryCodes: any = [];
   countryCodesFiltered: any = [];
+  currentBillingBranch:any=undefined;
 
   starterPackageNotAllowCustomerType = [
     "BRANCH"
@@ -344,8 +345,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   PatchCustomerCompanyData() {
     if (this.historyState.customerCompany.customerCompanyData) {
+      
       var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
       var contactPsn: ContactPersonItem[] = this.historyState.customerCompany.contactPerson;
+      this.currentBillingBranch=this.getBillingBranches(cust.guid!);
       this.ccForm?.patchValue({
         address1: cust.address_line1,
         address2: cust.address_line2,
@@ -1322,4 +1325,15 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     Utility.onAlphaNumericWithSpace(event, this.ccForm?.get(controlName)!);
   }
 
+  BillingBranchReadOnly():boolean
+  {
+    var retval = false;
+
+    if(this.currentBillingBranch)
+    {
+        retval=true;
+    }
+    return retval;
+
+  }
 }

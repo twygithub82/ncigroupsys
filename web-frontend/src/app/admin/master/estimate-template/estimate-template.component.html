@@ -51,7 +51,8 @@
                         <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                           @for (cc of customer_companyList; track cc) {
                           <mat-option [value]="cc">
-                            {{ccDS.displayCodeDashName(cc)}}
+                            <span  class="truncate-one-line">  {{ccDS.displayCodeDashName(cc)}} </span>
+                            <!-- {{ccDS.displayCodeDashName(cc)}} -->
                           </mat-option>
                           }
                         </mat-autocomplete>
