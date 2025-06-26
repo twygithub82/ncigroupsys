@@ -403,6 +403,7 @@
     "ARE-YOU-SURE-CANCEL": "Cancel?",
     "ARE-YOU-SURE-ABORT": "Abort?",
     "ARE-YOU-SURE-UNDO": "Undo?",
+    "ARE-YOU-SURE-NO-ACTION": "No Action?",
     "ARE-YOU-SURE-ROLLBACK": "Reinstate?",
     "ARE-YOU-SURE-COMPLETE": "Complete?",
     "DELETE": "Delete",
@@ -1337,7 +1338,7 @@
     "TANK-PERIODIC-TEST-DUE": "Periodic Test Due",
     "CLEANING-KIV": "KIV Cleaning",
     "ERROR": "Error",
-    "FORGOT-PASSWORD-CAPTION": "Please enter the email address you would like to reset the password.",
+    "FORGOT-PASSWORD-CAPTION": "Please enter your email address to reset your password.",
     "GATE-OUT-PUBLISH-PENDING": "Gate Out Publish: Pending",
     "GATE-IN-PUBLISH-PENDING": "Gate In Publish: Pending"
   },

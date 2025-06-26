@@ -100,11 +100,11 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     'hour',
     'price',
     'material',
-    'isOwner',
-    'approve_part',
     'approve_qty',
     'approve_hour',
-    'approve_cost'
+    'approve_cost',
+    'approve_part',
+    'isOwner',
   ];
   pageTitleDetails = 'MENUITEMS.REPAIR.LIST.APPROVAL-DETAILS'
   breadcrumsMiddleList = [
@@ -151,6 +151,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
     ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
@@ -573,7 +574,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       width: '1000px',
       data: {
         action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
         item: [this.repairItem],
         translatedLangText: this.translatedLangText
       },
@@ -886,11 +887,11 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         'hour',
         'price',
         'material',
-        'isOwner',
-        'approve_part',
         'approve_qty',
         'approve_hour',
-        'approve_cost'
+        'approve_cost',
+        'approve_part',
+        'isOwner',
       ];
     } else {
       this.displayedColumns = [
@@ -903,10 +904,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         'hour',
         'price',
         'material',
-        'approve_part',
         'approve_qty',
         'approve_hour',
-        'approve_cost'
+        'approve_cost',
+        'approve_part',
       ];
     }
   }

@@ -449,10 +449,10 @@ export class Utility {
     if (!containerNumber) return containerNumber;
 
     // Remove spaces and dashes first
-    const cleaned = containerNumber.replace(/\s|-/g, '').toUpperCase();
+    const cleaned = containerNumber.trim().replace(/\s|-/g, '').toUpperCase();
 
     if (cleaned.length !== 11) {
-      return containerNumber.toUpperCase();
+      return containerNumber.trim().toUpperCase();
     }
 
     const ownerCode = cleaned.slice(0, 4);
@@ -464,9 +464,10 @@ export class Utility {
 
   static formatTankNumberForSearch(tankNumber: string): string {
     if (!tankNumber) return '';
+    const cleaned = tankNumber?.trim();
 
-    const serialNumber = tankNumber.slice(0, -1); // everything except last char
-    const checkDigit = tankNumber.slice(-1); // last char
+    const serialNumber = cleaned.slice(0, -1); // everything except last char
+    const checkDigit = cleaned.slice(-1); // last char
 
     return `${serialNumber}-${checkDigit}`;
   }

@@ -24,7 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink,ActivatedRoute,Router } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -214,7 +214,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     private translate: TranslateService,
     private searchStateService: SearchStateService,
     public modulePackageService: ModulePackageService,
-    
+
   ) {
     super();
     this.translateLangText();
@@ -385,47 +385,47 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     //  var actionId= this.route.snapshot.paramMap.get('id');
     // if(!actionId)
     {
-        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-        if (savedCriteria) {
-          this.searchForm?.patchValue(savedCriteria);
-          this.constructSearchCriteria();
-        }
-
-        if (savedPagination) {
-          this.pageIndex = savedPagination.pageIndex;
-          this.pageSize = savedPagination.pageSize;
-
-          this.performSearch(
-            savedPagination.pageSize,
-            savedPagination.pageIndex,
-            savedPagination.first,
-            savedPagination.after,
-            savedPagination.last,
-            savedPagination.before
-          );
-        }
-
-        if (!savedCriteria && !savedPagination) {
-          this.search();
-        }
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
       }
-      // else if(actionId==="pending")
-      // {
-      //     const where: any = {and:[
-      //   { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
-      //   { storing_order_tank:{ tank_status_cv: { eq: "REPAIR" } }},
-      //   { status_cv: { in: ["PENDING"] } }
-      // ]};
+
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
+
+        this.performSearch(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
+      }
+
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
+    }
+    // else if(actionId==="pending")
+    // {
+    //     const where: any = {and:[
+    //   { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
+    //   { storing_order_tank:{ tank_status_cv: { eq: "REPAIR" } }},
+    //   { status_cv: { in: ["PENDING"] } }
+    // ]};
 
 
-      //   this.lastSearchCriteria = where;
-      //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-      //       this.updatePageSelection();
-      //     });
-      //   console.log("search pending records");
-      // }
+    //   this.lastSearchCriteria = where;
+    //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+    //       this.updatePageSelection();
+    //     });
+    //   console.log("search pending records");
+    // }
   }
 
   // export table data in excel file
@@ -463,7 +463,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
       //status_cv: { in: ['PENDING', 'APPROVED'] },
     };
 
-    if (this.searchForm!.get('tank_no')?.value || (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) || this.searchForm!.get('repair_option_cv')?.value?.length || this.searchForm!.get('customer_code')?.value) {
+    if (this.searchForm!.get('tank_no')?.value || (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) ||
+      this.searchForm!.get('repair_option_cv')?.value?.length || this.searchForm!.get('customer_code')?.value ||
+      this.searchForm!.get('eir_no')?.value || (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value)) {
       const sotSome: any = {};
 
       if (this.searchForm!.get('last_cargo')?.value) {
