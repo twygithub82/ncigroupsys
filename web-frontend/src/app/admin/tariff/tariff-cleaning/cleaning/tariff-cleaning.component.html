@@ -174,7 +174,7 @@
   </form>
   <div class="body">
     <div class="responsive_table">
-      <table mat-table [dataSource]="tcList" matSort
+      <table mat-table [dataSource]="tcList" matSort (matSortChange)="onSortChange($event)"
         class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
         <!-- ID Column -->
         <ng-container matColumnDef="id">
@@ -182,7 +182,7 @@
           <mat-cell *matCellDef="let row">{{row.tariff_cleaning?.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="cargo">
-          <mat-header-cell *matHeaderCellDef
+          <mat-header-cell *matHeaderCellDef mat-sort-header
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
             {{translatedLangText.NAME }}</mat-header-cell>
           <mat-cell mat-cell
@@ -212,7 +212,7 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="un_no">
-          <mat-header-cell *matHeaderCellDef
+          <mat-header-cell *matHeaderCellDef mat-sort-header
             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CARGO_UN_NO
             }}</mat-header-cell>
           <mat-cell *matCellDef="let row"
@@ -244,7 +244,7 @@
         </ng-container>
 
         <ng-container matColumnDef="method">
-          <mat-header-cell *matHeaderCellDef
+          <mat-header-cell *matHeaderCellDef mat-sort-header
             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CARGO_METHOD}}</mat-header-cell>
           <mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"

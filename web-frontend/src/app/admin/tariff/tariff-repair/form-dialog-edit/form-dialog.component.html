@@ -206,13 +206,13 @@
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetLabourCostLabel()}}</mat-label>
-            <input matInput formControlName="labour_hour" type="number" min="0">
+            <input matInput formControlName="labour_hour" type="number"  [attr.min]="isMultiSelect() ? -20 : 0">
           </mat-form-field>
         </div>
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetMaterialCostLabel()}}</mat-label>
-            <input matInput formControlName="material_cost" type="number" min="0">
+            <input matInput formControlName="material_cost" type="number"  [attr.min]="isMultiSelect() ? -20 : 0">
           </mat-form-field>
         </div>
       </div>

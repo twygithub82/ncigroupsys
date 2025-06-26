@@ -163,6 +163,13 @@ export const GET_DISTINCT_PART_NAME = gql`
   }
 `;
 
+
+export const GET_DISTINCT_PART_NAME_ONLY = gql`
+  query queryDistinctPartName($groupName: String, $subgroupName: String, $part_name: String,$isPartNameOnly:Boolean) {
+    resultList: queryDistinctPartName(groupName: $groupName, subgroupName: $subgroupName, part_name: $part_name,isPartNameOnly:$isPartNameOnly)
+  }
+`;
+
 export const GET_DISTINCT_DIMENSION = gql`
   query queryDistinctDimension($partName: String) {
     resultList: queryDistinctDimension(partName: $partName)
@@ -255,6 +262,31 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
       .query<any>({
         query: GET_DISTINCT_PART_NAME,
         variables: { groupName, subgroupName, part_name },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffRepairItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList;
+          return resultList;
+        })
+      );
+  }
+
+  searchDistinctPartNameOnly( part_name?: string): Observable<string[]> {
+    this.loadingSubject.next(true);
+    var groupName=null; 
+    var subgroupName= null;
+    var isPartNameOnly = true;
+    return this.apollo
+      .query<any>({
+        query: GET_DISTINCT_PART_NAME_ONLY,
+        variables: { groupName, subgroupName, part_name,isPartNameOnly },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

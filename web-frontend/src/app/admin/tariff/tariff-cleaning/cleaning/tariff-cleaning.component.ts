@@ -22,7 +22,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
@@ -839,4 +839,47 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   isAllowView() {
     return this.modulePackageService.hasFunctions(['TARIFF_CLEANING_VIEW']);
   }
+
+  onSortChange(event: Sort): void {
+      const { active: field, direction } = event;
+  
+      // reset if no direction
+      if (!direction) {
+        this.lastOrderBy = null;
+        return this.search();
+      }
+  
+      // convert to GraphQL enum (uppercase)
+      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+  
+      switch (field) {
+        case 'cargo':
+          this.lastOrderBy = {
+            tariff_cleaning: {
+              cargo: dirEnum
+            },
+          };
+          break;
+            
+      case 'un_no':
+        this.lastOrderBy = {
+          tariff_cleaning: {
+            un_no: dirEnum
+          },
+        };
+        break;
+      case 'method':
+        this.lastOrderBy = {
+          tariff_cleaning: {
+            cleaning_method: {name: dirEnum}
+          },
+        };
+        break;
+        default:
+          this.lastOrderBy = null;
+      }
+  
+      this.search();
+    }
 }

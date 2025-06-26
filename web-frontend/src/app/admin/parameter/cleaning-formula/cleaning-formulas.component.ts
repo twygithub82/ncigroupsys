@@ -580,6 +580,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   description_removeAllSelected(): void {
     this.selectedDescs = [];
     this.resetDescriptionValue();
+    if (Utility.IsAllowAutoSearch())
+        this.search();
   }
 
    checkboxCalled:boolean=false;
@@ -608,10 +610,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       if (Utility.IsAllowAutoSearch())  
       {
          this.search();
-        // var interval = 300;
-        // setTimeout(() => {
-        //   this.search();
-        // },interval);
+      
       }
 
   //   // if(event.source===undefined) 

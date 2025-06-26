@@ -95,7 +95,7 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="packResidueItems" matSort
+          <table mat-table [dataSource]="packResidueItems" matSort  matSort (matSortChange)="onSortChange($event)"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
@@ -112,7 +112,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="residue_type">
-              <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.RESIDUE_TYPE
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.RESIDUE_TYPE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
@@ -162,7 +162,7 @@
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell *matHeaderCellDef
+              <mat-header-cell *matHeaderCellDef  mat-sort-header
                 [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"

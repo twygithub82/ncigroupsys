@@ -40,7 +40,14 @@
           <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width">
               <mat-label>{{langText.PROFILE_NAME | translate}}</mat-label>
-              <input matInput formControlName="profile_name" type="text">
+              <input matInput formControlName="profile_name" type="text" [matAutocomplete]="profileName">
+               <mat-autocomplete #profileName="matAutocomplete">
+                @for (cc of profileList; track cc) {
+                <mat-option [value]="cc">
+                  {{cc}}
+                </mat-option>
+                }
+              </mat-autocomplete>
             </mat-form-field>
           </div>
           <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -62,10 +69,10 @@
   </form>
   <div class="body">
     <div class="responsive_table">
-      <table mat-table [dataSource]="tariffDepotItems" matSort
+      <table mat-table [dataSource]="tariffDepotItems" matSort (matSortChange)="onSortChange($event)"
         class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
         <ng-container matColumnDef="fName">
-          <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.PROFILE_NAME
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PROFILE_NAME
             }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
@@ -79,7 +86,7 @@
               }}:</span>{{row.tariff_depot?.description}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="mobile">
-          <mat-header-cell *matHeaderCellDef>{{translatedLangText.CLEANING_LAST_UPDATED_DT}}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CLEANING_LAST_UPDATED_DT}}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{translatedLangText.CLEANING_LAST_UPDATED_DT}}:</span>
             {{this.displayLastUpdated(row.tariff_depot)}}</mat-cell>

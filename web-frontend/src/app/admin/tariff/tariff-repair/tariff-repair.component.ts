@@ -20,7 +20,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -308,7 +308,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       startWith(''),
       debounceTime(300),
       tap(value => {
-        this.trfRepairDS.searchDistinctPartName(undefined, undefined, value).subscribe(data => {
+        this.trfRepairDS.searchDistinctPartNameOnly(value).subscribe(data => {
           this.partNameList = data;
         });
       })
@@ -992,9 +992,11 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       this.selectedParts.splice(index, 1);
 
     }
+    this.AutoSearch();
   }
   removeAllSelectedParts(): void {
     this.selectedParts = [];
+    this.AutoSearch();
   }
 
 
@@ -1013,6 +1015,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     else {
       this.selectedParts.splice(index, 1);
     }
+
+    this.AutoSearch();
   }
 
 
@@ -1063,10 +1067,56 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     } else {
       this.selectedParts.splice(index, 1);
     }
+
+    this.AutoSearch();
   }
 
   onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
+    }
+  }
+
+ onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'fName':
+        this.lastOrderBy = {
+          tariff_repair: {
+            part_name: dirEnum,
+          },
+        };
+        break;
+
+      case 'last_date':
+        this.lastOrderBy = {
+          tariff_repair: {
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+          },
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
   }
 }

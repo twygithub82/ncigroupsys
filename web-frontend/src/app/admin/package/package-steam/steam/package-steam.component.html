@@ -92,7 +92,7 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="packageSteamItems" matSort
+          <table mat-table [dataSource]="packageSteamItems" matSort (matSortChange)="onSortChange($event)"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
@@ -117,7 +117,7 @@
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="companyName">
-              <mat-header-cell *matHeaderCellDef
+              <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">
@@ -165,7 +165,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastUpdate">
-              <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>

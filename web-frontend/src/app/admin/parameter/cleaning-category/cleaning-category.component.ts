@@ -589,6 +589,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
+    if (Utility.IsAllowAutoSearch())
+        this.search();
   }
 
   name_selected(event: MatAutocompleteSelectedEvent): void {
@@ -674,6 +676,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   description_removeAllSelected(): void {
     this.selectedDescs = [];
+    if (Utility.IsAllowAutoSearch())
+        this.search();
   }
 
   description_selected(event: MatAutocompleteSelectedEvent): void {
@@ -684,19 +688,19 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+    
     }
     else {
       itm.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+      
     }
 
     if (elmInput) {
       elmInput.nativeElement.value = '';
       cnt?.setValue('');
     }
+    if (Utility.IsAllowAutoSearch())
+        this.search();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });

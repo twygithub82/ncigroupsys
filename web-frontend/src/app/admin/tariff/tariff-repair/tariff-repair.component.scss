@@ -82,3 +82,21 @@ mat-chip-row[color="primary"] {
   max-height: 2.4em;
   /* = line-height * number of lines */
 }
+
+.truncate-one-wrap-option {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  line-height: 1.2em;
+  max-height: 2.4em;
+}
+
+.option-wrapper {
+  display: flex;
+  align-items: center;
+  height: 2.4em; /* same as .truncate-one-wrap-option max-height */
+}
+

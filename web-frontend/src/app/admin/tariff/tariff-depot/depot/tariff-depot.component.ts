@@ -20,7 +20,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -85,10 +85,12 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   unit_type_control = new UntypedFormControl();
 
   tnkDS: TankDS;
-  tfDepotDS: TariffDepotDS
+  tfDepotDS: TariffDepotDS;
+  
 
   tariffDepotItems: TariffDepotItem[] = [];
   tankItemList: TankItem[] = [];
+  profileList:String[]=[];
 
   pageStateType = 'TariffDepot'
   pageIndex = 0;
@@ -242,6 +244,26 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeFilterValues() {
+     this.tdForm!.get('profile_name')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (value && typeof value === 'object') {
+          searchCriteria = value.profile_name;
+        } else {
+          searchCriteria = value || '';
+        }
+        this.subs.sink = this.tfDepotDS.SearchTariffDepot({ or: [{ profile_name: { contains: searchCriteria } }] }, [{ profile_name: 'ASC' }]).subscribe(data => {
+
+          this.profileList = data
+          .map(item => item.profile_name)
+          .filter((name): name is string => name !== undefined);
+
+        });
+      })
+    ).subscribe();
+
     this.tdForm!.get('unit_type')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -660,4 +682,41 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_DELETE']);
   }
+
+    onSortChange(event: Sort): void {
+        const { active: field, direction } = event;
+    
+        // reset if no direction
+        if (!direction) {
+          this.lastOrderBy = null;
+          return this.search();
+        }
+    
+        // convert to GraphQL enum (uppercase)
+        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+    
+        switch (field) {
+          case 'mobile':
+            this.lastOrderBy = {
+              tariff_depot: {
+                update_dt: dirEnum,
+                create_dt: dirEnum,
+              },
+            };
+            break;
+              
+          case 'fName':
+          this.lastOrderBy = {
+            tariff_depot: {
+              profile_name: dirEnum
+            },
+          };
+          break;
+          default:
+            this.lastOrderBy = null;
+        }
+    
+        this.search();
+      }
 }

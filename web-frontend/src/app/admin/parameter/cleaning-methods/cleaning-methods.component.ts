@@ -555,6 +555,9 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
+    
+  if (Utility.IsAllowAutoSearch())
+        this.search();
   }
 
   name_selected(event: MatAutocompleteSelectedEvent): void {
@@ -579,6 +582,16 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       elmInput.nativeElement.value = '';
       cnt?.setValue('');
     }
+
+
+    
+  // if (Utility.IsAllowAutoSearch())
+  //  {
+  //   var interval=2*1000;
+  //    setTimeout(() => {
+  //      this.search();
+  //    },interval)
+  //  }
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -632,6 +645,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   description_removeAllSelected(): void {
     this.selectedDescs = [];
+    if (Utility.IsAllowAutoSearch())
+        this.search();
   }
 
   description_selected(event: MatAutocompleteSelectedEvent): void {
@@ -642,13 +657,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+    
     }
     else {
       itm.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+      
     }
 
     if (elmInput) {
@@ -657,6 +670,9 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       cnt?.setValue('');
 
     }
+
+    if (Utility.IsAllowAutoSearch())
+        this.search();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });

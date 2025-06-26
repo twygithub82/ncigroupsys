@@ -76,14 +76,16 @@
                                 (matChipInputTokenEnd)="add($event)">
                               <mat-autocomplete #partName="matAutocomplete" (optionSelected)="selected($event)">
                                 @for (pn of partNameList; track pn) {
-                                <mat-option [value]="pn" class="checkbox-option"
+                                <mat-option [value]="pn" class="checkbox-option "
                                   [class.mdc-list-item--selected]="itemSelected(pn)">
                                   <div class="horizontal-container"> <!-- Flex container -->
                                     <mat-checkbox color="primary" class="checkbox-item"
                                       (click)="onCheckboxClicked(pn); $event.stopPropagation()"
                                       [checked]="itemSelected(pn) || false">
                                     </mat-checkbox>
-                                    <div class="option-text">{{ pn }}</div>
+                                    <div class="option-wrapper">
+                                    <div class="truncate-one-wrap-option">{{ pn }}</div>
+                                    </div>
                                   </div>
                                 </mat-option>
                                 }
@@ -148,10 +150,14 @@
                         <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
-                            <mat-select formControlName="group_name_cv" multiple>
+                            <mat-select formControlName="group_name_cv" (selectionChange)="AutoSearch()" multiple>
                               @for (cn of groupNameCvList; track cn) {
-                              <mat-option [value]="cn.code_val">
-                                {{cn.description}}
+                              <mat-option [value]="cn.code_val" >
+
+                                 <div class="option-wrapper">
+                                    <div class="truncate-one-wrap-option">{{ cn.description }}</div>
+                                    </div>
+                                <!-- {{cn.description}} -->
                               </mat-option>
                               }
                             </mat-select>
@@ -160,10 +166,12 @@
                         <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
-                            <mat-select formControlName="sub_group_name_cv" multiple>
+                            <mat-select formControlName="sub_group_name_cv" (selectionChange)="AutoSearch()" multiple>
                               @for (cn of subGroupNameCvList; track cn) {
                               <mat-option [value]="cn.code_val">
-                                {{cn.description}}
+                                 <div class="option-wrapper">
+                                    <div class="truncate-one-wrap-option">{{ cn.description }}</div>
+                                    </div>
                               </mat-option>
                               }
                             </mat-select>
@@ -250,7 +258,7 @@
               </mat-accordion>
               <div class="body">
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="trfRepairItems" matSort
+                  <table mat-table [dataSource]="trfRepairItems" matSort (matSortChange)="onSortChange($event)"
                     class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl curve-table">
                     <!-- Checkbox Column -->
                     @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
@@ -270,7 +278,7 @@
                     </ng-container>
                     }
                     <ng-container matColumnDef="fName">
-                      <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_25'">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-3_25'">
                         {{this.translatedLangText.PART_NAME
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_25'">
@@ -312,7 +320,7 @@
                         {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="hour">
-                      <mat-header-cell *matHeaderCellDef
+                      <mat-header-cell *matHeaderCellDef mat-sort-header
                         [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
                         (contextmenu)="onContextMenu($event, row.tariff_repair)">
@@ -331,7 +339,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="last_date">
-                      <mat-header-cell *matHeaderCellDef
+                      <mat-header-cell *matHeaderCellDef mat-sort-header
                         [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
                         <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
