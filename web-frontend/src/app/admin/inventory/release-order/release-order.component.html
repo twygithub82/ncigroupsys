@@ -35,9 +35,10 @@
                         </div>
                         @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
                         <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
-                          <button mat-mini-fab color="warn" (click)="cancelSelectedRows(roSelection.selected)"
+                          <button mat-mini-fab (click)="cancelSelectedRows(roSelection.selected)"
+                            [class.red-button]="!canCancelSelectedRows()"
                             [disabled]="canCancelSelectedRows()">
-                            <mat-icon class="col-white">cancel</mat-icon>
+                            <mat-icon class="col-white">close</mat-icon>
                           </button>
                         </div>
                         }
@@ -56,7 +57,7 @@
                           <input matInput formControlName="ro_no">
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                           <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -76,7 +77,7 @@
                           <input matInput formControlName="tank_no">
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                           <input matInput formControlName="job_no">
@@ -91,7 +92,7 @@
                           <mat-datepicker #release_dt_picker></mat-datepicker>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.STATUS}}</mat-label>
                           <mat-select formControlName="ro_status">
@@ -135,21 +136,23 @@
                     </ng-container>
                     <ng-container matColumnDef="ro_no">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.RO_NO}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.RO_NO}}:</span>{{row.ro_no}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="customer_code">
-                      <mat-header-cell *matHeaderCellDef>
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.CUSTOMER}}
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let row">
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{ccDS.displayCodeDashName(row.customer_company)}}
+                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="ro_dt">
@@ -164,11 +167,11 @@
                     </ng-container>
                     <ng-container matColumnDef="no_of_tanks">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         {{translatedLangText.NO_OF_TANKS}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.NO_OF_TANKS}}:</span>
                         {{row.release_order_sot?.length}}
                       </mat-cell>
@@ -207,10 +210,10 @@
                     <!-- actions -->
                     <ng-container matColumnDef="actions">
                       <mat-header-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let row; let i=index;"
-                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <!-- <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
                       class="tbl-action-btn">
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
