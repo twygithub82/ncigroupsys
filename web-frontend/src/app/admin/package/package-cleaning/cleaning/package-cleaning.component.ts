@@ -39,7 +39,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -864,7 +864,11 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      retval = `${this.selectedCustomers[0].name}`
+     const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${this.selectedCustomers[0].name}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }

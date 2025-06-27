@@ -47,8 +47,8 @@
                     <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-                        <input matInput formControlName="unit_type" [matAutocomplete]="unitType">
-                        <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayTankFn">
+                        <input matInput formControlName="unit_type" [matAutocomplete]="unitType" (keydown.enter)="search()"> 
+                        <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayTankFn" (optionSelected)="AutoSearch()">
                           @for (tnk of tankList; track tnk) {
                           <mat-option [value]="tnk">
                             {{tnk.unit_type}}
@@ -64,10 +64,10 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="unitTypeItems" matSort
+              <table mat-table [dataSource]="unitTypeItems" matSort (matSortChange)="onSortChange($event)"
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="unittype">
-                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.UNIT_TYPE
                       }}:</span>{{row.unit_type}}</mat-cell>
@@ -171,7 +171,7 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="lastUpdate">
-                  <mat-header-cell *matHeaderCellDef
+                  <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'d-flex justify-content-center'">

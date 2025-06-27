@@ -35,7 +35,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -580,7 +580,12 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       retval = `${itm.length} ${this.translatedLangText.CATEGORY_NAME_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      retval = `${itm[0]}`
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+            const value=`${itm[0]}`;
+            retval = `${value.length > maxLength 
+              ? value.slice(0, maxLength) + '...' 
+              : value}`;
+      
     }
     return retval;
   }
@@ -589,8 +594,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
-    if (Utility.IsAllowAutoSearch())
-        this.search();
+   this.AutoSearch();
   }
 
   name_selected(event: MatAutocompleteSelectedEvent): void {
@@ -601,14 +605,11 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
       // this.search();
     }
     else {
       itm.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+     
     }
 
     if (elmInput) {
@@ -617,11 +618,17 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       cnt?.setValue('');
 
     }
+    this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
   }
 
+  AutoSearch()
+  {
+    if (Utility.IsAllowAutoSearch())
+        this.search();
+  }
   name_onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.name_selected(fakeEvent);
@@ -667,7 +674,11 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       retval = `${itm.length} ${this.translatedLangText.CATEGORY_DESCRIPTION_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      retval = `${itm[0]}`
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${itm[0]}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }
@@ -676,8 +687,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   description_removeAllSelected(): void {
     this.selectedDescs = [];
-    if (Utility.IsAllowAutoSearch())
-        this.search();
+    this.AutoSearch();
   }
 
   description_selected(event: MatAutocompleteSelectedEvent): void {
@@ -699,8 +709,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       elmInput.nativeElement.value = '';
       cnt?.setValue('');
     }
-    if (Utility.IsAllowAutoSearch())
-        this.search();
+    this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });

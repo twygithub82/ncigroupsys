@@ -51,7 +51,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.COST }}</mat-label>
-                <input matInput formControlName="adjusted_cost" type="number" min="0">
+                <input matInput #costInput formControlName="adjusted_cost" type="number" min="0" (focus)="costInput.select()">
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>

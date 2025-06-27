@@ -37,7 +37,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -570,7 +570,11 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       retval = `${itm.length} ${this.translatedLangText.FORMULA_DESCRIPTION_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      retval = `${itm[0]}`
+       const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${itm[0]}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }
@@ -580,8 +584,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   description_removeAllSelected(): void {
     this.selectedDescs = [];
     this.resetDescriptionValue();
-    if (Utility.IsAllowAutoSearch())
-        this.search();
+    this.AutoSearch();
   }
 
    checkboxCalled:boolean=false;
@@ -607,11 +610,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
           cnt?.setValue('');
         }
 
-      if (Utility.IsAllowAutoSearch())  
-      {
-         this.search();
-      
-      }
+      this.AutoSearch();
 
   //   // if(event.source===undefined) 
   //   // { 
@@ -711,5 +710,14 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_DELETE']);
+  }
+
+  AutoSearch()
+  {
+    if(Utility.IsAllowAutoSearch())  
+      {
+         this.search();
+      
+      }
   }
 }

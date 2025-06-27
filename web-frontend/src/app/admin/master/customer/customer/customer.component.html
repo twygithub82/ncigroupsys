@@ -37,9 +37,9 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl" (keyup.enter)="AutoSearch()"
                       [matAutocomplete]="customerCode">
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn" (optionSelected)="AutoSearch()" >
                       @for (cc of customer_companyFilterList; track cc) {
                       <mat-option [value]="cc">
                       <span  class="truncate-one-line">  {{ccDS.displayCodeDashName(cc)}} </span>
@@ -51,7 +51,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
-                    <mat-select formControlName="country">
+                    <mat-select formControlName="country" (selectionChange)="AutoSearch()">
                       <!-- <mat-option [value]="">{{'--Select--'}}</mat-option> -->
                       @for (country of countryCodes; track country) {
                       <mat-option [value]="country.country">{{country.country}}</mat-option>
@@ -63,7 +63,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
-                    <mat-select formControlName="default_profile" [compareWith]="compareObjects">
+                    <mat-select formControlName="default_profile" [compareWith]="compareObjects" (selectionChange)="AutoSearch()">
                       @for (option of unit_typeList; track option) {
                       <mat-option [value]="option">{{option.unit_type}}</mat-option>
                       }
@@ -87,12 +87,12 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="customer_companyResultList" matSort
+          <table mat-table [dataSource]="customer_companyResultList" matSort  (matSortChange)="onSortChange($event)"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="customer_code">
-              <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg justify-content-center'">
+              <mat-header-cell *matHeaderCellDef mat-sort-header
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CODE
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
@@ -121,17 +121,17 @@
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
               <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'"
-                *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATE
+                *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2_5-xl'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-2_5-xl'" *matCellDef="let row">
+              <mat-cell [ngClass]="'tbl-col-width-per-2-xl'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.customer_company?.tank?.unit_type}}</mat-cell>
             </ng-container>

@@ -21,7 +21,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -739,5 +739,49 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.resetForm();
     this.search();
   }
+  
+  onSortChange(event: Sort): void {
+      const { active: field, direction } = event;
+  
+      // reset if no direction
+      if (!direction) {
+        this.lastOrderBy = null;
+        return this.search();
+      }
+  
+      // convert to GraphQL enum (uppercase)
+      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+  
+      switch (field) {
+        case 'bDate':
+          this.lastOrderBy = {
+            
+              update_dt: dirEnum,
+              create_dt: dirEnum,
+            
+          };
+          break;
+  
+        case 'fName':
+          this.lastOrderBy = {
+            
+              code: dirEnum,
+            
+          };
+          break;
+      
+        default:
+          this.lastOrderBy = null;
+      }
+  
+      this.search();
+    }
+
+    AutoSearch()
+    {
+      if (Utility.IsAllowAutoSearch())
+        this.search();
+    }
 }
 

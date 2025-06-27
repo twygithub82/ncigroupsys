@@ -46,9 +46,9 @@
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                        <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                        <input matInput formControlName="customer_code" [formControl]="customerCodeControl" (keyup.enter)="AutoSearch()"
                           [matAutocomplete]="customerCode">
-                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                        <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn" (optionSelected)="AutoSearch()" >
                           @for (cc of customer_companyList; track cc) {
                           <mat-option [value]="cc">
                             <span  class="truncate-one-line">  {{ccDS.displayCodeDashName(cc)}} </span>
@@ -73,7 +73,7 @@
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.TEMPLATE}}</mat-label>
-                        <mat-select formControlName="template_name" multiple>
+                        <mat-select formControlName="template_name" multiple (selectionChange)="AutoSearch()">
                           @for (cn of masterTempItemOnly; track cn) {
                           <mat-option [value]="cn.template_name">
                             {{cn.template_name}}
@@ -86,7 +86,7 @@
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.TYPE}}</mat-label>
-                        <mat-select formControlName="template_type_cv">
+                        <mat-select formControlName="template_type_cv" (selectionChange)="AutoSearch()">
                           @for (cn of templateTypeItemCvList; track cn) {
                           <mat-option [value]="cn.code_val">
                             {{cn.description}}
@@ -112,17 +112,17 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="masterTemplateItem" matSort
+              <table mat-table [dataSource]="masterTemplateItem" matSort (matSortChange)="onSortChange($event)"
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="customer">
-                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.CUSTOMER
+                  <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER
                       }}:</span>{{row.template_name}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="template">
-                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.TEMPLATE
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TEMPLATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.TEMPLATE
@@ -136,10 +136,23 @@
                       }}:</span>{{this.displayTemplateType(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_update_dt">
-                  <mat-header-cell *matHeaderCellDef>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                     {{this.displayLastUpdated(row)}}</mat-cell>
+                </ng-container>
+                 <ng-container matColumnDef="actions">
+                  <mat-header-cell
+                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                    *matHeaderCellDef></mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;"
+                    [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  
+                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                      <mat-icon>delete_forever</mat-icon>
+                    </button>
+                  </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                 <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"

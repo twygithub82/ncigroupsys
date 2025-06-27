@@ -20,13 +20,14 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
@@ -80,6 +81,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     'template',
     'type',
     'last_update_dt',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.MASTER.LIST.ESTIMATE-TEMPLATE'
@@ -636,4 +638,68 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     this.templateNameControl.reset('');
     //this.template_type_cv.reset('');
   }
+
+   cancelItem(row: MasterTemplateItem) {
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          headerText: this.translatedLangText.CONFIRM_DELETE,
+          action: 'new',
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result.action === 'confirmed') {
+        //  this.deleteSelectedUnitType(row);
+        }
+      });
+    }
+
+    onSortChange(event: Sort): void {
+      const { active: field, direction } = event;
+  
+      // reset if no direction
+      if (!direction) {
+        this.lastOrderBy = null;
+        return this.search();
+      }
+  
+      // convert to GraphQL enum (uppercase)
+      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+  
+      switch (field) {
+        case 'last_update_dt':
+          this.lastOrderBy = {
+            
+              update_dt: dirEnum,
+              create_dt: dirEnum,
+            
+          };
+          break;
+  
+        case 'template':
+          this.lastOrderBy = {
+            template_name: dirEnum,
+            
+          };
+          break;
+      
+        default:
+          this.lastOrderBy = null;
+      }
+  
+      this.search();
+    }
+
+    AutoSearch()
+    {
+      if (Utility.IsAllowAutoSearch())
+        this.search();
+    }
 }

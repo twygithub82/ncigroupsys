@@ -20,7 +20,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -825,5 +825,48 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.search();
   }
 
+   onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'last_update_dt':
+        this.lastOrderBy = {
+          customer_company:{
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+          }
+        };
+        break;
+
+      case 'customer_code':
+        this.lastOrderBy = {
+          customer_company:{
+            code: dirEnum,
+          }
+        };
+        break;
+    
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
+
+  AutoSearch()
+  {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
 }
 

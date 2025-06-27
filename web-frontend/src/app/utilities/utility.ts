@@ -1274,6 +1274,8 @@ export const TANK_STATUS_IN_YARD = [
   'OUT_SURVEY',
 ]
 
+
+
 export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE", "ASSIGNED", "JOB_IN_PROGRESS"];
 
 //export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE","APPROVE","COMPLETE","ASSIGNED","JOB_IN_PROGRESS"]
@@ -1290,3 +1292,5 @@ export const BOOLEAN_YES_NO = [
 export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 'sg', flagUrl: 'https://flagcdn.com/24x18/sg.png' };
 
 export const pageSizeInfo = {pageSize: [25, 50, 75, 100], defaultSize: 25};
+
+export const maxLengthDisplaySingleSelectedItem=30;

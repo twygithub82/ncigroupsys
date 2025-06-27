@@ -35,7 +35,7 @@ import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { Third1Component } from 'app/multilevel/thirdlevel/third1/third1.component';
@@ -548,16 +548,18 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      retval = `${itm[0]}`
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${itm[0]}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
-    
-  if (Utility.IsAllowAutoSearch())
-        this.search();
+   this.AutoSearch();
   }
 
   name_selected(event: MatAutocompleteSelectedEvent): void {
@@ -568,13 +570,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+      
     }
     else {
       itm.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+     
     }
 
     if (elmInput) {
@@ -583,7 +583,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       cnt?.setValue('');
     }
 
-
+   this.AutoSearch();
     
   // if (Utility.IsAllowAutoSearch())
   //  {
@@ -636,7 +636,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       retval = `${itm.length} ${this.translatedLangText.PROCESS_DESCRIPTION_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      retval = `${itm[0]}`
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${itm[0]}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }
@@ -645,8 +649,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   description_removeAllSelected(): void {
     this.selectedDescs = [];
-    if (Utility.IsAllowAutoSearch())
-        this.search();
+    this.AutoSearch();
   }
 
   description_selected(event: MatAutocompleteSelectedEvent): void {
@@ -671,8 +674,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
     }
 
-    if (Utility.IsAllowAutoSearch())
-        this.search();
+    
+    this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -709,5 +712,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_DELETE']);
+  }
+
+  AutoSearch()
+  {
+    if (Utility.IsAllowAutoSearch())
+        this.search();
   }
 }

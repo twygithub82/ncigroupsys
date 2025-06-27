@@ -37,7 +37,7 @@ import { PackageSteamingItem } from 'app/data-sources/package-steam';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -831,13 +831,18 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      retval = `${this.selectedCustomers[0].name}`
+       const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${this.selectedCustomers[0].name}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
+    this.AutoSearch();
   }
 
 
@@ -846,13 +851,11 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+    
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+      
     }
 
     if (this.custInput) {
@@ -860,11 +863,18 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       this.custInput.nativeElement.value = '';
 
     }
+
+    this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
   }
 
+  AutoSearch()
+  {
+    if (Utility.IsAllowAutoSearch())
+        this.search();
+  }
   onCheckboxClicked(row: CustomerCompanyItem) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);

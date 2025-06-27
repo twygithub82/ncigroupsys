@@ -39,7 +39,7 @@ import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -470,7 +470,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
     }
 
-    if (this.pcForm!.get("profile_name")?.value) {
+    if (this.selectedProfiles.length > 0) {
 
       var tariffDepot: any = {};
       tariffDepot.guid = { in: this.selectedProfiles.map(c => c.guid) };
@@ -759,6 +759,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     else {
       this.selectedProfiles.splice(index, 1);
     }
+    this.AutoSearch();
 
     // if (this.profileInput) {
     //  this.searchProfileNameList('');
@@ -846,7 +847,11 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedProfiles.length} ${this.translatedLangText.PROFILES_SELECTED}`;
     }
     else if (this.selectedProfiles?.length == 1) {
-      retval = `${this.selectedProfiles[0].description}`
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${this.selectedCustomers[0].name}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }
@@ -858,17 +863,23 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      retval = `${this.selectedCustomers[0].name}`
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${this.selectedCustomers[0].name}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
     }
     return retval;
   }
 
   removeSelectedProfiles(): void {
     this.selectedProfiles = [];
+      this.AutoSearch();
   }
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
+      this.AutoSearch();
   }
 
 
@@ -877,13 +888,11 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+    
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+      
     }
 
     if (this.custInput) {
@@ -891,6 +900,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       this.custInput.nativeElement.value = '';
 
     }
+    this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -907,6 +917,10 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.selectedProfile(fakeEvent);
   }
 
+  AutoSearch(){
+      if (Utility.IsAllowAutoSearch())
+        this.search();
+  }
   onSortChange(event: Sort): void {
       const { active: field, direction } = event;
   

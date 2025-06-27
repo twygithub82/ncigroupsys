@@ -32,13 +32,14 @@
           </mat-expansion-panel-header>
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+              <button type="submit" style="display: none" (click)="AutoSearch()"></button>
               <div class="row">
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.MAIN_CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl" 
                       [matAutocomplete]="customerCode">
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn"  (optionSelected)="AutoSearch()" >
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
                         {{ccDS.displayCodeDashName(cc)}}
@@ -62,7 +63,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_CODE}}</mat-label>
-                    <input matInput formControlName="branch_code" type="text">
+                    <input matInput formControlName="branch_code" type="text" >
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -80,7 +81,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
-                    <mat-select formControlName="default_profile" [compareWith]="compareObjects">
+                    <mat-select formControlName="default_profile" [compareWith]="compareObjects" (selectionChange)="AutoSearch()">
                       @for (option of unit_typeList; track option) {
                       <mat-option [value]="option">{{option.unit_type}}</mat-option>
                       }
@@ -104,10 +105,10 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="customer_companyList" matSort
+          <table mat-table [dataSource]="customer_companyList" matSort (matSortChange)="onSortChange($event)"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
-              <mat-header-cell *matHeaderCellDef
+              <mat-header-cell *matHeaderCellDef 
                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.MAIN_CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -116,7 +117,7 @@
                   }}:</span>{{this.getMainCustomerCode(row)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef
+              <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.BRANCH_CODE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -159,7 +160,7 @@
             </ng-container>
 
             <ng-container matColumnDef="bDate">
-              <mat-header-cell *matHeaderCellDef
+              <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-3_5-xl'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3-xl'"
