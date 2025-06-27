@@ -298,7 +298,7 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table ">
                     <table mat-table [dataSource]="deList" matSort
-                      class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                      class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                       <!-- ID Column -->
                       <ng-container matColumnDef="seq">
                         <mat-header-cell *matHeaderCellDef 
@@ -361,7 +361,7 @@
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                           <span class="mobile-label">{{translatedLangText.DELETE}}:</span>
                           <button mat-icon-button (click)="stopEventTrigger($event)"
-                            (click)="deleteEstDetail($event,row)">
+                            (click)="deleteEstDetail($event,row)" color="warn">
                             <mat-icon>delete_forever</mat-icon>
                           </button>
                         </mat-cell>
