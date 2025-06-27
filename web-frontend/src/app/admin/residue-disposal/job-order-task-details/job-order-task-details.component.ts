@@ -851,7 +851,6 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
               guid: firstJobPart!.residue.guid,
               sot_guid: this.jobOrderItem?.sot_guid,
               action: "IN_PROGRESS",
-
             });
             console.log(residueStatusReq);
             this.residueDS.updateResidueStatus(residueStatusReq).subscribe(result => {
@@ -1009,15 +1008,16 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
         this.jobOrderItem.start_dt = this.jobOrderItem.start_dt ?? data.start_time;
         this.jobOrderItem.time_table ??= [];
 
+        const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === data.time_table_guid);
         if (event_name === 'onJobStarted') {
-          const foundTimeTable = this.jobOrderItem.time_table?.filter(x => x.guid === data.time_table_guid);
           if (foundTimeTable?.length) {
             foundTimeTable[0].start_time = data.start_time
           } else {
-            this.jobOrderItem.time_table?.push(new TimeTableItem({ guid: data.time_table_guid, start_time: data.start_time, stop_time: data.stop_time, job_order_guid: data.job_order_guid }))
+            const startNew = new TimeTableItem({ guid: data.time_table_guid, start_time: data.start_time, stop_time: data.stop_time, job_order_guid: data.job_order_guid });
+            this.jobOrderItem.time_table?.push(startNew)
           }
         } else if (event_name === 'onJobStopped') {
-          this.jobOrderItem.time_table = this.jobOrderItem.time_table?.filter(x => x.guid !== data.time_table_guid);
+          foundTimeTable[0].stop_time = data.stop_time;
         }
         console.log(`Updated JobOrder ${event_name} :`, this.jobOrderItem);
       }

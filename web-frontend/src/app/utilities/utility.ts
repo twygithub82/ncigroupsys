@@ -244,6 +244,16 @@ export class Utility {
     return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year} ${formattedHours}:${formattedMinutes}`;
   }
 
+  static getDisplayTimeTaken(stop_time: number | undefined, start_time: number | undefined): string {
+    if (!stop_time || !start_time) return '';
+    const timeTakenSec = stop_time - start_time;
+
+    const hours = Math.floor(timeTakenSec / 3600);
+    const minutes = Math.ceil((timeTakenSec % 3600) / 60);
+
+    return `${hours} hr ${minutes} min`;
+  }
+
   static getToday(): string {
     return new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
   }
@@ -1233,7 +1243,7 @@ export class Utility {
   }
 
   static naturalSort(a: string, b: string): number {
-  // Split into parts: letters and numbers
+    // Split into parts: letters and numbers
     const aParts = a.split(/(\d+)/);
     const bParts = b.split(/(\d+)/);
 
@@ -1289,4 +1299,4 @@ export const BOOLEAN_YES_NO = [
 
 export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 'sg', flagUrl: 'https://flagcdn.com/24x18/sg.png' };
 
-export const pageSizeInfo = {pageSize: [25, 50, 75, 100], defaultSize: 25};
+export const pageSizeInfo = { pageSize: [25, 50, 75, 100], defaultSize: 25 };

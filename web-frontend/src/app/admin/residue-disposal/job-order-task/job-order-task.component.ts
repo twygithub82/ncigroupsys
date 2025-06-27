@@ -484,8 +484,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return this.joDS.canStartJob(jobOrderItem)
   }
 
-  canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
-    return this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
+  canCompleteJob(jobOrderItem: JobOrderItem | undefined): boolean {
+    return this.joDS.canCompleteJob(jobOrderItem);
   }
 
   isSelectedJobStatus(value: string): boolean {
@@ -584,21 +584,48 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   completeJob(event: Event, jobOrderItem: JobOrderItem) {
     this.preventDefault(event);  // Prevents the form submission
-    const newParam = new UpdateJobOrderRequest({
-      guid: jobOrderItem?.guid,
-      remarks: jobOrderItem?.remarks,
-      start_dt: jobOrderItem?.start_dt,
-      complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
-    });
-    const param = [newParam];
-    console.log(param)
-    this.joDS.completeJobOrder(param).subscribe(result => {
-      if (result.data.completeJobOrder > 0) {
-        var item: ResiduePartItem = new ResiduePartItem(jobOrderItem.residue_part![0]!);
-        this.UpdateResidueStatusCompleted(item.residue_guid!);
+    if (this.isStarted(jobOrderItem)) {
+      // auto stop job timer
+      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      if (found?.length) {
+        const newParam = new TimeTableItem(found[0]);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          const newParam = new UpdateJobOrderRequest({
+            guid: jobOrderItem?.guid,
+            remarks: jobOrderItem?.remarks,
+            start_dt: jobOrderItem?.start_dt,
+            complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+          });
+          const param = [newParam];
+          console.log(param)
+          this.joDS.completeJobOrder(param).subscribe(result => {
+            if (result.data.completeJobOrder > 0) {
+              var item = new ResiduePartItem(jobOrderItem.residue_part![0]!);
+              this.UpdateResidueStatusCompleted(item.residue_guid!);
+            }
+          });
+        });
       }
-      //console.log(result)
-    });
+    } else {
+      const newParam = new UpdateJobOrderRequest({
+        guid: jobOrderItem?.guid,
+        remarks: jobOrderItem?.remarks,
+        start_dt: jobOrderItem?.start_dt,
+        complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+      });
+      const param = [newParam];
+      console.log(param)
+      this.joDS.completeJobOrder(param).subscribe(result => {
+        if (result.data.completeJobOrder > 0) {
+          var item = new ResiduePartItem(jobOrderItem.residue_part![0]!);
+          this.UpdateResidueStatusCompleted(item.residue_guid!);
+        }
+      });
+    }
   }
 
   // private subscribeToJobOrderEvent(
@@ -677,6 +704,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
             job.time_table?.push(new TimeTableItem({ guid: data.time_table_guid, start_time: data.start_time, stop_time: data.stop_time, job_order_guid: data.job_order_guid }))
           }
         } else if (event_name === 'onJobStopped') {
+          // to clear the time table entry when job is stopped by filter out the newly added time table entry
           job.time_table = job.time_table?.filter(x => x.guid !== data.time_table_guid);
         }
         console.log(`Updated JobOrder ${event_name} :`, job);

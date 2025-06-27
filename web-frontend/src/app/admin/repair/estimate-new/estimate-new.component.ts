@@ -553,6 +553,13 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       }
     }
     this.isOwnerChanged();
+
+    if (!this.canEdit()) {
+      this.repairForm?.get('surveyor_id')?.disable();
+      this.repairForm?.get('labour_cost_discount')?.disable();
+      this.repairForm?.get('material_cost_discount')?.disable();
+      this.repairForm?.get('remarks')?.disable();
+    }
   }
 
   populateFoundRepair(repair: RepairItem, isDuplicate: boolean) {
@@ -1360,7 +1367,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
   hasMenuItems(row: any): boolean {
     return (
-      this.isAllowEdit()
+      this.canEdit()
     );
   }
 
@@ -1373,10 +1380,14 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   canEdit() {
-    return this.isAllowEdit() && this.repairDS.canAmend(this.repairItem);
+    return ((!this.repairItem?.guid && this.isAllowAdd()) || (!!this.repairItem?.guid && this.isAllowEdit())) && this.repairDS.canAmend(this.repairItem);
   }
 
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_ADD']);
   }
 }

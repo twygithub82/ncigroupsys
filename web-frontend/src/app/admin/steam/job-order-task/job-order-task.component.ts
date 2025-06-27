@@ -47,6 +47,7 @@ import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-p
 import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 
 @Component({
   selector: 'app-job-order-task',
@@ -169,7 +170,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     'JOB_IN_PROGRESS',
   ]
 
-  private jobOrderSubscriptions: Subscription[] = [];
+  // private jobOrderSubscriptions: Subscription[] = [];
+
+  private joSubscriptions = new Map<string, Subscription>();
 
   constructor(
     public httpClient: HttpClient,
@@ -179,7 +182,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private apollo: Apollo,
     private translate: TranslateService,
     private router: Router,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private notificationService: SingletonNotificationService
   ) {
     super();
     this.translateLangText();
@@ -354,15 +358,37 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.joDS.searchStartedJobOrder(this.lastSearchCriteriaJobOrder, this.lastOrderByJobOrder, first, after, last, before)
       .subscribe(data => {
-        data = data.filter(data => data.steaming_part?.length);
-        console.log(data)
-        this.jobOrderList = data.filter(data => data.delete_dt === null || data.delete_dt === 0);
+        data = data.filter(data => data.steaming_part?.length && (data.delete_dt === null || data.delete_dt === 0));
+        const newGuids = new Set<string>();
+        this.jobOrderList = data;
+        // this.jobOrderList.forEach(jo => {
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
+        //   this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
+        // })
         this.jobOrderList.forEach(jo => {
-          jo.time_table = jo.time_table?.filter(data => data.delete_dt === null || data.delete_dt === 0);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStarted.bind(this.joDS), jo.guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderStopped.bind(this.joDS), jo.guid!);
-          this.subscribeToJobOrderEvent(this.joDS.subscribeToJobOrderCompleted.bind(this.joDS), jo.guid!);
-        })
+          const guid = jo.guid!;
+          newGuids.add(guid);
+
+          if (this.joSubscriptions.has(guid)) {
+            // Already subscribed — skip to avoid duplication
+            return;
+          }
+
+          const sub = this.notificationService.subscribe(guid, (msg) => {
+            this.processJobStatusChange(msg);
+          });
+
+          this.joSubscriptions.set(guid, sub);
+        });
+
+        // Unsubscribe and remove old subscriptions no longer needed
+        Array.from(this.joSubscriptions.keys()).forEach(guid => {
+          if (!newGuids.has(guid)) {
+            this.joSubscriptions.get(guid)!.unsubscribe();
+            this.joSubscriptions.delete(guid);
+          }
+        });
         this.endCursorJobOrder = this.joDS.pageInfo?.endCursor;
         this.startCursorJobOrder = this.joDS.pageInfo?.startCursor;
         this.hasNextPageJobOrder = this.joDS.pageInfo?.hasNextPage ?? false;
@@ -468,8 +494,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     return this.joDS.canStartJob(jobOrderItem)
   }
 
-  canCompleteJob(jobOrderItem: JobOrderItem | undefined, isStarted: boolean | undefined): boolean {
-    return this.joDS.canCompleteJob(jobOrderItem) && !isStarted;
+  canCompleteJob(jobOrderItem: JobOrderItem | undefined): boolean {
+    return this.joDS.canCompleteJob(jobOrderItem);
   }
 
   isSelectedJobStatus(value: string): boolean {
@@ -536,6 +562,40 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
 
   completeJob(event: Event, jobOrderItem: JobOrderItem) {
     this.preventDefault(event);  // Prevents the form submission
+    // const newParam = new UpdateJobOrderRequest({
+    //   guid: jobOrderItem?.guid,
+    //   remarks: jobOrderItem?.remarks,
+    //   start_dt: jobOrderItem?.start_dt,
+    //   complete_dt: jobOrderItem?.complete_dt ?? Utility.convertDate(new Date()) as number
+    // });
+    // const param = [newParam];
+    // console.log(param)
+    // this.joDS.completeJobOrder(param).subscribe(result => {
+    //   if (result.data.completeJobOrder > 0) {
+    //     var item: SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
+    //     this.UpdateSteamStatusCompleted(item.steaming_guid!);
+    //   }
+    // });
+    if (this.isStarted(jobOrderItem)) {
+      const found = jobOrderItem?.time_table?.find(x => x?.start_time && !x?.stop_time);
+      if (found) {
+        const newParam = new TimeTableItem(found);
+        newParam.stop_time = Utility.convertDate(new Date()) as number;
+        newParam.job_order = new JobOrderGO({ ...jobOrderItem });
+        const param = [newParam];
+        console.log(param)
+        this.ttDS.stopJobTimer(param).subscribe(result => {
+          var item: SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
+          this.completeJobOrder(item.steaming_guid!, jobOrderItem);
+        });
+      }
+    } else {
+      var item: SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
+      this.completeJobOrder(item.steaming_guid!, jobOrderItem);
+    }
+  }
+
+  completeJobOrder(steamGuid: string, jobOrderItem: JobOrderItem): void {
     const newParam = new UpdateJobOrderRequest({
       guid: jobOrderItem?.guid,
       remarks: jobOrderItem?.remarks,
@@ -546,66 +606,93 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     console.log(param)
     this.joDS.completeJobOrder(param).subscribe(result => {
       if (result.data.completeJobOrder > 0) {
-        var item: SteamPartItem = new SteamPartItem(jobOrderItem.steaming_part![0]!);
-        this.UpdateSteamStatusCompleted(item.steaming_guid!);
+        this.UpdateSteamStatusCompleted(steamGuid);
       }
-      //console.log(result)
     });
   }
 
-  private subscribeToJobOrderEvent(
-    subscribeFn: (guid: string) => Observable<any>,
-    job_order_guid: string
-  ) {
-    const subscription = subscribeFn(job_order_guid).subscribe({
-      next: (response) => {
-        console.log('Received data:', response);
-        const data = response.data
+  // private subscribeToJobOrderEvent(
+  //   subscribeFn: (guid: string) => Observable<any>,
+  //   job_order_guid: string
+  // ) {
+  //   const subscription = subscribeFn(job_order_guid).subscribe({
+  //     next: (response) => {
+  //       console.log('Received data:', response);
+  //       const data = response.data
 
-        let jobData: any;
-        let eventType: any;
+  //       let jobData: any;
+  //       let eventType: any;
 
-        if (data?.onJobStopped) {
-          jobData = data.onJobStopped;
-          eventType = 'jobStopped';
-        } else if (data?.onJobStarted) {
-          jobData = data.onJobStarted;
-          eventType = 'jobStarted';
-        } else if (data?.onJobCompleted) {
-          jobData = data.onJobCompleted;
-          eventType = 'onJobCompleted';
-        }
+  //       if (data?.onJobStopped) {
+  //         jobData = data.onJobStopped;
+  //         eventType = 'jobStopped';
+  //       } else if (data?.onJobStarted) {
+  //         jobData = data.onJobStarted;
+  //         eventType = 'jobStarted';
+  //       } else if (data?.onJobCompleted) {
+  //         jobData = data.onJobCompleted;
+  //         eventType = 'onJobCompleted';
+  //       }
 
-        if (jobData) {
-          const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
-          if (foundJob?.length) {
-            foundJob[0].status_cv = jobData.job_status;
-            foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
-            foundJob[0].time_table ??= [];
+  //       if (jobData) {
+  //         const foundJob = this.jobOrderList.filter(x => x.guid === jobData.job_order_guid);
+  //         if (foundJob?.length) {
+  //           foundJob[0].status_cv = jobData.job_status;
+  //           foundJob[0].start_dt = foundJob[0].start_dt ?? jobData.start_time;
+  //           foundJob[0].time_table ??= [];
 
-            if (eventType === 'jobStarted') {
-              const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
-              if (foundTimeTable?.length) {
-                foundTimeTable[0].start_time = jobData.start_time
-              } else {
-                foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
-              }
-            } else if (eventType === 'jobStopped') {
-              foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
-            }
-            console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
+  //           if (eventType === 'jobStarted') {
+  //             const foundTimeTable = foundJob[0].time_table?.filter(x => x.guid === jobData.time_table_guid);
+  //             if (foundTimeTable?.length) {
+  //               foundTimeTable[0].start_time = jobData.start_time
+  //             } else {
+  //               foundJob[0].time_table?.push(new TimeTableItem({ guid: jobData.time_table_guid, start_time: jobData.start_time, stop_time: jobData.stop_time, job_order_guid: jobData.job_order_guid }))
+  //             }
+  //           } else if (eventType === 'jobStopped') {
+  //             foundJob[0].time_table = foundJob[0].time_table?.filter(x => x.guid !== jobData.time_table_guid);
+  //           }
+  //           console.log(`Updated JobOrder ${eventType} :`, foundJob[0]);
+  //         }
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Error:', error);
+  //     },
+  //     complete: () => {
+  //       console.log('Subscription completed');
+  //     }
+  //   });
+
+  //   this.jobOrderSubscriptions.push(subscription);
+  // }
+
+  processJobStatusChange(response: any) {
+    // console.log('Received data:', response);
+    const event_name = response.event_name;
+    const data = response.payload
+
+    if (data) {
+      const foundJob = this.jobOrderList.filter(x => x.guid === data.job_order_guid);
+      if (foundJob?.length) {
+        const job = foundJob[0];
+        job.status_cv = data.job_status;
+        job.start_dt = job.start_dt ?? data.start_time;
+        job.time_table ??= [];
+
+        if (event_name === 'onJobStarted') {
+          const foundTimeTable = job.time_table?.filter(x => x.guid === data.time_table_guid);
+          if (foundTimeTable?.length) {
+            foundTimeTable[0].start_time = data.start_time
+          } else {
+            job.time_table?.push(new TimeTableItem({ guid: data.time_table_guid, start_time: data.start_time, stop_time: data.stop_time, job_order_guid: data.job_order_guid }))
           }
+        } else if (event_name === 'onJobStopped') {
+          // to clear the time table entry when job is stopped by filter out the newly added time table entry
+          job.time_table = job.time_table?.filter(x => x.guid !== data.time_table_guid);
         }
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      },
-      complete: () => {
-        console.log('Subscription completed');
+        console.log(`Updated JobOrder ${event_name} :`, job);
       }
-    });
-
-    this.jobOrderSubscriptions.push(subscription);
+    }
   }
 
   UpdateSteamStatusCompleted(steam_guid: string) {
