@@ -20,8 +20,7 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.QC_DATE}}</mat-label>
-            <input matInput formControlName="qc_dt" [matDatepicker]="qc_dt_picker" [min]="estCompleteDt"
-              [max]="startDateQC">
+            <input matInput formControlName="qc_dt" [matDatepicker]="qc_dt_picker" [min]="estCompleteDt">
             <mat-datepicker-toggle matSuffix [for]="qc_dt_picker"></mat-datepicker-toggle>
             <mat-datepicker #qc_dt_picker [startAt]="startDateQC"></mat-datepicker>
             <!-- @if (confirmationForm.get('qc_dt')?.hasError('required')) {

@@ -1,63 +1,65 @@
 <div class="card p-0">
-  <div class="card mat-expansion-panel-body">
-    <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
-      <div class="row">
-        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
-          <mat-form-field class="example-full-width" appearance="fill">
-            <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
-            <mat-label>
-              {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
-            </mat-label>
-            <input matInput formControlName="filterJobOrder">
-          </mat-form-field>
+  <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+              <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" (click)="$event.stopPropagation()">
+                <mat-icon>search</mat-icon>
+              </button>
+            </div>
+            <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                <mat-icon>clear_all</mat-icon>
+              </button>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="row">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
+              <mat-label>
+                {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
+              </mat-label>
+              <input matInput formControlName="filterJobOrder">
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+              <input matInput formControlName="customer" [formControl]="customerCodeControl"
+                [matAutocomplete]="customerCode">
+              <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                @for (cc of customer_companyList; track cc) {
+                <mat-option [value]="cc">
+                  {{ccDS.displayCodeDashName(cc)}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.STATUS}}</mat-label>
+              <mat-select multiple formControlName="jobStatusCv">
+                @for (codeValue of jobStatusCvList; track codeValue) {
+                @if (availableProcessStatus.includes(codeValue.code_val || '')) {
+                <mat-option [value]="codeValue.code_val">
+                  {{codeValue.description}}
+                </mat-option>
+                }
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
         </div>
-        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-            <input matInput formControlName="customer" [formControl]="customerCodeControl"
-              [matAutocomplete]="customerCode">
-            <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-              @for (cc of customer_companyList; track cc) {
-              <mat-option [value]="cc">
-                {{ccDS.displayCodeDashName(cc)}}
-              </mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 pt-3">
-          <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>{{translatedLangText.STATUS}}</mat-label>
-            <mat-select multiple formControlName="jobStatusCv">
-              @for (codeValue of jobStatusCvList; track codeValue) {
-              @if (availableProcessStatus.includes(codeValue.code_val || '')) {
-              <mat-option [value]="codeValue.code_val">
-                {{codeValue.description}}
-              </mat-option>
-              }
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 d-flex align-items-center ms-auto justify-content-end">
-          <!-- <mat-button-toggle-group formControlName="jobStatusCv" class="m-r-10" [hideMultipleSelectionIndicator]="true"
-            color="primary" multiple>
-            @for (codeValue of jobStatusCvList; track codeValue) {
-            <mat-button-toggle [value]="codeValue.code_val"
-              [class.selected-toggle-btn]="isSelectedJobStatus(codeValue.code_val!)">{{codeValue.description}}</mat-button-toggle>
-            }
-          </mat-button-toggle-group> -->
-          <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" matTooltip={{translatedLangText.SEARCH}}>
-            <mat-icon>search</mat-icon>
-          </button>
-          <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-            matTooltip={{translatedLangText.CLEAR_ALL}}>
-            <mat-icon>clear_all</mat-icon>
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
   <div class="body overflow-auto">
     <div class="responsive_table">
       <table mat-table [dataSource]="jobOrderList" matSort
@@ -126,7 +128,7 @@
           </mat-header-cell>
           <mat-cell *matCellDef="let row; let i=index;"
             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-            @if (canStartJob(row)) {
+            @if (canStartJob(row) && !isStarted(row)) {
             <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
               <!-- <mat-icon [color]="row.time_table?.length ? null : 'warn'" -->
               <mat-icon [ngClass]="{
@@ -137,7 +139,7 @@
               </mat-icon>
             </button>
             }
-            @if (canCompleteJob(row, isStarted(row))) {
+            @if (canCompleteJob(row)) {
             <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
               <mat-icon class="green-timer-icon">check_box</mat-icon>
             </button>

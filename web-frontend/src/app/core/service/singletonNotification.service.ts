@@ -48,10 +48,10 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
   public subscribe(topics: string | string[], handler: (message: MessageItem) => void): Subscription {
     // Normalize to array if single topic provided
     const topicArray = Array.isArray(topics) ? topics : [topics];
-    
+
     // Create or get emitters for each topic
     const emitters: EventEmitter<MessageItem>[] = [];
-    
+
     topicArray.forEach(topic => {
       let emitter = this.emitterMap.get(topic);
       if (!emitter) {
@@ -68,17 +68,17 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
 
     if (existing) {
       console.warn(`[NotificationService] Duplicate subscription ignored for topics: ${topicArray.join(', ')}`);
-      const subscriptions = emitters.map(emitter => 
+      const subscriptions = emitters.map(emitter =>
         emitter.subscribe({ next: handler })
       );
-      
+
       return new Subscription(() => {
         subscriptions.forEach(sub => sub.unsubscribe());
       });
     }
 
     // Create new subscriptions
-    const subscriptions = emitters.map(emitter => 
+    const subscriptions = emitters.map(emitter =>
       emitter.subscribe({
         next: handler,
         complete: () => {
@@ -88,12 +88,12 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
       })
     );
 
-    this.subscribers.push({ 
-      topics: topicArray, 
-      event: { 
+    this.subscribers.push({
+      topics: topicArray,
+      event: {
         emitters,  // Changed from single emitter to array of emitters
-        closed: false 
-      } 
+        closed: false
+      }
     });
 
     return new Subscription(() => {
@@ -124,12 +124,12 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
   private broadcastMessage(message: MessageItem) {
     this.subscribers = this.subscribers.filter(sub => {
       // Check if any of the subscribed topics match the message topic
-      const hasMatchingTopic = sub.topics.some(topic => 
+      const hasMatchingTopic = sub.topics.some(topic =>
         this.topicMatches(topic, message?.topic!)
       );
-      
+
       const active = !sub.event.closed && hasMatchingTopic;
-      
+
       if (active) {
         if (typeof message.payload === 'string') {
           message.payload = JSON.parse(message.payload);
@@ -139,10 +139,10 @@ export class SingletonNotificationService extends BaseDataSource<MessageItem> {
           // optionally handle unexpected formats
           console.log('Unsupported payload type:', typeof message.payload);
         }
-        
+
         // Emit the message through all matching emitters
         sub.event.emitters.forEach(emitter => {
-          if (sub.topics.some(topic => 
+          if (sub.topics.some(topic =>
             this.topicMatches(topic, message?.topic!)
           )) {
             emitter.emit(message);

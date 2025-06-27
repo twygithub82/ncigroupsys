@@ -13,7 +13,7 @@
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row justify-content-center">
-        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
 
           <div class="row clearfix">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -235,7 +235,7 @@
 
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 text-center ">
-                <mat-label style="display: flex; justify-content: left;">* {{translatedLangText.REMARKS}} -
+                <mat-label style="display: flex; justify-content: left;">{{translatedLangText.REMARKS}} -
                   {{this.getTariffCleaningRemarks()}}</mat-label>
               </div>
             </div>

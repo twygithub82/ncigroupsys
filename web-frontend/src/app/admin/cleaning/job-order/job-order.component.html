@@ -33,7 +33,7 @@
                           </mat-panel-description>
                         </mat-expansion-panel-header>
                         <div class="row">
-                          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>
                                 {{translatedLangText.TANK_NO}}
@@ -41,7 +41,7 @@
                               <input matInput formControlName="filterClean">
                             </mat-form-field>
                           </div>
-                          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                               <input matInput formControlName="customer" [matAutocomplete]="customerCode">
@@ -55,7 +55,7 @@
                               </mat-autocomplete>
                             </mat-form-field>
                           </div>
-                          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
                               <mat-date-range-input [rangePicker]="eir_picker" [max]="todayDt">
@@ -66,7 +66,7 @@
                               <mat-date-range-picker #eir_picker></mat-date-range-picker>
                             </mat-form-field>
                           </div>
-                          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.PROCESS}}</mat-label>
                               <input matInput formControlName="cleanMethod" [matAutocomplete]="cleanMethod">
@@ -79,7 +79,7 @@
                               </mat-autocomplete>
                             </mat-form-field>
                           </div>
-                          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-2 mb-0">
+                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.STATUS}}</mat-label>
                               <mat-select multiple formControlName="status_cv">
@@ -119,13 +119,10 @@
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="customer">
-                          <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="''">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                             {{translatedLangText.CUSTOMER}}
                           </mat-header-cell>
-                          <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="''"
-                            class="">
+                          <mat-cell mat-cell *matCellDef="let row" [ngClass]="''" class="">
                             <span
                               class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?row.storing_order_tank?.storing_order?.customer_company.name:'-'}}
                           </mat-cell>
@@ -229,8 +226,9 @@
                       </mat-progress-spinner>
                     </div>
                     }
-                    <mat-paginator #paginator [length]="cleanDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeClean"
-                      [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEventClean($event)">
+                    <mat-paginator #paginator [length]="cleanDS.totalCount" [pageIndex]="pageIndexJobOrder"
+                      [pageSize]="pageSizeClean" [pageSizeOptions]="[25, 50, 75, 100]"
+                      (page)="onPageEventClean($event)">
                     </mat-paginator>
                   </div>
                 </div>

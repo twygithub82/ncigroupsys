@@ -214,24 +214,27 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     {
       label: this.translatedLangText.REPAIR_EST_TAB_TITLE,
       component: 'app-job-allocation',
-      modulePackage: ['growth', 'customized']
+      modulePackage: ['growth', 'customized'],
+      expectedFunctions: ['REPAIR_JOB_ALLOCATION_VIEW', 'REPAIR_JOB_ALLOCATION_EDIT', 'REPAIR_JOB_ALLOCATION_DELETE']
     },
     {
       label: this.translatedLangText.JOB_ORDER_TAB_TITLE,
       component: 'app-job-task',
-      modulePackage: ['starter', 'growth', 'customized']
+      modulePackage: ['starter', 'growth', 'customized'],
+      expectedFunctions: ['REPAIR_JOBS_VIEW', 'REPAIR_JOBS_EDIT', 'REPAIR_JOBS_DELETE']
     },
     {
       label: this.translatedLangText.QC,
       component: 'app-job-qc',
-      modulePackage: ['starter', 'growth', 'customized']
+      modulePackage: ['starter', 'growth', 'customized'],
+      expectedFunctions: ['REPAIR_QC_VIEW', 'REPAIR_QC_EDIT', 'REPAIR_QC_DELETE']
     }
   ];
 
   get allowedTabs() {
-    return this.tabConfig.filter(tab =>
-      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
-    );
+    return this.tabConfig.filter(tab => {
+      return this.modulePackageService.hasFunctions(tab.expectedFunctions)
+    });
   }
 
   @ViewChild('repairJobOrderTask', { static: false }) repairJobOrderTask?: JobOrderTaskComponent;

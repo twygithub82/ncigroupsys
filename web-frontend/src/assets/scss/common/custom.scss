@@ -2152,7 +2152,7 @@ $grid-breakpoints: (
 }
 
 .green-button {
-  background-color: lighten(#35b435, 16%) !important;  //#057930
+  background-color: lighten(#35b435, 16%) !important; //#057930
   /* Material green */
   color: white !important;
 }
@@ -2384,7 +2384,7 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   background-position: center;
   opacity: 0.08;
   pointer-events: none;
-   z-index: -1;
+  z-index: -1;
 }
 
 .mat-mdc-row.bg-warn-row {
@@ -2409,7 +2409,12 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   margin-right: 6px;
 }
 
-.chg-psw-text, .forgot-psw-caption-text {
+.chg-psw-text,
+.forgot-psw-caption-text {
   width: 100%;
   padding-bottom: 0px;
+}
+
+.mat-mdc-form-field-required-marker {
+  display: none !important;
 }

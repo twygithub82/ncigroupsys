@@ -22,11 +22,11 @@
                   <mat-label>{{translatedLangText.USERNAME}}</mat-label>
                   <input matInput formControlName="username" />
                   <mat-icon class="material-icons-two-tone color-icon p-3" matSuffix>face</mat-icon>
-                  @if (authForm.get('username')?.hasError('required')) {
+                  <!-- @if (authForm.get('username')?.hasError('required')) {
                   <mat-error>
                     {{translatedLangText.USERNAME}} {{translatedLangText.PROCEDURE_REQUIRED}}
                   </mat-error>
-                  }
+                  } -->
                 </mat-form-field>
               </div>
             </div>
@@ -40,11 +40,11 @@
                     <mat-icon class="material-icons-two-tone color-icon m-3" matSuffix>
                       {{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                   </a>
-                  @if (authForm.get('password')?.hasError('required')) {
+                  <!-- @if (authForm.get('password')?.hasError('required')) {
                   <mat-error>
                     {{translatedLangText.PASSWORD}} {{translatedLangText.PROCEDURE_REQUIRED}}
                   </mat-error>
-                  }
+                  } -->
                 </mat-form-field>
               </div>
             </div>
@@ -60,9 +60,9 @@
               </div>
               <a class="txt1" routerLink="/authentication/forgot-password">{{translatedLangText.FORGOTPASSWORD}}</a>
             </div>
-            @if (error) {
+            <!-- @if (error) {
             <div class="alert alert-danger mt-3 mb-0">{{error}}</div>
-            }
+            } -->
             <div class="container-auth-form-btn mt-0">
               <div style="text-align:center">
                 <button mat-raised-button color="primary" [class.auth-spinner]="loading" class="auth-form-btn"

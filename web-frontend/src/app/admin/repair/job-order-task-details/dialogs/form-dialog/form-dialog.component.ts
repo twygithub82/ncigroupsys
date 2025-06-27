@@ -115,14 +115,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return Utility.convertEpochToDateTimeStr(input);
   }
 
-  displayTimeTaken(stop_time: number | undefined, start_time: number | undefined): string | undefined {
-    if (!stop_time || !start_time) return '';
-    const timeTakenMs = stop_time - start_time;
-
-    const hours = Math.floor(timeTakenMs / 3600);
-    const minutes = Math.floor((timeTakenMs % 3600) / 60);
-
-    return `${hours} hr ${minutes} min`;
+  displayTimeTaken(stop_time: number | undefined, start_time: number | undefined): string {
+    return Utility.getDisplayTimeTaken(stop_time, start_time);
   }
 
   sortByStartTime(items: any): any {
