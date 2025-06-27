@@ -44,8 +44,7 @@
                         modulePackageService.isCustomizedPackage())){
                         <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
                           <button mat-mini-fab (click)="cancelSelectedRows(soSelection.selected)"
-                            [class.red-button]="!canCancelSelectedRows()"
-                            [disabled]="canCancelSelectedRows()">
+                            [class.red-button]="!canCancelSelectedRows()" [disabled]="canCancelSelectedRows()">
                             <mat-icon class="col-white">close</mat-icon>
                           </button>
                         </div>
@@ -192,8 +191,7 @@
                         {{translatedLangText.CUSTOMER}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}
+                        <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="no_of_tanks">
@@ -225,7 +223,7 @@
                       <mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                         <span class="mobile-label">{{translatedLangText.SO_NOTES}}:</span>
-                        {{row.so_notes}}</mat-cell>
+                        <span class="truncate-text" [matTooltip]="row.so_notes">{{row.so_notes}}</span></mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="accept_status">
                       <mat-header-cell *matHeaderCellDef

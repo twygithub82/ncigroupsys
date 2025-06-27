@@ -2418,3 +2418,14 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
 .mat-mdc-form-field-required-marker {
   display: none !important;
 }
+
+.truncate-2-lines {
+  display: -webkit-box;
+  display: box; // legacy fallback (not critical but harmless)
+  -webkit-box-orient: vertical;
+  box-orient: vertical; // legacy fallback
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  line-clamp: 2; // modern standard property
+}
