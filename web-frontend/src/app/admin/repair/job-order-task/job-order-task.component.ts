@@ -630,11 +630,11 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   }
 
   canStartJob(jobOrderItem: JobOrderItem | undefined) {
-    return this.joDS.canStartJob(jobOrderItem)
+    return this.isAllowEdit() && this.joDS.canStartJob(jobOrderItem)
   }
 
   canCompleteJob(jobOrderItem: JobOrderItem | undefined): boolean {
-    return this.joDS.canCompleteJob(jobOrderItem);
+    return this.isAllowEdit() && this.joDS.canCompleteJob(jobOrderItem);
   }
 
   isSelectedJobStatus(value: string): boolean {
@@ -831,5 +831,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       let successMsg = this.translatedLangText.SAVE_SUCCESS;
       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
     }
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_JOBS_EDIT']);
   }
 }

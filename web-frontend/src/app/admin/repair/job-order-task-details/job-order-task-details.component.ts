@@ -51,6 +51,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'job-order-task-details',
@@ -272,6 +273,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
+    private modulePackageService: ModulePackageService,
     private notificationService: SingletonNotificationService
   ) {
     super();
@@ -1068,5 +1070,13 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(`Updated JobOrder ${event_name} :`, this.jobOrderItem);
       }
     }
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['REPAIR_JOBS_EDIT']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['REPAIR_JOBS_DELETE']);
   }
 }
