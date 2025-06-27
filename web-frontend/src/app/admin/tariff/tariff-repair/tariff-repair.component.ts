@@ -245,8 +245,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     PART_SELECTED: 'COMMON-FORM.SELECTED',
   }
 
-  @ViewChild('partInput', { static: true })
-  partInput?: ElementRef<HTMLInputElement>;
+
+  @ViewChild('partInput', { static: true }) partInput?: ElementRef<HTMLInputElement>;
 
   constructor(
     public httpClient: HttpClient,
@@ -929,6 +929,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       handled_item_cv: ''
     });
     this.partControl?.setValue('');
+    if (this.partInput) {
+      this.partInput.nativeElement.value = '';
+    }
   }
 
   stopEventTrigger(event: Event) {
@@ -1082,7 +1085,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
- onSortChange(event: Sort): void {
+  onSortChange(event: Sort): void {
     const { active: field, direction } = event;
 
     // reset if no direction
