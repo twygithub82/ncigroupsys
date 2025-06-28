@@ -669,7 +669,7 @@
                 {{translatedLangText.ROLLBACK}}
               </button>
               }
-              @if (residueDS.canCancel(residueItem!)) {
+              <!-- @if (residueDS.canCancel(residueItem!)) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5 red-button" (click)="onCancel($event)">
                 <mat-icon>
@@ -681,7 +681,7 @@
                 </mat-icon>
                 {{translatedLangText.DELETE}}
               </button>
-              }
+              } -->
               @if (residueDS.canNoAction(residueItem!)) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5 red-button" (click)="onNoAction($event,residueItem!)">

@@ -637,7 +637,7 @@
                 {{translatedLangText.ROLLBACK}}
               </button>
               }
-              @if (steamDS.canCancel(steamItem!)) {
+              <!-- @if (steamDS.canCancel(steamItem!)) {
               <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5" (click)="onCancel($event)">
                 <mat-icon>
@@ -649,7 +649,7 @@
                 </mat-icon>
                 {{translatedLangText.DELETE}}
               </button>
-              }
+              } -->
               @if (steamDS.canNoAction(steamItem!)) {
               <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5" (click)="onNoAction($event)">
@@ -660,7 +660,7 @@
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.CANCEL}}
+                {{translatedLangText.NO_ACTION}}
               </button>
               }
             </div>
