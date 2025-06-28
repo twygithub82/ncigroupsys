@@ -2448,3 +2448,17 @@ button.mat-mdc-mini-fab.smaller-btn {
 mat-card.card-copied {
   background-color: $theme-blue-nav-anchor_focus;
 }
+
+button[mat-flat-button].center-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-left: auto;
+  }
+}
