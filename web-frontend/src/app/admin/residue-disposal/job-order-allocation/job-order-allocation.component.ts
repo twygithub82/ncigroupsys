@@ -52,6 +52,8 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-residue-disposal-job-order-estimate-new',
@@ -212,7 +214,8 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     RESIDUE_DISPOSAL: 'COMMON-FORM.RESIDUE-DISPOSAL',
     APPROVE_DATE: 'COMMON-FORM.APPROVE-DATE',
     ABORT: 'COMMON-FORM.ABORT',
-    VIEW: 'COMMON-FORM.VIEW'
+    VIEW: 'COMMON-FORM.VIEW',
+    UNASSIGN: 'COMMON-FORM.UNASSIGN',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -280,7 +283,8 @@ selectedJobTaskClass =selected_job_task_color;
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -864,6 +868,10 @@ selectedJobTaskClass =selected_job_task_color;
 
       this.getPackageResidue();
       this.loadBillingBranch();
+
+      if (!this.canEdit()) {
+        this.residueEstForm?.get('team_allocation')?.disable()
+      }
     }
   }
 
@@ -1123,12 +1131,15 @@ selectedJobTaskClass =selected_job_task_color;
     // this.repSelection.clear();
     // selectedTeam?.setValue('')
     // this.residueEstForm?.get('deList')?.setErrors(null);
-
   }
+
   isAssignEnabled() {
     return this.repSelection.hasValue() && this.residueEstForm?.get('team_allocation')?.value;
   }
 
+  isAnyAssignedToTeam() {
+    return this.deList.some(item => !!item.job_order?.team?.guid);
+  }
 
   onApprove(event: Event) {
     event.preventDefault();
@@ -1288,13 +1299,12 @@ selectedJobTaskClass =selected_job_task_color;
 
   canSave(): boolean {
     const validStatus = ['ASSIGNED', 'PENDING', 'APPROVED', 'PARTIAL_ASSIGNED', 'CANCELED', 'NO_ACTION']
-
     var allowSave: boolean = validStatus.includes(this.residueItem?.status_cv!);
     // if (this.deList?.length) {
     //   var itms = this.deList.filter(itm => (itm.job_order?.status_cv == "PENDING" || itm.job_order == null || itm.job_order?.status_cv == null));
     //   allowSave = itms.length > 0;
     // }
-    return allowSave;
+    return allowSave && this.canEdit();
   }
 
   canRollBack(): boolean {
@@ -1413,4 +1423,56 @@ selectedJobTaskClass =selected_job_task_color;
     });
   }
 
+  ConfirmUnassignTeam(event: Event, row: ResidueItem) {
+    this.stopEventTrigger(event);
+    this.ConfirmUnassignDialog(event, row);
+  }
+
+  ConfirmUnassignDialog(event: Event, row: ResidueItem) {
+    event.preventDefault(); // Prevents the form submission
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.UnassignEstimate(row);
+      }
+    });
+  }
+
+  UnassignEstimate(row: ResidueItem) {
+    this.subs.sink = this.residueDS.rollbackAssigneddResidue([row.guid!])
+      .subscribe((result: any) => {
+        if (result.data.rollbackAssignedResidue) {
+          this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
+        }
+      });
+  }
+
+  canUnassignTeam(row: ResidueItem | undefined) {
+    return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
+  }
+
+  canEdit() {
+    return this.isAllowEdit() && this.residueDS.canAssign(this.residueItem);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['RESIDUE_DISPOSAL_JOB_ALLOCATION_EDIT']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['RESIDUE_DISPOSAL_JOB_ALLOCATION_DELETE']);
+  }
 }

@@ -112,10 +112,10 @@
               }
               @if (!(joDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-2-75 col-lg-2-75 col-md-12 col-sm-12 ms-2 m-b-10 p-l-0">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 ms-2 m-b-10 p-l-0">
                   {{translatedLangText.JOB_ORDER_NO}}: <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
                 </div>
-                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-10">
+                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-10 ms-2">
                   {{translatedLangText.STATUS}}: <span
                     class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
                 </div>
@@ -126,8 +126,7 @@
                     <mat-icon>view_list</mat-icon>
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
-                  <button mat-flat-button (click)="toggleJobState($event, isStarted())"
-                    [disabled]="!canStartJob()"
+                  <button mat-flat-button (click)="toggleJobState($event, isStarted())" [disabled]="!canStartJob()"
                     [ngClass]="{'m-r-10': true, 'yellow-button': canStartJob() && isStarted(), 'bg-red': canStartJob() && !isStarted()}">
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.PAUSE_JOB : translatedLangText.START_JOB }}
@@ -415,7 +414,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{displayDate(joDS.getQCJobOrder(repairItem?.repair_part)?.qc_dt)}}
+                            {{displayDate(joDS.getQCJobOrder(repairItem?.repair_part)?.qc_dt) || "-"}}
                           </div>
                         </div>
                       </div>

@@ -323,7 +323,8 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
-                  <input matInput [formControl]="newDesc" [matAutocomplete]="description" required="true"  maxlength="150">
+                  <input matInput [formControl]="newDesc" [matAutocomplete]="description" required="true"
+                    maxlength="150">
                   <mat-autocomplete #description="matAutocomplete" [displayWith]="displayResiduePart">
                     @for (cc of displayPackResidueList; track cc) {
                     <mat-option [value]="cc">
@@ -619,9 +620,7 @@
                   @if (!(residueDS.loading$ | async)&&!(isExportingPDF)) {
                   <i class="fas fa-file-export"></i>
                   } @else if ((residueDS.loading$ | async)||(isExportingPDF)) {
-
                   <mat-spinner color="primary" [diameter]="16"></mat-spinner>
-
                   }
                 </span>
                 {{translatedLangText.EXPORT}}
@@ -670,19 +669,19 @@
                 {{translatedLangText.ROLLBACK}}
               </button>
               }
-              @if (residueDS.canCancel(residueItem!)) {
+              <!-- @if (residueDS.canCancel(residueItem!)) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5 red-button" (click)="onCancel($event)">
                 <mat-icon>
                   @if (!(residueDS.loading$ | async)) {
-                  close
+                  delete_forever
                   } @else if ((residueDS.loading$ | async)) {
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.CANCEL}}
+                {{translatedLangText.DELETE}}
               </button>
-              }
+              } -->
               @if (residueDS.canNoAction(residueItem!)) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5 red-button" (click)="onNoAction($event,residueItem!)">

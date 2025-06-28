@@ -56,6 +56,7 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-estimate-new',
@@ -216,7 +217,6 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     ABORT: 'COMMON-FORM.ABORT',
     DETAILS: 'COMMON-FORM.DETAILS',
     TYPE: 'COMMON-FORM.TYPE',
-
   }
 
   newDesc = new FormControl(null, [Validators.required]);
@@ -291,7 +291,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -367,29 +368,6 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       { alias: 'unitTypeCv', codeValType: 'RESIDUE_UNIT' },
     ];
     this.cvDS.getCodeValuesByType(queries);
-
-    // this.cvDS.connectAlias('groupNameCv').subscribe(data => {
-    //   this.groupNameCvList = data;
-    //   this.updateData(this.repList);
-    //   const subqueries: any[] = [];
-    //   data.map(d => {
-    //     if (d.child_code) {
-    //       let q = { alias: d.child_code, codeValType: d.child_code };
-    //       const hasMatch = subqueries.some(subquery => subquery.codeValType === d.child_code);
-    //       if (!hasMatch) {
-    //         subqueries.push(q);
-    //       }
-    //     }
-    //   });
-    //   if (subqueries.length > 0) {
-    //     this.cvDS?.getCodeValuesByType(subqueries);
-    //     subqueries.map(s => {
-    //       this.cvDS?.connectAlias(s.alias).subscribe(data => {
-    //         this.subgroupNameCvList.push(...data);
-    //       });
-    //     });
-    //   }
-    // });
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
     });
@@ -419,12 +397,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       this.populateResiduePartList(this.residueItem!);
     });
 
-
-    //this.getSurveyorList();
-
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    //this.residue_guid = this.route.snapshot.paramMap.get('repair_est_id');
-
     this.route.data.subscribe(routeData => {
       this.isDuplicate = routeData['action'] === 'duplicate';
       this.loadHistoryState();
@@ -1131,25 +1104,6 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     this.stopEventTrigger(event);
     this.preventDefault(event);
     this.deleteItem(event, row, index);
-  }
-
-  handleDuplicateRow(event: Event, row: StoringOrderTankItem): void {
-    //this.stopEventTrigger(event);
-    let newSot: StoringOrderTankItem = new StoringOrderTankItem();
-    newSot.unit_type_guid = row.unit_type_guid;
-    newSot.last_cargo_guid = row.last_cargo_guid;
-    newSot.tariff_cleaning = row.tariff_cleaning;
-    // newSot.purpose_cleaning = row.purpose_cleaning;
-    // newSot.purpose_storage = row.purpose_storage;
-    // newSot.purpose_repair_cv = row.purpose_repair_cv;
-    // newSot.purpose_steam = row.purpose_steam;
-    // newSot.required_temp = row.required_temp;
-    newSot.clean_status_cv = row.clean_status_cv;
-    newSot.certificate_cv = row.certificate_cv;
-    newSot.so_guid = row.so_guid;
-    newSot.eta_dt = row.eta_dt;
-    newSot.etr_dt = row.etr_dt;
-    //this.addEstDetails(event, newSot);
   }
 
   handleSaveSuccess(count: any) {

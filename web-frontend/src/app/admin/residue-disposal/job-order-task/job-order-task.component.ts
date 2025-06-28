@@ -735,7 +735,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     })
 
     this.residueDS.search(where).subscribe(result => {
-
       if (result.length > 0) {
         var resItem: ResidueItem = result[0];
         let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
@@ -743,7 +742,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         residueStatus.guid = resItem?.guid;
         residueStatus.sot_guid = resItem?.sot_guid;
         this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
-
           console.log(result);
         });
         //.subscribe(result=>{

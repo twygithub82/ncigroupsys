@@ -38,7 +38,7 @@
                         <div class="row">
                           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
-                              <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span>
+                              <!-- <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span> -->
                               <mat-label>
                                 {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
                               </mat-label>
@@ -109,7 +109,7 @@
                         </ng-container>
                         <ng-container matColumnDef="customer">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-4_25xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.CUSTOMER}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
@@ -141,21 +141,21 @@
                         </ng-container>
                         <ng-container matColumnDef="status_cv">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-2_75_25-xl tbl-col-width-per-2_75_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.STATUS}}
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="'tbl-col-width-per-2_75_25-xl tbl-col-width-per-2_75_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span
                               class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(row?.status_cv)}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="actions">
                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
-                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                             @if (canUnassignTeam(row)) {
                             <button mat-icon-button (click)="onUnassignTeam($event, row.guid)"
                               [matTooltip]="translatedLangText.UNASSIGN">

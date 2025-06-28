@@ -223,9 +223,9 @@
         </ng-container>
         <ng-container matColumnDef="category">
           <mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CARGO_CATEGORY}}</mat-header-cell>
+            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CARGO_CATEGORY}}</mat-header-cell>
           <mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
             (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label">{{translatedLangText.CARGO_CATEGORY }}:</span>
             {{row.tariff_cleaning?.cleaning_category?.name}}
@@ -234,9 +234,9 @@
 
         <ng-container matColumnDef="ban_type">
           <mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CARGO_BAN_TYPE}}</mat-header-cell>
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CARGO_BAN_TYPE}}</mat-header-cell>
           <mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
             (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label">{{translatedLangText.CARGO_BAN_TYPE }}:</span>
             {{getbanTypeDescription(row.tariff_cleaning?.ban_type_cv)}}
@@ -255,9 +255,9 @@
         </ng-container>
         <ng-container matColumnDef="flash_point">
           <mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
+            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.CARGO_FLASH_POINT}}</mat-header-cell>
           <mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
             (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label">{{translatedLangText.CARGO_FLASH_POINT}}:</span>
             {{row.tariff_cleaning?.flash_point}}</mat-cell>

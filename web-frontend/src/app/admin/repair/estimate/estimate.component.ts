@@ -152,6 +152,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     SEARCH: 'COMMON-FORM.SEARCH',
     COST: 'COMMON-FORM.COST',
+    DELETE: 'COMMON-FORM.DELETE',
   }
 
   availableProcessStatus: string[] = [
@@ -421,31 +422,31 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     // var actionId= this.route.snapshot.paramMap.get('id');
     // if(!actionId)
     // {
-        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-        if (savedCriteria) {
-          this.searchForm?.patchValue(savedCriteria);
-          this.constructSearchCriteria();
-        }
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
 
-        if (savedPagination) {
-          this.pageIndex = savedPagination.pageIndex;
-          this.pageSize = savedPagination.pageSize;
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
 
-          this.performSearch(
-            savedPagination.pageSize,
-            savedPagination.pageIndex,
-            savedPagination.first,
-            savedPagination.after,
-            savedPagination.last,
-            savedPagination.before
-          );
-        }
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
 
-        if (!savedCriteria && !savedPagination) {
-          this.search();
-        }
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
     //  }
     //  else if(actionId==='pending')
     // {
@@ -521,9 +522,8 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       purpose_repair_cv: { in: ["REPAIR", "OFFHIRE"] }
     };
 
-    if(this.searchForm!.get('est_pending')?.value)
-    {
-       where.or=[{repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }];
+    if (this.searchForm!.get('est_pending')?.value) {
+      where.or = [{ repair: { any: false } }, { repair: { all: { status_cv: { in: ["CANCELED"] } } } }];
     }
 
     if (this.searchForm!.get('tank_no')?.value) {

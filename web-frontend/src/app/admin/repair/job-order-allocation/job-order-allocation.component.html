@@ -480,7 +480,7 @@
                   }
                   @if (canEdit()) {
                   <button mat-flat-button color="primary"
-                    [disabled]="(repairDS.actionLoading$ | async) || (joDS.actionLoading$ | async)">
+                    [disabled]="(repairDS.actionLoading$ | async) || (joDS.actionLoading$ | async) || !isAnyAssignedToTeam()">
                     <mat-icon>
                       @if (!(repairDS.actionLoading$ | async) && !(joDS.actionLoading$ | async)) {
                       save

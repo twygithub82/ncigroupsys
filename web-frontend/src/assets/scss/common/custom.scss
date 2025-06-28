@@ -2419,16 +2419,16 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   display: none !important;
 }
 
-.truncate-2-lines {
-  display: -webkit-box;
-  display: box; // legacy fallback (not critical but harmless)
-  -webkit-box-orient: vertical;
-  box-orient: vertical; // legacy fallback
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 2;
-  line-clamp: 2; // modern standard property
-}
+// .truncate-2-lines {
+//   display: -webkit-box;
+//   display: flex; // legacy fallback (not critical but harmless)
+//   -webkit-box-orient: vertical;
+//   box-orient: vertical; // legacy fallback
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   -webkit-line-clamp: 2;
+//   line-clamp: 2; // modern standard property
+// }
 
 h6[matsuffix] {
   font-size: 0.9rem
@@ -2442,5 +2442,23 @@ button.mat-mdc-mini-fab.smaller-btn {
 
   .material-icons {
     font-size: 18px;
+  }
+}
+
+mat-card.card-copied {
+  background-color: $theme-blue-nav-anchor_focus;
+}
+
+button[mat-flat-button].center-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-left: auto;
   }
 }

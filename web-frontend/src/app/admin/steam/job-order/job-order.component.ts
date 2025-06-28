@@ -47,6 +47,7 @@ import { debounceTime, startWith, tap } from 'rxjs';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-job-order',
@@ -225,7 +226,8 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     private translate: TranslateService,
     private router: Router,
     private route: ActivatedRoute,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -782,11 +784,11 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     }
   }
 
-   canUnassignTeam(row: SteamItem | undefined) {
-        return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
-      }
+  canUnassignTeam(row: SteamItem | undefined) {
+    return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
+  }
 
   isAllowDelete() {
-    return true;//this.modulePackageService.hasFunctions(['STEAM_JOB_ALLOCATION_DELETE']);
+    return this.modulePackageService.hasFunctions(['STEAMING_JOB_ALLOCATION_DELETE']);
   }
 }
