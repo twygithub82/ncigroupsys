@@ -25,7 +25,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -353,7 +353,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     'IN_SURVEY'
   ]
 
-  @ViewChild('dynamicContainer', { read: ViewContainerRef, static: true }) container!: ViewContainerRef;
+  @ViewChild('compartmentStepper') compartmentStepper?: MatStepper;
 
   constructor(
     public httpClient: HttpClient,
