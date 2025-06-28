@@ -184,7 +184,7 @@
                           </div>
                         </mat-panel-description>
                       </mat-expansion-panel-header>
-                      <mat-card-content>
+                      <mat-card-content [ngClass]="'p-0'">
                         <mat-divider></mat-divider>
                         @if ((filterDeleted(row.residue || [])?.length ?? 0) > 0) {
                         <div class="responsive_table">
@@ -244,9 +244,9 @@
                               <mat-header-cell
                                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                                 *matHeaderCellDef></mat-header-cell>
-                              <mat-cell *matCellDef="let residueRow; let i=index;" 
+                              <mat-cell *matCellDef="let residueRow; let i=index;"
                                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                                
+
                                 @if(residueRow.status_cv !== 'JOB_IN_PROGRESS'){
                                 <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                                   <mat-icon>more_vert</mat-icon>
