@@ -1084,6 +1084,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
+    this.AutoSearch();
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
@@ -1091,19 +1092,19 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+      
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+      
     }
 
     if (this.custInput) {
       this.searchCustomerCompanyList('');
       this.custInput.nativeElement.value = '';
     }
+
+    this.AutoSearch();
   }
 
   onCheckboxClicked(row: CustomerCompanyItem) {
@@ -1150,5 +1151,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       }
   
       this.search();
+    }
+
+    AutoSearch() {
+      if (Utility.IsAllowAutoSearch()) {
+        this.search();
+      }
     }
 }

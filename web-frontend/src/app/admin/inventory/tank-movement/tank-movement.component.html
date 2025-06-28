@@ -144,7 +144,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
-                          <mat-select multiple formControlName="purpose">
+                          <mat-select multiple formControlName="purpose" (selectionChange)="AutoSearch()">
                             @for (codeValue of purposeOptionCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}
@@ -156,7 +156,7 @@
                       <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-                          <mat-select formControlName="tank_status_cv">
+                          <mat-select formControlName="tank_status_cv" (selectionChange)="AutoSearch()">
                             @for (codeValue of tankStatusCvList; track codeValue) {
                             @if (codeValue.code_val === '' || availableProcessStatus.includes(codeValue.code_val ?? '')) {
                             <mat-option [value]="codeValue.code_val">
@@ -170,7 +170,7 @@
                       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.YARD}}</mat-label>
-                          <mat-select formControlName="yard_cv">
+                          <mat-select formControlName="yard_cv" (selectionChange)="AutoSearch()">
                             @for (codeValue of yardCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}

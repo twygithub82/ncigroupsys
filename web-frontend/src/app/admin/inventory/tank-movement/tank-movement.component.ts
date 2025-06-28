@@ -34,7 +34,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -627,13 +627,18 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       retval = `${itm.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      retval = `${this.ccDS.displayCodeDashName(itm[0])}`
+       const maxLength = maxLengthDisplaySingleSelectedItem;
+            const value=`${this.ccDS.displayCodeDashName(itm[0])}`;
+            retval = `${value.length > maxLength 
+              ? value.slice(0, maxLength) + '...' 
+              : value}`;
     }
     return retval;
   }
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
+    this.AutoSearch();
   }
 
   name_selected(event: MatAutocompleteSelectedEvent): void {
@@ -653,6 +658,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       elmInput.nativeElement.value = '';
       cnt?.setValue('');
     }
+
+    this.AutoSearch();
   }
 
   name_onCheckboxClicked(row: any) {
@@ -694,13 +701,20 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       retval = `${itm.length} ${this.translatedLangText.CARGO_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      retval = `${itm[0].cargo}`
+     // retval = `${itm[0].cargo}`
+        const buffer =10;
+        const maxLength = (maxLengthDisplaySingleSelectedItem-buffer);
+            const value=`${itm[0].cargo}`;
+            retval = `${value.length > maxLength 
+              ? value.slice(0, maxLength) + '...' 
+              : value}`;
     }
     return retval;
   }
 
   cargo_removeAllSelected(): void {
     this.selectedCargoes = [];
+    this.AutoSearch();
   }
 
   cargo_selected(event: MatAutocompleteSelectedEvent): void {
@@ -724,6 +738,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       cnt?.setValue('');
 
     }
+
+    this.AutoSearch();
   }
 
   cargo_onCheckboxClicked(row: any) {
@@ -744,5 +760,11 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       input.value = '';
     }
     cnt?.setValue(null);
+  }
+
+  AutoSearch(){
+    if(Utility.IsAllowAutoSearch()){
+      this.search();
+    }
   }
 }

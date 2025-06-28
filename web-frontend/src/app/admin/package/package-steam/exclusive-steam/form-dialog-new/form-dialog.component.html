@@ -17,7 +17,7 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.CUSTOMER }}</mat-label>
-                <input matInput formControlName="customer_code" [matAutocomplete]="customerCode"
+                <input matInput formControlName="customer_code"  required [matAutocomplete]="customerCode"
                   [readonly]="!canEdit()">
                 <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                   @for (cc of customer_companyList; track cc) {
@@ -31,7 +31,7 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.LAST_CARGO }}</mat-label>
-                <mat-select formControlName="last_cargo" multiple>
+                <mat-select formControlName="last_cargo" multiple required>
                   @for (lc of last_cargoList; track lc) {
                   <mat-option [value]="lc">
                     {{lc.cargo}}
@@ -58,13 +58,13 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
-                <input matInput formControlName="min_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" required>
+                <input matInput formControlName="min_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" required (focus)="selectAll($event)">
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
-                <input matInput formControlName="max_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" required>
+                <input matInput formControlName="max_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" required (focus)="selectAll($event)">
               </mat-form-field>
             </div>
           </div>
@@ -82,7 +82,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.FLAT_RATE }}</mat-label>
-                <input matInput formControlName="cost" type="number" min="0" required>
+                <input matInput formControlName="cost" type="number" min="0" required (focus)="selectAll($event)">
                 <!-- @if (pcForm.get('cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.COST }} {{langText.CARGO_REQUIRED | translate}}
@@ -104,7 +104,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.HOURLY_RATE }}</mat-label>
-                <input matInput formControlName="labour" type="number" min="0">
+                <input matInput formControlName="labour" type="number" min="0" (focus)="selectAll($event)">
                 <!-- @if (pcForm.get('labour')?.hasError('required')) {
                        <mat-error>
                          {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}
@@ -117,7 +117,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                <input matInput formControlName="remarks" type="text">
+                <input matInput formControlName="remarks" type="text" (focus)="selectAll($event)">
               </mat-form-field>
             </div>
           </div>

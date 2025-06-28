@@ -632,4 +632,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     return retval;
 
   }
+   selectAll(event: FocusEvent) {
+    const input = event.target as HTMLInputElement;
+    input.select();  // Selects all text in the input
+  }
 }

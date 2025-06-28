@@ -27,7 +27,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.FLAT_RATE }}</mat-label>
-                <input matInput formControlName="cost" type="number" min="0" [required]="selectedItems.length <= 1">
+                <input matInput formControlName="cost" type="number" min="0" [required]="selectedItems.length <= 1" (focus)="selectAll($event)">
                 <!-- @if (pcForm.get('cost')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.COST }} {{langText.CARGO_REQUIRED | translate}}
@@ -39,7 +39,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.HOURLY_RATE }}</mat-label>
-                <input matInput formControlName="labour" type="number" min="0">
+                <input matInput formControlName="labour" type="number" min="0" (focus)="selectAll($event)">
                 <!-- @if (pcForm.get('labour')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.LABOUR }} {{langText.CARGO_REQUIRED | translate}}

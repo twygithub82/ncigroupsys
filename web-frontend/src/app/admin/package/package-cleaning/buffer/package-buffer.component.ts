@@ -134,7 +134,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
-  translatedLangText: any = {}
+  translatedLangText: any = {};
+  allowSelectedAll:boolean =false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -416,8 +417,9 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packBufferItems.length;
-    return numSelected === numRows;
+    // const numRows = this.packBufferItems.length;
+     const numRows = this.packBufferItems.filter(r=>this.selectedPackEst?.tariff_buffer_guid === r.tariff_buffer_guid).length;
+    return (numSelected === numRows && numSelected > 0);
   }
 
   isSelected(option: any): boolean {
@@ -433,7 +435,26 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
+   masterToggle_r1() {
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.packBufferItems.forEach((row) =>{
+       if(this.selectedPackEst?.tariff_buffer_guid === row.tariff_buffer_guid)
+       {
+        this.selection.select(row)
+       }
+       else if (this.allowSelectedAll)
+       {
+          if(!this.selectedPackEst)this.selectedPackEst=row;
+          this.selection.select(row);
+       }
+      }
+      );
+  }
+
   search() {
+     this.selectedPackEst = undefined;
+     this.allowSelectedAll=false;
     const where: any = {
       customer_company: { delete_dt: { eq: null } }
     };
@@ -444,8 +465,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     }
 
 
-    if (this.pcForm!.value["customer_cost"]) {
-      const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
+    if (this.pcForm?.get("customer_cost")?.value!==null &&this.pcForm?.get("customer_cost")?.value!=="") {
+      const selectedCost: number = Number(this.pcForm?.get("customer_cost")?.value);
       where.cost = { eq: selectedCost }
     }
 
@@ -567,8 +588,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     //}
   }
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/*******  af7ffc15-fa33-49c9-8f44-5a20c48bfe8c  *******/
+
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
@@ -797,6 +817,25 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     return retval;
 
   }
+
+   HideSelectAllCheckBox()
+  {
+     var retval: boolean = true;
+
+     retval = !(this.selectedPackEst);
+     if(retval)
+     {
+       var first = this.packBufferItems[0];
+       if(first)
+       {
+         var total = this.packBufferItems.length;
+         retval = ! (this.packBufferItems.filter(r=>r.tariff_buffer_guid===first.tariff_buffer_guid).length===total) 
+         this.allowSelectedAll=!retval;
+       }
+     }
+     return retval
+  }
+
   onTabFocused() {
     this.resetForm();
     this.search();
@@ -827,6 +866,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
+    this.AutoSearch();
   }
 
 
@@ -835,13 +875,11 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+    
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+     
     }
 
     if (this.custInput) {
@@ -849,6 +887,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       this.custInput.nativeElement.value = '';
 
     }
+    this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -894,6 +933,12 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
         }
     
         this.search();
+      }
+
+      AutoSearch()
+      {
+        if (Utility.IsAllowAutoSearch())
+          this.search();
       }
 
 }

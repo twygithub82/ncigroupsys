@@ -35,7 +35,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { TariffResidueDS } from 'app/data-sources/tariff-residue';
+import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
@@ -113,6 +113,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
+  residueTypeList?:TariffResidueItem[] = [];
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -128,13 +129,15 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   selection = new SelectionModel<PackageResidueItem>(true, []);
 
   selectedCustomers: any[] = [];
+  selectedResidue: any[] = [];
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
   selectedPackEst?: PackageResidueItem = undefined;
   id?: number;
   pcForm?: UntypedFormGroup;
-  translatedLangText: any = {}
+  translatedLangText: any = {};
+  allowSelectedAll:boolean =false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -236,6 +239,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   @ViewChild('custInput', { static: true })
   custInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('residueInput', { static: true })
+  residueInput?: ElementRef<HTMLInputElement>;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -327,7 +332,28 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     ).subscribe();
 
 
+     this.pcForm!.get('residue_disposal')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.description;
+        }
+
+        this.searchResidueist(searchCriteria);
+        //this.searchCustomerCompanyList(searchCriteria);
+        // this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        //   this.customer_companyList = data
+        // });
+      })
+    ).subscribe();
+
   }
+
+
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
@@ -434,8 +460,9 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packResidueItems.length;
-    return numSelected === numRows;
+    const numRows = this.packResidueItems.filter(r=>this.selectedPackEst?.tariff_residue_guid === r.tariff_residue_guid).length;
+    var bretval=(numSelected === numRows)&& numSelected>0;
+    return bretval;
   }
 
   isSelected(option: any): boolean {
@@ -447,11 +474,32 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     this.isAllSelected()
       ? this.selection.clear()
       : this.packResidueItems.forEach((row) =>
+       
         this.selection.select(row)
       );
   }
 
+   masterToggle_r1() {
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.packResidueItems.forEach((row) =>{
+       if(this.selectedPackEst?.tariff_residue_guid === row.tariff_residue_guid)
+       {
+        this.selection.select(row);
+       }
+       else if (this.allowSelectedAll)
+       {
+        if(!this.selectedPackEst)this.selectedPackEst=row;
+        this.selection.select(row);
+       }
+      }
+      );
+  }
+
+
   search() {
+    this.selectedPackEst = undefined;
+    this.allowSelectedAll=false;
     const where: any = {
       customer_company: { delete_dt: { eq: null } }
     };
@@ -464,15 +512,18 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
     }
 
-    if (this.pcForm!.value["customer_cost"]) {
-      const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
+    if (this.pcForm?.get("customer_cost")?.value!==null &&this.pcForm?.get("customer_cost")?.value!==""){
+      const selectedCost: number = Number(this.pcForm?.get("customer_cost")?.value);
       where.cost = { eq: selectedCost }
     }
 
-    if (this.pcForm!.get("residue_disposal")?.value) {
-      const tariffResidue: any = {}
-      tariffResidue.description = { contains: this.pcForm!.get("residue_disposal")?.value };
-      where.tariff_residue = tariffResidue;
+   // if (this.pcForm!.get("residue_disposal")?.value) 
+   if(this.selectedResidue.length>0)
+   {
+      var residueGuids = this.selectedResidue.map(c => c.guid);
+      
+      
+      where.tariff_residue_guid = { in: residueGuids };
     }
 
     this.lastSearchCriteria = where;
@@ -748,6 +799,14 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
+   searchResidueist(searchCriteria: string) {
+    this.subs.sink = this.tariffResidueDS.SearchTariffResidue({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
+      if (this.residueInput?.nativeElement.value === searchCriteria) {
+        this.residueTypeList = data;
+      }
+    });
+  }
+
   toggleEstimate(row: PackageResidueItem) {
 
     this.selection.toggle(row);
@@ -769,19 +828,92 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
+  HideSelectAllCheckBox()
+  {
+     var retval: boolean = true;
+
+     retval = !(this.selectedPackEst);
+     if(retval)
+     {
+       var first = this.packResidueItems[0];
+       if(first)
+       {
+         var total = this.packResidueItems.length;
+         retval = ! (this.packResidueItems.filter(r=>r.tariff_residue_guid===first.tariff_residue_guid).length===total) 
+         this.allowSelectedAll=!retval;
+       }
+     }
+     return retval
+  }
+
   onTabFocused() {
     this.resetForm();
     this.search();
   }
 
 
-  itemSelected(row: CustomerCompanyItem): boolean {
+ 
+
+ getSelectedResiduesDisplay(): string {
+    var retval: string = "";
+    if (this.selectedResidue?.length > 1) {
+      retval = `${this.selectedResidue.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+    }
+    else if (this.selectedResidue?.length == 1) {
+     const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value=`${this.selectedResidue[0].description}`;
+      retval = `${value.length > maxLength 
+        ? value.slice(0, maxLength) + '...' 
+        : value}`;
+    }
+    return retval;
+  }
+
+  removeAllSelectedResidues(): void {
+    this.selectedResidue = [];
+    this.AutoSearch();
+  }
+
+  selectedResidueItem(event: MatAutocompleteSelectedEvent): void {
+    const residue = event.option.value;
+    const index = this.selectedResidue.findIndex(c => c.guid === residue.guid);
+    if (!(index >= 0)) {
+      this.selectedResidue.push(residue);
+    
+    }
+    else {
+      this.selectedResidue.splice(index, 1);
+    
+    }
+
+    if (this.custInput) {
+      this.searchResidueist('');
+      this.residueInput!.nativeElement.value = '';
+
+    }
+
+    this.AutoSearch();
+  }
+
+  ResidueitemSelected(row: TariffResidueItem): boolean {
+    var retval: boolean = false;
+    const index = this.selectedResidue.findIndex(c => c.guid === row.guid);
+    retval = (index >= 0);
+    return retval;
+  }
+    onResidueCheckboxClicked(row: TariffResidueItem) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selectedResidueItem(fakeEvent);
+
+  }
+
+
+   itemSelected(row: CustomerCompanyItem): boolean {
     var retval: boolean = false;
     const index = this.selectedCustomers.findIndex(c => c.code === row.code);
     retval = (index >= 0);
     return retval;
   }
-
 
   getSelectedCustomersDisplay(): string {
     var retval: string = "";
@@ -800,6 +932,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
+    this.AutoSearch();
   }
 
 
@@ -808,13 +941,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+    
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+    
     }
 
     if (this.custInput) {
@@ -822,6 +953,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
       this.custInput.nativeElement.value = '';
 
     }
+
+    this.AutoSearch();
   }
 
   onCheckboxClicked(row: CustomerCompanyItem) {
@@ -830,6 +963,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
+  AutoSearch()
+  {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
 
     onSortChange(event: Sort): void {
         const { active: field, direction } = event;

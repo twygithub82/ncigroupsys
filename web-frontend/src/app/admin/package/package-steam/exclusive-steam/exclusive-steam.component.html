@@ -126,7 +126,7 @@
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-3'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER
-                  }}:</span>{{row.package_steaming?.customer_company.name}}</mat-cell>
+                  }}:</span>{{row.package_steaming?.customer_company?.name||''}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lastCargo">
               <mat-header-cell *matHeaderCellDef

@@ -576,4 +576,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
    displayNumber(input: number | string | undefined) {
       return Utility.formatNumberDisplay(input);
     }
+
+ selectAll(event: FocusEvent) {
+  const input = event.target as HTMLInputElement;
+  input.select();  // Selects all text in the input
+ }
 }

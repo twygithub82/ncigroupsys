@@ -848,7 +848,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     else if (this.selectedProfiles?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedCustomers[0].name}`;
+      const value=`${this.selectedProfiles[0].profile_name}`;
       retval = `${value.length > maxLength 
         ? value.slice(0, maxLength) + '...' 
         : value}`;

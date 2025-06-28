@@ -686,4 +686,33 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     content += ' :';
     return content
   }
+
+   allowNegative(event: KeyboardEvent) {
+    const allowedChars = /[0-9-]/;
+    const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+    
+    if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
+      event.preventDefault();
+    }
+    
+    // Additional logic to prevent multiple minus signs
+    const input = event.target as HTMLInputElement;
+    if (event.key === '-' && input.value.includes('-')) {
+      event.preventDefault();
+    }
+  }
+
+  positiveOnly(event: KeyboardEvent) {
+    const allowedChars = /[0-9]/;
+    const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+    
+    if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  selectAll(event: FocusEvent) {
+    const input = event.target as HTMLInputElement;
+    input.select();  // Selects all text in the input
+  }
 }

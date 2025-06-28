@@ -9,7 +9,8 @@
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card p-0">
-              <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+              <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm"  (ngSubmit)="AutoSearch()">
+                  <button  type="submit"  matSuffix  mat-icon-button   aria-label="Submit"   style="display: none" ></button>
                 <mat-accordion>
                   <mat-expansion-panel [expanded]="true">
                     <mat-expansion-panel-header>
@@ -55,6 +56,7 @@
                       <div class="row">
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width" appearance="fill">
+                           
                             <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                             <mat-chip-grid #chipGrid>
                               <!-- @for (cust of selectedCustomers; track cust) { -->
@@ -90,7 +92,7 @@
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.GROUP}}</mat-label>
-                            <mat-select formControlName="group_name_cv">
+                            <mat-select formControlName="group_name_cv" (selectionChange)="AutoSearch()">
                               @for (cn of groupNameCvList; track cn) {
                               <mat-option [value]="cn">
                                 {{cn.description}}
@@ -102,7 +104,7 @@
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>{{translatedLangText.SUB_GROUP}}</mat-label>
-                            <mat-select formControlName="sub_group_name_cv">
+                            <mat-select formControlName="sub_group_name_cv" (selectionChange)="AutoSearch()">
                               @for (cn of subGroupNameCvList; track cn) {
                               <mat-option [value]="cn">
                                 {{cn.description}}
@@ -114,11 +116,11 @@
                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                            <input matInput [matAutocomplete]="partName" [formControl]="partNameControl">
-                            <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
+                            <input matInput [matAutocomplete]="partName" [formControl]="partNameControl" (keyup.enter)="AutoSearch()">
+                            <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn" (optionSelected)="AutoSearch()">
                               @for (pn of partNameList; track pn) {
                               <mat-option [value]="pn">
-                                {{pn}}
+                              <span class="truncate-one-wrap">  {{pn}}</span>
                               </mat-option>
                               }
                             </mat-autocomplete>
@@ -127,13 +129,13 @@
                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.LABOUR_HOUR}}</mat-label>
-                            <input matInput formControlName="labour_hour" type="number" min="0">
+                            <input matInput formControlName="labour_hour" type="number" min="0" (keyup.enter)="AutoSearch()">
                           </mat-form-field>
                         </div>
                         <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.MATERIAL_COST$}}</mat-label>
-                            <input matInput formControlName="material_cost" type="number" min="0">
+                            <input matInput formControlName="material_cost" type="number" min="0" (keyup.enter)="AutoSearch()">
                           </mat-form-field>
                         </div>
                         <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -184,7 +186,7 @@
                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
-                            <mat-select formControlName="handled_item_cv">
+                            <mat-select formControlName="handled_item_cv" (selectionChange)="AutoSearch()">
                               @for (cn of handledItemCvList; track cn) {
                               <mat-option [value]="cn">
                                 {{cn.description}}

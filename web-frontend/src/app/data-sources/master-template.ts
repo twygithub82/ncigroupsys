@@ -401,6 +401,12 @@ export const UPDATE_MASTER_TEMPLATE_ESTIMATION = gql`
   }
 `;
 
+export const DELETE_MASTER_TEMPLATE_ESTIMATION = gql`
+  mutation deleteTemplateEstimation($templateEsimateGuid:String!) {
+    deleteTemplateEstimation(templateEsimateGuid: $templateEsimateGuid)
+  }
+`;
+
 export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem> {
   constructor(private apollo: Apollo) {
     super();
@@ -508,6 +514,20 @@ export class MasterEstimateTemplateDS extends BaseDataSource<MasterTemplateItem>
       mutation: UPDATE_MASTER_TEMPLATE_ESTIMATION,
       variables: {
         editTemplateEstimate
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
+
+   DeleteMasterTemplate(templateEsimateGuid: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_MASTER_TEMPLATE_ESTIMATION,
+      variables: {
+        templateEsimateGuid
       }
     }).pipe(
       catchError((error: ApolloError) => {

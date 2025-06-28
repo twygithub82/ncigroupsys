@@ -19,7 +19,8 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{getMaterialCostLabel()}}</mat-label>
-                    <input matInput formControlName="material_cost" type="number" min="0"
+                    <input matInput formControlName="material_cost" type="text"  [attr.min]="isMultiSelect() ? -20 : 0"
+                      (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)" (focus)="selectAll($event)"
                       [required]="this.selectedItems.length===1">
                     <!-- @if (pcForm.get('material_cost')?.hasError('required')) {
                       <mat-error>
@@ -42,7 +43,8 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{getLabourHourLabel() }}</mat-label>
-                    <input matInput formControlName="labour_hour" type="number" min="0">
+                    <input matInput formControlName="labour_hour" type="text"   [attr.min]="isMultiSelect() ? -20 : 0"
+                      (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)" (focus)="selectAll($event)" >
                     <!-- @if (pcForm.get('labour_hour')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.LABOUR_HOUR }} {{translatedLangText.CARGO_REQUIRED }}

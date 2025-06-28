@@ -45,7 +45,7 @@
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-            <input matInput formControlName="part_name" type="text" required>
+            <input matInput formControlName="part_name" type="text" required  (focus)="selectAll($event)" >
             <!-- @if (pcForm.get('part_name')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
@@ -85,7 +85,7 @@
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
-            <input matInput formControlName="height_diameter" type="number" min="0"
+            <input matInput formControlName="height_diameter" type="number" min="0"  (focus)="selectAll($event)" 
               [required]="isRequired('height_diameter_unit_cv')">
             <!-- @if (pcForm.get('height_diameter')?.hasError('required')) {
                 <mat-error>
@@ -112,7 +112,7 @@
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
-            <input matInput formControlName="width_diameter" type="number" min="0"
+            <input matInput formControlName="width_diameter" type="number" min="0"  (focus)="selectAll($event)" 
               [required]="isRequired('width_diameter_unit_cv')">
             <!-- @if (pcForm.get('width_diameter')?.hasError('required')) {
                 <mat-error>
@@ -141,7 +141,7 @@
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
-            <input matInput formControlName="thickness" type="number" min="0"
+            <input matInput formControlName="thickness" type="number" min="0"  (focus)="selectAll($event)" 
               [required]="isRequired('thickness_unit_cv')">
             <!-- @if (pcForm.get('thickness')?.hasError('required')) {
                 <mat-error>
@@ -168,7 +168,7 @@
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.LENGTH}}</mat-label>
-            <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')">
+            <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')"  (focus)="selectAll($event)" >
           </mat-form-field>
           @if (pcForm.get('length')?.hasError('existed')) {
           <mat-error>
@@ -206,13 +206,13 @@
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetLabourCostLabel()}}</mat-label>
-            <input matInput formControlName="labour_hour" type="number"  [attr.min]="isMultiSelect() ? -20 : 0">
+            <input matInput formControlName="labour_hour" type="text"  [attr.min]="isMultiSelect() ? -20 : 0" (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)"  (focus)="selectAll($event)" >
           </mat-form-field>
         </div>
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetMaterialCostLabel()}}</mat-label>
-            <input matInput formControlName="material_cost" type="number"  [attr.min]="isMultiSelect() ? -20 : 0">
+            <input matInput formControlName="material_cost" type="text"  [attr.min]="isMultiSelect() ? -20 : 0" (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)"  (focus)="selectAll($event)" >
           </mat-form-field>
         </div>
       </div>

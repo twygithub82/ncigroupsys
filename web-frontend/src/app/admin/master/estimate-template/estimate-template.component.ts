@@ -655,11 +655,24 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
       });
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result.action === 'confirmed') {
-        //  this.deleteSelectedUnitType(row);
+          this.deleteSelectedestimateTemplate(row);
+          
         }
       });
     }
 
+    deleteSelectedestimateTemplate(row: MasterTemplateItem) {
+      
+      this.masterEstTempDS.DeleteMasterTemplate(row.guid).subscribe(result => {
+
+         var count = result.data.deleteTemplateEstimation;
+        if (count > 0) {
+          this.handleSaveSuccess(count);
+          this.refreshTable();
+        }
+  
+      })
+    }
     onSortChange(event: Sort): void {
       const { active: field, direction } = event;
   

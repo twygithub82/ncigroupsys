@@ -447,4 +447,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
+  selectAll(event: FocusEvent) {
+  const input = event.target as HTMLInputElement;
+  input.select();  // Selects all text in the input
+  }
 }

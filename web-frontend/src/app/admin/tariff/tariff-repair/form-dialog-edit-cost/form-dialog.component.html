@@ -56,7 +56,7 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
                   <input matInput [formControl]="partNameControl" [matAutocomplete]="partName"
-                    formControlName="part_name">
+                    formControlName="part_name"  (focus)="selectAll($event)" >
                   <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn">
                     @for (name of partNameFilteredList; track name) {
                     <mat-option [value]="name">
@@ -101,7 +101,7 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
                   <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost"
-                    [max]="maxMaterialCost">
+                    [max]="maxMaterialCost"  (focus)="selectAll($event)" >
                   <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text">
                     {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
@@ -116,7 +116,7 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
                   <input matInput formControlName="labour_hour_percentage" type="number" [min]="minMaterialCost"
-                    [max]="maxMaterialCost">
+                    [max]="maxMaterialCost"  (focus)="selectAll($event)" >
                   <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')" class="italic-text">
                     {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>

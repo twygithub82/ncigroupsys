@@ -404,16 +404,64 @@ EnableValidator(path: string) {
     this.dialogRef.close();
   }
 
-  getMaterialCostLabel(){
-    //var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'($)':'');
-    var lbl = this.translatedLangText.MATERIAL_COST + ' $';
-    return lbl;
+   isMultiSelect(): boolean {
+    var bRetval: boolean = this.selectedItems.length > 1;
+    return bRetval;
   }
 
-  getLabourHourLabel(){
-    //var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
-    var lbl = this.translatedLangText.LABOUR_HOUR;
-    return lbl;
+  
+   getLabourHourLabel() {
+    var content = this.translatedLangText.LABOUR_HOUR;
+    if (this.isMultiSelect()) content += '(%)';
+    content += ' :';
+    return content
   }
+
+  getMaterialCostLabel() {
+    var content = this.translatedLangText.MATERIAL_COST;
+    if (this.isMultiSelect()) content += '(%)';
+    content += ' :';
+    return content
+  }
+
+  allowNegative(event: KeyboardEvent) {
+  const allowedChars = /[0-9-]/;
+  const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+  
+  if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
+    event.preventDefault();
+  }
+  
+  // Additional logic to prevent multiple minus signs
+  const input = event.target as HTMLInputElement;
+  if (event.key === '-' && input.value.includes('-')) {
+    event.preventDefault();
+  }
+}
+
+positiveOnly(event: KeyboardEvent) {
+  const allowedChars = /[0-9]/;
+  const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+  
+  if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
+    event.preventDefault();
+  }
+}
+
+selectAll(event: FocusEvent) {
+  const input = event.target as HTMLInputElement;
+  input.select();  // Selects all text in the input
+}
+  // getMaterialCostLabel(){
+  //   //var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'($)':'');
+  //   var lbl = this.translatedLangText.MATERIAL_COST + ' $';
+  //   return lbl;
+  // }
+
+  // getLabourHourLabel(){
+  //   //var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
+  //   var lbl = this.translatedLangText.LABOUR_HOUR;
+  //   return lbl;
+  // }
 
 }

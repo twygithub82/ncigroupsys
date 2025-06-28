@@ -70,7 +70,7 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BUFFER_TYPE}}</mat-label>
-                    <mat-select formControlName="profile_name">
+                    <mat-select formControlName="profile_name" (selectionChange)="AutoSearch()">
                       <mat-option [value]="''">{{translatedLangText.ALL}}</mat-option>
                       @for (buffer of bufferList; track buffer) {
                       <mat-option [value]="buffer.buffer_type">
@@ -84,7 +84,7 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_COST }}</mat-label>
-                    <input matInput formControlName="customer_cost" type="number" min="0">
+                    <input matInput formControlName="customer_cost" type="number" min="0" (keyup.enter)="AutoSearch()">
                   </mat-form-field>
                 </div>
                 <!-- <div
@@ -109,9 +109,9 @@
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
-                <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
+                <mat-checkbox color="primary" (change)="$event ? masterToggle_r1() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" hidden>
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" [hidden]="HideSelectAllCheckBox()">
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">

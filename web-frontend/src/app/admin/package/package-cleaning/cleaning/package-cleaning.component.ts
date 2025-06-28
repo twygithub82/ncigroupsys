@@ -148,6 +148,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
+   allowSelectedAll:boolean =false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -462,8 +463,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.custCompClnCatItems.length;
-    return numSelected === numRows;
+    // const numRows = this.custCompClnCatItems.length;
+    const numRows = this.custCompClnCatItems.filter(r=>this.selectedPackEst?.cleaning_category?.guid === r.cleaning_category?.guid).length;
+    return (numSelected === numRows && numSelected > 0);
   }
 
   isSelected(option: any): boolean {
@@ -479,12 +481,30 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
+  masterToggle_r1() {
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.custCompClnCatItems.forEach((row) =>{
+       if(this.selectedPackEst?.cleaning_category?.guid === row.cleaning_category?.guid)
+       {
+        this.selection.select(row)
+       }
+       else if (this.allowSelectedAll)
+       {
+         if(!this.selectedPackEst) this.selectedPackEst = row;
+         this.selection.select(row);
+       }
+      }
+      );
+  }
+
   search() {
+    
+    this.selectedPackEst = undefined;
+    this.allowSelectedAll=false;
     const where: any = {
       customer_company: { delete_dt: { eq: null } }
     };
-    this.selectedPackEst = undefined;
-
     if (this.selectedCustomers.length > 0) {
       //if (this.customerCodeControl.value.length > 0) 
 
@@ -500,7 +520,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       }
     }
 
-    if (this.pcForm!.value["customer_cost"]) {
+    if ((this.pcForm?.get("customer_cost")?.value!==null &&this.pcForm?.get("customer_cost")?.value!=="")) {
       const selectedCost: number = Number(this.pcForm!.value["customer_cost"]);
       where.adjusted_price = { eq: selectedCost }
     }
@@ -844,6 +864,24 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     }
     return retval;
 
+  }
+
+   HideSelectAllCheckBox()
+  {
+     var retval: boolean = true;
+
+     retval = !(this.selectedPackEst);
+     if(retval)
+     {
+       var first = this.custCompClnCatItems[0];
+       if(first)
+       {
+         var total = this.custCompClnCatItems.length;
+         retval = ! (this.custCompClnCatItems.filter(r=>r.cleaning_category?.guid===first.cleaning_category?.guid).length===total) 
+         this.allowSelectedAll=!retval;
+       }
+     }
+     return retval
   }
 
   onTabFocused() {
