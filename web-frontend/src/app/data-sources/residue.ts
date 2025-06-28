@@ -1058,6 +1058,10 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
   }
 
+  canAssign(re: ResidueItem | undefined): boolean {
+    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'ASSIGNED'; // || re?.status_cv === 'JOB_IN_PROGRESS'
+  }
+
   canCopy(re: ResidueItem): boolean {
     return false;
   }
@@ -1150,7 +1154,7 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     if (!residue || residue.length === 0) {
       return undefined;
     }
-    
+
     const beginDate = this.getResidueBeginDate(residue);
     const completeDate = this.getResidueCompleteDate(residue);
 
@@ -1177,5 +1181,4 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
       }
     });
   }
-
 }

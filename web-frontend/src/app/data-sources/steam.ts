@@ -1229,14 +1229,16 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   canSave(re: SteamItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
     var allowSave: boolean = validStatus.includes(re?.status_cv!);
-
     return allowSave;
-
   }
 
   canApprove(re: SteamItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED']
     return validStatus.includes(re?.status_cv!);
+  }
+
+  canAssign(re: SteamItem | undefined): boolean {
+    return re?.status_cv === 'APPROVED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'ASSIGNED'; // || re?.status_cv === 'JOB_IN_PROGRESS'
   }
 
   canQCComplete(re: SteamItem | undefined): boolean {

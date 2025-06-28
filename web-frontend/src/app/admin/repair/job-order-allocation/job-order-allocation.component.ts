@@ -974,6 +974,10 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     });
   }
 
+  isAnyAssignedToTeam() {
+    return this.repList.some(item => !!item.job_order?.team?.guid);
+  }
+
   unassignTeam(repairGuid: string) {
     this.repairDS.rollbackAssignedRepair([repairGuid]).subscribe(result => {
       console.log(result)

@@ -401,13 +401,19 @@
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label">
+                            {{steamItem?.approve_by}}
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label">
+                            {{steamItem?.allocate_by}}
+                          </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <div class="table-label"></div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                          <div class="table-label">
+                            {{joDS.getQCJobOrder(steamItem?.steaming_part)?.qc_by || "-"}}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -422,13 +428,18 @@
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label">
+                            {{displayDate(steamItem?.approve_dt)}}
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label"></div>
+                          <div class="table-label">
+                            {{displayDate(steamItem?.allocate_dt)}}</div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 text-center border">
-                          <div class="table-label"></div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
+                          <div class="table-label">
+                            {{displayDate(joDS.getQCJobOrder(steamItem?.steaming_part)?.qc_dt)}}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -448,7 +459,7 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">-</div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 ps-4 border">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">-</div>
                         </div>
                       </div>

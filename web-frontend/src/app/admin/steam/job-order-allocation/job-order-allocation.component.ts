@@ -345,13 +345,10 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       unit_price: [''],
       deList: [''],
       team_allocation: [''],
-
     });
   }
 
   initializeValueChanges() {
-
-
     console.log('initializeValueChanges');
     this.steamEstForm?.get('desc')?.valueChanges.pipe(
       startWith(''),
@@ -412,12 +409,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       this.unitTypeCvList = data;
     });
 
-
-    //this.getSurveyorList();
-
     this.sot_guid = this.route.snapshot.paramMap.get('id');
-    //this.repair_guid = this.route.snapshot.paramMap.get('repair_est_id');
-
     this.subs.sink = this.teamDS.getTeamListByDepartment(["REPAIR"]).subscribe(data => {
       if (data?.length) {
         this.teamList = data;
@@ -632,20 +624,15 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     // Add any additional logic if needed
   }
 
-
-
   updateData(newData: ResiduePartItem[] | undefined): void {
     if (newData?.length) {
       this.deList = newData.map((row, index) => ({
         ...row,
         index: index
       }));
-
-      //this.calculateCost();
     }
     else {
       this.deList = [];
-
     }
   }
 
@@ -678,9 +665,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
         // Navigate to the route and pass the JSON object
         this.router.navigate(['/admin/steam/job-order'], {
           state: this.historyState
-
-        }
-        );
+        });
       });
     }
   }
@@ -869,7 +854,6 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     //   this.packResidueList=data;
     //   this.displayPackResidueList=data;
     // });
-
   }
 
   loadBillingBranch() {
@@ -908,7 +892,9 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
       this.getPackageSteam();
       this.loadBillingBranch();
 
-
+      if (!this.canEdit()) {
+        this.steamEstForm?.get('team_allocation')?.disable()
+      }
     }
   }
 
@@ -1173,12 +1159,15 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     // this.repSelection.clear();
     // selectedTeam?.setValue('')
     // this.residueEstForm?.get('deList')?.setErrors(null);
-
   }
+
   isAssignEnabled() {
     return this.repSelection.hasValue() && this.steamEstForm?.get('team_allocation')?.value;
   }
 
+  isAnyAssignedToTeam() {
+    return this.deList.some(item => !!item.job_order?.team?.guid);
+  }
 
   onApprove(event: Event) {
     event.preventDefault();
@@ -1595,7 +1584,15 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     });
   }
 
+  canEdit() {
+    return this.isAllowEdit() && this.steamDs.canAssign(this.steamItem);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['STEAMING_JOB_ALLOCATION_EDIT']);
+  }
+
   isAllowDelete() {
-    return true;//this.modulePackageService.hasFunctions(['STEAM_JOB_ALLOCATION_DELETE']);
+    return this.modulePackageService.hasFunctions(['STEAMING_JOB_ALLOCATION_DELETE']);
   }
 }

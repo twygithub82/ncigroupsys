@@ -303,10 +303,10 @@
                       <mat-header-cell *matHeaderCellDef
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.TEAM}}
-                        <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
+                        <!-- <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
                           [checked]="repSelection.hasValue() && isAllSelected()"
                           [indeterminate]="repSelection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'">
-                        </mat-checkbox>
+                        </mat-checkbox> -->
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm font-bold'">
@@ -394,11 +394,22 @@
                   {{translatedLangText.ABORT}}
                 </button>
                 } -->
-
-                @if(canSave())
-                {
-                <button mat-flat-button color="primary" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
-                  (click)="save()">
+                @if (canUnassignTeam(residueItem)) {
+                <button mat-flat-button color="warn" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
+                  (click)="ConfirmUnassignDialog($event, residueItem!)">
+                  <mat-icon>
+                    @if (!(residueDS.loading$ | async)) {
+                    remove_circle_outline
+                    } @else if ((residueDS.loading$ | async)) {
+                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                    }
+                  </mat-icon>
+                  {{translatedLangText.UNASSIGN}}
+                </button>
+                }
+                @if(canSave()) {
+                <button mat-flat-button color="primary"
+                  [disabled]="(residueDS.loading$ | async) || !isAnyAssignedToTeam()" class="m-r-5" (click)="save()">
                   <mat-icon>
                     @if (!(residueDS.loading$ | async)) {
                     save
@@ -409,8 +420,7 @@
                   {{translatedLangText.SAVE}}
                 </button>
                 }
-                @if(canRollBack())
-                {
+                @if(canRollBack()) {
                 <button mat-flat-button color="accent" [disabled]="(residueDS.loading$ | async)" class="m-r-5"
                   (click)="rollbackJobs($event)">
                   <mat-icon>
@@ -423,7 +433,6 @@
                   {{translatedLangText.ROLLBACK}}
                 </button>
                 }
-                <!-- </div> -->
               </div>
             </div>
           </div>

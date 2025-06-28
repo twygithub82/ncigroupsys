@@ -126,8 +126,7 @@
                     <mat-icon>view_list</mat-icon>
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
-                  <button mat-flat-button (click)="toggleJobState($event, isStarted())"
-                    [disabled]="!canStartJob()"
+                  <button mat-flat-button (click)="toggleJobState($event, isStarted())" [disabled]="!canStartJob()"
                     [ngClass]="{'m-r-10': true, 'yellow-button': canStartJob() && isStarted(), 'bg-red': canStartJob() && !isStarted()}">
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.PAUSE_JOB : translatedLangText.START_JOB }}
@@ -415,7 +414,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{displayDate(joDS.getQCJobOrder(repairItem?.repair_part)?.qc_dt)}}
+                            {{displayDate(joDS.getQCJobOrder(repairItem?.repair_part)?.qc_dt) || "-"}}
                           </div>
                         </div>
                       </div>

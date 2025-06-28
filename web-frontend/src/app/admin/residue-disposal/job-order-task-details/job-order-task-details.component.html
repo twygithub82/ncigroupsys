@@ -372,7 +372,9 @@
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">-</div>
+                          <div class="table-label">
+                            {{joDS.getQCJobOrder(residueItem?.residue_part)?.qc_by || '-'}}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -397,7 +399,9 @@
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">-</div>
+                          <div class="table-label">
+                            {{displayDate(joDS.getQCJobOrder(residueItem?.residue_part)?.qc_dt) || '-'}}
+                          </div>
                         </div>
                       </div>
                     </div>

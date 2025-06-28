@@ -45,6 +45,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-job-order',
@@ -215,7 +216,8 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -658,7 +660,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
           this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
         }
       });
-
   }
 
   handleRollbackSuccess(count: any) {
@@ -674,19 +675,22 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     this.onFilterResidue();
   }
 
-     @ViewChild('residueJobOrderTask') residueJobOrderTask!: JobOrderTaskComponent;
-     
-           
-      onTabSelected(event: MatTabChangeEvent): void {
-        console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-        switch (event.index) {
-         
-         case 0:
-            this.onTabFocused(); break;
-         case 1:
-             this.residueJobOrderTask?.onTabFocused(); break;
-       
-        }
-      }
+  @ViewChild('residueJobOrderTask') residueJobOrderTask!: JobOrderTaskComponent;
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+      case 0:
+        this.onTabFocused(); break;
+      case 1:
+        this.residueJobOrderTask?.onTabFocused(); break;
+    }
+  }
 
+  canUnassignTeam(row: ResidueItem | undefined) {
+    return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['RESIDUE_DISPOSAL_JOB_ALLOCATION_DELETE']);
+  }
 }
