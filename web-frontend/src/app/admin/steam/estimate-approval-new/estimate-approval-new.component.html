@@ -642,12 +642,12 @@
                 class="m-r-5" (click)="onCancel($event)">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)) {
-                  close
+                  delete_forever
                   } @else if ((steamDS.loading$ | async)) {
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.CANCEL}}
+                {{translatedLangText.DELETE}}
               </button>
               }
               @if (steamDS.canNoAction(steamItem!)) {
@@ -668,7 +668,5 @@
         </div>
       </div>
     </div>
-
-
   </div>
 </section>

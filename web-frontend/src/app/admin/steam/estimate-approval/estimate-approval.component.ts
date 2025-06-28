@@ -164,7 +164,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     APPROVE: 'COMMON-FORM.APPROVE',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     SEARCH: 'COMMON-FORM.SEARCH',
-    COST: 'COMMON-FORM.COST'
+    COST: 'COMMON-FORM.COST',
+    DELETE: 'COMMON-FORM.DELETE'
   }
 
   availableTankStatus: string[] = [

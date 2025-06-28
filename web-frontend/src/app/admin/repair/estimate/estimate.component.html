@@ -335,8 +335,8 @@
                               } -->
                                   @if (isAllowDelete() && repairDS.canCancel(repairRow)) {
                                   <button mat-menu-item (click)="cancelRow(repairRow, row)">
-                                    <mat-icon>cancel</mat-icon>
-                                    <span>{{translatedLangText.CANCEL}}</span>
+                                    <mat-icon>delete_forever</mat-icon>
+                                    <span>{{translatedLangText.DELETE}}</span>
                                   </button>
                                   }
                                 </mat-menu>

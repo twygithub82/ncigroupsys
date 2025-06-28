@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -24,11 +24,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router,ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -44,10 +43,10 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 
 // import { RepairEstDS, RepairEstGO, RepairEstItem } from 'app/data-sources/repair-est';
 // import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { ResidueDS, ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 
 @Component({
   selector: 'app-estimate',
@@ -155,7 +154,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     SEARCH: 'COMMON-FORM.SEARCH',
-    COST: 'COMMON-FORM.COST'
+    COST: 'COMMON-FORM.COST',
+    DELETE: 'COMMON-FORM.DELETE'
   }
 
   availableTankStatus: string[] = [
@@ -423,52 +423,50 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       this.processStatusCvList = data;
     });
 
-     var actionId= this.route.snapshot.paramMap.get('id');
-    if(!actionId)
-    {
+    var actionId = this.route.snapshot.paramMap.get('id');
+    if (!actionId) {
 
-        const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-        const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-        if (savedCriteria) {
-          this.searchForm?.patchValue(savedCriteria);
-          this.constructSearchCriteria();
-        }
-
-        if (savedPagination) {
-          this.pageIndex = savedPagination.pageIndex;
-          this.pageSize = savedPagination.pageSize;
-
-          this.performSearch(
-            savedPagination.pageSize,
-            savedPagination.pageIndex,
-            savedPagination.first,
-            savedPagination.after,
-            savedPagination.last,
-            savedPagination.before
-          );
-        }
-
-        if (!savedCriteria && !savedPagination) {
-          this.search();
-        }
+      if (savedCriteria) {
+        this.searchForm?.patchValue(savedCriteria);
+        this.constructSearchCriteria();
       }
-      else if(actionId==="pending")
-      {
-          const where ={
-            and:[
-                 { purpose_cleaning: { eq: true } }, 
-                { tank_status_cv: { eq: "CLEANING" } },
-                { residue: { some: {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }} } }        
-            ]
-          };
 
-          this.lastSearchCriteria = where;
-          this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-            this.updatePageSelection();
-          });
-          console.log("search pending records");
+      if (savedPagination) {
+        this.pageIndex = savedPagination.pageIndex;
+        this.pageSize = savedPagination.pageSize;
+
+        this.performSearch(
+          savedPagination.pageSize,
+          savedPagination.pageIndex,
+          savedPagination.first,
+          savedPagination.after,
+          savedPagination.last,
+          savedPagination.before
+        );
       }
+
+      if (!savedCriteria && !savedPagination) {
+        this.search();
+      }
+    }
+    else if (actionId === "pending") {
+      const where = {
+        and: [
+          { purpose_cleaning: { eq: true } },
+          { tank_status_cv: { eq: "CLEANING" } },
+          { residue: { some: { status_cv: { in: ["JOB_IN_PROGRESS", "APPROVED"] } } } }
+        ]
+      };
+
+      this.lastSearchCriteria = where;
+      this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+        this.updatePageSelection();
+      });
+      console.log("search pending records");
+    }
   }
 
   handleCancelSuccess(count: any) {
@@ -785,7 +783,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     this.search();
   }
 
-    getMaxDate(){
+  getMaxDate() {
     return new Date();
   }
 
