@@ -1340,7 +1340,10 @@
     "ERROR": "Error",
     "FORGOT-PASSWORD-CAPTION": "Please enter your email address to reset your password.",
     "GATE-OUT-PUBLISH-PENDING": "Gate Out Publish: Pending",
-    "GATE-IN-PUBLISH-PENDING": "Gate In Publish: Pending"
+    "GATE-IN-PUBLISH-PENDING": "Gate In Publish: Pending",
+    "PCS": "Pcs",
+    "INCH": "Inch",
+    "PTS": "Pts"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

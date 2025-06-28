@@ -2429,3 +2429,7 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   -webkit-line-clamp: 2;
   line-clamp: 2; // modern standard property
 }
+
+h6[matsuffix] {
+  font-size: 0.9rem
+}
