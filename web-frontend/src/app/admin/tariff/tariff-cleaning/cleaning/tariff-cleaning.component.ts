@@ -89,8 +89,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     'class',
     'un_no',
     'method',
-    'flash_point',
     'category',
+    'flash_point',
     'ban_type',
     'actions'
   ];
