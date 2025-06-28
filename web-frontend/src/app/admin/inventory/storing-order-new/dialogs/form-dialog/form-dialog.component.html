@@ -90,7 +90,7 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REQUIRED_TEMP}}</mat-label>
                 <input matInput formControlName="required_temp" type="number">
-                <h6 class="color-icon p-t-15 p-r-5" matSuffix>&deg;C</h6>
+                <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{data.translatedLangText.DEGREE_CELSIUS_SYMBOL}}</h6>
                 <!-- @if (storingOrderTankForm.get('required_temp')?.hasError('required')) {
                 <mat-error>
                   {{data.translatedLangText.REQUIRED_TEMP}} {{data.translatedLangText.SO_REQUIRED}}

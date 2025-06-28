@@ -422,6 +422,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         }
       })
     ).subscribe();
+
+    this.repairPartForm?.get('repair')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value.includes('4X')) {
+          this.SetRepair4X(false);
+        } else {
+          // this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost?.toFixed(2) ?? 0.00);
+          this.SetRepair4X(true);
+        }
+      })
+    ).subscribe();
   }
 
   findInvalidControls() {
@@ -592,5 +605,25 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     }
     return false;
+  }
+
+  SetRepair4X(isResetDisable: boolean) {
+    const material_cost = this.repairPartForm?.get('material_cost');
+    const quantity = this.repairPartForm?.get('quantity');
+    const hour = this.repairPartForm?.get('hour');
+    if (!isResetDisable) {
+      quantity?.setValue(1);
+      quantity?.disable();
+      hour?.setValue(0);
+      hour?.disable();
+      material_cost?.setValue(0);
+      material_cost?.disable();
+    } else {
+      if (this.canEdit()) {
+        quantity?.enable();
+        hour?.enable();
+        material_cost?.enable();
+      }
+    }
   }
 }

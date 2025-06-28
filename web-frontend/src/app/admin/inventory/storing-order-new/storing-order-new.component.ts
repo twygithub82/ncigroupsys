@@ -160,7 +160,8 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     UNDO: 'COMMON-FORM.UNDO',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
     EXCEEDED: 'COMMON-FORM.EXCEEDED',
-    MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO'
+    MUST_MORE_THAN_ZERO: 'COMMON-FORM.MUST-MORE-THAN-ZERO',
+    DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -243,10 +244,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         'tank_no',
         'last_cargo',
         'job_no',
-        'purpose_storage',
         'purpose_cleaning',
-        'purpose_steam',
         'purpose_repair_cv',
+        'purpose_storage',
+        'purpose_steam',
         'status_cv',
         'certificate_cv',
         'actions'
@@ -256,10 +257,10 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
         'tank_no',
         'last_cargo',
         'job_no',
-        'purpose_storage',
         'purpose_cleaning',
-        //'purpose_steam',
         'purpose_repair_cv',
+        'purpose_storage',
+        //'purpose_steam',
         'status_cv',
         'certificate_cv',
         'actions'
