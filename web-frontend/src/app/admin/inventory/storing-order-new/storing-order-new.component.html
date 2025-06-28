@@ -28,7 +28,8 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input type="text" matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode" required>
+                    <input type="text" matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
+                      required>
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of ccDS.connect() | async; track cc) {
                       <mat-option [value]="cc">
@@ -92,11 +93,11 @@
                       </ng-container>
                       <ng-container matColumnDef="tank_no">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.TANK_NO}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
@@ -155,7 +156,7 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_storage">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.STORAGE}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -166,7 +167,7 @@
                             <mat-icon class="text-success">done</mat-icon>
                           </div>
                           }
-                          @if (!row.purpose_storage) {
+                          @else {
                           <div>
                             <mat-icon class="text-danger">clear</mat-icon>
                           </div>
@@ -175,7 +176,7 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_cleaning">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.CLEANING}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -186,7 +187,7 @@
                             <mat-icon class="text-success">done</mat-icon>
                           </div>
                           }
-                          @if (!row.purpose_cleaning) {
+                          @else {
                           <div>
                             <mat-icon class="text-danger">clear</mat-icon>
                           </div>
@@ -195,7 +196,7 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_steam">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.STEAM}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -206,7 +207,7 @@
                             <mat-icon class="text-success">done</mat-icon>
                           </div>
                           }
-                          @if (!row.purpose_steam) {
+                          @else {
                           <div>
                             <mat-icon class="text-danger">clear</mat-icon>
                           </div>
@@ -215,11 +216,11 @@
                       </ng-container>
                       <ng-container matColumnDef="purpose_repair_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.REPAIR}}:</span>
                           {{getRepairDescription(row.purpose_repair_cv)}}
                         </mat-cell>
@@ -244,7 +245,16 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.CERTIFICATE}}:</span>
-                          {{getYesNoDescription(row.certificate_cv)}}
+                          @if (row.certificate_cv === 'Y') {
+                          <div>
+                            <mat-icon class="text-success">done</mat-icon>
+                          </div>
+                          }
+                          @else if (row.certificate_cv === 'N') {
+                          <div>
+                            <mat-icon class="text-danger">clear</mat-icon>
+                          </div>
+                          }
                         </mat-cell>
                       </ng-container>
                       <!-- actions -->
@@ -356,8 +366,8 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                   @if (canEdit() && soDS.canAdd(storingOrderItem)) {
-                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'" [disabled]="!isCustomerSelected()"
-                    (click)="addOrderDetails($event)">
+                  <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                    [disabled]="!isCustomerSelected()" (click)="addOrderDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.ORDER_DETAILS}}
                   </button>
                   }
