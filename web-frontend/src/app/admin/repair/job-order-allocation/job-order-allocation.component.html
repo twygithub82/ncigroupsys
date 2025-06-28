@@ -289,7 +289,8 @@
                         [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                       <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;" (click)="toggleRep(row)"
-                        [ngClass]="{'bg-light-green': repSelection.isSelected(row)}" [style.cursor]="'pointer'"
+                         [ngClass]="repSelection.isSelected(row) ? selectedJobTaskClass : ''"
+                        [style.cursor]="'pointer'"
                         matRipple>
                       </mat-row>
                     </table>

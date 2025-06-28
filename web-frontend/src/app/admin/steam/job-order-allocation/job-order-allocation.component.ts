@@ -50,7 +50,7 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { Utility,selected_job_task_color } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
@@ -282,7 +282,7 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   repSelection = new SelectionModel<ResiduePartItem>(true, []);
   cleaningTotalHours: number | undefined;
-
+  selectedJobTaskClass =selected_job_task_color;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,

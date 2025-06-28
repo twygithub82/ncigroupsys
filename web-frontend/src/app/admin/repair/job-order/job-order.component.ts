@@ -208,6 +208,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   hasPreviousPageRepair = false;
 
   jobOrderStartedCount = 0;
+  
   private jobOrderSubscriptions: Subscription[] = [];
 
   tabConfig = [

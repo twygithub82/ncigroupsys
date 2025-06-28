@@ -44,7 +44,7 @@ import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { Utility,selected_job_task_color } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
@@ -250,7 +250,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   teamDS: TeamDS;
   joDS: JobOrderDS;
   isOwner = false;
-
+selectedJobTaskClass =selected_job_task_color;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,

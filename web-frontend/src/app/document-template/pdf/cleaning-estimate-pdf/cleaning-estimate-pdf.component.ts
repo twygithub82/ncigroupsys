@@ -1183,7 +1183,13 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           //     { content: `${amtWords}`,  colSpan: 3,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
              
           //  ])
-        
+          var t=2;
+        estData.push([
+             '',
+              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top:t }}},
+              { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top:t,right: rightPadding_cost} } },
+             
+             ]);
 
            if(sysCurrencyCode!=custCurrencyCode){
              var totalForeign=`${this.translatedLangText.TOTAL} (${custCurrencyCode}):`;
@@ -1191,27 +1197,22 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
              var convertedCost =  `${this.parse2Decimal(this.totalCost*rate)}`;
              estData.push([
              '',
-              { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
-              { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: 1,right: rightPadding_cost } } },
+              { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top:t }}},
+              { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top: t,right: rightPadding_cost } } },
              
            ])
            }
-           else
-           {
-             estData.push([
-             '',
-              { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1,cellPadding: { top: 1 }}},
-              { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { top:1,right: rightPadding_cost } } },
+          //  else
+          //  {
              
-             ]);
-           }
+          //  }
   
   //cellPadding: { top: 5 }
           autoTable(pdf, {
           body:estData,
           startY: startY, // Start table at the current startY value
           styles: {
-            cellPadding: { left:2 , right: 5, top: 1, bottom: 0 }, // Reduce padding
+            cellPadding: { left:2 , right: 5, top: t, bottom: 0 }, // Reduce padding
             lineWidth: 0, // remove all borders initially
           },
           theme: 'grid',

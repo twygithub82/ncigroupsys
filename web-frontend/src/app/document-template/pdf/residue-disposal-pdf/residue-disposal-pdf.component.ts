@@ -1181,7 +1181,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                 await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
       
                  //var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
-                this.downloadFile(pdf.output('blob'), this.estimate_no!)
+                this.downloadFile(pdf.output('blob'), this.getPdfFileName())
                  this.dialogRef.close(); 
               }
 
@@ -1253,7 +1253,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
                 var totalCost=qty * cost;
                 if (item.approve_part) estTotalCost+=totalCost;
                 repData.push([
-                  index++,item.description,`${qty} ${item.qty_unit_type_cv}`, 
+                  (++index),item.description,`${qty} ${item.qty_unit_type_cv}`, 
                    { content: `${this.parse2Decimal(cost)}`,styles: { halign: 'right', valign: 'middle',cellPadding: { right: rightPadding_cost-1 } } },
                    { content: `${this.parse2Decimal(totalCost)}`,styles: { halign: 'right', valign: 'middle',cellPadding: { right: rightPadding_cost } } }                  
                   //, app
@@ -1337,7 +1337,17 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         //  var totalSGD=`${this.translatedLangText.TOTAL_SGD}:`;
         // var totalCostValue=`${this.parse2Decimal(this.totalCost)}`;
         startY+=3;
+        var t=2;
          var estData:RowInput[]=[];
+         estData.push([
+              '','','',
+                { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
+                { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',
+                  fontSize: fontSz,cellPadding: { right: rightPadding_cost,top:t } } },
+                
+            ]);
+
+
         //  estData.push([
         //       { content: `${amtWords}`,  colSpan: 6,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: 10, textColor: '#000000'} },
              
@@ -1356,28 +1366,28 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
              estData.push([
              '','','',
               { content: `${totalForeign}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}},
-              { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { right: rightPadding_cost }} } ,
+              { content: `${convertedCost}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz, cellPadding: { right: rightPadding_cost,top:t }} } ,
               
            ])
            }
-           else
-           {
+          //  else
+          //  {
 
-              estData.push([
-              '','','',
-                { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
-                { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',
-                  fontSize: fontSz,cellPadding: { right: rightPadding_cost } } },
+          //     estData.push([
+          //     '','','',
+          //       { content: `${totalSGD}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',fontSize: fontSz+1}  },
+          //       { content: `${totalCostValue}`,styles: { halign: 'right', valign: 'middle',fontStyle: 'bold',
+          //         fontSize: fontSz,cellPadding: { right: rightPadding_cost } } },
                 
-            ])
+          //   ])
 
-           }
+          //  }
           autoTable(pdf, {
             body:estData,
             startY: startY, // Start table at the current startY value
             tableWidth:tableWidth,
             styles: {
-              cellPadding: { left:2 , right: 2, top: 1, bottom: 0 }, // Reduce padding
+              cellPadding: { left:2 , right: 2, top: t, bottom: 0 }, // Reduce padding
               fontSize: 7.5,
               lineWidth: 0 // remove all borders initially
             },
@@ -1409,5 +1419,11 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
         
   
+      }
+
+      getPdfFileName():string{
+        var fileName=`${this.residueItem.storing_order_tank.tank_no} (${this.estimate_no!}).pdf`;
+
+        return fileName;
       }
 }

@@ -345,7 +345,8 @@
                     </ng-container>
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" (click)="toggleRep(row)"
-                      [ngClass]="{'bg-light-green': repSelection.isSelected(row)}" [style.cursor]="'pointer'" matRipple>
+                      [ngClass]="repSelection.isSelected(row) ? selectedJobTaskClass : ''"
+                       [style.cursor]="'pointer'" matRipple>
                     </mat-row>
                   </table>
                 </div>

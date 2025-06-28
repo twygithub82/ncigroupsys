@@ -159,7 +159,8 @@
                             @if (canUnassignTeam(row)) {
                             <button mat-icon-button (click)="onUnassignTeam($event, row.guid)"
                               [matTooltip]="translatedLangText.UNASSIGN">
-                              <mat-icon>remove_circle_outline</mat-icon>
+                               <span class="material-symbols-outlined rotate-180">chip_extraction</span>
+                              <!-- <mat-icon>remove_circle_outline</mat-icon> -->
                             </button>
                             }
                           </mat-cell>
