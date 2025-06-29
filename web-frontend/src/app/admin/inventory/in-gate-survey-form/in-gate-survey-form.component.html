@@ -1998,8 +1998,8 @@
                                 <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                   <mat-form-field class="example-full-width">
                                     <mat-label>{{translatedLangText.RESIDUE}}</mat-label>
-                                    <input matInput formControlName="residue" type="number"
-                                      (wheel)="preventDefault($event)" min="0">
+                                    <input tlxFormInput matInput formControlName="residue" appNumericText
+                                      [allowDecimal]="false" type="text" [min]="0">
                                     <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.KG}}</h6>
                                     <!-- @if (getManlidFormGroup().get('residue')?.hasError('required')) {
                                     <mat-error>
@@ -2037,7 +2037,8 @@
                           </button>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
-                          @if ((compartmentStepper?.selectedIndex ?? 0) === ((compartmentStepper?._steps?.length ?? 0) - 1)) {
+                          @if ((compartmentStepper?.selectedIndex ?? 0) === ((compartmentStepper?._steps?.length ?? 0) -
+                          1)) {
                           @if (canPublish()) {
                           <button mat-raised-button matStepperNext color="accent" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"

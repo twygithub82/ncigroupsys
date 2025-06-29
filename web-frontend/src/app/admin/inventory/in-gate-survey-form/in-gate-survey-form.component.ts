@@ -60,6 +60,7 @@ import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank-no-dialog.component';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 @Component({
   selector: 'app-in-gate',
@@ -94,6 +95,7 @@ import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank
     MatStepperModule,
     MatRadioModule,
     PreventNonNumericDirective,
+    NumericTextDirective,
     MatButtonToggleModule,
     ExclusiveToggleDirective,
     GlobalMaxCharDirective
@@ -1300,7 +1302,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           pv_spec_pcs: ig.in_gate_survey?.pv_spec_pcs,
           safety_handrail: ig.in_gate_survey?.safety_handrail,
           buffer_plate: ig.in_gate_survey?.buffer_plate,
-          residue: ig.in_gate_survey?.residue,
+          residue: !!ig.in_gate_survey?.residue ? Utility.convertNumber(ig.in_gate_survey?.residue) : '',
           dipstick: ig.in_gate_survey?.dipstick,
         }
       },
@@ -1311,6 +1313,11 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.populateTopSideCells(JSON.parse(ig.in_gate_survey?.top_coord || '{}'));
     this.highlightedCellsFront = this.populateHighlightedCells(this.highlightedCellsFront, JSON.parse(ig.in_gate_survey?.front_coord || '[]'));
     this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(ig.in_gate_survey?.bottom_coord || '[]'));
+
+    if (!!ig.tank?.purpose_steam) {
+      this.getManlidFormGroup()?.get('residue')?.disable();
+    }
+
     this.detectChanges();
   }
 
@@ -1559,7 +1566,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
       igs.pv_spec_pcs = manlidFormGroup.get('pv_spec_pcs')?.value;
       igs.safety_handrail = manlidFormGroup.get('safety_handrail')?.value;
       igs.buffer_plate = manlidFormGroup.get('buffer_plate')?.value;
-      igs.residue = manlidFormGroup.get('residue')?.value;
+      igs.residue = Utility.convertNumber(manlidFormGroup.get('residue')?.value);
       igs.dipstick = manlidFormGroup.get('dipstick')?.value;
 
       igs.left_coord = JSON.stringify(this.getHighlightedCoordinates(this.highlightedCellsLeft));

@@ -53,6 +53,7 @@ import { Utility } from 'app/utilities/utility';
 import { Observable } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 @Component({
   selector: 'app-estimate-new',
@@ -86,7 +87,8 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ]
 })
 export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -362,8 +364,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
               this.repairForm?.get('is_default_template')?.setValue(this.getCustomer()?.def_template_guid === value.guid);
             }
             // estimate
-            this.repairForm?.get('labour_cost_discount')?.setValue(value.labour_cost_discount);
-            this.repairForm?.get('material_cost_discount')?.setValue(value.material_cost_discount);
+            this.repairForm?.get('labour_cost_discount')?.setValue(Utility.convertNumber(value.labour_cost_discount));
+            this.repairForm?.get('material_cost_discount')?.setValue(Utility.convertNumber(value.material_cost_discount));
             this.repairForm?.get('remarks')?.setValue(value.remarks);
 
             const existingList: any[] = [];
@@ -596,8 +598,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
       guid: !isDuplicate ? this.repairItem!.guid : '',
       remarks: this.repairItem!.remarks,
       surveyor_id: this.repairItem!.aspnetusers_guid,
-      labour_cost_discount: this.repairItem!.labour_cost_discount,
-      material_cost_discount: this.repairItem!.material_cost_discount
+      labour_cost_discount: Utility.convertNumber(this.repairItem!.labour_cost_discount),
+      material_cost_discount: Utility.convertNumber(this.repairItem!.material_cost_discount)
     });
 
     if (!this.canEdit()) {

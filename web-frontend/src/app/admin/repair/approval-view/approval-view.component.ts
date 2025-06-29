@@ -85,7 +85,6 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective,
     NumericTextDirective
   ]
 })
@@ -501,8 +500,8 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       guid: repair.guid,
       remarks: repair.remarks,
       surveyor_id: repair.aspnetusers_guid,
-      labour_cost_discount: repair.labour_cost_discount,
-      material_cost_discount: repair.material_cost_discount
+      labour_cost_discount: !!repair.labour_cost_discount ? Utility.convertNumber(repair.labour_cost_discount) : 0,
+      material_cost_discount: !!repair.material_cost_discount ? Utility.convertNumber(repair.material_cost_discount) : 0,
     });
     this.updateData(repair.repair_part);
     if (!this.repairDS.canApprove(this.repairItem)) {
@@ -735,7 +734,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     event.preventDefault();
     const bill_to = this.repairForm!.get('bill_to');
     bill_to?.setErrors(null);
-    if (bill_to?.value) {
+    if (this.repairForm?.valid) {
       let re: RepairItem = new RepairItem();
       re.guid = this.repairItem?.guid;
       re.sot_guid = this.repairItem?.sot_guid;
