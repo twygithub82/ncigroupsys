@@ -230,8 +230,8 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
-                          <input matInput formControlName="class_no" required (dblclick)="addClassNo($event)"
-                            [matAutocomplete]="classNo">
+                          <input matInput formControlName="class_no" required (click)="addClassNo($event)"
+                            [matAutocomplete]="classNo" readonly>
                           <mat-autocomplete #classNo="matAutocomplete" [displayWith]="displayClassNoFn">
                             @for (itm of existingClassNos; track itm) {
                             <mat-option [value]="itm.class">

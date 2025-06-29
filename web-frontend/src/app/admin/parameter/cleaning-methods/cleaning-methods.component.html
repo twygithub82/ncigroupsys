@@ -160,7 +160,7 @@
               </mat-accordion>
               <div class="body overflow-auto">
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="clnMethodItem" matSort
+                  <table mat-table [dataSource]="clnMethodItem" matSort (matSortChange)="onSortChange($event)"
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <!-- ID Column -->
                     <ng-container matColumnDef="id">
@@ -168,7 +168,7 @@
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="category_name">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="''">
                         {{translatedLangText.CLEANING_METHOD}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
@@ -184,7 +184,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">
-                      <mat-header-cell *matHeaderCellDef>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>
                         {{translatedLangText.LAST_UPDATED }}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

@@ -19,24 +19,26 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
                 <input matInput #minInput formControlName="min_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" (focus)="minInput.select()" required>
-              </mat-form-field>
+                @if (pcForm.hasError('tempRangeInvalid') &&(pcForm.get('min_temp')?.touched || pcForm.get('max_temp')?.touched)) {
+                  <mat-error >
+                  {{translatedLangText.TEMP_RANGE_ERROR}}
+                 </mat-error> 
+                }
+                @if (pcForm.hasError('overlaps')&&(pcForm.get('min_temp')?.touched || pcForm.get('max_temp')?.touched)) {
+                   <mat-error >
+                  {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
+                </mat-error>
+                }
+                </mat-form-field>
             </div>
+            
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 ">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
                 <input matInput #maxInput formControlName="max_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" (focus)="maxInput.select()" required>
               </mat-form-field>
             </div>
-          @if (pcForm.hasError('tempRangeInvalid')) {
-          <mat-error>
-            {{translatedLangText.TEMP_RANGE_ERROR}}
-          </mat-error>
-          }
-          @if (pcForm.hasError('overlaps')) {
-          <mat-error>
-            {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
-          </mat-error>
-          }
+         
           </div>
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">

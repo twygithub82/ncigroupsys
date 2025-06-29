@@ -21,7 +21,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -324,7 +324,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.mthDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.clnMethodItem =data.sort( (a,b)=> Utility.naturalSort(a.name!, b.name!) );
+      this.clnMethodItem =data;
+     // this.clnMethodItem =data.sort( (a,b)=> Utility.naturalSort(a.name!, b.name!) );
       // data.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       // this.clnMethodItem = data.map(i => {
       //   i.cleaning_method_formula?.sort((a, b) => a.sequence! - b.sequence!);
@@ -719,4 +720,38 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     if (Utility.IsAllowAutoSearch())
         this.search();
   }
+
+    onSortChange(event: Sort): void {
+          const { active: field, direction } = event;
+      
+          // reset if no direction
+          if (!direction) {
+            this.lastOrderBy = null;
+            return this.search();
+          }
+      
+          // convert to GraphQL enum (uppercase)
+          const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+          // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+      
+          switch (field) {
+            case 'update_date':
+              this.lastOrderBy = {
+                  update_dt: dirEnum,
+                  create_dt: dirEnum,
+              };
+              break;
+    
+            case 'category_name':
+              this.lastOrderBy = {
+                  name: dirEnum,
+              };
+              break;
+          
+            default:
+              this.lastOrderBy = null;
+          }
+      
+          this.search();
+        }
 }

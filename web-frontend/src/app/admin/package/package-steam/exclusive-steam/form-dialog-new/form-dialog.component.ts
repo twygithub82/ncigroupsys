@@ -213,6 +213,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     EXCLUSIVE_STEAM: 'MENUITEMS.PACKAGE.LIST.EXCLUSIVE-STEAMING',
     FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
     HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
+    MAX_TEMP_EXCEED_FLASH_POINT: 'COMMON-FORM.MAX-TEMP-EXCEED-FLASH-POINT',
   };
   unit_type_control = new UntypedFormControl();
 
@@ -239,8 +240,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.tnkItems = [];
     this.action = data.action!;
     this.translateLangText();
+    // if (this.action === "edit") this.patchExclusiveSteam(data.selectedItem);
     this.InitValueChanges()
-    if (this.action === "edit") this.patchExclusiveSteam(data.selectedItem);
   }
 
   patchExclusiveSteam(row: ExclusiveSteamingItem) {
@@ -250,7 +251,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       min_temp: row.temp_min,
       max_temp: row.temp_max === 9999 ? "" : row.temp_max,
       labour: this.displayNumber(row.package_steaming?.labour),
-      last_cargo: [row.tariff_cleaning],
+     last_cargo: this.last_cargoList?.find(lc =>lc.guid === row.tariff_cleaning?.guid),
       customer_code: row.package_steaming?.customer_company,
       // qty:[''],
       cost: this.displayNumber(row.package_steaming?.cost),
@@ -294,8 +295,9 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.subs.sink = this.trfCleanDS.getAllTariffCleaning({ or: [{ cargo: { contains: searchCriteria } }], delete_dt: { eq: null } }, 1000).subscribe(data => {
       this.last_cargoList = data
       if (this.action === "edit") {
-        const found = this.last_cargoList?.filter(x => x.guid === this.data.selectedItem?.tariff_cleaning?.guid);
-        this.pcForm?.get('last_cargo')?.setValue(found);
+        //const found = this.last_cargoList?.filter(x => x.guid === this.data.selectedItem?.tariff_cleaning?.guid);
+        //this.pcForm?.get('last_cargo')?.setValue(found);
+         this.patchExclusiveSteam(this.data.selectedItem);
       }
     });
   }
@@ -316,12 +318,19 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
   GetTitle() {
 
-    if (this.action === "new") {
+    if (this.isNew()) {
       return `${this.translatedLangText.NEW} ${this.translatedLangText.EXCLUSIVE_STEAM}`;
     }
     return `${this.translatedLangText.EDIT} ${this.translatedLangText.EXCLUSIVE_STEAM}`;
     //  return this.action==="new"?this.translatedLangText.NEW:this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_STEAM;      
 
+  }
+
+  isNew():Boolean
+  {
+    var retval: boolean = false;
+    if (this.action === "new") retval = true;
+    return retval;
   }
 
   translateLangText() {
@@ -401,6 +410,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
       else {
         this.pcForm?.setErrors({ overlaps: true });
+        this.pcForm?.get('min_temp')?.setErrors({ overlaps: true });
       }
 
 
@@ -429,8 +439,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     where.and.push({ package_steaming: { customer_company_guid: { eq: custGuid } } });
     where.and.push({ or: [{ package_steaming: { delete_dt: { eq: null } } }, { package_steaming: { delete_dt: { eq: 0 } } }] });
 
-    if (this.pcForm?.value['last_cargo'].length > 0) {
-      var lastCargoGuids: string[] = this.pcForm.value['last_cargo'].map((cargo: { guid: string }) => cargo.guid);
+    if (this.pcForm?.value['last_cargo']) {
+      var lastCargoGuids: string[] = [this.pcForm.value['last_cargo'].guid];//this.pcForm.value['last_cargo'].map((cargo: { guid: string }) => cargo.guid);
       where.and.push({ tariff_cleaning_guid: { in: lastCargoGuids } });
     }
     //where.and.push({ tariff_cleaning_guid: { eq: lastCargoGuid } });
@@ -471,6 +481,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
       else {
         this.pcForm?.setErrors({ overlaps: true });
+         this.pcForm?.get('min_temp')?.setErrors({ overlaps: true });
       }
 
 

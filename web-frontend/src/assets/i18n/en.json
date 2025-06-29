@@ -1343,7 +1343,8 @@
     "GATE-IN-PUBLISH-PENDING": "Gate In Publish: Pending",
     "PCS": "Pcs",
     "INCH": "Inch",
-    "PTS": "Pts"
+    "PTS": "Pts",
+    "MAX-TEMP-EXCEED-FLASH-POINT": "Max Temp Exceeds Flash Point"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

@@ -1,8 +1,8 @@
 import { ApolloError } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
+import { catchError, expand, finalize, last, map, switchMap, takeWhile, tap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { TariffCleaningItem } from './tariff-cleaning';
 
@@ -149,6 +149,43 @@ export class CleaningCategoryDS extends BaseDataSource<CleaningCategoryItem> {
         })
       );
   }
+
+
+  loadAllItems(
+  where?: any,
+  order?: any,
+  batchSize: number = 100
+): Observable<CleaningCategoryItem[]> {
+  let allItems: CleaningCategoryItem[] = [];
+  let after: string | undefined;
+
+  const loadBatch = (): Observable<CleaningCategoryItem[]> => {
+    return this.loadItems(
+      where,
+      order,
+      batchSize
+    ).pipe(
+      switchMap(items => {
+        allItems = [...allItems, ...items];
+        
+        if (this.pageInfo?.hasNextPage) {
+          after = this.pageInfo.endCursor;
+          return loadBatch();
+        }
+        
+        return of(allItems);
+      })
+    );
+  };
+
+  this.loadingSubject.next(true);
+  return loadBatch().pipe(
+    finalize(() => {
+      this.loadingSubject.next(false);
+      this.totalCount = allItems.length;
+    })
+  );
+}
 
   loadItems(where?: any, order?: any, first?: any): Observable<CleaningCategoryItem[]> {
     this.loadingSubject.next(true);

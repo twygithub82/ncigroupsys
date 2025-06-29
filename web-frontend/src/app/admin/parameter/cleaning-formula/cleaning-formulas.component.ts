@@ -20,7 +20,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -570,7 +570,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       retval = `${itm.length} ${this.translatedLangText.FORMULA_DESCRIPTION_SELECTED}`;
     }
     else if (itm?.length == 1) {
-       const maxLength = maxLengthDisplaySingleSelectedItem;
+      const maxLength = maxLengthDisplaySingleSelectedItem;
       const value=`${itm[0]}`;
       retval = `${value.length > maxLength 
         ? value.slice(0, maxLength) + '...' 
@@ -720,4 +720,38 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       
       }
   }
+
+    onSortChange(event: Sort): void {
+          const { active: field, direction } = event;
+      
+          // reset if no direction
+          if (!direction) {
+            this.lastOrderBy = null;
+            return this.search();
+          }
+      
+          // convert to GraphQL enum (uppercase)
+          const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+          // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+      
+          switch (field) {
+            case 'update_date':
+              this.lastOrderBy = {
+                  update_dt: dirEnum,
+                  create_dt: dirEnum,
+              };
+              break;
+    
+            case 'category_description':
+              this.lastOrderBy = {
+                  description: dirEnum,
+              };
+              break;
+          
+            default:
+              this.lastOrderBy = null;
+          }
+      
+          this.search();
+        }
 }

@@ -1,7 +1,7 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, expand, finalize, last, map, switchMap, takeWhile, tap } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { ApolloError } from '@apollo/client/core';
@@ -32,8 +32,8 @@ export const DELETE_CLEANING_METHOD = gql`
  `;
 
 export const GET_CLEANING_METHOD_QUERY = gql`
-  query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!],$first:Int) {
-    queryCleaningMethod(where: $where , order: $order,first:$first) {
+  query queryCleaningMethod($where:cleaning_methodFilterInput , $order:[cleaning_methodSortInput!],$first:Int,$after: String){ 
+    queryCleaningMethod(where: $where , order: $order,first:$first,after: $after){ 
       nodes {
         category_guid
         create_by
@@ -182,12 +182,61 @@ export class CleaningMethodDS extends BaseDataSource<CleaningMethodItem> {
     super();
   }
 
-  loadItems(where?: any, order?: any, first?: any): Observable<CleaningMethodItem[]> {
+ loadAllItems(
+  where?: any, 
+  order?: any, 
+  batchSize: number = 100
+): Observable<CleaningMethodItem[]> {
+  let allItems: CleaningMethodItem[] = [];
+  let after: string | undefined;
+  let totalCount: number = 0;
+    
+  const loadNextBatch = (): Observable<CleaningMethodItem[]> => {
+    return this.apollo.query<any>({
+      query: GET_CLEANING_METHOD_QUERY,
+      variables: { where, order, first: batchSize, after },
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => result.data?.queryCleaningMethod || { nodes: [], pageInfo: { hasNextPage: false } }),
+      switchMap(result => {
+        const batchItems = result.nodes || [];
+        allItems = [...allItems, ...batchItems];
+        
+        if (totalCount === 0 && result.totalCount != null) {
+          totalCount = result.totalCount;
+        }
+
+        if (result.pageInfo?.hasNextPage) {
+          after = result.pageInfo.endCursor;
+          return loadNextBatch();
+        }
+       this.totalCount = allItems.length;
+        return of(allItems);
+      }),
+      catchError(error => {
+        console.error('Error loading batch:', error);
+        // Return what we've loaded so far
+        return of(allItems);
+      })
+    );
+  };
+
+  this.loadingSubject.next(true);
+  return loadNextBatch().pipe(
+     finalize(() => {
+      this.loadingSubject.next(false);
+      
+    })
+  );
+}
+
+  loadItems(where?: any, order?: any, first?: any,after?:any): Observable<CleaningMethodItem[]> {
+    if(!first)first=100;
     this.loadingSubject.next(true);
     return this.apollo
       .query<any>({
         query: GET_CLEANING_METHOD_QUERY,
-        variables: { where, order, first },
+        variables: { where, order, first,after },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(

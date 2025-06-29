@@ -39,7 +39,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
@@ -979,7 +979,12 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedParts.length} ${this.translatedLangText.PART_SELECTED}`;
     }
     else if (this.selectedParts?.length == 1) {
-      retval = `${this.selectedParts[0]}`
+      //retval = `${this.selectedParts[0]}`;
+       const maxLength = maxLengthDisplaySingleSelectedItem;
+            const value=`${this.selectedParts[0]}`;
+            retval = `${value.length > maxLength 
+              ? value.slice(0, maxLength) + '...' 
+              : value}`;
     }
     return retval;
   }

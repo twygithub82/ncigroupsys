@@ -73,7 +73,7 @@
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_CLASS }}</mat-label>
-              <mat-select formControlName="class_no" [compareWith]="compareObjects">
+              <mat-select formControlName="class_no" [compareWith]="compareObjects" (selectionChange)="AutoSearch()">
                 @for (codeValue of classNoCvList; track codeValue) {
                 <mat-option [value]="codeValue">
                   {{codeValue.description}}
@@ -100,10 +100,10 @@
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_METHOD }}</mat-label>
-              <mat-select formControlName="method" [compareWith]="compareObjects">
+              <mat-select formControlName="method" [compareWith]="compareObjects" (selectionChange)="AutoSearch()">
                 @for (cm of cMethodList; track cm) {
                 <mat-option [value]="cm">
-                  {{cm.description}}
+                  {{displayProcessCleaningStatusFilter(cm)}}
                 </mat-option>
                 }
               </mat-select>
@@ -120,7 +120,7 @@
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_CATEGORY }}</mat-label>
-              <mat-select formControlName="category" [compareWith]="compareObjects">
+              <mat-select formControlName="category" [compareWith]="compareObjects" (selectionChange)="AutoSearch()">
                 @for (cCat of cCategoryList; track cCat) {
                 <mat-option [value]="cCat">
                   <!-- {{cCat.name}} -->
@@ -149,7 +149,7 @@
           <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.CARGO_BAN_TYPE}}</mat-label>
-              <mat-select formControlName="ban_type">
+              <mat-select formControlName="ban_type" (selectionChange)="AutoSearch()">
                 @for (cn of banTypeCvList; track cn) {
                 <mat-option [value]="cn.code_val">
                   {{cn.description}}

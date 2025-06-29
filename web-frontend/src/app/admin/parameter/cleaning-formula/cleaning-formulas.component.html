@@ -124,15 +124,15 @@
               </mat-accordion>
               <div class="body overflow-auto">
                 <div class="responsive_table">
-                  <table mat-table [dataSource]="clnFormulaList" matSort
+                  <table mat-table [dataSource]="clnFormulaList" matSort (matSortChange)="onSortChange($event)"
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <!-- ID Column -->
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="category_name">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    <ng-container matColumnDef="category_name" >
+                      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="''">
                         {{translatedLangText.CLEANING_FORMULA}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
@@ -140,7 +140,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="category_description">
-                      <mat-header-cell *matHeaderCellDef
+                      <mat-header-cell *matHeaderCellDef mat-sort-header
                         [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.DESCRIPTION }}
                       </mat-header-cell>
@@ -159,7 +159,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">
-                      <mat-header-cell *matHeaderCellDef>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header>
                         {{translatedLangText.LAST_UPDATED }}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

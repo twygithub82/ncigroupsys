@@ -417,10 +417,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         }
         else {
           this.pcForm?.setErrors({ overlaps: true });
+          this.pcForm?.get('min_temp')?.setErrors({ overlaps: true });
         }
       }
       else {
         this.pcForm?.setErrors({ overlaps: true });
+        this.pcForm?.get('min_temp')?.setErrors({ overlaps: true });
       }
     });
   }
@@ -467,4 +469,5 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     inputElement.value = inputElement.value.split('.')[0];
     this.pcForm.get('min_temp')?.setValue(Number(inputElement.value));
   }
+
 }

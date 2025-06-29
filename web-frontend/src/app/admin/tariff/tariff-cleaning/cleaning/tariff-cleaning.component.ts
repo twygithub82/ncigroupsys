@@ -42,7 +42,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility ,maxLengthDisplaySingleSelectedItem} from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -266,17 +266,25 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   public loadData() {
-    this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+    //this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => 
+    this.cCategoryDS.loadAllItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => 
+    {
       if (this.cCategoryDS.totalCount > 0) {
         this.cCategoryList = addDefaultSelectOption(data, 'All');
       }
     });
 
-    this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+     this.cMethodDS.loadAllItems({ name: { neq: null } }, { name: 'ASC' }).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
         this.cMethodList = addDefaultSelectOption(data, 'All');
       }
     });
+
+    // this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
+    //   if (this.cMethodDS.totalCount > 0) {
+    //     this.cMethodList = addDefaultSelectOption(data, 'All');
+    //   }
+    // });
 
     const queries = [
       { alias: 'ctHazardLevelCv', codeValType: 'HAZARD_LEVEL' },
@@ -756,7 +764,12 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       retval = `${this.selectedCargo.length} ${this.translatedLangText.CARGO_SELECTED}`;
     }
     else if (this.selectedCargo?.length == 1) {
-      retval = `${this.selectedCargo[0].cargo}`
+      // retval = `${this.selectedCargo[0].cargo}`
+       const maxLength = maxLengthDisplaySingleSelectedItem;
+          const value=`${this.selectedCargo[0].cargo}`;
+          retval = `${value.length > maxLength 
+            ? value.slice(0, maxLength) + '...' 
+            : value}`;
     }
     return retval;
   }
@@ -765,6 +778,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   removeAllSelectedCargo(): void {
     this.selectedCargo = [];
+    this.AutoSearch();
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
@@ -785,6 +799,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       this.searchForm?.get('cargo_name')?.setValue('');
       this.searchCargoList('');
     }
+
+    this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -882,4 +898,16 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   
       this.search();
     }
+
+   displayProcessCleaningStatusFilter(row:any):String{
+    var retval: string = '';
+     retval = row.name||row.description||'';
+    return retval;
+   } 
+
+    AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
+    }
+  }
 }

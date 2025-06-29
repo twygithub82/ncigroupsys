@@ -31,22 +31,13 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.LAST_CARGO }}</mat-label>
-                <mat-select formControlName="last_cargo" multiple required>
+                <mat-select formControlName="last_cargo"  required [multiple]="isNew()">
                   @for (lc of last_cargoList; track lc) {
                   <mat-option [value]="lc">
                     {{lc.cargo}}
                   </mat-option>
                   }
                 </mat-select>
-                <!-- <input matInput formControlName="last_cargo" 
-              [matAutocomplete]="lastCargo">
-            <mat-autocomplete #lastCargo="matAutocomplete" [displayWith]="displayLastCargoFn">
-              @for (lc of last_cargoList; track lc) {
-              <mat-option [value]="lc">
-                {{lc.cargo}}
-              </mat-option>
-              }
-            </mat-autocomplete> -->
               </mat-form-field>
             </div>
           </div>
@@ -59,25 +50,31 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
                 <input matInput formControlName="min_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" required (focus)="selectAll($event)">
+                  @if (pcForm.hasError('tempRangeInvalid')) {
+                    <mat-error>
+                      {{translatedLangText.TEMP_RANGE_ERROR}}
+                    </mat-error>
+                    }
+                    @if (pcForm.hasError('overlaps')) {
+                    <mat-error>
+                      {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
+                    </mat-error>
+                    }
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
                 <input matInput formControlName="max_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" required (focus)="selectAll($event)">
+                @if (pcForm.hasError('excessFlashPoint')) {
+                  <mat-error>
+                    {{translatedLangText.MAX_TEMP_EXCEED_FLASH_POINT}}
+                  </mat-error>
+                  }
               </mat-form-field>
             </div>
           </div>
-          @if (pcForm.hasError('tempRangeInvalid')) {
-          <mat-error>
-            {{translatedLangText.TEMP_RANGE_ERROR}}
-          </mat-error>
-          }
-          @if (pcForm.hasError('overlaps')) {
-          <mat-error>
-            {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
-          </mat-error>
-          }
+        
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
