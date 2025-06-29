@@ -9,6 +9,8 @@ export class NumericTextDirective {
   @Input() allowDecimal = true;
   @Input() decimalLimit: number | null = 2;
   @Input() disableScroll = true;
+  @Input() min: string | number | null = null;
+  @Input() max: string | number | null = null;
 
   constructor(private el: ElementRef<HTMLInputElement>) {
   }
@@ -23,14 +25,31 @@ export class NumericTextDirective {
     const isDigit = /^[0-9]$/.test(key);
     const isDot = key === '.';
 
-    // block anything not digit/dot
     if (!isDigit && (!this.allowDecimal || !isDot)) {
       event.preventDefault();
       return;
     }
 
-    // prevent 2 dots
+    // Prevent multiple dots
     if (isDot && value.includes('.')) {
+      event.preventDefault();
+      return;
+    }
+
+    const selectionStart = input.selectionStart ?? value.length;
+    const selectionEnd = input.selectionEnd ?? selectionStart;
+
+    const predictedValue =
+      value.substring(0, selectionStart) + key + value.substring(selectionEnd);
+
+    const numericValue = parseFloat(predictedValue);
+    const minValue = this.toNumber(this.min);
+    const maxValue = this.toNumber(this.max);
+
+    if (
+      minValue !== null && !isNaN(numericValue) && numericValue < minValue ||
+      maxValue !== null && !isNaN(numericValue) && numericValue > maxValue
+    ) {
       event.preventDefault();
       return;
     }
@@ -38,21 +57,15 @@ export class NumericTextDirective {
     if (!this.allowDecimal || this.decimalLimit === null) return;
 
     const dotIndex = value.indexOf('.');
-    if (dotIndex === -1) return; // No decimal yet? no need to check
+    if (dotIndex === -1) return;
 
-    const cursorPos = input.selectionStart ?? value.length;
-    const selectionEnd = input.selectionEnd ?? cursorPos;
+    const isTypingAfterDot = selectionStart > dotIndex;
+    const replacedLength = selectionEnd - selectionStart;
+    const currentDecimal = value.slice(dotIndex + 1);
+    const predictedDecimalLength = currentDecimal.length - replacedLength + 1;
 
-    const isTypingAfterDot = cursorPos > dotIndex;
-
-    if (isTypingAfterDot) {
-      const currentDecimal = value.slice(dotIndex + 1);
-      const replacedLength = selectionEnd - cursorPos;
-      const predictedDecimalLength = currentDecimal.length - replacedLength + 1;
-
-      if (predictedDecimalLength > this.decimalLimit) {
-        event.preventDefault();
-      }
+    if (isTypingAfterDot && predictedDecimalLength > this.decimalLimit) {
+      event.preventDefault();
     }
   }
 
@@ -62,10 +75,32 @@ export class NumericTextDirective {
 
     const pasted = event.clipboardData?.getData('text') ?? '';
     const decimalRegex = this.allowDecimal
-      ? /^[0-9]*\.?[0-9]*$/
-      : /^[0-9]*$/;
+      ? /^\d+(\.\d*)?$/
+      : /^\d+$/;
 
     if (!decimalRegex.test(pasted)) {
+      event.preventDefault();
+      return;
+    }
+
+    const input = this.el.nativeElement;
+    const value = input.value;
+    const selectionStart = input.selectionStart ?? value.length;
+    const selectionEnd = input.selectionEnd ?? selectionStart;
+
+    const predictedValue =
+      value.substring(0, selectionStart) +
+      pasted +
+      value.substring(selectionEnd);
+
+    const numericValue = parseFloat(predictedValue);
+    const minValue = this.toNumber(this.min);
+    const maxValue = this.toNumber(this.max);
+
+    if (
+      (minValue !== null && !isNaN(numericValue) && numericValue < minValue) ||
+      (maxValue !== null && !isNaN(numericValue) && numericValue > maxValue)
+    ) {
       event.preventDefault();
       return;
     }
@@ -87,5 +122,11 @@ export class NumericTextDirective {
     if (this.disableScroll && this.el.nativeElement === document.activeElement) {
       event.preventDefault();
     }
+  }
+
+  private toNumber(value: string | number | null): number | null {
+    if (value === null || value === '') return null;
+    const num = typeof value === 'number' ? value : parseFloat(value);
+    return isNaN(num) ? null : num;
   }
 }

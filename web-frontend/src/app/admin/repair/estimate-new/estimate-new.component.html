@@ -481,8 +481,8 @@
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
-                                (focus)="selectText($event)" [placeholder]="translatedLangText.PERCENTAGE_SYMBOL"
-                                type="number" min="0" max="99">
+                                appNumericText [allowDecimal]="true" (focus)="selectText($event)"
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="text" max="100" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>

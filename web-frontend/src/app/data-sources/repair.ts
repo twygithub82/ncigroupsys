@@ -10,6 +10,7 @@ import { RepairPartItem } from './repair-part';
 import { UserItem } from './user';
 import { ApolloError } from '@apollo/client/errors';
 import { BillingItem } from './billing';
+import { Utility } from 'app/utilities/utility';
 
 export class RepairGO {
   public guid?: string;
@@ -2017,8 +2018,8 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   getTotal(repairPartList: any[] | undefined): any {
     const totalSums = repairPartList?.filter(data => !data.delete_dt && (data.approve_part ?? true))?.reduce((totals: any, part) => {
       return {
-        hour: (totals.hour ?? 0) + (part.approve_hour ?? part.hour ?? 0),
-        total_mat_cost: totals.total_mat_cost + (((part.approve_qty !== null && part.approve_qty !== undefined ? part.approve_qty : part.quantity ?? 0) * (part.approve_cost !== null && part.approve_cost !== undefined ? part.approve_cost : part.material_cost ?? 0)))
+        hour: (totals.hour ?? 0) + (Utility.convertNumber(part.approve_hour) ?? Utility.convertNumber(part.hour) ?? 0),
+        total_mat_cost: totals.total_mat_cost + (((part.approve_qty !== null && part.approve_qty !== undefined ? Utility.convertNumber(part.approve_qty) : Utility.convertNumber(part.quantity) ?? 0) * (part.approve_cost !== null && part.approve_cost !== undefined ? Utility.convertNumber(part.approve_cost) : Utility.convertNumber(part.material_cost) ?? 0)))
       };
     }, { hour: 0, total_mat_cost: 0 }) || 0;
     return totalSums;

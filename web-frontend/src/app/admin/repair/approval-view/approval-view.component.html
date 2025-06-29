@@ -384,9 +384,9 @@
                         <span class="mobile-label">{{translatedLangText.QTY}}:</span>
                         <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
-                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty" appNumericText
                               (change)="calculateCost();" [disabled]="isDisabled(row)" (wheel)="preventDefault($event)"
-                              (focus)="selectText($event)" type="number" min="0" [allowDecimal]="false">
+                              (focus)="selectText($event)" type="text" min="0" [allowDecimal]="false">
                           </mat-form-field>
                         </tlx-form-field>
                       </mat-cell>
@@ -401,9 +401,9 @@
                         <span class="mobile-label">{{translatedLangText.HOUR}}:</span>
                         <tlx-form-field customClass="mat-table-form-txt-60px">
                           <mat-form-field>
-                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour"
+                            <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour" appNumericText
                               [allowDecimal]="true" (change)="calculateCost();" [disabled]="isDisabled(row)"
-                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                              (wheel)="preventDefault($event)" (focus)="selectText($event)" type="text" min="0">
                           </mat-form-field>
                         </tlx-form-field>
                       </mat-cell>
@@ -422,7 +422,7 @@
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
                                 (change)="calculateCost();" [disabled]="isDisabled(row)" appNumericText
-                                [allowDecimal]="true" (focus)="selectText($event)" type="text" min="0">
+                                [allowDecimal]="true" (focus)="selectText($event)" type="text" [min]="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -562,8 +562,8 @@
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
-                                [allowDecimal]="true" (focus)="selectText($event)"
-                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
+                                appNumericText [allowDecimal]="true" (focus)="selectText($event)"
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="text" max="100" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
@@ -571,8 +571,8 @@
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
-                                [allowDecimal]="true" (focus)="selectText($event)"
-                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
+                                appNumericText [allowDecimal]="true" (focus)="selectText($event)"
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="text" max="100" min="0">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>
