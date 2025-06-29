@@ -1,31 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Router, NavigationEnd, RouterLink, RouterLinkActive } from '@angular/router';
-import { DOCUMENT, NgStyle, NgClass } from '@angular/common';
+import { Direction } from '@angular/cdk/bidi';
+import { DOCUMENT, NgClass, NgStyle } from '@angular/common';
 import {
   Component,
-  Inject,
   ElementRef,
+  HostListener,
+  Inject,
+  OnDestroy,
   OnInit,
   Renderer2,
-  HostListener,
-  OnDestroy,
 } from '@angular/core';
-import { ROUTES } from './sidebar-items';
-import { AuthService } from '@core';
-import { RouteInfo } from './sidebar.metadata';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { FeatherModule } from 'angular-feather';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '@core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { FeatherModule } from 'angular-feather';
 import { Utility } from 'app/utilities/utility';
 import { environment, modulePackage } from 'environments/environment';
-import { MatTooltip } from '@angular/material/tooltip';
-import { Direction } from '@angular/cdk/bidi';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { MatDividerModule } from '@angular/material/divider';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { ROUTES } from './sidebar-items';
+import { RouteInfo } from './sidebar.metadata';
 
 @Component({
   selector: 'app-sidebar',

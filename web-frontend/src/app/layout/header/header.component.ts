@@ -1,31 +1,30 @@
-import { DOCUMENT, NgClass } from '@angular/common';
+import { Direction } from '@angular/cdk/bidi';
+import { CommonModule, DOCUMENT, NgClass } from '@angular/common';
 import {
   Component,
-  Inject,
   ElementRef,
+  Inject,
   OnInit,
   Renderer2,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { ConfigService } from '@config';
-import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { InConfiguration, AuthService, LanguageService } from '@core';
-import { NgScrollbar } from 'ngx-scrollbar';
-import { MatMenuModule } from '@angular/material/menu';
-import { FeatherIconsComponent } from '../../shared/components/feather-icons/feather-icons.component';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
-import { GraphqlNotificationService } from '../../services/global-notification.service'
-import { Apollo } from 'apollo-angular';
-import { Subscription } from 'rxjs';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { MatSnackBar, MatSnackBarVerticalPosition, MatSnackBarHorizontalPosition } from '@angular/material/snack-bar';
-import { Direction } from '@angular/cdk/bidi';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Utility } from 'app/utilities/utility';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { ConfigService } from '@config';
+import { AuthService, InConfiguration, LanguageService } from '@core';
 import { TranslateService } from '@ngx-translate/core';
+import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Apollo } from 'apollo-angular';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility } from 'app/utilities/utility';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { Subscription } from 'rxjs';
+import { GraphqlNotificationService } from '../../services/global-notification.service';
+import { FeatherIconsComponent } from '../../shared/components/feather-icons/feather-icons.component';
 
 interface Notifications {
   message: string;

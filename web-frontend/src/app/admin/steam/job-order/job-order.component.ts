@@ -30,7 +30,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
@@ -39,6 +39,7 @@ import { SteamDS, SteamItem } from "app/data-sources/steam";
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
@@ -47,7 +48,7 @@ import { debounceTime, startWith, tap } from 'rxjs';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
+import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-job-order',
@@ -220,6 +221,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
+    public confirmDialog: ConfirmDialogService,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -285,7 +287,31 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   }
 
   private refreshTable() {
-    this.paginator._changePageSize(this.paginator.pageSize);
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.filterSteamForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndexSteam = savedPagination.pageIndex;
+      this.pageSizeSteam = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.onFilterSteam();
+    }
   }
 
   cancelSelectedRows(row: StoringOrderItem[]) {
@@ -723,31 +749,25 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   ConfirmUnassignDialog(event: Event, row: SteamItem) {
     event.preventDefault(); // Prevents the form submission
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+    const data: any = {
+      headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+      action: 'new',
+      allowRemarks: true,
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
+    const dialogRef = this.confirmDialog.open(data);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.UnassignEstimate(row);
+        const remarks = result.remarks || '';
+        this.UnassignEstimate(row, remarks);
       }
     });
   }
 
-  UnassignEstimate(row: SteamItem) {
-    this.subs.sink = this.steamDs.rollbackAssignedSteam([row.guid!])
+  UnassignEstimate(row: SteamItem, remarks: string) {
+    this.subs.sink = this.steamDs.rollbackAssignedSteam([row.guid!], remarks)
       .subscribe((result: any) => {
-        if (result.data.rollbackAssignedResidue) {
-          this.handleRollbackSuccess(result.data.rollbackAssignedResidue);
+        if (result.data.rollbackAssignedSteaming) {
+          this.handleRollbackSuccess(result.data.rollbackAssignedSteaming);
         }
       });
 

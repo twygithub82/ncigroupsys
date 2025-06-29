@@ -31,7 +31,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { JobOrderDS, JobOrderItem } from 'app/data-sources/job-order';
@@ -39,13 +39,14 @@ import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { JobOrderTaskComponent } from "../job-order-task/job-order-task.component";
-import { ModulePackageService } from 'app/services/module-package.service';
+import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-job-order',
@@ -210,6 +211,7 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
+    public confirmDialog: ConfirmDialogService,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -542,18 +544,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
     }
     this.resetForm();
     this.onFilterResidue();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {
@@ -633,28 +623,22 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   ConfirmUnassignDialog(event: Event, row: ResidueItem) {
     event.preventDefault(); // Prevents the form submission
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+    const data: any = {
+      headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+      action: 'new',
+      allowRemarks: true,
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
+    const dialogRef = this.confirmDialog.open(data);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.UnassignEstimate(row);
+        const remarks = result.remarks || '';
+        this.UnassignEstimate(row, remarks);
       }
     });
   }
 
-  UnassignEstimate(row: ResidueItem) {
-    this.subs.sink = this.residueDS.rollbackAssigneddResidue([row.guid!])
+  UnassignEstimate(row: ResidueItem, remarks: string) {
+    this.subs.sink = this.residueDS.rollbackAssigneddResidue([row.guid!], remarks)
       .subscribe((result: any) => {
         if (result.data.rollbackAssignedResidue) {
           this.handleRollbackSuccess(result.data.rollbackAssignedResidue);

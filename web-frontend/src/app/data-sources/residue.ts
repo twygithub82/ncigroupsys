@@ -780,8 +780,8 @@ export const ROLLBACK_COMPLETED_RESIDUE = gql`
 `
 
 export const ROLLBACK_ASSIGNED_RESIDUE = gql`
-  mutation rollbackAssignedResidue($residueGuid: [String!]) {
-    rollbackAssignedResidue(residueGuid: $residueGuid)
+  mutation rollbackAssignedResidue($residueGuid: [String!], $remark: String) {
+    rollbackAssignedResidue(residueGuid: $residueGuid, remark: $remark)
   }
 `
 
@@ -992,11 +992,12 @@ export class ResidueDS extends BaseDataSource<ResidueItem> {
     });
   }
 
-  rollbackAssigneddResidue(residueGuid: string[]): Observable<any> {
+  rollbackAssigneddResidue(residueGuid: string[], remark: string): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_ASSIGNED_RESIDUE,
       variables: {
-        residueGuid
+        residueGuid,
+        remark
       }
     });
   }

@@ -51,6 +51,7 @@ import { JobOrderQCComponent } from "../../repair/job-order-qc/job-order-qc.comp
 import { JobOrderTaskComponent } from "../../repair/job-order-task/job-order-task.component";
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ComponentUtil } from 'app/utilities/component-util';
+import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-job-order',
@@ -208,7 +209,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   hasPreviousPageRepair = false;
 
   jobOrderStartedCount = 0;
-  
+
   private jobOrderSubscriptions: Subscription[] = [];
 
   tabConfig = [
@@ -244,6 +245,7 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
+    public confirmDialog: ConfirmDialogService,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -572,29 +574,23 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
   onUnassignTeam(event: Event, repairGuid: string) {
     this.stopEventTrigger(event);
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+    const data: any = {
+      headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+      action: 'new',
+      allowRemarks: true,
     }
 
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
+    const dialogRef = this.confirmDialog.open(data);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.unassignTeam(repairGuid);
+      if (result?.action === 'confirmed') {
+        const remarks = result?.remarks || '';
+        this.unassignTeam(repairGuid, remarks);
       }
     });
   }
 
-  unassignTeam(repairGuid: string) {
-    this.repairDS.rollbackAssignedRepair([repairGuid]).subscribe(result => {
+  unassignTeam(repairGuid: string, remarks: string) {
+    this.repairDS.rollbackAssignedRepair([repairGuid], remarks).subscribe(result => {
       console.log(result)
       this.handleSaveSuccess(result?.data?.rollbackAssignedRepair);
       this.refreshTable();
@@ -688,18 +684,6 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
     }
     this.resetForm();
     this.onFilterRepair();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   getMaxDate() {

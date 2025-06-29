@@ -823,22 +823,6 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     else {
       this.resetFormDetail();
     }
-
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     if(report_type===1)
-    //     {
-    //       this.resetFormSummary();
-    //     }
-    //   }
-    // });
   }
 
 

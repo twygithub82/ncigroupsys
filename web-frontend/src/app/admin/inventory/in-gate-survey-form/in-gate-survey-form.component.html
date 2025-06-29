@@ -434,7 +434,8 @@
                             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                               <mat-form-field class="example-full-width">
                                 <mat-label>{{translatedLangText.DATE}}</mat-label>
-                                <input matInput formControlName="test_dt" [matDatepicker]="test_dt_picker" [max]="this.getMaxDate()" required>
+                                <input matInput formControlName="test_dt" [matDatepicker]="test_dt_picker"
+                                  [max]="this.getMaxDate()" required>
                                 <mat-datepicker-toggle matSuffix [for]="test_dt_picker"></mat-datepicker-toggle>
                                 <mat-datepicker #test_dt_picker></mat-datepicker>
                                 <!-- <mat-datepicker-toggle matSuffix [for]="test_dt_picker"></mat-datepicker-toggle>
@@ -1255,7 +1256,8 @@
                         </div>
                         }
                         @if (!(igDS.loading$ | async)) {
-                        <mat-stepper class="example-stepper" [orientation]="(compTypeStepperOrientation | async)!">
+                        <mat-stepper class="example-stepper" #compartmentStepper
+                          [orientation]="(compTypeStepperOrientation | async)!">
                           <mat-step [stepControl]="getBottomFormGroup()"
                             [completed]="this.in_gate?.in_gate_survey?.guid ? true : getBottomFormGroup().valid">
                             <form [formGroup]="getBottomFormGroup()">
@@ -1424,7 +1426,8 @@
                                     <mat-label>{{translatedLangText.THERMOMETER}}</mat-label>
                                     <input matInput formControlName="thermometer" type="number"
                                       (wheel)="preventDefault($event)">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>
+                                      {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}</h6>
                                     <!-- @if (getBottomFormGroup().get('thermometer')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.THERMOMETER}} {{translatedLangText.SO_REQUIRED}}
@@ -2034,22 +2037,7 @@
                           </button>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
-                          <!-- <ng-container #dynamicContainer></ng-container> -->
-                          <!-- @if (canDownload()) {
-                          <button mat-raised-button matStepperNext class="msr-2"
-                            [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
-                            (click)="onDownload()">
-                            <mat-icon>
-                              @if (!(igsDS.actionLoading$ | async) && !(isImageLoading$| async) &&
-                              !(isFileActionLoading$| async)) {
-                              download
-                              } @else {
-                              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                              }
-                            </mat-icon>
-                            {{translatedLangText.DOWNLOAD}}
-                          </button>
-                          } -->
+                          @if ((compartmentStepper?.selectedIndex ?? 0) === ((compartmentStepper?._steps?.length ?? 0) - 1)) {
                           @if (canPublish()) {
                           <button mat-raised-button matStepperNext color="accent" class="msr-2"
                             [disabled]="(igsDS.actionLoading$| async) || (isImageLoading$| async) || (isFileActionLoading$| async)"
@@ -2092,6 +2080,7 @@
                             </mat-icon>
                             {{translatedLangText.SAVE}}
                           </button>
+                          }
                           }
                         </div>
                       </div>

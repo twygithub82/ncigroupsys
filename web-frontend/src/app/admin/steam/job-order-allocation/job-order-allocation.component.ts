@@ -29,6 +29,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -49,14 +50,14 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility,selected_job_task_color } from 'app/utilities/utility';
+import { Utility, selected_job_task_color } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-estimate-new',
@@ -282,10 +283,11 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
 
   repSelection = new SelectionModel<ResiduePartItem>(true, []);
   cleaningTotalHours: number | undefined;
-  selectedJobTaskClass =selected_job_task_color;
+  selectedJobTaskClass = selected_job_task_color;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
+    public confirmDialog: ConfirmDialogService,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -301,9 +303,6 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     this.cvDS = new CodeValuesDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.igDS = new InGateDS(this.apollo);
-    // this.plDS = new PackageLabourDS(this.apollo);
-    // this.repairEstDS = new RepairDS(this.apollo);
-    // this.repairEstPartDS = new RepairPartDS(this.apollo);
     this.mtDS = new MasterEstimateTemplateDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
     this.userDS = new UserDS(this.apollo);
@@ -1552,33 +1551,25 @@ export class JobOrderAllocationSteamComponent extends UnsubscribeOnDestroyAdapte
     return this.isAllowDelete() && (row?.status_cv === 'ASSIGNED' || row?.status_cv === 'PARTIAL_ASSIGNED') && !row.complete_dt;
   }
 
-
   onUnassignTeam(event: Event, repairGuid: string) {
     this.stopEventTrigger(event);
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+    const data: any = {
+      headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+      action: 'new',
+      allowRemarks: true,
     }
-
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
+    const dialogRef = this.confirmDialog.open(data);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.unassignTeam(repairGuid);
+        const remarks = result.remarks || '';
+        this.unassignTeam(repairGuid, remarks);
       }
     });
   }
 
-  unassignTeam(steamGuid: string) {
-    this.steamDs.rollbackAssignedSteam([steamGuid]).subscribe(result => {
+  unassignTeam(steamGuid: string, remarks: string) {
+    this.steamDs.rollbackAssignedSteam([steamGuid], remarks).subscribe(result => {
       console.log(result)
       this.handleSaveSuccess(result?.data?.rollbackAssignedSteaming);
     });

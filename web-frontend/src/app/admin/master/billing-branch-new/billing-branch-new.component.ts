@@ -29,13 +29,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MasterTemplateItem, TemplateEstPartItem, TepDamageRepairItem } from 'app/data-sources/master-template';
+import { MasterTemplateItem, TepDamageRepairItem } from 'app/data-sources/master-template';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -43,12 +44,10 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { DEFAULT_COUNTRY_CODE, Utility } from 'app/utilities/utility';
+import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-billing-branch-new',

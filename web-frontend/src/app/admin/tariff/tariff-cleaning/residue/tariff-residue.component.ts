@@ -35,13 +35,13 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,

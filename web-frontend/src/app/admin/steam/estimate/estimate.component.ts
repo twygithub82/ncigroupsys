@@ -173,7 +173,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
     'PENDING',
     'NO_ACTION'
   ]
-  
+
   searchForm?: UntypedFormGroup;
 
   pckRepDS: PackageRepairDS;
@@ -710,19 +710,7 @@ export class SteamEstimateComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     this.resetForm();
-  this.search();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
+    this.search();
   }
 
   resetForm() {

@@ -21,7 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -29,13 +29,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { BillingBranchesItem, BillingContactPersonItem, BillingCustomerItem } from 'app/data-sources/billingBranches';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { ContactPersonItem, ContactPersonItemAction } from 'app/data-sources/contact-person';
 import { CurrencyDS, CurrencyItem } from 'app/data-sources/currency';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { MasterTemplateItem, TemplateEstPartItem, TepDamageRepairItem } from 'app/data-sources/master-template';
+import { MasterTemplateItem, TemplateEstPartItem } from 'app/data-sources/master-template';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
@@ -43,12 +44,10 @@ import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { DEFAULT_COUNTRY_CODE, Utility } from 'app/utilities/utility';
+import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-customer-new',
@@ -1183,18 +1182,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     event.preventDefault(); // Prevents the form submission
     event.stopPropagation();
     this.resetForm();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {

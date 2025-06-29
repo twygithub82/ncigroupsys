@@ -30,6 +30,7 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angul
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -41,21 +42,18 @@ import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-lab
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
-import { SteamDS, SteamItem, SteamStatusRequest, SteamTemp } from 'app/data-sources/steam';
+import { SteamDS, SteamGO, SteamItem, SteamStatusRequest, SteamTemp } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { SteamGO } from 'app/data-sources/steam';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 @Component({
   selector: 'job-order-task-monitor',
   standalone: true,

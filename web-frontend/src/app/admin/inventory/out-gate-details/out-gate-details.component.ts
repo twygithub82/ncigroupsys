@@ -34,18 +34,18 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
 import { ReleaseOrderGO } from 'app/data-sources/release-order';
 import { ReleaseOrderSotDS, ReleaseOrderSotGO, ReleaseOrderSotItem } from 'app/data-sources/release-order-sot';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-out-gate-details',
