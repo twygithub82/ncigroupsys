@@ -283,6 +283,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   phone_regex: any = /([0-9]{7,10})$/; // 7–10 digits
   countryCodes: any = [];
   countryCodesFiltered: any = [];
+  isAllowedToChangedMainCustomer: boolean = true;
 
   constructor(
     public httpClient: HttpClient,
@@ -415,8 +416,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.historyState.customerCompany) {
       this.isFromBranch = false;
     } else if (this.historyState) {
+      this.isAllowedToChangedMainCustomer=false;
       this.selectedBillingBranch = this.historyState.selectedRow;
       this.patchData(this.selectedBillingBranch);
+
     }
 
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {

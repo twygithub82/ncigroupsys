@@ -386,7 +386,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
-      height: '80vh',
+      maxHeight: '80vh',
       data: {
         action: 'update',
         langText: this.langText,

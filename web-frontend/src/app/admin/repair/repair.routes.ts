@@ -16,12 +16,6 @@ export const REPAIR_ROUTE: Routes = [
     canActivate: [AuthGuard],
     data: { expectedFunctions: ['REPAIR_REPAIR_ESTIMATE_ADD', 'REPAIR_REPAIR_ESTIMATE_DELETE', 'REPAIR_REPAIR_ESTIMATE_EDIT', 'REPAIR_REPAIR_ESTIMATE_VIEW'] }
   },
-   {
-    path: "estimate/:id",
-    component: RepairEstimateComponent,
-    canActivate: [AuthGuard],
-    data: { expectedFunctions: ['REPAIR_REPAIR_ESTIMATE_ADD', 'REPAIR_REPAIR_ESTIMATE_DELETE', 'REPAIR_REPAIR_ESTIMATE_EDIT', 'REPAIR_REPAIR_ESTIMATE_VIEW'] }
-  },
   {
     path: "estimate/new/:id",
     component: RepairEstimateNewComponent,

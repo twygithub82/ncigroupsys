@@ -42,6 +42,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-billing-branch',
@@ -87,6 +88,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     'lName',
     'category',
     'bDate',
+    'actions'
   ];
   translatedLangText: any = {}
   langText = {
@@ -218,7 +220,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { code: "ASC" };
+  //lastOrderBy: any = { code: "ASC" };
+  lastOrderBy: any = { customer_company:{ code: "ASC" }};
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -433,6 +436,45 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
     where.and = [
+     {customer_company:{ main_customer_guid: { neq: null } }},
+     {customer_company: { main_customer_guid: { neq: "" } }},
+     {customer_company: { type_cv: { in: ["BRANCH"] } }},
+     {customer_company:  { delete_dt: { eq: null } }}
+    ];
+    if (this.customerCodeControl.value) {
+      const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
+      if(where.customer_company==null) where.customer_company={};
+      where.customer_company.guid= { eq: customerCode.guid };
+    }
+
+    if (this.pcForm!.value["branch_code"]) {
+      where.and = [ {customer_company:{ code: { contains: this.pcForm!.value["branch_code"] } }},  {customer_company:{ type_cv: { eq: 'BRANCH' } }}];
+    }
+
+    if (this.pcForm!.get("default_profile")?.value?.guid) {
+      const tankSearch: any = {};
+      tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
+      if(where.customer_company==null) where.customer_company={};
+      where.customer_company.tank = tankSearch;
+    }
+
+    if (this.pcForm!.value["country"]) {
+      if(where.customer_company==null) where.customer_company={};
+      where.customer_company.country = { contains: this.pcForm!.value["country"] };
+    }
+
+    if (this.pcForm!.value["contact_person"]) {
+       if(where.customer_company==null) where.customer_company={};
+      where.customer_company.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
+    }
+
+    this.lastSearchCriteria = where;
+  }
+
+  constructSearchCriteria1() {
+    const where: any = {};
+
+    where.and = [
       { main_customer_guid: { neq: null } },
       { main_customer_guid: { neq: "" } },
       { type_cv: { in: ["BRANCH"] } },
@@ -480,7 +522,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       before
     });
     console.log(this.searchStateService.getPagination(this.pageStateType))
-    this.subs.sink = this.ccDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
+
+   // this.subs.sink = this.ccDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data =>
+   this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data =>
+       {
       this.customer_companyList = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
@@ -743,19 +788,20 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   
       switch (field) {
         case 'bDate':
-          this.lastOrderBy = {
+          this.lastOrderBy = { customer_company:{
             
               update_dt: dirEnum,
               create_dt: dirEnum,
-            
+            }
           };
           break;
   
         case 'fName':
           this.lastOrderBy = {
             
+              customer_company:{
               code: dirEnum,
-            
+            }
           };
           break;
       
@@ -771,5 +817,41 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       if (Utility.IsAllowAutoSearch())
         this.search();
     }
+
+    isShowDeleteIcon(row: any): boolean {
+      return (!row.so_count && !row.sot_count && !row.tank_info_count);
+    }
+
+     cancelItem(row: CustomerCompanyItem) {
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          data: {
+            headerText: this.translatedLangText.CONFIRM_DELETE,
+            action: 'new',
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result.action === 'confirmed') {
+            this.deleteCustomerAndBillingBranch(row.guid!);
+          }
+        });
+      }
+
+      deleteCustomerAndBillingBranch(customerGuid: string) {
+        this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d => {
+          let count = d.data.deleteCustomerCompany;
+          if (count > 0) {
+            this.handleSaveSuccess(count);
+            this.refreshTable();
+            //this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+          }
+        });
+      }
 }
 

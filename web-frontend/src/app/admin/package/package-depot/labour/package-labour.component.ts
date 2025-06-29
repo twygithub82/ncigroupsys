@@ -348,7 +348,8 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: '60vw',
+      maxHeight: '80vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -379,7 +380,8 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     var rows: PackageLabourItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: '60vw',
+      maxHeight: '80vh',
       data: {
         action: 'new',
         langText: this.langText,

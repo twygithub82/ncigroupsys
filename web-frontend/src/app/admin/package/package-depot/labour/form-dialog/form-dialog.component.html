@@ -14,40 +14,6 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="row">
-           <div class="body overflow-auto mb-4">
-            <div class="responsive_table">
-              
-            <table mat-table [dataSource]="selectedItems" matSort
-                class="advance-table striped-rows hover-highlight dark-header curve-table curve-table">
-                      <ng-container matColumnDef="fName">
-                        <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
-                            }}:</span>{{row.customer_company.code}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="lName">
-                        <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
-                            }}:</span>{{row.customer_company.name}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="email">
-                        <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COST
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <span class="mobile-label">{{translatedLangText.COST }}:</span>
-                          {{row.cost.toFixed(2)}}</mat-cell>
-                      </ng-container>
-                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
-                      </mat-row>
-                    </table>
-            </div>
-          </div>
-          </div>
-          <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.COST }}</mat-label>
@@ -69,46 +35,40 @@
               </mat-form-field>
             </div>
           </div>
-          <!-- <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <div class="card">
-                <div class="materialTableHeader">
+          <div class="row">
+              <div class="body overflow-auto mb-4">
+                <div class="responsive_table">
+              
+                  <table mat-table [dataSource]="selectedItems" matSort
+                      class="advance-table striped-rows hover-highlight dark-header curve-table curve-table">
+                            <ng-container matColumnDef="fName">
+                              <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
+                                }}</mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
+                                  }}:</span>{{row.customer_company.code}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="lName">
+                              <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
+                                }}</mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
+                                  }}:</span>{{row.customer_company.name}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="email">
+                              <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COST
+                                }}</mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <span class="mobile-label">{{translatedLangText.COST }}:</span>
+                                {{row.cost.toFixed(2)}}</mat-cell>
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
+                            </mat-row>
+                  </table>
                 </div>
-                <div class="body overflow-auto">
-                  <div class="responsive_table">
-                    <table mat-table [dataSource]="selectedItems" matSort
-                      class="mat-cell advance-table striped-rows hover-highlight dark-header">
-                      <ng-container matColumnDef="fName">
-                        <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_CODE
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
-                            }}:</span>{{row.customer_company.code}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="lName">
-                        <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COMPANY_NAME
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
-                            }}:</span>{{row.customer_company.name}}</mat-cell>
-                      </ng-container>
-                      <ng-container matColumnDef="email">
-                        <mat-header-cell *matHeaderCellDef >{{translatedLangText.CUSTOMER_COST
-                          }}</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <span class="mobile-label">{{translatedLangText.COST }}:</span>
-                          {{row.cost.toFixed(2)}}</mat-cell>
-                      </ng-container>
-                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>
-                      </mat-row>
-                    </table>
-                  </div>
-                </div>
-              </div>
+             </div>
             </div>
-          </div> -->
-
 
         </div>
 

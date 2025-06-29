@@ -19,7 +19,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
-                    <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode" required>
+                    <input matInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode" required [readonly]="!isAllowedToChangedMainCustomer">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
@@ -38,7 +38,7 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_CODE }}</mat-label>
                     <input matInput formControlName="branch_code" class="text-uppercase" (input)="onAlphaOnly($event)"
-                      maxlength="6" required>
+                      maxlength="6" required [readonly]="!isAllowedToChangedMainCustomer">
                     <!-- @if (ccForm?.get('branch_code')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BRANCH_CODE}} {{this.translatedLangText.SO_REQUIRED}}

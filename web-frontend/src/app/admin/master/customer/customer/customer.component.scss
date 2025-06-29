@@ -33,12 +33,7 @@
   text-overflow: ellipsis;
 }
 
-::ng-deep .truncate-three-lines {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+
 
 // ::ng-deep mat-option .mat-option-text {
 //   display: flex;

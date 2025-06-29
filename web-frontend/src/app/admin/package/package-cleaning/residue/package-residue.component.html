@@ -139,27 +139,24 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="residue_type">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.RESIDUE_TYPE
+              <mat-header-cell *matHeaderCellDef mat-sort-header
+              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
+              >{{this.translatedLangText.RESIDUE_TYPE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
+              >
                 <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
                   }}:</span>{{row.tariff_residue.description}}</mat-cell>
             </ng-container>
-            <!-- <ng-container matColumnDef="cutomer_code">
-              <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                >{{this.translatedLangText.CUSTOMER_CODE
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
-                  }}:</span>{{row.customer_company.code}}</mat-cell>
-            </ng-container> -->
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.CUSTOMER
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+              <mat-header-cell *matHeaderCellDef mat-sort-header
+              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
+               >{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
+              <mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
+              (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
                   <!-- </span>{{ccDS.displayName(row.customer_company)}} -->
                 </span>{{row.customer_company.name}}
@@ -190,10 +187,10 @@
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
               <mat-header-cell *matHeaderCellDef  mat-sort-header
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row)}}</mat-cell>
