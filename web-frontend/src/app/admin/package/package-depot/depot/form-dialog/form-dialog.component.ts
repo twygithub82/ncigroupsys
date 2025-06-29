@@ -25,6 +25,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -33,12 +34,8 @@ import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageDepotItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -67,17 +64,15 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'customer_code',
     'customer_name',
     'profile_name',
-    // 'storage_cost',
   ];
 
   action: string;
@@ -222,10 +217,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       gate_in_cost_standard: [],
       gate_out_cost_cust: [''],
       gate_out_cost_standard: [],
-
       profile_name: this.profileNameControl,
     });
   }
+
   profileChanged() {
     if (this.profileNameControl.value) {
       const selectedProfile: PackageDepotItem = this.profileNameControl.value;
@@ -244,6 +239,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       });
     }
   }
+
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -271,7 +267,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   loadData() {
     this.queryDepotCost();
-
     const queries = [
       { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
 
@@ -279,11 +274,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
       this.storageCalCvList = data;
-
-
       if (this.selectedItems.length == 1) {
         var pckDepotItm = this.selectedItems[0];
-
         this.pcForm.patchValue({
           preinspection_cost_cust: pckDepotItm.preinspection_cost?.toFixed(2),
           preinspection_cost_standard: pckDepotItm.tariff_depot?.preinspection_cost?.toFixed(2),
@@ -343,22 +335,22 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       .filter((guid): guid is string => guid !== undefined);
 
     var lolo_cost = -1;
-    if (this.pcForm!.value["lolo_cost_cust"]) lolo_cost = Number(this.pcForm!.value["lolo_cost_cust"]);
+    if (this.pcForm!.value["lolo_cost_cust"]) lolo_cost = Utility.convertNumber(this.pcForm!.value["lolo_cost_cust"], 2);
 
     var preinspection_cost = -1;
-    if (this.pcForm!.value["preinspection_cost_cust"]) preinspection_cost = Number(this.pcForm!.value["preinspection_cost_cust"]);
+    if (this.pcForm!.value["preinspection_cost_cust"]) preinspection_cost = Utility.convertNumber(this.pcForm!.value["preinspection_cost_cust"], 2);
     var free_storage = -1;
-    if (this.pcForm!.value["free_storage_days"]) free_storage = Number(this.pcForm!.value["free_storage_days"]);
+    if (this.pcForm!.value["free_storage_days"]) free_storage = this.pcForm!.value["free_storage_days"];
 
 
     var storage_cost = -1;
-    if (this.pcForm!.value["storage_cost_cust"]) storage_cost = Number(this.pcForm!.value["storage_cost_cust"]);
+    if (this.pcForm!.value["storage_cost_cust"]) storage_cost = Utility.convertNumber(this.pcForm!.value["storage_cost_cust"], 2);
 
     var gate_in_cost = -1;
-    if (this.pcForm!.value["gate_in_cost_cust"]) gate_in_cost = Number(this.pcForm!.value["gate_in_cost_cust"]);
+    if (this.pcForm!.value["gate_in_cost_cust"]) gate_in_cost = Utility.convertNumber(this.pcForm!.value["gate_in_cost_cust"], 2);
 
     var gate_out_cost = -1;
-    if (this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost = Number(this.pcForm!.value["gate_out_cost_cust"]);
+    if (this.pcForm!.value["gate_out_cost_cust"]) gate_out_cost = Utility.convertNumber(this.pcForm!.value["gate_out_cost_cust"], 2);
 
     var storageCalValue: String = "";
     if (this.pcForm?.get('storage_cal_cv')?.value) {
