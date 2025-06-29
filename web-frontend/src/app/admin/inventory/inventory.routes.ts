@@ -137,6 +137,12 @@ export const INVENTORY_ROUTE: Routes = [
   //   data: { expectedFunctions: ['INVENTORY_RELEASE_ORDER_VIEW'] }
   // },
   {
+    path: "release-order/new",
+    component: ReleaseOrderDetailsComponent,
+    canActivate: [AuthGuard],
+    data: { expectedFunctions: ['INVENTORY_RELEASE_ORDER_VIEW', 'INVENTORY_RELEASE_ORDER_EDIT', 'INVENTORY_RELEASE_ORDER_DELETE', 'INVENTORY_RELEASE_ORDER_ADD'] }
+  },
+  {
     path: "release-order/edit/:id",
     component: ReleaseOrderDetailsComponent,
     canActivate: [AuthGuard],

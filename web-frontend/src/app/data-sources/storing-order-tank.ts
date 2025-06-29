@@ -1791,6 +1791,11 @@ const GET_STORING_ORDER_TANKS_REPAIR = gql`
             approve_cost
           }
         }
+        residue {
+          guid
+          status_cv
+          delete_dt
+        }
       }
       pageInfo {
         endCursor
