@@ -6,3 +6,7 @@
     min-width: 250px;
     min-height: 150px;
 }
+
+::ng-deep .confirmation-dialog-panel .mdc-dialog__surface {
+    overflow-y: unset !important;
+}

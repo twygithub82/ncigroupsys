@@ -1518,8 +1518,8 @@ export const ROLLBACK_REPAIR_STATUS = gql`
 `
 
 export const ROLLBACK_ASSIGNED_REPAIR = gql`
-  mutation rollbackAssignedRepair($repairGuid: [String!]) {
-    rollbackAssignedRepair(repairGuid: $repairGuid)
+  mutation rollbackAssignedRepair($repairGuid: [String!], $remark: String) {
+    rollbackAssignedRepair(repairGuid: $repairGuid, remark: $remark)
   }
 `
 
@@ -1847,11 +1847,12 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   //   });
   // }
 
-  rollbackAssignedRepair(repairGuid: string[]): Observable<any> {
+  rollbackAssignedRepair(repairGuid: string[], remark: string): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_ASSIGNED_REPAIR,
       variables: {
-        repairGuid
+        repairGuid,
+        remark
       }
     });
   }
@@ -2221,60 +2222,64 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     // Convert the epoch time to a readable date string
     return latestQcDt;
   }
-  
-   getRepairCustomerApprovalWaitingCount(): Observable<number> {
-      this.loadingSubject.next(true);
-      var first=100;
-      let where: any = {and:[
-        { storing_order_tank:{ purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
+
+  getRepairCustomerApprovalWaitingCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    var first = 100;
+    let where: any = {
+      and: [
+        { storing_order_tank: { purpose_repair_cv: { in: ["OFFHIRE", "REPAIR"] } } },
         // { storing_order_tank:{ tank_status_cv: { in: ["REPAIR","STORAGE"] } }},
         { status_cv: { in: ["PENDING"] } }
-      ]};
-      return this.apollo
-        .query<any>({
-          query: GET_REPAIR,
-          variables: { where,first },
-          fetchPolicy: 'no-cache' // Ensure fresh data
+      ]
+    };
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR,
+        variables: { where, first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.resultList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
         })
-        .pipe(
-          map((result) => result.data),
-          catchError(() => of({ soList: [] })),
-          finalize(() => this.loadingSubject.next(false)),
-          map((result) => {
-            const sotList = result.resultList || { nodes: [], totalCount: 0 };
-            return sotList.totalCount;
-          })
-        );
-    }
+      );
+  }
 
-     getRepairQCWaitingCount(): Observable<number> {
-        this.loadingSubject.next(true);
-        var first =100;
-        let where: any = {and:[
-          {storing_order_tank: { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }}, 
-          // {storing_order_tank: { tank_status_cv: {in: ["REPAIR","STORAGE"]} }},
-          { status_cv: { in: ["COMPLETED"] }} 
-        ]};
-        return this.apollo
-          .query<any>({
-            query: GET_REPAIR_FOR_QC,
-            variables: { where,first },
-            fetchPolicy: 'no-cache' // Ensure fresh data
-          })
-          .pipe(
-            map((result) => result.data),
-            catchError(() => of({ soList: [] })),
-            finalize(() => this.loadingSubject.next(false)),
-            map((result) => {
-              const sotList = result.resultList || { nodes: [], totalCount: 0 };
-              return sotList.totalCount;
-            })
-          );
-      }
+  getRepairQCWaitingCount(): Observable<number> {
+    this.loadingSubject.next(true);
+    var first = 100;
+    let where: any = {
+      and: [
+        { storing_order_tank: { purpose_repair_cv: { in: ["OFFHIRE", "REPAIR"] } } },
+        // {storing_order_tank: { tank_status_cv: {in: ["REPAIR","STORAGE"]} }},
+        { status_cv: { in: ["COMPLETED"] } }
+      ]
+    };
+    return this.apollo
+      .query<any>({
+        query: GET_REPAIR_FOR_QC,
+        variables: { where, first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ soList: [] })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const sotList = result.resultList || { nodes: [], totalCount: 0 };
+          return sotList.totalCount;
+        })
+      );
+  }
 
-  
-  
-    
-  
-   
+
+
+
+
+
 }

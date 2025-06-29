@@ -29,6 +29,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -48,15 +49,13 @@ import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-estimate-new',

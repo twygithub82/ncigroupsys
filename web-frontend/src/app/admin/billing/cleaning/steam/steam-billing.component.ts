@@ -31,7 +31,7 @@ import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-p
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingEstimateRequest, BillingInputRequest, BillingItem } from 'app/data-sources/billing';
-import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
@@ -40,11 +40,11 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import {BusinessLogicUtil} from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-steam-billing',
@@ -628,18 +628,6 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
     this.resetForm();
     this.search();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {

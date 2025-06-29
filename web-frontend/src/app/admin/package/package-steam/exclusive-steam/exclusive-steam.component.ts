@@ -37,7 +37,7 @@ import { PackageSteamingItem } from 'app/data-sources/package-steam';
 import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 
@@ -726,18 +726,6 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     this.resetForm();
     this.search();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_RESET,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {

@@ -1,6 +1,8 @@
-<div class="container confirmation-dialog p-2">
+<div
+    [ngClass]="{'container confirmation-dialog': true, 'p-2': !allowRemarks && !allowRemarksWithRequired, 'pl-4 pr-4': allowRemarks || allowRemarksWithRequired}">
     <h4 mat-dialog-title
-        [ngClass]="{'pb-3': true, 'ps-0': allowRemarks || allowRemarksWithRequired, 'align-center': !allowRemarks && !allowRemarksWithRequired}">{{headerText | translate}}</h4>
+        [ngClass]="{'pb-3': true, 'ps-0': allowRemarks || allowRemarksWithRequired, 'align-center': !allowRemarks && !allowRemarksWithRequired}">
+        {{headerText | translate}}</h4>
     @if (data.allowRemarks || data.allowRemarksWithRequired) {
     <form class="ms-0" [formGroup]="confirmForm!" #formDirective="ngForm">
         <div class="row">

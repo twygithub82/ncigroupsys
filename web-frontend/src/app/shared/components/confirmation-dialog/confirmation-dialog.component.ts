@@ -29,7 +29,6 @@ export interface DialogData {
     MatDialogTitle,
     MatDialogActions,
     MatButtonModule,
-    MatDialogClose,
     MatDividerModule,
     TranslateModule,
     MatFormFieldModule,

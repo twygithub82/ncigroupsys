@@ -3,7 +3,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -46,6 +46,7 @@ import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankItem } from 'app/
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS } from 'app/data-sources/tank-info';
 import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { ModulePackageService } from 'app/services/module-package.service';
@@ -59,7 +60,6 @@ import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank-no-dialog.component';
-import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-in-gate',

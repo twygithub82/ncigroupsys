@@ -29,6 +29,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -46,14 +47,14 @@ import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility ,selected_job_task_color} from 'app/utilities/utility';
+import { Utility, selected_job_task_color } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { ModulePackageService } from 'app/services/module-package.service';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-residue-disposal-job-order-estimate-new',
@@ -274,10 +275,11 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
 
   repSelection = new SelectionModel<ResiduePartItem>(true, []);
   cleaningTotalHours: number | undefined;
-selectedJobTaskClass =selected_job_task_color;
+  selectedJobTaskClass = selected_job_task_color;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
+    public confirmDialog: ConfirmDialogService,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -1431,28 +1433,22 @@ selectedJobTaskClass =selected_job_task_color;
   ConfirmUnassignDialog(event: Event, row: ResidueItem) {
     event.preventDefault(); // Prevents the form submission
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+    const data: any = {
+      headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+      action: 'new',
+      allowRemarks: true,
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
+    const dialogRef = this.confirmDialog.open(data);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.UnassignEstimate(row);
+        const remarks = result.remarks || '';
+        this.UnassignEstimate(row, remarks);
       }
     });
   }
 
-  UnassignEstimate(row: ResidueItem) {
-    this.subs.sink = this.residueDS.rollbackAssigneddResidue([row.guid!])
+  UnassignEstimate(row: ResidueItem, remarks: string) {
+    this.subs.sink = this.residueDS.rollbackAssigneddResidue([row.guid!], remarks)
       .subscribe((result: any) => {
         if (result.data.rollbackAssignedResidue) {
           this.handleRollbackSuccess(result.data.rollbackAssignedResidue);

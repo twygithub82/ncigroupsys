@@ -25,7 +25,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { BillingSOTItem, report_billing_customer, report_billing_item } from 'app/data-sources/billing';
@@ -493,18 +492,6 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     this.resetForm();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {

@@ -29,6 +29,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { BookingDS } from 'app/data-sources/booking';
@@ -40,15 +41,13 @@ import { ReleaseOrderSotDS, ReleaseOrderSotItem, ReleaseOrderSotUpdateItem, Rele
 import { SchedulingDS, SchedulingItem, SchedulingUpdateItem } from 'app/data-sources/scheduling';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { StoringOrderTankGO, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-release-order-details',

@@ -65,6 +65,7 @@ import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { TariffCleaningDS, TariffCleaningGO } from 'app/data-sources/tariff-cleaning';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TransferDS, TransferItem } from 'app/data-sources/transfer';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heating-pdf/steam-heating-pdf.component';
@@ -94,7 +95,6 @@ import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/ren
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
-import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-tank-movement-details',

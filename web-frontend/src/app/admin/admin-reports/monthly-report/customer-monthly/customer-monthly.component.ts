@@ -25,27 +25,24 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
-import { BillingDS } from 'app/data-sources/billing';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
-import { PackageLabourDS } from 'app/data-sources/package-labour';
-import { AdminReportMonthlyReport, daily_inventory_summary, CustomerMonthlySales, ReportDS } from 'app/data-sources/reports';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { AdminReportMonthlyReport, CustomerMonthlySales, daily_inventory_summary, ReportDS } from 'app/data-sources/reports';
+import { SteamItem } from 'app/data-sources/steam';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { CustomerMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/customer-sales/customer-sales-details-pdf.component';
 import { MonthlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/details/monthly-details-pdf.component';
+import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { reportPreviewWindowDimension } from 'environments/environment';
-import { MonthlyChartPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/overview/monthly-chart-pdf.component';
-import { CustomerMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/monthly/customer-sales/customer-sales-details-pdf.component';
-import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-monthly',
@@ -447,18 +444,6 @@ export class CustomerMonthlyAdminReportComponent extends UnsubscribeOnDestroyAda
       tempDirection = 'ltr';
     }
     this.resetForm();
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   data: {
-    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-    //     action: 'new',
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result.action === 'confirmed') {
-    //     this.resetForm();
-    //   }
-    // });
   }
 
   resetForm() {

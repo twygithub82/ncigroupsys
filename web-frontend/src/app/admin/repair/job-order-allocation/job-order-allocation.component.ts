@@ -29,6 +29,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -43,12 +44,12 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
-import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility,selected_job_task_color } from 'app/utilities/utility';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ComponentUtil } from 'app/utilities/component-util';
+import { Utility, selected_job_task_color } from 'app/utilities/utility';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-job-order-allocation',
@@ -250,10 +251,11 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   teamDS: TeamDS;
   joDS: JobOrderDS;
   isOwner = false;
-selectedJobTaskClass =selected_job_task_color;
+  selectedJobTaskClass = selected_job_task_color;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
+    public confirmDialog: ConfirmDialogService,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -953,23 +955,17 @@ selectedJobTaskClass =selected_job_task_color;
   onUnassignTeam(event: Event, repairGuid: string) {
     this.stopEventTrigger(event);
 
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
+    const data: any = {
+      headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
+      action: 'new',
+      allowRemarks: true,
     }
 
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_TEAM_UNASSIGN,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
+    const dialogRef = this.confirmDialog.open(data);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-        this.unassignTeam(repairGuid);
+        const remarks = result.remarks || '';
+        this.unassignTeam(repairGuid, remarks);
       }
     });
   }
@@ -978,8 +974,8 @@ selectedJobTaskClass =selected_job_task_color;
     return this.repList.some(item => !!item.job_order?.team?.guid);
   }
 
-  unassignTeam(repairGuid: string) {
-    this.repairDS.rollbackAssignedRepair([repairGuid]).subscribe(result => {
+  unassignTeam(repairGuid: string, remarks: string) {
+    this.repairDS.rollbackAssignedRepair([repairGuid], remarks).subscribe(result => {
       console.log(result)
       this.handleSaveSuccess(result?.data?.rollbackAssignedRepair);
     });

@@ -49,8 +49,10 @@ import { StoringOrderTank, StoringOrderTankDS, StoringOrderTankItem } from 'app/
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TankInfoDS, TankInfoItem } from 'app/data-sources/tank-info';
 import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -60,8 +62,6 @@ import { Observable, Subject, merge } from 'rxjs';
 import { debounceTime, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { ModulePackageService } from 'app/services/module-package.service';
-import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 
 @Component({
   selector: 'app-out-gate-survey-form',

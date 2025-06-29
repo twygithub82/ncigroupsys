@@ -27,9 +27,11 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -43,15 +45,12 @@ import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { EMPTY, Observable, of, Subscription, switchMap } from 'rxjs';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { EMPTY, of, Subscription, switchMap } from 'rxjs';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { SingletonNotificationService } from '@core/service/singletonNotification.service';
-import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'job-order-task-details',

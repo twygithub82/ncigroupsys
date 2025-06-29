@@ -954,8 +954,8 @@ export const ROLLBACK_STEAM_EST = gql`
   }
 `
 export const ROLLBACK_ASSIGNED_STEAM = gql`
-  mutation rollbackAssignedSteaming($steamingGuid: [String!]) {
-    rollbackAssignedSteaming(steamingGuid: $steamingGuid)
+  mutation rollbackAssignedSteaming($steamingGuid: [String!], $remark: String) {
+    rollbackAssignedSteaming(steamingGuid: $steamingGuid, remark: $remark)
   }
 `
 
@@ -1171,11 +1171,12 @@ export class SteamDS extends BaseDataSource<SteamItem> {
     });
   }
 
-  rollbackAssignedSteam(steamingGuid: any): Observable<any> {
+  rollbackAssignedSteam(steamingGuid: any, remark: string): Observable<any> {
     return this.apollo.mutate({
       mutation: ROLLBACK_ASSIGNED_STEAM,
       variables: {
-        steamingGuid
+        steamingGuid,
+        remark
       }
     });
   }
