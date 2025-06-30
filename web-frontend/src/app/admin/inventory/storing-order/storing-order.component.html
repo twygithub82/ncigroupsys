@@ -196,11 +196,11 @@
                     </ng-container>
                     <ng-container matColumnDef="no_of_tanks">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center text-center'">
                         {{translatedLangText.NO_OF_TANKS}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-center text-center'">
                         <span class="mobile-label">{{translatedLangText.NO_OF_TANKS}}:</span>
                         {{row.storing_order_tank.length}}
                       </mat-cell>
