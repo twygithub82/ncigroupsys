@@ -291,7 +291,7 @@
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.MATERIAL_COST$}}:</span>
-                        {{row.material_cost?.toFixed(2)}}</mat-cell>
+                        {{displayCurrency(row.material_cost)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="last_update">
                       <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>

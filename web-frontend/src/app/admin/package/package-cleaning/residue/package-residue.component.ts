@@ -481,7 +481,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
    masterToggle_r1() {
     this.isAllSelected()
-      ? this.selection.clear()
+      ? this.resetSelection()
       : this.packResidueItems.forEach((row) =>{
        if(this.selectedPackEst?.tariff_residue_guid === row.tariff_residue_guid)
        {
@@ -494,6 +494,12 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
        }
       }
       );
+  }
+
+  resetSelection() {
+    this.selection.clear();
+    this.selectedPackEst = undefined;
+    //this.allowSelectedAll=false;
   }
 
 
@@ -957,40 +963,44 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
       this.search();
   }
 
-    onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = null;
-          return this.search();
-        }
-    
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'last_update_dt':
-            this.lastOrderBy = {
-                update_dt: dirEnum,
-                create_dt: dirEnum,
-            };
-            break;
+  
+  displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
+  onSortChange(event: Sort): void {
+      const { active: field, direction } = event;
 
-          case 'customer_name':
-            this.lastOrderBy = {
-              customer_company:{
-                name: dirEnum,
-              }
-            };
-            break;
-        
-          default:
-            this.lastOrderBy = null;
-        }
-    
-        this.search();
+      // reset if no direction
+      if (!direction) {
+        this.lastOrderBy = null;
+        return this.search();
       }
+
+      // convert to GraphQL enum (uppercase)
+      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+      switch (field) {
+        case 'last_update_dt':
+          this.lastOrderBy = {
+              update_dt: dirEnum,
+              create_dt: dirEnum,
+          };
+          break;
+
+        case 'customer_name':
+          this.lastOrderBy = {
+            customer_company:{
+              name: dirEnum,
+            }
+          };
+          break;
+      
+        default:
+          this.lastOrderBy = null;
+      }
+
+      this.search();
+    }
 }
 

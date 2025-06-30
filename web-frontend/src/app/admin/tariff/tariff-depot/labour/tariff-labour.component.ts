@@ -346,7 +346,7 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
 
         this.pcForm!.patchValue({
           description: this.dbMasterLabourCost.description,
-          cost: this.dbMasterLabourCost.cost,
+          cost: this.displayCurrency(this.dbMasterLabourCost.cost) ,
           remarks: this.dbMasterLabourCost.remarks,
           lastUpdated: this.displayDate(this.dbMasterLabourCost?.update_dt || this.dbMasterLabourCost?.create_dt)
         });
@@ -398,5 +398,8 @@ export class TariffLabourComponent extends UnsubscribeOnDestroyAdapter
 
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['TARIFF_LABOUR_COST_EDIT']);
+  }
+   displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
   }
 }

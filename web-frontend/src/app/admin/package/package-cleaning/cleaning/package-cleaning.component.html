@@ -150,13 +150,13 @@
               <mat-header-cell *matHeaderCellDef  [ngClass]="'justify-content-center'">{{this.translatedLangText.CUSTOMER_COST}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span>
-                {{row.adjusted_price.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.adjusted_price)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tariff_cost">
               <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}}$ :</span>
-                {{row.cleaning_category.cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.cleaning_category.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="updateddt">
               <mat-header-cell *matHeaderCellDef mat-sort-header >{{this.translatedLangText.LAST_UPDATE

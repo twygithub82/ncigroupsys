@@ -169,7 +169,7 @@
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST}}:</span>
-                {{row.cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tariff_cost">
               <mat-header-cell *matHeaderCellDef
@@ -178,7 +178,7 @@
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}} $:</span>
-                {{row.tariff_residue.cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.tariff_residue.cost)}}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="remarks">
               <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.REMARKS }}</mat-header-cell>

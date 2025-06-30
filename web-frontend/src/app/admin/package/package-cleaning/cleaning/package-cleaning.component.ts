@@ -483,7 +483,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   masterToggle_r1() {
     this.isAllSelected()
-      ? this.selection.clear()
+      ? this.resetSelection()
       : this.custCompClnCatItems.forEach((row) => {
         if (this.selectedPackEst?.cleaning_category?.guid === row.cleaning_category?.guid) {
           this.selection.select(row)
@@ -495,6 +495,13 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       }
       );
   }
+
+    resetSelection() {
+    this.selection.clear();
+    this.selectedPackEst = undefined;
+    //this.allowSelectedAll=false;
+  }
+
 
   search() {
 
@@ -952,6 +959,10 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.search();
+  }
+
+  displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
   }
 
 }

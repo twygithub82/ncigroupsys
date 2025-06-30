@@ -134,9 +134,9 @@
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
+                <mat-checkbox color="primary" (change)="$event ? masterToggle_r1() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" hidden>
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"  [hidden]="HideSelectAllCheckBox()" >
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
@@ -177,7 +177,7 @@
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.PREINSPECTION_COST }}:</span>
-                {{row.preinspection_cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.preinspection_cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lolo_cost">
               <mat-header-cell *matHeaderCellDef
@@ -186,7 +186,7 @@
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.LOLO_COST }}:</span>
-                {{row.lolo_cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.lolo_cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="gate_surcharge">
               <mat-header-cell *matHeaderCellDef
@@ -195,7 +195,7 @@
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.IN_OUT_SURCHARGE_COST }}:</span>
-                {{row.gate_in_cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.gate_in_cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="storage_cost">
               <mat-header-cell *matHeaderCellDef
@@ -204,7 +204,7 @@
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.STORAGE_COST}}:</span>
-                {{row.storage_cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.storage_cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="free_days">
               <mat-header-cell *matHeaderCellDef

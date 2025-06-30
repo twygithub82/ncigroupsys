@@ -16,6 +16,29 @@
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
+                
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{getLabourHourLabel() }}</mat-label>
+                    <input matInput formControlName="labour_hour" type="text"   [attr.min]="isMultiSelect() ? -20 : 0"
+                      (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)" (focus)="selectAll($event)" >
+                    <!-- @if (pcForm.get('labour_hour')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.LABOUR_HOUR }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      } -->
+                    @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('min')){
+                    <mat-error>
+                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
+                    </mat-error>
+                    }
+                    @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('max')){
+                    <mat-error>
+                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
+                    </mat-error>
+                    }
+                  </mat-form-field>
+                </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{getMaterialCostLabel()}}</mat-label>
@@ -40,28 +63,6 @@
                   </mat-form-field>
 
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{getLabourHourLabel() }}</mat-label>
-                    <input matInput formControlName="labour_hour" type="text"   [attr.min]="isMultiSelect() ? -20 : 0"
-                      (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)" (focus)="selectAll($event)" >
-                    <!-- @if (pcForm.get('labour_hour')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.LABOUR_HOUR }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
-                      } -->
-                    @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('min')){
-                    <mat-error>
-                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
-                    </mat-error>
-                    }
-                    @if(this.selectedItems.length>1&&pcForm.get('labour_hour')?.hasError('max')){
-                    <mat-error>
-                      {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_EXCEED}} {{maxMaterialCost}}%
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div>
               </div>
             </div>
           </div>
@@ -82,22 +83,22 @@
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="fName">
                     <mat-header-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       *matHeaderCellDef>{{translatedLangText.CUSTOMER_CODE
                       }}</mat-header-cell>
                     <mat-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       *matCellDef="let row">
                       <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                         }}:</span>{{row.customer_company.code}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="lName">
                     <mat-header-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'pr-0 tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       *matHeaderCellDef>{{translatedLangText.CUSTOMER_COMPANY_NAME
                       }}</mat-header-cell>
                     <mat-cell
-                      [ngClass]="'pr-0 tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'pr-0 tbl-col-width-per-3_25-xl tbl-col-width-per-3_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       *matCellDef="let row">
                       <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                         }}:</span>{{row.customer_company.name}}</mat-cell>
@@ -113,6 +114,16 @@
                       <span class="mobile-label">{{translatedLangText.PART_NAME
                         }}:</span>{{row.tariff_repair?.part_name}}</mat-cell>
                   </ng-container>
+                  
+                  <ng-container matColumnDef="labour">
+                    <mat-header-cell *matHeaderCellDef
+                      [ngClass]="'pr-0 tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      {{translatedLangText.LABOUR_HOUR}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row"
+                      [ngClass]="'pr-0 tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      <span class="mobile-label">{{translatedLangText.LABOUR_HOUR
+                        }}:</span>{{row.labour_hour}}</mat-cell>
+                  </ng-container>
                   <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef
                       [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
@@ -120,7 +131,7 @@
                     <mat-cell *matCellDef="let row"
                       [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <span class="mobile-label">{{translatedLangText.MATERIAL_COST
-                        }}:</span>{{row.material_cost.toFixed(2)}}</mat-cell>
+                        }}:</span>{{displayCurrency(row.material_cost)}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="mobile">
                     <mat-header-cell *matHeaderCellDef
@@ -129,7 +140,7 @@
                     <mat-cell *matCellDef="let row"
                       [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <span class="mobile-label">{{translatedLangText.TARIFF_COST
-                        }}:</span>{{row.tariff_repair.material_cost.toFixed(2)}}</mat-cell>
+                        }}:</span>{{displayCurrency(row.tariff_repair.material_cost)}}</mat-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns" class="custom-body-row"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row"

@@ -179,6 +179,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     COST: "COMMON-FORM.COST",
     TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
+    RESIDUE_TYPE: 'COMMON-FORM.RESIDUE-TYPE',
   };
   selectedItems: PackageResidueItem[];
 
@@ -418,6 +419,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
+   getCostLabel():string{
+    var retval =this.translatedLangText.COST;
+    if(this.selectedItems.length>1){
+      retval = retval.replace("$","%");
+    }
+    return retval;
   }
 
 }
