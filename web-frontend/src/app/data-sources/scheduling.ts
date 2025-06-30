@@ -222,6 +222,11 @@ export const GET_SCHEDULING_FOR_RO = gql`
               transfer_in_dt
               create_dt
             }
+            residue {
+              guid
+              status_cv
+              delete_dt
+            }
           }
         }
       }

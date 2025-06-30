@@ -13,47 +13,21 @@
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-          
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.GATE_IN_COST}}</mat-label>
-                    <input matInput #gateInInput formControlName="gate_in_cost_cust" type="number" min="0"
+                    <input matInput #gateInInput formControlName="gate_in_cost_cust" appNumericText type="text" min="0"
                       [required]="this.selectedItems.length===1" (focus)="gateInInput.select()">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.GATE_OUT_COST}}</mat-label>
-                    <input matInput #gateOutInput formControlName="gate_out_cost_cust" type="number" min="0"
-                      [required]="this.selectedItems.length===1" (focus)="gateOutInput.select()">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.GATE_IN_COST }}</mat-label>
-                    <input matInput formControlName="gate_in_cost_standard" type="text" readonly="true">
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row" hidden>
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-              <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.LOLO_COST}}</mat-label>
-                    <input matInput formControlName="lolo_cost_cust" type="number" min="0"
-                      [required]="this.selectedItems.length===1">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.LOLO_COST }}</mat-label>
-                    <input matInput formControlName="lolo_cost_standard" type="text" readonly="true">
+                    <input matInput #gateOutInput formControlName="gate_out_cost_cust" appNumericText type="text"
+                      min="0" [required]="this.selectedItems.length===1" (focus)="gateOutInput.select()">
                   </mat-form-field>
                 </div>
               </div>
@@ -65,27 +39,19 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.PREINSPECTION_COST}}</mat-label>
-                    <input matInput  #costInput formControlName="preinspection_cost_cust" type="number" min="0"
-                      [required]="this.selectedItems.length===1"  (focus)="costInput.select()">
+                    <input matInput #costInput formControlName="preinspection_cost_cust" appNumericText type="text"
+                      min="0" [required]="this.selectedItems.length===1" (focus)="costInput.select()">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.LOLO_COST}}</mat-label>
-                    <input matInput #loloInput formControlName="lolo_cost_cust" type="number" min="0"
+                    <input matInput #loloInput formControlName="lolo_cost_cust" appNumericText type="text" min="0"
                       [required]="this.selectedItems.length===1" (focus)="loloInput.select()">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.PREINSPECTION_COST }}</mat-label>
-                    <input matInput  formControlName="preinspection_cost_standard" type="text" readonly="true">
-
                   </mat-form-field>
                 </div>
               </div>
             </div>
-
           </div>
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
@@ -93,20 +59,15 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.STORAGE_COST}}</mat-label>
-                    <input matInput #storageInput formControlName="storage_cost_cust" type="number" min="0"
+                    <input matInput #storageInput formControlName="storage_cost_cust" appNumericText type="text" min="0"
                       [required]="this.selectedItems.length===1" (focus)="storageInput.select()">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.FREE_STORAGE}}</mat-label>
-                    <input matInput #freeStorageInput formControlName="free_storage_days" type="number" min="0" [allowDecimal]="false" (focus)="freeStorageInput.select()">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.STORAGE_COST }}</mat-label>
-                    <input matInput formControlName="storage_cost_standard" type="text" readonly="true">
+                    <input matInput #freeStorageInput formControlName="free_storage_days" type="number" min="0"
+                      [allowDecimal]="false" (focus)="freeStorageInput.select()">
                   </mat-form-field>
                 </div>
               </div>
@@ -118,14 +79,8 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.GATE_OUT_COST}}</mat-label>
-                    <input matInput #gateOutInput formControlName="gate_out_cost_cust" type="number" min="0"
-                      [required]="this.selectedItems.length===1" (focus)="gateOutInput.select()">
-                  </mat-form-field>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.GATE_OUT_COST }}</mat-label>
-                    <input matInput  formControlName="gate_out_cost_standard" type="text" readonly="true">
+                    <input matInput #gateOutInput formControlName="gate_out_cost_cust" appNumericText type="text"
+                      min="0" [required]="this.selectedItems.length===1" (focus)="gateOutInput.select()">
                   </mat-form-field>
                 </div>
               </div>
@@ -191,19 +146,18 @@
               </table>
             </div>
           </div>
+          <div mat-dialog-actions class="mb-1 align-right">
+            @if (canEdit()) {
+            <button mat-flat-button color="primary" class="me-1" (click)="save()">
+              <mat-icon>
+                save
+              </mat-icon>
+              {{translatedLangText.UPDATE}}</button>
+            }
+            <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
+          </div>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()">
-          <mat-icon>
-            save
-          </mat-icon>
-          {{translatedLangText.UPDATE}}</button>
-        }
-        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
-      </div>
-
     </form>
   </div>
 </div>

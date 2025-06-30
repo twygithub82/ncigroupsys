@@ -22,6 +22,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -30,7 +31,6 @@ import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageLabourItem[];
 }
@@ -61,7 +61,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent {
@@ -176,10 +177,9 @@ export class FormDialogComponent {
     EDIT_PACKAGE_CLEANING: "MENUITEMS.PACKAGE.LIST.PACKAGE-CLEANING-EDIT",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
     PACKAGE_LABOUR: "COMMON-FORM.PACKAGE-LABOUR",
-    TARIFF_LABOUR:'MENUITEMS.TARIFF.LIST.TARIFF-LABOUR',
+    TARIFF_LABOUR: 'MENUITEMS.TARIFF.LIST.TARIFF-LABOUR',
     COST: "COMMON-FORM.COST",
     CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
-
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
   };
@@ -253,7 +253,6 @@ export class FormDialogComponent {
     });
   }
 
-
   canEdit() {
     return true;
   }
@@ -270,35 +269,25 @@ export class FormDialogComponent {
   }
 
   save() {
-
-
-
-    var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
-    var remarks = this.pcForm!.value["remarks"];
-
     if (this.selectedItems.length == 1) {
       var packLabour = new PackageLabourItem(this.selectedItems[0]);
-      packLabour.cost = Number(this.pcForm!.value["adjusted_cost"]);
+      packLabour.cost = Utility.convertNumber(this.pcForm!.value["adjusted_cost"], 2);
       packLabour.remarks = this.pcForm!.value["remarks"];
       packLabour.tariff_labour = undefined;
       packLabour.customer_company = undefined;
       this.packLabourDS.updatePackageLabour(packLabour).subscribe(result => {
-
         if (result.data.updatePackageLabour > 0) {
-
           console.log('valid');
           this.dialogRef.close(result.data.updatePackageLabour);
 
         }
       });
-    }
-    else if (this.selectedItems.length > 1) {
+    } else if (this.selectedItems.length > 1) {
       let pc_guids: string[] = this.selectedItems
         .map(cc => cc.guid)
         .filter((guid): guid is string => guid !== undefined);
-
       let cost = -1;
-      if (this.pcForm!.value["adjusted_cost"]) cost = this.pcForm!.value["adjusted_cost"];
+      if (this.pcForm!.value["adjusted_cost"]) cost = Utility.convertNumber(this.pcForm!.value["adjusted_cost"], 2);
 
       let remarks = this.pcForm!.value["remarks"];
       this.packLabourDS.updatePackageLabours(pc_guids, cost, remarks).subscribe(result => {
