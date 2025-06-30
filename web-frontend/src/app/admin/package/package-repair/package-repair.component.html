@@ -238,9 +238,9 @@
                     </ng-container> -->
                     <ng-container matColumnDef="custCompanyName">
                       <mat-header-cell *matHeaderCellDef mat-sort-header
-                        [ngClass]="'tbl-col-width-per-1-xl'">{{translatedLangText.CUSTOMER_CODE
+                        [ngClass]="'tbl-col-width-per-1_25-xl'">{{translatedLangText.CUSTOMER_CODE
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE}}:</span>
                         <!-- {{custCompDS.displayName(row.customer_company)}} -->
