@@ -347,4 +347,16 @@ export class FormDialogComponent {
     return code && name ? `${code} (${name})` : '';
   }
 
+  displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
+
+  getCostLabel():string{
+    var retval =this.translatedLangText.COST;
+    if(this.selectedItems.length>1){
+      retval = retval.replace("$","%");
+    }
+    return retval;
+  }
+
 }

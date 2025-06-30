@@ -137,7 +137,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
   selectedPackEst?: PackageDepotItem;
-
+   allowSelectedAll:boolean =false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -329,6 +329,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       ];
     } else {
       this.displayedColumns = [
+        'select',
         'customer',
         'profile',
         'gate_surcharge',
@@ -439,8 +440,10 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packDepotItems.length;
-    return numSelected === numRows;
+    const numRows = this.packDepotItems.filter(r=>this.selectedPackEst?.tariff_depot?.guid === r.tariff_depot?.guid).length;
+   
+     var bretval=(numSelected === numRows)&& numSelected>0;
+    return bretval;
   }
 
   isSelected(option: any): boolean {
@@ -454,6 +457,29 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       : this.packDepotItems.forEach((row) =>
         this.selection.select(row)
       );
+  }
+
+  masterToggle_r1() {
+    this.isAllSelected()
+      ? this.resetSelection()
+      : this.packDepotItems.forEach((row) =>{
+       if(this.selectedPackEst?.tariff_depot?.guid === row.tariff_depot?.guid)
+       {
+        this.selection.select(row);
+       }
+       else if (this.allowSelectedAll)
+       {
+        if(!this.selectedPackEst)this.selectedPackEst=row;
+        this.selection.select(row);
+       }
+      }
+      );
+  }
+
+  resetSelection() {
+    this.selection.clear();
+    this.selectedPackEst = undefined;
+    //this.allowSelectedAll=false;
   }
 
   search() {
@@ -910,39 +936,61 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
         this.search();
   }
   onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
-  
-      // reset if no direction
-      if (!direction) {
-        this.lastOrderBy = null;
-        return this.search();
-      }
-  
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-  
-      switch (field) {
-        case 'last_update':
-          this.lastOrderBy = {
-              update_dt: dirEnum,
-              create_dt: dirEnum,
-          };
-          break;
+    const { active: field, direction } = event;
 
-        case 'customer':
-          this.lastOrderBy = {
-            customer_company:{
-              name: dirEnum,
-            }
-          };
-          break;
-      
-        default:
-          this.lastOrderBy = null;
-      }
-  
-      this.search();
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'last_update':
+        this.lastOrderBy = {
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+        };
+        break;
+
+      case 'customer':
+        this.lastOrderBy = {
+          customer_company:{
+            name: dirEnum,
+          }
+        };
+        break;
+    
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
+    
+  displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
+
+    HideSelectAllCheckBox()
+  {
+     var retval: boolean = true;
+
+     retval = !(this.selectedPackEst);
+     if(retval)
+     {
+       var first = this.packDepotItems[0];
+       if(first)
+       {
+         var total = this.packDepotItems.length;
+         retval = ! (this.packDepotItems.filter(r=>r.tariff_depot?.guid===first.tariff_depot?.guid).length===total) 
+         this.allowSelectedAll=!retval;
+       }
+     }
+     return retval
+  }
 }
 

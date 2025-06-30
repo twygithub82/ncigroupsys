@@ -225,7 +225,7 @@ export class FormDialogComponent {
   createPackageCleaning(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      adjusted_cost: 200.00,
+      adjusted_cost: [''],
       remarks: ['']
     });
   }
@@ -315,6 +315,14 @@ export class FormDialogComponent {
   }
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+    getCostLabel():string{
+    var retval =this.translatedLangText.COST;
+    if(this.selectedItems.length>1){
+      retval = retval.replace("$","%");
+    }
+    return retval;
   }
 
 }

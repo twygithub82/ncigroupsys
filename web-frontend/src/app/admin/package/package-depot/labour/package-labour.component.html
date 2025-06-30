@@ -152,7 +152,7 @@
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST}}:</span>
-                {{row.cost.toFixed(2)}}</mat-cell>
+                {{displayCurrency(row.cost)}}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="bDate">
                     <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.STANDARD_COST}}</mat-header-cell>

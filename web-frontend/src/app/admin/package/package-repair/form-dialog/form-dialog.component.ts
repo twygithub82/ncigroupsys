@@ -77,6 +77,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     'fName',
     'lName',
     'email',
+    'labour',
     'gender',
     // 'bDate',
     'mobile',
@@ -198,7 +199,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CANNOT_EXCEED: "COMMON-FORM.CANNOT-EXCEED",
     CANNOT_SMALLER: "COMMON-FORM.CANNOT-SMALLER",
     SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
-    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED'
+    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED',
+    
   };
 
 
@@ -452,6 +454,10 @@ selectAll(event: FocusEvent) {
   const input = event.target as HTMLInputElement;
   input.select();  // Selects all text in the input
 }
+
+ displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
   // getMaterialCostLabel(){
   //   //var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'($)':'');
   //   var lbl = this.translatedLangText.MATERIAL_COST + ' $';

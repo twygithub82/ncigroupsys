@@ -1146,4 +1146,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         this.search();
       }
     }
+
+   displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
 }

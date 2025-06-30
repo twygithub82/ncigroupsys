@@ -16,7 +16,7 @@
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
-                <mat-label>{{translatedLangText.COST}}</mat-label>
+                <mat-label>{{getCostLabel()}}</mat-label>
                 <input matInput formControlName="adjusted_cost" type="number" min="0">
               </mat-form-field>
             </div>
@@ -59,7 +59,7 @@
                       <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2 justify-content-center'">
                         {{translatedLangText.CUSTOMER_COST}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2 justify-content-center'">
-                        <span class="mobile-label">{{translatedLangText.COST }}:</span> {{row.cost.toFixed(2)}}
+                        <span class="mobile-label">{{translatedLangText.COST }}:</span> {{displayCurrency(row.cost)}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="tariffCost">
@@ -67,7 +67,7 @@
                         $</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
                         <span class="mobile-label">{{translatedLangText.TARIFF_COST}}$ </span>
-                        {{row.tariff_buffer.cost.toFixed(2)}}</mat-cell>
+                        {{displayCurrency(row.tariff_buffer.cost)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="profile">
                       <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-2'">{{translatedLangText.TYPE}}</mat-header-cell>

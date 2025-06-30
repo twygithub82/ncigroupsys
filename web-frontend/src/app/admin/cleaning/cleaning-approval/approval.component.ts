@@ -577,16 +577,13 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
     var rows: InGateCleaningItem[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '50vw',
+      height: '80vh',
       data: {
         action: action,
         langText: this.langText,
         selectedItems: rows,
         viewOnly: viewOnly
       },
-      position: {
-        top: '10px'
-      }
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {

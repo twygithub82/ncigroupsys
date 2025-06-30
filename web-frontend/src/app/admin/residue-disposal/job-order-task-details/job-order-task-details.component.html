@@ -149,22 +149,22 @@
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 p-l-7">
-                  <button mat-flat-button color="primary" (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10'">
+                  <button mat-flat-button color="primary" (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10 job-order-task-button'">
                     <mat-icon>view_list</mat-icon>
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
                   <button mat-flat-button (click)="toggleJobState($event, isStarted())" [disabled]="!canStartJob()"
-                    [ngClass]="{'m-r-10': true, 'yellow-button': canStartJob() && isStarted(), 'red-button': canStartJob() && !isStarted()}">
+                    [ngClass]="{'job-order-task-button m-r-10': true, 'yellow-button': canStartJob() && isStarted(), 'red-button': canStartJob() && !isStarted()}">
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.PAUSE_JOB : translatedLangText.START_JOB }}
                   </button>
                   <button mat-flat-button color="accent" [disabled]="!canCompleteJob()" (click)="completeJob($event)"
-                    [ngClass]="{'m-r-10': true, 'green-button': canCompleteJob()}">
+                    [ngClass]="{'job-order-task-button m-r-10': true, 'green-button': canCompleteJob()}">
                     <mat-icon>check_box</mat-icon>
                     {{translatedLangText.COMPLETE_JOB}}
                   </button>
                   @if (canRollbackJob()) {
-                  <button mat-flat-button color="" color="accent" (click)="rollbackJob($event)">
+                  <button mat-flat-button color="" color="accent" (click)="rollbackJob($event)" [ngClass]="'job-order-task-button'">
                     <mat-icon>undo</mat-icon>
                     {{translatedLangText.ROLLBACK}}
                   </button>

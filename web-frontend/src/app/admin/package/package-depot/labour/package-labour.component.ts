@@ -853,6 +853,8 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
         }
     
         this.search();
-      }
-
+    }
+  displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
 }
