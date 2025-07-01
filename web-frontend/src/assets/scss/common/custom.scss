@@ -2471,3 +2471,15 @@ button[mat-flat-button].center-icon {
 .job-order-task-button{
   width:147px
 }
+
+.ellipsis-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: inherit;
+}
+
+mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
+  flex-flow: nowrap !important;
+}
