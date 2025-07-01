@@ -25,6 +25,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -33,12 +34,8 @@ import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageRepairItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 @Component({
@@ -67,21 +64,18 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'fName',
     'lName',
     'email',
     'labour',
     'gender',
-    // 'bDate',
     'mobile',
-    // 'actions',
   ];
 
   action: string;
@@ -89,8 +83,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dialogTitle?: string;
   minMaterialCost: number = -20;
   maxMaterialCost: number = 20;
-  //packageDepotItems?: PackageDepotItem[]=[];
-  //packageDepotDS?:PackageDepotDS;
   packRepairDS?: PackageRepairDS;
   packRepairItem?: PackageRepairItem[] = [];
 
@@ -199,8 +191,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     CANNOT_EXCEED: "COMMON-FORM.CANNOT-EXCEED",
     CANNOT_SMALLER: "COMMON-FORM.CANNOT-SMALLER",
     SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
-    CARGO_REQUIRED:'COMMON-FORM.IS-REQUIRED',
-    
+    CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
   };
 
 
@@ -227,8 +218,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.translateLangText();
     this.loadData();
 
-    if(this.selectedItems.length>1)
-    {
+    if (this.selectedItems.length > 1) {
       this.EnableValidator('material_cost');
       this.EnableValidator('labour_hour');
     }
@@ -273,32 +263,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   loadData() {
-
     if (this.selectedItems.length == 1) {
       var pckRepairItem = this.selectedItems[0];
-
       this.pcForm.patchValue({
         material_cost: pckRepairItem.material_cost?.toFixed(2),
         labour_hour: pckRepairItem.labour_hour,
         remarks: pckRepairItem.remarks
-        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
-
-
     }
-
-
-
-
-  }
-
-  queryDepotCost() {
-    // const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
-
-    // this.packageDepotDS?.SearchPackageDepot(where,{},50).subscribe((data:PackageDepotItem[])=>{
-    //   this.packageDepotItems=data;
-
-    // });
   }
 
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
@@ -313,7 +285,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
-EnableValidator(path: string) {
+  EnableValidator(path: string) {
     this.pcForm.get(path)?.setValidators([
       Validators.min(this.minMaterialCost),
       Validators.max(this.maxMaterialCost),
@@ -326,7 +298,7 @@ EnableValidator(path: string) {
     this.pcForm.get(path)?.clearValidators();
     this.pcForm.get(path)?.updateValueAndValidity();
   }
-  
+
 
   canEdit() {
     return true;
@@ -352,17 +324,11 @@ EnableValidator(path: string) {
         .map(cc => cc.guid)
         .filter((guid): guid is string => guid !== undefined);
 
-       var material_cost = 1;
-       if (this.pcForm!.value["material_cost"]) material_cost = (Number(this.pcForm!.value['material_cost']) / 100) + 1;
-       var labour_hour = 1;
-       if (this.pcForm!.value["labour_hour"]) labour_hour = (Number(this.pcForm!.value["labour_hour"])/100)+1;
+      var material_cost = 1;
+      if (this.pcForm!.value["material_cost"]) material_cost = (Number(this.pcForm!.value['material_cost']) / 100) + 1;
+      var labour_hour = 1;
+      if (this.pcForm!.value["labour_hour"]) labour_hour = (Number(this.pcForm!.value["labour_hour"]) / 100) + 1;
 
-      // var remarks = this.pcForm!.value["remarks"] || "";
-      // if (pd_guids.length == 1) {
-      //   if (!remarks) {
-      //     remarks = "--";
-      //   }
-      // }
       this.packRepairDS?.updatePackageRepairsByPercentage(pd_guids, material_cost, labour_hour).subscribe(result => {
         if (result.data.updatePackageRepair_ByPercentage > 0) {
 
@@ -380,16 +346,11 @@ EnableValidator(path: string) {
       packRepairItm.remarks = this.pcForm!.value["remarks"];
       this.packRepairDS?.updatePackageRepair(packRepairItm).subscribe(result => {
         if (result.data.updatePackageRepair > 0) {
-
           console.log('valid');
           this.dialogRef.close(result.data.updatePackageRepair);
-
         }
       });
     }
-
-   
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -402,17 +363,17 @@ EnableValidator(path: string) {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
 
-   isMultiSelect(): boolean {
+  isMultiSelect(): boolean {
     var bRetval: boolean = this.selectedItems.length > 1;
     return bRetval;
   }
 
-  
-   getLabourHourLabel() {
+  getLabourHourLabel() {
     var content = this.translatedLangText.LABOUR_HOUR;
     if (this.isMultiSelect()) content += '(%)';
     content += ' :';
@@ -427,47 +388,35 @@ EnableValidator(path: string) {
   }
 
   allowNegative(event: KeyboardEvent) {
-  const allowedChars = /[0-9-]/;
-  const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
-  
-  if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
-    event.preventDefault();
+    const allowedChars = /[0-9-]/;
+    const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+
+    if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
+      event.preventDefault();
+    }
+
+    // Additional logic to prevent multiple minus signs
+    const input = event.target as HTMLInputElement;
+    if (event.key === '-' && input.value.includes('-')) {
+      event.preventDefault();
+    }
   }
-  
-  // Additional logic to prevent multiple minus signs
-  const input = event.target as HTMLInputElement;
-  if (event.key === '-' && input.value.includes('-')) {
-    event.preventDefault();
+
+  positiveOnly(event: KeyboardEvent) {
+    const allowedChars = /[0-9]/;
+    const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+
+    if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
+      event.preventDefault();
+    }
   }
-}
 
-positiveOnly(event: KeyboardEvent) {
-  const allowedChars = /[0-9]/;
-  const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
-  
-  if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
-    event.preventDefault();
+  selectAll(event: FocusEvent) {
+    const input = event.target as HTMLInputElement;
+    input.select();  // Selects all text in the input
   }
-}
 
-selectAll(event: FocusEvent) {
-  const input = event.target as HTMLInputElement;
-  input.select();  // Selects all text in the input
-}
-
- displayCurrency(amount: any) {
-    return Utility.formatNumberDisplay(amount);
+  parse2Decimal(value: any): string {
+    return Utility.formatNumberDisplay(value)
   }
-  // getMaterialCostLabel(){
-  //   //var lbl = this.translatedLangText.MATERIAL_COST + (this.selectedItems.length>1?'($)':'');
-  //   var lbl = this.translatedLangText.MATERIAL_COST + ' $';
-  //   return lbl;
-  // }
-
-  // getLabourHourLabel(){
-  //   //var lbl = this.translatedLangText.LABOUR_HOUR + (this.selectedItems.length>1?'(%)':'');
-  //   var lbl = this.translatedLangText.LABOUR_HOUR;
-  //   return lbl;
-  // }
-
 }
