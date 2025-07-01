@@ -905,6 +905,12 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     });
   }
 
+  handleSaveSuccess(count: any) {
+    if ((count ?? 0) > 0) {
+      ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', this.translatedLangText.SAVE_SUCCESS, 'top', 'center', this.snackBar);
+    }
+  }
+
   approveRow(event: Event, row: ResidueItem) {
     const found = this.reSelection.selected.some(x => x.guid === row.guid);
     let selectedList = [...this.reSelection.selected];
@@ -936,31 +942,20 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       console.log(result)
       this.search();
     });
-    // this.residueDS.cancelResidue(reList).subscribe(result => {
-    //   this.handleCancelSuccess(result?.data?.cancelResidue)
-    // });
   }
-
-
 
   onApprove(event: Event, row: ResidueItem) {
     event.preventDefault();
-    // const bill_to =(this.residueEstForm?.get("billing_branch")?.value?this.sotItem?.storing_order?.customer_company?.guid:this.residueEstForm?.get("billing_branch")?.value?.guid);
-
-    // if (bill_to) {
     let re: ResidueItem = new ResidueItem(row);
 
     re.guid = row?.guid;
     re.sot_guid = row?.sot_guid;
     re.bill_to_guid = row?.storing_order_tank?.storing_order?.customer_company_guid;
     re.status_cv = row?.status_cv;
-    // re.job_no=this.residueEstForm?.get("job_no")?.value
-    //  re.remarks=this.residueEstForm?.get("remarks")?.value
     var total_cost: number = 0;
     re.residue_part?.forEach((rep: any) => {
       rep.action = 'EDIT';
       rep.approve_qty = (this.IsApproved(row) ? rep.approve_qty : rep.quantity);
-      // rep.approve_hour = (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour ?? rep.hour) : 0;
       rep.approve_cost = (this.IsApproved(row) ? rep.approve_cost : rep.cost);
       rep.approve_part = (rep.approve_part == null || rep.approve_part ? true : false);
       if (rep.approve_part == 1) total_cost += rep.approve_qty * rep.approve_cost;
@@ -981,8 +976,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     this.residueDS.approveResidue(re).subscribe(result => {
       console.log(result)
       this.search();
-      // this.handleSaveSuccess(result?.data?.approveResidue);
+      this.handleSaveSuccess(result?.data?.approveResidue);
     });
-
   }
 }
