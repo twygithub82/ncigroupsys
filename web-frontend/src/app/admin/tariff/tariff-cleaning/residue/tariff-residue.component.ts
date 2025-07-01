@@ -772,6 +772,7 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_VIEW']);
   }
 
+  
    onSortChange(event: Sort): void {
         const { active: field, direction } = event;
     
@@ -781,12 +782,14 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
           return this.search();
         }
     
+        
         // convert to GraphQL enum (uppercase)
         const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
         // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
     
         switch (field) {
           case 'email':
+            
             this.lastOrderBy = {
               tariff_residue: {
                 update_dt: dirEnum,

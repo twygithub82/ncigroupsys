@@ -1303,7 +1303,7 @@ export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 's
 
 export const pageSizeInfo = {pageSize: [25, 50, 75, 100], defaultSize: 25};
 
-export const maxLengthDisplaySingleSelectedItem=30;
+export const maxLengthDisplaySingleSelectedItem=45;
 
 export const selected_job_task_color ="bg-lighter-orange";
 
