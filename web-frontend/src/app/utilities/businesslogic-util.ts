@@ -5,6 +5,7 @@ import { modulePackage } from "environments/environment";
 import { ESTIMATE_APPROVED_STATUS, Utility } from "./utility";
 import { SurveyDetailItem } from "app/data-sources/survey-detail";
 import { UntypedFormGroup } from "@angular/forms";
+import { ResidueItem } from "app/data-sources/residue";
 
 export class BusinessLogicUtil {
     static isOthers(value: string | string[]): boolean {
@@ -192,5 +193,10 @@ export class BusinessLogicUtil {
         });
 
         return isValid;
+    }
+
+    static anyActiveResidues(residue?: ResidueItem[]) {
+        if (!residue?.length) return false;
+        return residue.some(res => res.status_cv === 'PENDING' && !res.delete_dt);
     }
 }
