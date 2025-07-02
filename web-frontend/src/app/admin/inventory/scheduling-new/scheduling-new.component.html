@@ -198,8 +198,8 @@
                   <mat-accordion>
                     <mat-expansion-panel
                       [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'bg-extra-light-grey': checkDisable(row)}"
-                      [expanded]="false">
-                      <mat-expansion-panel-header>
+                      [expanded]="false" class="alternate-panel">
+                      <mat-expansion-panel-header class="tank-header">
                         <mat-panel-description>
                           <mat-checkbox (change)="$event ? toggleRow(row) : null"
                             [checked]="sotSelection.isSelected(row)" class="card-checkbox" color="primary"
