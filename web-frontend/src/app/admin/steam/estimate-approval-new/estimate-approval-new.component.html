@@ -612,7 +612,7 @@
               }
               @if (canApprove()) {
               <button mat-flat-button color="basic"
-                [disabled]="(steamDS.loading$ | async) ||(!IsAbleToApprove())||(isExportingPDF)" class="m-r-5 bg-green"
+                [disabled]="(steamDS.loading$ | async) ||(!IsAbleToApprove())||(isExportingPDF)" class="m-r-5 green-button"
                 (click)="approveRow($event)">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)&&!(isExportingPDF)) {
