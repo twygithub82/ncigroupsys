@@ -173,6 +173,6 @@
   </mat-progress-spinner>
 </div>
 }
-<mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+<mat-paginator #paginator [length]="residueDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
   [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEventJobOrder($event)">
 </mat-paginator>

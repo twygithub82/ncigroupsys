@@ -631,7 +631,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
           };
           break;
           
-         case 'fname':
+         case 'fName':
           this.lastOrderBy = {
             tariff_buffer: {
               buffer_type: dirEnum

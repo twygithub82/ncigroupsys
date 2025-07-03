@@ -900,6 +900,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
+    this.AutoSearch();
     //this.search();
   }
 
@@ -963,6 +964,12 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
+  }
+
+  AutoSearch()
+  {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
   }
 
 }

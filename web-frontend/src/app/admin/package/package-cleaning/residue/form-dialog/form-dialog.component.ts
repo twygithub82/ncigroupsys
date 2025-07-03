@@ -427,7 +427,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
    getCostLabel():string{
     var retval =this.translatedLangText.COST;
     if(this.selectedItems.length>1){
-      retval = retval.replace("$","%");
+      // retval = retval.replace("$","%");
     }
     return retval;
   }

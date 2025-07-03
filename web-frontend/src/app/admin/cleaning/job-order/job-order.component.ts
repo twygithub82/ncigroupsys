@@ -3,7 +3,7 @@ import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRippleModule } from '@angular/material/core';
@@ -29,7 +29,7 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
@@ -48,6 +48,8 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ENTER ,COMMA} from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-job-order',
@@ -80,7 +82,8 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
     MatDividerModule,
     MatCardModule,
     MatTabsModule,
-    BayOverviewComponent
+    BayOverviewComponent,
+    MatChipsModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -207,6 +210,9 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   customer_companyList?: CustomerCompanyItem[];
   last_cargoList?: TariffCleaningItem[];
 
+  selectedProcesses: any[] = [];
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  
   pageIndexClean = 0;
   pageSizeClean = pageSizeInfo.defaultSize;
   lastSearchCriteriaClean: any;
@@ -343,9 +349,17 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
     });
-    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+   
+     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+  }
+
+
+  searchProcessList(criteria: string)
+  {
+    
   }
 
   showNotification(
@@ -666,12 +680,17 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         } else {
           searchCriteria = value.description;
         }
-        this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }, 100).subscribe(data => {
+       this.SearchCleanMethod(searchCriteria);
+      })
+    ).subscribe();
+  }
+
+  SearchCleanMethod(searchCriteria:string){
+
+     this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }, 100).subscribe(data => {
           this.cleanMethodList = data;
           this.sortList(this.cleanMethodList);
         });
-      })
-    ).subscribe();
   }
 
   translateLangText() {
@@ -977,4 +996,84 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
     }
   }
+
+  @ViewChild('procInput', { static: true })
+  procInput?: ElementRef<HTMLInputElement>;
+
+   itemSelected(row: CodeValuesItem): boolean {
+      var retval: boolean = false;
+      const index = this.selectedProcesses.findIndex(c => c.code_val === row.code_val);
+      retval = (index >= 0);
+      return retval;
+    }
+  
+    getSelectedProcessesDisplay(): string {
+      var retval: string = "";
+      if (this.selectedProcesses?.length > 1) {
+        retval = `${this.selectedProcesses.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+      }
+      else if (this.selectedProcesses?.length == 1) {
+        const maxLength = maxLengthDisplaySingleSelectedItem;
+        const value = `${this.selectedProcesses[0].description}`;
+        retval = `${value.length > maxLength
+          ? value.slice(0, maxLength) + '...'
+          : value}`;
+      }
+      return retval;
+    }
+  
+    removeAllSelectedProcesses(): void {
+      this.selectedProcesses = [];
+      this.AutoSearch();
+      //this.search();
+    }
+  
+    onCheckboxClicked(row: CodeValuesItem) {
+      const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+      this.selected(fakeEvent);
+    }
+
+     selected(event: MatAutocompleteSelectedEvent): void {
+        const process = event.option.value;
+        const index = this.selectedProcesses.findIndex(c => c.code_value === process.code_value);
+        if (!(index >= 0)) {
+          this.selectedProcesses.push(process);
+        
+        }
+        else {
+          this.selectedProcesses.splice(index, 1);
+        }
+    
+        if (this.procInput) {
+         // this.searchCustomerCompanyList('');
+          this.procInput.nativeElement.value = '';
+          this.SearchCleanMethod('');
+        }
+
+        this.AutoSearch();
+        // this.updateFormControl();
+        //this.customerCodeControl.setValue(null);
+        //this.pcForm?.patchValue({ customer_code: null });
+      }
+    
+      add(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+        // Add our fruit
+        if ((value || '').trim()) {
+          //this.fruits.push(value.trim());
+        }
+        // Reset the input value
+        if (input) {
+          input.value = '';
+        }
+        this.customerCodeControl.setValue(null);
+      }
+      
+    AutoSearch() 
+    {
+      if(Utility.IsAllowAutoSearch())
+        this.onFilterCleaning();
+    }
+
 }
