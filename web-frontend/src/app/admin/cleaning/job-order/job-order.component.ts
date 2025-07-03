@@ -174,6 +174,10 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     SEARCH: 'COMMON-FORM.SEARCH',
     CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
+    YET_START: "COMMON-FORM.YET-START",
+    STARTED: "COMMON-FORM.STARTED",
+    NOT_STARTED: "COMMON-FORM.NOT-STARTED",
+    TO_COMPLETE: "COMMON-FORM.TO-COMPLETE",
   }
 
   filterCleanForm?: UntypedFormGroup;
