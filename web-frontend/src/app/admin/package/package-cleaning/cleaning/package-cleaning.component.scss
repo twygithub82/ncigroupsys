@@ -34,8 +34,6 @@ mat-chip-row[color="primary"] {
   background: transparent !important;
   background-color: transparent !important;
   border-radius: 6px;
-  // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
-  //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
   padding: 2px 2px;
   font-weight: 500;
   color: #333;
@@ -85,4 +83,22 @@ mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
 
 .multiSelected_autocomplete {
   padding: 0 12px;
+}
+
+::ng-deep .mat-mdc-chip-action-label {
+  overflow: hidden !important;
+}
+
+::ng-deep .mdc-evolution-chip__text-label {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+
+::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary,
+::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__cell--primary,
+::ng-deep .mat-mdc-standard-chip .mat-mdc-chip-action-label {
+  overflow: hidden !important;
 }

@@ -7,6 +7,7 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 export class NumericTextDirective {
   @Input() restrictNonNumeric = true;
   @Input() allowDecimal = true;
+  @Input() allowNegative = false;
   @Input() decimalLimit: number | null = 2;
   @Input() disableScroll = true;
   @Input() min: string | number | null = null;
@@ -24,6 +25,17 @@ export class NumericTextDirective {
 
     const isDigit = /^[0-9]$/.test(key);
     const isDot = key === '.';
+    const isMinus = key === '-';
+
+    const selectionStart = input.selectionStart ?? value.length;
+    const selectionEnd = input.selectionEnd ?? selectionStart;
+
+    if (isMinus) {
+      if (!this.allowNegative || selectionStart !== 0 || value.includes('-')) {
+        event.preventDefault();
+      }
+      return;
+    }
 
     if (!isDigit && (!this.allowDecimal || !isDot)) {
       event.preventDefault();
@@ -35,9 +47,6 @@ export class NumericTextDirective {
       event.preventDefault();
       return;
     }
-
-    const selectionStart = input.selectionStart ?? value.length;
-    const selectionEnd = input.selectionEnd ?? selectionStart;
 
     const predictedValue =
       value.substring(0, selectionStart) + key + value.substring(selectionEnd);
@@ -75,8 +84,12 @@ export class NumericTextDirective {
 
     const pasted = event.clipboardData?.getData('text') ?? '';
     const decimalRegex = this.allowDecimal
-      ? /^\d+(\.\d*)?$/
-      : /^\d+$/;
+      ? this.allowNegative
+        ? /^-?\d+(\.\d*)?$/
+        : /^\d+(\.\d*)?$/
+      : this.allowNegative
+        ? /^-?\d+$/
+        : /^\d+$/;
 
     if (!decimalRegex.test(pasted)) {
       event.preventDefault();

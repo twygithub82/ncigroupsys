@@ -2403,7 +2403,7 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
 
 .previous-label {
   font-weight: bold;
-  color: #ff0000;
+  color: #000000;
 }
 
 .option-country-flag {
@@ -2470,4 +2470,16 @@ button[mat-flat-button].center-icon {
 
 .job-order-task-button{
   width:147px
+}
+
+.ellipsis-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: inherit;
+}
+
+mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
+  flex-flow: nowrap !important;
 }

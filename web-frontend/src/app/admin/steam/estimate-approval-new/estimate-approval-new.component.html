@@ -582,7 +582,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
               @if (canExport()) {
               <button mat-flat-button [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
-                class="m-r-5 accent-darker" (click)="onExport($event)">
+                class="m-r-5 orange-button" (click)="onExport($event)">
                 @if (!(steamDS.loading$ | async)) {
                 <i class="fas fa-file-export"></i>
                 } @else if ((steamDS.loading$ | async)) {
@@ -612,7 +612,7 @@
               }
               @if (canApprove()) {
               <button mat-flat-button color="basic"
-                [disabled]="(steamDS.loading$ | async) ||(!IsAbleToApprove())||(isExportingPDF)" class="m-r-5 bg-green"
+                [disabled]="(steamDS.loading$ | async) ||(!IsAbleToApprove())||(isExportingPDF)" class="m-r-5 green-button"
                 (click)="approveRow($event)">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)&&!(isExportingPDF)) {
@@ -651,8 +651,8 @@
               </button>
               } -->
               @if (steamDS.canNoAction(steamItem!)) {
-              <button mat-flat-button color="warn" [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
-                class="m-r-5" (click)="onNoAction($event)">
+              <button mat-flat-button [disabled]="(steamDS.loading$ | async)||(isExportingPDF)"
+                class="m-r-5 red-button" (click)="onNoAction($event)">
                 <mat-icon>
                   @if (!(steamDS.loading$ | async)) {
                   close

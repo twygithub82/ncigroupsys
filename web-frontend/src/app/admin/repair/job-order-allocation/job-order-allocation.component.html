@@ -466,7 +466,7 @@
                   </button>
                   } -->
                   @if (canUnassignTeam(repairItem)) {
-                  <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-r-5"
+                  <button mat-flat-button [disabled]="(repairDS.loading$ | async)" class="m-r-5 red-button"
                     (click)="onUnassignTeam($event, repairItem?.guid!)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {

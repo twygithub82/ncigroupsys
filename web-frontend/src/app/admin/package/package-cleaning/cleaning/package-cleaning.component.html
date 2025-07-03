@@ -38,13 +38,13 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <mat-chip-grid #chipGrid>
+                    <mat-chip-grid #chipGrid class="nowrap">
                       @if(selectedCustomers.length>0){
                       <mat-chip-row color="primary" (click)="removeAllSelectedCustomers()">
                         <button matChipRemove hidden>
                           <mat-icon>cancel</mat-icon>
                         </button>
-                        {{getSelectedCustomersDisplay()}}
+                        <span>{{getSelectedCustomersDisplay()}}</span>
                       </mat-chip-row>
                       }
                       <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"

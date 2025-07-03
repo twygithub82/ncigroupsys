@@ -269,7 +269,10 @@
                         @if (canCancel(row)) {
                         <button mat-icon-button color="warn" (click)="$event.stopPropagation()"
                           (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL" class="tbl-action-btn">
-                          <mat-icon>cancel</mat-icon>
+                          <!-- <mat-icon>remove_selection</mat-icon> -->
+                          <span class="material-symbols-outlined">
+                            remove_selection
+                          </span>
                         </button>
                         }
                       </mat-cell>
