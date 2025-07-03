@@ -95,3 +95,17 @@ mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
 .multiSelected_autocomplete{
     padding: 0 12px;
 }
+
+.single-line-chip-grid {
+  white-space: nowrap; /* Ensures content stays on a single line */
+  overflow: hidden;    /* Hides content that overflows the container */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for clipped text */
+  display: block;      /* Ensures the ellipsis works correctly with block-level display */
+}
+
+/* You might need to adjust the width of the input field within the chip grid
+   to allow space for the ellipsis if it's too wide by default. */
+.single-line-chip-grid input {
+  width: 100%; /* Or set a specific max-width */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+}

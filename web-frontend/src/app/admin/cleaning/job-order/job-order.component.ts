@@ -173,6 +173,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     QC: 'COMMON-FORM.QC',
     BAY_OVERVIEW: "COMMON-FORM.BAY-OVERVIEW",
     SEARCH: 'COMMON-FORM.SEARCH',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -418,13 +419,17 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       ]
     };
 
-    if (this.filterCleanForm!.get('cleanMethod')?.value) {
+   // if (this.filterCleanForm!.get('cleanMethod')?.value) 
+   if(this.selectedProcesses.length>0)
+   {
+      var cleanGuids = this.selectedProcesses.map(c => c.guid);
       where.and.push({
-        storing_order_tank: { tariff_cleaning: { cleaning_method: { name: { eq: (this.filterCleanForm!.get('cleanMethod')?.value).name } } } }
+        storing_order_tank: { tariff_cleaning: { cleaning_method: { guid: { in: cleanGuids } } } }
       });
     }
 
-    if (this.filterCleanForm!.get('filterClean')?.value) {
+    if (this.filterCleanForm!.get('filterClean')?.value) 
+      {
       const tankNo = this.filterCleanForm!.get('filterClean')?.value;
       where.and.push({
         storing_order_tank: {
@@ -678,7 +683,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         if (typeof value === 'string') {
           searchCriteria = value;
         } else {
-          searchCriteria = value.description;
+          searchCriteria = value.name;
         }
        this.SearchCleanMethod(searchCriteria);
       })
@@ -689,7 +694,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
      this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }, 100).subscribe(data => {
           this.cleanMethodList = data;
-          this.sortList(this.cleanMethodList);
+        //  this.sortList(this.cleanMethodList);
         });
   }
 
@@ -1000,9 +1005,9 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   @ViewChild('procInput', { static: true })
   procInput?: ElementRef<HTMLInputElement>;
 
-   itemSelected(row: CodeValuesItem): boolean {
+   itemSelected(row: CleaningMethodItem): boolean {
       var retval: boolean = false;
-      const index = this.selectedProcesses.findIndex(c => c.code_val === row.code_val);
+      const index = this.selectedProcesses.findIndex(c => c.guid === row.guid);
       retval = (index >= 0);
       return retval;
     }
@@ -1014,7 +1019,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       }
       else if (this.selectedProcesses?.length == 1) {
         const maxLength = maxLengthDisplaySingleSelectedItem;
-        const value = `${this.selectedProcesses[0].description}`;
+        const value = `${this.selectedProcesses[0].name}`;
         retval = `${value.length > maxLength
           ? value.slice(0, maxLength) + '...'
           : value}`;
@@ -1024,6 +1029,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   
     removeAllSelectedProcesses(): void {
       this.selectedProcesses = [];
+       this.filterCleanForm?.patchValue({cleanMethod:''});
       this.AutoSearch();
       //this.search();
     }
@@ -1035,7 +1041,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
      selected(event: MatAutocompleteSelectedEvent): void {
         const process = event.option.value;
-        const index = this.selectedProcesses.findIndex(c => c.code_value === process.code_value);
+        const index = this.selectedProcesses.findIndex(c => c.guid === process.guid);
         if (!(index >= 0)) {
           this.selectedProcesses.push(process);
         
@@ -1047,6 +1053,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         if (this.procInput) {
          // this.searchCustomerCompanyList('');
           this.procInput.nativeElement.value = '';
+          this.filterCleanForm?.patchValue({cleanMethod:''});
           this.SearchCleanMethod('');
         }
 

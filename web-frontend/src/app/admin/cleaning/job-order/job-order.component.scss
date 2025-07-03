@@ -1,0 +1,15 @@
+.horizontal-container {
+  display: flex;
+  align-items: center;
+  width: 100%; /* Take full width of parent */
+  min-width: 0; /* CRITICAL for nested flex items */
+}
+
+/* Text element with ellipsis */
+.option-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1; /* shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
+  min-width: 0; /* CRITICAL - allows text truncation */
+}

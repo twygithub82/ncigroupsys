@@ -50,16 +50,21 @@
   flex-shrink: 0;
 }
 
+/* Container for checkbox and text */
 .horizontal-container {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%; /* Take full width of parent */
+  min-width: 0; /* CRITICAL for nested flex items */
 }
 
-/* Ensure text wraps properly */
+/* Text element with ellipsis */
 .option-text {
-  margin-top: 4px;
-  white-space: normal;    /* Allow text wrapping */
-  line-height: 1.5;       /* Improve readability */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1; /* shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
+  min-width: 0; /* CRITICAL - allows text truncation */
 }
 
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
@@ -68,4 +73,19 @@
 
 .multiSelected_autocomplete{
     padding: 0 12px;
+}
+
+
+.single-line-chip-grid {
+  white-space: nowrap; /* Ensures content stays on a single line */
+  overflow: hidden;    /* Hides content that overflows the container */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for clipped text */
+  display: block;      /* Ensures the ellipsis works correctly with block-level display */
+}
+
+/* You might need to adjust the width of the input field within the chip grid
+   to allow space for the ellipsis if it's too wide by default. */
+.single-line-chip-grid input {
+  width: 100%; /* Or set a specific max-width */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
 }

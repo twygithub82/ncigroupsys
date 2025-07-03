@@ -49,7 +49,7 @@
                                 [displayWith]="displayCustomerCompanyFn">
                                 @for (cc of customer_companyList; track cc) {
                                 <mat-option [value]="cc">
-                                  {{ccDS.displayCodeDashName(cc)}}
+                                  <div class="option-text"> {{ccDS.displayCodeDashName(cc)}}</div>
                                 </mat-option>
                                 }
                               </mat-autocomplete>
@@ -196,8 +196,9 @@
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
                             [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span
-                              class="mobile-label">{{translatedLangText.PROCESS}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.description?row.storing_order_tank?.tariff_cleaning?.cleaning_method?.name:'-'}}
+                            <span class="mobile-label">{{translatedLangText.PROCESS}}:</span>
+                            {{row.storing_order_tank?.tariff_cleaning?.cleaning_method?.name}}
+
                           </mat-cell>
                         </ng-container>
 

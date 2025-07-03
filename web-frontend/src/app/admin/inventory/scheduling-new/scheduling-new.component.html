@@ -125,7 +125,7 @@
                       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.BOOKING_TYPE}}</mat-label>
-                          <mat-select formControlName="book_type_cv">
+                          <mat-select formControlName="book_type_cv" (selectionChange)="AutoSearch()">
                             @for (codeValue of bookingTypeCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}
@@ -143,7 +143,7 @@
                       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CURRENT_STATUS}}</mat-label>
-                          <mat-select formControlName="tank_status_cv">
+                          <mat-select formControlName="tank_status_cv" (selectionChange)="AutoSearch()">
                             @for (codeValue of tankStatusCvList; track codeValue) {
                             @if (!codeValue.code_val || this.availableProcessStatus.includes(codeValue.code_val)) {
                             <mat-option [value]="codeValue.code_val">
@@ -157,7 +157,7 @@
                       <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.YARD}}</mat-label>
-                          <mat-select formControlName="yard_cv">
+                          <mat-select formControlName="yard_cv" (selectionChange)="AutoSearch()">
                             @for (codeValue of yardCvList; track codeValue) {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}

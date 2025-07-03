@@ -904,4 +904,9 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['INVENTORY_BOOKING_DELETE']);
   }
+
+  AutoSearch(){
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
 }
