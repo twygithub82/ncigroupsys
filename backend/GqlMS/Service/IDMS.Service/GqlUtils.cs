@@ -310,6 +310,15 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
+        public static double CalculateMaterialCostRoundedUp(double? materialCost)
+        {
+            if (materialCost == 0.0)
+                return 0.0;
+
+            double result = Math.Ceiling(Convert.ToDouble(materialCost * 20)) / 20.0;
+            return result;
+        }
+
         public static async Task<bool> StatusChangeConditionCheck(ApplicationServiceDBContext context, string processType, string processGuid, string newStatus)
         {
             try
@@ -386,7 +395,7 @@ namespace IDMS.Service.GqlTypes
             }
         }
 
-        public static async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid, string processGuid="")
+        public static async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid, string processGuid = "")
         {
 
             //first check tank purpose
@@ -482,6 +491,6 @@ namespace IDMS.Service.GqlTypes
                 return pendingJob;
             }
             return false;
-        }    
+        }
     }
 }
