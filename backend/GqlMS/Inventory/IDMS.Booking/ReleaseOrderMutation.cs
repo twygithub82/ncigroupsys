@@ -31,6 +31,8 @@ namespace IDMS.Booking.GqlTypes
                 newRO.guid = Util.GenerateGUID();
                 newRO.create_by = user;
                 newRO.create_dt = currentDateTime;
+                newRO.update_by = user;
+                newRO.update_dt = currentDateTime;
 
                 newRO.ro_no = releaseOrder.ro_no;
                 newRO.ro_notes = releaseOrder.ro_notes;
@@ -54,6 +56,8 @@ namespace IDMS.Booking.GqlTypes
                     newROSOT.guid = Util.GenerateGUID();
                     newROSOT.create_by = user;
                     newROSOT.create_dt = currentDateTime;
+                    newROSOT.update_by = user;
+                    newROSOT.update_dt = currentDateTime;
 
                     newROSOT.sot_guid = roSOT.sot_guid;
                     newROSOT.ro_guid = newRO.guid;
@@ -113,6 +117,8 @@ namespace IDMS.Booking.GqlTypes
                         newROSOT.guid = Util.GenerateGUID();
                         newROSOT.create_by = user;
                         newROSOT.create_dt = currentDateTime;
+                        newROSOT.update_by = user;
+                        newROSOT.update_dt = currentDateTime;
 
                         newROSOT.sot_guid = roSOT.storing_order_tank.guid;
                         newROSOT.ro_guid = releaseOrder.guid;

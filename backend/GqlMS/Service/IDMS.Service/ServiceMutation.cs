@@ -50,6 +50,8 @@ namespace IDMS.Service.GqlTypes
                             newJobOrder.remarks = item.remarks;
                             newJobOrder.create_by = user;
                             newJobOrder.create_dt = currentDateTime;
+                            newJobOrder.update_by = user;
+                            newJobOrder.update_dt = currentDateTime;
                             await context.AddAsync(newJobOrder);
                         }
                         else
@@ -76,9 +78,6 @@ namespace IDMS.Service.GqlTypes
                     await transaction.CommitAsync();
                     //TODO
                     //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
-
-
-
                     return res;
                 }
                 catch
@@ -253,6 +252,8 @@ namespace IDMS.Service.GqlTypes
                     startTimeTable.guid = Util.GenerateGUID();
                     startTimeTable.create_by = user;
                     startTimeTable.create_dt = currentDateTime;
+                    startTimeTable.update_by = user;
+                    startTimeTable.update_dt = currentDateTime;
                     startTimeTable.start_time = currentDateTime;
                     startTimeTable.job_order_guid = item.job_order_guid;
                     newTimeTableList.Add(startTimeTable);
