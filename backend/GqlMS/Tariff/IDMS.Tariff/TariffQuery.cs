@@ -458,7 +458,7 @@ namespace IDMS.Models.Tariff.GqlTypes
         }
 
         public async Task<List<string?>> QueryDistinctPartName(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, string? groupName, string? subgroupName, string? part_name)
+            [Service] IHttpContextAccessor httpContextAccessor, string? groupName, string? subgroupName, string? part_name, bool? isPartNameOnly = false)
         {
             try
             {
@@ -466,24 +466,36 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 var query = context.tariff_repair.AsQueryable();
 
-                // Apply filters conditionally
-                if (!string.IsNullOrEmpty(groupName))
+                if(isPartNameOnly ?? false)
                 {
-                    query = query.Where(tr => tr.group_name_cv.ToLower() == groupName.ToLower());
+                    if (!string.IsNullOrEmpty(part_name))
+                    {
+                        query = query.Where(tr => tr.part_name.ToLower().Contains(part_name.ToLower()));
+                    }
+                    //else
+                    //    throw new GraphQLException(new Error($"Part name cannot be null or empty", "ERROR"));
                 }
+                else
+                {
+                    // Apply filters conditionally
+                    if (!string.IsNullOrEmpty(groupName))
+                    {
+                        query = query.Where(tr => tr.group_name_cv.ToLower() == groupName.ToLower());
+                    }
 
-                if (!string.IsNullOrEmpty(part_name))
-                {
-                    query = query.Where(tr => tr.part_name.ToLower().Contains(part_name.ToLower()));
-                }
+                    if (!string.IsNullOrEmpty(part_name))
+                    {
+                        query = query.Where(tr => tr.part_name.ToLower().Contains(part_name.ToLower()));
+                    }
 
-                if (subgroupName == null)
-                {
-                    query = query.Where(tr => tr.subgroup_name_cv == null || tr.group_name_cv == "");
-                }
-                else if (subgroupName != "")
-                {
-                    query = query.Where(tr => tr.subgroup_name_cv.ToLower() == subgroupName.ToLower());
+                    if (subgroupName == null)
+                    {
+                        query = query.Where(tr => tr.subgroup_name_cv == null || tr.group_name_cv == "");
+                    }
+                    else if (subgroupName != "")
+                    {
+                        query = query.Where(tr => tr.subgroup_name_cv.ToLower() == subgroupName.ToLower());
+                    }
                 }
 
                 // Select distinct part names
