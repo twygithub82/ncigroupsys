@@ -24,20 +24,16 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newTariffDepot.guid = NewTariffDepot.guid;
                 newTariffDepot.description = NewTariffDepot.description;
                 newTariffDepot.profile_name = NewTariffDepot.profile_name;
-                newTariffDepot.gate_in_cost = NewTariffDepot.gate_in_cost;
-                newTariffDepot.gate_out_cost = NewTariffDepot.gate_out_cost;
-                newTariffDepot.preinspection_cost = NewTariffDepot.preinspection_cost;
-                newTariffDepot.lolo_cost = NewTariffDepot.lolo_cost;
-                newTariffDepot.storage_cost = NewTariffDepot.storage_cost;
+                newTariffDepot.gate_in_cost = CalculateMaterialCostRoundedUp(NewTariffDepot.gate_in_cost);
+                newTariffDepot.gate_out_cost = CalculateMaterialCostRoundedUp(NewTariffDepot.gate_out_cost);
+                newTariffDepot.preinspection_cost = CalculateMaterialCostRoundedUp(NewTariffDepot.preinspection_cost);
+                newTariffDepot.lolo_cost = CalculateMaterialCostRoundedUp(NewTariffDepot.lolo_cost);
+                newTariffDepot.storage_cost = CalculateMaterialCostRoundedUp(NewTariffDepot.storage_cost);
                 newTariffDepot.free_storage = NewTariffDepot.free_storage;
                 if (NewTariffDepot.tanks != null)
                 {
                     var tankGuids = NewTariffDepot.tanks.Select(t1 => t1.guid).ToList();
                     var tanks = context.tank.Where(t => tankGuids.Contains(t.guid)).ToList();
-
-                    // newTariffDepot.tanks = NewTariffDepot.tanks;
-                    // context.tank.
-                    //newTariffDepot.unit_type_cv = NewTariffDepot.unit_type_cv;
 
                     foreach (var t in tanks)
                     {
@@ -49,6 +45,8 @@ namespace IDMS.Models.Tariff.GqlTypes
                 }
                 newTariffDepot.create_by = uid;
                 newTariffDepot.create_dt = GqlUtils.GetNowEpochInSec();
+                newTariffDepot.update_by = uid;
+                newTariffDepot.update_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_depot.Add(newTariffDepot);
 
                 //change this to use trigger, instead of using code to perform the insert
@@ -98,12 +96,12 @@ namespace IDMS.Models.Tariff.GqlTypes
                 dbTariffDepot.description = UpdateTariffDepot.description;
                 dbTariffDepot.profile_name = UpdateTariffDepot.profile_name;
                 // newTariffClean.cost = NewTariffClean.cost;
-                dbTariffDepot.preinspection_cost = UpdateTariffDepot.preinspection_cost;
-                dbTariffDepot.lolo_cost = UpdateTariffDepot.lolo_cost;
-                dbTariffDepot.storage_cost = UpdateTariffDepot.storage_cost;
+                dbTariffDepot.preinspection_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.preinspection_cost);
+                dbTariffDepot.lolo_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.lolo_cost);
+                dbTariffDepot.storage_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.storage_cost);
                 dbTariffDepot.free_storage = UpdateTariffDepot.free_storage;
-                dbTariffDepot.gate_in_cost = UpdateTariffDepot.gate_in_cost;
-                dbTariffDepot.gate_out_cost = UpdateTariffDepot.gate_out_cost;
+                dbTariffDepot.gate_in_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.gate_in_cost);
+                dbTariffDepot.gate_out_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.gate_out_cost);
                 // dbTariffDepot.unit_type_cv = UpdateTariffDepot.unit_type_cv;
                 dbTariffDepot.tanks = UpdateTariffDepot.tanks;
                 dbTariffDepot.update_by = uid;
@@ -229,6 +227,9 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 newTariffClean.create_by = uid;
                 newTariffClean.create_dt = currentDateTime;
+                newTariffClean.update_by = uid;
+                newTariffClean.update_dt = currentDateTime;
+
                 context.tariff_cleaning.Add(newTariffClean);
 
                 await UpdateUNToTable(context, NewTariffClean.un_no, NewTariffClean.class_cv, uid, currentDateTime);
@@ -334,7 +335,8 @@ namespace IDMS.Models.Tariff.GqlTypes
                     UN.class_cv = classNo;
                     UN.create_by = user;
                     UN.create_dt = currentDateTime;
-
+                    UN.update_by = user;
+                    UN.update_dt = currentDateTime;
                     await context.AddAsync(UN);
                     //ret = await context.SaveChangesAsync();
                 }
@@ -362,9 +364,12 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newTariffBuffer.guid = NewTariffBuffer.guid;
                 newTariffBuffer.remarks = NewTariffBuffer.remarks;
                 newTariffBuffer.buffer_type = NewTariffBuffer.buffer_type;
-                newTariffBuffer.cost = NewTariffBuffer.cost;
+                newTariffBuffer.cost = CalculateMaterialCostRoundedUp(NewTariffBuffer.cost);
                 newTariffBuffer.create_by = uid;
                 newTariffBuffer.create_dt = GqlUtils.GetNowEpochInSec();
+                newTariffBuffer.update_by = uid;
+                newTariffBuffer.update_dt = GqlUtils.GetNowEpochInSec();
+
                 context.tariff_buffer.Add(newTariffBuffer);
 
                 //change this to use trigger, instead of using code to perform the insert
@@ -394,7 +399,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 dbTariffBuffer.remarks = UpdateTariffBuffer.remarks;
                 dbTariffBuffer.buffer_type = UpdateTariffBuffer.buffer_type;
-                dbTariffBuffer.cost = UpdateTariffBuffer.cost;
+                dbTariffBuffer.cost = CalculateMaterialCostRoundedUp(UpdateTariffBuffer.cost);
                 dbTariffBuffer.update_by = uid;
                 dbTariffBuffer.update_dt = GqlUtils.GetNowEpochInSec();
 
@@ -506,9 +511,11 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newTariffLabour.guid = NewTariffLabour.guid;
                 newTariffLabour.remarks = NewTariffLabour.remarks;
                 newTariffLabour.description = NewTariffLabour.description;
-                newTariffLabour.cost = NewTariffLabour.cost;
+                newTariffLabour.cost = CalculateMaterialCostRoundedUp(NewTariffLabour.cost);
                 newTariffLabour.create_by = uid;
                 newTariffLabour.create_dt = GqlUtils.GetNowEpochInSec();
+                newTariffLabour.update_by = uid;
+                newTariffLabour.update_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_labour.Add(newTariffLabour);
 
                 //change this to use trigger, instead of using code to perform the insert
@@ -552,7 +559,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 dbTariffLabour.remarks = UpdateTariffLabour.remarks;
                 dbTariffLabour.description = UpdateTariffLabour.description;
-                dbTariffLabour.cost = UpdateTariffLabour.cost;
+                dbTariffLabour.cost = CalculateMaterialCostRoundedUp(UpdateTariffLabour.cost);
                 dbTariffLabour.update_by = uid;
                 dbTariffLabour.update_dt = GqlUtils.GetNowEpochInSec();
 
@@ -614,9 +621,11 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newTariffResidue.guid = NewTariffResidue.guid;
                 newTariffResidue.remarks = NewTariffResidue.remarks;
                 newTariffResidue.description = NewTariffResidue.description;
-                newTariffResidue.cost = NewTariffResidue.cost;
+                newTariffResidue.cost = CalculateMaterialCostRoundedUp(NewTariffResidue.cost);
                 newTariffResidue.create_by = uid;
                 newTariffResidue.create_dt = curDate;
+                newTariffResidue.update_by = uid;
+                newTariffResidue.update_dt = curDate;
                 context.tariff_residue.Add(newTariffResidue);
 
                 //change this to use trigger, instead of using code to perform the insert
@@ -645,7 +654,7 @@ namespace IDMS.Models.Tariff.GqlTypes
 
                 dbTariffResidue.remarks = UpdateTariffResidue.remarks;
                 dbTariffResidue.description = UpdateTariffResidue.description;
-                dbTariffResidue.cost = UpdateTariffResidue.cost;
+                dbTariffResidue.cost = CalculateMaterialCostRoundedUp(UpdateTariffResidue.cost);
                 dbTariffResidue.update_by = uid;
                 dbTariffResidue.update_dt = GqlUtils.GetNowEpochInSec();
 
@@ -705,13 +714,6 @@ namespace IDMS.Models.Tariff.GqlTypes
             return retval;
         }
 
-        //This function is for testing store_procedure purpose
-        private async void AddPackageResidueTask(ApplicationTariffDBContext context, string user, string guid, string remarks, double? cost, long date)
-        {
-
-            await context.Database.ExecuteSqlRawAsync("CALL SP_Insert_PackageResidue(@p0, @p1, @p2, @p3, @p4)", user, guid, remarks, cost, date);
-            Console.WriteLine("-------------End Task Add--------------");
-        }
         #endregion Tariff Labour methods
 
         #region Tariff Repair methods
@@ -738,12 +740,14 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newTariffRepair.labour_hour = NewTariffRepair.labour_hour;
                 newTariffRepair.length = NewTariffRepair.length;
                 newTariffRepair.length_unit_cv = NewTariffRepair.length_unit_cv;
-                newTariffRepair.material_cost = NewTariffRepair.material_cost;
+                newTariffRepair.material_cost = CalculateMaterialCostRoundedUp(NewTariffRepair.material_cost);
                 newTariffRepair.part_name = NewTariffRepair.part_name;
                 newTariffRepair.thickness = NewTariffRepair.thickness;
                 newTariffRepair.thickness_unit_cv = NewTariffRepair.thickness_unit_cv;
                 newTariffRepair.create_by = uid;
                 newTariffRepair.create_dt = GqlUtils.GetNowEpochInSec();
+                newTariffRepair.update_by = uid;
+                newTariffRepair.update_dt = GqlUtils.GetNowEpochInSec();
                 context.tariff_repair.Add(newTariffRepair);
 
                 //change this to use trigger, instead of using code to perform the insert
@@ -800,7 +804,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 dbTariffRepair.labour_hour = UpdateTariffRepair.labour_hour;
                 dbTariffRepair.length = UpdateTariffRepair.length;
                 dbTariffRepair.length_unit_cv = UpdateTariffRepair.length_unit_cv;
-                dbTariffRepair.material_cost = UpdateTariffRepair.material_cost;
+                dbTariffRepair.material_cost = CalculateMaterialCostRoundedUp(UpdateTariffRepair.material_cost);
                 dbTariffRepair.part_name = UpdateTariffRepair.part_name;
                 dbTariffRepair.thickness = UpdateTariffRepair.thickness;
                 dbTariffRepair.thickness_unit_cv = UpdateTariffRepair.thickness_unit_cv;
@@ -849,7 +853,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                     if (labour_hour > 0) r.labour_hour = labour_hour;
                     if (length > 0) r.length = length;
                     if (!string.IsNullOrEmpty(length_unit_cv)) r.length_unit_cv = length_unit_cv;
-                    if (material_cost > 0) r.material_cost = material_cost;
+                    if (material_cost > 0) r.material_cost = CalculateMaterialCostRoundedUp(material_cost);
                     if (thickness > 0) r.thickness = thickness;
                     if (!string.IsNullOrEmpty(part_name)) r.part_name = part_name;
                     if (!string.IsNullOrEmpty(thickness_unit_cv)) r.thickness_unit_cv = thickness_unit_cv;
@@ -892,23 +896,11 @@ namespace IDMS.Models.Tariff.GqlTypes
                     }
                     else
                     {
-                        //if (!string.IsNullOrEmpty(group_name_cv))
-                        //{
-                        //    dbTariffRepairs = dbTariffRepairs.Where(t => t.group_name_cv == group_name_cv).ToArray();
-                        //    isAll = false;
-                        //}
                         if (group_name_cv != null && group_name_cv.Any())
                         {
                             dbTariffRepairs = dbTariffRepairs.Where(t => group_name_cv.Contains(t.group_name_cv)).ToArray();
                             isAll = false;
                         }
-
-                        //if (!string.IsNullOrEmpty(subgroup_name_cv))
-                        //{
-                        //    dbTariffRepairs = dbTariffRepairs.Where(t => subgroup_name_cv.EqualsIgnore(t.subgroup_name_cv ?? "")).ToArray();
-                        //    isAll = false;
-                        //}
-
                         if (subgroup_name_cv != null && subgroup_name_cv.Any())
                         {
                             dbTariffRepairs = dbTariffRepairs.Where(t => subgroup_name_cv.Contains(t.subgroup_name_cv)).ToArray();
@@ -946,7 +938,9 @@ namespace IDMS.Models.Tariff.GqlTypes
                         retval = await context.tariff_repair.ExecuteUpdateAsync(s => s
                           .SetProperty(e => e.update_dt, currentDateTime)
                           .SetProperty(e => e.update_by, uid)
-                          .SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
+                          //.SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
+                          //.SetProperty(e => e.material_cost, e => (Math.Ceiling(Convert.ToDouble((e.material_cost * material_cost_percentage) * 20)) / 20.0))
+                          .SetProperty(e => e.material_cost, e => CalculateMaterialCostRoundedUp(e.material_cost * material_cost_percentage))
                           .SetProperty(e => e.labour_hour, e => (Math.Ceiling(Convert.ToDouble((e.labour_hour ?? 0) * labour_hour_percentage) * 4) / 4))
                            );
                     }
@@ -955,7 +949,13 @@ namespace IDMS.Models.Tariff.GqlTypes
                         var guids = dbTariffRepairs.Select(p => p.guid).ToList();
                         string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
 
-                        string sql = $"UPDATE tariff_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                        //string sql = $"UPDATE tariff_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                        //             $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
+                        //             $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                        //             $"WHERE guid IN ({guidList})";
+
+
+                        string sql = $"UPDATE tariff_repair SET material_cost = (CEILING(COALESCE(material_cost, 0.0) * {material_cost_percentage} * 20.0) / 20.0), " +
                                      $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
                                      $"update_dt = {currentDateTime}, update_by = '{uid}' " +
                                      $"WHERE guid IN ({guidList})";
@@ -981,10 +981,12 @@ namespace IDMS.Models.Tariff.GqlTypes
             return retval;
         }
 
-        public double CalculateMaterialCostRoundedUp(double materialCost, double materialCostPercentage)
+        private double CalculateMaterialCostRoundedUp(double? materialCost)
         {
-            double value = materialCost * materialCostPercentage;
-            double result = Math.Ceiling(value * 100) / 100;
+            if (materialCost == 0.0)
+                return 0.0;
+
+            double result = Math.Ceiling(Convert.ToDouble(materialCost * 20)) / 20.0;
             return result;
         }
 
@@ -1050,10 +1052,12 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newTariffSteaming.temp_max = NewTariffSteaming.temp_max;
                 newTariffSteaming.temp_min = NewTariffSteaming.temp_min;
                 newTariffSteaming.labour = NewTariffSteaming.labour;
-                newTariffSteaming.cost = NewTariffSteaming.cost;
+                newTariffSteaming.cost = CalculateMaterialCostRoundedUp(NewTariffSteaming.cost);
                 newTariffSteaming.remarks = NewTariffSteaming.remarks;
                 newTariffSteaming.create_by = uid;
                 newTariffSteaming.create_dt = GqlUtils.GetNowEpochInSec();
+                newTariffSteaming.update_by = uid;
+                newTariffSteaming.update_dt = GqlUtils.GetNowEpochInSec();
                 await context.tariff_steaming.AddAsync(newTariffSteaming);
 
                 retval = await context.SaveChangesAsync();
@@ -1084,7 +1088,7 @@ namespace IDMS.Models.Tariff.GqlTypes
                 dbTariffSteaming.temp_max = UpdateTariffSteaming.temp_max;
                 dbTariffSteaming.temp_min = UpdateTariffSteaming.temp_min;
                 dbTariffSteaming.labour = UpdateTariffSteaming.labour;
-                dbTariffSteaming.cost = UpdateTariffSteaming.cost;
+                dbTariffSteaming.cost = CalculateMaterialCostRoundedUp(UpdateTariffSteaming.cost);
                 dbTariffSteaming.remarks = UpdateTariffSteaming.remarks;
                 dbTariffSteaming.update_by = uid;
                 dbTariffSteaming.update_dt = GqlUtils.GetNowEpochInSec();
@@ -1166,6 +1170,8 @@ namespace IDMS.Models.Tariff.GqlTypes
                 newUnNo.class_cv = unNumber.class_cv;
                 newUnNo.create_by = uid;
                 newUnNo.create_dt = GqlUtils.GetNowEpochInSec();
+                newUnNo.update_by = uid;
+                newUnNo.update_dt = GqlUtils.GetNowEpochInSec();
                 context.un_number.Add(newUnNo);
 
                 retval = await context.SaveChangesAsync();

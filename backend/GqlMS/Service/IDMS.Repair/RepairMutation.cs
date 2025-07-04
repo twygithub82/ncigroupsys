@@ -29,14 +29,16 @@ namespace IDMS.Repair.GqlTypes
                 newRepair.guid = Util.GenerateGUID();
                 newRepair.create_by = user;
                 newRepair.create_dt = currentDateTime;
+                newRepair.update_by = user;
+                newRepair.update_dt = currentDateTime;
 
                 newRepair.sot_guid = repair.sot_guid;
                 newRepair.aspnetusers_guid = repair.aspnetusers_guid;
                 newRepair.estimate_no = repair.estimate_no;
                 newRepair.labour_cost_discount = repair.labour_cost_discount;
                 newRepair.material_cost_discount = repair.material_cost_discount;
-                newRepair.total_cost = repair.total_cost;
-                newRepair.labour_cost = repair.labour_cost;
+                newRepair.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_cost);
+                newRepair.labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.labour_cost);
                 newRepair.owner_enable = repair.owner_enable;
                 newRepair.remarks = repair.remarks;
                 newRepair.total_hour = repair.total_hour;
@@ -44,9 +46,9 @@ namespace IDMS.Repair.GqlTypes
                 newRepair.status_cv = CurrentServiceStatus.PENDING;
 
                 //----------------------------------------------------
-                newRepair.est_cost = repair.est_cost;
-                newRepair.total_labour_cost = repair.total_labour_cost;
-                newRepair.total_material_cost = repair.total_material_cost;
+                newRepair.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.est_cost);
+                newRepair.total_labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_labour_cost);
+                newRepair.total_material_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_material_cost);
 
                 await context.repair.AddAsync(newRepair);
 
@@ -57,6 +59,8 @@ namespace IDMS.Repair.GqlTypes
                     newPart.guid = Util.GenerateGUID();
                     newPart.create_by = user;
                     newPart.create_dt = currentDateTime;
+                    newPart.update_by = user;
+                    newPart.update_dt = currentDateTime;
                     newPart.repair_guid = newRepair.guid;
                     partList.Add(newPart);
 
@@ -116,14 +120,14 @@ namespace IDMS.Repair.GqlTypes
                     appvRepair.update_by = user;
                     appvRepair.update_dt = currentDateTime;
                     appvRepair.owner_enable = repair.owner_enable;
-                    appvRepair.total_cost = repair.total_cost;
+                    appvRepair.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_cost);
                     appvRepair.bill_to_guid = repair.bill_to_guid;
                     appvRepair.remarks = repair.remarks;
 
                     //-----------------------------------------------
-                    appvRepair.est_cost = repair.est_cost;
-                    appvRepair.total_labour_cost = repair.total_labour_cost;
-                    appvRepair.total_material_cost = repair.total_material_cost;
+                    appvRepair.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.est_cost);
+                    appvRepair.total_labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_labour_cost);
+                    appvRepair.total_material_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_material_cost);
                     appvRepair.material_cost_discount = repair.material_cost_discount;
                     appvRepair.labour_cost_discount = repair.labour_cost_discount;
 
@@ -145,7 +149,7 @@ namespace IDMS.Repair.GqlTypes
                             part.approve_qty = item.approve_qty;
                             part.approve_hour = item.approve_hour;
                             part.approve_part = item.approve_part;
-                            part.approve_cost = item.approve_cost;
+                            part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                         }
@@ -185,9 +189,9 @@ namespace IDMS.Repair.GqlTypes
 
                 updateRepair.update_by = user;
                 updateRepair.update_dt = currentDateTime;
-                updateRepair.total_cost = repair.total_cost;
-                updateRepair.total_labour_cost = repair.total_labour_cost;
-                updateRepair.total_material_cost = repair.total_material_cost;
+                updateRepair.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_cost);
+                updateRepair.total_labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_labour_cost);
+                updateRepair.total_material_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.total_material_cost);
                 updateRepair.labour_cost_discount = repair.labour_cost_discount;
                 updateRepair.material_cost_discount = repair.material_cost_discount;
                 updateRepair.job_no = repair.job_no;
@@ -202,8 +206,8 @@ namespace IDMS.Repair.GqlTypes
                 {
                     updateRepair.sot_guid = repair.sot_guid;
                     updateRepair.aspnetusers_guid = repair.aspnetusers_guid;
-                    updateRepair.est_cost = repair.est_cost;
-                    updateRepair.labour_cost = repair.labour_cost;
+                    updateRepair.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.est_cost);
+                    updateRepair.labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(repair.labour_cost);
                     updateRepair.total_hour = repair.total_hour;
                     updateRepair.estimate_no = repair.estimate_no;
                     updateRepair.remarks = repair.remarks;
@@ -219,6 +223,8 @@ namespace IDMS.Repair.GqlTypes
                             newRepairPart.guid = Util.GenerateGUID();
                             newRepairPart.create_by = user;
                             newRepairPart.create_dt = currentDateTime;
+                            newRepairPart.update_by = user;
+                            newRepairPart.update_dt = currentDateTime;
                             newRepairPart.repair_guid = updateRepair.guid;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part);
                             await context.repair_part.AddAsync(newRepairPart);
@@ -243,7 +249,7 @@ namespace IDMS.Repair.GqlTypes
                             existingPart.quantity = part.quantity;
                             existingPart.location_cv = part.location_cv;
                             existingPart.hour = part.hour;
-                            existingPart.material_cost = part.material_cost;
+                            existingPart.material_cost = GqlUtils.CalculateMaterialCostRoundedUp(part.material_cost);
                             existingPart.remarks = part.remarks;
                             //await UpdateRepairDamageCode(context, user, currentDateTime, part, part.rep_damage_repair);
                             await UpdateRepairDamageCode(context, user, currentDateTime, part, existingPart.rp_damage_repair);
@@ -267,7 +273,7 @@ namespace IDMS.Repair.GqlTypes
                         {
                             existingPart.approve_part = part.approve_part;
                             existingPart.approve_qty = part.approve_qty;
-                            existingPart.approve_cost = part.approve_cost;
+                            existingPart.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(part.approve_cost);
                             existingPart.approve_hour = part.approve_hour;
                             existingPart.owner = part.owner;
                         }
@@ -680,7 +686,7 @@ namespace IDMS.Repair.GqlTypes
                     //}
                     var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid))
                         .OrderByDescending(t => t.stop_time).FirstOrDefaultAsync();
-                    if (timeTables != null) 
+                    if (timeTables != null)
                     {
                         timeTables.stop_time = null;
                         timeTables.update_by = user;
@@ -780,7 +786,7 @@ namespace IDMS.Repair.GqlTypes
             }
         }
         public async Task<int> RollbackAssignedRepair(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<string>? repairGuid)
+            [Service] IConfiguration config, List<string>? repairGuid, string? remark)
         {
             try
             {
@@ -801,6 +807,8 @@ namespace IDMS.Repair.GqlTypes
                     rollbackRepair.update_by = user;
                     rollbackRepair.update_dt = currentDateTime;
                     rollbackRepair.status_cv = CurrentServiceStatus.APPROVED;
+                    if (!string.IsNullOrEmpty(remark))
+                        rollbackRepair.remarks = remark;
 
                     //Parts handking
                     var repairarts = rollbackRepair.repair_part;
@@ -855,6 +863,8 @@ namespace IDMS.Repair.GqlTypes
                             partDamage.guid = Util.GenerateGUID();
                             partDamage.create_by = user;
                             partDamage.create_dt = currentDateTime;
+                            partDamage.update_by = user;
+                            partDamage.update_dt = currentDateTime;
 
                             partDamage.rp_guid = repairPart.guid;
                             partDamage.code_type = item.code_type;
@@ -991,28 +1001,28 @@ namespace IDMS.Repair.GqlTypes
         //    }
         //}
 
-        private async Task<bool> TankMovementCheck(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
-        {
-            string tableName = processType;
+        //private async Task<bool> TankMovementCheck(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
+        //{
+        //    string tableName = processType;
 
-            //var sqlQuery = $@"SELECT guid FROM {tableName} 
-            //                WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
-            //                '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-            //                AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+        //    //var sqlQuery = $@"SELECT guid FROM {tableName} 
+        //    //                WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
+        //    //                '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
+        //    //                AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
 
 
-            var sqlQuery = $@"SELECT guid FROM {tableName} 
-                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
-                            '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-                            AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
-            var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
+        //    var sqlQuery = $@"SELECT guid FROM {tableName} 
+        //                    WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}',
+        //                    '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
+        //                    AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
+        //    var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
-            if (result.Count > 0)
-                return true;
-            else
-                return false;
-            //}
-        }
+        //    if (result.Count > 0)
+        //        return true;
+        //    else
+        //        return false;
+        //    //}
+        //}
 
         //private async Task JobOrderHandling(ApplicationServiceDBContext context, string user, long currentDateTime, string action, string? processGuid = "", List<job_order>? jobOrders = null)
         //{
