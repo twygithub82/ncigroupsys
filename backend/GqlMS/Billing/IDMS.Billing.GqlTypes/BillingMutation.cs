@@ -29,6 +29,8 @@ namespace IDMS.Billing.GqlTypes
                 newBill.guid = Util.GenerateGUID();
                 newBill.create_by = user;
                 newBill.create_dt = currentDateTime;
+                newBill.update_by = user;
+                newBill.update_dt = currentDateTime;
                 await context.billing.AddAsync(newBill);
 
                 foreach (var item in billingEstimateRequests)
@@ -295,13 +297,15 @@ namespace IDMS.Billing.GqlTypes
                     newSD.guid = Util.GenerateGUID();
                     newSD.create_by = user;
                     newSD.create_dt = currentDateTime;
+                    newSD.update_by = user;
+                    newSD.update_dt = currentDateTime;
 
                     newSD.billing_guid = billingGuid;
                     newSD.sot_guid = item.sot_guid;
                     newSD.start_dt = item.start_dt;
                     newSD.end_dt = item.end_dt;
                     newSD.state_cv = item.state_cv;
-                    newSD.total_cost = item.total_cost;
+                    newSD.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.total_cost);
                     newSD.remaining_free_storage = item.remaining_free_storage;
                     newSD.remarks = item.remarks;
 
@@ -325,7 +329,7 @@ namespace IDMS.Billing.GqlTypes
                         updateSD.start_dt = item.start_dt;
                         updateSD.end_dt = item.end_dt;
                         updateSD.state_cv = item.state_cv;
-                        updateSD.total_cost = item.total_cost;
+                        updateSD.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.total_cost);
                         updateSD.remaining_free_storage = item.remaining_free_storage;
                         updateSD.remarks = item.remarks;
                     }
@@ -368,10 +372,10 @@ namespace IDMS.Billing.GqlTypes
                     {
                         updateBS.update_by = user;
                         updateBS.update_dt = currentDateTime;
-                        updateBS.lift_on_cost = updateBillingSOT.lift_on_cost;
-                        updateBS.lift_off_cost = updateBillingSOT.lift_off_cost;
-                        updateBS.preinspection_cost = updateBillingSOT.preinspection_cost;
-                        updateBS.storage_cost = updateBillingSOT.storage_cost;
+                        updateBS.lift_on_cost = GqlUtils.CalculateMaterialCostRoundedUp(updateBillingSOT.lift_on_cost);
+                        updateBS.lift_off_cost = GqlUtils.CalculateMaterialCostRoundedUp(updateBillingSOT.lift_off_cost);
+                        updateBS.preinspection_cost = GqlUtils.CalculateMaterialCostRoundedUp(updateBillingSOT.preinspection_cost);
+                        updateBS.storage_cost = GqlUtils.CalculateMaterialCostRoundedUp(updateBillingSOT.storage_cost);
                         updateBS.free_storage = updateBillingSOT.free_storage;
                         updateBS.storage_cal_cv = updateBillingSOT.storage_cal_cv;
                         updateBS.remarks = updateBillingSOT.remarks;
@@ -382,8 +386,8 @@ namespace IDMS.Billing.GqlTypes
                         updateBS.lift_off = updateBillingSOT.lift_off;
                         updateBS.gate_in = updateBillingSOT.gate_in;
                         updateBS.gate_out = updateBillingSOT.gate_out;
-                        updateBS.gate_in_cost = updateBillingSOT.gate_in_cost;
-                        updateBS.gate_out_cost = updateBillingSOT.gate_out_cost;
+                        updateBS.gate_in_cost = GqlUtils.CalculateMaterialCostRoundedUp(updateBillingSOT.gate_in_cost);
+                        updateBS.gate_out_cost = GqlUtils.CalculateMaterialCostRoundedUp(updateBillingSOT.gate_out_cost);
                         updateBS.depot_cost_remarks = updateBillingSOT.depot_cost_remarks;
                     }
                 }
@@ -452,8 +456,10 @@ namespace IDMS.Billing.GqlTypes
                     newSD.guid = Util.GenerateGUID();
                     newSD.create_by = user;
                     newSD.create_dt = currentDateTime;
+                    newSD.update_by = user;
+                    newSD.update_dt = currentDateTime;
                     newSD.state_cv = storageDetails.state_cv;
-                    newSD.total_cost = storageDetails.total_cost;
+                    newSD.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(storageDetails.total_cost);
                     newSD.remaining_free_storage = storageDetails.remaining_free_storage;
 
                     await context.AddAsync(newSD);
@@ -465,7 +471,7 @@ namespace IDMS.Billing.GqlTypes
                     updateSD.update_by = user;
                     updateSD.update_dt = currentDateTime;
                     updateSD.remarks = storageDetails.remarks;
-                    updateSD.total_cost = storageDetails.total_cost;
+                    updateSD.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(storageDetails.total_cost);
                     updateSD.remaining_free_storage = storageDetails.remaining_free_storage;
                     updateSD.state_cv = storageDetails.state_cv;
                 }
