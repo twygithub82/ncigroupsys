@@ -23,6 +23,8 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 template.guid = Util.GenerateGUID();
                 template.create_by = user;
                 template.create_dt = currentDateTime;
+                template.update_by = user;
+                template.update_dt = currentDateTime;
 
                 template.template_name = newTemplateEstimate.template_name;
                 template.type_cv = newTemplateEstimate.type_cv;
@@ -45,6 +47,8 @@ namespace IDMS.EstimateTemplate.GqlTypes
                     newPart.guid = Util.GenerateGUID();
                     newPart.create_by = user;
                     newPart.create_dt = currentDateTime;
+                    newPart.update_by = user;
+                    newPart.update_dt = currentDateTime;
                     newPart.template_est_guid = template.guid;
                     partList.Add(newPart);
 
@@ -105,6 +109,8 @@ namespace IDMS.EstimateTemplate.GqlTypes
                             newEstPart.guid = Util.GenerateGUID();
                             newEstPart.create_by = user;
                             newEstPart.create_dt = currentDateTime;
+                            newEstPart.update_by = user;
+                            newEstPart.update_dt = currentDateTime;
                             newEstPart.template_est_guid = template.guid;
                             await UpdateRepairDamageCode(context, user, currentDateTime, part);
                             await context.template_est_part.AddAsync(newEstPart);
@@ -169,6 +175,34 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
 
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        public async Task<int> DeleteTemplateEstimation(ApplicationMasterDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+           [Service] IConfiguration config, string templateEsimateGuid)
+        {
+            try
+            {
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                if (string.IsNullOrWhiteSpace(templateEsimateGuid))
+                    throw new GraphQLException(new Error($"Templete estimate guid cannot be null or empty", "ERROR"));
+
+                var deleteTemplete = new template_est() { guid = templateEsimateGuid };
+                context.template_est.Attach(deleteTemplete);
+
+                deleteTemplete.delete_dt = currentDateTime;
+                deleteTemplete.update_by = user;
+                deleteTemplete.update_dt = currentDateTime;
+
+                var res = await context.SaveChangesAsync();
+                return res;
             }
             catch (Exception ex)
             {
@@ -241,6 +275,8 @@ namespace IDMS.EstimateTemplate.GqlTypes
                         templateEstCustomer.guid = Util.GenerateGUID();
                         templateEstCustomer.create_by = user;
                         templateEstCustomer.create_dt = currentDateTime;
+                        templateEstCustomer.update_by = user;
+                        templateEstCustomer.update_dt = currentDateTime;
 
                         templateEstCustomer.template_est_guid = templateEst.guid;
                         templateEstCustomer.customer_company_guid = cus.customer_company_guid;
@@ -292,6 +328,8 @@ namespace IDMS.EstimateTemplate.GqlTypes
                             tepDamage.guid = Util.GenerateGUID();
                             tepDamage.create_by = user;
                             tepDamage.create_dt = currentDateTime;
+                            tepDamage.update_by = user;
+                            tepDamage.update_dt = currentDateTime;
 
                             tepDamage.tep_guid = estPart.guid;
                             tepDamage.code_type = item.code_type;
