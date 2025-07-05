@@ -2133,6 +2133,18 @@ $grid-breakpoints: (
   }
 }
 
+mat-card.tank-card {
+  background-color: lighten(#b3cbff, 10%);
+  min-height: 48px;
+  display: table;
+  width: 100%;
+}
+
+mat-card-content.tank-card-content {
+  display: table-cell;
+  vertical-align: middle;
+}
+
 .yellow-timer-icon {
   color: lighten(#dfa805, 25%); //#25D366 //#0ec955b4; /* any custom color */
 }
@@ -2468,8 +2480,8 @@ button[mat-flat-button].center-icon {
   transform: rotate(180deg);
 }
 
-.job-order-task-button{
-  width:147px
+.job-order-task-button {
+  width: 147px
 }
 
 .ellipsis-text {

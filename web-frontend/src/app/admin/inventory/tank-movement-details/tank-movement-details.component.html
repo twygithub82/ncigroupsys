@@ -459,13 +459,10 @@
                             <div class="row">
                               <div
                                 class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
-                                <span class="contact-detail-info font-bold text-decoration-underline mb-2">
+                                <span
+                                  class="contact-detail-info font-bold text-decoration-underline cursor-pointer ms-2 me-5 pe-5"
+                                  (click)="onDownloadEir()">
                                   {{translatedLangText.IN_GATE}}
-                                </span>
-                                <span class="cursor-pointer ms-2 me-5 pe-5" (click)="onDownloadEir()">
-                                  <mat-icon>
-                                    download
-                                  </mat-icon>
                                 </span>
                               </div>
                             </div>
@@ -533,13 +530,10 @@
                             <div class="row">
                               <div
                                 class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 d-flex justify-content-center">
-                                <span class="contact-detail-info font-bold text-decoration-underline mb-2">
+                                <span
+                                  class="contact-detail-info font-bold text-decoration-underline  cursor-pointer ms-2 me-5 pe-5"
+                                  (click)="onDownloadEir(false)">
                                   {{translatedLangText.OUT_GATE}}
-                                </span>
-                                <span class="cursor-pointer ms-2 me-5 pe-5" (click)="onDownloadEir(false)">
-                                  <mat-icon>
-                                    download
-                                  </mat-icon>
                                 </span>
                               </div>
                             </div>
@@ -1009,7 +1003,7 @@
                               }
                               @if (!(residueDS.loading$ | async) && !(sotDS.loading$ | async) && !(sotDS.actionLoading$
                               | async)) {
-                              @if (sot?.purpose_cleaning) {
+                              @if (sot?.purpose_cleaning || residueItem.length) {
                               <div class="row justify-content-center pt-3">
                                 <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                   <div class="row right-align-display">
@@ -1129,7 +1123,6 @@
                                         </mat-header-cell>
                                         <mat-cell *matCellDef="let row; let i=index;"
                                           [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
-                                          @if (canRollbackResidueCompleted(row) || canOverwriteResidueApproval(row)) {
                                           <button mat-icon-button [matMenuTriggerFor]="menu"
                                             (click)="stopEventTrigger($event)">
                                             <mat-icon>more_vert</mat-icon>
@@ -1147,8 +1140,11 @@
                                               <span>{{translatedLangText.OVERWRITE_APPROVAL}}</span>
                                             </button>
                                             }
+                                            <button mat-menu-item (click)="exportResidueEst($event, row)">
+                                              <mat-icon>change_circle</mat-icon>
+                                              <span>{{translatedLangText.OVERWRITE_APPROVAL}}</span>
+                                            </button>
                                           </mat-menu>
-                                          }
                                         </mat-cell>
                                       </ng-container>
                                       <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
