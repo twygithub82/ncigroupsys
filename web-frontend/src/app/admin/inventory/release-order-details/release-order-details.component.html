@@ -85,14 +85,164 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   @if (getReleaseOrderSotArray().controls.length) {
                   <div formArrayName="sotList">
+                    <table mat-table [dataSource]="getReleaseOrderSotArray().controls" matSort
+                      class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                      <ng-container matColumnDef="tank_no">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="''">
+                          {{translatedLangText.TANK_NO}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="''">
+                          <span class="mobile-label">
+                            {{translatedLangText.TANK_NO}}:
+                          </span>
+                          <div [ngClass]="'' + getBadgeClass(getLastAction(row.get('actions')?.value))">
+                            {{row.get('tank_no')?.value}}
+                          </div>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="schedule_dt">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="''">
+                          {{translatedLangText.SCHEDULE_DATE}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="''">
+                          <span class="mobile-label">{{translatedLangText.SCHEDULE_DATE}}:</span>
+                          <span>
+                            {{row.get('schedule_dt')?.value}}
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="tank_status_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="''">
+                          {{translatedLangText.TANK_STATUS}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="''">
+                          <span class="truncate-text">
+                            <span class="mobile-label">{{translatedLangText.TANK_STATUS}}:</span>
+                            <span>
+                              {{getTankStatusDescription(row.get('tank_status_cv')?.value)}}
+                            </span>
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="status_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="''">
+                          {{translatedLangText.STATUS}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"
+                          [ngClass]="''">
+                          <span class="mobile-label">{{translatedLangText.STATUS}}:</span>
+                          <span>
+                            {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="yard_cv">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="''">
+                          {{translatedLangText.LOCATION}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="''">
+                          <span class="mobile-label">{{translatedLangText.LOCATION}}:</span>
+                          <span>
+                            {{getYardDescription(row.get('yard_cv')?.value)}}
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="remarks">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          {{translatedLangText.REMARKS}}
+                        </mat-header-cell>
+                        <mat-cell mat-cell *matCellDef="let row"
+                          [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>
+                          <span>
+                            {{getYardDescription(row.get('remarks')?.value)}}
+                          </span>
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="job_no">
+                        <mat-header-cell *matHeaderCellDef
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          {{translatedLangText.JOB_NO}}
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i=index;"
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <div [formGroupName]="i">
+                            <span class="mobile-label">{{translatedLangText.JOB_NO}}:</span>
+                            <tlx-form-field customClass="mat-table-form-txt-40px">
+                              <mat-form-field>
+                                <input tlxFormInput matInput formControlName="release_job_no" required>
+                              </mat-form-field>
+                            </tlx-form-field>
+                          </div>
+                        </mat-cell>
+                      </ng-container>
+                      <!-- actions -->
+                      <ng-container matColumnDef="actions">
+                        <mat-header-cell
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                          *matHeaderCellDef>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row; let i=index;"
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
+                          @if (checkMenuItems(row)) {
+                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                            <mat-icon>more_vert</mat-icon>
+                          </button>
+                          <mat-menu #menu="matMenu">
+                            @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('cancel') &&
+                            roSotDS.canCancelStatus(row.get('status_cv')?.value)) {
+                            <button mat-menu-item (click)="cancelItem($event, row)">
+                              <mat-icon>cancel</mat-icon>
+                              <span>{{translatedLangText.CANCEL}}</span>
+                            </button>
+                            }
+                            @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('rollback')
+                            &&
+                            canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) {
+                            <button mat-menu-item (click)="rollbackItem($event, row)">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{translatedLangText.ROLLBACK_STATUS}}</span>
+                            </button>
+                            }
+                            @if (row.get('action')?.value === 'new') {
+                            <button mat-menu-item (click)="handleDelete($event, row, i)">
+                              <mat-icon>delete</mat-icon>
+                              <span>{{translatedLangText.DELETE}}</span>
+                            </button>
+                            }
+                            @if (row.get('actions')?.value.includes('cancel')) {
+                            <button mat-menu-item (click)="undoAction($event, row, 'cancel')">
+                              <mat-icon>undo</mat-icon>
+                              <span>{{translatedLangText.UNDO}} {{translatedLangText.CANCEL}}</span>
+                            </button>
+                            }
+                          </mat-menu>
+                          }
+                        </mat-cell>
+                      </ng-container>
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; let i=index; columns: displayedColumns;"
+                        [ngClass]="{'deleted-row': row.get('delete_dt')?.value, 'edited-row': row.get('guid')?.value && !row.get('delete_dt')?.value && row.get('edited')?.value}"
+                        [style.cursor]="'pointer'" matRipple>
+                      </mat-row>
+                    </table>
+                  </div>
+                  <!-- <div formArrayName="sotList">
                     @for (row of getReleaseOrderSotArray().controls; track row; let index = $index) {
                     <mat-card [formGroupName]="index" [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
                       <mat-card-header class="pt-0 pe-0 pb-0 d-flex justify-content-between align-items-center"
                         (click)="toggleRow(row)">
                         <mat-card-title [ngClass]="{'pt-1': true}">
-                          <!-- <mat-checkbox (change)="$event ? toggleRow(row) : null" [checked]="roSotSelection.isSelected(row)"
-                            class="card-checkbox" (click)="$event.stopPropagation()">
-                          </mat-checkbox> -->
                           <u>{{row.get('tank_no')?.value}}</u>
                           <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.get('actions')?.value)) + ' ms-1'">
                             {{getLastAction(row.get('actions')?.value) | uppercase }}
@@ -102,24 +252,7 @@
                       <mat-card-content [ngClass]="'pb-0'">
                         <div class="row">
                           <div class="col-xl-8-5 col-lg-8-5 col-md-12 col-sm-12 mb-1">
-                            <!-- <div class="row">
-                              <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.TANK_NO}}:</span>
-                                {{row.get('tank_no')?.value}}
-                                <div [ngClass]="'badge ' + getBadgeClass(row.get('action')?.value) + ' ms-1'">{{
-                                  row.get('action')?.value | uppercase }}
-                                </div>
-                              </div>
-                              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                                {{row.get('status_cv')?.value}}
-                              </div>
-                            </div> -->
                             <div class="row">
-                              <!-- <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.EIR_NO}}:</span>
-                                {{row.get('eir_no')?.value}}
-                              </div> -->
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.SCHEDULE_DATE}}:</span>
                                 {{row.get('schedule_dt')?.value}}
@@ -134,10 +267,6 @@
                               </div>
                             </div>
                             <div class="row">
-                              <!-- <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-1">
-                                <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
-                                {{row.get('eir_dt')?.value}}
-                              </div> -->
                               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                                 <span class="font-bold">{{translatedLangText.STATUS}}:</span>
                                 {{getSoTankStatusDescription(row.get('status_cv')?.value)}}
@@ -147,22 +276,11 @@
                                 {{getYardDescription(row.get('yard_cv')?.value)}}
                               </div>
                             </div>
-                            <!-- <div class="row">
-                              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
-                                <span class="font-bold">{{translatedLangText.REMARKS}}:</span>
-                                {{row.get('remarks')?.value}}
-                              </div>
-                            </div> -->
                           </div>
                           <div class="col-xl-2-75 col-lg-2-75 col-md-12 col-sm-12 mb-1">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                               <input matInput formControlName="release_job_no" required>
-                              <!-- @if (row.get('release_job_no')?.hasError('required')) {
-                              <mat-error>
-                                {{translatedLangText.JOB_NO}} {{translatedLangText.SO_REQUIRED}}
-                              </mat-error>
-                              } -->
                             </mat-form-field>
                           </div>
                           @if (checkMenuItems(row)) {
@@ -178,7 +296,8 @@
                                 <span>{{translatedLangText.CANCEL}}</span>
                               </button>
                               }
-                              @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('rollback') &&
+                              @if (roDS.canAddTank(releaseOrderItem) && !row.get('actions')?.value.includes('rollback')
+                              &&
                               canRollback(row.get('status_cv')?.value, row.get('sot_guid')?.value)) {
                               <button mat-menu-item (click)="rollbackItem($event, row)">
                                 <mat-icon>undo</mat-icon>
@@ -204,7 +323,7 @@
                       </mat-card-content>
                     </mat-card>
                     }
-                  </div>
+                  </div> -->
                   }
                   @else {
                   <mat-divider></mat-divider>
@@ -221,7 +340,6 @@
                 </div>
               </div>
               }
-              <mat-divider></mat-divider>
               @if (roForm?.get('sotList')?.hasError('required')) {
               <mat-error class="ps-3">
                 {{translatedLangText.ADD_ATLEAST_ONE}}

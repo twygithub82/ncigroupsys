@@ -251,7 +251,7 @@ export class FormDialogComponent {
   }
 
   checkDisable(sot: any | undefined): boolean {
-    return this.over3Days(sot) || this.notStorage(sot) || this.addedSot(sot);
+    return this.over3Days(sot) || this.notStorage(sot) || this.addedSot(sot) || this.anyActiveResidue(sot);
   }
 
   over3Days(sot: any | undefined): boolean {
@@ -390,5 +390,9 @@ export class FormDialogComponent {
 
   getLastLocation(sot?: StoringOrderTankItem) {
     return BusinessLogicUtil.getLastLocation(sot, this.igDS.getInGateItem(sot?.in_gate), sot?.tank_info, sot?.transfer)
+  }
+
+  anyActiveResidue(sot?: SchedulingSotItem): boolean {
+    return BusinessLogicUtil.anyActiveResidues(sot?.storing_order_tank?.residue);
   }
 }

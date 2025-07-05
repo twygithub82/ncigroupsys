@@ -48,6 +48,7 @@ import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 
 @Component({
   selector: 'app-release-order-details',
@@ -82,7 +83,8 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatDividerModule,
     MatMenuModule,
     MatCardModule,
-    GlobalMaxCharDirective
+    GlobalMaxCharDirective,
+    TlxFormFieldComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -90,18 +92,13 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 })
 export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
-    'select',
     'tank_no',
-    //'tank_no_validity',
-    'last_cargo',
-    'job_no',
-    'purpose_storage',
-    'purpose_cleaning',
-    'purpose_steam',
-    'purpose_repair_cv',
+    'schedule_dt',
+    'tank_status_cv',
     'status_cv',
-    'certificate_cv',
-    'actions'
+    'yard_cv',
+    'job_no',
+    'actions',
   ];
   pageTitleNew = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-NEW'
   pageTitleEdit = 'MENUITEMS.INVENTORY.LIST.RELEASE-ORDER-EDIT'
@@ -187,6 +184,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
   soTankStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
+  dataSource: AbstractControl[] = [];
 
   cvDS: CodeValuesDS;
   ccDS: CustomerCompanyDS;
@@ -435,7 +433,6 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const sotGuidList = this.getFormSotGuids();
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      disableClose: true,
       width: '80vw',
       maxWidth: '1200px',
       data: {
