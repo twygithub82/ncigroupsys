@@ -493,6 +493,8 @@ namespace IDMS.Repair.GqlTypes
                         rollbackRepair.update_by = user;
                         rollbackRepair.update_dt = currentDateTime;
                         rollbackRepair.status_cv = CurrentServiceStatus.PENDING;
+                        rollbackRepair.material_cost_discount = 0;
+                        rollbackRepair.labour_cost_discount = 0;
                         rollbackRepair.remarks = item.remarks;
 
                         needTankMovementCheck = true;
