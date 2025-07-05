@@ -93,34 +93,6 @@
                     </mat-chip-grid>
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                  <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                    <mat-chip-grid #chipProfile>
-                      @if(this.selectedProfiles.length>0){
-                      <mat-chip-row (click)="removeSelectedProfiles()">
-                        {{getSelectedProfilesDisplay()}}
-                        <button matChipRemove hidden>
-                          <mat-icon>cancel</mat-icon>
-                        </button>
-                      </mat-chip-row>
-                      }
-                      <input #profileInput [formControl]="profileNameControl" [matAutocomplete]="profileName"
-                        [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
-                      <mat-autocomplete #profileName="matAutocomplete" (optionSelected)="selectedProfile($event)">
-                        @for (p of profile_nameList; track p) {
-                        <mat-option [value]="p" [class.mdc-list-item--selected]="itemProfileSelected(p)">
-                          <div class="horizontal-container">
-                            <mat-checkbox color="primary" (click)="onCheckboxProfileClicked(p);$event.stopPropagation()"
-                              [checked]="itemProfileSelected(p) || false"></mat-checkbox>
-                            <div class="option-text">{{p.profile_name}}</div>
-                          </div>
-                        </mat-option>
-                        }
-                      </mat-autocomplete>
-                    </mat-chip-grid>
-                  </mat-form-field>
-                </div> -->
               </div>
             </div>
           </mat-expansion-panel>

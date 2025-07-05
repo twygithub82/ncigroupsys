@@ -376,6 +376,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         });
       }
       else {
+        this.pcForm.get('min_temp')?.setErrors({ overlaps: true });
+        this.pcForm.get('max_temp')?.setErrors({ overlaps: true });
         this.pcForm?.setErrors({ overlaps: true });
       }
     });

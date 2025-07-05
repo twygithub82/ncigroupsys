@@ -1455,4 +1455,12 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     return retval;
   }
 
+  // DisplayMaterialCost(row:TemplateEstPartItem):String
+  // {
+  //   var retval: string = this.parse2Decimal(row.tariff_repair?.material_cost);
+  //   if()
+  //   retval = Number(Number(row.tariff_repair.material_cost || 0) * Number(row.quantity || 0)).toFixed(2);
+  //   return retval;
+  // }
+
 }
