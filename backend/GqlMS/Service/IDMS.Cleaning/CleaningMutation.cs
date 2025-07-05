@@ -31,6 +31,12 @@ namespace IDMS.Cleaning.GqlTypes
                 newCleaning.guid = Util.GenerateGUID();
                 newCleaning.create_by = user;
                 newCleaning.create_dt = currentDateTime;
+                newCleaning.update_by = user;
+                newCleaning.update_dt = currentDateTime;
+                newCleaning.buffer_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.buffer_cost);
+                newCleaning.cleaning_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.cleaning_cost);
+                newCleaning.est_buffer_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.est_buffer_cost);
+                newCleaning.est_cleaning_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.est_cleaning_cost);
 
                 newCleaning.status_cv = string.IsNullOrEmpty(cleaning.status_cv) ? CurrentServiceStatus.APPROVED : cleaning.status_cv;
 
@@ -80,8 +86,8 @@ namespace IDMS.Cleaning.GqlTypes
 
                 updateCleaning.job_no = cleaning.job_no;
                 updateCleaning.remarks = cleaning.remarks;
-                updateCleaning.est_buffer_cost = cleaning.est_buffer_cost;
-                updateCleaning.est_cleaning_cost = cleaning.est_cleaning_cost;
+                updateCleaning.est_buffer_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.est_buffer_cost);
+                updateCleaning.est_cleaning_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.est_cleaning_cost);
                 updateCleaning.update_by = user;
                 updateCleaning.update_dt = currentDateTime;
 
@@ -93,8 +99,8 @@ namespace IDMS.Cleaning.GqlTypes
                         updateCleaning.approve_by = user;
 
                         updateCleaning.bill_to_guid = cleaning.bill_to_guid;
-                        updateCleaning.buffer_cost = cleaning.buffer_cost;
-                        updateCleaning.cleaning_cost = cleaning.cleaning_cost;
+                        updateCleaning.buffer_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.buffer_cost);
+                        updateCleaning.cleaning_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.cleaning_cost);
 
                         await GqlUtils.JobOrderHandling(context, "cleaning", user, currentDateTime, ObjectAction.APPROVE, processGuid: cleaning.guid);
                         tankMovementCheck = true;
@@ -135,13 +141,9 @@ namespace IDMS.Cleaning.GqlTypes
                     case ObjectAction.OVERWRITE:
                         updateCleaning.approve_dt = cleaning.approve_dt;
                         updateCleaning.overwrite_remarks = cleaning.overwrite_remarks;
-                        updateCleaning.buffer_cost = cleaning.buffer_cost;
-                        updateCleaning.cleaning_cost = cleaning.cleaning_cost;
-                        //updateCleaning.cleaning_cost cleaning.storing_order_tank.in_gate.FirstOrDefault().in_gate_survey.tank_comp_guid;
-
-                        //updateCleaning.storing_order_tank.in_gate.Where(ig => ig.guid == inGateSurvey.in_gate_guid)
-                        //                                         .SingleOrDefault().in_gate_survey.tank_comp_guid = inGateSurvey.tank_comp_guid;
-
+                        updateCleaning.buffer_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.buffer_cost);
+                        updateCleaning.cleaning_cost = GqlUtils.CalculateMaterialCostRoundedUp(cleaning.cleaning_cost);
+                 
                         if (inGateSurvey == null || string.IsNullOrEmpty(inGateSurvey.guid))
                             throw new GraphQLException(new Error("Ingate survey object cannot be null when overwrite.", "ERROR"));
 
@@ -370,34 +372,34 @@ namespace IDMS.Cleaning.GqlTypes
             }
         }
 
-        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
-        {
-            //First check if still have other steaming estimate havnt completed
-            string tableName = processType;
+        //private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, string processGuid)
+        //{
+        //    //First check if still have other steaming estimate havnt completed
+        //    string tableName = processType;
 
-            var sqlQuery = $@"SELECT guid FROM {tableName} 
-                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
-                            '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-                            AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
-            var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
+        //    var sqlQuery = $@"SELECT guid FROM {tableName} 
+        //                    WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
+        //                    '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
+        //                    AND sot_guid = '{sotGuid}' AND guid != '{processGuid}' AND delete_dt IS NULL";
+        //    var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
-            if (result.Count > 0)
-                return true;
-            else
-                return false;
-        }
+        //    if (result.Count > 0)
+        //        return true;
+        //    else
+        //        return false;
+        //}
 
-        private async Task TankMovementCheckCrossProcess(ApplicationServiceDBContext context, string sotGuid, string user, long currentDateTime)
-        {
-            //if no other steaming estimate or all completed. then we check cross process tank movement
-            var sot = await context.storing_order_tank.FindAsync(sotGuid);
-            if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                sot.tank_status_cv = TankMovementStatus.REPAIR;
-            else
-                sot.tank_status_cv = TankMovementStatus.STORAGE;
-            sot.update_by = user;
-            sot.update_dt = currentDateTime;
-        }
+        //private async Task TankMovementCheckCrossProcess(ApplicationServiceDBContext context, string sotGuid, string user, long currentDateTime)
+        //{
+        //    //if no other steaming estimate or all completed. then we check cross process tank movement
+        //    var sot = await context.storing_order_tank.FindAsync(sotGuid);
+        //    if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+        //        sot.tank_status_cv = TankMovementStatus.REPAIR;
+        //    else
+        //        sot.tank_status_cv = TankMovementStatus.STORAGE;
+        //    sot.update_by = user;
+        //    sot.update_dt = currentDateTime;
+        //}
 
         //public async Task<int> CompleteQCCleaning(ApplicationServiceDBContext context, [Service] IConfiguration config,
         //    [Service] IHttpContextAccessor httpContextAccessor, CleaningJobOrder cleaningJobOrder)

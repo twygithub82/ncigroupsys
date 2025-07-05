@@ -9,7 +9,6 @@ using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Steaming.GqlTypes.LocalModel;
 using IDMS.Models.Inventory;
-using System.ComponentModel.Design;
 
 namespace IDMS.Steaming.GqlTypes
 {
@@ -28,15 +27,23 @@ namespace IDMS.Steaming.GqlTypes
                 newSteaming.guid = Util.GenerateGUID();
                 newSteaming.create_by = user;
                 newSteaming.create_dt = currentDateTime;
+                newSteaming.update_by = user;
+                newSteaming.update_dt = currentDateTime;
                 newSteaming.status_cv = CurrentServiceStatus.PENDING;
                 newSteaming.estimate_by = user;
                 newSteaming.estimate_dt = currentDateTime;
+                newSteaming.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.est_cost);
+                newSteaming.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_cost);
+                newSteaming.total_labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_labour_cost);
+                newSteaming.total_material_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_material_cost);
 
                 foreach (var item in steaming.steaming_part)
                 {
                     item.guid = Util.GenerateGUID();
                     item.create_by = user;
                     item.create_dt = currentDateTime;
+                    item.update_by = user;
+                    item.update_dt = currentDateTime;
                     item.steaming_guid = newSteaming.guid;
                 }
 
@@ -80,10 +87,10 @@ namespace IDMS.Steaming.GqlTypes
                 approveSteam.update_by = user;
                 approveSteam.update_dt = currentDateTime;
                 if (steaming.est_cost != null)
-                    approveSteam.est_cost = steaming.est_cost;
-                approveSteam.total_cost = steaming.total_cost;
-                approveSteam.total_material_cost = steaming.total_material_cost;
-                approveSteam.total_labour_cost = steaming.total_labour_cost;
+                    approveSteam.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.est_cost);
+                approveSteam.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_cost);
+                approveSteam.total_material_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_material_cost);
+                approveSteam.total_labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_labour_cost);
                 approveSteam.total_hour = steaming.total_hour;
                 approveSteam.flat_rate = steaming.flat_rate;
                 approveSteam.rate = steaming.rate;
@@ -110,13 +117,8 @@ namespace IDMS.Steaming.GqlTypes
                                 part.description = item.description;
                                 part.approve_part = item.approve_part;
                                 part.approve_qty = item.approve_qty;
-                                part.approve_labour = item.approve_labour;
-                                part.approve_cost = item.approve_cost;
-
-                                part.approve_part = item.approve_part;
-                                part.approve_qty = item.approve_qty;
-                                part.approve_labour = item.approve_labour;
-                                part.approve_cost = item.approve_cost;
+                                part.approve_labour = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_labour);
+                                part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
 
                                 part.update_by = user;
                                 part.update_dt = currentDateTime;
@@ -129,17 +131,19 @@ namespace IDMS.Steaming.GqlTypes
                             newPart.guid = Util.GenerateGUID();
                             newPart.create_by = user;
                             newPart.create_dt = currentDateTime;
+                            newPart.update_by = user;
+                            newPart.update_dt = currentDateTime;
                             newPart.steaming_guid = item.steaming_guid ?? steaming.guid;
                             newPart.steaming_exclusive_guid = item.steaming_exclusive_guid;
                             newPart.tariff_steaming_guid = item.tariff_steaming_guid;
                             newPart.job_order_guid = "";
                             newPart.description = item.description;
                             newPart.quantity = item.quantity;
-                            newPart.cost = item.cost;
-                            newPart.labour = item.labour;
-                            newPart.approve_cost = item.approve_cost;
+                            newPart.cost = GqlUtils.CalculateMaterialCostRoundedUp(item.cost);
+                            newPart.labour = GqlUtils.CalculateMaterialCostRoundedUp(item.labour);
+                            newPart.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
+                            newPart.approve_labour = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_labour);
                             newPart.approve_qty = item.approve_qty;
-                            newPart.approve_labour = item.approve_labour;
                             newPart.approve_part = true;
                             await context.steaming_part.AddAsync(newPart);
                         }
@@ -188,21 +192,20 @@ namespace IDMS.Steaming.GqlTypes
                 if (steaming.action != null && steaming.action.EqualsIgnore(ObjectAction.OVERWRITE))
                 {
                     updateSteaming.overwrite_remarks = steaming.overwrite_remarks;
-                    updateSteaming.total_cost = steaming.total_cost;
-     
+                    updateSteaming.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_cost);
                 }
                 else
                 {   //For normal update
-                    updateSteaming.est_cost = steaming.est_cost;
+                    updateSteaming.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.est_cost);
                     updateSteaming.est_hour = steaming.est_hour;
                     updateSteaming.rate = steaming.rate;
                     updateSteaming.flat_rate = steaming.flat_rate;
-                    updateSteaming.total_cost = steaming.total_cost;
+                    updateSteaming.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_cost);
                     updateSteaming.remarks = steaming.remarks;
                     if (steaming.total_labour_cost != null)
-                        updateSteaming.total_labour_cost = steaming.total_labour_cost;
+                        updateSteaming.total_labour_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_labour_cost);
                     if (steaming.total_material_cost != null)
-                        updateSteaming.total_material_cost = steaming.total_material_cost;
+                        updateSteaming.total_material_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_material_cost);
                 }
                 //Handling For steaming_part
                 foreach (var item in steaming.steaming_part)
@@ -212,6 +215,8 @@ namespace IDMS.Steaming.GqlTypes
                         item.guid = Util.GenerateGUID();
                         item.create_by = user;
                         item.create_dt = currentDateTime;
+                        item.update_by = user;
+                        item.update_dt = currentDateTime;
                         item.steaming_guid = steaming.guid;
                         await context.steaming_part.AddAsync(item);
                     }
@@ -226,14 +231,14 @@ namespace IDMS.Steaming.GqlTypes
                             part.update_by = user;
                             part.update_dt = currentDateTime;
                             part.quantity = item.quantity;
-                            part.cost = item.cost;
-                            part.labour = item.labour;
+                            part.cost = GqlUtils.CalculateMaterialCostRoundedUp(item.cost);
+                            part.labour = GqlUtils.CalculateMaterialCostRoundedUp(item.labour);
                             part.description = item.description;
                             part.tariff_steaming_guid = item.tariff_steaming_guid;
                             part.approve_part = item.approve_part;
                             part.approve_qty = item.approve_qty;
-                            part.approve_labour = item.approve_labour;
-                            part.approve_cost = item.approve_cost;
+                            part.approve_labour = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_labour);
+                            part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                         }
                     }
                     else if (ObjectAction.CANCEL.EqualsIgnore(item.action))
@@ -253,8 +258,8 @@ namespace IDMS.Steaming.GqlTypes
                         part.update_dt = currentDateTime;
                         part.approve_part = item.approve_part;
                         part.approve_qty = item.approve_qty;
-                        part.approve_cost = item.approve_cost;
-                        part.approve_labour = item.approve_labour;
+                        part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
+                        part.approve_labour = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_labour);
                     }
                 }
 
@@ -358,6 +363,8 @@ namespace IDMS.Steaming.GqlTypes
                     steamingTemp.guid = Util.GenerateGUID();
                     steamingTemp.create_by = user;
                     steamingTemp.create_dt = currentDateTime;
+                    steamingTemp.update_by = user;
+                    steamingTemp.update_dt = currentDateTime;
                     await context.AddAsync(steamingTemp);
 
                     var steam = await context.steaming.Where(s => s.steaming_part
@@ -755,7 +762,7 @@ namespace IDMS.Steaming.GqlTypes
         }
 
         public async Task<int> RollbackAssignedSteaming(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<string>? steamingGuid)
+            [Service] IConfiguration config, List<string>? steamingGuid, string? remark)
         {
             try
             {
@@ -780,6 +787,8 @@ namespace IDMS.Steaming.GqlTypes
                     rollbackSteaming.update_by = user;
                     rollbackSteaming.update_dt = currentDateTime;
                     rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                    if (!string.IsNullOrEmpty(remark))
+                        rollbackSteaming.remarks = remark;
 
                     //Parts handking
                     var steamParts = rollbackSteaming.steaming_part;

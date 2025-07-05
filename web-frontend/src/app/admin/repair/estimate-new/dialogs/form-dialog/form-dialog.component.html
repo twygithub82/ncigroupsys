@@ -118,7 +118,7 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl col-lg col-md col-sm mb-1">
+        <div class="col-xl-0-75 col-lg-0-75 col-md-1 col-sm mb-1">
           @if (canEdit()) {
           <button mat-mini-fab color="primary" [disabled]="!this.repairPartForm.get('part_name')?.value"
             (click)="searchPart()">
@@ -126,7 +126,7 @@
           </button>
           }
         </div>
-        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
             <input matInput formControlName="remarks">

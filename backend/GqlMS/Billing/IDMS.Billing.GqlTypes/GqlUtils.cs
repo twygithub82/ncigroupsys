@@ -188,6 +188,14 @@ namespace IDMS.Billing.Application
             var diff = (7 + (dayOfWeek - DayOfWeek.Monday)) % 7;
             return date.AddDays(-1 * diff).Date;
         }
-        
+
+        public static double CalculateMaterialCostRoundedUp(double? materialCost)
+        {
+            if (materialCost == 0.0)
+                return 0.0;
+
+            double result = Math.Ceiling(Convert.ToDouble(materialCost * 20)) / 20.0;
+            return result;
+        }
     }
 }

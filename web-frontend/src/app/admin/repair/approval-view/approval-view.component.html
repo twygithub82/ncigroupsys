@@ -133,7 +133,7 @@
     </div>
     <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
-        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card">
             <div class="header">
               <h2>
@@ -148,24 +148,44 @@
               </div>
               }
               @if (!(repairDS.loadingSubject | async)) {
-              <div class="row padding-left">
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-b-10">
+              <div class="row">
+                <div class="col-xl-2 col-lg-12 col-md-12 col-sm-12 m-b-10">
                   {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
                 </div>
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-b-10">
+                <div class="col-xl-2 col-lg-12 col-md-12 col-sm-12 m-b-10 align-center">
                   {{translatedLangText.ESTIMATE_DATE}}: <span
                     class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                 </div>
-                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-b-10">
+                <div class="col-xl-2 col-lg-12 col-md-12 col-sm-12 m-b-10 align-right">
                   {{translatedLangText.STATUS}}: <span
                     [ngClass]="'font-bold badge ' + repairDS.getStatusBadgeClass(repairItem?.status_cv)">{{getProcessStatusDescription(repairItem?.status_cv)}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
+                    <input matInput formControlName="job_no" required>
+                  </mat-form-field>
+                </div>
+                <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                  @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
+                    <mat-select formControlName="bill_to" required>
+                      @for (cc of customer_companyList; track cc) {
+                      <mat-option [value]="cc">{{displayCustomerCompanyName(cc)}}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  }
                 </div>
               </div>
               }
             </div>
           </div>
         </div>
-        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <!-- <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card pb-0">
             <div class="header">
               <h2>
@@ -196,11 +216,6 @@
                       <mat-option [value]="cc">{{displayCustomerCompanyName(cc)}}</mat-option>
                       }
                     </mat-select>
-                    <!-- @if (repairForm?.get('bill_to')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.BILL_TO}} {{translatedLangText.SO_REQUIRED}}
-                    </mat-error>
-                    } -->
                   </mat-form-field>
                   }
                 </div>
@@ -208,7 +223,7 @@
               }
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </form>
     <div class="row clearfix">

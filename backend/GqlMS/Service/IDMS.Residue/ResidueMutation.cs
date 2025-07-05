@@ -39,10 +39,12 @@ namespace IDMS.Residue.GqlTypes
                 newResidue.status_cv = CurrentServiceStatus.PENDING;
                 newResidue.allocate_by = residue.allocate_by;
                 newResidue.allocate_dt = residue.allocate_dt;
-                newResidue.est_cost = residue.est_cost;
-                newResidue.total_cost = residue.total_cost;
+                newResidue.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(residue.est_cost);
+                newResidue.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(residue.total_cost);
                 newResidue.create_by = user;
                 newResidue.create_dt = currentDateTime;
+                newResidue.update_by = user;
+                newResidue.update_dt = currentDateTime;
 
                 await context.residue.AddAsync(newResidue);
 
@@ -53,6 +55,8 @@ namespace IDMS.Residue.GqlTypes
                     newPart.guid = Util.GenerateGUID();
                     newPart.create_by = user;
                     newPart.create_dt = currentDateTime;
+                    newPart.update_by = user;
+                    newPart.update_dt = currentDateTime;
                     newPart.residue_guid = newResidue.guid;
                     partList.Add(newPart);
                 }
@@ -99,12 +103,12 @@ namespace IDMS.Residue.GqlTypes
                 updatedResidue.job_no = residue.job_no;
                 updatedResidue.bill_to_guid = residue.bill_to_guid;
                 updatedResidue.remarks = residue.remarks;
-                updatedResidue.total_cost = residue.total_cost;
+                updatedResidue.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(residue.total_cost);
 
                 if (ObjectAction.OVERWRITE.EqualsIgnore(residue.action))
                     updatedResidue.overwrite_remarks = residue.overwrite_remarks;
                 else
-                    updatedResidue.est_cost = residue.est_cost;
+                    updatedResidue.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(residue.est_cost);
 
                 //Handling For Template_est_part
                 foreach (var item in residue.residue_part)
@@ -114,6 +118,8 @@ namespace IDMS.Residue.GqlTypes
                         item.guid = Util.GenerateGUID();
                         item.create_by = user;
                         item.create_dt = currentDateTime;
+                        item.update_by = user;
+                        item.update_dt = currentDateTime;
                         item.residue_guid = residue.guid;
                         await context.residue_part.AddAsync(item);
                     }
@@ -129,7 +135,7 @@ namespace IDMS.Residue.GqlTypes
                         part.update_dt = currentDateTime;
                         part.quantity = item.quantity;
                         part.qty_unit_type_cv = item.qty_unit_type_cv;
-                        part.cost = item.cost;
+                        part.cost = GqlUtils.CalculateMaterialCostRoundedUp(item.cost);
                         part.description = item.description;
                         part.tariff_residue_guid = item.tariff_residue_guid;
                     }
@@ -150,7 +156,7 @@ namespace IDMS.Residue.GqlTypes
                         part.update_dt = currentDateTime;
                         part.approve_part = item.approve_part;
                         part.approve_qty = item.approve_qty;
-                        part.approve_cost = item.approve_cost;
+                        part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                         part.qty_unit_type_cv = item.qty_unit_type_cv;
                     }
                 }
@@ -185,8 +191,8 @@ namespace IDMS.Residue.GqlTypes
                     approveResidue.bill_to_guid = residue.bill_to_guid;
                     approveResidue.job_no = residue.job_no;
                     approveResidue.remarks = residue.remarks;
-                    approveResidue.est_cost = residue.est_cost;
-                    approveResidue.total_cost = residue.total_cost;
+                    approveResidue.est_cost = GqlUtils.CalculateMaterialCostRoundedUp(residue.est_cost);
+                    approveResidue.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(residue.total_cost);
 
                     //Only change when first time approve
                     if (CurrentServiceStatus.PENDING.EqualsIgnore(residue.status_cv))
@@ -210,7 +216,7 @@ namespace IDMS.Residue.GqlTypes
 
                                 part.description = item.description;
                                 part.approve_part = item.approve_part;
-                                part.approve_cost = item.approve_cost;
+                                part.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                                 part.approve_qty = item.approve_qty;
                                 part.approve_part = item.approve_part;
                                 part.qty_unit_type_cv = item.qty_unit_type_cv;
@@ -223,13 +229,15 @@ namespace IDMS.Residue.GqlTypes
                                 newPart.guid = Util.GenerateGUID();
                                 newPart.create_by = user;
                                 newPart.create_dt = currentDateTime;
+                                newPart.update_by = user;
+                                newPart.update_dt = currentDateTime;
                                 newPart.residue_guid = item.residue_guid ?? residue.guid;
                                 newPart.tariff_residue_guid = item.tariff_residue_guid;
                                 newPart.job_order_guid = "";
                                 newPart.description = item.description;
                                 newPart.quantity = item.quantity;
-                                newPart.cost = item.cost;
-                                newPart.approve_cost = item.approve_cost;
+                                newPart.cost = GqlUtils.CalculateMaterialCostRoundedUp(item.cost);
+                                newPart.approve_cost = GqlUtils.CalculateMaterialCostRoundedUp(item.approve_cost);
                                 newPart.approve_qty = item.approve_qty;
                                 newPart.approve_part = true;
                                 newPart.qty_unit_type_cv = item.qty_unit_type_cv;
@@ -683,7 +691,7 @@ namespace IDMS.Residue.GqlTypes
         //}
 
         public async Task<int> RollbackAssignedResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-           [Service] IConfiguration config, List<string>? residueGuid)
+           [Service] IConfiguration config, List<string>? residueGuid, string? remark)
         {
             try
             {
@@ -704,15 +712,17 @@ namespace IDMS.Residue.GqlTypes
                     rollbackResidue.update_by = user;
                     rollbackResidue.update_dt = currentDateTime;
                     rollbackResidue.status_cv = CurrentServiceStatus.APPROVED;
+                    if (!string.IsNullOrEmpty(remark))
+                        rollbackResidue.remarks = remark;
 
                     //Parts handking
                     var residueParts = rollbackResidue.residue_part;
-                    if(residueParts != null)
+                    if (residueParts != null)
                     {
                         foreach (var part in residueParts)
                         {
                             //Job Order Handling, must perform before set part.job_order_guid to null
-                            if(part.job_order  != null)
+                            if (part.job_order != null)
                             {
                                 part.job_order.delete_dt = currentDateTime;
                                 part.job_order.update_dt = currentDateTime;
@@ -746,38 +756,38 @@ namespace IDMS.Residue.GqlTypes
             }
         }
 
-        private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, List<string> processGuidList)
-        {
-            //First check if still have other steaming estimate havnt completed
-            var processGuid = string.Join(",", processGuidList.Select(g => $"'{g}'"));
-            string tableName = processType;
+        //private async Task<bool> TankMovementCheckInternal(ApplicationServiceDBContext context, string processType, string sotGuid, List<string> processGuidList)
+        //{
+        //    //First check if still have other steaming estimate havnt completed
+        //    var processGuid = string.Join(",", processGuidList.Select(g => $"'{g}'"));
+        //    string tableName = processType;
 
-            var sqlQuery = $@"SELECT guid FROM {tableName} 
-                            WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
-                            '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
-                            AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
-            var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
+        //    var sqlQuery = $@"SELECT guid FROM {tableName} 
+        //                    WHERE status_cv IN ('{CurrentServiceStatus.APPROVED}', '{CurrentServiceStatus.JOB_IN_PROGRESS}', '{CurrentServiceStatus.QC}', 
+        //                    '{CurrentServiceStatus.PENDING}', '{CurrentServiceStatus.PARTIAL}', '{CurrentServiceStatus.ASSIGNED}')
+        //                    AND sot_guid = '{sotGuid}' AND guid NOT IN ({processGuid}) AND delete_dt IS NULL";
+        //    var result = await context.Database.SqlQueryRaw<string>(sqlQuery).ToListAsync();
 
-            if (result.Count > 0)
-                return true;
-            else
-                return false;
-        }
+        //    if (result.Count > 0)
+        //        return true;
+        //    else
+        //        return false;
+        //}
 
-        private async Task TankMovementCheckCrossProcess(ApplicationServiceDBContext context, string sotGuid, string user, long currentDateTime)
-        {
-            var sot = await context.storing_order_tank.FindAsync(sotGuid);
+        //private async Task TankMovementCheckCrossProcess(ApplicationServiceDBContext context, string sotGuid, string user, long currentDateTime)
+        //{
+        //    var sot = await context.storing_order_tank.FindAsync(sotGuid);
 
 
-            if (sot?.purpose_cleaning ?? false)
-                sot.tank_status_cv = TankMovementStatus.CLEANING;
-            else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
-                sot.tank_status_cv = TankMovementStatus.REPAIR;
-            else
-                sot.tank_status_cv = TankMovementStatus.STORAGE;
-            sot.update_by = user;
-            sot.update_dt = currentDateTime;
-        }
+        //    if (sot?.purpose_cleaning ?? false)
+        //        sot.tank_status_cv = TankMovementStatus.CLEANING;
+        //    else if (!string.IsNullOrEmpty(sot?.purpose_repair_cv))
+        //        sot.tank_status_cv = TankMovementStatus.REPAIR;
+        //    else
+        //        sot.tank_status_cv = TankMovementStatus.STORAGE;
+        //    sot.update_by = user;
+        //    sot.update_dt = currentDateTime;
+        //}
 
         //private async Task<bool> JobInProgessCheck(ApplicationServiceDBContext context, string processGuid)
         //{

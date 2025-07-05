@@ -28,6 +28,8 @@ namespace IDMS.Booking.GqlTypes
                 newScheduling.guid = Util.GenerateGUID();
                 newScheduling.create_by = user;
                 newScheduling.create_dt = currentDateTime;
+                newScheduling.update_by = user;
+                newScheduling.update_dt = currentDateTime;
 
                 //newScheduling.reference = scheduling.reference;
                 newScheduling.status_cv = BookingStatus.NEW;
@@ -41,6 +43,8 @@ namespace IDMS.Booking.GqlTypes
                     newSchedulingSOT.guid = Util.GenerateGUID();
                     newSchedulingSOT.create_by = user;
                     newSchedulingSOT.create_dt = currentDateTime;
+                    newSchedulingSOT.update_by = user;
+                    newSchedulingSOT.update_dt = currentDateTime;
 
                     newSchedulingSOT.sot_guid = sch_sot.sot_guid;
                     newSchedulingSOT.scheduling_guid = newScheduling.guid;

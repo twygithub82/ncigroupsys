@@ -1068,22 +1068,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   displayDateTime(input: number | undefined): string | undefined {
-    var dateTime = Utility.convertEpochToDateTimeStr(input);
-    if (dateTime && dateTime !== '-') {
-      const parts = dateTime.split(' ');
-      if (parts.length >= 2) {
-        dateTime = `${parts[0]} - ${parts[1]}`;
-      }
-    }
-    return dateTime;
+    return Utility.convertEpochToDateTimeStr(input);
   }
 
   displayDate(input: any): string | undefined {
     return Utility.convertEpochToDateStr(input);
-  }
-
-  convertDisplayDate(input: number | Date | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input as number);
   }
 
   getNatureInGateAlert() {
@@ -3455,6 +3444,33 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
     });
+  }
+
+  exportResidueEst(event: Event, residueItem: ResidueItem) {
+    let tempDirection: Direction;
+
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    // const dialogRef = this.dialog.open(ResidueEstimateFormComponent, {
+    //   position: { top: '-9999px', left: '-9999px' },
+    //   width: '794px',
+    //   height: '80vh',
+    //   data: {
+    //     residueItem,
+    //     residueDS: this.residueDS,
+    //     cvDS: this.cvDS
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.fileManagerService.actionLoadingSubject.next(true);
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   this.fileManagerService.actionLoadingSubject.next(false);
+    // });
+
   }
 
   anyActiveRepair(includePending: boolean = false): boolean {

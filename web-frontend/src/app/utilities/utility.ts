@@ -226,7 +226,7 @@ export class Utility {
     const formattedHours = hours % 12 || 12; // convert 0 to 12 for midnight
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
 
-    return `${day}/${month}/${year} ${formattedHours}:${formattedMinutes} ${ampm}`;
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year} ; ${formattedHours}:${formattedMinutes} ${ampm}`;
   }
 
   static formatDateTo24Hour(date: Date): string {
@@ -241,7 +241,7 @@ export class Utility {
     const formattedHours = String(hours).padStart(2, '0');
     const formattedMinutes = String(minutes).padStart(2, '0');
 
-    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year} ${formattedHours}:${formattedMinutes}`;
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year} ; ${formattedHours}:${formattedMinutes}`;
   }
 
   static getDisplayTimeTaken(stop_time: number | undefined, start_time: number | undefined): string {

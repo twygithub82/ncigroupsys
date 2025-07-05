@@ -44,6 +44,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-estimate',
@@ -864,6 +865,10 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     this.filterRECheck.est_dt_start = undefined;
     this.filterRECheck.est_dt_end = undefined;
     this.filterRECheck.status_cv = this.availableProcessStatus;
+  }
+
+  anyActiveResidues(sot: StoringOrderTankItem): boolean {
+    return BusinessLogicUtil.anyActiveResidues(sot.residue);
   }
 
   getMaxDate() {

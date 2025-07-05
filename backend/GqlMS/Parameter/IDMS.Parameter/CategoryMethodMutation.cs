@@ -34,6 +34,8 @@ namespace IDMS.Models.Parameter.GqlTypes
                 newCleanMthd.sequence = maxSequence ?? 0 + 1;
                 newCleanMthd.create_by = uid;
                 newCleanMthd.create_dt = currentDateTime;
+                newCleanMthd.update_by = uid;
+                newCleanMthd.update_dt = currentDateTime;
 
                 //Cleaning formula handling
                 //IList<cleaning_method_formula> cleaningMethodFormulaList = new List<cleaning_method_formula>();
@@ -46,9 +48,10 @@ namespace IDMS.Models.Parameter.GqlTypes
                         item.method_guid = newCleanMthd.guid;
                         item.create_by = uid;
                         item.create_dt = currentDateTime;
+                        item.update_by = uid;
+                        item.update_dt = currentDateTime;
 
                         await context.cleaning_method_formula.AddAsync(item);
-                        //cleaningMethodFormulaList.Add(newCMF);
                     }
                 }
 
@@ -59,7 +62,6 @@ namespace IDMS.Models.Parameter.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
-
 
             return retval;
         }
@@ -99,7 +101,9 @@ namespace IDMS.Models.Parameter.GqlTypes
                         newCMF.sequence = item.sequence;
                         newCMF.create_by = user;
                         newCMF.create_dt = currentDateTime;
-                 
+                        newCMF.update_by = user;
+                        newCMF.update_dt = currentDateTime;
+
                         await context.cleaning_method_formula.AddAsync(newCMF);
                     }
 
@@ -186,6 +190,8 @@ namespace IDMS.Models.Parameter.GqlTypes
 
                 newCleanCategory.create_by = uid;
                 newCleanCategory.create_dt = GqlUtils.GetNowEpochInSec();
+                newCleanCategory.update_by = uid;
+                newCleanCategory.update_dt = GqlUtils.GetNowEpochInSec();
 
                 await context.cleaning_category.AddAsync(newCleanCategory);
                 retval = await context.SaveChangesAsync();
@@ -332,7 +338,6 @@ namespace IDMS.Models.Parameter.GqlTypes
         #endregion Cleaning Category
 
         #region cleaning_formula
-
         public async Task<int> AddCleaningFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
              [Service] IHttpContextAccessor httpContextAccessor, cleaning_formula NewCleanFormula)
         {
@@ -348,6 +353,8 @@ namespace IDMS.Models.Parameter.GqlTypes
                 newCleanFormula.duration = NewCleanFormula.duration;
                 newCleanFormula.create_by = uid;
                 newCleanFormula.create_dt = GqlUtils.GetNowEpochInSec();
+                newCleanFormula.update_by = uid;
+                newCleanFormula.update_dt = GqlUtils.GetNowEpochInSec();
 
                 await context.cleaning_formula.AddAsync(newCleanFormula);
                 retval = await context.SaveChangesAsync();
@@ -418,117 +425,7 @@ namespace IDMS.Models.Parameter.GqlTypes
         #endregion
 
         #region cleaning_method_formula
-        //public async Task<int> AddCleaningMethodFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
-        //        [Service] IHttpContextAccessor httpContextAccessor, CleaningMethodFormulaRequest NewCleanMethodFormula)
-        //{
-        //    int retval = 0;
-        //    try
-        //    {
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        var currentDateTime = GqlUtils.GetNowEpochInSec();
 
-        //        //Cleaning Method Handling
-        //        var cleanMethod = NewCleanMethodFormula.cleaning_method;
-        //        cleanMethod.guid = Util.GenerateGUID();
-        //        cleanMethod.create_by = user;
-        //        cleanMethod.create_dt = currentDateTime;
-        //        _ = await context.cleaning_method.AddAsync(cleanMethod);
-
-
-        //        //Cleaning formula handling
-        //        IList<cleaning_method_formula> cleaningMethodFormulaList = new List<cleaning_method_formula>();
-        //        foreach (var item in NewCleanMethodFormula.cleaning_formulas)
-        //        {
-        //            var newCMF = new cleaning_method_formula();
-        //            newCMF.guid = Util.GenerateGUID();
-        //            newCMF.method_guid = cleanMethod.guid;
-        //            newCMF.formula_guid = item.formula_guid;
-        //            newCMF.sequence = item.sequence;
-        //            newCMF.create_by = user;
-        //            newCMF.create_dt = currentDateTime;
-
-        //            cleaningMethodFormulaList.Add(newCMF);
-        //        }
-        //        if (cleaningMethodFormulaList.Count > 0)
-        //        {
-        //            await context.cleaning_method_formula.AddRangeAsync(cleaningMethodFormulaList);
-        //            retval = await context.SaveChangesAsync();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //    return retval;
-        //}
-
-        //public async Task<int> UpdateCleaningMethodFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
-        //        [Service] IHttpContextAccessor httpContextAccessor, CleaningMethodFormulaRequest UpdateCleanMethodFormula)
-        //{
-        //    int retval = 0;
-        //    try
-        //    {
-        //        var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-        //        var currentDateTime = GqlUtils.GetNowEpochInSec();
-
-        //        if (string.IsNullOrEmpty(UpdateCleanMethodFormula.cleaning_method.guid))
-        //            throw new GraphQLException(new Error($"Cleaning method guid cannot be null or empty", "ERROR"));
-
-        //        var curMethodGuid = UpdateCleanMethodFormula.cleaning_method.guid;
-        //        var cleanMethod = new cleaning_method() { guid = curMethodGuid };
-        //        context.cleaning_method.Attach(cleanMethod);
-        //        cleanMethod.description = UpdateCleanMethodFormula.cleaning_method.description;
-        //        cleanMethod.name = UpdateCleanMethodFormula.cleaning_method.name;
-
-        //        var dbCleanMethodFormula = await context.cleaning_method_formula.Where(c => c.method_guid == curMethodGuid && (c.delete_dt == null || c.delete_dt == 0)).ToListAsync();
-
-        //        foreach (var item in UpdateCleanMethodFormula.cleaning_formulas)
-        //        {
-        //            if (item.action.EqualsIgnore(ObjectAction.NEW))
-        //            {
-        //                var newCMF = new cleaning_method_formula();
-        //                newCMF.guid = Util.GenerateGUID();
-        //                newCMF.method_guid = curMethodGuid;
-        //                newCMF.formula_guid = item.formula_guid;
-        //                newCMF.sequence = item.sequence;
-        //                newCMF.create_by = user;
-        //                newCMF.create_dt = currentDateTime;
-        //                //await context.cleaning_method_formula.AddAsync(newCMF);
-        //                dbCleanMethodFormula.Add(newCMF);
-        //            }
-
-        //            if (item.action.EqualsIgnore(ObjectAction.EDIT))
-        //            {
-        //                var updateCMF = dbCleanMethodFormula.Where(c => c.method_guid == curMethodGuid && c.formula_guid == item.formula_guid).FirstOrDefault();
-        //                if (updateCMF != null)
-        //                {
-        //                    updateCMF.sequence = item.sequence;
-        //                    updateCMF.update_by = user;
-        //                    updateCMF.update_dt = currentDateTime;
-        //                }
-        //            }
-
-        //            if (item.action.EqualsIgnore(ObjectAction.CANCEL))
-        //            {
-        //                var updateCMF = dbCleanMethodFormula.Where(c => c.method_guid == curMethodGuid && c.formula_guid == item.formula_guid).FirstOrDefault();
-        //                if (updateCMF != null)
-        //                {
-        //                    updateCMF.delete_dt = currentDateTime;
-        //                    updateCMF.update_by = user;
-        //                    updateCMF.update_dt = currentDateTime;
-        //                }
-        //            }
-        //        }
-
-        //        retval = await context.SaveChangesAsync();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.StackTrace);
-        //        throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
-        //    }
-        //    return retval;
-        //}
 
         public async Task<int> DeleteCleaningMethodFormula(ApplicationParameterDBContext context, [Service] IConfiguration config,
                 [Service] IHttpContextAccessor httpContextAccessor, string[] DeleteCleanMethodFormula_guids)

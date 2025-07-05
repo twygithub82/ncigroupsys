@@ -32,6 +32,8 @@ namespace IDMS.Booking.GqlTypes
                     newBooking.guid = Util.GenerateGUID();
                     newBooking.create_by = user;
                     newBooking.create_dt = currentDateTime;
+                    newBooking.update_by = user;
+                    newBooking.update_dt = currentDateTime;
 
                     newBooking.sot_guid = guid;
                     newBooking.test_class_cv = booking.test_class_cv;

@@ -33,7 +33,9 @@ namespace IDMS.Customer.GqlTypes
                 newCustomer.guid = Util.GenerateGUID();
                 newCustomer.create_dt = currentDateTime;
                 newCustomer.create_by = user;
-          
+                newCustomer.update_dt = currentDateTime;
+                newCustomer.update_by = user;
+
                 await context.customer_company.AddAsync(newCustomer);
 
                 if (contactPersons != null)
@@ -47,6 +49,8 @@ namespace IDMS.Customer.GqlTypes
                         newContactPerson.guid = Util.GenerateGUID();
                         newContactPerson.create_dt = currentDateTime;
                         newContactPerson.create_by = user;
+                        newContactPerson.update_dt = currentDateTime;
+                        newContactPerson.update_by = user;
                         newContactPerson.customer_guid = newCustomer.guid;
                         newContactPersonList.Add(newContactPerson);
                     }
@@ -65,7 +69,9 @@ namespace IDMS.Customer.GqlTypes
                             mapper.Map(branch.BranchCustomer, branchCustomer);
                             branchCustomer.guid = Util.GenerateGUID();
                             branchCustomer.create_dt = currentDateTime;
-                            branchCustomer.create_by = user;;
+                            branchCustomer.create_by = user;
+                            branchCustomer.update_dt = currentDateTime;
+                            branchCustomer.update_by = user;
 
                             await context.customer_company.AddAsync(branchCustomer);
 
@@ -76,6 +82,8 @@ namespace IDMS.Customer.GqlTypes
                                     ccPerson.guid = Util.GenerateGUID();
                                     ccPerson.create_dt = currentDateTime;
                                     ccPerson.create_by = user;
+                                    ccPerson.update_dt = currentDateTime;
+                                    ccPerson.update_by = user;
                                     ccPerson.customer_guid = branchCustomer.guid;
                                     branchContactPersonList.Add(ccPerson);
                                 }
@@ -135,7 +143,10 @@ namespace IDMS.Customer.GqlTypes
                                 mapper.Map(branch.BranchCustomer, branchCustomer);
                                 branchCustomer.guid = Util.GenerateGUID();
                                 branchCustomer.create_dt = currentDateTime;
-                                branchCustomer.create_by = user; ;
+                                branchCustomer.create_by = user;
+                                branchCustomer.update_dt = currentDateTime;
+                                branchCustomer.update_by = user;
+
                                 mainCustomerGuid = branchCustomer.guid;
                                 await context.customer_company.AddAsync(branchCustomer);
                             }
@@ -232,6 +243,8 @@ namespace IDMS.Customer.GqlTypes
                             contactPerson.guid = Util.GenerateGUID();
                             contactPerson.create_dt = currentDateTime;
                             contactPerson.create_by = user;
+                            contactPerson.update_dt = currentDateTime;
+                            contactPerson.update_by = user;
                             contactPerson.customer_guid = mainCustomerGuid;
                             await context.customer_company_contact_person.AddAsync(contactPerson);
                         }
