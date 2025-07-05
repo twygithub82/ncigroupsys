@@ -103,7 +103,7 @@ export class EditSotDetailsFormDialogComponent {
     private fb: UntypedFormBuilder,
   ) {
     // Set the defaults
-    this.dialogTitle = `${data.translatedLangText?.OVERWRITE} ${data.translatedLangText?.TANK_DETAILS}`;
+    this.dialogTitle = `${data.translatedLangText?.TANK_DETAILS}`;
     this.sot = data.sot!;
     this.ig = data.ig!;
     this.igs = data.igs!;

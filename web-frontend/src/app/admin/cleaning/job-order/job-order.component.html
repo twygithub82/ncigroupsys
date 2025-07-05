@@ -78,35 +78,35 @@
                               </mat-select>
                             </mat-form-field>
                           </div> -->
-                           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                              <mat-form-field class="example-full-width" appearance="fill">
-                                <mat-label>{{translatedLangText.PROCESS}}</mat-label>
-                                <mat-chip-grid #chipGrid>
-                                  @if(selectedProcesses.length>0){
-                                  <mat-chip-row color="primary" (click)="removeAllSelectedProcesses()">
-                                    <button matChipRemove hidden>
-                                      <mat-icon>cancel</mat-icon>
-                                    </button>
-                                    {{getSelectedProcessesDisplay()}}
-                                  </mat-chip-row>
-                                  }
-                                  <input #procInput  formControlName="cleanMethod" [matAutocomplete]="process"
-                                    [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                    (matChipInputTokenEnd)="add($event)">
-                                  <mat-autocomplete #process="matAutocomplete" (optionSelected)="selected($event)">
-                                    @for (cc of cleanMethodList; track cc) {
-                                    <mat-option [value]="cc"  [class.mdc-list-item--selected]="itemSelected(cc)">
-                                      <div class="horizontal-container">
+                          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                            <mat-form-field class="example-full-width" appearance="fill">
+                              <mat-label>{{translatedLangText.PROCESS}}</mat-label>
+                              <mat-chip-grid #chipGrid>
+                                @if(selectedProcesses.length>0){
+                                <mat-chip-row color="primary" (click)="removeAllSelectedProcesses()">
+                                  <button matChipRemove hidden>
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                  {{getSelectedProcessesDisplay()}}
+                                </mat-chip-row>
+                                }
+                                <input #procInput formControlName="cleanMethod" [matAutocomplete]="process"
+                                  [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                  (matChipInputTokenEnd)="add($event)">
+                                <mat-autocomplete #process="matAutocomplete" (optionSelected)="selected($event)">
+                                  @for (cc of cleanMethodList; track cc) {
+                                  <mat-option [value]="cc" [class.mdc-list-item--selected]="itemSelected(cc)">
+                                    <div class="horizontal-container">
                                       <mat-checkbox color="primary" [checked]="itemSelected(cc) || false"
                                         (click)="onCheckboxClicked(cc);$event.stopPropagation()"></mat-checkbox>
                                       <div class="option-text">{{cc.name}}</div>
-                                      </div>
-                                    </mat-option>
-                                    }
-                                  </mat-autocomplete>
-                                </mat-chip-grid>
-                              </mat-form-field>
-                            </div>
+                                    </div>
+                                  </mat-option>
+                                  }
+                                </mat-autocomplete>
+                              </mat-chip-grid>
+                            </mat-form-field>
+                          </div>
                           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.STATUS}}</mat-label>
@@ -261,12 +261,12 @@
                     </mat-paginator>
                     <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
                       <div class="legend-item d-flex align-items-center me-4 mb-2">
-                        <mat-icon class="me-2">timer</mat-icon>
-                        <span>{{translatedLangText.TO_COMPLETE}}</span>
+                        <mat-icon class="disabled-icon me-2">timer</mat-icon>
+                        <span>{{translatedLangText.NOT_STARTED}}</span>
                       </div>
                       <div class="legend-item d-flex align-items-center me-4 mb-2">
-                        <mat-icon class="disabled-icon">timer</mat-icon>
-                        <span>{{translatedLangText.NOT_STARTED}}</span>
+                        <mat-icon class="me-2">timer</mat-icon>
+                        <span>{{translatedLangText.TO_COMPLETE}}</span>
                       </div>
                     </div>
                   </div>

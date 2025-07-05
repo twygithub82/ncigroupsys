@@ -163,8 +163,11 @@
             [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
             @if (canStartJob(row) && !isStarted(row)) {
             <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
-              <mat-icon [color]="row.time_table?.length ? null : 'warn'"
+              <!-- <mat-icon [color]="row.time_table?.length ? null : 'warn'"
                 [ngClass]="{'yellow-timer-icon': row.time_table?.length}">
+                timer
+              </mat-icon> -->
+              <mat-icon [ngClass]="{'yellow-timer-icon': row.time_table?.length, 'red-timer-icon': !row.time_table?.length}">
                 timer
               </mat-icon>
             </button>
@@ -202,13 +205,13 @@
     </mat-paginator>
     <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
       <div class="legend-item d-flex align-items-center me-4 mb-0">
-        <mat-icon class="me-2" color="warn">timer</mat-icon>
+        <mat-icon class="me-2 red-timer-icon">timer</mat-icon>
         <span>{{translatedLangText.NOT_STARTED}}</span>
       </div>
-      <div class="legend-item d-flex align-items-center me-4 mb-0">
+      <!-- <div class="legend-item d-flex align-items-center me-4 mb-0">
         <mat-icon class="me-2 yellow-timer-icon">timer</mat-icon>
         <span>{{translatedLangText.STARTED}}</span>
-      </div>
+      </div> -->
       <div class="legend-item d-flex align-items-center me-4 mb-0">
         <mat-icon class="me-2 green-timer-icon">check_box</mat-icon>
         <span>{{translatedLangText.TO_COMPLETE}}</span>
