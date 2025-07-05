@@ -2076,38 +2076,6 @@ $grid-breakpoints: (
   }
 }
 
-// .tlx-card {
-//   background-color: #fff;
-
-//   .header {
-//     background-color: #fff;
-
-//     h2 {
-//       color: #000;
-//     }
-//   }
-// }
-
-// .mat-expansion-panel-header.tank-header {
-//   background-color: lighten(#b3cbff, 10%);
-
-//   &:hover,
-//   &:focus {
-//     background-color: lighten(#b3cbff, 5%) !important;
-//   }
-
-//   &.mat-expanded {
-//     .header h2 {
-//       // color: white;
-//     }
-
-//     &:hover,
-//     &:focus {
-//       background-color: lighten(#b3cbff, 10%) !important;
-//     }
-//   }
-// }
-
 .mat-expansion-panel.alternate-panel {
 
   // Default blue background for .tank-header
@@ -2189,29 +2157,6 @@ mat-card-content.tank-card-content {
   z-index: 10;
 }
 
-// nav.navbar.active {
-//   border-radius: 10%;
-//   .container-fluid {
-//     background-color: #000 !important;
-//     color: #fff;
-
-//     .header-icon svg,
-//     .fas,
-//     .m-r-5 {
-//       color: #fff !important;
-//     }
-
-//     .mat-mdc-icon-button,
-//     .mat-mdc-button {
-//       color: #fff !important;
-//     }
-
-//     .mat-mdc-menu-trigger {
-//       color: #fff !important;
-//     }
-//   }
-// }
-
 .card.cargo-nature {
   border: 0px;
   font-weight: 700;
@@ -2235,9 +2180,10 @@ mat-card-content.tank-card-content {
   }
 }
 
-// .card .header {
-//   border-bottom: 1px solid;
-// }
+.card .header-custom-padding{
+  padding-left: 0.6%;
+  padding-bottom: 0%;
+}
 
 .sidemenu-collapse {
   height: 100%;

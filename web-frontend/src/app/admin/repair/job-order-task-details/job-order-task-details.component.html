@@ -127,7 +127,7 @@
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
                   <button mat-flat-button (click)="toggleJobState($event, isStarted())" [disabled]="!canStartJob()"
-                    [ngClass]="{'job-order-task-button m-r-10': true, 'yellow-button': canStartJob() && isStarted(), 'red-button': canStartJob() && !isStarted()}">
+                    [ngClass]="{'job-order-task-button m-r-10': true, 'orange-button': canStartJob() && isStarted(), 'red-button': canStartJob() && !isStarted()}">
                     <mat-icon>timer</mat-icon>
                     {{ isStarted() ? translatedLangText.PAUSE_JOB : translatedLangText.START_JOB }}
                   </button>

@@ -99,4 +99,8 @@ export class CancelFormDialogComponent {
   cancelItemArray(): UntypedFormArray {
     return this.cancelForm.get('cancelItemList') as UntypedFormArray;
   }
+  displayTargetedRepair(reList: UntypedFormArray) {
+    return reList.controls.map(re => re.get('estimate_no')?.value)
+      .join(', ')
+  }
 }

@@ -73,7 +73,7 @@ export class RenumberTankFormDialogComponent {
   ) {
     // Set the defaults
     this.action = data.action!;
-    this.dialogTitle = `${data.translatedLangText?.UPDATE} ${data.translatedLangText?.TANK_NO}`;
+    this.dialogTitle = `${data.translatedLangText?.RENUMBER}`;
     this.sot = data.sot;
     this.sotDS = data.sotDS;
     this.tankForm = this.createForm();

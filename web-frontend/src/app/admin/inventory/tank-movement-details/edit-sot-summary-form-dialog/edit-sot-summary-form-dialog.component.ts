@@ -99,7 +99,7 @@ export class EditSotSummaryFormDialogComponent {
     private fb: UntypedFormBuilder,
   ) {
     // Set the defaults
-    this.dialogTitle = `${data.translatedLangText?.OVERWRITE} ${data.translatedLangText?.TANK_SUMMARY_DETAILS}`;
+    this.dialogTitle = `${data.translatedLangText?.TANK_SUMMARY_DETAILS}`;
     // this.maxDate = Utility.getLaterDate(Utility.convertDate(this.surveyDetail.survey_dt) as Date, this.maxDate);
     this.sot = data.sot!;
     this.ig = data.ig!;
