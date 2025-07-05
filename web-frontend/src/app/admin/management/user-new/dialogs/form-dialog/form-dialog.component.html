@@ -106,7 +106,7 @@
         @if (canEdit()) {
         <button mat-flat-button color="primary" [disabled]="this.contactPersonForm?.invalid" (click)="submit()">{{data.translatedLangText.ADD}}</button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>

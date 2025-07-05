@@ -206,7 +206,7 @@
         <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid"
           (click)="submit()">{{data.translatedLangText.UPDATE}}</button>
         }
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>

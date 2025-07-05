@@ -14,7 +14,7 @@
       @if (canEdit()) {
       <button mat-flat-button color="primary" class="me-2" (click)="submit()">{{data.translatedLangText.YES}}</button>
       }
-      <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+      <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
     </div>
   </div>
 </div>
