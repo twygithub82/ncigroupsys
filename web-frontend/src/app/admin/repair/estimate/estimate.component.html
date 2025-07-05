@@ -177,14 +177,14 @@
                       </mat-card-header>
                     </mat-panel-title> -->
                         <mat-panel-description>
-                          <div class="w-xl-15 w-lg-50">
+                          <div class="w-xl-12 w-lg-12">
                             <span class="font-bold">{{row.tank_no}}</span>
                           </div>
-                          <div class="w-xl-30 w-lg-50">
+                          <div class="ms-1 w-xl-36 w-lg-40">
                             <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
                             {{row.storing_order?.customer_company?.name}}
                           </div>
-                          <div class="w-xl-15 w-lg-50">
+                          <div class="ms-2 w-xl-15 w-lg-50">
                             <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
                             {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
                           </div>
