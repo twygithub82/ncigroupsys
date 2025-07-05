@@ -487,6 +487,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: '65vw',
+      maxHeight:'90vh',
       //height: '1000px',
       data: {
         action: 'new',
@@ -517,8 +518,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: '65vw',
-      //height: '1000px',
-      //height: '90vh',
+     // height: '900px',
+      maxHeight: '99vh',
       data: {
         action: 'edit',
         langText: this.langText,

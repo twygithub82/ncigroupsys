@@ -757,7 +757,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     
         // reset if no direction
         if (!direction) {
-          this.lastOrderBy = null;
+          this.lastOrderBy = {name: 'ASC'}
           return this.search();
         }
     

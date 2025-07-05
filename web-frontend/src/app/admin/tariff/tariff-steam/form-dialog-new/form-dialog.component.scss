@@ -75,3 +75,36 @@
   font-weight: bold;
   font-size: 14px;
 }
+
+/* Add this to your global styles or component CSS */
+.mat-form-field-flex {
+  align-items: flex-start !important; /* Allows error to push content down */
+}
+
+.mat-form-field-infix {
+  padding-bottom: 1em !important; /* Extra space for error */
+}
+
+.mat-form-field-subscript-wrapper {
+  position: static !important; /* Allows natural height expansion */
+  overflow: visible !important;
+}
+
+.multi-line-error {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  display: block;
+}
+
+/* Fix Angular Material's default fixed height */
+.mat-form-field-subscript-wrapper {
+  position: relative !important;
+  height: auto !important;
+}
+
+/* Ensure row container doesn't clip content */
+.row {
+  overflow: visible;
+  margin-bottom: 16px; /* Adjust spacing between rows */
+}
