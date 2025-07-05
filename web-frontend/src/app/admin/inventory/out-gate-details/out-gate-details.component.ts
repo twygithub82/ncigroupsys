@@ -417,7 +417,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
         vehicle_no: this.outGateForm.get('vehicle_no')?.value?.toUpperCase(),
         remarks: this.outGateForm.get('remarks')?.value,
         so_tank_guid: sot.guid,
-        haulier: this.outGateForm.get('haulier')?.value,
+        haulier: this.outGateForm.get('haulier')?.value?.toUpperCase(),
         yard_cv: this.outGateForm.get('yard_cv')?.value,
         tank: sot
       })
