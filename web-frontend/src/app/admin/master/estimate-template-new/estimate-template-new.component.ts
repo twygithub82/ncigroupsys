@@ -1455,12 +1455,37 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     return retval;
   }
 
-  // DisplayMaterialCost(row:TemplateEstPartItem):String
-  // {
-  //   var retval: string = this.parse2Decimal(row.tariff_repair?.material_cost);
-  //   if()
-  //   retval = Number(Number(row.tariff_repair.material_cost || 0) * Number(row.quantity || 0)).toFixed(2);
-  //   return retval;
-  // }
+  DisplayMaterialCost(row:TemplateEstPartItem):String
+  {
+    var retval: string = this.parse2Decimal(row.tariff_repair?.material_cost);
+    if(this.Contain4X(row.tep_damage_repair!))
+    {
+      retval="0.00";
+    }
+    
+    
+    return retval;
+  }
+
+
+  DisplayPrice(row:TemplateEstPartItem):String
+  {
+    var retval: string = this.parse2Decimal((row.quantity||0) * (row.tariff_repair?.material_cost||0));
+    if(this.Contain4X(row.tep_damage_repair!))
+    {
+      retval="0.00";
+    }
+      return retval;
+  }
+
+  Contain4X(damageRepair: any[]):Boolean
+  {
+    var filterCode=1;
+    var retval = false;
+    var itm4x= damageRepair.filter((x: any) => x.code_type === filterCode && x.code_cv==='4X');
+    retval=(itm4x.length>0);
+    
+    return retval;
+  }
 
 }
