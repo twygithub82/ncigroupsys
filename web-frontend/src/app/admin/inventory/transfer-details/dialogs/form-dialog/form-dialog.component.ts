@@ -85,7 +85,7 @@ export class FormDialogComponent {
       this.dialogTitle = data.translatedLangText?.EDIT_TRANSFER_DETAILS;
       this.filteredYardCvList = data.populateData?.yardCvList?.filter((x: any) => x.code_val !== this.lastTransfer?.location_from_cv);
     } else {
-      this.dialogTitle = data.translatedLangText?.NEW_TRANSFER_DETAILS;
+      this.dialogTitle = data.translatedLangText?.TRANSFER_DETAILS;
       this.filteredYardCvList = data.populateData?.yardCvList?.filter((x: any) => x.code_val !== this.lastLocation);
     }
     this.index = data.index;

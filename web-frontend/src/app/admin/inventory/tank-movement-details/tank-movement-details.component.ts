@@ -166,16 +166,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ];
 
   displayedColumnsBooking = [
-    'book_type_cv',
     'booking_dt',
+    'book_type_cv',
     'reference',
-    'status_cv',
+    //'status_cv',
     'surveyor',
   ];
 
   displayedColumnsScheduling = [
-    'book_type_cv',
     'scheduling_dt',
+    'book_type_cv',
     'reference',
     'status_cv',
   ];
@@ -183,8 +183,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   displayedColumnsSurveyDetail = [
     'survey_type',
     'survey_dt',
-    'surveyor',
     'remarks',
+    'surveyor',
     'status_cv',
   ];
 

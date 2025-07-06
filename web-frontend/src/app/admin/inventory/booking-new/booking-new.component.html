@@ -254,22 +254,22 @@
                           </ng-container>
                           <ng-container matColumnDef="booking_dt">
                             <mat-header-cell mat-header-cell *matHeaderCellDef
-                              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                              [ngClass]="''">
                               {{translatedLangText.DATE}}
                             </mat-header-cell>
                             <mat-cell mat-cell *matCellDef="let bookingRow"
-                              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                              [ngClass]="''">
                               <span
                                 class="mobile-label">{{translatedLangText.DATE}}:</span>{{displayDate(bookingRow.booking_dt)}}
                             </mat-cell>
                           </ng-container>
                           <ng-container matColumnDef="book_type_cv">
                             <mat-header-cell mat-header-cell *matHeaderCellDef
-                              [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                              [ngClass]="''">
                               {{translatedLangText.BOOKING_TYPE}}
                             </mat-header-cell>
                             <mat-cell mat-cell *matCellDef="let bookingRow"
-                              [ngClass]="'tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                              [ngClass]="''">
                               <span
                                 class="mobile-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookTypeDescription(bookingRow?.book_type_cv)}}
                             </mat-cell>
@@ -285,11 +285,11 @@
                           </ng-container>
                           <ng-container matColumnDef="surveyor">
                             <mat-header-cell mat-header-cell *matHeaderCellDef
-                              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                              [ngClass]="''">
                               {{translatedLangText.SURVEYOR}}
                             </mat-header-cell>
                             <mat-cell mat-cell *matCellDef="let bookingRow"
-                              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                              [ngClass]="''">
                               <span
                                 class="mobile-label">{{translatedLangText.SURVEYOR}}:</span>{{bookingRow?.test_class_cv}}
                             </mat-cell>

@@ -8,87 +8,6 @@
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form class="ms-0" #formDirective="ngForm">
-          <!-- <div class="card">
-            <div class="header">
-              <h2>
-                {{translatedLangText.ORDER_DETAILS}}
-              </h2>
-            </div>
-            <div class="body">
-              @if (sotDS.loading$ | async) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-              }
-              @if (!(sotDS.loading$ | async)) {
-              <mat-card-content>
-                <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.SO_NO}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_no}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.SO_NOTES}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.CUSTOMER}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.BRANCH_NAME}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{ccDS.displayName(customerBranch) || 'N.A.'}}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.SO_DATE}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                        <span>{{translatedLangText.STATUS}}:</span>
-                      </div>
-                      <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </mat-card-content>
-              }
-            </div>
-          </div> -->
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
               <div class="row">
@@ -109,7 +28,7 @@
                       @if (!(sotDS.loading$ | async)) {
                       <mat-card-content>
                         <div class="row">
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 m-b-5">
                             <div class="row">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
                                 <span>{{translatedLangText.TANK_NO}}:</span>
@@ -118,6 +37,17 @@
                                 <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
                               </div>
                             </div>
+                            <div class="row">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                                <span>{{translatedLangText.CUSTOMER}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                                <div class="contact-detail-info font-bold">
+                                  {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 m-b-5">
                             <div class="row">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
                                 <span>{{translatedLangText.EIR_NO}}:</span>
@@ -129,30 +59,22 @@
                             </div>
                             <div class="row">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                                <span>{{translatedLangText.PURPOSE}}:</span>
-                              </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <div class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}</div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                            <div class="row">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
-                                <span>{{translatedLangText.CUSTOMER}}:</span>
-                              </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                                <div class="contact-detail-info font-bold">
-                                  {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
                                 <span>{{translatedLangText.LAST_CARGO}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
                                 <div class="contact-detail-info font-bold">
                                   {{storingOrderTankItem?.tariff_cleaning?.cargo}}</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                            <div class="row">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right">
+                                <span>{{translatedLangText.PURPOSE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
+                                <div class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}
+                                </div>
                               </div>
                             </div>
                             <div class="row">
