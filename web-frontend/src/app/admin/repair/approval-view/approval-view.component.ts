@@ -610,7 +610,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   onRollback(event: Event) {
     this.preventDefault(event);
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -628,6 +627,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      debugger
       if (result?.action === 'confirmed') {
         const reList = result.item.map((item: any) => {
           const RepairRequestInput = new RepairRequest({

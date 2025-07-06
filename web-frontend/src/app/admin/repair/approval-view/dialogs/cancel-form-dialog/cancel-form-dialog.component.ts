@@ -73,7 +73,7 @@ export class CancelFormDialogComponent {
       estimate_no: [re.estimate_no],
       sot_guid: [re.sot_guid],
       remarks_display: [re.remarks],
-      remarks: ["", Validators.required]
+      remarks: [""]
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
@@ -94,6 +94,8 @@ export class CancelFormDialogComponent {
         index: this.index
       }
       this.dialogRef.close(returnDialog);
+    } else {
+      this.findInvalidControls();
     }
   }
   cancelItemArray(): UntypedFormArray {
@@ -102,5 +104,14 @@ export class CancelFormDialogComponent {
   displayTargetedRepair(reList: UntypedFormArray) {
     return reList.controls.map(re => re.get('estimate_no')?.value)
       .join(', ')
+  }
+
+  findInvalidControls() {
+    const controls = this.cancelForm.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        console.log(name);
+      }
+    }
   }
 }
