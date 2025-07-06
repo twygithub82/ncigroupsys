@@ -86,11 +86,11 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
 
   tnkDS: TankDS;
   tfDepotDS: TariffDepotDS;
-  
+
 
   tariffDepotItems: TariffDepotItem[] = [];
   tankItemList: TankItem[] = [];
-  profileList:String[]=[];
+  profileList: String[] = [];
 
   pageStateType = 'TariffDepot'
   pageIndex = 0;
@@ -244,7 +244,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeFilterValues() {
-     this.tdForm!.get('profile_name')!.valueChanges.pipe(
+    this.tdForm!.get('profile_name')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -257,8 +257,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
         this.subs.sink = this.tfDepotDS.SearchTariffDepot({ or: [{ profile_name: { contains: searchCriteria } }] }, [{ profile_name: 'ASC' }]).subscribe(data => {
 
           this.profileList = data
-          .map(item => item.profile_name)
-          .filter((name): name is string => name !== undefined);
+            .map(item => item.profile_name)
+            .filter((name): name is string => name !== undefined);
 
         });
       })
@@ -533,7 +533,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-       disableClose: true,
+      disableClose: true,
       width: '600px',
       height: 'auto',
       data: {
@@ -671,40 +671,40 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_DELETE']);
   }
 
-    onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = null;
-          return this.search();
-        }
-    
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'mobile':
-            this.lastOrderBy = {
-              tariff_depot: {
-                update_dt: dirEnum,
-                create_dt: dirEnum,
-              },
-            };
-            break;
-              
-          case 'fName':
-          this.lastOrderBy = {
-            tariff_depot: {
-              profile_name: dirEnum
-            },
-          };
-          break;
-          default:
-            this.lastOrderBy = null;
-        }
-    
-        this.search();
-      }
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'mobile':
+        this.lastOrderBy = {
+          tariff_depot: {
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+          },
+        };
+        break;
+
+      case 'fName':
+        this.lastOrderBy = {
+          tariff_depot: {
+            profile_name: dirEnum
+          },
+        };
+        break;
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
 }

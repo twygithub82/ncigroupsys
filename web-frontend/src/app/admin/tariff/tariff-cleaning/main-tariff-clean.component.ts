@@ -69,25 +69,6 @@ import { TariffResidueComponent } from './residue/tariff-residue.component';
   ]
 })
 export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  displayedColumnsRepair = [
-    'tank_no',
-    'customer',
-    'eir_no',
-    'eir_dt',
-    'last_cargo',
-    'method',
-    'status_cv',
-    'actions'
-  ];
-
-  displayedColumnsJobOrder = [
-    'tank_no',
-    'job_order_no',
-    'customer',
-    'estimate_no',
-    'status_cv'
-  ];
-
   pageTitle = 'COMMON-FORM.CLEANING'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.TARIFF.TEXT', route: '/admin/tariff/tariff-cleaning' }
@@ -149,7 +130,6 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     TARIFF_CLEANING: 'MENUITEMS.TARIFF.LIST.TARIFF-CLEANING',
     TARIFF_BUFFER: 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
     TARIFF_RESIDUE: 'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE'
-
   }
 
   filterCleanForm?: UntypedFormGroup;
@@ -216,7 +196,7 @@ export class MainTariffCleaningComponent extends UnsubscribeOnDestroyAdapter imp
     super();
     this.translateLangText();
   }
-  
+
   ngOnInit() {
   }
 
