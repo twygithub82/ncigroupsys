@@ -166,16 +166,16 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   ];
 
   displayedColumnsBooking = [
-    'book_type_cv',
     'booking_dt',
+    'book_type_cv',
     'reference',
-    'status_cv',
+    //'status_cv',
     'surveyor',
   ];
 
   displayedColumnsScheduling = [
-    'book_type_cv',
     'scheduling_dt',
+    'book_type_cv',
     'reference',
     'status_cv',
   ];
@@ -183,8 +183,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   displayedColumnsSurveyDetail = [
     'survey_type',
     'survey_dt',
-    'surveyor',
     'remarks',
+    'surveyor',
     'status_cv',
   ];
 
@@ -440,7 +440,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     OVERWRITE_JOB_NO: 'COMMON-FORM.OVERWRITE-JOB-NO',
     OVERWRITE_DEPOT_COST: 'COMMON-FORM.OVERWRITE-DEPOT-COST',
     OVERWRITE_LAST_CARGO: 'COMMON-FORM.OVERWRITE-LAST-CARGO',
-    OVERWRITE_CONDITION: 'COMMON-FORM.OVERWRITE-CONDITION',
+    OVERWRITE_CONDITION: 'COMMON-FORM.CONDITION',
     PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
     PRE_INSPECTION_COST: 'COMMON-FORM.PRE-INSPECTION-COST',
     LIFT_OFF_COST: 'COMMON-FORM.LIFT-OFF-COST',
@@ -451,9 +451,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     OVERWRITE_APPROVAL: 'COMMON-FORM.OVERWRITE-APPROVAL',
     CARGO_NAME: 'COMMON-FORM.CARGO-NAME',
     APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
-    APPROVED_BUFFER_CLEANING_COST: 'COMMON-FORM.APPROVED-BUFFER-CLEANING-COST',
+    BUFFER_CLEANING_COST: 'COMMON-FORM.BUFFER-CLEANING-COST',
     LAST_CARGO_CLEANING_QUOTATION: 'COMMON-FORM.LAST-CARGO-CLEANING-QUOTATION',
-    DEPOT_ESTIMATE: 'COMMON-FORM.DEPOT-ESTIMATE',
+    ESTIMATE: 'COMMON-FORM.ESTIMATE',
     CUSTOMER_APPROVAL: 'COMMON-FORM.CUSTOMER-APPROVAL',
     TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     UPDATED_ON: 'COMMON-FORM.UPDATED-ON',
@@ -466,7 +466,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     ROLLBACK: 'COMMON-FORM.ROLLBACK',
     REINSTATE: 'COMMON-FORM.REINSTATE',
     CONFIRM: 'COMMON-FORM.CONFIRM',
-    OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
+    QC: 'COMMON-FORM.QC',
     ROLLBACK_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     SURVEY_TYPE: 'COMMON-FORM.SURVEY-TYPE',
     APPLY_ALL: 'COMMON-FORM.APPLY-ALL',
@@ -502,7 +502,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     SUBGROUP: 'COMMON-FORM.SUBGROUP',
     INVALID: 'COMMON-FORM.INVALID',
     EXISTED: 'COMMON-FORM.EXISTED',
-    REOWNERSHIP: 'COMMON-FORM.REOWNERSHIP'
+    REOWNERSHIP: 'COMMON-FORM.REOWNERSHIP',
+    AMOUNT_$:"COMMON-FORM.AMOUNT-$",
+    DEPOT_COST: "MENUITEMS.TARIFF.LIST.TARIFF-DEPOT"
   }
 
   sot_guid: string | null | undefined;
@@ -2022,7 +2024,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteCleaningApprovalFormDialogComponent, {
       disableClose: true,
       width: '80vw',
-      height: '90vh',
+      height: '80vh',
       data: {
         sot: this.sot,
         cleaning: this.cleaningItem,

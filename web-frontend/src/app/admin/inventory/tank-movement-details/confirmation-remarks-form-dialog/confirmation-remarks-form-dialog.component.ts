@@ -81,7 +81,7 @@ export class ConfirmationRemarksFormDialogComponent {
     // Set the defaults
     this.action = this.data.action;
     if (this.action === 'overwrite') {
-      this.dialogTitle = data.dialogTitle || data.translatedLangText?.OVERWRITE_QC;
+      this.dialogTitle = data.dialogTitle || data.translatedLangText?.QC;
     } else {
       this.dialogTitle = data.dialogTitle || data.translatedLangText?.ROLLBACK;
     }

@@ -241,3 +241,7 @@ span.badge {
   font-weight: 500;
   line-height: 1.2;
 }
+.badge-fixed-size {
+  width: 85px;   /* Set a minimum width */
+  height: 26px; 
+}

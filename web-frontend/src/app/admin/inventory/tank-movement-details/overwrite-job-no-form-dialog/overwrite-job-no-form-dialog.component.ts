@@ -67,7 +67,7 @@ export class OverwriteJobNoFormDialogComponent {
 
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.OVERWRITE_JOB_NO;
+    this.dialogTitle = data.translatedLangText?.JOB_NO;
     this.sot = data.sot!;
     this.overwriteForm = this.createForm();
   }

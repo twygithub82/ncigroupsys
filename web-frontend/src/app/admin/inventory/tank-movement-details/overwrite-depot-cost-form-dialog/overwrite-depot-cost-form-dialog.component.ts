@@ -71,7 +71,7 @@ export class OverwriteDepotCostFormDialogComponent {
 
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.OVERWRITE_DEPOT_COST;
+    this.dialogTitle = data.translatedLangText?.DEPOT_COST;
     this.billingSot = data.billingSot!;
     this.overwriteForm = this.createForm();
   }

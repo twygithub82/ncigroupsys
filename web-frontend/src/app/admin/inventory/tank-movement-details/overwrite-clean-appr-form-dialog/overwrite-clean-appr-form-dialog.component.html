@@ -25,28 +25,22 @@
           <div class="row d-flex justify-content-center">
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.APPROVED_COST}}</mat-label>
+                <mat-label>{{data.translatedLangText.CLEANING}} {{data.translatedLangText.COST}}</mat-label>
                 <input matInput formControlName="cleaning_cost" type="number" min="0" required>
-                <!-- @if (overwriteForm.get('cleaning_cost')?.hasError('required')) {
-                <mat-error>
-                  {{data.translatedLangText.APPROVED_COST}} {{data.translatedLangText.SO_REQUIRED}}
-                </mat-error>
-                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="overwrite_remarks" required>
+              </mat-form-field>
             </div>
           </div>
           <div class="row d-flex justify-content-center">
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
               <mat-form-field class="example-full-width">
-                <mat-label>{{data.translatedLangText.APPROVED_BUFFER_CLEANING_COST}}</mat-label>
+                <mat-label>{{data.translatedLangText.BUFFER_CLEANING_COST}}</mat-label>
                 <input matInput formControlName="buffer_cost" type="number" min="0" required>
-                <!-- @if (overwriteForm.get('buffer_cost')?.hasError('required')) {
-                <mat-error>
-                  {{data.translatedLangText.APPROVED_DATE}} {{data.translatedLangText.SO_REQUIRED}}
-                </mat-error>
-                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-0">
@@ -65,36 +59,32 @@
               </mat-form-field>
             </div>
           </div>
-          <div class="row d-flex justify-content-center">
+          <!-- <div class="row d-flex justify-content-center">
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
                 <input matInput formControlName="overwrite_remarks" required>
-                <!-- @if (overwriteForm.get('overwrite_remarks')?.hasError('required')) {
-                <mat-error>
-                  {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
-                </mat-error>
-                } -->
               </mat-form-field>
             </div>
             <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 mb-1">
             </div>
-          </div>
-          <div class="row mb-2 d-flex justify-content-center">
+          </div> -->
+
+          <!-- <div class="row mb-2 d-flex justify-content-center">
             <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1 d-flex justify-content-end">
-              <button mat-flat-button color="primary" (click)="submit()" [disabled]="(tcDS.actionLoading$ | async)">
+              <button mat-flat-button color="primary" class="me-1" (click)="submit()" [disabled]="(tcDS.actionLoading$ | async)">
                 <mat-icon>
                   @if (!(tcDS.actionLoading$ | async)) {
                   save
                   } @else if ((tcDS.actionLoading$ | async)) {
-                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                  <mat-spinner color="primary"  [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
                 {{data.translatedLangText.UPDATE}}
               </button>
-              <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
+              <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
             </div>
-          </div>
+          </div> -->
           <div class="card m-4 p-4 m-t-0">
             <!-- <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
@@ -207,31 +197,31 @@
                   </ng-container>
                   <ng-container matColumnDef="depot_estimate">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      {{data.translatedLangText.DEPOT_ESTIMATE}} $
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      {{data.translatedLangText.ESTIMATE}} $
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <span
-                        class="mobile-label">{{data.translatedLangText.DEPOT_ESTIMATE}}:</span>{{parse2Decimal(row.est_cleaning_cost)}}
+                        class="mobile-label">{{data.translatedLangText.ESTIMATE}}:</span>{{parse2Decimal(row.est_cleaning_cost)}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
-                      <span class="font-bold">{{data.translatedLangText.TOTAL_COST}}</span>
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center">
+                      <span class="">{{data.translatedLangText.TOTAL_COST}}</span>
                     </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="customer_approval">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      {{data.translatedLangText.CUSTOMER_APPROVAL}} $
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      {{data.translatedLangText.APPROVAL}} $
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <span
-                        class="mobile-label">{{data.translatedLangText.CUSTOMER_APPROVAL}}:</span>{{parse2Decimal(row.cleaning_cost)}}
+                        class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>{{parse2Decimal(row.cleaning_cost)}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center">
                       {{parse2Decimal(cleaningItem.cleaning_cost)}}
                     </mat-footer-cell>
                   </ng-container>
@@ -243,7 +233,7 @@
                 </table>
               </div>
             </div>
-            <div class="row m-3 m-t-0">
+            <div class="row m-2 m-t-0">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                 <div class="row">
                   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
@@ -359,6 +349,20 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div mat-dialog-actions class="mb-3 mt-1 pr-1 align-right">
+              <button mat-flat-button color="primary" class="me-1" (click)="submit()"
+                [disabled]="(tcDS.actionLoading$ | async)">
+                <mat-icon>
+                  @if (!(tcDS.actionLoading$ | async)) {
+                  save
+                  } @else if ((tcDS.actionLoading$ | async)) {
+                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                  }
+                </mat-icon>
+                {{data.translatedLangText.UPDATE}}
+              </button>
+              <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
             </div>
           </div>
         </div>

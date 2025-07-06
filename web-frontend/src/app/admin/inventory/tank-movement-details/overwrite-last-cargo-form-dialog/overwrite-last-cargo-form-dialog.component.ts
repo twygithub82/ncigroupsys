@@ -78,7 +78,7 @@ export class OverwriteLastCargoFormDialogComponent {
 
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.OVERWRITE_LAST_CARGO;
+    this.dialogTitle = data.translatedLangText?.LAST_CARGO;
     this.sot = data.sot!;
     this.cleaningItem = data.cleaning!;
     this.tcDS = data.tcDS;

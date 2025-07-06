@@ -43,7 +43,7 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 
 import { debounceTime, startWith, tap } from 'rxjs';
-import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
@@ -262,9 +262,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   ) {
     super();
     this.initPcForm();
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
-    // this.clnCatDS= new CleaningCategoryDS(this.apollo);
-    // this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
   }
@@ -487,7 +484,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: '65vw',
-      maxHeight:'90vh',
+      maxHeight: '90vh',
       //height: '1000px',
       data: {
         action: 'new',
@@ -518,7 +515,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       disableClose: true,
       width: '65vw',
-     // height: '900px',
+      // height: '900px',
       maxHeight: '99vh',
       data: {
         action: 'edit',
@@ -970,11 +967,11 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     else if (this.selectedParts?.length == 1) {
       //retval = `${this.selectedParts[0]}`;
-       const maxLength = maxLengthDisplaySingleSelectedItem;
-            const value=`${this.selectedParts[0]}`;
-            retval = `${value.length > maxLength 
-              ? value.slice(0, maxLength) + '...' 
-              : value}`;
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value = `${this.selectedParts[0]}`;
+      retval = `${value.length > maxLength
+        ? value.slice(0, maxLength) + '...'
+        : value}`;
     }
     return retval;
   }
@@ -1116,5 +1113,21 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.search();
+  }
+
+  hasMenuItem(row: any) {
+    return (this.isAllowDelete() && !row.tank_count) || this.isAllowAdd();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_DELETE']);
   }
 }

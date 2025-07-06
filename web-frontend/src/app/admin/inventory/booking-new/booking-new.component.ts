@@ -91,7 +91,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     'book_type_cv',
     'reference',
     'surveyor',
-    'status_cv',
+    //'status_cv',
     'actions',
   ];
 
@@ -153,7 +153,8 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     DELETE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     SAVE: 'COMMON-FORM.SAVE',
-    UPDATE: 'COMMON-FORM.UPDATE'
+    UPDATE: 'COMMON-FORM.UPDATE',
+    DATE: 'COMMON-FORM.DATE'
   }
 
   availableTankStatus: string[] = [
@@ -748,7 +749,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       disableClose: true,
-      width: '40vw',
+      width: '380px',
       data: {
         action: "cancel",
         sot: sot,
