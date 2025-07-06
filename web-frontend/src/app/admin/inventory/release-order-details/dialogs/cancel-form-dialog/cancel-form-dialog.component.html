@@ -1,13 +1,14 @@
 <div class="container">
-  <div class="modalHeader">
+  <!-- <div class="modalHeader">
     <h4 mat-dialog-title>{{data.action === 'cancel' ? data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
-  </div>
+  </div> -->
+  <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0 align-center">{{data.action === 'cancel' ?
+    data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
-    <mat-divider></mat-divider>
     <form class="register-form" [formGroup]="roSotListForm" #formDirective="ngForm">
       <div formArrayName="roSotList">
         @for (roSot of getRoSotListArray().controls; track roSot; let index = $index) {
-        <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-light-grey')">
+        <!-- <div [formGroupName]="index" [class]="'row ' + (index % 2 == 0 ? '' : 'bg-light-grey')">
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <div [class]="'row pt-2'">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 clearfix">
@@ -17,6 +18,11 @@
               </div>
             </div>
           </div>
+        </div> -->
+        <div [formGroupName]="index">
+          <p class="text-normal tank-title">
+            {{roSot.get('tank_no')?.value}}
+          </p>
         </div>
         }
       </div>
@@ -24,18 +30,13 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.REMARK}}</mat-label>
-            <textarea matInput formControlName="remarks"></textarea>
-            <!-- @if (roSotListForm.get('remarks')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            } -->
+             <input matInput formControlName="remarks">
           </mat-form-field>
         </div>
       </div>
     </form>
   </div>
-  <div mat-dialog-actions class="mb-3">
+   <div mat-dialog-actions class="mb-4 align-center">
     <button mat-flat-button color="warn" class="me-2" (click)="confirm()">
       {{data.translatedLangText.CONFIRM | translate}}
     </button>
