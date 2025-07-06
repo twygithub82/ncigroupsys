@@ -30,6 +30,7 @@ import { TariffResidueItem } from 'app/data-sources/tariff-residue';
 import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-steam';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { tempRangeValidator } from '../validators/temp-range.validator';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 export interface DialogData {
   action?: string;
@@ -78,23 +79,9 @@ interface Condition {
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
-  displayedColumns = [
-    //  'select',
-    // 'img',
-    'fName',
-    'lName',
-    'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
-  ];
-
   action: string;
   index?: number;
   dialogTitle?: string;
-
-
   trfSteamDS: TariffSteamingDS;
 
   tnkItems?: TankItem[];
@@ -105,8 +92,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   startDate = new Date();
   pcForm: UntypedFormGroup;
   lastCargoControl = new UntypedFormControl();
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -219,9 +204,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
 
   selectedItem: TariffSteamingItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
-
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -229,41 +211,26 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();
     this.selectedItem = data.selectedItem;
-
     this.trfSteamDS = new TariffSteamingDS(this.apollo);
-
     this.pcForm = this.createTariffSteam();
-    // this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
-    //this.custCompClnCatDS=new CustomerCompanyCleaningCategoryDS(this.apollo);
-    // this.catDS= new CleaningCategoryDS(this.apollo);
-
-
     this.tnkItems = [];
     this.action = data.action!;
     this.translateLangText();
     this.InitValueChanges()
     if (this.action === "edit") this.patchTariffSteam(data.selectedItem);
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
 
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
+    if (!this.canEdit()) {
+      this.pcForm.get('min_temp')?.disable();
+      this.pcForm.get('max_temp')?.disable();
+      this.pcForm.get('labour')?.disable();
+      this.pcForm.get('cost')?.disable();
+      this.pcForm.get('remarks')?.disable();
+    }
   }
 
   patchTariffSteam(row: TariffSteamingItem) {
@@ -273,7 +240,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       min_temp: row.temp_min,
       max_temp: row.temp_max === 9999 ? "" : row.temp_max,
       labour: row.labour?.toFixed(2),
-      // qty:[''],
       cost: row.cost?.toFixed(2),
       remarks: row.remarks
     });
@@ -295,19 +261,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   public InitValueChanges() {
-
-    // this.pcForm.get("cost")?.valueChanges.subscribe(data=>{
-    //   this.pcForm.patchValue({
-    //     cost: this.pcForm.get("cost")?.value.toFixed(2)
-    //   });
-    // });
-
-    // this.pcForm.get("labour")?.valueChanges.subscribe(data=>{
-    //   this.pcForm.patchValue({
-    //     labour: this.pcForm.get("labour")?.value.toFixed(2)
-    //   });
-    // });
-
   }
 
   GetButtonCaption() {
@@ -318,14 +271,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       return this.translatedLangText.CANCEL;
     }
   }
-  GetTitle() {
 
+  GetTitle() {
     if (this.action === "new") {
       return `${this.translatedLangText.NEW} ${this.translatedLangText.TARIFF_STEAM} ${this.translatedLangText.RANGE}`;
     }
     return `${this.translatedLangText.EDIT} ${this.translatedLangText.TARIFF_STEAM} ${this.translatedLangText.RANGE}`;
-    //  return this.action==="new"?this.translatedLangText.NEW:this.translatedLangText.EDIT + " " + this.translatedLangText.TARIFF_STEAM;      
-
   }
 
   translateLangText() {
@@ -334,23 +285,22 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     });
   }
 
+  isAdd() {
+    return this.pcForm!.value['action'] == "new";
+  }
 
   canEdit() {
-    return this.pcForm!.value['action'] == "new";
+    return (this.isAllowAdd() && !this.selectedItem?.guid) || (this.isAllowEdit() && !!this.selectedItem?.guid);
   }
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
-
       console.log('valid');
       this.dialogRef.close(count);
     }
   }
 
-
-
   save() {
-
     if (!this.pcForm?.valid) return;
 
     let where: any = { or: [] };
@@ -402,7 +352,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
         if (data.length == 1) {
           bUpd = this.selectedItem.guid === data[0].guid;
-
         }
 
         if (bUpd) {
@@ -439,11 +388,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     const month = date.toLocaleString('en-US', { month: 'short' });
     const year = date.getFullYear();
 
-    // Replace the '/' with '-' to get the required format
-
-
     return `${day}/${month}/${year}`;
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -456,6 +401,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
@@ -472,4 +418,11 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get('min_temp')?.setValue(Number(inputElement.value));
   }
 
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_EDIT1']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_ADD']);
+  }
 }

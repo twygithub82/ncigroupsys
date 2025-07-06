@@ -17,55 +17,19 @@
                   <mat-panel-title>
                   </mat-panel-title>
                   <mat-panel-description>
+                    @if (isAllowAdd()) {
                     <div class="m-l-" [matTooltip]="translatedLangText.NEW">
                       <button mat-mini-fab class="primary-light" (click)="addCall()" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">add</mat-icon>
                       </button>
                     </div>
+                    }
                     <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
                   </div> -->
                   </mat-panel-description>
                 </mat-expansion-panel-header>
-                <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
-                  <div class="row">
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PACKAGE_MIN_LABOUR}}</mat-label>
-                        <input matInput formControlName="min_labour" type="number">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PACKAGE_MAX_LABOUR }}</mat-label>
-                        <input matInput formControlName="max_labour" type="number">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PACKAGE_MIN_COST}}</mat-label>
-                        <input matInput formControlName="min_cost" type="number">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PACKAGE_MAX_COST }}</mat-label>
-                        <input matInput formControlName="max_cost" type="number">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                      <button mat-mini-fab color="primary" (click)="search()">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                      <button mat-flat-button class="m-l-10 bg-light-gold" (click)="resetDialog($event)">
-                        {{translatedLangText.CLEAR_ALL}}
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div> -->
               </mat-expansion-panel>
             </mat-accordion>
             <div class="body">
@@ -128,7 +92,8 @@
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="lastUpdate">
-                    <mat-header-cell *matHeaderCellDef  mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef
+                      mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                     <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_steaming)">
                       <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
                       {{this.displayLastUpdated(row.tariff_steaming)}}</mat-cell>
@@ -139,7 +104,7 @@
                       *matHeaderCellDef></mat-header-cell>
                     <mat-cell *matCellDef="let row; let i=index;"
                       [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      @if (!row.tank_count) {
+                      @if (isAllowDelete() && !row.tank_count) {
                       <button mat-icon-button (click)="$event.stopPropagation()"
                         (click)="cancelItem(row.tariff_steaming)" [matTooltip]="translatedLangText.DELETE"
                         class="tbl-action-btn text-custom-danger">
@@ -177,5 +142,4 @@
       </div>
     </div>
   </div>
-
 </section>
