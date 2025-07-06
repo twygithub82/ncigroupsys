@@ -419,7 +419,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_EDIT1']);
+    return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_EDIT']);
   }
 
   isAllowAdd() {
