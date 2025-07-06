@@ -35,6 +35,7 @@ import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ConfirmDialogComponent } from './confirm/confirm.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 export interface DialogData {
   action?: string;
@@ -84,12 +85,6 @@ interface Condition {
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
-  displayedColumns = [
-    'fName',
-    'lName',
-    'email',
-  ];
-
   UpdateInProgress: boolean = false;
   action: string;
   index?: number;
@@ -258,11 +253,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();
     this.selectedItems = data.selectedItems;
-    //this.tnkDS = new TankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.pcForm = this.createTarifRepair();
@@ -282,7 +277,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       length: this.lengthControl,
       material_cost_percentage: [''],
       labour_hour_percentage: [''],
-
     });
   }
 
@@ -432,7 +426,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   canEdit() {
-    return true;
+    return this.isAllowEdit();
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -597,12 +591,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     return tr;
   }
 
-
   checkCondition(trfRepairItem: TariffRepairItem): Boolean {
     var retval: Boolean = false;
     var maxCustomerAllowed: number = 10;
     var msg: String = "";
-
 
     retval = (trfRepairItem.group_name_cv?.trim() != "");
     if (!retval) retval = (trfRepairItem.subgroup_name_cv?.trim() != "" && trfRepairItem.subgroup_name_cv != undefined);
@@ -621,19 +613,18 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       retval = true;
     }
 
-
-
     if (!retval && msg.trim() != "") {
       this.ConfirmItem(msg);
     }
-
-
-
     return retval;
-
   }
-   selectAll(event: FocusEvent) {
+
+  selectAll(event: FocusEvent) {
     const input = event.target as HTMLInputElement;
     input.select();  // Selects all text in the input
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_EDIT']);
   }
 }

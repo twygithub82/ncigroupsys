@@ -39,7 +39,7 @@ import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -137,7 +137,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
   selectedPackEst?: PackageDepotItem;
-   allowSelectedAll:boolean =false;
+  allowSelectedAll: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -440,9 +440,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packDepotItems.filter(r=>this.selectedPackEst?.tariff_depot?.guid === r.tariff_depot?.guid).length;
-   
-     var bretval=(numSelected === numRows)&& numSelected>0;
+    const numRows = this.packDepotItems.filter(r => this.selectedPackEst?.tariff_depot?.guid === r.tariff_depot?.guid).length;
+
+    var bretval = (numSelected === numRows) && numSelected > 0;
     return bretval;
   }
 
@@ -462,16 +462,14 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   masterToggle_r1() {
     this.isAllSelected()
       ? this.resetSelection()
-      : this.packDepotItems.forEach((row) =>{
-       if(this.selectedPackEst?.tariff_depot?.guid === row.tariff_depot?.guid)
-       {
-        this.selection.select(row);
-       }
-       else if (this.allowSelectedAll)
-       {
-        if(!this.selectedPackEst)this.selectedPackEst=row;
-        this.selection.select(row);
-       }
+      : this.packDepotItems.forEach((row) => {
+        if (this.selectedPackEst?.tariff_depot?.guid === row.tariff_depot?.guid) {
+          this.selection.select(row);
+        }
+        else if (this.allowSelectedAll) {
+          if (!this.selectedPackEst) this.selectedPackEst = row;
+          this.selection.select(row);
+        }
       }
       );
   }
@@ -810,8 +808,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
         this.profile_nameList = data
       }
     });
-
-
   }
 
   toggleEstimate(row: PackageDepotItem) {
@@ -832,7 +828,6 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       retval = !(this.selectedPackEst.tariff_depot?.guid === row.tariff_depot?.guid);
     }
     return retval;
-
   }
 
   onTabFocused() {
@@ -854,22 +849,19 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-
   getSelectedProfilesDisplay(): string {
     var retval: string = "";
     if (this.selectedProfiles?.length > 1) {
       retval = `${this.selectedProfiles.length} ${this.translatedLangText.PROFILES_SELECTED}`;
-    }
-    else if (this.selectedProfiles?.length == 1) {
+    } else if (this.selectedProfiles?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedProfiles[0].profile_name}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
+      const value = `${this.selectedProfiles[0].profile_name}`;
+      retval = `${value.length > maxLength
+        ? value.slice(0, maxLength) + '...'
         : value}`;
     }
     return retval;
   }
-
 
   getSelectedCustomersDisplay(): string {
     var retval: string = "";
@@ -878,9 +870,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     else if (this.selectedCustomers?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value.length > maxLength
+        ? value.slice(0, maxLength) + '...'
         : value}`;
     }
     return retval;
@@ -888,31 +880,26 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
   removeSelectedProfiles(): void {
     this.selectedProfiles = [];
-      this.AutoSearch();
+    this.AutoSearch();
   }
 
   removeAllSelectedCustomers(): void {
     this.selectedCustomers = [];
-      this.AutoSearch();
+    this.AutoSearch();
   }
-
 
   selected(event: MatAutocompleteSelectedEvent): void {
     const customer = event.option.value;
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-    
-    }
-    else {
+    } else {
       this.selectedCustomers.splice(index, 1);
-      
     }
 
     if (this.custInput) {
       this.searchCustomerCompanyList('');
       this.custInput.nativeElement.value = '';
-
     }
     this.AutoSearch();
     // this.updateFormControl();
@@ -931,9 +918,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.selectedProfile(fakeEvent);
   }
 
-  AutoSearch(){
-      if (Utility.IsAllowAutoSearch())
-        this.search();
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
   }
   onSortChange(event: Sort): void {
     const { active: field, direction } = event;
@@ -951,46 +938,43 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     switch (field) {
       case 'last_update':
         this.lastOrderBy = {
-            update_dt: dirEnum,
-            create_dt: dirEnum,
+          update_dt: dirEnum,
+          create_dt: dirEnum,
         };
         break;
 
       case 'customer':
         this.lastOrderBy = {
-          customer_company:{
+          customer_company: {
             name: dirEnum,
           }
         };
         break;
-    
+
       default:
         this.lastOrderBy = null;
     }
 
     this.search();
   }
-    
+
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }
 
-    HideSelectAllCheckBox()
-  {
-     var retval: boolean = true;
+  HideSelectAllCheckBox() {
+    var retval: boolean = true;
 
-     retval = !(this.selectedPackEst);
-     if(retval)
-     {
-       var first = this.packDepotItems[0];
-       if(first)
-       {
-         var total = this.packDepotItems.length;
-         retval = ! (this.packDepotItems.filter(r=>r.tariff_depot?.guid===first.tariff_depot?.guid).length===total) 
-         this.allowSelectedAll=!retval;
-       }
-     }
-     return retval
+    retval = !(this.selectedPackEst);
+    if (retval) {
+      var first = this.packDepotItems[0];
+      if (first) {
+        var total = this.packDepotItems.length;
+        retval = !(this.packDepotItems.filter(r => r.tariff_depot?.guid === first.tariff_depot?.guid).length === total)
+        this.allowSelectedAll = !retval;
+      }
+    }
+    return retval
   }
 }
 

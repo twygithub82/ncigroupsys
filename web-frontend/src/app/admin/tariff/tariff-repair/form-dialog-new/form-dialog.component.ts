@@ -29,6 +29,7 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 
 export interface DialogData {
@@ -68,18 +69,6 @@ export interface DialogData {
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
-  displayedColumns = [
-    //  'select',
-    // 'img',
-    'fName',
-    'lName',
-    'email',
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
-  ];
-
   action: string;
   index?: number;
   dialogTitle?: string;
@@ -230,10 +219,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   unit_type_control = new UntypedFormControl();
   unitTypeChangedEventUnsub: boolean = false;
 
-  // selectedItem: TariffRepairItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
-
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_New>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -241,11 +226,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();
-    //this.selectedItem = data.selectedItem;
-
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.pcForm = this.createTariffRepair();
@@ -253,7 +237,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
-
+    
     if (data.action == "duplicate") {
       this.selectedItem = data.selectedItem;
       this.pcForm.patchValue({
@@ -271,7 +255,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         material_cost: '',
       });
     }
-
   }
 
   createTariffRepair(): UntypedFormGroup {
@@ -293,7 +276,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       length_unit_cv: this.lengthUnitControl,
       labour_hour: [''],
       material_cost: [''],
-
     });
   }
 
@@ -364,7 +346,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   canEdit() {
-    return this.pcForm!.value['action'] == "new";
+    return this.isAllowAdd() && this.pcForm!.value['action'] == "new";
   }
 
   handleSaveSuccess(count: any) {
@@ -493,8 +475,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get("thickness_unit_cv")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
     this.pcForm.get('length')?.valueChanges.subscribe(value => {
       let len = `${this.pcForm?.get("length")?.value || ''}`;
-      if(len=='')
-      {
+      if (len == '') {
         this.lengthUnitControl.reset();
       }
 
@@ -557,4 +538,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     return false; // Return false if the control doesn't exist
   }
 
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_ADD']);
+  }
 }

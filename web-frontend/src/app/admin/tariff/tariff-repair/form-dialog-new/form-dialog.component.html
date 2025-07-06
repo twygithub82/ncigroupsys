@@ -89,7 +89,8 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.HEIGHT_DIAMETER}}</mat-label>
-              <input matInput formControlName="height_diameter" type="number" min="0" [required]="isRequired('height_diameter_unit_cv')">
+              <input matInput formControlName="height_diameter" type="number" min="0"
+                [required]="isRequired('height_diameter_unit_cv')">
               <!-- @if (pcForm.get('height_diameter')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.HEIGHT_DIAMETER }} {{translatedLangText.CARGO_REQUIRED }}
@@ -100,7 +101,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-              <mat-select formControlName="height_diameter_unit_cv"[required]="isRequired('height_diameter')">
+              <mat-select formControlName="height_diameter_unit_cv" [required]="isRequired('height_diameter')">
                 <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
                   {{ t.description }}
                 </mat-option>
@@ -115,7 +116,8 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.WIDTH_DIAMETER}}</mat-label>
-              <input matInput formControlName="width_diameter" type="number" min="0" [required]="isRequired('width_diameter_unit_cv')">
+              <input matInput formControlName="width_diameter" type="number" min="0"
+                [required]="isRequired('width_diameter_unit_cv')">
               <!-- @if (pcForm.get('width_diameter')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
@@ -143,7 +145,8 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
-              <input matInput formControlName="thickness" type="number" min="0" [required]="isRequired('thickness_unit_cv')">
+              <input matInput formControlName="thickness" type="number" min="0"
+                [required]="isRequired('thickness_unit_cv')">
               <!-- @if (pcForm.get('thickness')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
@@ -169,7 +172,7 @@
           <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
             <mat-form-field class="example-full-width">
               <mat-label>{{translatedLangText.LENGTH}}</mat-label>
-              <input matInput formControlName="length" type="number"min="0" [required]="isRequired('length_unit_cv')">
+              <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')">
             </mat-form-field>
             @if (pcForm.get('length')?.hasError('existed')) {
             <mat-error>

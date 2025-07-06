@@ -29,6 +29,7 @@ import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 export interface DialogData {
   action?: string;
@@ -76,15 +77,11 @@ interface Condition {
 })
 export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'fName',
     'lName',
     'email',
     'gender',
     'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   action: string;
@@ -116,8 +113,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   widthDiameterUnitControl = new UntypedFormControl();
   thicknessUnitControl = new UntypedFormControl();
 
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -243,15 +238,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     super();
     this.selectedItems = data.selectedItems;
-    //this.tnkDS = new TankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trfRepairDS = new TariffRepairDS(this.apollo);
     this.pcForm = this.createTarifRepair();
-
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -275,6 +269,25 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
         labour_hour: rec.labour_hour,
         material_cost: rec.material_cost?.toFixed(2),
       });
+
+      if (!this.canEdit()) {
+        this.pcForm.get('part_name')?.disable();
+        this.pcForm.get('alias')?.disable();
+        this.pcForm.get('dimension')?.disable();
+        this.pcForm.get('height_diameter')?.disable();
+        this.pcForm.get('width_diameter')?.disable();
+        this.pcForm.get('thickness')?.disable();
+        this.pcForm.get('length')?.disable();
+        this.pcForm.get('labour_hour')?.disable();
+        this.pcForm.get('material_cost')?.disable();
+
+        this.groupNameControl.disable();
+        this.subGroupNameControl.disable();
+        this.heightDiameterUnitControl.disable();
+        this.widthDiameterUnitControl.disable();
+        this.thicknessUnitControl.disable();
+        this.lengthUnitControl.disable();
+      }
     }
     else if (this.selectedItems.length > 1) {
       this.assignEditableForUI();
@@ -336,7 +349,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   public loadData() {
     const queries = [
       { alias: 'groupName', codeValType: 'GROUP_NAME' },
-      //{ alias: 'subGroupName', codeValType: 'SUB_GROUP_NAME' },
       { alias: 'unitType', codeValType: 'UNIT_TYPE' }
     ];
     this.cvDS.getCodeValuesByType(queries);
@@ -409,7 +421,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   canEdit() {
-    return true;
+    return this.isAllowEdit();
   }
 
   handleSaveSuccess(count: any) {
@@ -687,14 +699,14 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     return content
   }
 
-   allowNegative(event: KeyboardEvent) {
+  allowNegative(event: KeyboardEvent) {
     const allowedChars = /[0-9-]/;
     const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
-    
+
     if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
       event.preventDefault();
     }
-    
+
     // Additional logic to prevent multiple minus signs
     const input = event.target as HTMLInputElement;
     if (event.key === '-' && input.value.includes('-')) {
@@ -705,7 +717,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   positiveOnly(event: KeyboardEvent) {
     const allowedChars = /[0-9]/;
     const allowedControlChars = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
-    
+
     if (!allowedChars.test(event.key) && !allowedControlChars.includes(event.key)) {
       event.preventDefault();
     }
@@ -714,5 +726,9 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   selectAll(event: FocusEvent) {
     const input = event.target as HTMLInputElement;
     input.select();  // Selects all text in the input
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_EDIT']);
   }
 }
