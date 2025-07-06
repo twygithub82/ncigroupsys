@@ -41,11 +41,12 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
+
 @Component({
-  selector: 'app-group',
+  selector: 'app-team',
   standalone: true,
-  templateUrl: './group.component.html',
-  styleUrl: './group.component.scss',
+  templateUrl: './team.component.html',
+  styleUrl: './team.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -78,26 +79,22 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 })
 
 
-export class GroupComponent extends UnsubscribeOnDestroyAdapter
+export class TeamComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
-  displayedColumns = [
+   displayedColumns = [
     // 'select',
     //'desc',
-    'fName',
-    'lName',
-    'mobile',
-    // 'gender',
-    'bDate',
-
-    'email',
+    'description',
+    'department',
+    'last_update',
     // 'actions',
   ];
-
   pageTitle = 'MENUITEMS.MANAGEMENT.LIST.GROUP'
   breadcrumsMiddleList = [
     { text: 'MENUITEMS.MANAGEMENT.TEXT', route: '/admin/management' }
   ]
 
+  groupNameControl = new UntypedFormControl();
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
   descriptionControl = new UntypedFormControl();
@@ -224,7 +221,12 @@ export class GroupComponent extends UnsubscribeOnDestroyAdapter
     LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
-    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL'
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
+    USER:'COMMON-FORM.USER',
+    ROLE:'COMMON-FORM.ROLE',
+    DEPARTMENT:'COMMON-FORM.DEPARTMENT',
+    POSITION:'COMMON-FORM.POSITION',
   }
 
   constructor(
@@ -279,16 +281,7 @@ export class GroupComponent extends UnsubscribeOnDestroyAdapter
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
-      customer_code: this.customerCodeControl,
-      alias_name: [''],
-      phone: [''],
-      fax_no: [''],
-      email: [''],
-      country: [''],
-      contact_person: [''],
-      mobile_no: [''],
-      description: this.descriptionControl,
-      handled_item_cv: this.handledItemControl
+     description: [''],
     });
   }
 
@@ -329,7 +322,7 @@ export class GroupComponent extends UnsubscribeOnDestroyAdapter
     }
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '720px',
+      width: '75vw',
       height: 'auto',
       data: {
         action: 'update',
@@ -352,28 +345,35 @@ export class GroupComponent extends UnsubscribeOnDestroyAdapter
       }
     });
   }
-
-  addCall(event: Event) {
+ addCall(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
-    // Navigate to the route and pass the JSON object
-    this.router.navigate(['/admin/management/group/new/ '], {
-      state: {
-        id: '',
-        type: 'group',
-        pagination: {
-          where: this.lastSearchCriteria,
-          pageSize: this.pageSize,
-          pageIndex: this.pageIndex,
-          hasPreviousPage: this.hasPreviousPage,
-          startCursor: this.startCursor,
-          endCursor: this.endCursor,
-          previous_endCursor: this.previous_endCursor,
 
-          showResult: this.ccDS.totalCount > 0
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    // if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '600px',
+      data: {
+        action: 'new',
+        langText: this.langText,
+        selectedItems: this.selection.selected
+      }
 
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        if (result.selectedValue > 0) {
+          this.handleSaveSuccess(result.selectedValue);
+          this.search();
         }
       }
     });
+    
   }
 
 

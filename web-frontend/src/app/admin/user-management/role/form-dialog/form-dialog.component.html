@@ -1,0 +1,101 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4>{{this.getPageTitle()}} </h4>
+      </div>
+    </div>
+    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button> -->
+  </div>
+  <div mat-dialog-content class="auto-height">
+    <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
+          <div class="card">
+          
+            <div class="row">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
+                  <input matInput formControlName="description" type="text">
+
+                </mat-form-field>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.DEPARTMENT}}</mat-label>
+                  <input matInput formControlName="department" type="text">
+
+                </mat-form-field>
+              </div>
+               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.POSITION}}</mat-label>
+                  <input matInput formControlName="position" type="text">
+
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.FEATURES}}</mat-label>
+                      <input matInput formControlName="feature" type="text" required>
+                      @if (pcForm.get('feature')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.FEATURES }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                   <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 mb-1">
+                     <div class="card">
+                        <div class="header">
+                          <h2>{{translatedLangText.SELECTED_FEATURES}} </h2>
+                        </div>
+                        <div class="body">
+                          @if (updatedFeatureList.length) {
+                          <div cdkDropList class="steps-list" >
+                            @for (movie of updatedFeatureList; let i = $index; track movie) {
+                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
+                                mins</span>
+                              @if (canEdit()) {
+                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelFeatureItem($event, i)"
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                              }
+                            </div>
+                            }
+                          </div>
+                          }
+                          @else {
+                          <!-- <div class="text-center">
+                            <h5>{{translatedLangText.NO_RESULT}}</h5>
+                          </div> -->
+                          }
+                        </div>
+                      </div>
+                   </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,254 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4>{{this.getPageTitle()}} </h4>
+      </div>
+    </div>
+    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button> -->
+  </div>
+  <div mat-dialog-content class="auto-height">
+    <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+      <div class="row justify-content-center">
+        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
+          <div class="card">
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.NAME}}</mat-label>
+                      <input matInput formControlName="name" type="text" required>
+                      @if (pcForm.get('name')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.NAME }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CONTACT_NO}}</mat-label>
+                      <input matInput formControlName="contact" type="text">
+
+                    </mat-form-field>
+                  </div>
+                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.EMAIL}}</mat-label>
+                      <input matInput formControlName="email" type="text">
+
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.USERNAME}}</mat-label>
+                      <input matInput formControlName="username" type="text" required>
+                      @if (pcForm.get('username')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.USERNAME }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      }
+                    </mat-form-field>
+                   </div>
+                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.PASSWORD}}</mat-label>
+                        <input matInput formControlName="pwd" type="text">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.CONFIRM_PASSWORD}}</mat-label>
+                        <input matInput formControlName="confirm_pwd" type="text">
+                      </mat-form-field>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.ROLE}}</mat-label>
+                      <input matInput formControlName="role" type="text" required>
+                      @if (pcForm.get('username')?.hasError('required')) {
+                      <mat-error>
+                        {{translatedLangText.USERNAME }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      }
+                    </mat-form-field>
+                   </div>
+                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.TEAM}}</mat-label>
+                        <input matInput formControlName="team" type="text">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.ADHOC}}</mat-label>
+                        <input matInput formControlName="adhoc" type="text">
+                      </mat-form-field>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                     <div class="card">
+                        <div class="header">
+                          <h2>{{translatedLangText.SELECTED_ROLES}} </h2>
+                        </div>
+                        <div class="body">
+                          @if (updatedRoleList.length) {
+                          <div cdkDropList class="steps-list" >
+                            @for (movie of updatedRoleList; let i = $index; track movie) {
+                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
+                                mins</span>
+                              @if (canEdit()) {
+                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                              }
+                            </div>
+                            }
+                          </div>
+                          }
+                          @else {
+                          <!-- <div class="text-center">
+                            <h5>{{translatedLangText.NO_RESULT}}</h5>
+                          </div> -->
+                          }
+                        </div>
+                      </div>
+                   </div>
+                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                     <div class="card">
+                        <div class="header">
+                          <h2>{{translatedLangText.SELECTED_TEAMS}} </h2>
+                        </div>
+                        <div class="body">
+                          @if (updatedTeamList.length) {
+                          <div cdkDropList class="steps-list" >
+                            @for (movie of updatedTeamList; let i = $index; track movie) {
+                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
+                                mins</span>
+                              @if (canEdit()) {
+                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                              }
+                            </div>
+                            }
+                          </div>
+                          }
+                          @else {
+                          <!-- <div class="text-center">
+                            <h5>{{translatedLangText.NO_RESULT}}</h5>
+                          </div> -->
+                          }
+                        </div>
+                      </div>
+                   </div>
+                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                     <div class="card">
+                        <div class="header">
+                          <h2>{{translatedLangText.SELECTED_ADHOC}} </h2>
+                        </div>
+                        <div class="body">
+                          @if (updatedAdhocList.length) {
+                          <div cdkDropList class="steps-list" >
+                            @for (movie of updatedAdhocList; let i = $index; track movie) {
+                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
+                                mins</span>
+                              @if (canEdit()) {
+                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                              }
+                            </div>
+                            }
+                          </div>
+                          }
+                          @else {
+                          <!-- <div class="text-center">
+                            <h5>{{translatedLangText.NO_RESULT}}</h5>
+                          </div> -->
+                          }
+                        </div>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div class="row">
+                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                     <div class="card">
+                        <div class="header">
+                          <h2>{{translatedLangText.SELECTED_FEATURES}} </h2>
+                        </div>
+                        <div class="body">
+                          @if (updatedRoleList.length) {
+                          <div cdkDropList class="steps-list" >
+                            @for (movie of updatedRoleList; let i = $index; track movie) {
+                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
+                                mins</span>
+                              @if (canEdit()) {
+                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                              }
+                            </div>
+                            }
+                          </div>
+                          }
+                          @else {
+                          <!-- <div class="text-center">
+                            <h5>{{translatedLangText.NO_RESULT}}</h5>
+                          </div> -->
+                          }
+                        </div>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div mat-dialog-actions class="mb-1 align-right">
+        @if (canEdit()) {
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        }
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
+      </div>
+    </form>
+  </div>
+</div>

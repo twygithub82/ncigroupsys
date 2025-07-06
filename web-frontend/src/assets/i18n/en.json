@@ -309,6 +309,14 @@
         "CHANGE-PASSWORD": "Change Password",
         "LOGOUT": "Logout"
       }
+    },
+     "USER-MANAGEMENT": {
+      "TEXT": "User Management",
+      "LIST": {
+        "USERS": "Users",
+        "ROLES": "Roles",
+        "TEAMS": "Teams"
+      }
     }
   },
   "LANDING-SIGNIN": {
@@ -1344,7 +1352,16 @@
     "PCS": "Pcs",
     "INCH": "Inch",
     "PTS": "Pts",
-    "MAX-TEMP-EXCEED-FLASH-POINT": "Max Temp Exceeds Flash Point"
+    "MAX-TEMP-EXCEED-FLASH-POINT": "Max Temp Exceeds Flash Point",
+    "ROLE": "Role",
+    "USER":"User",
+    "POSITION":"Position",
+    "ADHOC":"Adhoc Feature",
+     "SELECTED-ROLES":"Selected Roles",
+    "SELECTED-TEAMS":"Selected Teams",
+    "SELECTED-ADHOC":"Selected Adhoc Features",
+    "SELECTED-FEATURES":"Selected Features",
+    "FEATURES":"Features"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

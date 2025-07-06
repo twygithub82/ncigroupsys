@@ -16,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
@@ -25,21 +26,24 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
+  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: PackageResidueItem[];
+  // populateData?: any;
+  // index: number;
+  // sotExistedList?: StoringOrderTankItem[]
 }
 
 
 
 @Component({
-  selector: 'app-management-group-form-dialog',
+  selector: 'app-management-user-form-dialog',
   templateUrl: './form-dialog.component.html',
   styleUrls: ['./form-dialog.component.scss'],
   providers: [provideNgxMask()],
@@ -64,10 +68,11 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    MatTooltipModule
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
+
   displayedColumns = [
     //  'select',
     // 'img',
@@ -180,11 +185,28 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     GATE_IN_COST: 'COMMON-FORM.GATE-IN-COST',
     GATE_OUT_COST: 'COMMON-FORM.GATE-OUT-COST',
     COST: "COMMON-FORM.COST",
-
+    USER: 'MENUITEMS.MANAGEMENT.LIST.USER',
+    USERNAME: 'LANDING-SIGNIN.USERNAME',
+    PASSWORD: 'LANDING-SIGNIN.PASSWORD',
+    CONFIRM_PASSWORD: 'LANDING-SIGNIN.CONFIRM-PASSWORD',
+    NAME: 'COMMON-FORM.NAME',
+    EMAIL: 'COMMON-FORM.EMAIL',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
+    FEATURES: "COMMON-FORM.FEATURES",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
+    ROLE:'COMMON-FORM.ROLE',
+    DEPARTMENT:'COMMON-FORM.DEPARTMENT',
+    POSITION:'COMMON-FORM.POSITION',
+    TEAM:'COMMON-FORM.TEAM',
+    SELECTED_FEATURES:'COMMON-FORM.SELECTED-FEATURES',
+    
   };
 
 
   selectedItems: PackageResidueItem[];
+  updatedFeatureList: any[] = [];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -211,11 +233,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   createPackageResidue(): UntypedFormGroup {
     return this.fb.group({
       selectedItems: this.selectedItems,
-      cost_cust: [''],
-      cost_standard: ['-'],
-      remarks: [''],
+      name: [''],
+      contact: [''],
+      email: [''],
+      username: [''],
+      pwd: [''],
+      cofirm_pwd: [''],
 
     });
+  }
+
+  getPageTitle() {
+    return this.translatedLangText.NEW + ' ' + this.translatedLangText.ROLE;
   }
   // profileChanged()
   // {
@@ -425,7 +454,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
-  preventDefault(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-  }
+cancelFeatureItem($event: MouseEvent,index: number) {
+
+}
 }

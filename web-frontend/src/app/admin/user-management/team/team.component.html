@@ -1,0 +1,123 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+
+          <mat-accordion>
+            <mat-expansion-panel expanded="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                </mat-panel-title>
+                <mat-panel-description>
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                      <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                        <mat-icon>search</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                      <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                        <mat-icon>clear_all</mat-icon>
+                      </button>
+                    </div>
+                    <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+                      <button mat-mini-fab class="primary-light" (click)="addCall($event)" (click)="$event.stopPropagation()">
+                        <mat-icon class="col-white">add</mat-icon>
+                      </button>
+                    </div>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+                  <div class="row">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>{{translatedLangText.DESCRIPTION }}</mat-label>
+                        <input matInput formControlName="description" type="text">
+                        <mat-icon matSuffix class="date-icon">search</mat-icon>
+
+                      </mat-form-field>
+
+                    </div>
+               
+                  </div>
+                
+
+                </form>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <div class="body overflow-auto">
+            <div class="responsive_table">
+              <table mat-table [dataSource]="customer_companyList" matSort
+                class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                  <ng-container matColumnDef="description">
+                  <mat-header-cell *matHeaderCellDef 
+                    [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.DESCRIPTION }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                    [ngClass]="'tbl-col-width-per-3'">
+                    <span class="mobile-label">{{this.translatedLangText.DESCRIPTION }}:</span>{{row.description}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="department">
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.DEPARTMENT
+                    }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <span class="mobile-label">{{this.translatedLangText.DEPARTMENT
+                      }}:</span>{{row.department}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="last_update">
+                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.LAST_UPDATE
+                    }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                    <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
+                    {{this.displayLastUpdated(row)}}</mat-cell>
+                </ng-container>
+                <!-- actions -->
+                <ng-container matColumnDef="actions">
+                  <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
+                  <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
+                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
+                      class="tbl-action-btn">
+                      <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
+                    </button>
+                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
+                      class="tbl-action-btn">
+                      <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                    </button>
+                  </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                  [style.cursor]="'pointer'" matRipple>
+                </mat-row>
+              </table>
+            </div>
+            <!-- Loading spinner -->
+            @if (!(ccDS.loading$ | async) && !customer_companyList.length) {
+            <mat-divider></mat-divider>
+            <div class="no-results m-l-20 pt-3" [style.display]="customer_companyList.length === 0 ? '' : 'none'">
+              <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+            </div>
+            }
+            <!-- Loading spinner -->
+            @if (ccDS.loading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
+            </div>
+            }
+
+            <mat-paginator #paginator [length]="ccDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+              [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

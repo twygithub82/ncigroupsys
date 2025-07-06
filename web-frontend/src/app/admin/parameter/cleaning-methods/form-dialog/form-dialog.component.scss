@@ -4,6 +4,10 @@
   overflow: auto;
 }
 
+::ng-deep .mat-mdc-dialog-content {
+  max-height: none;
+}
+
 table.mat-table {
   width: 100%;
   border-collapse: collapse;
