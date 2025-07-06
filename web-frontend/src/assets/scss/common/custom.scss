@@ -2088,6 +2088,18 @@ $grid-breakpoints: (
     }
   }
 
+    // When bg-light-white is applied, override .tank-header background
+  &.bg-light-white {
+    .tank-header {
+      background-color: white !important;
+
+      &:hover,
+      &:focus {
+        background-color: white !important;
+      }
+    }
+  }
+
   // Override when the panel is expanded
   &.mat-expanded {
     .tank-header {

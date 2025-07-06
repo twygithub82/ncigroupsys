@@ -137,7 +137,7 @@ export class OverwriteRepairApprovalFormDialogComponent {
     private modulePackageService: ModulePackageService,
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.OVERWRITE_APPROVAL;
+    this.dialogTitle = data.translatedLangText?.APPROVAL;
     this.sot = data.sot!;
     this.repairItem = data.repairItem!;
     this.packageLabourItem = data.packageLabourItem!;

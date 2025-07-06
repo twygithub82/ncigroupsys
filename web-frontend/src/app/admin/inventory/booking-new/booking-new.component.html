@@ -30,8 +30,14 @@
                           </button>
                         </div>
                         }
+                        <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                          <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                            (click)="$event.stopPropagation()">
+                            <mat-icon>clear_all</mat-icon>
+                          </button>
+                        </div>
                         @if (isAllowAdd() || isAllowEdit()) {
-                        <div class="m-l-10">
+                        <div class="m-l-5">
                           <mat-checkbox color="primary" class="card-checkbox ms-1" (change)="masterToggle()"
                             (click)="$event.stopPropagation()" [checked]="sotSelection.hasValue() && isAllSelected()"
                             [indeterminate]="sotSelection.hasValue() && !isAllSelected()" [disabled]="!sotList.length">
@@ -39,12 +45,6 @@
                           </mat-checkbox>
                         </div>
                         }
-                        <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                          <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                            (click)="$event.stopPropagation()">
-                            <mat-icon>clear_all</mat-icon>
-                          </button>
-                        </div>
                       </mat-panel-description>
                     </mat-expansion-panel-header>
                     <div class="row">
@@ -200,9 +200,9 @@
                 @for(row of sotList; track row){
                 <mat-card [ngClass]="{'booking-tbl card-content p-0 m-b-10 cursor-pointer': true}" matRipple>
                   <mat-accordion>
-                    <mat-expansion-panel
-                      [ngClass]="{'bg-light-green': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])), 'bg-extra-light-grey': checkDisable(row)}"
-                      [expanded]="false" class="alternate-panel">
+                    <mat-expansion-panel class="alternate-panel" 
+                      [ngClass]="{'bg-light-white': checkMatch(filterDeleted(row.scheduling_sot || []), filterDeleted(row.booking || [])),
+                                  'bg-extra-light-grey': checkDisable(row)}" [expanded]="false">
                       <mat-expansion-panel-header class="tank-header">
                         <mat-panel-description>
                           @if (isAllowAdd() || isAllowEdit()) {
@@ -255,12 +255,12 @@
                           <ng-container matColumnDef="booking_dt">
                             <mat-header-cell mat-header-cell *matHeaderCellDef
                               [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                              {{translatedLangText.BOOKING_DATE}}
+                              {{translatedLangText.DATE}}
                             </mat-header-cell>
                             <mat-cell mat-cell *matCellDef="let bookingRow"
                               [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                               <span
-                                class="mobile-label">{{translatedLangText.BOOKING_DATE}}:</span>{{displayDate(bookingRow.booking_dt)}}
+                                class="mobile-label">{{translatedLangText.DATE}}:</span>{{displayDate(bookingRow.booking_dt)}}
                             </mat-cell>
                           </ng-container>
                           <ng-container matColumnDef="book_type_cv">
@@ -482,10 +482,10 @@
                 </mat-paginator>
                 <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
                   <div class="legend-item d-flex align-items-center me-4 mb-0">
-                    <span class="badge badge-solid-green">{{translatedLangText.BOOKED}}</span>
+                    <span class="badge badge-solid-green badge-fixed-size">{{translatedLangText.BOOKED}}</span>
                   </div>
                   <div class="legend-item d-flex align-items-center me-4 mb-0">
-                    <span class="badge badge-solid-orange ms-1">{{translatedLangText.SCHEDULED}}</span>
+                    <span class="badge badge-solid-orange badge-fixed-size ms-1">{{translatedLangText.SCHEDULED}}</span>
                   </div>
                 </div>
               </div>

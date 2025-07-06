@@ -112,7 +112,7 @@ export class OverwriteResidueApprovalFormDialogComponent {
     private fb: UntypedFormBuilder,
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.OVERWRITE_APPROVAL;
+    this.dialogTitle = data.translatedLangText?.APPROVAL;
     this.sot = data.sot!;
     this.residueItem = data.residueItem!;
     this.packageLabourItem = data.packageLabourItem!;

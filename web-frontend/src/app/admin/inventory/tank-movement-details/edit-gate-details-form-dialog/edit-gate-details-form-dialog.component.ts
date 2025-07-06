@@ -77,7 +77,7 @@ export class EditGateDetailsFormDialogComponent {
 
   ) {
     // Set the defaults
-    this.dialogTitle = data.translatedLangText?.OVERWRITE_CONDITION;
+    this.dialogTitle = data.action == "in" ? data.translatedLangText?.IN_GATE : data.translatedLangText?.OUT_GATE,  //data.translatedLangText?.OVERWRITE_CONDITION;
     this.action = data.action;
     this.sot = data.sot!;
     this.gateItem = data.gateItem!;
