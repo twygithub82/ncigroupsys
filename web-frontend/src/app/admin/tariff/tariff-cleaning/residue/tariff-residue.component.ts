@@ -772,44 +772,44 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     return this.modulePackageService.hasFunctions(['TARIFF_RESIDUE_DISPOSAL_VIEW']);
   }
 
-  
-   onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = null;
-          return this.search();
-        }
-    
-        
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'email':
-            
-            this.lastOrderBy = {
-              tariff_residue: {
-                update_dt: dirEnum,
-                create_dt: dirEnum,
-              },
-            };
-            break;
-             
-         case 'fName':
-          this.lastOrderBy = {
-            tariff_residue: {
-              description: dirEnum
-            },
-          };
-          break;
-          default:
-            this.lastOrderBy = null;
-        }
-    
-        this.search();
-      }
+
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'email':
+
+        this.lastOrderBy = {
+          tariff_residue: {
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+          },
+        };
+        break;
+
+      case 'fName':
+        this.lastOrderBy = {
+          tariff_residue: {
+            description: dirEnum
+          },
+        };
+        break;
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
 }
 

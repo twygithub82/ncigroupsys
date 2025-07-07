@@ -609,40 +609,40 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   }
 
   onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
-  
-      // reset if no direction
-      if (!direction) {
-        this.lastOrderBy = null;
-        return this.search();
-      }
-  
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-  
-      switch (field) {
-        case 'email':
-          this.lastOrderBy = {
-            tariff_buffer: {
-              update_dt: dirEnum,
-              create_dt: dirEnum,
-            },
-          };
-          break;
-          
-         case 'fName':
-          this.lastOrderBy = {
-            tariff_buffer: {
-              buffer_type: dirEnum
-            },
-          };
-          break;
-  
-        default:
-          this.lastOrderBy = null;
-      }
-  
-      this.search();
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'email':
+        this.lastOrderBy = {
+          tariff_buffer: {
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+          },
+        };
+        break;
+
+      case 'fName':
+        this.lastOrderBy = {
+          tariff_buffer: {
+            buffer_type: dirEnum
+          },
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
 }
