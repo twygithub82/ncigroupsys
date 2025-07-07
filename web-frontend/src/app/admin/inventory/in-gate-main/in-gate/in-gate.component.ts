@@ -128,12 +128,13 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     private apollo: Apollo,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    private modulePackageService: ModulePackageService
+    
   ) {
     super();
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    searchStateService.clearOtherPages(this.pageStateType);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;

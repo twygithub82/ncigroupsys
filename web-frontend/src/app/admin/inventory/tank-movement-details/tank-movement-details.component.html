@@ -1141,16 +1141,16 @@
                                               <span>{{translatedLangText.APPROVAL}}</span>
                                             </button>
                                             }
-                                            <button mat-menu-item (click)="exportResidueEst($event, row)">
+                                            <!-- <button mat-menu-item (click)="exportResidueEst($event, row)">
                                               <mat-icon>edit</mat-icon>
                                               <span>{{translatedLangText.OVERWRITE_APPROVAL}}</span>
-                                            </button>
+                                            </button> -->
                                           </mat-menu>
                                         </mat-cell>
                                       </ng-container>
                                       <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
                                       <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
-                                        [style.cursor]="'pointer'" matRipple>
+                                        [style.cursor]="'pointer'" (click)="ViewResidueEstimateItem(row)" matRipple>
                                       </mat-row>
                                     </table>
                                   </div>

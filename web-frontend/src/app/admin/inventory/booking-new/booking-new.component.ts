@@ -47,6 +47,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-booking-new',
@@ -205,6 +206,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
   hasPreviousPage = false;
 
   todayDt: Date = new Date();
+  pageStateType="Booking";
 
   constructor(
     public httpClient: HttpClient,
@@ -213,9 +215,11 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
+    private searchStateService: SearchStateService,
     private modulePackageService: ModulePackageService
   ) {
     super();
+    searchStateService.clearOtherPages(this.pageStateType);
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);

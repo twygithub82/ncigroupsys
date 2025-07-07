@@ -2463,3 +2463,7 @@ button[mat-flat-button].center-icon {
 mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
   flex-flow: nowrap !important;
 }
+
+.mdc-dialog__content.cancel-form {
+  overflow: hidden;
+}

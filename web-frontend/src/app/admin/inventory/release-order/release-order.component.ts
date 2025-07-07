@@ -188,6 +188,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     public modulePackageService: ModulePackageService
   ) {
     super();
+    searchStateService.clearOtherPages(this.pageStateType);
     this.translateLangText();
     this.initSearchForm();
     this.soDS = new StoringOrderDS(this.apollo);

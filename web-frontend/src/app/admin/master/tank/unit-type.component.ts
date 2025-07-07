@@ -84,7 +84,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     //'select',
-   
+
     ''
   ];
 
@@ -715,10 +715,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   DisableAddTankButton() {
     var retval: boolean = false;
 
-    if(this.modulePackageService.isStarterPackage())
-    {
-      if(this.tnkDS.totalCount>maxTankCount)
-      {
+    if (this.modulePackageService.isStarterPackage()) {
+      if (this.tnkDS.totalCount > maxTankCount) {
         return true;
       }
 
@@ -727,58 +725,57 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-   onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = null;
-          return this.search();
-        }
-    
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'lastUpdate':
-            this.lastOrderBy = {
-              
-                update_dt: dirEnum,
-                create_dt: dirEnum,
-              
-            };
-            break;
-    
-          case 'unittype':
-            this.lastOrderBy = {
-              unit_type: dirEnum,
-              
-            };
-            break;
-        
-          default:
-            this.lastOrderBy = null;
-        }
-    
-        this.search();
-      }
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
 
-      AutoSearch(){
-        if (Utility.IsAllowAutoSearch())
-          this.search();
-      }
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
 
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'lastUpdate':
+        this.lastOrderBy = {
+
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+
+        };
+        break;
+
+      case 'unittype':
+        this.lastOrderBy = {
+          unit_type: dirEnum,
+
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_UNIT_TYPE_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_UNIT_TYPE_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['MASTER_UNIT_TYPE_DELETE']);
+  }
 }
-// export function addDefaultSelectOption(list: CodeValuesItem[], desc: string = '-- Select --', val: string = ''): CodeValuesItem[] {
-//   // Check if the list already contains the default value
-//   const containsDefault = list.some(item => item.code_val === val);
-
-//   // If the default value is not present, add it to the list
-//   if (!containsDefault) {
-//     // Create a new array with the default option added at the beginning
-//     return [{ code_val: val, description: desc }, ...list];
-//   }
-
-//   return list;
-// }

@@ -1,0 +1,156 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="editRowModal">
+      <div class="modalHeader clearfix">
+        <h4>{{GetTitle()}}</h4>
+      </div>
+    </div>
+  </div>
+   <div class="row">
+        <div class="responsive_table">
+          <table mat-table [dataSource]="deList!" matSort
+            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+            <!-- ID Column -->
+            <ng-container matColumnDef="seq">
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
+              <mat-cell *matCellDef="let row; let i = index"
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+              <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="desc">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                {{translatedLangText.DESCRIPTION}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+              </mat-cell>
+              <mat-footer-cell *matFooterCellDef [ngClass]="''"
+                class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="qty">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                {{translatedLangText.QUANTITY}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                <span class="mobile-label">{{translatedLangText.QTY}}:</span>
+                    @if(IsApproved())
+                    {
+                      {{row.approve_qty}}
+                   
+                    }
+                    @else
+                    {
+                       {{row.quantity}}
+                    }
+              </mat-cell>
+              <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="qty_unit">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                {{translatedLangText.TYPE}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center' ">
+                <span class="mobile-label">{{translatedLangText.TYPE}}:</span>
+                {{row.qty_unit_type_cv}}
+              </mat-cell>
+              <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="unit_price">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                {{translatedLangText.PRICE}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
+               
+                    @if(IsApproved())
+                    {
+                      {{parse2Decimal(row.approve_cost)}}
+                    
+                    }
+                    @else
+                    { {{parse2Decimal(row.cost)}}
+                   
+                    }
+                  
+              </mat-cell>
+              <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                {{translatedLangText.TOTAL_COST}}:
+              </mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="approve_part">
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                <mat-icon>more_vert</mat-icon>
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
+                @if (row.approve_part === null || row.approve_part === undefined ||
+                IsApprovePart(row)){
+                <mat-icon class="col-green font-bold" >check</mat-icon>
+                }
+                @else {
+                <mat-icon class="col-red font-bold" >close</mat-icon>
+                }
+              </mat-cell>
+              <mat-footer-cell *matFooterCellDef
+                [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="cost">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                {{translatedLangText.COST}}
+              </mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                <span
+                  class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateResidueItemCost(row))}}
+              </mat-cell>
+              <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                <span class="mobile-label"> </span>{{this.parse2Decimal(getTotalCost()) }}
+              </mat-footer-cell>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <mat-header-cell class="pr-0"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                *matHeaderCellDef>
+              </mat-header-cell>
+              <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
+                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
+              [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
+              [style.cursor]="'pointer'" matRipple>
+            </mat-row>
+            <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+          </table>
+        </div>
+        <!-- No result -->
+        @if ( !deList?.length) {
+        <mat-divider></mat-divider>
+        <div class="no-results m-l-20 pt-3" [style.display]="deList?.length === 0 ? '' : 'none'">
+          <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+        </div>
+        }
+    
+        <div mat-dialog-actions class="pt-2 pb-2 pe-4 align-right">
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
+      </div>
+        
+      </div>
+      
+</div>

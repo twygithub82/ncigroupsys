@@ -33,26 +33,26 @@
                       </mat-error>
                       } -->
                     @if (tempForm?.get('template_name')?.hasError('existed')) {
-                        <mat-error>
-                          {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.EXISTED}}
-                        </mat-error>
-                        }
+                    <mat-error>
+                      {{this.translatedLangText.TEMPLATE}} {{this.translatedLangText.EXISTED}}
+                    </mat-error>
+                    }
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm3 mb-1">
                   <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
-                      <mat-select  formControlName="customer_code" multiple>
-                          <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
-                            <ng-container *ngIf="cc !== null">
-                              {{ ccDS.displayCodeDashName(cc) }}
-                            </ng-container>
-                          </mat-option>
-                        </mat-select>
+                    <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
+                    <mat-select formControlName="customer_code" multiple>
+                      <mat-option *ngFor="let cc of this.customer_companyList" [value]="cc">
+                        <ng-container *ngIf="cc !== null">
+                          {{ ccDS.displayCodeDashName(cc) }}
+                        </ng-container>
+                      </mat-option>
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
-                  @if (soDS.canAdd(storingOrderItem)) {
+                  @if (canEdit() && soDS.canAdd(storingOrderItem)) {
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10 mt-2'"
                     (click)="addEstDetails($event)">
                     <mat-icon class="col-white">add</mat-icon>{{translatedLangText.DETAILS}}
@@ -76,18 +76,17 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="seq">
-                        <mat-header-cell *matHeaderCellDef >S/N</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>S/N</mat-header-cell>
                         <mat-cell *matCellDef="let row;">{{row.index+1}}</mat-cell>
                       </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">
-                        <mat-header-cell *matHeaderCellDef >Id</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
                         <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="subgroup_name_cv">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.SUBGROUP}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -98,8 +97,7 @@
                       </ng-container>
                       <ng-container matColumnDef="damage">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.DAMAGE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -113,7 +111,8 @@
                                     matTooltipClass="custom-tooltip">
                               {{displayDamageRepairCode(row.tep_damage_repair, 0)}}
                             </span> -->
-                            <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 0)" matTooltipClass="custom-tooltip">
+                            <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 0)"
+                              matTooltipClass="custom-tooltip">
                               {{displayDamageRepairCode(row.tep_damage_repair, 0)}}
                             </span>
                           </span>
@@ -121,8 +120,7 @@
                       </ng-container>
                       <ng-container matColumnDef="repair">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -135,15 +133,15 @@
                                   matTooltipClass="custom-tooltip">
                             {{displayDamageRepairCode(row.tep_damage_repair, 1)}}
                           </span> -->
-                          <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 1)" matTooltipClass="custom-tooltip">
+                          <span [matTooltip]="displayDamageRepairCodeDescription(row.tep_damage_repair, 1)"
+                            matTooltipClass="custom-tooltip">
                             {{displayDamageRepairCode(row.tep_damage_repair, 1)}}
                           </span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="description">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                          >
+                          [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -154,8 +152,7 @@
                       </ng-container>
                       <ng-container matColumnDef="quantity">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                          >
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.QTY}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -166,8 +163,7 @@
                       </ng-container>
                       <ng-container matColumnDef="hour">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                          >
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.HOUR}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
@@ -182,18 +178,17 @@
                           {{translatedLangText.PRICE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"> 
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                           <div>
                             <!-- <span>{{parse2Decimal(row.tariff_repair.material_cost)}}</span> -->
-                             <span>{{DisplayPrice(row)}}</span>
+                            <span>{{DisplayPrice(row)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="material">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
-                          >
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                           {{translatedLangText.MATERIAL}} $
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
@@ -201,7 +196,7 @@
                           <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
                           <div>
                             <!-- <span>{{parse2Decimal(row.quantity * row.tariff_repair.material_cost)}}</span> -->
-                             <span>{{DisplayMaterialCost(row)}}</span>
+                            <span>{{DisplayMaterialCost(row)}}</span>
                           </div>
                         </mat-cell>
                       </ng-container>
@@ -225,6 +220,7 @@
                         <mat-header-cell class="pr-0" [ngClass]="''" *matHeaderCellDef>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row;" class="justify-content-end">
+                          @if (canEdit()) {
                           <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                             <mat-icon>more_vert</mat-icon>
                           </button>
@@ -236,12 +232,12 @@
                             </button>
                             }
                           </mat-menu>
+                          }
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                      <mat-row *matRowDef="let row; columns: ['group_name_cv'];"
-                        [hidden]="!row.isGroupHeader" [ngClass]="{'bg-lightest-blue font-bold': true}"
-                        [style.cursor]="'pointer'" matRipple>
+                      <mat-row *matRowDef="let row; columns: ['group_name_cv'];" [hidden]="!row.isGroupHeader"
+                        [ngClass]="{'bg-lightest-blue font-bold': true}" [style.cursor]="'pointer'" matRipple>
                       </mat-row>
                       <mat-row *matRowDef="let row; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
@@ -263,13 +259,8 @@
                   }
                 </div>
               </div>
-
-
-
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-
-
                   @if (!repList.data.length) {
                   <mat-divider></mat-divider>
                   <div class="no-results m-l-20 pt-3" [style.display]="repList.data.length === 0 ? '' : 'none'">
@@ -317,7 +308,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                       <mat-form-field class="example-full-width full-height">
                         <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                        <textarea matInput formControlName="remarks"  style="height:220px ;"></textarea>
+                        <textarea matInput formControlName="remarks" style="height:220px ;"></textarea>
                       </mat-form-field>
                     </div>
                   </div>
@@ -370,8 +361,7 @@
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_discount"
-                                 [placeholder]="translatedLangText.PERCENTAGE_SYMBOL"
-                                type="number" min="0" required>
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
                               <!-- @if (tempForm?.get('labour_discount')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.LABOUR_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
@@ -384,8 +374,7 @@
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_discount"
-                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL"
-                                type="number" min="0" required>
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
                               <!-- @if (tempForm?.get('material_discount')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
@@ -397,12 +386,14 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label"></div>
                         </div>
-
                       </div>
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                          <span class="font-bold">{{translatedLangText.HOUR}}</span>
+                        </div>
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.TOTAL}}</span>
                         </div>
                       </div>
@@ -435,7 +426,6 @@
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label"></div>
                                 </div>
-
                               </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
@@ -443,13 +433,15 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('labour_total')?.value | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('labour_total')?.value | number:
+                                      '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('total_material_cost')?.value | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('total_material_cost')?.value | number:
+                                      '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -461,13 +453,15 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('labour_discount_amount')?.value | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('labour_discount_amount')?.value | number:
+                                      '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{tempForm!.get('material_discount_amount')?.value | number: '1.2-2'}}</span>
+                                    <span>$</span><span>{{tempForm!.get('material_discount_amount')?.value | number:
+                                      '1.2-2'}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -476,7 +470,6 @@
                                     <span>$</span><span>{{tempForm!.get('net_cost')?.value | number: '1.2-2'}}</span>
                                   </div>
                                 </div>
-
                               </div>
                             </div>
                           </div>
@@ -489,12 +482,13 @@
               }
               <div class="row m-t-5">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                  <button mat-flat-button type="button" aria-label="Back to previous page"  (click)="GoBackPrevious($event)">
+                  <button mat-flat-button type="button" aria-label="Back to previous page"
+                    (click)="GoBackPrevious($event)">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                  @if (isAnyItemEdited()) {
+                  @if (canEdit() && isAnyItemEdited()) {
                   <button mat-flat-button color="primary" [disabled]="(soDS.loading$ | async)">
                     <mat-icon>
                       @if (!(soDS.loading$ | async)) {

@@ -208,10 +208,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     FLAT_RATE_ONLY: 'COMMON-FORM.FLAT-RATE-ONLY',
   };
 
-
   selectedItem: TankItem;
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
 
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
@@ -249,7 +246,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -257,20 +253,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   displayDateFromEpoch(epoch: any) {
     if (epoch) {
       var updatedt = Number(epoch);
-
       const date = new Date(updatedt! * 1000);
       const day = String(date.getDate()).padStart(2, '0');
       const month = date.toLocaleString('en-US', { month: 'short' });
       const year = date.getFullYear();
-
-      // Replace the '/' with '-' to get the required format
-
-
       return `${day}/${month}/${year}`;
     }
     return `-`;
-
   }
+
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
@@ -278,10 +269,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   loadData() {
-
     if (this.selectedItem) {
       var tnkItm = this.selectedItem;
-
       this.pcForm.patchValue({
         unit_type: tnkItm.unit_type,
         lift_on: tnkItm.lift_on,
@@ -290,44 +279,28 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         gate_out: tnkItm.gate_out,
         preinspect: tnkItm.preinspect,
         iso_format: tnkItm.iso_format,
-        flat_rate:tnkItm.flat_rate
-        // flat_rate: tnkItm.flat_rate,
-        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
+        flat_rate: tnkItm.flat_rate
       });
-
-
     }
 
-
-
-
+    if (!this.canEdit()) {
+      this.pcForm?.get('unit_type')?.disable()
+      this.pcForm?.get('lift_on')?.disable()
+      this.pcForm?.get('lift_off')?.disable()
+      this.pcForm?.get('gate_in')?.disable()
+      this.pcForm?.get('gate_out')?.disable()
+      this.pcForm?.get('preinspect')?.disable()
+      this.pcForm?.get('iso_format')?.disable()
+      this.pcForm?.get('flat_rate')?.disable()
+    }
   }
-
 
   selectStorageCalculateCV_Description(valCode?: string): CodeValuesItem {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
       valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
-
-      // If no match is found, description will be undefined, so you can handle it accordingly
-
     }
     return valCodeObject;
-
-  }
-
-
-
-  // selectClassNo(value:string):void{
-  //   const returnDialog: DialogData = {
-  //     selectedValue:value
-  //   }
-  //   console.log('valid');
-  //   this.dialogRef.close(returnDialog);
-  // }
-
-  canEdit() {
-    return true;
   }
 
   handleSaveSuccess(count: any) {
@@ -342,7 +315,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   async save() {
-
     if (!this.pcForm?.valid) return;
     const dup: boolean = await this.checkDuplication();
     if (dup) {
@@ -362,14 +334,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
       this.tankDS?.updateTank(tnkItm).subscribe(result => {
         if (result.data.updateTank > 0) {
-
           console.log('valid');
           this.dialogRef.close(result.data.updateTank);
-
         }
       });
-    }
-    else {
+    } else {
       var tnkItm = new TankItem();
       tnkItm.unit_type = `${this.pcForm.get("unit_type")?.value}`;
       tnkItm.gate_in = this.pcForm.get("gate_in")?.value;
@@ -381,17 +350,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tnkItm.flat_rate = this.pcForm.get("flat_rate")?.value;
       this.tankDS?.addNewTank(tnkItm).subscribe(result => {
         if (result.data.addTank > 0) {
-
           console.log('valid');
           this.dialogRef.close(result.data.addTank);
-
         }
       });
     }
-
-
-
-
   }
 
   async checkDuplication(): Promise<boolean> {
@@ -441,7 +404,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   GetActionButton(): string {
-
     var action: string = this.translatedLangText.SAVE;
     if (this.action === 'update') {
       action = this.translatedLangText.UPDATE;
@@ -450,4 +412,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return action;
   }
 
+  canEdit(): boolean {
+    return ((!!this.selectedItem?.guid && this.isAllowEdit()) || (!this.selectedItem?.guid && this.isAllowAdd()));
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_UNIT_TYPE_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_UNIT_TYPE_ADD']);
+  }
 }

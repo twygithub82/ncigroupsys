@@ -1,11 +1,14 @@
 import { Direction } from '@angular/cdk/bidi';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,22 +24,19 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
+import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { Utility, maxLengthDisplaySingleSelectedItem, pageSizeInfo } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
-import { MatCardModule } from '@angular/material/card';
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
@@ -44,12 +44,9 @@ import { RepairItem } from 'app/data-sources/repair';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { ComponentUtil } from 'app/utilities/component-util';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-job-order',
@@ -293,45 +290,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
-  }
-
-  cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        this.soDS.cancelStoringOrder(so).subscribe(result => {
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-              this.refreshTable();
-            });
-          }
-        });
-      }
-    });
   }
 
   public loadData() {
