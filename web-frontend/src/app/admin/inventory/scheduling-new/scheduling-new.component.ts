@@ -46,6 +46,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
@@ -885,9 +886,12 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.lastCargoControl.reset('');
   }
 
-  AutoSearch()
-  {
-    if(Utility.IsAllowAutoSearch())
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
       this.search();
+  }
+
+  getLastLocation(row: any) {
+    return BusinessLogicUtil.getLastLocation(row, this.igDS.getInGateItem(row.in_gate), row.tank_info, row.transfer)
   }
 }
