@@ -43,7 +43,6 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
 @Component({
   selector: 'app-customer',
   standalone: true,
@@ -347,36 +346,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     event.preventDefault(); // Prevents the form submission
   }
 
-  adjustCost() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    if (this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '720px',
-      height: 'auto',
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems: this.selection.selected
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result > 0) {
-        this.handleSaveSuccess(result);
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-      }
-    });
-  }
-
   addCall(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
     // Navigate to the route and pass the JSON object
@@ -478,7 +447,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
       const customer_company: any = { tank: { guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } }
       where.and.push({ customer_company: customer_company })
     }
-    
+
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
       // where.country = { eq: this.pcForm!.value["country"] };
       const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
@@ -776,7 +745,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   }
 
   isShowDeleteIcon(row: any): boolean {
-    return (!row.so_count && !row.sot_count && !row.tank_info_count);
+    return (this.isAllowDelete() && !row.so_count && !row.sot_count && !row.tank_info_count);
   }
 
   async CanDeleteCustomer(guid: string): Promise<boolean> {
@@ -813,7 +782,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.search();
   }
 
-   onSortChange(event: Sort): void {
+  onSortChange(event: Sort): void {
     const { active: field, direction } = event;
 
     // reset if no direction
@@ -829,7 +798,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     switch (field) {
       case 'last_update_dt':
         this.lastOrderBy = {
-          customer_company:{
+          customer_company: {
             update_dt: dirEnum,
             create_dt: dirEnum,
           }
@@ -838,12 +807,12 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
       case 'customer_code':
         this.lastOrderBy = {
-          customer_company:{
+          customer_company: {
             code: dirEnum,
           }
         };
         break;
-    
+
       default:
         this.lastOrderBy = null;
     }
@@ -851,10 +820,21 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     this.search();
   }
 
-  AutoSearch()
-  {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
       this.search();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_DELETE']);
   }
 }
 

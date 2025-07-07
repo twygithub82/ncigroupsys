@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -18,13 +18,13 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-// import { RepairEstPartItem } from 'app/data-sources/repair-est-part';
+import { provideNgxMask } from 'ngx-mask';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ContactPersonItem } from 'app/data-sources/contact-person';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { Utility } from 'app/utilities/utility';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 
 export interface DialogData {
@@ -91,7 +91,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
-
+    private modulePackageService: ModulePackageService
   ) {
     super();
     // Set the defaults
@@ -109,17 +109,24 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.CONTACT_PERSON}`;
     }
     this.contactPerson = data.item ? data.item : new ContactPersonItem();
-
     this.index = data.index;
-    // this.title_control.setValue(this.contactPerson.title_cv);
-
     this.initializeValueChange();
-    // this.patchForm();
   }
+
   ngOnInit() {
-    // this.initializeFilterCustomerCompany();
     this.contactPersonForm = this.createForm();
 
+    if (!this.canEdit()) {
+      this.contactPersonForm.get('title_cv')?.disable()
+      this.contactPersonForm.get('customer_company')?.disable()
+      this.contactPersonForm.get('name')?.disable()
+      this.contactPersonForm.get('email')?.disable()
+      this.contactPersonForm.get('department')?.disable()
+      this.contactPersonForm.get('job_title')?.disable()
+      this.contactPersonForm.get('customer_guid')?.disable()
+      this.contactPersonForm.get('did')?.disable()
+      this.contactPersonForm.get('phone')?.disable()
+    }
   }
 
   createForm(): UntypedFormGroup {
@@ -132,21 +139,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       department: [this.contactPerson.department],
       job_title: [this.contactPerson.job_title],
       customer_guid: [this.contactPerson.customer_guid],
-      did: [this.contactPerson.did,
-      //[Validators.required]
-      ],
+      did: [this.contactPerson.did],
       phone: [this.contactPerson.phone, [
         Validators.required,
         Validators.pattern(this.phone_regex)] // Adjust regex for your format
       ]
-
     });
   }
 
   patchForm() {
-    // const selectedCodeValue = this.data.populateData.groupNameCvList.find(
-    //   (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
-    // );
     this.contactPersonForm?.patchValue({
       guid: this.contactPerson.guid,
       title_cv: this.contactPerson.title_cv,
@@ -163,16 +164,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   submit() {
     if (this.contactPersonForm?.valid) {
-      //  let actions = Array.isArray(this.repairPart.actions!) ? [...this.repairPart.actions!] : [];
-      // if (this.action === 'new') {
-      //   if (!actions.includes('new')) {
-      //     actions = [...new Set([...actions, 'new'])];
-      //   }
-      // } else {
-      //   if (!actions.includes('new')) {
-      //     actions = [...new Set([...actions, 'edit'])];
-      //   }
-      // }
       var rep: any = {
         ...this.contactPerson,
         title_cv: this.contactPersonForm?.get("title_cv")!.value,
@@ -182,7 +173,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         phone: this.contactPersonForm?.get("phone")!.value,
         job_title: this.contactPersonForm?.get("job_title")!.value,
         did: this.contactPersonForm?.get("did")!.value,
-        //     actions
       }
 
       console.log(rep)
@@ -212,10 +202,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializeValueChange() {
-
   }
-
-
 
   findInvalidControls() {
     const controls = this.contactPersonForm?.controls;
@@ -226,64 +213,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  REPDamage(damages: any[]): RPDamageRepairItem[] {
-    return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
-  }
-
-  REPRepair(repairs: any[]): RPDamageRepairItem[] {
-    return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
-  }
-
-  REPDamageRepairToCV(damagesRepair: any[] | undefined): RPDamageRepairItem[] {
-    return damagesRepair?.map(dmgRp => dmgRp.code_cv) || [];
-  }
-
-  displayPartNameFn(tr: string): string {
-    return tr;
-  }
-
-  validateLength(): boolean {
-    let isValid = true;
-    // const length = this.repairPartForm.get('length')?.value;
-    // const remarks = this.repairPartForm.get('remarks')?.value;
-
-    // // Validate that at least one of the purpose checkboxes is checked
-    // if (!length && !remarks) {
-    //   isValid = false; // At least one purpose must be selected
-    //   this.repairPartForm.get('remarks')?.setErrors({ required: true });
-    // }
-
-    return isValid;
-  }
-
-  canEdit(): boolean {
-    return true;
-  }
-
-  // updateValidators(validOptions: any[]) {
-  //   this.partNameControl.setValidators([
-  //     Validators.required,
-  //     AutocompleteSelectionValidator(validOptions)
-  //   ]);
-  // }
-
-  getLocationDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
-  }
-
-  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
-  }
-
-  getTitleCvObject(codeValType: string): CodeValuesItem | undefined {
-    return this.cvDS.getCodeObject(codeValType, this.data.populateData.satulationCvList);
-  }
-  
   onNumericOnly(event: Event): void {
     Utility.onNumericOnly(event, this.contactPersonForm!?.get("phone")!);
   }
 
-  // isUpdate(): boolean{
-  //   if(this.action === "")
-  // }
+  canEdit(): boolean {
+    return ((!!this.contactPerson.guid && this.isAllowEdit()) || (!this.contactPerson.guid && this.isAllowAdd()));
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_ADD']);
+  }
 }

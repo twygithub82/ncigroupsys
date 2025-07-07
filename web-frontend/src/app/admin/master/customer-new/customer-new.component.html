@@ -208,7 +208,8 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
-                    <input matInput formControlName="billing_branches" [matAutocomplete]="customerCode" [readonly]="BillingBranchReadOnly()">
+                    <input matInput formControlName="billing_branches" [matAutocomplete]="customerCode"
+                      [readonly]="BillingBranchReadOnly()">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
@@ -218,6 +219,7 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
+                @if (canEdit()) {
                 <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
                   <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
                     (click)="addBillingBranch($event)">
@@ -225,7 +227,9 @@
                   </button>
                 </div>
                 }
+                }
               </div>
+              @if (canEdit()) {
               <div class="row">
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex justify-content-end ms-auto">
                   <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
@@ -240,6 +244,7 @@
                   </button>
                 </div>
               </div>
+              }
             </div>
           </div>
         </div>
@@ -345,10 +350,12 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; let i=index;"
                           class="tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end">
+                          @if (canEdit()) {
                           <button mat-icon-button (click)="handleDelete($event, row, i)"
                             [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
                             <mat-icon>delete_forever</mat-icon>
                           </button>
+                          }
                         </mat-cell>
                       </ng-container>
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -379,7 +386,7 @@
                   </button>
                 </div>
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2">
-                  @if (isAnyItemEdited()) {
+                  @if (canEdit()) {
                   <button mat-flat-button color="primary">
                     <mat-icon>
                       save

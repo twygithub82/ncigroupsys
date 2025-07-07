@@ -46,7 +46,6 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
 @Component({
@@ -235,7 +234,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   phone_regex: any = /^\+?[1-9]\d{0,2}(-\d{3}-\d{3}-\d{4}|\d{7,10})$/;
   countryCodes: any = [];
   countryCodesFiltered: any = [];
-  currentBillingBranch:any=undefined;
+  currentBillingBranch: any = undefined;
 
   starterPackageNotAllowCustomerType = [
     "BRANCH"
@@ -344,10 +343,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   PatchCustomerCompanyData() {
     if (this.historyState.customerCompany.customerCompanyData) {
-      
       var cust: CustomerCompanyItem = this.historyState.customerCompany.customerCompanyData;
       var contactPsn: ContactPersonItem[] = this.historyState.customerCompany.contactPerson;
-      this.currentBillingBranch=this.getBillingBranches(cust.guid!);
+      this.currentBillingBranch = this.getBillingBranches(cust.guid!);
       this.ccForm?.patchValue({
         address1: cust.address_line1,
         address2: cust.address_line2,
@@ -380,8 +378,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.selectedCustomerCmp = this.historyState.selectedRow;
       if (this.historyState.customerCompany) {
         this.PatchCustomerCompanyData();
-      }
-      else {
+      } else {
         this.countryCodesFiltered = this.countryCodes?.filter((country: any) =>
           country.code.toLowerCase().includes(this.selectedCustomerCmp?.country_code?.toLowerCase()) || country.country.toLowerCase().includes(this.selectedCustomerCmp?.country_code?.toLowerCase())
         );
@@ -418,9 +415,28 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     else if (this.historyState.customerCompany) // New Customer Company and New Billing Branch
     {
       this.PatchCustomerCompanyData();
-    }
-    else {
+    } else {
       this.refreshBillingBranches();
+    }
+
+    if (!this.canEdit()) {
+      this.ccForm?.get('customer_code')?.disable();
+      this.ccForm?.get('customer_name')?.disable();
+      this.ccForm?.get('customer_type')?.disable();
+      this.ccForm?.get('billing_branches')?.disable();
+      this.ccForm?.get('country_code')?.disable();
+      this.ccForm?.get('phone')?.disable();
+      this.ccForm?.get('email')?.disable();
+      this.ccForm?.get('web')?.disable();
+      this.ccForm?.get('currency')?.disable();
+      this.ccForm?.get('default_profile')?.disable();
+      this.ccForm?.get('address1')?.disable();
+      this.ccForm?.get('address2')?.disable();
+      this.ccForm?.get('postal_code')?.disable();
+      this.ccForm?.get('city_name')?.disable();
+      this.ccForm?.get('country')?.disable();
+      this.ccForm?.get('remarks')?.disable();
+      this.ccForm?.get('repList')?.disable();
     }
   }
 
@@ -453,8 +469,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         this.ccForm?.patchValue({
           default_profile: this.getDefaultTank(cust.def_tank_guid!),
         })
-      }
-      else if (this.selectedCustomerCmp) {
+      } else if (this.selectedCustomerCmp) {
         this.ccForm?.patchValue({
           default_profile: this.getDefaultTank(this.selectedCustomerCmp?.def_tank_guid!),
         })
@@ -568,13 +583,11 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         } else {
           this.updateData([...this.repList.data, result.item]);
         }
-
       }
     });
   }
 
   deleteItem(row: StoringOrderTankItem, index: number) {
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -593,82 +606,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         const data = [...this.repList.data];
         data.splice(index, 1);
         this.updateData(data); // Refresh the data source
-      }
-    });
-  }
-
-  cancelSelectedRows(row: RepairPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        action: "cancel",
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList.data];
-        result.item.forEach((newItem: RepairPartItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          // If the item is found, update the properties
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'cancel'])]
-                : ['cancel']
-            };
-          }
-        });
-        this.updateData(data);
-      }
-    });
-  }
-
-  rollbackSelectedRows(row: RepairPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        action: "rollback",
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList.data];
-        result.item.forEach((newItem: RepairPartItem) => {
-          const index = data.findIndex((existingItem: any) => existingItem.guid === newItem.guid);
-
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'rollback'])]
-                : ['rollback']
-            };
-          }
-        });
-        this.updateData(data);
       }
     });
   }
@@ -993,25 +930,6 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     event.preventDefault(); // Prevents the form submission
     event.stopPropagation();
     this.deleteItem(row, index);
-
-  }
-
-  cancelItem(event: Event, row: RepairPartItem) {
-    // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.cancelSelectedRows(this.sotSelection.selected)
-    } else {
-      this.cancelSelectedRows([row])
-    }
-  }
-
-  rollbackItem(event: Event, row: RepairPartItem) {
-    // this.id = row.id;
-    if (this.sotSelection.hasValue()) {
-      this.rollbackSelectedRows(this.sotSelection.selected)
-    } else {
-      this.rollbackSelectedRows([row])
-    }
   }
 
   undoAction(event: Event, row: RepairPartItem, action: string) {
@@ -1312,15 +1230,24 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     Utility.onAlphaNumericWithSpace(event, this.ccForm?.get(controlName)!);
   }
 
-  BillingBranchReadOnly():boolean
-  {
+  BillingBranchReadOnly(): boolean {
     var retval = false;
 
-    if(this.currentBillingBranch)
-    {
-        retval=true;
+    if (this.currentBillingBranch) {
+      retval = true;
     }
     return retval;
+  }
 
+  canEdit(): boolean {
+    return ((!!this.customer_guid && this.isAllowEdit()) || (!this.customer_guid && this.isAllowAdd()));
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_ADD']);
   }
 }

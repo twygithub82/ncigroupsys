@@ -48,6 +48,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-billing-branch-new',
@@ -293,7 +294,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.translateLangText();
@@ -353,7 +355,6 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
   initCCForm() {
     this.ccForm = this.fb.group({
       guid: [''],
-      // customer_company_guid: [''],
       customer_code: this.customerCodeControl,
       branch_code: ['', [
         Validators.required,
@@ -407,6 +408,25 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       }));
       this.updateData(existContact!);
     }
+    
+    if (!this.canEdit()) {
+      this.customerCodeControl.disable()
+      this.ccForm?.get('branch_code')?.disable();
+      this.ccForm?.get('branch_name')?.disable();
+      this.ccForm?.get('country_code')?.disable();
+      this.ccForm?.get('phone')?.disable();
+      this.ccForm?.get('email')?.disable();
+      this.ccForm?.get('web')?.disable();
+      this.ccForm?.get('currency')?.disable();
+      this.ccForm?.get('default_profile')?.disable();
+      this.ccForm?.get('address1')?.disable();
+      this.ccForm?.get('address2')?.disable();
+      this.ccForm?.get('postal_code')?.disable();
+      this.ccForm?.get('city_name')?.disable();
+      this.ccForm?.get('country')?.disable();
+      this.ccForm?.get('remarks')?.disable();
+      this.ccForm?.get('repList')?.disable();
+    }
   }
 
   public loadData() {
@@ -416,7 +436,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     if (this.historyState.customerCompany) {
       this.isFromBranch = false;
     } else if (this.historyState) {
-      this.isAllowedToChangedMainCustomer=false;
+      this.isAllowedToChangedMainCustomer = false;
       this.selectedBillingBranch = this.historyState.selectedRow;
       this.patchData(this.selectedBillingBranch);
 
@@ -1320,5 +1340,21 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       Validators.required,
       AutocompleteSelectionValidator(validOptions)
     ]);
+  }
+
+  canEdit(): boolean {
+    return ((!!this.selectedBillingBranch?.guid && this.isAllowEdit()) || (!this.selectedBillingBranch?.guid && this.isAllowAdd()));
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
   }
 }

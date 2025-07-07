@@ -17,12 +17,14 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
+              @if (isAllowAdd()) {
               <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
                 <button mat-mini-fab class="primary-light" (click)="addBillingBranch($event)"
                   (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
               </div>
+              }
               <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                 matTooltip={{translatedLangText.EXPORT}}>
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
@@ -37,9 +39,10 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.MAIN_CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl" 
+                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
                       [matAutocomplete]="customerCode">
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn"  (optionSelected)="AutoSearch()" >
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn"
+                      (optionSelected)="AutoSearch()">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
                         {{ccDS.displayCodeDashName(cc)}}
@@ -63,7 +66,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH_CODE}}</mat-label>
-                    <input matInput formControlName="branch_code" type="text" >
+                    <input matInput formControlName="branch_code" type="text">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
@@ -81,7 +84,8 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
-                    <mat-select formControlName="default_profile" [compareWith]="compareObjects" (selectionChange)="AutoSearch()">
+                    <mat-select formControlName="default_profile" [compareWith]="compareObjects"
+                      (selectionChange)="AutoSearch()">
                       @for (option of unit_typeList; track option) {
                       <mat-option [value]="option">{{option.unit_type}}</mat-option>
                       }
@@ -108,7 +112,7 @@
           <table mat-table [dataSource]="customer_companyList" matSort (matSortChange)="onSortChange($event)"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
-              <mat-header-cell *matHeaderCellDef 
+              <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.MAIN_CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -122,7 +126,8 @@
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.BRANCH_CODE }}:</span>{{row.customer_company?.code}}</mat-cell>
+                <span class="mobile-label">{{this.translatedLangText.BRANCH_CODE
+                  }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
               <mat-header-cell *matHeaderCellDef

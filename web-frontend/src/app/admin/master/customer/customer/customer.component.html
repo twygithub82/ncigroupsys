@@ -17,11 +17,13 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
+              @if (isAllowAdd()) {
               <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
                 <button mat-mini-fab class="primary-light" (click)="addCall($event)" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">add</mat-icon>
                 </button>
               </div>
+              }
               @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
               <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                 matTooltip={{translatedLangText.EXPORT}}>
@@ -37,12 +39,13 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl" (keyup.enter)="AutoSearch()"
-                      [matAutocomplete]="customerCode">
-                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn" (optionSelected)="AutoSearch()" >
+                    <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                      (keyup.enter)="AutoSearch()" [matAutocomplete]="customerCode">
+                    <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn"
+                      (optionSelected)="AutoSearch()">
                       @for (cc of customer_companyFilterList; track cc) {
                       <mat-option [value]="cc">
-                      <span  class="truncate-one-line">  {{ccDS.displayCodeDashName(cc)}} </span>
+                        <span class="truncate-one-line"> {{ccDS.displayCodeDashName(cc)}} </span>
                       </mat-option>
                       }
                     </mat-autocomplete>
@@ -63,7 +66,8 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DEFAULT_PROFILE}}</mat-label>
-                    <mat-select formControlName="default_profile" [compareWith]="compareObjects" (selectionChange)="AutoSearch()">
+                    <mat-select formControlName="default_profile" [compareWith]="compareObjects"
+                      (selectionChange)="AutoSearch()">
                       @for (option of unit_typeList; track option) {
                       <mat-option [value]="option">{{option.unit_type}}</mat-option>
                       }
@@ -87,21 +91,22 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="customer_companyResultList" matSort  (matSortChange)="onSortChange($event)"
+          <table mat-table [dataSource]="customer_companyResultList" matSort (matSortChange)="onSortChange($event)"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="customer_code">
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">{{this.translatedLangText.CUSTOMER_CODE}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">
+              <mat-cell *matCellDef="let row"
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.CODE
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell class="left-padding-cell" [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-3_5-lg'" 
+              <mat-header-cell class="left-padding-cell" [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-3_5-lg'"
                 *matHeaderCellDef>{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell class="left-padding-cell" [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-3_5-lg'" 
+              <mat-cell class="left-padding-cell" [ngClass]="'tbl-col-width-per-4_5-xl tbl-col-width-per-3_5-lg'"
                 *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company?.name}}</mat-cell>
@@ -120,8 +125,8 @@
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'"
-                *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'" *matHeaderCellDef
+                mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
