@@ -467,17 +467,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
-  stopEventTrigger(event: Event) {
-    //this.preventDefault(event);
-    this.stopPropagation(event);
-  }
-
-
-  stopPropagation(event: Event) {
-    // event.stopPropagation(); // Stops event propagation
-  }
-
-
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -491,13 +480,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.tcForm!.get("file_size")?.setErrors({ required: true });
     }
 
-    //this.tcForm!.get('sotList')?.setErrors(null);
-    //this.tcForm?.get('un_no')?.setErrors({ exited: false });
     if (this.tcForm?.valid) {
-      // if (!this.sotList.data.length) {
-      //   this.tcForm.get('sotList')?.setErrors({ required: true });
-      // } else 
-      // {
       this.trfCleaningSubmitting = true;
       this.submitForSaving.next(this.trfCleaningSubmitting);
       this.submitForSaving.subscribe(value => {
@@ -532,7 +515,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
             await this.handleSaveSuccess(result?.data?.updateTariffClean, guid!);
             this.trfCleaningSubmitting = false;
             this.submitForSaving.next(this.trfCleaningSubmitting);
-
           });
         }
         else {
@@ -556,9 +538,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           this.ShowDuplicateCargoMessage();
         }
       }
-
-
-
     }
     else {
       console.log('Invalid tcForm', this.tcForm?.value);
@@ -576,13 +555,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-        //this.router.navigate(['/admin/tariff/tariff-cleaning']);
         this.router.navigate(['/admin/tariff/tariff-cleaning'], {
           state: this.historyState
-
-        }
-        );
-
+        });
       });
     }
   }
@@ -666,21 +641,15 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         langText: this.langText,
         selectedValue: this.tcForm!.get("class_no")?.value
       }
-
     });
 
-
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-
-
       if (result) {
         if (result.selectedValue) {
-
           this.tcForm!.patchValue({
             class_no: result.selectedValue,
           });
         }
-
       }
     });
 
@@ -696,11 +665,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           const url = URL.createObjectURL(blob);
           // Open the Blob URL in a new window or tab
           window.open(url, '_blank');
-          // const newWindow = window.open('', '_blank');
-          // if (newWindow) {
-          //   newWindow.document.title = 'hello'//this.selectedFile?.name || 'File Viewer';
-          //   newWindow.document.body.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>`;
-          // }
         }
       };
       reader.readAsArrayBuffer(this.selectedFile); // Use readAsArrayBuffer for binary data
@@ -711,12 +675,10 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     return !!this.tcForm!.value["un_no"]; // File can be selected if un_no is not empty
   }
 
-
   onUnNoBlur(): void {
     // if (this.tcForm!.get('un_no')?.valid && this.selectedFileChanged) 
     //   {
     //     this.QueryAllFilesInGroupAndClassNo();
-
     // }
   }
 
@@ -729,15 +691,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         this.tcForm?.patchValue({ sds_file: this.selectedFile, file_size: fileSizeInMB });
         this.tcForm?.get("sds_file")?.updateValueAndValidity();
         if (fileSizeInMB <= this.maxFileSizeInMB) {
-
           this.selectedFileChanged = true;
         }
-
       }
     }
   }
-
-
 
   async downloadFiles(urls: any[]): Promise<File[]> {
     const filePromises = urls.map(async (data) => {
@@ -765,7 +723,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       const urls: string[] = this.existingSDSFilesUrls.map(item => item.url);
       await firstValueFrom(this.fileManagerService.deleteFile(urls));
     }
-
   }
 
   async QueryClassNo() {
@@ -789,13 +746,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         this.tcForm?.patchValue({
           class_no: clsNo
         });
-
-
       }
-
     });
-
-
   }
   async QueryAllFilesInGroup(groupguid: string) {
     this.sdsFileLoading = true;
@@ -805,14 +757,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       if (value != this.sdsFileLoading) this.selectedFileLoading.next(this.sdsFileLoading);
       console.log('Subject Value:', value); // This should not reset to false after await
     });
-    // const unNoControl = this.tcForm!.get('un_no');
-
-    //     if (unNoControl) {
-    //       const value = unNoControl.value;
-    //       GroupGuid=value;
-    //      // console.log('UN Number on blur:', value);
-    //       // Additional logic can be added here
-    //     }
 
     this.fileManagerService.getFileUrlByGroupGuid([GroupGuid]).subscribe({
       next: async (response) => {
@@ -844,8 +788,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
         this.sdsFileLoading = false;
       }
     });
-
-
   }
 
   async QueryAllFilesInGroupAndClassNo() {
@@ -854,7 +796,6 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     //this.QueryAllFilesInGroup();
     this.QueryClassNo();
   }
-
 
   async onSubmit(groupGuid: string, tableName: string) {
     if (this.selectedFileChanged) {
@@ -876,29 +817,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
           Description: "SDS file"
         }
       }
-
-      //   var metadataJsonString =JSON.stringify(jsonObject);
-      //  formData.append('files', this.selectedFile!, this.selectedFile?.name);
-      //  formData.append('metadata', metadataJsonString);
       await (firstValueFrom(this.fileManagerService.uploadFiles([uploadMeta])));
-      // await firstValueFrom( this.httpClient.post(uploadURL,formData));
-      // this.httpClient.post(uploadURL, formData
-      //  ).subscribe({
-      //   next: (response) => {
-      //     console.log('File successfully uploaded!', response);
-      //   },
-      //   error: (err) => {
-      //     console.error('Upload error:', err);
-      //     // Handle unknown errors more gracefully
-      //     if (err.error instanceof ErrorEvent) {
-      //       // Client-side error
-      //       console.error('Client-side error:', err.error.message);
-      //     } else {
-      //       // Server-side error
-      //       console.error(`Server-side error: ${err.status} - ${err.message}`);
-      //     }
-      //   },
-      // });
     }
   }
 

@@ -627,80 +627,91 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
     //this.template_type_cv.reset('');
   }
 
-   cancelItem(row: MasterTemplateItem) {
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+  cancelItem(row: MasterTemplateItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.deleteSelectedestimateTemplate(row);
+
       }
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-        data: {
-          headerText: this.translatedLangText.CONFIRM_DELETE,
-          action: 'new',
-        },
-        direction: tempDirection
-      });
-      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-        if (result.action === 'confirmed') {
-          this.deleteSelectedestimateTemplate(row);
-          
-        }
-      });
+    });
+  }
+
+  deleteSelectedestimateTemplate(row: MasterTemplateItem) {
+
+    this.masterEstTempDS.DeleteMasterTemplate(row.guid).subscribe(result => {
+
+      var count = result.data.deleteTemplateEstimation;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+        this.refreshTable();
+      }
+
+    })
+  }
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
 
-    deleteSelectedestimateTemplate(row: MasterTemplateItem) {
-      
-      this.masterEstTempDS.DeleteMasterTemplate(row.guid).subscribe(result => {
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
 
-         var count = result.data.deleteTemplateEstimation;
-        if (count > 0) {
-          this.handleSaveSuccess(count);
-          this.refreshTable();
-        }
-  
-      })
-    }
-    onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
-  
-      // reset if no direction
-      if (!direction) {
+    switch (field) {
+      case 'last_update_dt':
+        this.lastOrderBy = {
+
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+
+        };
+        break;
+
+      case 'template':
+        this.lastOrderBy = {
+          template_name: dirEnum,
+
+        };
+        break;
+
+      default:
         this.lastOrderBy = null;
-        return this.search();
-      }
-  
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-  
-      switch (field) {
-        case 'last_update_dt':
-          this.lastOrderBy = {
-            
-              update_dt: dirEnum,
-              create_dt: dirEnum,
-            
-          };
-          break;
-  
-        case 'template':
-          this.lastOrderBy = {
-            template_name: dirEnum,
-            
-          };
-          break;
-      
-        default:
-          this.lastOrderBy = null;
-      }
-  
-      this.search();
     }
 
-    AutoSearch()
-    {
-      if (Utility.IsAllowAutoSearch())
-        this.search();
-    }
+    this.search();
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_DELETE']);
+  }
 }

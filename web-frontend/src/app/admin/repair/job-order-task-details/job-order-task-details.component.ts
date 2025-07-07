@@ -934,7 +934,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '30vw',
+      //width: '30vw',
       data: {
         // last_remarks: this.jobOrderItem?.remarks,
         // action: 'rollback',

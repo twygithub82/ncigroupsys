@@ -2328,6 +2328,11 @@ mat-form-field.textarea-line-1 textarea.mdc-text-field__input {
   line-height: 0.8 !important;
 }
 
+
+// .smaller-prefix {
+//   font-size: 0.85em !important; /* Or any other desired size like 12px, etc. */
+// }
+
 .text-normal {
   color: #222222;
 }
@@ -2452,4 +2457,8 @@ button[mat-flat-button].center-icon {
 
 mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
   flex-flow: nowrap !important;
+}
+
+.mdc-dialog__content.cancel-form {
+  overflow: hidden;
 }

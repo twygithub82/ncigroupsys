@@ -13,43 +13,41 @@
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1 ">
-        
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 ">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
-                <input matInput #minInput formControlName="min_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" (focus)="minInput.select()" required>
-                @if (pcForm.hasError('tempRangeInvalid') &&(pcForm.get('min_temp')?.touched || pcForm.get('max_temp')?.touched)) {
-                  <mat-error >
-                   
-                    {{translatedLangText.TEMP_RANGE_ERROR}}
-                  
-                  
-                 </mat-error> 
-                }
-                @if (pcForm.hasError('overlaps')&&(pcForm.get('min_temp')?.touched || pcForm.get('max_temp')?.touched)) {
-                   <mat-error class="multi-line-error">
-                   
-                    {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
-                  
+                <input matInput #minInput formControlName="min_temp" type="number" step="1" inputmode="numeric"
+                  [allowDecimal]="false" (focus)="minInput.select()" required>
+                @if (pcForm.hasError('tempRangeInvalid') &&(pcForm.get('min_temp')?.touched ||
+                pcForm.get('max_temp')?.touched)) {
+                <mat-error>
+                  {{translatedLangText.TEMP_RANGE_ERROR}}
                 </mat-error>
                 }
-                </mat-form-field>
-            </div>
-            
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 " >
-              <mat-form-field class="example-full-width">
-                <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
-                <input matInput #maxInput formControlName="max_temp" type="number" step="1" inputmode="numeric" [allowDecimal]="false" (focus)="maxInput.select()" required>
+                @if (pcForm.hasError('overlaps')&&(pcForm.get('min_temp')?.touched || pcForm.get('max_temp')?.touched))
+                {
+                <mat-error class="multi-line-error">
+                  {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
+                </mat-error>
+                }
               </mat-form-field>
             </div>
-         
+
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 ">
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
+                <input matInput #maxInput formControlName="max_temp" type="number" step="1" inputmode="numeric"
+                  [allowDecimal]="false" (focus)="maxInput.select()" required>
+              </mat-form-field>
+            </div>
           </div>
-          <div class="row" >
+          <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.FLAT_RATE }}</mat-label>
-                <input matInput #flatInput formControlName="cost" type="number" min="0"  (focus)="flatInput.select()" required>
+                <input matInput #flatInput formControlName="cost" type="number" min="0" (focus)="flatInput.select()"
+                  required>
                 <!-- @if (pcForm.get('cost')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.COST }} {{langText.CARGO_REQUIRED | translate}}
@@ -60,7 +58,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.HOURLY_RATE }}</mat-label>
-                <input matInput #labourInput formControlName="labour" type="number" min="0"  (focus)="labourInput.select()">
+                <input matInput #labourInput formControlName="labour" type="number" min="0"
+                  (focus)="labourInput.select()">
                 <!-- @if (pcForm.get('labour')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.LABOUR }} {{translatedLangText.CARGO_REQUIRED | translate}}
@@ -69,7 +68,7 @@
               </mat-form-field>
             </div>
           </div>
-          <div class="row" >
+          <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.REMARKS}}</mat-label>
@@ -80,7 +79,8 @@
         </div>
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
-        @if (canEdit()) {
+        @if(canEdit()) {
+        @if (isAdd()) {
         <button mat-flat-button color="primary" class="me-1" (click)="save()">
           <mat-icon>
             save
@@ -94,7 +94,7 @@
           </mat-icon>
           {{translatedLangText.UPDATE}}</button>
         }
-
+        }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
       </div>
     </form>

@@ -29,6 +29,7 @@ export interface DialogData {
   imports: [
     MatButtonModule,
     MatIconModule,
+    MatDialogContent,
     MatFormFieldModule,
     MatInputModule,
     MatDialogClose,

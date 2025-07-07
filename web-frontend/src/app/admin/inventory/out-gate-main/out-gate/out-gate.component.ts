@@ -73,13 +73,13 @@ import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive'
 })
 export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
+    'ro_no',
     'tank_no',
     'customer_code',
     'job_no',
-    'last_cargo',
+    'last_cargo'
     // 'eir_no',
     // 'eir_dt',
-    'ro_no'
   ];
 
   pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE'

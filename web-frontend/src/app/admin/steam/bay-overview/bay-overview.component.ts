@@ -141,6 +141,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     ARE_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     ARE_SURE_COMPLETE: 'COMMON-FORM.ARE-YOU-SURE-COMPLETE',
     REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
+    DETAILS: 'COMMON-FORM.DETAILS',
+    STEAM: 'MENUITEMS.STEAM.TEXT'
   }
 
   availableProcessStatus: string[] = [
@@ -756,15 +758,14 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '800px',
-      height: '250px',
+      width: '380px',
+      //height: '250px',
       data: {
         action: "EDIT",
         item: team.jobOrderItem,
         langText: this.translatedLangText,
         confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
         index: -1
-
       },
       direction: tempDirection
     });
@@ -796,8 +797,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       }
 
     });
-
   }
+  
   showTankInfo(event: Event, team: any) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -824,8 +825,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     this.preventDefault(event);  // Prevents the form submission
     var jobOrderItem = team.jobOrderItem;
     this.router.navigate(['/admin/steam/job-order/monitor', jobOrderItem.guid, jobOrderItem.steaming_part?.[0]?.steaming_guid]);
-   
-
   }
 
   onTabFocused() {

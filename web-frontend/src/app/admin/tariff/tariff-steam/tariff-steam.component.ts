@@ -40,6 +40,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 @Component({
   selector: 'app-tariff-residue',
   standalone: true,
@@ -217,8 +218,8 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     private apollo: Apollo,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
-
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.initTcForm();
@@ -362,7 +363,6 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItem: row
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -684,34 +684,46 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     return Math.ceil(value * factor) / factor;
   }
 
-   onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
-  
-      // reset if no direction
-      if (!direction) {
-        this.lastOrderBy = null;
-        return this.search();
-      }
-  
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-  
-      switch (field) {
-        case 'lastUpdate':
-          this.lastOrderBy = {
-            tariff_steaming: {
-              update_dt: dirEnum,
-              create_dt: dirEnum,
-            },
-          };
-          break;
-      
-        default:
-          this.lastOrderBy = null;
-      }
-  
-      this.search();
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'lastUpdate':
+        this.lastOrderBy = {
+          tariff_steaming: {
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+          },
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['TARIFF_STEAMING_DELETE']);
+  }
 }
 

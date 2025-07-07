@@ -31,6 +31,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 
 export interface DialogData {
   action?: string;
@@ -103,7 +104,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private snackBar: MatSnackBar,
-
+    private modulePackageService: ModulePackageService
   ) {
     super();
     // Set the defaults
@@ -481,7 +482,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   canEdit(): boolean {
-    return true;
+    return true;// ((!!this.repairPart?.guid && this.isAllowEdit()) || (!this.repairPart?.guid && this.isAllowAdd()));
   }
 
   // updateValidators(validOptions: any[]) {
@@ -625,5 +626,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         material_cost?.enable();
       }
     }
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_ADD']);
   }
 }

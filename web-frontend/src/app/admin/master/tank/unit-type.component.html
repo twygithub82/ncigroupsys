@@ -4,224 +4,229 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
-        <div class="card">
+    <div class="card">
       <div class="body">
-    <div class="row">
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card p-0">
-          <mat-accordion>
-            <mat-expansion-panel [expanded]="true">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                      <mat-icon>search</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
-                      (click)="$event.stopPropagation()">
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
-                  </div>
-                  <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                    <button mat-mini-fab class="primary-light" (click)="addNew()" (click)="$event.stopPropagation()"
-                      [hidden]="DisableAddTankButton()">
-                      <mat-icon class="col-white">add</mat-icon>
-                    </button>
-                  </div>
-                  @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-                  <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card p-0">
+              <mat-accordion>
+                <mat-expansion-panel [expanded]="true">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                        <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                          <mat-icon>search</mat-icon>
+                        </button>
+                      </div>
+                      <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                        <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                          (click)="$event.stopPropagation()">
+                          <mat-icon>clear_all</mat-icon>
+                        </button>
+                      </div>
+                      @if (isAllowAdd()) {
+                      <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+                        <button mat-mini-fab class="primary-light" (click)="addNew()" (click)="$event.stopPropagation()"
+                          [hidden]="DisableAddTankButton()">
+                          <mat-icon class="col-white">add</mat-icon>
+                        </button>
+                      </div>
+                      }
+                      @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+                      <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT"
                     matTooltip={{translatedLangText.EXPORT}}>
                     <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                       (click)="$event.stopPropagation()" />
                   </div> -->
-                  }
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
-                  <div class="row">
-                    <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                      <mat-form-field class="example-full-width" appearance="fill">
-                        <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-                        <input matInput formControlName="unit_type" [matAutocomplete]="unitType" (keydown.enter)="search()"> 
-                        <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayTankFn" (optionSelected)="AutoSearch()">
-                          @for (tnk of tankList; track tnk) {
-                          <mat-option [value]="tnk">
-                            {{tnk.unit_type}}
-                          </mat-option>
-                          }
-                        </mat-autocomplete>
-                      </mat-form-field>
-                    </div>
+                      }
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
+                    <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
+                      <div class="row">
+                        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                          <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+                            <input matInput formControlName="unit_type" [matAutocomplete]="unitType"
+                              (keydown.enter)="search()">
+                            <mat-autocomplete #unitType="matAutocomplete" [displayWith]="displayTankFn"
+                              (optionSelected)="AutoSearch()">
+                              @for (tnk of tankList; track tnk) {
+                              <mat-option [value]="tnk">
+                                {{tnk.unit_type}}
+                              </mat-option>
+                              }
+                            </mat-autocomplete>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </form>
                   </div>
-                </form>
+                </mat-expansion-panel>
+              </mat-accordion>
+              <div class="body overflow-auto">
+                <div class="responsive_table">
+                  <table mat-table [dataSource]="unitTypeItems" matSort (matSortChange)="onSortChange($event)"
+                    class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                    <ng-container matColumnDef="unittype">
+                      <mat-header-cell *matHeaderCellDef
+                        mat-sort-header>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{this.translatedLangText.UNIT_TYPE
+                          }}:</span>{{row.unit_type}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="gatein">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.GATE_IN}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.GATE_IN}}:</span>
+                        @if (row.gate_in){
+                        <mat-icon class="col-green font-bold">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold">close</mat-icon>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="gateout">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.GATE_OUT}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.GATE_OUT}}:</span>
+                        @if(row.gate_out){
+                        <mat-icon class="col-green font-bold">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold">close</mat-icon>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="lifton">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LIFT_ON}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.LIFT_ON}}:</span>
+                        @if(row.lift_on){
+                        <mat-icon class="col-green font-bold">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold">close</mat-icon>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="liftoff">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LIFT_OFF}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.LIFT_OFF}}:</span>
+                        @if(row.lift_off){
+                        <mat-icon class="col-green font-bold">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold">close</mat-icon>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="preinspect">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.PREINSPECT}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.PREINSPECT}}:</span>
+                        @if(row.preinspect){
+                        <mat-icon class="col-green font-bold">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold">close</mat-icon>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="isoformat">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.ISO_FORMAT}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.ISO_FORMAT}}:</span>
+                        @if(row.iso_format){
+                        <mat-icon class="col-green font-bold">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold">close</mat-icon>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="flatRate">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.FLAT_RATE_ONLY}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.FLAT_RATE_ONLY}}:</span>
+                        @if(row.flat_rate){
+                        <mat-icon class="col-green font-bold">check</mat-icon>
+                        }
+                        @else {
+                        <mat-icon class="col-red font-bold">close</mat-icon>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="lastUpdate">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header
+                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
+                      <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                        [ngClass]="'d-flex justify-content-center'">
+                        <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED_DT}}:</span>
+                        {{this.displayLastUpdated(row)}}</mat-cell>
+                    </ng-container>
+                    <!-- actions -->
+                    <ng-container matColumnDef="actions">
+                      <mat-header-cell
+                        [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matHeaderCellDef></mat-header-cell>
+                      <mat-cell *matCellDef="let row; let i=index;"
+                        [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        @if (isAllowDelete() && !row.tariff_depot_guid && !row.sot?.length)
+                        {
+                        <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
+                          [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                          <mat-icon>delete_forever</mat-icon>
+                        </button>
+                        }
+                      </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                      [style.cursor]="'pointer'" matRipple>
+                    </mat-row>
+                  </table>
+                </div>
+                <!-- Loading spinner -->
+                @if (!(tnkDS.loading$ | async) && !unitTypeItems.length) {
+                <mat-divider></mat-divider>
+                <div class="no-results m-l-20 pt-3" [style.display]="unitTypeItems.length === 0 ? '' : 'none'">
+                  <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
+                </div>
+                }
+                <!-- Loading spinner -->
+                @if (tnkDS.loading$ | async) {
+                <div class="tbl-spinner">
+                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                  </mat-progress-spinner>
+                </div>
+                }
+                <mat-paginator #paginator [length]="tnkDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                  [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
+                </mat-paginator>
               </div>
-            </mat-expansion-panel>
-          </mat-accordion>
-          <div class="body overflow-auto">
-            <div class="responsive_table">
-              <table mat-table [dataSource]="unitTypeItems" matSort (matSortChange)="onSortChange($event)"
-                class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                <ng-container matColumnDef="unittype">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.UNIT_TYPE}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                    <span class="mobile-label">{{this.translatedLangText.UNIT_TYPE
-                      }}:</span>{{row.unit_type}}</mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="gatein">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.GATE_IN}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.GATE_IN}}:</span>
-                    @if (row.gate_in){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="gateout">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.GATE_OUT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.GATE_OUT}}:</span>
-                    @if(row.gate_out){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="lifton">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LIFT_ON}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.LIFT_ON}}:</span>
-                    @if(row.lift_on){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="liftoff">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LIFT_OFF}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.LIFT_OFF}}:</span>
-                    @if(row.lift_off){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="preinspect">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.PREINSPECT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.PREINSPECT}}:</span>
-                    @if(row.preinspect){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="isoformat">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.ISO_FORMAT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.ISO_FORMAT}}:</span>
-                    @if(row.iso_format){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="flatRate">
-                  <mat-header-cell *matHeaderCellDef
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.FLAT_RATE_ONLY}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.FLAT_RATE_ONLY}}:</span>
-                    @if(row.flat_rate){
-                    <mat-icon class="col-green font-bold">check</mat-icon>
-                    }
-                    @else {
-                    <mat-icon class="col-red font-bold">close</mat-icon>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="lastUpdate">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
-                    [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
-                  <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'d-flex justify-content-center'">
-                    <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED_DT}}:</span>
-                    {{this.displayLastUpdated(row)}}</mat-cell>
-                </ng-container>
-                <!-- actions -->
-                <ng-container matColumnDef="actions">
-                  <mat-header-cell
-                    [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                    *matHeaderCellDef></mat-header-cell>
-                  <mat-cell *matCellDef="let row; let i=index;"
-                    [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                    @if (!row.tariff_depot_guid && !row.sot?.length)
-                    {
-                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelItem(row)"
-                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                      <mat-icon>delete_forever</mat-icon>
-                    </button>
-                    }
-                  </mat-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
-                  [style.cursor]="'pointer'" matRipple>
-                </mat-row>
-              </table>
             </div>
-            <!-- Loading spinner -->
-            @if (!(tnkDS.loading$ | async) && !unitTypeItems.length) {
-            <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="unitTypeItems.length === 0 ? '' : 'none'">
-              <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
-            </div>
-            }
-            <!-- Loading spinner -->
-            @if (tnkDS.loading$ | async) {
-            <div class="tbl-spinner">
-              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-              </mat-progress-spinner>
-            </div>
-            }
-            <mat-paginator #paginator [length]="tnkDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-              [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
-            </mat-paginator>
           </div>
         </div>
       </div>
-    </div>
-    </div>
     </div>
   </div>
 </section>

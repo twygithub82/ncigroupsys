@@ -226,7 +226,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
       etr_dt_end: [''],
       purpose: [''],
       release_dt: [''],
-      due_dt:['']
+      due_dt: ['']
     });
   }
 
@@ -241,18 +241,18 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
         'select',
         'ro_no',
         'customer_code',
-        'ro_dt',
-        'status',
         'no_of_tanks',
+        'status',
+        'ro_dt',
         'actions'
       ];
     } else {
       this.displayedColumns = [
         'ro_no',
         'customer_code',
-        'ro_dt',
-        'status',
         'no_of_tanks',
+        'status',
+        'ro_dt',
         'actions'
       ];
     }
@@ -552,13 +552,13 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     const where: any = {};
 
     if (this.searchForm!.get('due_dt')?.value) {
-       var dueDt = this.searchForm!.get('due_dt')?.value;
-       where.and = [
+      var dueDt = this.searchForm!.get('due_dt')?.value;
+      where.and = [
         // { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-        {release_dt: {lte:dueDt  } },
-        {status_cv:{in:['PENDING']}}]  
-    
-  }
+        { release_dt: { lte: dueDt } },
+        { status_cv: { in: ['PENDING'] } }]
+
+    }
 
     if (this.searchForm!.get('ro_no')?.value) {
       where.ro_no = { contains: this.searchForm!.get('ro_no')?.value?.trim() };

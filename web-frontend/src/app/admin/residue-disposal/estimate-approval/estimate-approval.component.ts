@@ -548,7 +548,8 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     }
 
     if (this.searchForm!.value['customer_code']) {
-      where.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
+      if (!where.storing_order) where.storing_order = {};
+      where.storing_order.customer_company = { code: { contains: this.searchForm!.value['customer_code'].code } };
     }
 
     if (this.searchForm!.value['part_name']) {

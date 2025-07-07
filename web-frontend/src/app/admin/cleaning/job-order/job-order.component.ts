@@ -1,11 +1,14 @@
 import { Direction } from '@angular/cdk/bidi';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,22 +24,19 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
+import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { StoringOrderDS, StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
-import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { StoringOrderDS, StoringOrderItem } from 'app/data-sources/storing-order';
+import { Utility, maxLengthDisplaySingleSelectedItem, pageSizeInfo } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog1/form-dialog.component';
-import { MatCardModule } from '@angular/material/card';
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateCleaningDS, InGateCleaningItem } from 'app/data-sources/in-gate-cleaning';
 import { JobOrderDS, JobOrderGO, JobOrderItem, UpdateJobOrderRequest } from 'app/data-sources/job-order';
@@ -44,12 +44,9 @@ import { RepairItem } from 'app/data-sources/repair';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
-import { ComponentUtil } from 'app/utilities/component-util';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { BayOverviewComponent } from "../bay-overview/bay-overview.component";
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { ENTER ,COMMA} from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-job-order',
@@ -217,7 +214,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
 
   selectedProcesses: any[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
-  
+
   pageIndexClean = 0;
   pageSizeClean = pageSizeInfo.defaultSize;
   lastSearchCriteriaClean: any;
@@ -293,45 +290,8 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-  cancelItem(row: StoringOrderItem) {
-    // this.id = row.id;
-    this.cancelSelectedRows([row])
-  }
-
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
-  }
-
-  cancelSelectedRows(row: StoringOrderItem[]) {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      data: {
-        item: [...row],
-        langText: this.langText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const so = result.item.map((item: StoringOrderItem) => new StoringOrderGO(item));
-        this.soDS.cancelStoringOrder(so).subscribe(result => {
-          if ((result?.data?.cancelStoringOrder ?? 0) > 0) {
-            let successMsg = this.langText.CANCELED_SUCCESS;
-            this.translate.get(this.langText.CANCELED_SUCCESS).subscribe((res: string) => {
-              successMsg = res;
-              ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-              this.refreshTable();
-            });
-          }
-        });
-      }
-    });
   }
 
   public loadData() {
@@ -354,17 +314,16 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     this.cvDS.connectAlias('tankStatusCv').subscribe(data => {
       this.tankStatusCvList = data;
     });
-   
-     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
+
+    this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
 
   }
 
 
-  searchProcessList(criteria: string)
-  {
-    
+  searchProcessList(criteria: string) {
+
   }
 
   showNotification(
@@ -423,17 +382,15 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       ]
     };
 
-   // if (this.filterCleanForm!.get('cleanMethod')?.value) 
-   if(this.selectedProcesses.length>0)
-   {
+    // if (this.filterCleanForm!.get('cleanMethod')?.value) 
+    if (this.selectedProcesses.length > 0) {
       var cleanGuids = this.selectedProcesses.map(c => c.guid);
       where.and.push({
         storing_order_tank: { tariff_cleaning: { cleaning_method: { guid: { in: cleanGuids } } } }
       });
     }
 
-    if (this.filterCleanForm!.get('filterClean')?.value) 
-      {
+    if (this.filterCleanForm!.get('filterClean')?.value) {
       const tankNo = this.filterCleanForm!.get('filterClean')?.value;
       where.and.push({
         storing_order_tank: {
@@ -689,17 +646,17 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
         } else {
           searchCriteria = value.name;
         }
-       this.SearchCleanMethod(searchCriteria);
+        this.SearchCleanMethod(searchCriteria);
       })
     ).subscribe();
   }
 
-  SearchCleanMethod(searchCriteria:string){
+  SearchCleanMethod(searchCriteria: string) {
 
-     this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }, 100).subscribe(data => {
-          this.cleanMethodList = data;
-        //  this.sortList(this.cleanMethodList);
-        });
+    this.subs.sink = this.cmDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { description: { contains: searchCriteria } }] }, { name: 'ASC' }, 100).subscribe(data => {
+      this.cleanMethodList = data;
+      //  this.sortList(this.cleanMethodList);
+    });
   }
 
   translateLangText() {
@@ -754,6 +711,9 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
       eir_dt_start: '',
       eir_dt_end: ''
     });
+
+    this.selectedProcesses = [];
+    this.filterCleanForm?.patchValue({ cleanMethod: '' });
   }
 
   filterDeleted(resultList: any[] | undefined): any {
@@ -1009,82 +969,81 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
   @ViewChild('procInput', { static: true })
   procInput?: ElementRef<HTMLInputElement>;
 
-   itemSelected(row: CleaningMethodItem): boolean {
-      var retval: boolean = false;
-      const index = this.selectedProcesses.findIndex(c => c.guid === row.guid);
-      retval = (index >= 0);
-      return retval;
+  itemSelected(row: CleaningMethodItem): boolean {
+    var retval: boolean = false;
+    const index = this.selectedProcesses.findIndex(c => c.guid === row.guid);
+    retval = (index >= 0);
+    return retval;
+  }
+
+  getSelectedProcessesDisplay(): string {
+    var retval: string = "";
+    if (this.selectedProcesses?.length > 1) {
+      retval = `${this.selectedProcesses.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
-  
-    getSelectedProcessesDisplay(): string {
-      var retval: string = "";
-      if (this.selectedProcesses?.length > 1) {
-        retval = `${this.selectedProcesses.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
-      }
-      else if (this.selectedProcesses?.length == 1) {
-        const maxLength = maxLengthDisplaySingleSelectedItem;
-        const value = `${this.selectedProcesses[0].name}`;
-        retval = `${value.length > maxLength
-          ? value.slice(0, maxLength) + '...'
-          : value}`;
-      }
-      return retval;
+    else if (this.selectedProcesses?.length == 1) {
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value = `${this.selectedProcesses[0].name}`;
+      retval = `${value.length > maxLength
+        ? value.slice(0, maxLength) + '...'
+        : value}`;
     }
-  
-    removeAllSelectedProcesses(): void {
-      this.selectedProcesses = [];
-       this.filterCleanForm?.patchValue({cleanMethod:''});
-      this.AutoSearch();
-      //this.search();
+    return retval;
+  }
+
+  removeAllSelectedProcesses(): void {
+    this.selectedProcesses = [];
+    this.filterCleanForm?.patchValue({ cleanMethod: '' });
+    this.AutoSearch();
+    //this.search();
+  }
+
+  onCheckboxClicked(row: CodeValuesItem) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const process = event.option.value;
+    const index = this.selectedProcesses.findIndex(c => c.guid === process.guid);
+    if (!(index >= 0)) {
+      this.selectedProcesses.push(process);
+
     }
-  
-    onCheckboxClicked(row: CodeValuesItem) {
-      const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-      this.selected(fakeEvent);
+    else {
+      this.selectedProcesses.splice(index, 1);
     }
 
-     selected(event: MatAutocompleteSelectedEvent): void {
-        const process = event.option.value;
-        const index = this.selectedProcesses.findIndex(c => c.guid === process.guid);
-        if (!(index >= 0)) {
-          this.selectedProcesses.push(process);
-        
-        }
-        else {
-          this.selectedProcesses.splice(index, 1);
-        }
-    
-        if (this.procInput) {
-         // this.searchCustomerCompanyList('');
-          this.procInput.nativeElement.value = '';
-          this.filterCleanForm?.patchValue({cleanMethod:''});
-          this.SearchCleanMethod('');
-        }
-
-        this.AutoSearch();
-        // this.updateFormControl();
-        //this.customerCodeControl.setValue(null);
-        //this.pcForm?.patchValue({ customer_code: null });
-      }
-    
-      add(event: MatChipInputEvent): void {
-        const input = event.input;
-        const value = event.value;
-        // Add our fruit
-        if ((value || '').trim()) {
-          //this.fruits.push(value.trim());
-        }
-        // Reset the input value
-        if (input) {
-          input.value = '';
-        }
-        this.customerCodeControl.setValue(null);
-      }
-      
-    AutoSearch() 
-    {
-      if(Utility.IsAllowAutoSearch())
-        this.onFilterCleaning();
+    if (this.procInput) {
+      // this.searchCustomerCompanyList('');
+      this.procInput.nativeElement.value = '';
+      this.filterCleanForm?.patchValue({ cleanMethod: '' });
+      this.SearchCleanMethod('');
     }
+
+    this.AutoSearch();
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    this.customerCodeControl.setValue(null);
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.onFilterCleaning();
+  }
 
 }

@@ -51,15 +51,15 @@
               </div>
             </mat-card-content>
             <mat-card-actions class="d-flex justify-content-center align-items-center">
-              <button mat-mini-fab type="button" class="secondary" [disabled]="!team.isOccupied"
+              <button mat-mini-fab type="button" class="secondary" [disabled]="!team.isOccupied" matTooltip={{translatedLangText.ROLLBACK}}
                 (click)="rollBackSteamingJob($event,team)">
                 <mat-icon class="col-white">undo</mat-icon>
               </button>
-              <button mat-mini-fab color="accent" type="button" class="ms-3 me-3" [disabled]="!team.isOccupied"
+              <button mat-mini-fab color="accent" type="button" class="ms-3 me-3" [disabled]="!team.isOccupied" matTooltip={{translatedLangText.DETAILS}}
                 (click)="showTankInfo($event,team)">
                 <mat-icon class="col-white">info_outline</mat-icon>
               </button>
-              <button mat-mini-fab color="primary" type="button" [disabled]="!team.isOccupied"
+              <button mat-mini-fab color="primary" type="button" [disabled]="!team.isOccupied" matTooltip={{translatedLangText.STEAM}}
                 (click)="steamJob($event,team)">
                 <mat-icon class="col-white">whatshot</mat-icon>
               </button>

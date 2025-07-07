@@ -81,12 +81,12 @@
                     </div>
                     }
                     <div class="row justify-content-center">
-                      <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-xs-2 m-b-5">
                             <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                          <div class="col-xl-9 col-lg-10 col-md-10 col-sm-10 col-xs-7 m-b-5">
                             <span class="value-display-info">
                               {{sot?.tank_no}}
                               @if (tiItem?.previous_tank_no) {
@@ -95,34 +95,21 @@
                             </span>
                           </div>
                         </div>
-
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-xs-2 m-b-5">
                             <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-10 col-md-10 col-sm-10 col-xs-10 m-b-5 ">
                             <span class="value-display-info">
                               {{ccDS.displayName(sot?.storing_order?.customer_company)}}
                             </span>
                           </div>
                         </div>
-
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                            <span class="value-display-info">
-                              {{sot?.tariff_cleaning?.cargo}}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-2 col-md-2 col-sm-2 col-xs-2 m-b-5">
                             <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-10 col-md-10 col-sm-10 col-xs-10 m-b-5 ">
                             <span class="value-display-info">
                               {{ccDS.displayName(sot?.customer_company)}}
                               @if (tiItem?.previous_customer_company) {
@@ -131,85 +118,95 @@
                             </span>
                           </div>
                         </div>
-
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                            <span class="value-display-info">
-                              {{displayTankPurpose(sot!)}}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                             <span class="label-display-info">{{translatedLangText.CURRENT_STATUS}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
                             <span class="value-display-info">
                               {{getTankStatusDescription(sot?.tank_status_cv)}}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                             <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
                             <span class="value-display-info">
                               {{igDS.getInGateItem(sot?.in_gate)?.eir_no ||"-"}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                             <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
                             <span class="value-display-info">
                               {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt)|| "-"}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-2 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
+                          </div>
+                          <div class="col-xl-9 col-lg-10 col-md-10 col-sm-10 col-xs-10 m-b-5 ">
+                            <span class="value-display-info">
+                              {{sot?.tariff_cleaning?.cargo}}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CLEAN_STATUS}}:</span>
+                          </div>
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
+                            <span class="value-display-info">
+                              {{getCleanStatusDescription(sot?.clean_status_cv)}}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xl-3-25 col-lg-3-25 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
+                          </div>
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
+                            <span class="value-display-info">
+                              {{displayTankPurpose(sot!)}}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                             <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
                             <span class="value-display-info">
                               {{last_test_desc || '-'}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                             <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
                             <span class="value-display-info">
                               {{next_test_desc || '-'}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                            <span class="label-display-info">{{translatedLangText.CLEAN_STATUS}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
-                            <span class="value-display-info">
-                              {{getCleanStatusDescription(sot?.clean_status_cv)}}
-                            </span>
-                          </div>
-                        </div>
-                        <div class="row right-align-display">
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                             <span class="label-display-info">{{translatedLangText.YARD}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 ">
                             <span class="value-display-info">
                               {{getYardDescription(getLastLocation())}}
                             </span>
@@ -276,7 +273,7 @@
                         </div>
                         }
                         <div class="row justify-content-center">
-                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-12 m-b-5">
                             <div class="row right-align-display">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                                 <span class="label-display-info">{{translatedLangText.UNIT_TYPE}}:</span>
@@ -284,6 +281,16 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                 <span class="value-display-info">
                                   {{sot?.tank?.unit_type}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.MANUFACTURER_DOM}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{igs?.manufacturer_cv || "-"}} - {{displayDate(igs?.dom_dt)}}
                                 </span>
                               </div>
                             </div>
@@ -299,26 +306,6 @@
                             </div>
                             <div class="row right-align-display">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.TARE_WEIGHT}}:</span>
-                              </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                <span class="value-display-info">
-                                  {{igs?.tare_weight || "-"}} {{translatedLangText.KG}}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="row right-align-display">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
-                              </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                <span class="value-display-info">
-                                  {{getDisCompDescription(igs?.btm_dis_comp_cv) || "-"}}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="row right-align-display">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5">
                                 <span class="label-display-info">{{translatedLangText.NOTES}}:</span>
                               </div>
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
@@ -331,30 +318,8 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="row right-align-display">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.RELEASE_NOTES}}:</span>
-                              </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
-                                <div class="d-flex align-items-center">
-                                  <span class="value-display-info me-2">{{sot?.release_note || "-"}}</span>
-                                  <mat-icon color="primary" class="cursor-pointer"
-                                    (click)="editTankNotes($event)">mode_edit</mat-icon>
-                                </div>
-                              </div>
-                            </div>
                           </div>
-                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
-                            <div class="row right-align-display">
-                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.MANUFACTURER_DOM}}:</span>
-                              </div>
-                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                                <span class="value-display-info">
-                                  {{igs?.manufacturer_cv || "-"}} - {{displayDate(igs?.dom_dt)}}
-                                </span>
-                              </div>
-                            </div>
+                          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5">
                             <div class="row right-align-display">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                                 <span class="label-display-info">{{translatedLangText.CAPACITY}}:</span>
@@ -362,6 +327,16 @@
                               <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                 <span class="value-display-info">
                                   {{igs?.capacity || "-"}} {{translatedLangText.LITERS}}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.TARE_WEIGHT}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{igs?.tare_weight || "-"}} {{translatedLangText.KG}}
                                 </span>
                               </div>
                             </div>
@@ -375,6 +350,22 @@
                                 </span>
                               </div>
                             </div>
+
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.RELEASE_NOTES}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                                <div class="d-flex align-items-center">
+                                  <span class="value-display-info me-2">{{sot?.release_note || "-"}}</span>
+                                  <mat-icon color="primary" class="cursor-pointer"
+                                    (click)="editTankNotes($event)">mode_edit</mat-icon>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5">
                             <div class="row right-align-display">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                                 <span class="label-display-info">{{translatedLangText.COMPARTMENT_TYPE}}:</span>
@@ -385,6 +376,18 @@
                                 </span>
                               </div>
                             </div>
+
+                            <div class="row right-align-display">
+                              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                                <span class="label-display-info">{{translatedLangText.BOTTOM_DIS_TYPE}}:</span>
+                              </div>
+                              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                                <span class="value-display-info">
+                                  {{getDisCompDescription(igs?.btm_dis_comp_cv) || "-"}}
+                                </span>
+                              </div>
+                            </div>
+
                             <div class="row right-align-display">
                               <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                                 <span class="label-display-info">{{translatedLangText.WALKWAY}}:</span>
@@ -395,6 +398,7 @@
                                 </span>
                               </div>
                             </div>
+
                           </div>
                         </div>
                       </div>
@@ -1137,10 +1141,10 @@
                                               <span>{{translatedLangText.APPROVAL}}</span>
                                             </button>
                                             }
-                                            <button mat-menu-item (click)="exportResidueEst($event, row)">
+                                            <!-- <button mat-menu-item (click)="exportResidueEst($event, row)">
                                               <mat-icon>edit</mat-icon>
                                               <span>{{translatedLangText.OVERWRITE_APPROVAL}}</span>
-                                            </button>
+                                            </button> -->
                                           </mat-menu>
                                         </mat-cell>
                                       </ng-container>
@@ -1835,56 +1839,46 @@
                                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="book_type_cv">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.BOOKING_TYPE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span
                                         class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="booking_dt">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.DATE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span class="mobile-tab-label">{{translatedLangText.DATE}}:</span>
                                       <span>{{displayDate(row.booking_dt) ?? "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="reference">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.REFERENCE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
                                       <span>{{row.reference ?? "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="surveyor">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.SURVEYOR}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>
                                       <span>{{row.test_class_cv ?? "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="status_cv">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.STATUS}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span
                                         class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
                                     </mat-cell>
@@ -1928,46 +1922,38 @@
                                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="book_type_cv">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.BOOKING_TYPE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span
                                         class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="scheduling_dt">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.DATE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span class="mobile-tab-label">{{translatedLangText.DATE}}:</span>
                                       <span>{{displayDate(row?.scheduling_sot?.[0]?.scheduling_dt) ?? "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="reference">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.REFERENCE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
                                       <span>{{row?.scheduling_sot?.[0]?.reference || "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="status_cv">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       <!--Purposely do not display the header-->
                                       <!-- {{translatedLangText.STATUS}} -->
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                       <!--Purposely do not display the column value-->
                                       <!-- <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}} -->
                                     </mat-cell>
@@ -2206,34 +2192,28 @@
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="survey_type">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.SURVEY_TYPE}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
                                     class="mobile-tab-label">{{translatedLangText.SURVEY_TYPE}}:</span>{{getSurveyTypeDescription(row.survey_type_cv)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="survey_dt">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.SURVEY_DATE}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span class="mobile-tab-label">{{translatedLangText.SURVEY_DATE}}:</span>
                                   <span>{{displayDate(row?.survey_dt) ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="surveyor">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.SURVEYOR}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
                                     class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>{{row.test_class_cv}}
                                 </mat-cell>
@@ -2259,23 +2239,19 @@
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="remarks">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.REFERENCE}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
                                   <span>{{row.remarks ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="update_by">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.UPDATE_BY}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>
                                   <span>{{row.update_by || row.create_by || "-"}}</span>
                                 </mat-cell>
@@ -2346,78 +2322,64 @@
                                 <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="transfer_out_dt">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.FROM}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
                                     class="mobile-tab-label">{{translatedLangText.FROM}}:</span>{{displayDate(row.transfer_out_dt)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="transfer_in_dt">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.TO}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span class="mobile-tab-label">{{translatedLangText.TO}}:</span>
                                   <span>{{displayDate(row.transfer_in_dt) ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="days">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.DAYS}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
                                   <span>{{transferDS.getDays(row) || "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="location_from_cv">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.FROM_YARD}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
                                     class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="location_to_cv">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.TO_YARD}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
                                     class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
                                 </mat-cell>m
                               </ng-container>
                               <ng-container matColumnDef="update_by">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.UPDATE_BY}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
                                     class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="update_dt">
-                                <mat-header-cell mat-header-cell *matHeaderCellDef
-                                  [ngClass]="''">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                   {{translatedLangText.UPDATE_DATE}}
                                 </mat-header-cell>
-                                <mat-cell mat-cell *matCellDef="let row"
-                                  [ngClass]="''">
+                                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                                   <span
                                     class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDateTime(row?.update_dt
                                   || row?.create_dt)}}

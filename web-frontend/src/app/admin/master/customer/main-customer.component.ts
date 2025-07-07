@@ -154,32 +154,32 @@ export class MainCustomerComponent extends UnsubscribeOnDestroyAdapter implement
     {
       label: this.translatedLangText.CUSTOMER,
       component: 'app-customer',
-      modulePackage: ['starter', 'growth', 'customized']
+      modulePackage: ['starter', 'growth', 'customized'],
+      expectedFunctions: ['MASTER_CUSTOMER_ADD', 'MASTER_CUSTOMER_DELETE', 'MASTER_CUSTOMER_EDIT', 'MASTER_CUSTOMER_VIEW'],
     },
     {
       label: this.translatedLangText.BILLING_BRANCH,
       component: 'app-billing-branch',
-      modulePackage: ['growth', 'customized']
+      modulePackage: ['growth', 'customized'],
+      expectedFunctions: ['MASTER_BILLING_BRANCH_ADD', 'MASTER_BILLING_BRANCH_DELETE', 'MASTER_BILLING_BRANCH_EDIT', 'MASTER_BILLING_BRANCH_VIEW'],
     }
   ];
 
   get allowedTabs() {
-    return this.tabConfig.filter(tab =>
-      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
-    );
+    return this.tabConfig.filter(tab => {
+      return this.modulePackageService.hasFunctions(tab.expectedFunctions)
+    });
   }
 
-   @ViewChild('customer') customer!: CustomerComponent;
+  @ViewChild('customer') customer!: CustomerComponent;
   @ViewChild('billBranch') billBranch!: BillingBranchComponent;
-   onTabSelected(event: MatTabChangeEvent): void {
-       console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
-       switch (event.index) {
-         
-         case 0:
-           this.customer?.onTabFocused(); break;
-         case 1:
-            this.billBranch?.onTabFocused(); break;
-      
-       }
-     }
+  onTabSelected(event: MatTabChangeEvent): void {
+    console.log(`Selected Index: ${event.index}, Tab Label: ${event.tab.textLabel}`);
+    switch (event.index) {
+      case 0:
+        this.customer?.onTabFocused(); break;
+      case 1:
+        this.billBranch?.onTabFocused(); break;
+    }
+  }
 }

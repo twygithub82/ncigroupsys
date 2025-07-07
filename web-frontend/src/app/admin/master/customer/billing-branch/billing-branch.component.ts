@@ -20,14 +20,16 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
@@ -35,14 +37,12 @@ import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/custome
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { TankDS, TankItem } from 'app/data-sources/tank';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-billing-branch',
@@ -221,7 +221,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   //lastOrderBy: any = { code: "ASC" };
-  lastOrderBy: any = { customer_company:{ code: "ASC" }};
+  lastOrderBy: any = { customer_company: { code: "ASC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -243,8 +243,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchStateService: SearchStateService,
-    private translate: TranslateService
-
+    private translate: TranslateService,
+    private modulePackageService: ModulePackageService
   ) {
     super();
     this.initPcForm();
@@ -264,26 +264,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
     this.translateLangText();
     this.initializeFilterCustomerCompany();
-    // var state = history.state;
-    // if (state.type == "billing-branch") {
-    //   let showResult = state.pagination.showResult;
-    //   if (showResult) {
-    //     this.searchCriteriaService = state.pagination.where;
-    //     this.pageIndex = state.pagination.pageIndex;
-    //     this.pageSize = state.pagination.pageSize;
-    //     this.hasPreviousPage = state.pagination.hasPreviousPage;
-    //     this.startCursor = state.pagination.startCursor;
-    //     this.endCursor = state.pagination.endCursor;
-    //     this.previous_endCursor = state.pagination.previous_endCursor;
-    //     this.paginator.pageSize = this.pageSize;
-    //     this.paginator.pageIndex = this.pageIndex;
-    //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-    //   }
-
-    // }
-    // else {
-    //   this.search();
-    // }
   }
 
   initPcForm() {
@@ -311,57 +291,14 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
   }
 
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-  }
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
   }
 
-
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
-  }
-
-  adjustCost() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    if (this.selection.isEmpty()) return;
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '720px',
-      height: 'auto',
-      data: {
-        action: 'update',
-        langText: this.langText,
-        selectedItems: this.selection.selected
-      },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
-
-    });
-
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result > 0) {
-        //if(result.selectedValue>0)
-        // {
-        this.handleSaveSuccess(result);
-        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        //}
-      }
-    });
   }
 
   addBillingBranch(event: Event) {
@@ -436,35 +373,35 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
     where.and = [
-     {customer_company:{ main_customer_guid: { neq: null } }},
-     {customer_company: { main_customer_guid: { neq: "" } }},
-     {customer_company: { type_cv: { in: ["BRANCH"] } }},
-     {customer_company:  { delete_dt: { eq: null } }}
+      { customer_company: { main_customer_guid: { neq: null } } },
+      { customer_company: { main_customer_guid: { neq: "" } } },
+      { customer_company: { type_cv: { in: ["BRANCH"] } } },
+      { customer_company: { delete_dt: { eq: null } } }
     ];
     if (this.customerCodeControl.value) {
       const customerCode: CustomerCompanyItem = this.customerCodeControl.value;
-      if(where.customer_company==null) where.customer_company={};
-      where.customer_company.guid= { eq: customerCode.guid };
+      if (where.customer_company == null) where.customer_company = {};
+      where.customer_company.guid = { eq: customerCode.guid };
     }
 
     if (this.pcForm!.value["branch_code"]) {
-      where.and = [ {customer_company:{ code: { contains: this.pcForm!.value["branch_code"] } }},  {customer_company:{ type_cv: { eq: 'BRANCH' } }}];
+      where.and = [{ customer_company: { code: { contains: this.pcForm!.value["branch_code"] } } }, { customer_company: { type_cv: { eq: 'BRANCH' } } }];
     }
 
     if (this.pcForm!.get("default_profile")?.value?.guid) {
       const tankSearch: any = {};
       tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-      if(where.customer_company==null) where.customer_company={};
+      if (where.customer_company == null) where.customer_company = {};
       where.customer_company.tank = tankSearch;
     }
 
     if (this.pcForm!.value["country"]) {
-      if(where.customer_company==null) where.customer_company={};
+      if (where.customer_company == null) where.customer_company = {};
       where.customer_company.country = { contains: this.pcForm!.value["country"] };
     }
 
     if (this.pcForm!.value["contact_person"]) {
-       if(where.customer_company==null) where.customer_company={};
+      if (where.customer_company == null) where.customer_company = {};
       where.customer_company.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
     }
 
@@ -523,9 +460,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     });
     console.log(this.searchStateService.getPagination(this.pageStateType))
 
-   // this.subs.sink = this.ccDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data =>
-   this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data =>
-       {
+    // this.subs.sink = this.ccDS.search(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data =>
+    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(this.lastSearchCriteria, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.customer_companyList = data;
       this.previous_endCursor = undefined;
       this.endCursor = this.ccDS.pageInfo?.endCursor;
@@ -597,26 +533,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.performSearch(pageSize, pageIndex, first, after, last, before);
-  }
-
-  // searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-  //   previousPageIndex?: number) {
-  //   this.previous_endCursor = after;
-  //   this.subs.sink = this.ccDS.search(where, order, first, after, last, before).subscribe(data => {
-  //     this.customer_companyList = data;
-  //     this.endCursor = this.ccDS.pageInfo?.endCursor;
-  //     this.startCursor = this.ccDS.pageInfo?.startCursor;
-  //     this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-  //     this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-  //     this.pageIndex = pageIndex;
-  //     this.paginator.pageIndex = this.pageIndex;
-  //     this.selection.clear();
-  //     if (!this.hasPreviousPage)
-  //       this.previous_endCursor = undefined;
-  //   });
-  // }
-
-  removeSelectedRows() {
   }
 
   initializeFilterCustomerCompany() {
@@ -693,9 +609,9 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     // TableExportUtil.exportToExcel(exportData, 'excel');
   }
 
-    compareObjects(o1: any, o2: any): boolean {
-      return BusinessLogicUtil.emptyCompareWith(o1, o2);
-    }
+  compareObjects(o1: any, o2: any): boolean {
+    return BusinessLogicUtil.emptyCompareWith(o1, o2);
+  }
 
   // context menu
   onContextMenu(event: MouseEvent, item: any) {
@@ -723,9 +639,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       updatedt = r.create_dt;
     }
     return this.displayDate(updatedt);
-
   }
-
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
@@ -733,7 +647,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -772,86 +685,98 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.resetForm();
     this.search();
   }
-  
+
   onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
-  
-      // reset if no direction
-      if (!direction) {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'bDate':
+        this.lastOrderBy = {
+          customer_company: {
+
+            update_dt: dirEnum,
+            create_dt: dirEnum,
+          }
+        };
+        break;
+
+      case 'fName':
+        this.lastOrderBy = {
+
+          customer_company: {
+            code: dirEnum,
+          }
+        };
+        break;
+
+      default:
         this.lastOrderBy = null;
-        return this.search();
-      }
-  
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-  
-      switch (field) {
-        case 'bDate':
-          this.lastOrderBy = { customer_company:{
-            
-              update_dt: dirEnum,
-              create_dt: dirEnum,
-            }
-          };
-          break;
-  
-        case 'fName':
-          this.lastOrderBy = {
-            
-              customer_company:{
-              code: dirEnum,
-            }
-          };
-          break;
-      
-        default:
-          this.lastOrderBy = null;
-      }
-  
+    }
+
+    this.search();
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
       this.search();
-    }
+  }
 
-    AutoSearch()
-    {
-      if (Utility.IsAllowAutoSearch())
-        this.search();
-    }
+  isShowDeleteIcon(row: any): boolean {
+    return (this.isAllowDelete() && !row.so_count && !row.sot_count && !row.tank_info_count);
+  }
 
-    isShowDeleteIcon(row: any): boolean {
-      return (!row.so_count && !row.sot_count && !row.tank_info_count);
+  cancelItem(row: CustomerCompanyItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-
-     cancelItem(row: CustomerCompanyItem) {
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          data: {
-            headerText: this.translatedLangText.CONFIRM_DELETE,
-            action: 'new',
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result.action === 'confirmed') {
-            this.deleteCustomerAndBillingBranch(row.guid!);
-          }
-        });
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.CONFIRM_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result.action === 'confirmed') {
+        this.deleteCustomerAndBillingBranch(row.guid!);
       }
+    });
+  }
 
-      deleteCustomerAndBillingBranch(customerGuid: string) {
-        this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d => {
-          let count = d.data.deleteCustomerCompany;
-          if (count > 0) {
-            this.handleSaveSuccess(count);
-            this.refreshTable();
-            //this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-          }
-        });
+  deleteCustomerAndBillingBranch(customerGuid: string) {
+    this.ccDS.DeleteCustomerCompany([customerGuid]).subscribe(d => {
+      let count = d.data.deleteCustomerCompany;
+      if (count > 0) {
+        this.handleSaveSuccess(count);
+        this.refreshTable();
+        //this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
+    });
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_EDIT']);
+  }
+
+  isAllowAdd() {
+    return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_ADD']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['MASTER_BILLING_BRANCH_DELETE']);
+  }
 }
 
