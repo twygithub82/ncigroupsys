@@ -321,26 +321,26 @@
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="ther">
-                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                           {{translatedLangText.THERMOMETER}}(&deg;C)
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" class="">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.THERMOMETER}}:</span>{{row.meter_temp}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="top_side">
-                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                           {{translatedLangText.TOP_SIDE}}(&deg;C)
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" class="">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.TOP_SIDE}}:</span>{{row.top_temp}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="bottom_side">
-                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                        <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                           {{translatedLangText.BOTTOM_SIDE}}(&deg;C)
                         </mat-header-cell>
-                        <mat-cell mat-cell *matCellDef="let row" class="">
+                        <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                           <span class="mobile-label">{{translatedLangText.BOTTOM_SIDE}}:</span>{{ row.bottom_temp}}
                         </mat-cell>
                       </ng-container>

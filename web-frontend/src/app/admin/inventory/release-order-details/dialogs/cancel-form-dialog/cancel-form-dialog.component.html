@@ -4,7 +4,7 @@
   </div> -->
   <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0 align-center">{{data.action === 'cancel' ?
     data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
-  <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-3">
+ <div mat-dialog-content class="ps-1 pe-1 pt-0 pb-0">
     <form class="register-form" [formGroup]="roSotListForm" #formDirective="ngForm">
       <div formArrayName="roSotList">
         @for (roSot of getRoSotListArray().controls; track roSot; let index = $index) {
