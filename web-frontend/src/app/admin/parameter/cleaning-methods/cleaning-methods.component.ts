@@ -419,6 +419,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '600px',
+      maxHeight: '90vh',
       data: {
         action: 'new',
         langText: this.langText,

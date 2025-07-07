@@ -12,7 +12,7 @@
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="repairPartForm" #formDirective="ngForm">
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.DAMAGE}}</mat-label>
             <mat-select multiple formControlName="damage" required>
@@ -29,7 +29,7 @@
             } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{data.translatedLangText.REPAIR}}</mat-label>
             <mat-select multiple formControlName="repair" required (selectionChange)="onRepairSelectionChange($event)">
@@ -48,7 +48,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.GROUP_NAME}}</mat-label>
             <mat-select formControlName="group_name_cv" required>
@@ -63,7 +63,7 @@
             } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>
               {{data.translatedLangText.SUBGROUP_NAME}}
@@ -80,7 +80,7 @@
             } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.LOCATION}}</mat-label>
             <mat-select formControlName="location_cv">
@@ -96,7 +96,7 @@
             } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.COMMENT}}</mat-label>
             <input matInput formControlName="comment">
@@ -104,7 +104,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label class="d-flex">{{data.translatedLangText.PART_NAME}}
               @if (trDS.loadingSubject | async) {
@@ -118,15 +118,21 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl-0-75 col-lg-0-75 col-md-1 col-sm mb-1">
+        <!-- <div class="col-xl-0-75 col-lg-0-75 col-md-1 col-sm mb-1">
           @if (canEdit()) {
           <button mat-mini-fab color="primary" [disabled]="!this.repairPartForm.get('part_name')?.value"
             (click)="searchPart()">
             <mat-icon>search</mat-icon>
           </button>
           }
-        </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+        </div> -->
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 d-flex mb-0">
+          @if (canEdit()) {
+          <button mat-mini-fab color="primary" class="me-4" [disabled]="!this.repairPartForm.get('part_name')?.value"
+            (click)="searchPart()">
+            <mat-icon>search</mat-icon>
+          </button>
+          }
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
             <input matInput formControlName="remarks">

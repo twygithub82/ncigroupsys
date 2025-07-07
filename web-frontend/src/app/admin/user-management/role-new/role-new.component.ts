@@ -52,8 +52,8 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 @Component({
   selector: 'app-group-new',
   standalone: true,
-  templateUrl: './group-new.component.html',
-  styleUrl: './group-new.component.scss',
+  templateUrl: './role-new.component.html',
+  styleUrl: './role-new.component.scss',
   imports: [
     BreadcrumbComponent,
     MatButtonModule,
@@ -82,7 +82,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatCardModule,
   ]
 })
-export class GroupNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class RoleNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'index',
     'group_name_cv',

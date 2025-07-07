@@ -30,6 +30,10 @@ export const ADMIN_ROUTE: Routes = [
     loadChildren: () => import('./management/management.routes').then(m => m.MANAGEMENT_ROUTE)
   },
   {
+    path: 'user-management',
+    loadChildren: () => import('./user-management/user-management.routes').then(m => m.USER_MANAGEMENT_ROUTE)
+  },
+  {
     path: 'residue-disposal',
     loadChildren: () => import('./residue-disposal/residue-disposal.routes').then(m => m.RESIDUE_DISPOSAL_ROUTE)
   },

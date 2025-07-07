@@ -189,6 +189,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     NAME: 'COMMON-FORM.NAME',
     EMAIL: 'COMMON-FORM.EMAIL',
     CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
+    CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
+    MOBILE_NO: "COMMON-FORM.MOBILE-NO",
+    DID: "COMMON-FORM.DID",
+    COUNTRY: "COMMON-FORM.COUNTRY",
+    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
+    FAX_NO: "COMMON-FORM.FAX-NO",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
+    CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
+    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
+    ROLE:'COMMON-FORM.ROLE',
+    DEPARTMENT:'COMMON-FORM.DEPARTMENT',
+    POSITION:'COMMON-FORM.POSITION',
+    TEAM:'COMMON-FORM.TEAM',
   };
 
 
@@ -230,7 +243,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getPageTitle() {
-    return this.translatedLangText.NEW + ' ' + this.translatedLangText.USER;
+    return this.translatedLangText.NEW + ' ' + this.translatedLangText.TEAM;
   }
   // profileChanged()
   // {
@@ -440,4 +453,5 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.dialogRef.close();
   }
 
+ 
 }

@@ -82,6 +82,8 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   displayedColumns = [
     'fName',
     'lName',
+    'role',
+    'team',
     'mobile',
     'bDate',
     'email',
@@ -227,6 +229,8 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     PASSWORD: 'LANDING-SIGNIN.PASSWORD',
     NAME: 'COMMON-FORM.NAME',
     CONTACT: 'COMMON-FORM.CONTACT',
+    ROLE: 'COMMON-FORM.ROLE',
+    TEAM:'COMMON-FORM.TEAM'
 
 
   }
@@ -369,7 +373,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     }
     // if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '600px',
+      width: '75vw',
       data: {
         action: 'new',
         langText: this.langText,

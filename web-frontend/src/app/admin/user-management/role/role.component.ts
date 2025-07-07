@@ -20,30 +20,34 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
-import { CustomerCompanyItem } from 'app/data-sources/customer-company';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
-import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
-import { ModulePackageService } from 'app/services/module-package.service';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
+import { PackageResidueItem } from 'app/data-sources/package-residue';
+import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
-import { FormDialogComponent_Edit } from './form-dialog-edit/form-dialog.component';
-import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
 @Component({
-  selector: 'app-tariff-buffer',
+  selector: 'app-role',
   standalone: true,
-  templateUrl: './tariff-buffer.component.html',
-  styleUrl: './tariff-buffer.component.scss',
+  templateUrl: './role.component.html',
+  styleUrl: './role.component.scss',
   imports: [
+    BreadcrumbComponent,
     MatTooltipModule,
     MatButtonModule,
     MatIconModule,
@@ -51,6 +55,7 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
     MatSortModule,
     NgClass,
     MatCheckboxModule,
+    FeatherIconsComponent,
     MatRippleModule,
     MatProgressSpinnerModule,
     MatMenuModule,
@@ -66,57 +71,64 @@ import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
-    PreventNonNumericDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
-export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
+
+
+export class RoleComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
-    'fName',
-    'lName',
-    'email',
-    'actions',
+    // 'select',
+    //'desc',
+    'description',
+    'department',
+    'position',
+    'last_update',
+    // 'actions',
   ];
 
-  PROCEDURE_NAME = 'COMMON-FORM.PROCEDURE-NAME'
-  PROCEDURE_DESCRIPTION = 'COMMON-FORM.DESCRIPTION'
-  PROCEDURE_CLEAN_CATEGORY = 'COMMON-FORM.CLEAN-CATEGORY'
-  PROCEDURE_CLEAN_GROUP = 'COMMON-FORM.CLEAN-GROUP'
-  PROCEDURE_MIN_COST = 'COMMON-FORM.MIN-COST'
-  PROCEDURE_MAX_COST = 'COMMON-FORM.MAX-COST'
-  PROCEDURE_TOTAL_DURATION = 'COMMON-FORM.TOTAL-DURATION'
-  PROCEDURE_REQUIRED = 'COMMON-FORM.IS-REQUIRED'
-  PROCEDURE_STEPS = 'COMMON-FORM.PROCEDURE-STEPS'
-  PROCEDURE_STEP_NAME = 'COMMON-FORM.STEP-NAME'
-  PROCEDURE_STEP_DURATION = 'COMMON-FORM.STEP-DURATION'
-  PROCEDURE_STEP_DURATION_TOOLTIP = 'COMMON-FORM.STEP-DURATION-TOOLTIP'
-  CLEANING_GROUP_NAME = 'COMMON-FORM.GROUP-NAME'
-  CLEANING_BAY = 'COMMON-FORM.BAY'
+  pageTitle = 'MENUITEMS.MANAGEMENT.LIST.GROUP'
+  breadcrumsMiddleList = [
+    { text: 'MENUITEMS.MANAGEMENT.TEXT', route: '/admin/management' }
+  ]
 
-  CLEANING_LAST_UPDATED_DT = 'COMMON-FORM.LAST-UPDATED'
-
+  groupNameControl = new UntypedFormControl();
   customerCodeControl = new UntypedFormControl();
   categoryControl = new UntypedFormControl();
+  descriptionControl = new UntypedFormControl();
+  handledItemControl = new UntypedFormControl();
 
-  tariffBufferDS: TariffBufferDS;
-  sotDS: StoringOrderTankDS;
+  storageCalCvList: CodeValuesItem[] = [];
+  handledItemCvList: CodeValuesItem[] = [];
+  CodeValuesDS?: CodeValuesDS;
 
-  tariffBufferItems: TariffBufferItem[] = [];
+  ccDS: CustomerCompanyDS;
+  // tariffResidueDS:TariffResidueDS;
+  // packResidueDS:PackageResidueDS;
+  // clnCatDS:CleaningCategoryDS;
+  custCompDS: CustomerCompanyDS;
+
+  packResidueItems: PackageResidueItem[] = [];
+
+  custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
+  customer_companyList: CustomerCompanyItem[] = [];
+  cleaning_categoryList?: CleaningCategoryItem[];
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { tariff_buffer: { buffer_type: "ASC" } };
+  lastOrderBy: any = { code: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
 
-  selection = new SelectionModel<TariffBufferItem>(true, []);
+  searchField: string = "";
+  selection = new SelectionModel<PackageResidueItem>(true, []);
 
   id?: number;
   pcForm?: UntypedFormGroup;
@@ -126,6 +138,7 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.CARGO-DETAILS',
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
+    CUSTOMER: "COMMON-FORM.CUSTOMER",
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
@@ -180,42 +193,63 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     CARGO_DESCRIPTION: 'COMMON-FORM.CARGO-DESCRIPTION',
     CARGO_CLASS: 'COMMON-FORM.CARGO-CLASS',
     CARGO_CLASS_SELECT: 'COMMON-FORM.CARGO-CLASS-SELECT',
-    CARGO_UN_NO: 'COMMON-FORM.CARGO-UN-NO',
-    CARGO_METHOD: 'COMMON-FORM.CARGO-METHOD',
-    CARGO_CATEGORY: 'COMMON-FORM.CARGO-CATEGORY',
-    CARGO_FLASH_POINT: 'COMMON-FORM.CARGO-FLASH-POINT',
-    CARGO_COST: 'COMMON-FORM.CARGO-COST',
-    CARGO_HAZARD_LEVEL: 'COMMON-FORM.CARGO-HAZARD-LEVEL',
-    CARGO_BAN_TYPE: 'COMMON-FORM.CARGO-BAN-TYPE',
-    CARGO_NATURE: 'COMMON-FORM.CARGO-NATURE',
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    CARGO_NOTE: 'COMMON-FORM.CARGO-NOTE',
     PACKAGE_MIN_COST: 'COMMON-FORM.PACKAGE-MIN-COST',
     PACKAGE_MAX_COST: 'COMMON-FORM.PACKAGE-MAX-COST',
     PACKAGE_DETAIL: 'COMMON-FORM.PACKAGE-DETAIL',
     PACKAGE_CLEANING_ADJUSTED_COST: "COMMON-FORM.PACKAGE-CLEANING-ADJUST-COST",
-    DESCRIPTION: 'COMMON-FORM.BUFFER-TYPE',
-    BUFFER_CLEANING: 'MENUITEMS.TARIFF.LIST.TARIFF-BUFFER',
-    COST: 'COMMON-FORM.COST',
-    LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
+    EMAIL: 'COMMON-FORM.EMAIL',
+    CONTACT_NO: 'COMMON-FORM.CONTACT-NO',
+    PROFILE_NAME: 'COMMON-FORM.PROFILE-NAME',
+    VIEW: 'COMMON-FORM.VIEW',
+    DEPOT_PROFILE: 'COMMON-FORM.DEPOT-PROFILE',
+    PREINSPECTION_COST: "COMMON-FORM.PREINSPECTION-COST",
+    LOLO_COST: "COMMON-FORM.LOLO-COST",
+    STORAGE_COST: "COMMON-FORM.STORAGE-COST",
+    FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
+    LAST_UPDATED_DT: 'COMMON-FORM.LAST-UPDATED',
+    STANDARD_COST: "COMMON-FORM.STANDARD-COST",
+    CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
+    STORAGE_CALCULATE_BY: "COMMON-FORM.STORAGE-CALCULATE-BY",
+    HANDLED_ITEM: "COMMON-FORM.HANDLED-ITEM",
+    COST: "COMMON-FORM.COST",
+    DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
+    ALIAS_NAME: 'COMMON-FORM.ALIAS-NAME',
+    CONTACT_PERSON: "COMMON-FORM.CONTACT-PERSON",
+    MOBILE_NO: "COMMON-FORM.MOBILE-NO",
+    DID: "COMMON-FORM.DID",
+    COUNTRY: "COMMON-FORM.COUNTRY",
+    LAST_UPDATE: "COMMON-FORM.LAST-UPDATED",
+    FAX_NO: "COMMON-FORM.FAX-NO",
+    CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    TARIFF_BUFFER_ASSIGNED: 'COMMON-FORM.TARIFF-BUFFER-ASSIGNED',
-    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
+    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
+    USER:'COMMON-FORM.USER',
+    ROLE:'COMMON-FORM.ROLE',
+    DEPARTMENT:'COMMON-FORM.DEPARTMENT',
+    POSITION:'COMMON-FORM.POSITION',
   }
 
   constructor(
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
+    // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
-    private translate: TranslateService,
-    private modulePackageService: ModulePackageService
+    private searchCriteriaService: SearchCriteriaService,
+    private translate: TranslateService
+
   ) {
     super();
-    this.initTcForm();
-    this.tariffBufferDS = new TariffBufferDS(this.apollo);
-    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.initPcForm();
+    this.ccDS = new CustomerCompanyDS(this.apollo);
+    // this.tariffResidueDS = new TariffResidueDS(this.apollo);
+    // this.packResidueDS= new PackageResidueDS(this.apollo);
+    this.custCompDS = new CustomerCompanyDS(this.apollo);
+
+    this.CodeValuesDS = new CodeValuesDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -226,20 +260,29 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   ngOnInit() {
     this.loadData();
     this.translateLangText();
+    var state = history.state;
+    if (state.type == "customer-company") {
+      let showResult = state.pagination.showResult;
+      if (showResult) {
+        this.searchCriteriaService = state.pagination.where;
+        this.pageIndex = state.pagination.pageIndex;
+        this.pageSize = state.pagination.pageSize;
+        this.hasPreviousPage = state.pagination.hasPreviousPage;
+        this.startCursor = state.pagination.startCursor;
+        this.endCursor = state.pagination.endCursor;
+        this.previous_endCursor = state.pagination.previous_endCursor;
+        this.paginator.pageSize = this.pageSize;
+        this.paginator.pageIndex = this.pageIndex;
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+      }
+
+    }
   }
 
-  translateLangText() {
-    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
-      this.translatedLangText = translations;
-    });
-  }
-
-  initTcForm() {
+  initPcForm() {
     this.pcForm = this.fb.group({
-      guid: [''],
-      buffer_type: [''],
-      min_cost: [''],
-      max_cost: ['']
+      guid: [{ value: '' }],
+      description: [''],
     });
   }
 
@@ -251,49 +294,24 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
   }
 
-  addCall() {
+  addNew() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_New, {
-      width: '600px',
-      height: 'auto',
-      data: {
-        action: 'new',
-        langText: this.langText,
-        selectedItem: null
-      }
-    });
 
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result > 0) {
-        this.handleSaveSuccess(result);
-        if (this.tariffBufferDS.totalCount > 0) {
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        }
-      }
+  }
+  translateLangText() {
+    Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
+      this.translatedLangText = translations;
     });
   }
+
 
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
-  }
-
-  displayLastUpdated(r: TariffBufferItem) {
-    var updatedt = r.update_dt;
-    if (updatedt === null) {
-      updatedt = r.create_dt;
-    }
-    return this.displayDate(updatedt);
-
-  }
-
-
-  displayDate(input: number | undefined): string | undefined {
-    return Utility.convertEpochToDateStr(input);
   }
 
   adjustCost() {
@@ -303,8 +321,45 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '600px',
+    if (this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '720px',
+      height: 'auto',
+      data: {
+        action: 'update',
+        langText: this.langText,
+        selectedItems: this.selection.selected
+      },
+      position: {
+        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      }
+
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result > 0) {
+        //if(result.selectedValue>0)
+        // {
+        this.handleSaveSuccess(result);
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        //}
+      }
+    });
+  }
+
+addCall(event: Event) {
+    event.stopPropagation(); // Stop the click event from propagating
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    // if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '65vw',
+      maxHeight: '75vh',
       data: {
         action: 'new',
         langText: this.langText,
@@ -321,40 +376,80 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
         }
       }
     });
+    
   }
 
-  editCall(row: TariffBufferItem) {
-    // this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
 
-    const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
-      width: '600px',
-      data: {
-        action: 'edit',
-        langText: this.langText,
-        selectedItem: row
-      }
-    });
+  editCall(row: CustomerCompanyItem) {
 
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result > 0) {
-        this.handleSaveSuccess(result);
-        if (this.tariffBufferDS.totalCount > 0) {
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+    this.router.navigate([`/admin/master/customer/new/${row.guid} `], {
+      state: {
+        id: row.guid,
+        type: 'customer-company',
+        selectedRow: row,
+        pagination: {
+          where: this.lastSearchCriteria,
+          pageSize: this.pageSize,
+          pageIndex: this.pageIndex,
+          hasPreviousPage: this.hasPreviousPage,
+          startCursor: this.startCursor,
+          endCursor: this.endCursor,
+          previous_endCursor: this.previous_endCursor,
+
+          showResult: this.ccDS.totalCount > 0
+
         }
       }
     });
+    // this.preventDefault(event);  // Prevents the form submission
+    // let tempDirection: Direction;
+    // if (localStorage.getItem('isRtl') === 'true') {
+    //   tempDirection = 'rtl';
+    // } else {
+    //   tempDirection = 'ltr';
+    // }
+    // var rows :PackageResidueItem[] =[] ;
+    // rows.push(row);
+    // const dialogRef = this.dialog.open(FormDialogComponent,{
+
+    //   width: '720px',
+    //   height:'auto',
+    //   data: {
+    //     action: 'update',
+    //     langText: this.langText,
+    //     selectedItems:rows
+    //   },
+    //   position: {
+    //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+    //   }
+
+    // });
+
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //      //if (result) {
+    //       if(result>0)
+    //         {
+    //           this.handleSaveSuccess(result);
+    //           //this.search();
+    //           this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+    //         }
+    //   //}
+    //   });
+
   }
 
+
+
+  deleteItem(row: any) {
+
+  }
+  private refreshTable() {
+    this.paginator._changePageSize(this.paginator.pageSize);
+  }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.tariffBufferItems.length;
+    const numRows = this.packResidueItems.length;
     return numSelected === numRows;
   }
 
@@ -366,39 +461,64 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
   masterToggle() {
     this.isAllSelected()
       ? this.selection.clear()
-      : this.tariffBufferItems.forEach((row) =>
+      : this.packResidueItems.forEach((row) =>
         this.selection.select(row)
       );
   }
 
+
+
   search() {
     const where: any = {};
 
-    if (this.pcForm!.value["buffer_type"]) {
-      const buffer_type: Text = this.pcForm!.value["buffer_type"];
-      where.buffer_type = { contains: buffer_type }
+    if (this.customerCodeControl.value) {
+      if (this.customerCodeControl.value.length > 0) {
+
+
+        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+        var guids = customerCodes.map(cc => cc.guid);
+        where.guid = { in: guids };
+      }
     }
 
-    if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.cost = { gte: minCost, lte: maxCost };
-    } else if (this.pcForm!.value["min_cost"]) {
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.cost = { gte: minCost };
-    } else if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.cost = { lte: maxCost };
+    if (this.pcForm!.value["alias"]) {
+      where.alias = { contains: this.pcForm!.value["alias"] };
     }
+
+    // if (this.pcForm!.value["fax_no"]) {
+    //   where.customer_company = where.customer_company || {};
+    //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
+    // }
+
+    // if (this.pcForm!.value["phone"]) {
+    //   where.customer_company = where.customer_company || {};
+    //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
+    // }
+
+
+    // if (this.pcForm!.value["email"]) {
+    //   where.customer_company = where.customer_company || {};
+    //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
+    // }
+
+    if (this.pcForm!.value["country"]) {
+      where.country = { eq: this.pcForm!.value["country"] };
+    }
+
+    if (this.pcForm!.value["contact_person"]) {
+      where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
+    }
+
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.tariffBufferDS.SearchTariffBufferWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.tariffBufferItems = data;
+    this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+      this.customer_companyList = data;
+      // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
-      this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
-      this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
+      this.endCursor = this.ccDS.pageInfo?.endCursor;
+      this.startCursor = this.ccDS.pageInfo?.startCursor;
+      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = 0;
       this.paginator.pageIndex = 0;
       this.selection.clear();
@@ -407,12 +527,25 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
+  selectStorageCalculateCV_Description(valCode?: string): string {
+    let valCodeObject: CodeValuesItem = new CodeValuesItem();
+    if (this.storageCalCvList.length > 0) {
+      valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
+
+      // If no match is found, description will be undefined, so you can handle it accordingly
+
+    }
+    return valCodeObject.description || '-';
+
+  }
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
+
       });
     }
   }
@@ -434,7 +567,8 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
       last = undefined;
       before = undefined;
     } else {
-      if (pageIndex > this.pageIndex && this.hasNextPage) {
+      //if (pageIndex > this.pageIndex && this.hasNextPage) {
+      if (pageIndex > this.pageIndex) {
         // Navigate forward
         first = pageSize;
         after = this.endCursor;
@@ -442,24 +576,31 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
         // Navigate backward
         last = pageSize;
         before = this.startCursor;
-      } else if (pageIndex == this.pageIndex) {
+      }
+      else if (pageIndex == this.pageIndex) {
+
         first = pageSize;
         after = this.previous_endCursor;
+
+
+        //this.paginator.pageIndex=this.pageIndex;
+
       }
     }
 
     this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+    //}
   }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.tariffBufferDS.SearchTariffBufferWithCount(where, order, first, after, last, before).subscribe(data => {
-      this.tariffBufferItems = data;
-      this.endCursor = this.tariffBufferDS.pageInfo?.endCursor;
-      this.startCursor = this.tariffBufferDS.pageInfo?.startCursor;
-      this.hasNextPage = this.tariffBufferDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.tariffBufferDS.pageInfo?.hasPreviousPage ?? false;
+    this.subs.sink = this.ccDS.search(where, order, first, after, last, before).subscribe(data => {
+      this.customer_companyList = data;
+      this.endCursor = this.ccDS.pageInfo?.endCursor;
+      this.startCursor = this.ccDS.pageInfo?.startCursor;
+      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
+      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
       this.pageIndex = pageIndex;
       this.paginator.pageIndex = this.pageIndex;
       this.selection.clear();
@@ -468,8 +609,46 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
+  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
+    const sCriteria: any = {};
+    sCriteria.where = where;
+    sCriteria.order = order;
+    sCriteria.first = first;
+    sCriteria.after = after;
+    sCriteria.last = last;
+    sCriteria.before = before;
+    sCriteria.pageIndex = pageIndex;
+    sCriteria.previousPageIndex = previousPageIndex;
+    sCriteria.length = length;
+    sCriteria.hasNextPage = hasNextPage;
+    sCriteria.hasPreviousPage = hasPreviousPage;
+
+    this.searchCriteriaService.setCriteria(sCriteria);
+  }
+
+  removeSelectedRows() {
+
+  }
   public loadData() {
-    this.search();
+
+    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
+      // this.customer_companyList1 = data
+    });
+
+    // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
+
+    // const queries = [
+    //   { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
+
+    // ];
+    // this.CodeValuesDS?.getCodeValuesByType(queries);
+    // this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
+    //   this.handledItemCvList=data;
+    // });
+
+
+
   }
   showNotification(
     colorName: string,
@@ -523,6 +702,24 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     return null;
   }
 
+  displayLastUpdated(r: PackageResidueItem) {
+    var updatedt = r.update_dt;
+    if (updatedt === null) {
+      updatedt = r.create_dt;
+    }
+    const date = new Date(updatedt! * 1000);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+
+    // Replace the '/' with '-' to get the required format
+
+
+    return `${day}/${month}/${year}`;
+
+  }
+
+
   resetDialog(event: Event) {
     event.preventDefault(); // Prevents the form submission
 
@@ -542,107 +739,19 @@ export class TariffBufferComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
         this.resetForm();
-        this.search();
       }
     });
   }
 
   resetForm() {
-    this.initTcForm();
-    this.customerCodeControl.reset('');
+    this.initPcForm();
+    //this.customerCodeControl.reset();
   }
 
-  cancelItem(event: Event, row: TariffBufferItem) {
-    event.stopPropagation();
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      //width: '500px',
-      data: {
-        headerText: this.translatedLangText.CONFIRM_DELETE,
-        act: "warn"
-      },
-      direction: tempDirection
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result.action == "confirmed") {
-        this.deleteTariffAndPackageBuffer(row.guid!);
-      }
-    });
+  getSearchUserAndRoleLabel()
+  {
+    return `${this.translatedLangText.ROLE}/${this.translatedLangText.USER}`;
   }
 
-  deleteTariffAndPackageBuffer(tariffBufferGuid: string) {
-    this.tariffBufferDS.deleteTariffBuffer([tariffBufferGuid]).subscribe(d => {
-      let count = d.data.deleteTariffBuffer;
-      if (count > 0) {
-        this.handleSaveSuccess(count);
-        if (this.tariffBufferDS.totalCount > 0) {
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-        }
-      }
-    });
-  }
-
-  onTabFocused() {
-    this.resetForm();
-    this.search();
-  }
-
-  parse2Decimal(figure: number | string) {
-    return Utility.formatNumberDisplay(figure)
-  }
-
-  isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_EDIT']);
-  }
-
-  isAllowAdd() {
-    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_ADD']);
-  }
-
-  isAllowDelete() {
-    return this.modulePackageService.hasFunctions(['TARIFF_BUFFER_CLEANING_DELETE']);
-  }
-
-  onSortChange(event: Sort): void {
-    const { active: field, direction } = event;
-
-    // reset if no direction
-    if (!direction) {
-      this.lastOrderBy = null;
-      return this.search();
-    }
-
-    // convert to GraphQL enum (uppercase)
-    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-
-    switch (field) {
-      case 'email':
-        this.lastOrderBy = {
-          tariff_buffer: {
-            update_dt: dirEnum,
-            create_dt: dirEnum,
-          },
-        };
-        break;
-
-      case 'fName':
-        this.lastOrderBy = {
-          tariff_buffer: {
-            buffer_type: dirEnum
-          },
-        };
-        break;
-
-      default:
-        this.lastOrderBy = null;
-    }
-
-    this.search();
-  }
 }
+
