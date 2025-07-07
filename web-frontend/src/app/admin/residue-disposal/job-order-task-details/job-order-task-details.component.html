@@ -248,8 +248,6 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-
-
                           @if (row.approve_part === null || row.approve_part === undefined ||
                           IsApprovePart(row)){
                           <mat-icon class="col-green font-bold">check</mat-icon>
@@ -257,7 +255,6 @@
                           @else {
                           <mat-icon class="col-red font-bold">close</mat-icon>
                           }
-
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="team">
