@@ -270,7 +270,7 @@
                                 <mat-label>{{translatedLangText.CAPACITY}}</mat-label>
                                 <input matInput formControlName="capacity" type="number"
                                   (wheel)="preventDefault($event)" min="0" required>
-                                <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.LITERS}}</h6>
+                                <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.LITERS}}</h6>
                                 <!-- @if (surveyForm?.get('tank_details.capacity')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.CAPACITY}} {{translatedLangText.SO_REQUIRED}}
@@ -283,7 +283,7 @@
                                 <mat-label>{{translatedLangText.TARE_WEIGHT}}</mat-label>
                                 <input matInput formControlName="tare_weight" type="number"
                                   (wheel)="preventDefault($event)" min="0" required>
-                                <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.KG}}</h6>
+                                <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.KG}}</h6>
                                 <!-- @if (surveyForm?.get('tank_details.tare_weight')?.hasError('required')) {
                                 <mat-error>
                                   {{translatedLangText.TARE_WEIGHT}} {{translatedLangText.SO_REQUIRED}}
@@ -1968,7 +1968,7 @@
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="airline_valve_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.PCS}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}</h6>
                                     <!-- @if (getTopFormGroup().get('airline_valve_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -1981,7 +1981,7 @@
                                     <mat-label>{{translatedLangText.DIAMITER}}</mat-label>
                                     <input matInput formControlName="airline_valve_dim" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.INCH}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.INCH}}</h6>
                                     <!-- @if (getTopFormGroup().get('airline_valve_dim')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.DIAMITER}} {{translatedLangText.SO_REQUIRED}}
@@ -2156,7 +2156,7 @@
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="manlid_cover_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.PCS}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}</h6>
                                     <!-- @if (getManlidFormGroup().get('manlid_cover_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -2169,7 +2169,7 @@
                                     <mat-label>{{translatedLangText.VOLUME}}</mat-label>
                                     <input matInput formControlName="manlid_cover_pts" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.PTS}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PTS}}</h6>
                                     <!-- @if (getManlidFormGroup().get('manlid_cover_pts')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.VOLUME}} {{translatedLangText.SO_REQUIRED}}
@@ -2236,7 +2236,7 @@
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="pv_type_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.PCS}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}</h6>
                                     <!-- @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -2274,7 +2274,7 @@
                                     <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                     <input matInput formControlName="pv_spec_pcs" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.PCS}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}</h6>
                                     <!-- @if (getManlidFormGroup().get('pv_spec_pcs')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
@@ -2296,7 +2296,7 @@
                                     <mat-label>{{translatedLangText.BUFFER_PLATE}}</mat-label>
                                     <input matInput formControlName="buffer_plate" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.PCS}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.PCS}}</h6>
                                     <!-- @if (getManlidFormGroup().get('buffer_plate')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.BUFFER_PLATE}} {{translatedLangText.SO_REQUIRED}}
@@ -2311,7 +2311,7 @@
                                     <mat-label>{{translatedLangText.RESIDUE}}</mat-label>
                                     <input matInput formControlName="residue" type="number"
                                       (wheel)="preventDefault($event)" min="0">
-                                    <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{translatedLangText.KG}}</h6>
+                                    <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{translatedLangText.KG}}</h6>
                                     <!-- @if (getManlidFormGroup().get('residue')?.hasError('required')) {
                                     <mat-error>
                                       {{translatedLangText.RESIDUE}} {{translatedLangText.SO_REQUIRED}}
