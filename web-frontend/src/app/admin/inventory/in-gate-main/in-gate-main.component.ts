@@ -101,14 +101,12 @@ export class InGateMainComponent extends UnsubscribeOnDestroyAdapter implements 
       component: 'app-in-gate',
       modulePackage: ['growth', 'customized'],
       expectedFunctions: ['INVENTORY_IN_GATE_VIEW', 'INVENTORY_IN_GATE_EDIT', 'INVENTORY_IN_GATE_DELETE'],
-      componentRef: this.inGateComp
     },
     {
       label: this.translatedLangText.IN_GATE_SURVEY,
       component: 'app-in-gate-survey',
       modulePackage: ['starter', 'growth', 'customized'],
       expectedFunctions: ['INVENTORY_IN_GATE_SURVEY_VIEW', 'INVENTORY_IN_GATE_SURVEY_EDIT', 'INVENTORY_IN_GATE_SURVEY_DELETE', 'INVENTORY_IN_GATE_SURVEY_PUBLISH'],
-      componentRef: this.inGateSurveyComp
     }
   ];
 
