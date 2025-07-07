@@ -175,6 +175,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
     public modulePackageService: ModulePackageService
   ) {
     super();
+    searchStateService.clearOtherPages(this.pageStateType);
     this.translateLangText();
     this.initSearchForm();
     this.lastCargoControl = new UntypedFormControl('', [Validators.required, AutocompleteSelectionValidator(this.last_cargoList)]);

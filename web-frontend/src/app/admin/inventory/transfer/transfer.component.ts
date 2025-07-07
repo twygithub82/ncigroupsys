@@ -178,6 +178,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
     private searchStateService: SearchStateService
   ) {
     super();
+    searchStateService.clearOtherPages(this.pageStateType);
     this.translateLangText();
     this.initSearchForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);

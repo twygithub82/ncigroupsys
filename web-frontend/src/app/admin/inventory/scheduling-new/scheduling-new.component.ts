@@ -46,6 +46,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -204,6 +205,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
+  pageStateType="Scheduling";
 
   availableStatuses: string[] = ["CLEANING", "STEAM", "RESIDUE", "REPAIR", "STORAGE"];
 
@@ -216,9 +218,11 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
+    private searchStateService: SearchStateService,
     public modulePackageService: ModulePackageService
   ) {
     super();
+    searchStateService.clearOtherPages(this.pageStateType);
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);

@@ -40,7 +40,7 @@ import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-
+import {TeamDS,TeamItem} from 'app/data-sources/teams';
 
 @Component({
   selector: 'app-team',
@@ -102,14 +102,17 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
   storageCalCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
+  departmentCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
 
+  teamDS: TeamDS;
   ccDS: CustomerCompanyDS;
   // tariffResidueDS:TariffResidueDS;
   // packResidueDS:PackageResidueDS;
   // clnCatDS:CleaningCategoryDS;
-  custCompDS: CustomerCompanyDS;
+  // custCompDS: CustomerCompanyDS;
 
+  teamItems: TeamItem[] = []; 
   packResidueItems: PackageResidueItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
@@ -119,6 +122,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
+  
   lastOrderBy: any = { code: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
@@ -244,9 +248,10 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.teamDS = new TeamDS(this.apollo);
     // this.tariffResidueDS = new TariffResidueDS(this.apollo);
     // this.packResidueDS= new PackageResidueDS(this.apollo);
-    this.custCompDS = new CustomerCompanyDS(this.apollo);
+    //this.custCompDS = new CustomerCompanyDS(this.apollo);
 
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
   }
@@ -630,9 +635,12 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
   }
   public loadData() {
 
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
-      // this.customer_companyList1 = data
-    });
+    this.subs.sink = this.teamDS.loadItems({},{}).subscribe(data => {
+      this.teamItems = data;
+    })
+    // this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
+    //   // this.customer_companyList1 = data
+    // });
 
     // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
 

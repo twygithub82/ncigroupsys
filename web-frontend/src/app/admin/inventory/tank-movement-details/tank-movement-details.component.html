@@ -1146,7 +1146,7 @@
                                       </ng-container>
                                       <mat-header-row *matHeaderRowDef="displayedColumnsResidue"></mat-header-row>
                                       <mat-row *matRowDef="let row; columns: displayedColumnsResidue;"
-                                        [style.cursor]="'pointer'" matRipple>
+                                        [style.cursor]="'pointer'" (click)="ViewResidueEstimateItem(row)" matRipple>
                                       </mat-row>
                                     </table>
                                   </div>

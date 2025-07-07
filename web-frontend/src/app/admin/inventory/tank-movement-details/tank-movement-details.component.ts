@@ -95,6 +95,8 @@ import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/ren
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
+import {ResidueEstimateFormDialogComponent_View} from '../preview/residue-estimate/form-dialog.component';
+
 
 @Component({
   selector: 'app-tank-movement-details',
@@ -3692,4 +3694,62 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   isAllowTransfer() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TRANSFER']);
   }
+
+  ViewResidueEstimateItem(row: ResidueItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
+      width: '65vw',
+      maxWidth:'1000px',
+      data: {
+        action: 'view',
+        langText: this.langText,
+        selectedItem: row
+      }
+    });
+  }
+
+   ViewRepairEstimateItem(row: RepairItem) {
+      // this.preventDefault(event);  // Prevents the form submission
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
+        width: '75vw',
+        data: {
+          action: 'view',
+          langText: this.langText,
+          selectedItem: row
+        }
+      });
+    }
+    
+   ViewSteamEstimateItem(row: SteamItem) {
+      // this.preventDefault(event);  // Prevents the form submission
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+  
+      const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
+        width: '75vw',
+        data: {
+          action: 'view',
+          langText: this.langText,
+          selectedItem: row
+        }
+      });
+    }
 }

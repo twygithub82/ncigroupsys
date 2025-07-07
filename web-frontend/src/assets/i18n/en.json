@@ -1362,7 +1362,10 @@
     "SELECTED-TEAMS":"Selected Teams",
     "SELECTED-ADHOC":"Selected Adhoc Features",
     "SELECTED-FEATURES":"Selected Features",
-    "FEATURES":"Features"
+    "FEATURES":"Features",
+    "RESIDUE-ESTIMATE-DETAILS": "Residue Disposal Estimate Details",
+    "STEAM-ESTIMATE-DETAILS": "Steam Estimate Details",
+    "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
