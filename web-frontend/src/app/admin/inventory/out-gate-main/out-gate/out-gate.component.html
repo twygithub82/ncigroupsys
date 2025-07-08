@@ -68,11 +68,11 @@
         </ng-container>
         <ng-container matColumnDef="customer_code">
           <mat-header-cell mat-header-cell *matHeaderCellDef
-            [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             {{translatedLangText.CUSTOMER}}
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
-            [ngClass]="'tbl-col-width-per-3_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
             <span
               class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{roSotDS.getReleaseOrderSotItem(row.release_order_sot)?.release_order?.customer_company!.name}}
           </mat-cell>
