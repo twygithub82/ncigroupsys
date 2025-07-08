@@ -152,6 +152,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     ROLLBACK_STATUS: 'COMMON-FORM.ROLLBACK-STATUS',
     CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
+    ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     INVALID_SELECTION: 'COMMON-FORM.INVALID-SELECTION',
@@ -840,7 +841,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
@@ -892,7 +893,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
@@ -1699,10 +1700,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
         item: [this.residueItem],
         translatedLangText: this.translatedLangText
       },

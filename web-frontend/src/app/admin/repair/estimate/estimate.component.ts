@@ -313,7 +313,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
@@ -360,7 +360,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,

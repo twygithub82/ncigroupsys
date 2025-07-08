@@ -23,96 +23,102 @@
             @if (!(joDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.TANK_NO}}:</span>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sotItem?.tank_no}}</div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
+                        {{sotItem?.tank_no}}
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CUSTOMER}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_CARGO}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{sotItem?.tariff_cleaning?.cargo}}
-                      </div>
-                    </div>
-                  </div>
-                  <!-- <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.OWNER}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="value-display-info">
+                        <!-- {{ccDS.displayName(sotItem?.storing_order?.customer_company)}} -->
                         {{ccDS.displayName(sotItem?.customer_company)}}
                       </div>
                     </div>
-                  </div> -->
+                  </div>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_NO}}:</span>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_DATE}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
                         {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
-                      </div>
+                      </span>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.PURPOSE}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">{{displayTankPurpose(sotItem!)}}
-                      </div>
+                    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
+                        {{sotItem?.tariff_cleaning?.cargo}}
+                      </span>
                     </div>
                   </div>
-                  <!-- <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_TEST}}:</span>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <span class="value-display-info">
+                        {{displayTankPurpose(sotItem!)}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
                     </div>
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                      <div class="value-display-info">
                         {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.NEXT_TEST}}:</span>
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
                     </div>
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
+                      <div class="value-display-info">
                         {{getNextTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
                       </div>
                     </div>
-                  </div> -->
+                  </div>
                 </div>
               </div>
             </mat-card-content>
@@ -149,7 +155,8 @@
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 p-l-7">
-                  <button mat-flat-button color="primary" (click)="viewTimeTableDetails($event)" [ngClass]="'m-r-10 job-order-task-button'">
+                  <button mat-flat-button color="primary" (click)="viewTimeTableDetails($event)"
+                    [ngClass]="'m-r-10 job-order-task-button'">
                     <mat-icon>view_list</mat-icon>
                     {{translatedLangText.TIME_HISTORY}}
                   </button>
@@ -164,7 +171,8 @@
                     {{translatedLangText.COMPLETE_JOB}}
                   </button>
                   @if (canRollbackJob()) {
-                  <button mat-flat-button color="" color="accent" (click)="rollbackJob($event)" [ngClass]="'job-order-task-button'">
+                  <button mat-flat-button color="" color="accent" (click)="rollbackJob($event)"
+                    [ngClass]="'job-order-task-button'">
                     <mat-icon>undo</mat-icon>
                     {{translatedLangText.ROLLBACK}}
                   </button>
