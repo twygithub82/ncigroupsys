@@ -201,20 +201,6 @@ export const GET_SCHEDULING_SOT_FOR_MOVEMENT = gql`
           unit_type_guid
           update_by
           update_dt
-          in_gate {
-            eir_no
-            eir_dt
-            yard_cv
-          }
-          tariff_cleaning {
-            cargo
-          }
-          storing_order {
-            customer_company {
-              code
-              name
-            }
-          }
         }
       }
     }
