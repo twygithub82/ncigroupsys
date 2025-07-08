@@ -219,9 +219,14 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" (click)="submit()">
+        <button mat-flat-button color="primary" (click)="submit()" [disabled]="(schedulingDS.actionLoading$ | async)">
           <mat-icon>
+            @if (!(schedulingDS.actionLoading$ | async)) {
             save
+            }
+            @else {
+            loading
+            }
           </mat-icon>
           {{data.translatedLangText[getSaveBtnDescription()]}}</button>
         }
