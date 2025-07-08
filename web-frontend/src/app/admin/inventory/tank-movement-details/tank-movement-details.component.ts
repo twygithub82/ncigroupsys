@@ -3599,7 +3599,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TRANSFER']);
   }
 
-  getViewDirection() {
+  ViewResidueEstimateItem(row: ResidueItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let r = new ResidueItem(row);
+    r.storing_order_tank=this.sot;
+    //r.storing_order_tank.customer_company=new CustomerCompanyItem(this.sot?.customer_company);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -3619,9 +3623,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       data: {
         action: 'view',
         langText: this.langText,
-        selectedItem: row
-      },
-      direction: tempDirection
+        selectedItem: r,
+        nextTestDesc:this.next_test_desc!,
+        lastTestDesc:this.last_test_desc!
+      }
     });
   }
 

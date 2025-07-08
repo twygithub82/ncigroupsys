@@ -1496,7 +1496,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       );
-      return ret.toFixed(2);
+      return (ret||0).toFixed(2);
     }
     else {
       return '-';
