@@ -148,26 +148,29 @@ export class MainPackageCleaningComponent extends UnsubscribeOnDestroyAdapter im
 
   tabConfig = [
     {
-      label: this.translatedLangText.TARIFF_CLEANING,
+      label: this.translatedLangText.PACKAGE_CLEANING,
       component: 'app-package-cleaning',
-      modulePackage: ['starter', 'growth', 'customized']
+      modulePackage: ['starter', 'growth', 'customized'],
+      expectedFunctions: ['PACKAGE_CLEANING_VIEW', 'PACKAGE_CLEANING_DELETE', 'PACKAGE_CLEANING_EDIT'],
     },
     {
-      label: this.translatedLangText.TARIFF_BUFFER,
+      label: this.translatedLangText.PACKAGE_BUFFER,
       component: 'app-package-buffer',
-      modulePackage: ['growth', 'customized']
+      modulePackage: ['growth', 'customized'],
+      expectedFunctions: ['PACKAGE_BUFFER_CLEANING_VIEW', 'PACKAGE_BUFFER_CLEANING_DELETE', 'PACKAGE_BUFFER_CLEANING_EDIT'],
     },
     {
-      label: this.translatedLangText.TARIFF_RESIDUE,
+      label: this.translatedLangText.PACKAGE_RESIDUE,
       component: 'app-package-residue',
-      modulePackage: ['growth', 'customized']
+      modulePackage: ['growth', 'customized'],
+      expectedFunctions: ['PACKAGE_RESIDUE_DISPOSAL_VIEW', 'PACKAGE_RESIDUE_DISPOSAL_DELETE', 'PACKAGE_RESIDUE_DISPOSAL_EDIT'],
     }
   ];
 
   get allowedTabs() {
-    return this.tabConfig.filter(tab =>
-      tab.modulePackage.includes(this.modulePackageService.getModulePackage())
-    );
+    return this.tabConfig.filter(tab => {
+      return this.modulePackageService.hasFunctions(tab.expectedFunctions)
+    });
   }
 
   translateLangText() {
