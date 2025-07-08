@@ -6,6 +6,7 @@ import { ESTIMATE_APPROVED_STATUS, Utility } from "./utility";
 import { SurveyDetailItem } from "app/data-sources/survey-detail";
 import { UntypedFormGroup } from "@angular/forms";
 import { ResidueItem } from "app/data-sources/residue";
+import { BillingStorageDetail } from "app/data-sources/billing";
 
 export class BusinessLogicUtil {
     static isOthers(value: string | string[]): boolean {
@@ -198,5 +199,9 @@ export class BusinessLogicUtil {
     static anyActiveResidues(residue?: ResidueItem[]) {
         if (!residue?.length) return false;
         return residue.some(res => res.status_cv === 'PENDING' && !res.delete_dt);
+    }
+
+    static sumOfStorageDetails(storageDetails?: BillingStorageDetail[]) {
+        return storageDetails?.reduce((sum, detail) => sum + (detail.total_cost ?? 0), 0) ?? 0;
     }
 }

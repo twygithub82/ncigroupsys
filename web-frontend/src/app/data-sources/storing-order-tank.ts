@@ -2741,6 +2741,22 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
             status_cv
             update_by
             update_dt
+            storage_detail {
+              billing_guid
+              create_by
+              create_dt
+              delete_dt
+              end_dt
+              guid
+              remaining_free_storage
+              remarks
+              sot_guid
+              start_dt
+              state_cv
+              total_cost
+              update_by
+              update_dt
+            }
           }
         }
       }

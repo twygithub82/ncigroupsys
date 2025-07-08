@@ -1168,7 +1168,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   updatePurposeDialog(event: Event, type: string, action: string) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1246,7 +1246,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.preventDefault(event);
     if (steam?.create_by !== "system") { return; } // only auto approved have steam temperature
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1273,7 +1273,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     // });
 
     // if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1297,7 +1297,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   steamHeatingLogDialog(event: Event, steam: SteamItem) {
     this.preventDefault(event);
     return;
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1323,7 +1323,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   editTankNotes(event: Event) {
     this.preventDefault(event);
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1363,7 +1363,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
     const url = imgForm.get('preview')?.value;
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1412,7 +1412,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteJobNoDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1457,7 +1457,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteDepotCostDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1528,7 +1528,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   renumberTankDialog(event: Event) {
     this.preventDefault(event);
     const action = 'renumber';
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1576,7 +1576,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   reownerTankDialog(event: Event) {
     this.preventDefault(event);
     const action = 'reownership';
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1625,7 +1625,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   changeCustomerTankDialog(event: Event) {
     this.preventDefault(event);
     const action = 'recustomer';
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1667,7 +1667,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteTankSummaryDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1750,7 +1750,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteTankDetailsDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1820,7 +1820,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteGateDetailsDialog(event: Event, gateItem: any, action: string) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1876,7 +1876,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwritePurposeStorageDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1933,7 +1933,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteLastCargoDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -1978,7 +1978,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteCleanStatusDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2020,7 +2020,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteCleaningApprovalDialog(event: Event) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2075,7 +2075,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteSteamingApprovalDialog(event: Event, row: SteamItem) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2135,7 +2135,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteResidueApprovalDialog(event: Event, row: ResidueItem) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2196,7 +2196,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   overwriteRepairApprovalDialog(event: Event, row: RepairItem) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2279,7 +2279,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   onExport(event: Event, selectedItem: RepairItem) {
     this.preventDefault(event);
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2307,7 +2307,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   previewImagesDialog(event: Event, index: number) {
     event.preventDefault(); // Prevents the form submission
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2574,92 +2574,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.section.length === this.referenceFullSections.length
   }
 
-  private subscribeToPurposeChangeEvent(
-    subscribeFn: (guid: string) => Observable<any>,
-    sot_guid: string
-  ) {
-    const subscription = subscribeFn(sot_guid).subscribe({
-      next: (response) => {
-        console.log('Received data:', response);
-        const data = response.data
-        if (this.sot && this.sot_guid) {
-          this.sot.tank_status_cv = data?.onPurposeChanged?.tank_status;
-          const purpose: any = data?.onPurposeChanged?.purpose;
-
-          if (purpose === 'STEAMING') {
-            // this.sot.purpose_steam = true;
-            // this.subs.sink = this.steamDS.getSteamForMovement(this.sot_guid).subscribe(data => {
-            //   if (this.steamDS.totalCount > 0) {
-            //     console.log(`steam: `, data)
-            //     this.steamItem = data;
-            //   }
-            // });
-            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementSteaming(this.sot_guid).subscribe(data => {
-              if (data.length > 0 && this.sot) {
-                console.log(`sot steam: `, data);
-                this.sot.purpose_steam = data[0].purpose_steam;
-                this.steamItem = data[0].steaming || [];
-              }
-            });
-          } else if (purpose === 'CLEANING') {
-            // this.sot.purpose_cleaning = true;
-            // this.subs.sink = this.residueDS.getResidueForMovement(this.sot_guid).subscribe(data => {
-            //   if (this.residueDS.totalCount > 0) {
-            //     console.log(`residue: `, data)
-            //     this.residueItem = data;
-            //   }
-            // });
-            // this.subs.sink = this.cleaningDS.getCleaningForMovement(this.sot_guid).subscribe(data => {
-            //   if (this.cleaningDS.totalCount > 0) {
-            //     console.log(`cleaning: `, data)
-            //     this.cleaningItem = data;
-            //   }
-            // });
-            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementCleaning(this.sot_guid).subscribe(data => {
-              if (data.length > 0 && this.sot) {
-                console.log(`sot cleaning: `, data);
-                this.sot.purpose_cleaning = data[0].purpose_cleaning;
-                this.residueItem = data[0].residue || [];
-                this.cleaningItem = data[0].cleaning || [];
-              }
-            });
-          } else if (purpose === 'REPAIR') {
-            // this.sot.purpose_repair_cv = purpose;
-            // this.subs.sink = this.repairDS.getRepairForMovement(this.sot_guid).subscribe(data => {
-            //   if (this.repairDS.totalCount > 0) {
-            //     console.log(`repair: `, data);
-            //     this.repairItem = data;
-            //     this.displayColumnChanged();
-            //   }
-            // });
-            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementRepair(this.sot_guid).subscribe(data => {
-              if (data.length > 0 && this.sot) {
-                console.log(`sot repair: `, data);
-                this.sot.purpose_repair_cv = data[0].purpose_repair_cv;
-                this.repairItem = data[0].repair || [];
-              }
-            });
-          } else if (purpose === 'STORAGE') {
-            this.subs.sink = this.sotRepairDS.getStoringOrderTankForMovementStorage(this.sot_guid).subscribe(data => {
-              if (data.length > 0 && this.sot) {
-                console.log(`sot storage: `, data);
-                this.sot.purpose_storage = data[0].purpose_storage;
-              }
-            });
-          }
-        }
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      },
-      complete: () => {
-        console.log('Subscription completed');
-      }
-    });
-
-    this.sotPurposeChangeSubscriptions.push(subscription);
-  }
-
   isNoPurpose(sot: StoringOrderTankItem, selectedPurpose: string): boolean {
     const purposes = {
       storage: sot.purpose_storage,
@@ -2890,7 +2804,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       .filter(item => item.job_order !== null && item.job_order !== undefined)
       .map(item => new JobOrderGO(item.job_order!));
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2941,7 +2855,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       .filter(item => item.job_order !== null && item.job_order !== undefined)
       .map(item => new JobOrderGO(item.job_order!));
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -2987,7 +2901,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
     const distinctJobOrders = new JobOrderGO(row?.job_order);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -3030,7 +2944,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   onRollbackCleaning(event: Event, row?: InGateCleaningItem) {
     this.preventDefault(event);
 
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -3089,7 +3003,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   onRollbackRepairQC(event: Event, row: RepairItem) {
     this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -3142,7 +3056,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   onOverwriteQC(event: Event, row: RepairItem) {
     this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -3229,13 +3143,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           console.log(`packageDepot: `, data)
           this.pdItem = data[0];
         });
-        // this.subscribeToPurposeChangeEvent(this.sotDS.subscribeToSotPurposeChange.bind(this.sotDS), this.sot_guid!);
         this.loadDataHandling_ti(this.sot?.tank_no!);
         this.loadDataHandling_LastPeriodicTestDetail(this.sot?.tank_no!);
         this.loadDataHandling_branch();
-        // if (this.sot?.in_gate?.length) {
-        //   this.getCustomerBufferPackage(this.sot?.storing_order?.customer_company?.guid!, this.sot?.in_gate?.[0]?.in_gate_survey?.tank_comp_guid);
-        // }
       }
     });
   }
@@ -3420,12 +3330,19 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           "invoice_no": this.sot?.billing_sot?.gout_billing?.invoice_no,
           "cost": this.sot?.billing_sot?.gate_out_cost
         },
+        {
+          "description": this.translatedLangText.STORAGE,
+          "job_no": this.sot?.release_job_no,
+          "billing_guid": this.sot?.billing_sot?.storage_billing_guid,
+          "invoice_no": this.sot?.billing_sot?.storage_billing?.storage_detail?.length,
+          "cost": BusinessLogicUtil.sumOfStorageDetails(this.sot?.billing_sot?.storage_billing?.storage_detail)
+        },
       ]
     }
   }
 
   onDownloadEir(isInGate: boolean = true) {
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
 
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -3453,7 +3370,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   exportResidueEst(event: Event, residueItem: ResidueItem) {
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
 
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -3697,14 +3614,19 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TRANSFER']);
   }
 
-  ViewResidueEstimateItem(row: ResidueItem) {
-    // this.preventDefault(event);  // Prevents the form submission
+  getViewDirection() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
+    return tempDirection;
+  }
+
+  ViewResidueEstimateItem(row: ResidueItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction = this.getViewDirection();
 
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
       width: '65vw',
@@ -3713,13 +3635,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         action: 'view',
         langText: this.langText,
         selectedItem: row
-      }
+      },
+      direction: tempDirection
     });
   }
 
   ViewRepairEstimateItem(row: RepairItem) {
     // this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
@@ -3738,7 +3661,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   ViewSteamEstimateItem(row: SteamItem) {
     // this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
+    let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {

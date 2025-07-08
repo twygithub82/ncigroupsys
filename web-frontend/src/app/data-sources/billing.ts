@@ -167,7 +167,6 @@ export class BillingItemStorageDetail extends BillingGo {
   public residue?: ResidueItem[];
   public steaming?: SteamItem[];
   public cleaning?: InGateCleaningItem[];
-  //public gateio_billing_sot?: BillingSOTItem[];
   public gin_billing_sot?: BillingSOTItem[];
   public gout_billing_sot?: BillingSOTItem[];
   public preinsp_billing_sot?: BillingSOTItem[];
@@ -210,7 +209,6 @@ export class BillingStorageDetail {
   public update_dt?: number;
   public billing?: BillingItem;
   constructor(item: Partial<BillingStorageDetail> = {}) {
-
     this.billing_guid = item.billing_guid;
     this.create_by = item.create_by;
     this.create_dt = item.create_dt;
@@ -226,9 +224,7 @@ export class BillingStorageDetail {
     this.update_by = item.update_by;
     this.update_dt = item.update_dt;
     this.billing = item.billing;
-
   }
-
 }
 
 export class BillingSOTGo {
@@ -332,14 +328,10 @@ export class BillingInputRequest {
   public remarks?: string;
   public status_cv?: string;
 
-  //public aspnetsuser?: UserItem;
-
   constructor(item: Partial<BillingInputRequest> = {}) {
-
     this.guid = item.guid;
     this.currency_guid = item.currency_guid;
     this.bill_to_guid = item.bill_to_guid;
-    // this.aspnetsuser = item.aspnetsuser;
     this.invoice_dt = item.invoice_dt;
     this.invoice_due = item.invoice_due;
     this.invoice_no = item.invoice_no;
