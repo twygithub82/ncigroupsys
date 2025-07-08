@@ -78,7 +78,7 @@ export class BusinessLogicUtil {
     static getLastLocation(sot: any, ig: any, tank_info: any, transfer?: any[]) {
         if (sot?.tank_status_cv === 'RELEASED') {
             if (transfer?.length) {
-                return this.getLatestTransfer(transfer);
+                return this.getLatestTransfer(transfer)?.location_to_cv;
             } else {
                 return ig?.yard_cv;
             }

@@ -21,7 +21,7 @@ import { TankItem } from './tank';
 import { TankInfoItem } from './tank-info';
 import { TariffCleaningItem } from './tariff-cleaning';
 import { TransferItem } from './transfer';
-import { Utility,TANK_STATUS_IN_YARD } from 'app/utilities/utility';
+import { Utility, TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 
 export class StoringOrderTank {
   public guid?: string;
@@ -5161,20 +5161,20 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       })
     );
   }
-  
-    updateSotTankInfo(tankInfoRequest: any): Observable<any> {
-      this.actionLoadingSubject.next(true);
-      return this.apollo.mutate({
-        mutation: UPDATE_SOT_TANK_INFO,
-        variables: {
-          tankInfoRequest
-        }
-      }).pipe(
-        finalize(() => {
-          this.actionLoadingSubject.next(false);
-        })
-      );
-    }
+
+  updateSotTankInfo(tankInfoRequest: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
+    return this.apollo.mutate({
+      mutation: UPDATE_SOT_TANK_INFO,
+      variables: {
+        tankInfoRequest
+      }
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
+  }
 
   subscribeToSotPurposeChange(sot_guid: string): Observable<any> {
     return this.apollo.subscribe({
@@ -5251,11 +5251,13 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getInCompleteCleaningCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any ={and: [
-      { purpose_cleaning: { eq: true } }, 
-      { tank_status_cv: { eq: "CLEANING" } },
-      { cleaning: { some: {status_cv: { in: ["JOB_IN_PROGRESS","APPROVED"] }} } }
-    ]};
+    let where: any = {
+      and: [
+        { purpose_cleaning: { eq: true } },
+        { tank_status_cv: { eq: "CLEANING" } },
+        { cleaning: { some: { status_cv: { in: ["JOB_IN_PROGRESS", "APPROVED"] } } } }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5273,14 +5275,16 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-   getInCompleteResidueCount(): Observable<number> {
+  getInCompleteResidueCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = {and:[
-      { purpose_cleaning: { eq: true } }, 
-      { tank_status_cv: { in: ["CLEANING","STORAGE" ]} },
-      { residue: { some: {status_cv: { in: ["PENDING","APPROVED"] }} } }
-      // { residue: { any: true } }
-    ]};
+    let where: any = {
+      and: [
+        { purpose_cleaning: { eq: true } },
+        { tank_status_cv: { in: ["CLEANING", "STORAGE"] } },
+        { residue: { some: { status_cv: { in: ["PENDING", "APPROVED"] } } } }
+        // { residue: { any: true } }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5299,14 +5303,16 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
   }
 
 
-   getRepairCustomerApprovalWaitingCount(): Observable<number> {
+  getRepairCustomerApprovalWaitingCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = {and:[
-      { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
-      // { tank_status_cv: { eq: "REPAIR" } },
-      { repair: { any: true } },
-      { status_cv: { in: ["PENDING"] } }
-    ]};
+    let where: any = {
+      and: [
+        { purpose_repair_cv: { in: ["OFFHIRE", "REPAIR"] } },
+        // { tank_status_cv: { eq: "REPAIR" } },
+        { repair: { any: true } },
+        { status_cv: { in: ["PENDING"] } }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5324,13 +5330,15 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-   getRepairEstimateWaitingCount(): Observable<number> {
+  getRepairEstimateWaitingCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = {and:[
-      { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
-      { tank_status_cv: { in: ["REPAIR","STORAGE"] } },
-      { or:[ {repair: { any: false }} , { repair: { all: {status_cv: { in: ["CANCELED"] }} } }] }
-    ]};
+    let where: any = {
+      and: [
+        { purpose_repair_cv: { in: ["OFFHIRE", "REPAIR"] } },
+        { tank_status_cv: { in: ["REPAIR", "STORAGE"] } },
+        { or: [{ repair: { any: false } }, { repair: { all: { status_cv: { in: ["CANCELED"] } } } }] }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5350,11 +5358,13 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
 
   getRepairQCWaitingCount(): Observable<number> {
     this.loadingSubject.next(true);
-    let where: any = {and:[
-      { purpose_repair_cv: { in: ["OFFHIRE","REPAIR"] } }, 
-      { tank_status_cv: { eq: "REPAIR" } },
-      { repair: { some: {status_cv: { in: ["COMPLETED"] }} } }
-    ]};
+    let where: any = {
+      and: [
+        { purpose_repair_cv: { in: ["OFFHIRE", "REPAIR"] } },
+        { tank_status_cv: { eq: "REPAIR" } },
+        { repair: { some: { status_cv: { in: ["COMPLETED"] } } } }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5372,16 +5382,18 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
-getTotalGateInTodayCount(): Observable<number> {
+  getTotalGateInTodayCount(): Observable<number> {
     this.loadingSubject.next(true);
-    var starDt=Utility.convertDate(new Date());
-    var endDt=Utility.convertDate(new Date(),true,true);
-    let where: any = {and:[
-     { in_gate: { some:{eir_dt: { gte: starDt, lte: endDt  } }}}, 
-     // {or:[{ out_gate: { some:{eir_dt: { neq: 0 } }}}, { out_gate: { some:{eir_dt: { neq: null } }}}]},
-     { in_gate:{some:{eir_status_cv:{in:['PUBLISHED']}}}},
-     // { tank_status_cv: { eq: "RELEASED" } }
-    ]};
+    var starDt = Utility.convertDate(new Date());
+    var endDt = Utility.convertDate(new Date(), true, true);
+    let where: any = {
+      and: [
+        { in_gate: { some: { eir_dt: { gte: starDt, lte: endDt } } } },
+        // {or:[{ out_gate: { some:{eir_dt: { neq: 0 } }}}, { out_gate: { some:{eir_dt: { neq: null } }}}]},
+        { in_gate: { some: { eir_status_cv: { in: ['PUBLISHED'] } } } },
+        // { tank_status_cv: { eq: "RELEASED" } }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5401,14 +5413,16 @@ getTotalGateInTodayCount(): Observable<number> {
 
   getTotalGateOutTodayCount(): Observable<number> {
     this.loadingSubject.next(true);
-    var starDt=Utility.convertDate(new Date());
-    var endDt=Utility.convertDate(new Date(),true,true);
-    let where: any = {and:[
-     { out_gate: { some:{eir_dt: { gte: starDt, lte: endDt  } }}}, 
-     // {or:[{ out_gate: { some:{eir_dt: { neq: 0 } }}}, { out_gate: { some:{eir_dt: { neq: null } }}}]},
-     //{ out_gate:{some:{eir_status_cv:{in:['PUBLISHED']}}}},
-      { tank_status_cv: { eq: "RELEASED" } }
-    ]};
+    var starDt = Utility.convertDate(new Date());
+    var endDt = Utility.convertDate(new Date(), true, true);
+    let where: any = {
+      and: [
+        { out_gate: { some: { eir_dt: { gte: starDt, lte: endDt } } } },
+        // {or:[{ out_gate: { some:{eir_dt: { neq: 0 } }}}, { out_gate: { some:{eir_dt: { neq: null } }}}]},
+        //{ out_gate:{some:{eir_status_cv:{in:['PUBLISHED']}}}},
+        { tank_status_cv: { eq: "RELEASED" } }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5428,12 +5442,14 @@ getTotalGateInTodayCount(): Observable<number> {
 
   getTotalTankInYardCount(): Observable<number> {
     this.loadingSubject.next(true);
-    var starDt=Utility.convertDate(new Date());
-    var endDt=Utility.convertDate(new Date(),true,true);
-    let where: any = {and:[
-      {or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-      { tank_status_cv: { in: TANK_STATUS_IN_YARD  } }
-    ]};
+    var starDt = Utility.convertDate(new Date());
+    var endDt = Utility.convertDate(new Date(), true, true);
+    let where: any = {
+      and: [
+        { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
+        { tank_status_cv: { in: TANK_STATUS_IN_YARD } }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5453,18 +5469,25 @@ getTotalGateInTodayCount(): Observable<number> {
 
   getTotalTankInSteamingCount(): Observable<number> {
     this.loadingSubject.next(true);
-    var starDt=Utility.convertDate(new Date());
-    var endDt=Utility.convertDate(new Date(),true,true);
-    let where: any = {and:[
-      { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-      { purpose_steam:{eq:true}},
-      { tank_status_cv: { eq: 'STEAM'  } },
-      { steaming: { some: {and: [
-            { status_cv: { in: ["JOB_IN_PROGRESS"] } },
-            { estimate_no: { startsWith: "SE" } }
-          ]}}
-      }
-    ]};
+    var starDt = Utility.convertDate(new Date());
+    var endDt = Utility.convertDate(new Date(), true, true);
+    let where: any = {
+      and: [
+        { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
+        { purpose_steam: { eq: true } },
+        { tank_status_cv: { eq: 'STEAM' } },
+        {
+          steaming: {
+            some: {
+              and: [
+                { status_cv: { in: ["JOB_IN_PROGRESS"] } },
+                { estimate_no: { startsWith: "SE" } }
+              ]
+            }
+          }
+        }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5484,18 +5507,25 @@ getTotalGateInTodayCount(): Observable<number> {
 
   getTotalSteamingWaitingCount(): Observable<number> {
     this.loadingSubject.next(true);
-    var starDt=Utility.convertDate(new Date());
-    var endDt=Utility.convertDate(new Date(),true,true);
-    let where: any = {and:[
-      { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-      { purpose_steam:{eq:true}},
-      { tank_status_cv: { in: ['STEAM', 'STORAGE']  } },
-      { steaming: { some: {and: [
-            { status_cv: { in: ["PENDING","APPROVED"] } },
-            // { estimate_no: { startsWith: "SE" } }
-          ]}}
-      }
-    ]};
+    var starDt = Utility.convertDate(new Date());
+    var endDt = Utility.convertDate(new Date(), true, true);
+    let where: any = {
+      and: [
+        { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
+        { purpose_steam: { eq: true } },
+        { tank_status_cv: { in: ['STEAM', 'STORAGE'] } },
+        {
+          steaming: {
+            some: {
+              and: [
+                { status_cv: { in: ["PENDING", "APPROVED"] } },
+                // { estimate_no: { startsWith: "SE" } }
+              ]
+            }
+          }
+        }
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5513,21 +5543,24 @@ getTotalGateInTodayCount(): Observable<number> {
       );
   }
 
-   getTotalTankTestDueCount(): Observable<number> {
+  getTotalTankTestDueCount(): Observable<number> {
     this.loadingSubject.next(true);
     const today = new Date();
     const pastLimit = new Date(today);
     pastLimit.setFullYear(today.getFullYear() - 2);
     pastLimit.setMonth(pastLimit.getMonth() - 6); // 0.5 year = 6 months
-    var dueDt=Utility.convertDate(pastLimit,true,true);
-    
-    let where: any = {and:[
-      { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-      { tank_info:
-        {test_dt:{lte:dueDt}}
-      }
-     
-    ]};
+    var dueDt = Utility.convertDate(pastLimit, true, true);
+
+    let where: any = {
+      and: [
+        { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
+        {
+          tank_info:
+            { test_dt: { lte: dueDt } }
+        }
+
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5549,16 +5582,18 @@ getTotalGateInTodayCount(): Observable<number> {
     this.loadingSubject.next(true);
     const today = new Date();
     const pastLimit = new Date(today);
-   
+
     pastLimit.setDate(pastLimit.getDate() + 3); // 0.5 year = 6 months
-    var dueDt=Utility.convertDate(pastLimit,true,true);
-    
-    let where: any = {and:[
-      { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-      {release_order_sot: { some: { release_order: { release_dt: {lte:dueDt } } } } }
-      
-     
-    ]};
+    var dueDt = Utility.convertDate(pastLimit, true, true);
+
+    let where: any = {
+      and: [
+        { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] },
+        { release_order_sot: { some: { release_order: { release_dt: { lte: dueDt } } } } }
+
+
+      ]
+    };
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_COUNT,
@@ -5575,6 +5610,4 @@ getTotalGateInTodayCount(): Observable<number> {
         })
       );
   }
-
-
 }

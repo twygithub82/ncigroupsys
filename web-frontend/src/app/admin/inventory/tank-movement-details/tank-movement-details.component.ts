@@ -77,6 +77,7 @@ import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ResidueEstimateFormDialogComponent_View } from '../preview/residue-estimate/form-dialog.component';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
 import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
@@ -95,7 +96,7 @@ import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/ren
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
-import {ResidueEstimateFormDialogComponent_View} from '../preview/residue-estimate/form-dialog.component';
+import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 
 
 @Component({
@@ -505,7 +506,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     INVALID: 'COMMON-FORM.INVALID',
     EXISTED: 'COMMON-FORM.EXISTED',
     REOWNERSHIP: 'COMMON-FORM.REOWNERSHIP',
-    AMOUNT_$:"COMMON-FORM.AMOUNT-$",
+    AMOUNT_$: "COMMON-FORM.AMOUNT-$",
     DEPOT_COST: "MENUITEMS.TARIFF.LIST.TARIFF-DEPOT"
   }
 
@@ -523,6 +524,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   repairItem: RepairItem[] = [];
   bookingList: BookingItem[] = [];
   schedulingList: SchedulingItem[] = [];
+  schedulingSotList: SchedulingSotItem[] = [];
   surveyList: SurveyDetailItem[] = [];
   transferList: TransferItem[] = [];
   latestSurveyDetailItem: SurveyDetailItem[] = [];
@@ -564,6 +566,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   repairPartDS: RepairPartDS;
   bkDS: BookingDS;
   schedulingDS: SchedulingDS;
+  schedulingSotDS: SchedulingSotDS;
   surveyDS: SurveyDetailDS;
   tiDS: TankInfoDS;
   transferDS: TransferDS;
@@ -605,7 +608,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   subgroupNameCvList: CodeValuesItem[] = []
   damageCodeCvList: CodeValuesItem[] = []
   repairCodeCvList: CodeValuesItem[] = []
-
   storageCalCvList: CodeValuesItem[] = [];
   processStatusCvList: CodeValuesItem[] = [];
   tankStatusCvList: CodeValuesItem[] = [];
@@ -728,6 +730,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.repairPartDS = new RepairPartDS(this.apollo);
     this.bkDS = new BookingDS(this.apollo);
     this.schedulingDS = new SchedulingDS(this.apollo);
+    this.schedulingSotDS = new SchedulingSotDS(this.apollo);
     this.surveyDS = new SurveyDetailDS(this.apollo);
     this.tiDS = new TankInfoDS(this.apollo);
     this.transferDS = new TransferDS(this.apollo);
@@ -2763,7 +2766,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canChangeCustomer() {
-    return false;
     // check whether any billing done
     const billing_sot = this.sot?.billing_sot;
     if (billing_sot?.lon_billing_guid || billing_sot?.loff_billing_guid || billing_sot?.preinsp_billing_guid || billing_sot?.gin_billing_guid || billing_sot?.gout_billing_guid) {
@@ -3329,11 +3331,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  loadDataHandling_scheduling(sot_guid: string) {
-    this.subs.sink = this.schedulingDS.getSchedulingForMovement(sot_guid).subscribe(data => {
+  loadDataHandling_schedulingSot(sot_guid: string) {
+    this.subs.sink = this.schedulingSotDS.getSchedulingSotForMovement(sot_guid).subscribe(data => {
       if (data.length > 0) {
-        console.log(`scheduling: `, data);
-        this.schedulingList = data;
+        console.log(`scheduling Sot: `, data);
+        this.schedulingSotList = data;
       }
     });
   }
@@ -3504,7 +3506,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       this.loadDataHandling_cleaning(this.sot_guid);
       this.loadDataHandling_repair(this.sot_guid);
       this.loadDataHandling_booking(this.sot_guid);
-      this.loadDataHandling_scheduling(this.sot_guid);
+      this.loadDataHandling_schedulingSot(this.sot_guid);
       this.loadDataHandling_surveyDetail(this.sot_guid);
       this.loadDataHandling_transfer(this.sot_guid);
       this.loadDataHandling_tariffDepot();
@@ -3706,7 +3708,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
       width: '65vw',
-      maxWidth:'1000px',
+      maxWidth: '1000px',
       data: {
         action: 'view',
         langText: this.langText,
@@ -3715,41 +3717,41 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-   ViewRepairEstimateItem(row: RepairItem) {
-      // this.preventDefault(event);  // Prevents the form submission
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
-      }
-  
-      const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
-        width: '75vw',
-        data: {
-          action: 'view',
-          langText: this.langText,
-          selectedItem: row
-        }
-      });
+  ViewRepairEstimateItem(row: RepairItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
-    
-   ViewSteamEstimateItem(row: SteamItem) {
-      // this.preventDefault(event);  // Prevents the form submission
-      let tempDirection: Direction;
-      if (localStorage.getItem('isRtl') === 'true') {
-        tempDirection = 'rtl';
-      } else {
-        tempDirection = 'ltr';
+
+    const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
+      width: '75vw',
+      data: {
+        action: 'view',
+        langText: this.langText,
+        selectedItem: row
       }
-  
-      const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
-        width: '75vw',
-        data: {
-          action: 'view',
-          langText: this.langText,
-          selectedItem: row
-        }
-      });
+    });
+  }
+
+  ViewSteamEstimateItem(row: SteamItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+
+    const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
+      width: '75vw',
+      data: {
+        action: 'view',
+        langText: this.langText,
+        selectedItem: row
+      }
+    });
+  }
 }

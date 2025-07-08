@@ -344,7 +344,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         }
       }
     };
-
+    
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
       where.or = [
@@ -358,9 +358,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         return item.guid;
       });
       where.last_cargo_guid = { in: cond };
-
     }
-
 
     if (this.selectedNames.length > 0) {
       var cond = this.selectedNames.map((item) => {

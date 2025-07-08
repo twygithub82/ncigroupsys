@@ -254,7 +254,7 @@ export const GET_SCHEDULING_FOR_MOVEMENT = gql`
         status_cv
         update_by
         update_dt
-        scheduling_sot(where: { sot_guid: { eq: $sot_guid } }) {
+        scheduling_sot(where: { sot_guid: { eq: $sot_guid }, delete_dt: { eq: null } }) {
           guid
           scheduling_guid
           sot_guid
@@ -418,23 +418,33 @@ export class SchedulingDS extends BaseDataSource<SchedulingItem> {
   }
 
   addScheduling(scheduling: any, scheduling_SotList: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_SCHEDULING,
       variables: {
         scheduling,
         scheduling_SotList
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateScheduling(scheduling: any, scheduling_SotList: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_SCHEDULING,
       variables: {
         scheduling,
         scheduling_SotList
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   canCancel(schedule: SchedulingItem | undefined): boolean {

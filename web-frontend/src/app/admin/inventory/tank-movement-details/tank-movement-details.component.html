@@ -1915,47 +1915,54 @@
                                 </span>
                               </ng-template>
                               <div class="responsive_table">
-                                <table mat-table [dataSource]="schedulingList" matSort
+                                <table mat-table [dataSource]="schedulingSotList" matSort
                                   class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                                   <ng-container matColumnDef="id">
                                     <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                     <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="book_type_cv">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                       {{translatedLangText.BOOKING_TYPE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                       <span
-                                        class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                        class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row?.scheduling?.book_type_cv)}}
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="scheduling_dt">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                      {{translatedLangText.DATE}}
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.SCHEDULING_DATE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
-                                      <span class="mobile-tab-label">{{translatedLangText.DATE}}:</span>
-                                      <span>{{displayDate(row?.scheduling_sot?.[0]?.scheduling_dt) ?? "-"}}</span>
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span class="mobile-tab-label">{{translatedLangText.SCHEDULING_DATE}}:</span>
+                                      <span>{{displayDate(row?.scheduling_dt) ?? "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="reference">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                       {{translatedLangText.REFERENCE}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                       <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
-                                      <span>{{row?.scheduling_sot?.[0]?.reference || "-"}}</span>
+                                      <span>{{row?.reference || "-"}}</span>
                                     </mat-cell>
                                   </ng-container>
                                   <ng-container matColumnDef="status_cv">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                      <!--Purposely do not display the header-->
-                                      <!-- {{translatedLangText.STATUS}} -->
+                                    <mat-header-cell mat-header-cell *matHeaderCellDef
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      {{translatedLangText.STATUS}}
                                     </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
-                                      <!--Purposely do not display the column value-->
-                                      <!-- <span class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}} -->
+                                    <mat-cell mat-cell *matCellDef="let row"
+                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                      <span
+                                        class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
                                     </mat-cell>
                                   </ng-container>
                                   <mat-header-row *matHeaderRowDef="displayedColumnsScheduling"></mat-header-row>
@@ -1965,7 +1972,7 @@
                                 </table>
                               </div>
                               <!-- No result -->
-                              @if (!(schedulingDS.loading$ | async) && !schedulingList.length) {
+                              @if (!(schedulingSotDS.loading$ | async) && !schedulingSotList.length) {
                               <div class="no-results">
                                 <mat-divider></mat-divider>
                                 <div class="no-results m-l-20 pt-3">
@@ -1974,7 +1981,7 @@
                               </div>
                               }
                               <!-- Loading spinner -->
-                              @if (schedulingDS.loading$ | async) {
+                              @if (schedulingSotDS.loading$ | async) {
                               <div class="tbl-spinner">
                                 <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                                 </mat-progress-spinner>
@@ -2073,9 +2080,10 @@
                           </div>
                           }
                           }
+
                           @if (tab.component == 'scheduling') {
                           <div class="responsive_table">
-                            <table mat-table [dataSource]="schedulingList" matSort
+                            <table mat-table [dataSource]="schedulingSotList" matSort
                               class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
                               <ng-container matColumnDef="id">
                                 <mat-header-cell *matHeaderCellDef></mat-header-cell>
@@ -2089,7 +2097,7 @@
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span
-                                    class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row.book_type_cv)}}
+                                    class="mobile-tab-label">{{translatedLangText.BOOKING_TYPE}}:</span>{{getBookingTypeDescription(row?.scheduling?.book_type_cv)}}
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="scheduling_dt">
@@ -2100,7 +2108,7 @@
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span class="mobile-tab-label">{{translatedLangText.SCHEDULING_DATE}}:</span>
-                                  <span>{{displayDate(row?.scheduling_sot?.[0]?.scheduling_dt) ?? "-"}}</span>
+                                  <span>{{displayDate(row?.scheduling_dt) ?? "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="reference">
@@ -2111,7 +2119,7 @@
                                 <mat-cell mat-cell *matCellDef="let row"
                                   [ngClass]="'tbl-col-width-per-6-xl tbl-col-width-per-6-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                   <span class="mobile-tab-label">{{translatedLangText.REFERENCE}}:</span>
-                                  <span>{{row?.scheduling_sot?.[0]?.reference || "-"}}</span>
+                                  <span>{{row?.reference || "-"}}</span>
                                 </mat-cell>
                               </ng-container>
                               <ng-container matColumnDef="status_cv">
@@ -2132,7 +2140,7 @@
                             </table>
                           </div>
                           <!-- No result -->
-                          @if (!(schedulingDS.loading$ | async) && !schedulingList.length) {
+                          @if (!(schedulingSotDS.loading$ | async) && !schedulingSotList.length) {
                           <div class="no-results">
                             <mat-divider></mat-divider>
                             <div class="no-results m-l-20 pt-3">
@@ -2141,7 +2149,7 @@
                           </div>
                           }
                           <!-- Loading spinner -->
-                          @if (schedulingDS.loading$ | async) {
+                          @if (schedulingSotDS.loading$ | async) {
                           <div class="tbl-spinner">
                             <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                             </mat-progress-spinner>
@@ -2304,13 +2312,13 @@
                     </mat-panel-title>
                   </mat-expansion-panel-header>
                   <div class="body p-l-0 p-r-0">
-                    @if ((bkDS.loading$ | async) || (schedulingDS.loading$ | async)) {
+                    @if ((transferDS.loading$ | async)) {
                     <div class="tbl-spinner">
                       <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                       </mat-progress-spinner>
                     </div>
                     }
-                    @if (!(bkDS.loading$ | async) && !(schedulingDS.loading$ | async)) {
+                    @if (!(transferDS.loading$ | async)) {
                     <mat-card-content>
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">

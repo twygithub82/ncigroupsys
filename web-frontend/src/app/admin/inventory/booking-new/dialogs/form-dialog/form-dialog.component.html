@@ -57,7 +57,8 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="capacity">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
+                <mat-header-cell mat-header-cell *matHeaderCellDef
+                  [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
                   {{data.translatedLangText.CAPACITY}}
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
@@ -66,7 +67,8 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="tare_weight">
-                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
+                <mat-header-cell mat-header-cell *matHeaderCellDef
+                  [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
                   {{data.translatedLangText.TARE_WEIGHT}}
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
@@ -209,9 +211,15 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="submit()">
+        <button mat-flat-button color="primary" class="me-1" (click)="submit()"
+          [disabled]="(bkDS.actionLoading$ | async)">
           <mat-icon>
+            @if (!(bkDS.actionLoading$ | async)) {
             save
+            }
+            @else {
+            loading
+            }
           </mat-icon>
           {{data.translatedLangText[getSaveBtnDescription()]}}
         </button>
