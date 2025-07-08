@@ -767,7 +767,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '30vw',
+      width: '380px',
       data: {
         action: "EDIT",
         item: team.jobOrderItem,

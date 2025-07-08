@@ -272,7 +272,7 @@ export class JobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapter im
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private modulePackageService: ModulePackageService,
+    public modulePackageService: ModulePackageService,
     private notificationService: SingletonNotificationService
   ) {
     super();

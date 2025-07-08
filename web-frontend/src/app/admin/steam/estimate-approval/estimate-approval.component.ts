@@ -312,7 +312,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      //width: '1000px',
+      width: '380px',
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.CONFIRM_CANCEL,
