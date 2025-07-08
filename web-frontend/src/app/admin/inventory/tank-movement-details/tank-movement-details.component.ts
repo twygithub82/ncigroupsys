@@ -77,7 +77,7 @@ import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ResidueEstimateFormDialogComponent_View } from '../preview/residue-estimate/form-dialog.component';
+import { ResidueEstimateFormDialogComponent_View } from '@shared/preview/preview_residue-estimate/form-dialog.component';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
 import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
@@ -3599,10 +3599,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TRANSFER']);
   }
 
-  ViewResidueEstimateItem(row: ResidueItem) {
+  getViewDirection() {
     // this.preventDefault(event);  // Prevents the form submission
-    let r = new ResidueItem(row);
-    r.storing_order_tank=this.sot;
+   
     //r.storing_order_tank.customer_company=new CustomerCompanyItem(this.sot?.customer_company);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -3615,6 +3614,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   ViewResidueEstimateItem(row: ResidueItem) {
     // this.preventDefault(event);  // Prevents the form submission
+
+     let r = new ResidueItem(row);
+    r.storing_order_tank=this.sot;
+
     let tempDirection: Direction = this.getViewDirection();
 
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
