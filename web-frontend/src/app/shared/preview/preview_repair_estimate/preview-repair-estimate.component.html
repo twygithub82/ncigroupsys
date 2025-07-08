@@ -5,9 +5,6 @@
         <h4>{{dialogTitle}}</h4>
       </div>
     </div>
-    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
-      <mat-icon>close</mat-icon>
-    </button> -->
   </div>
   <div mat-dialog-content class="content-block">
     <div class="card">
@@ -471,7 +468,10 @@
                     @if (isOwner) {
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0 ps-4 border text-center div-bg-blue">
+                          <span class="font-bold">{{translatedLangText.LABOUR}}</span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.OWNER}}</span>
                         </div>
                       </div>
@@ -483,7 +483,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_owner_hour_est')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_owner_hour_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -564,7 +564,10 @@
                     </div>
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0 ps-4 border text-center div-bg-blue">
+                          <span class="font-bold">{{translatedLangText.LABOUR}}</span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.LESSEE}}</span>
                         </div>
                       </div>
@@ -576,7 +579,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_lessee_hour_est')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_lessee_hour_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div
@@ -658,7 +661,10 @@
                     }
                     <div class="col-xl col-lg col-md col-sm m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0 ps-4 border text-center div-bg-blue">
+                          <span class="font-bold">{{translatedLangText.LABOUR}}</span>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.TOTAL}}</span>
                         </div>
                       </div>
@@ -670,7 +676,7 @@
                                 <div
                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                   <div class="table-label cost-label">
-                                    <span>$</span><span>{{repairForm?.get('total_hour_est')?.value}}</span>
+                                    <span></span><span>{{repairForm?.get('total_hour_est')?.value}}</span>
                                   </div>
                                 </div>
                                 <div

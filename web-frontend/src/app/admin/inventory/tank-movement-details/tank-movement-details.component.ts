@@ -1267,27 +1267,12 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   repairDialog(event: Event, repair: RepairItem) {
     this.preventDefault(event);
-    // if (repair.status_cv === 'PENDING' || repair.status_cv === 'CANCELED') return;
-    // this.router.navigate(['/admin/repair/estimate/edit', this.sot?.guid, repair.guid], {
-    //   state: { from: this.router.url } // store current route
-    // });
-
-    // if (!this.modulePackageService.isGrowthPackage() && !this.modulePackageService.isCustomizedPackage()) return;
     let tempDirection: Direction = this.getViewDirection();
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
     const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
-      // width: '794px',
       height: '90vh',
-      // position: { top: '-9999px', left: '-9999px' },
       data: {
         repair_guid: repair?.guid,
       },
-      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
@@ -2788,9 +2773,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
-  canOverwriteRepairApproval(row: SteamItem) {
+  canOverwriteRepairApproval(row: RepairItem) {
     const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
-    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
+    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
   onRollbackSteamingJobs(event: Event, row: SteamItem) {

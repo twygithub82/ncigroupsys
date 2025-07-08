@@ -1770,16 +1770,16 @@
                               </table>
                             </div>
                             <!-- No result -->
-                            @if (!(repairDS.loading$ | async) && !repairItem.length) {
-                            <div class="no-results">
+                            @if (!(sotDS.loading$ | async) && !sotDepotCostDetails.length) {
+                            <!-- <div class="no-results">
                               <mat-divider></mat-divider>
                               <div class="no-results m-l-20 pt-3">
                                 <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                               </div>
-                            </div>
+                            </div> -->
                             }
                             <!-- Loading spinner -->
-                            @if (repairDS.loading$ | async) {
+                            @if (sotDS.loading$ | async) {
                             <div class="tbl-spinner">
                               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
                               </mat-progress-spinner>

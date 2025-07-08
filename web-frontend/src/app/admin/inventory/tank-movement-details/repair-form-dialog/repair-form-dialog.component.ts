@@ -18,7 +18,6 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
 import { provideNgxMask } from 'ngx-mask';
 
-
 export interface DialogData {
   action?: string;
   translatedLangText?: any;
