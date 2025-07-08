@@ -203,12 +203,12 @@
               </div>
             </div>
           </div>
-          <div class="row justify-content-center">
+          <div class="row">
             <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12">
               <div class="card">
                 <div class="header">
                   <h2>
-                    {{translatedLangText.OUT_GATE}}
+                    {{translatedLangText.OUT_GATE}} {{translatedLangText.DETAILS}}
                   </h2>
                 </div>
                 <div class="body">
@@ -237,7 +237,7 @@
                           </div>
                         </div>
                         <div class="row">
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
                               <input matInput formControlName="vehicle_no" class="text-uppercase"
@@ -245,18 +245,6 @@
                               <!-- @if (outGateForm?.get('vehicle_no')?.hasError('required')) {
                                   <mat-error>
                                     {{translatedLangText.VEHICLE_NO}} {{translatedLangText.SO_REQUIRED}}
-                                  </mat-error>
-                                  } -->
-                            </mat-form-field>
-                          </div>
-                          <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
-                            <mat-form-field class="example-full-width">
-                              <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
-                              <input matInput formControlName="driver_name" class="text-uppercase"
-                                (input)="onAlphaOnly($event, 'driver_name')" required>
-                              <!-- @if (outGateForm?.get('driver_name')?.hasError('required')) {
-                                  <mat-error>
-                                    {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
                                   </mat-error>
                                   } -->
                             </mat-form-field>
@@ -285,6 +273,20 @@
                             <mat-form-field class="example-full-width">
                               <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                               <input matInput formControlName="release_job_no" required>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
+                              <input matInput formControlName="driver_name" class="text-uppercase"
+                                (input)="onAlphaOnly($event, 'driver_name')" required>
+                              <!-- @if (outGateForm?.get('driver_name')?.hasError('required')) {
+                                  <mat-error>
+                                    {{translatedLangText.DRIVER_NAME}} {{translatedLangText.SO_REQUIRED}}
+                                  </mat-error>
+                                  } -->
                             </mat-form-field>
                           </div>
                         </div>

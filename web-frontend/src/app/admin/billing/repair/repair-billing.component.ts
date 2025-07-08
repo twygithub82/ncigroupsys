@@ -1023,8 +1023,6 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
     // Process each item in sotRepList
     this.sotRepList?.forEach(res => {
-      var r: any = res;
-
       // Filter repair items where owner_enable is true
       let repWithOwnerList = res.repair?.filter(r => r.owner_enable);
       if (repWithOwnerList && repWithOwnerList.length > 0) {
@@ -1046,8 +1044,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         // Push ownerList items into res.repair
         ownerList.forEach(updatedItem => {
           res.repair?.push(updatedItem); // Add each updated item to res.repair
-
         });
+        
         res.repair?.forEach(repItm => {
           this.calculateOwnerAndCustomerNetCost(repItm);
         });
@@ -1283,7 +1281,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       height: '90vh',
       // position: { top: '-9999px', left: '-9999px' },
       data: {
-        repair_guid: repair?.guid,
+        repair_guid: repair?.guid?.replace("_1", ""),
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

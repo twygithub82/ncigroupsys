@@ -227,39 +227,59 @@ export class BookingDS extends BaseDataSource<BookingItem> {
   }
 
   addBooking(booking: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: ADD_BOOKING,
       variables: {
         booking
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   updateBooking(bookingList: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: UPDATE_BOOKING,
       variables: {
         bookingList
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   cancelBooking(bookingList: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: CANCEL_BOOKING,
       variables: {
         bookingList
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   deleteBooking(bkGuids: any): Observable<any> {
+    this.actionLoadingSubject.next(true);
     return this.apollo.mutate({
       mutation: DELETE_BOOKING,
       variables: {
         bkGuids
       }
-    });
+    }).pipe(
+      finalize(() => {
+        this.actionLoadingSubject.next(false);
+      })
+    );
   }
 
   canCancel(booking: BookingItem): boolean {

@@ -1284,11 +1284,7 @@ export const TANK_STATUS_IN_YARD = [
   'OUT_SURVEY',
 ]
 
-
-
 export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE", "ASSIGNED", "JOB_IN_PROGRESS"];
-
-//export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE","APPROVE","COMPLETE","ASSIGNED","JOB_IN_PROGRESS"]
 
 export const TANK_STATUS_POST_IN_YARD = [
   'RELEASED',
@@ -1301,11 +1297,11 @@ export const BOOLEAN_YES_NO = [
 
 export const DEFAULT_COUNTRY_CODE = { country: 'Singapore', code: '+65', iso: 'sg', flagUrl: 'https://flagcdn.com/24x18/sg.png' };
 
-export const pageSizeInfo = {pageSize: [25, 50, 75, 100], defaultSize: 25};
+export const pageSizeInfo = { pageSize: [25, 50, 75, 100], defaultSize: 25 };
 
-export const maxLengthDisplaySingleSelectedItem=45;
+export const maxLengthDisplaySingleSelectedItem = 45;
 
-export const selected_job_task_color ="bg-lighter-orange";
+export const selected_job_task_color = "bg-lighter-orange";
 
-export const unassigned_icon ="chip_extraction";
+export const unassigned_icon = "chip_extraction";
 

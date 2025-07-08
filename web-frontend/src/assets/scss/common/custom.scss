@@ -2381,6 +2381,11 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   color: #000000;
 }
 
+.prefix-text {
+  font-size: 0.9em !important; /* Or any other desired size like 12px, etc. */
+  font-family: Calibri, sans-serif !important;
+}
+
 .option-country-flag {
   margin-right: 6px;
 }

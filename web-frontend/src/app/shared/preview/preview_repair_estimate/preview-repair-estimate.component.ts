@@ -472,7 +472,6 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
       return rep;
     });
     console.log(this.repairItem!.repair_part);
-    this.updateData(this.repairItem!.repair_part);
     this.repairForm?.patchValue({
       guid: this.repairItem!.guid,
       remarks: this.repairItem!.remarks,
@@ -480,6 +479,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
       labour_cost_discount: this.repairItem!.labour_cost_discount,
       material_cost_discount: this.repairItem!.material_cost_discount
     });
+    this.updateData(this.repairItem!.repair_part);
 
     this.repairForm?.get('surveyor_id')?.disable();
     this.repairForm?.get('labour_cost_discount')?.disable();
@@ -524,24 +524,6 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     row.owner = !(row.owner || false);
     this.calculateCost();
     this.calculateCostEst();
-  }
-
-  undoTempAction(row: any[], actionToBeRemove: string) {
-    const data: any[] = [...this.repList];
-    row.forEach((newItem: any) => {
-      const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-      if (index !== -1) {
-        data[index] = {
-          ...data[index],
-          ...newItem,
-          actions: Array.isArray(data[index].actions!)
-            ? data[index].actions!.filter((action: any) => action !== actionToBeRemove)
-            : []
-        };
-      }
-    });
-    this.updateData(data);
   }
 
   // context menu
@@ -810,7 +792,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
     const labourDiscount = this.repairForm?.getRawValue()?.labour_cost_discount;
     const matDiscount = this.repairForm?.getRawValue()?.material_cost_discount;
-
+    
     let total_hour = 0;
     let total_labour_cost = 0;
     let total_mat_cost = 0;
@@ -881,8 +863,8 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
   calculateCostEst() {
     const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
     const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-    const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
+    const labourDiscount = this.repairForm?.getRawValue()?.labour_cost_discount;
+    const matDiscount = this.repairForm?.getRawValue()?.material_cost_discount;
 
     let total_hour = 0;
     let total_labour_cost = 0;

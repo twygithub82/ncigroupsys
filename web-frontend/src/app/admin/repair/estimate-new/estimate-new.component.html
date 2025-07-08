@@ -23,51 +23,31 @@
             @if (!(sotDS.loading$ | async)) {
             <mat-card-content>
               <div class="row justify-content-center">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5">
                       <span class="value-display-info">{{sotItem?.tank_no || "-"}}</span>
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                      <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5">
                       <span class="value-display-info">
-                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
-                      </span>
-                    </div>
-                  </div>
-                  <div class="row right-align-display">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                      <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <span class="value-display-info">
-                        {{displayDate(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
-                      </span>
-                    </div>
-                  </div>
-                  <div class="row right-align-display">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                      <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <span class="value-display-info">
-                        {{displayTankPurpose(sotItem!)}}
+                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
                       </span>
                     </div>
                   </div>
                   @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                   <div class="row right-align-display">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5 pt-2 pb-2">
                       <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex align-items-center">
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5 d-flex align-items-center">
                       <div class="d-flex align-items-center">
                         <span class="value-display-info me-2">
                           {{ccDS.displayName(sotItem?.customer_company)}}
@@ -80,42 +60,64 @@
                   </div>
                   }
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
-                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                      <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5">
                       <span class="value-display-info">
-                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
+                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
                       </span>
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
+                    </div>
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5">
+                      <span class="value-display-info">
+                        {{displayDate(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3 m-b-5">
                       <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 m-b-5">
                       <span class="value-display-info">
                         {{sotItem?.tariff_cleaning?.cargo}}
                       </span>
                     </div>
                   </div>
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
-                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5">
+                      <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
+                    </div>
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <span class="value-display-info">
+                        {{displayTankPurpose(sotItem!)}}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row right-align-display">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5">
                       <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
                     </div>
-                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                       <span class="value-display-info">
                         {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
                       </span>
                     </div>
                   </div>
                   <div class="row right-align-display">
-                    <div class="col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5">
                       <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
                     </div>
-                    <div class="col-xl- col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                       <span class="value-display-info">
                         {{getNextTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
                       </span>

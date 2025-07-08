@@ -41,7 +41,7 @@
             <mat-label>{{data.translatedLangText.TARE_WEIGHT}}</mat-label>
             <input matInput formControlName="tare_weight" appNumericText [allowDecimal]="false"
               (input)="onNumericOnly($event, 'tare_weight')" required>
-            <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{data.translatedLangText.KG}}</h6>
+            <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{data.translatedLangText.KG}}</h6>
           </mat-form-field>
         </div>
       </div>
@@ -89,7 +89,7 @@
             <mat-label>{{data.translatedLangText.CAPACITY}}</mat-label>
             <input matInput formControlName="capacity" [allowDecimal]="false"
               (input)="onNumericOnly($event, 'capacity')" appNumericText required>
-            <h6 class="color-icon p-t-15 p-r-5" matSuffix>{{data.translatedLangText.LITERS}}</h6>
+            <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>{{data.translatedLangText.LITERS}}</h6>
           </mat-form-field>
         </div>
         <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
