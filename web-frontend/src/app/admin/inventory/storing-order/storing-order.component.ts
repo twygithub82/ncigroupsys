@@ -158,7 +158,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { so_no: "DESC" };
+  lastOrderBy: any = { create_dt: "DESC" };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
