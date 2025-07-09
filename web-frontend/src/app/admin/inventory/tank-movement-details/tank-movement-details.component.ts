@@ -1674,6 +1674,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           yardCvList: this.yardCvList,
           testTypeCvList: this.testTypeCvList,
           testClassCvList: this.testClassCvList,
+          cleanStatusCvList: this.cleanStatusCvList
         }
       },
       direction: tempDirection
@@ -1683,6 +1684,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         console.log(result)
         let newIg: any = undefined;
         let newIgs: any = undefined;
+        let newSot: any = undefined;
         let newTi: any = undefined;
 
         if (result.yard_cv) {
@@ -1702,6 +1704,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           };
         }
 
+        if (result.clean_status_cv || result.clean_status_remarks) {
+          newSot = {
+            guid: this.sot?.guid,
+            clean_status_cv: result.clean_status_cv,
+            clean_status_remarks: result.clean_status_remarks,
+          };
+        }
+
         if (result.ti_yard_cv || result.ti_last_test_cv || result.ti_test_dt || result.ti_next_test_cv || result.ti_test_class_cv) {
           newTi = {
             guid: this.tiItem?.guid,
@@ -1718,7 +1728,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
           ...(newIg && { ingate: newIg }),
           ...(newIgs && { ingateSurvey: newIgs }),
           so: undefined,
-          sot: undefined,
+          ...(newSot && { sot: newSot }),
           ...(newTi && { tankInfo: newTi })
         };
         this.sotDS.updateTankSummaryDetails(tankSummaryRequest).subscribe(result => {
@@ -3601,7 +3611,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getViewDirection() {
     // this.preventDefault(event);  // Prevents the form submission
-   
+
     //r.storing_order_tank.customer_company=new CustomerCompanyItem(this.sot?.customer_company);
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -3613,13 +3623,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   ViewResidueEstimateItem(row: ResidueItem) {
-    // this.preventDefault(event);  // Prevents the form submission
-
-     let r = new ResidueItem(row);
-    r.storing_order_tank=this.sot;
-
+    let r = new ResidueItem(row);
+    r.storing_order_tank = this.sot;
     let tempDirection: Direction = this.getViewDirection();
-
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
       width: '65vw',
       maxWidth: '1000px',
@@ -3627,21 +3633,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         action: 'view',
         langText: this.langText,
         selectedItem: r,
-        nextTestDesc:this.next_test_desc!,
-        lastTestDesc:this.last_test_desc!
+        nextTestDesc: this.next_test_desc!,
+        lastTestDesc: this.last_test_desc!
       }
     });
   }
 
   ViewRepairEstimateItem(row: RepairItem) {
-    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction = this.getViewDirection();
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
       width: '75vw',
       data: {
@@ -3653,14 +3652,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   ViewSteamEstimateItem(row: SteamItem) {
-    // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction = this.getViewDirection();
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
       width: '75vw',
       data: {
