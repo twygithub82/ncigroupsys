@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './layout/app-layout/main-layout/main-layout
 import { AuthGuard } from '@core/guard/auth.guard';
 import { AuthLayoutComponent } from './layout/app-layout/auth-layout/auth-layout.component';
 import { Page404Component } from './authentication/page404/page404.component';
+import { KioskLayoutComponent } from './layout/app-layout/kiosk-layout/kiosk-layout.component';
 
 export const APP_ROUTE: Route[] = [
     {
@@ -25,6 +26,16 @@ export const APP_ROUTE: Route[] = [
         component: AuthLayoutComponent,
         loadChildren: () =>
             import('./authentication/auth.routes').then((m) => m.AUTH_ROUTE),
+    },
+    {
+        path: 'kiosk',
+        component: KioskLayoutComponent,
+        children: [
+            {
+                path: ':kioskId',
+                loadChildren: () => import('./kiosk/kiosk.routes').then((m) => m.KIOSK_ROUTE),
+            },
+        ],
     },
     { path: '**', component: Page404Component },
 ];

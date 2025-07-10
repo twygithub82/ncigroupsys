@@ -25,7 +25,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatStepperModule, StepperOrientation } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -345,6 +345,8 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   stepperOrientation: Observable<StepperOrientation>;
   compTypeStepperOrientation: Observable<StepperOrientation>;
+
+  @ViewChild('compartmentStepper') compartmentStepper?: MatStepper;
 
   constructor(
     public httpClient: HttpClient,

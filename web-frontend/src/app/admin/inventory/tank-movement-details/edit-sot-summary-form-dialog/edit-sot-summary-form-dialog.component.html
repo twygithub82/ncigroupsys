@@ -60,11 +60,21 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 mb-0">
+        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-0">
           <span class="label-display-info">{{data.translatedLangText.NEXT_TEST}}:</span>
           <span class="value-display-info">
             {{next_test_desc || '-'}}
           </span>
+        </div>
+        <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.CLEAN_STATUS}}</mat-label>
+            <mat-select formControlName="clean_status_cv">
+              @for (codeValue of data.populateData.cleanStatusCvList; track codeValue) {
+              <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
       <div class="row">

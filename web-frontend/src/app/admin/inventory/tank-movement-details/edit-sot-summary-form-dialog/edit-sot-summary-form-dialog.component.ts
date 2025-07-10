@@ -121,7 +121,9 @@ export class EditSotSummaryFormDialogComponent {
       last_test_cv: this.igs?.last_test_cv,
       next_test_cv: this.igs?.next_test_cv,
       test_dt: Utility.convertDateMoment(this.igs?.test_dt),
-      test_class_cv: this.igs?.test_class_cv
+      test_class_cv: this.igs?.test_class_cv,
+      clean_status_cv: this.sot?.clean_status_cv,
+      clean_status_remarks: ''
     });
     this.overwriteForm = formGroup;
     this.initializeValueChange();
@@ -196,6 +198,8 @@ export class EditSotSummaryFormDialogComponent {
         ti_test_dt: shouldUpdate ? Utility.convertDate(testDt) : undefined,
         ti_next_test_cv: shouldUpdate ? nextTestCv : undefined,
         ti_test_class_cv: shouldUpdate ? testClassCv : undefined,
+        clean_status_cv: this.overwriteForm.get('clean_status_cv')?.value,
+        clean_status_remarks: this.overwriteForm.get('clean_status_remarks')?.value,
       }
       this.dialogRef.close(returnDialog);
     } else {

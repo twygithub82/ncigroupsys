@@ -24,6 +24,7 @@ import { PackageLabourItem } from 'app/data-sources/package-labour';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -185,12 +186,7 @@ export class FormDialogComponent {
     TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
     TYPE: 'COMMON-FORM.TYPE'
   };
-
-
   selectedItems: PackageBufferItem[] = [];
-  //tcDS: TariffCleaningDS;
-  //sotDS: StoringOrderTankDS;
-
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -198,45 +194,30 @@ export class FormDialogComponent {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
-
     this.selectedItems = data.selectedItems;
 
     this.pcForm = this.createPackageLabour();
-    if (this.selectedItems.length == 1)
+    if (this.selectedItems.length == 1) {
       this.pcForm.patchValue({
-
         adjusted_cost: this.selectedItems[0].cost?.toFixed(2),
         standard_cost: this.selectedItems[0].tariff_buffer?.cost?.toFixed(2),
         remarks: this.selectedItems[0].remarks
-
-        //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
       });
-
-
-    //this.tcDS = new TariffCleaningDS(this.apollo);
-    //this.sotDS = new StoringOrderTankDS(this.apollo);
+    }
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.packBufferDS = new PackageBufferDS(this.apollo);
 
     this.action = data.action!;
     this.translateLangText();
-    // this.sotExistedList = data.sotExistedList;
-    // if (this.action === 'edit') {
-    //   this.dialogTitle = 'Edit ' + data.item.tank_no;
-    //   this.storingOrderTank = data.item;
-    // } else {
-    //   this.dialogTitle = 'New Record';
-    //   this.storingOrderTank = new StoringOrderTankItem();
-    // }
-    // this.index = data.index;
-    // this.storingOrderTankForm = this.createStorigOrderTankForm();
-    // this.initializeValueChange();
 
-    // if (this.storingOrderTank?.tariff_cleaning) {
-    //   this.lastCargoControl.setValue(this.storingOrderTank?.tariff_cleaning);
-    // }
+    if (!this.canEdit()) {
+      this.pcForm.get('adjusted_cost')?.disable()
+      this.pcForm.get('standard_cost')?.disable()
+      this.pcForm.get('remarks')?.disable()
+    }
   }
 
   createPackageLabour(): UntypedFormGroup {
@@ -248,16 +229,10 @@ export class FormDialogComponent {
     });
   }
 
-
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
       this.translatedLangText = translations;
     });
-  }
-
-
-  canEdit() {
-    return true;
   }
 
   handleSaveSuccess(count: any) {
@@ -351,12 +326,19 @@ export class FormDialogComponent {
     return Utility.formatNumberDisplay(amount);
   }
 
-  getCostLabel():string{
-    var retval =this.translatedLangText.COST;
-    if(this.selectedItems.length>1){
+  getCostLabel(): string {
+    var retval = this.translatedLangText.COST;
+    if (this.selectedItems.length > 1) {
       // retval = retval.replace("$","%");
     }
     return retval;
   }
 
+  canEdit() {
+    return this.isAllowEdit();
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['PACKAGE_BUFFER_CLEANING_EDIT']);
+  }
 }

@@ -34,7 +34,6 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
-import { provideNgxMask } from 'ngx-mask';
 
 import { debounceTime, startWith, tap } from 'rxjs';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
@@ -62,7 +61,6 @@ export interface DialogData {
   selector: 'app-overwrite-repair-appr-form-dialog',
   templateUrl: './overwrite-repair-appr-form-dialog.component.html',
   styleUrls: ['./overwrite-repair-appr-form-dialog.component.scss'],
-  providers: [provideNgxMask()],
   standalone: true,
   imports: [
     MatButtonModule,

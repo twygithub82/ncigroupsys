@@ -19,6 +19,10 @@ export class BreadcrumbComponent {
   items!: any[];
   @Input()
   active_item!: string;
+  @Input()
+  showTitle: boolean = false;
+  @Input()
+  showBreadList: boolean = true;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,

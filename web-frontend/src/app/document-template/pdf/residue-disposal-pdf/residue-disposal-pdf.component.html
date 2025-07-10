@@ -171,7 +171,7 @@
   </div>
 </div>
 <div mat-dialog-actions class="m-2 align-right">
-  <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
+  <!-- <button mat-flat-button (click)="onDownloadClick()" tabindex="-1"
     [disabled]="(residueDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>
       @if (!(residueDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
@@ -181,7 +181,7 @@
       }
     </mat-icon>
     {{translatedLangText.DOWNLOAD}}
-  </button>
+  </button> -->
   <!-- <button mat-flat-button color="accent" (click)="onRepublshClick()" tabindex="-1"
     [disabled]="(residueDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
     <mat-icon>

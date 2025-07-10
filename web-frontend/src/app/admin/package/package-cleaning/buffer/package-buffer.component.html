@@ -17,7 +17,7 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
-              @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+              @if (isAllowEdit() && (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage())) {
               <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' + translatedLangText.EDIT">
                 <button mat-mini-fab class="primary-light" (click)="adjustCost()" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">edit</mat-icon>
@@ -47,7 +47,6 @@
                         </button>
                       </mat-chip-row>
                       }
-
                       <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
                         [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                         (matChipInputTokenEnd)="add($event)">

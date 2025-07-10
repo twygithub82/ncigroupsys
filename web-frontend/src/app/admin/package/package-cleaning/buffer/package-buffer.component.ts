@@ -41,7 +41,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 
@@ -135,7 +135,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {};
-  allowSelectedAll:boolean =false;
+  allowSelectedAll: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -279,7 +279,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displayColumnChanged() {
-    if (this.getPackages()) {
+    if (this.isAllowEdit() && this.getPackages()) {
       this.displayedColumns = [
         'select',
         'customer_name',
@@ -418,7 +418,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     // const numRows = this.packBufferItems.length;
-     const numRows = this.packBufferItems.filter(r=>this.selectedPackEst?.tariff_buffer_guid === r.tariff_buffer_guid).length;
+    const numRows = this.packBufferItems.filter(r => this.selectedPackEst?.tariff_buffer_guid === r.tariff_buffer_guid).length;
     return (numSelected === numRows && numSelected > 0);
   }
 
@@ -435,19 +435,17 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-   masterToggle_r1() {
+  masterToggle_r1() {
     this.isAllSelected()
       ? this.resetSelection()
-      : this.packBufferItems.forEach((row) =>{
-       if(this.selectedPackEst?.tariff_buffer_guid === row.tariff_buffer_guid)
-       {
-        this.selection.select(row)
-       }
-       else if (this.allowSelectedAll)
-       {
-          if(!this.selectedPackEst)this.selectedPackEst=row;
+      : this.packBufferItems.forEach((row) => {
+        if (this.selectedPackEst?.tariff_buffer_guid === row.tariff_buffer_guid) {
+          this.selection.select(row)
+        }
+        else if (this.allowSelectedAll) {
+          if (!this.selectedPackEst) this.selectedPackEst = row;
           this.selection.select(row);
-       }
+        }
       }
       );
   }
@@ -459,8 +457,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-     this.selectedPackEst = undefined;
-     this.allowSelectedAll=false;
+    this.selectedPackEst = undefined;
+    this.allowSelectedAll = false;
     const where: any = {
       customer_company: { delete_dt: { eq: null } }
     };
@@ -471,7 +469,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     }
 
 
-    if (this.pcForm?.get("customer_cost")?.value!==null &&this.pcForm?.get("customer_cost")?.value!=="") {
+    if (this.pcForm?.get("customer_cost")?.value !== null && this.pcForm?.get("customer_cost")?.value !== "") {
       const selectedCost: number = Number(this.pcForm?.get("customer_cost")?.value);
       where.cost = { eq: selectedCost }
     }
@@ -812,22 +810,19 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-   HideSelectAllCheckBox()
-  {
-     var retval: boolean = true;
+  HideSelectAllCheckBox() {
+    var retval: boolean = true;
 
-     retval = !(this.selectedPackEst);
-     if(retval)
-     {
-       var first = this.packBufferItems[0];
-       if(first)
-       {
-         var total = this.packBufferItems.length;
-         retval = ! (this.packBufferItems.filter(r=>r.tariff_buffer_guid===first.tariff_buffer_guid).length===total) 
-         this.allowSelectedAll=!retval;
-       }
-     }
-     return retval
+    retval = !(this.selectedPackEst);
+    if (retval) {
+      var first = this.packBufferItems[0];
+      if (first) {
+        var total = this.packBufferItems.length;
+        retval = !(this.packBufferItems.filter(r => r.tariff_buffer_guid === first.tariff_buffer_guid).length === total)
+        this.allowSelectedAll = !retval;
+      }
+    }
+    return retval
   }
 
   onTabFocused() {
@@ -850,9 +845,9 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     }
     else if (this.selectedCustomers?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value.length > maxLength
+        ? value.slice(0, maxLength) + '...'
         : value}`;
     }
     return retval;
@@ -869,11 +864,11 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-    
+
     }
     else {
       this.selectedCustomers.splice(index, 1);
-     
+
     }
 
     if (this.custInput) {
@@ -893,53 +888,56 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-   onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = null;
-          return this.search();
-        }
-    
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'last_update_dt':
-            this.lastOrderBy = {
-                update_dt: dirEnum,
-                create_dt: dirEnum,
-            };
-            break;
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
 
-          case 'customer_name':
-            this.lastOrderBy = {
-              customer_company:{
-                name: dirEnum,
-              }
-            };
-            break;
-        
-          default:
-            this.lastOrderBy = null;
-        }
-    
-        this.search();
-      }
-
-      AutoSearch()
-      {
-        if (Utility.IsAllowAutoSearch())
-          this.search();
-      }
-
-     displayCurrency(amount: any) {
-      return Utility.formatNumberDisplay(amount);
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
 
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'last_update_dt':
+        this.lastOrderBy = {
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+        };
+        break;
+
+      case 'customer_name':
+        this.lastOrderBy = {
+          customer_company: {
+            name: dirEnum,
+          }
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
+
+  displayCurrency(amount: any) {
+    return Utility.formatNumberDisplay(amount);
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['PACKAGE_BUFFER_CLEANING_EDIT']);
+  }
+
+  isAllowDelete() {
+    return this.modulePackageService.hasFunctions(['PACKAGE_BUFFER_CLEANING_DELETE']);
+  }
 }
-
-
-

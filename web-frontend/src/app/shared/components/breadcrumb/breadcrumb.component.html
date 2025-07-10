@@ -6,8 +6,14 @@
           <app-feather-icons [icon]="'menu'" [class]="'header-icon'"></app-feather-icons>
         </button>
       </div>
+      @if (showTitle) {
+      <div class="breadcrumb-title">
+        <h4 class="page-title">{{title | translate}}</h4>
+      </div>
+      }
     </div>
     <div class="col-6">
+      @if (showBreadList) {
       <ul class="breadcrumb-list">
         <li class="breadcrumb-item bcrumb-1">
           <a [routerLink]="'/'">
@@ -33,6 +39,7 @@
         <li class="breadcrumb-item active">{{active_item | translate}}</li>
         }
       </ul>
+      }
     </div>
   </div>
 </div>
