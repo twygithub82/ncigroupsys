@@ -97,6 +97,7 @@ import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reown
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
+import{SteamEstimateFormDialogComponent_View} from '@shared/preview/preview_steam-estimate/form-dialog.component';
 
 
 @Component({
@@ -3653,7 +3654,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   ViewSteamEstimateItem(row: SteamItem) {
-    // this.preventDefault(event);  // Prevents the form submission
+    let r = new SteamItem(row);
+    r.storing_order_tank=this.sot;
+
     let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -3661,12 +3664,15 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
 
-    const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
+    const dialogRef = this.dialog.open(SteamEstimateFormDialogComponent_View, {
       width: '75vw',
+      maxWidth: '1000px',
       data: {
         action: 'view',
         langText: this.langText,
-        selectedItem: row
+        selectedItem: r,
+        nextTestDesc:this.next_test_desc!,
+        lastTestDesc:this.last_test_desc!
       }
     });
   }

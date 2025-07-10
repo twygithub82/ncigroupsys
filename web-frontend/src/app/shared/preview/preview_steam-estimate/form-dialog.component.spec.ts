@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ResidueEstimateFormDialogComponent_View } from './form-dialog.component';
+import { SteamEstimateFormDialogComponent_View } from './form-dialog.component';
 
-describe('ResidueEstimateFormDialogComponent_View', () => {
-  let component: ResidueEstimateFormDialogComponent_View;
-  let fixture: ComponentFixture<ResidueEstimateFormDialogComponent_View>;
+describe('SteamEstimateFormDialogComponent_View', () => {
+  let component: SteamEstimateFormDialogComponent_View;
+  let fixture: ComponentFixture<SteamEstimateFormDialogComponent_View>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [ResidueEstimateFormDialogComponent_View]
+    imports: [SteamEstimateFormDialogComponent_View]
 })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ResidueEstimateFormDialogComponent_View);
+    fixture = TestBed.createComponent(SteamEstimateFormDialogComponent_View);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

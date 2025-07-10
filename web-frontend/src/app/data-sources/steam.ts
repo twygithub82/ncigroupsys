@@ -695,6 +695,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
         estimate_dt
         estimate_no
         est_cost
+        flat_rate
         total_cost
         total_material_cost
         total_labour_cost

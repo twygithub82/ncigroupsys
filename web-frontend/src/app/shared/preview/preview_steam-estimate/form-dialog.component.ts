@@ -35,11 +35,15 @@ import {InGateSurveyItem} from 'app/data-sources/in-gate-survey';
 import {BusinessLogicUtil} from 'app/utilities/businesslogic-util';
 import { CodeValuesDS,CodeValuesItem } from 'app/data-sources/code-values';
 import { MatCardModule } from '@angular/material/card';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { PackageRepairDS } from 'app/data-sources/package-repair';
+import { SteamPartItem } from 'app/data-sources/steam-part';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
   langText?: any;
-  selectedItem: ResidueItem;
+  selectedItem: SteamItem;
   nextTestDesc?:string;
   lastTestDesc?:string;
   
@@ -79,21 +83,16 @@ export interface DialogData {
     MatCardModule
   ],
 })
-export class ResidueEstimateFormDialogComponent_View {
+export class SteamEstimateFormDialogComponent_View {
   displayedColumns = [
-    //  'select',
-    // 'img',
     'seq',
     'desc',
     'qty',
-    'qty_unit',
     'unit_price',
+    'hour',
+    'cost',
     'approve_part',
-    'cost'
-    // 'gender',
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
+     'actions'
   ];
 
   action: string;
@@ -101,17 +100,21 @@ export class ResidueEstimateFormDialogComponent_View {
   dialogTitle?: string;
   deList?: any[]=[];
 
+  plDS: PackageLabourDS;
+  
   sotDS:StoringOrderTankDS;
   igDS: InGateDS;
   ccDS:CustomerCompanyDS;
   cvDS: CodeValuesDS;
+  steamDS:SteamDS;
   sotItem?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
    unit_type_control = new UntypedFormControl();
 
-  selectedItem: ResidueItem;
+  selectedItem: SteamItem;
   startDate = new Date();
+  isSteamRepair?: boolean = true;
   
   lastCargoControl = new UntypedFormControl();
   lastTestDesc :string='';
@@ -130,6 +133,9 @@ export class ResidueEstimateFormDialogComponent_View {
     processStatusCvList: CodeValuesItem[] = []
     clean_statusList: CodeValuesItem[] = [];
     isOwner = false;
+    labourHour: number = 1;
+    packageLabourItem?: PackageLabourItem;
+    autosteamCost: string = '';
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
@@ -238,11 +244,16 @@ export class ResidueEstimateFormDialogComponent_View {
     DETAILS: 'COMMON-FORM.DETAILS',
     TYPE: 'COMMON-FORM.TYPE',
     RESIDUE_ESTIMATE_DETAILS: 'COMMON-FORM.RESIDUE-ESTIMATE-DETAILS',
+    HOUR_RATE: 'COMMON-FORM.HOUR-RATE',
+    FLAT: 'COMMON-FORM.FLAT',
+    HOURLY:'COMMON-FORM.HOURLY',
+    BY_HOUR:'COMMON-FORM.BY-HOUR',
+    
   };
  
 
   constructor(
-    public dialogRef: MatDialogRef<ResidueEstimateFormDialogComponent_View>,
+    public dialogRef: MatDialogRef<SteamEstimateFormDialogComponent_View>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
@@ -250,20 +261,27 @@ export class ResidueEstimateFormDialogComponent_View {
     private snackBar: MatSnackBar,
   ) {
     // Set the defaults
-    
+    this.plDS = new PackageLabourDS(this.apollo);
+    this.steamDS=new SteamDS(this.apollo);
     this.sotDS=new StoringOrderTankDS(this.apollo);
     this.cvDS=new CodeValuesDS(this.apollo);
     this.igDS= new InGateDS(this.apollo);
     this.ccDS= new CustomerCompanyDS(this.apollo);
-    this.loadData();
+    this.plDS = new PackageLabourDS(this.apollo);
+    
     this.translateLangText();
     this.selectedItem = data.selectedItem;
     this.sotItem=this.selectedItem.storing_order_tank;
-    this.deList=this.selectedItem.residue_part;
+    this.deList=this.selectedItem.steaming_part;
     this.lastTestDesc= data.lastTestDesc||'';
     this.nextTestDesc=data.nextTestDesc||'';
     this.action = data.action!;
-    
+    this.isSteamRepair=this.steamDS.IsSteamRepair(this.selectedItem);
+    this.labourHour = this.selectedItem?.est_hour || 1;
+    if (BusinessLogicUtil.isEstimateApproved(this.selectedItem!)) {
+      this.labourHour = this.selectedItem?.total_hour || 1;
+    }
+    this.loadData();
   }
 
 
@@ -314,6 +332,10 @@ export class ResidueEstimateFormDialogComponent_View {
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
+
+
+      var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
+      this.getCustomerLabourPackage(ccGuid!);
     
   }
 
@@ -409,19 +431,19 @@ export class ResidueEstimateFormDialogComponent_View {
 
   }
 
-   getTotalCost(): number {
-    return this.deList?.reduce((acc, row) => {
-      if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
-        if (this.IsApproved()) {
-          return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
-        }
-        else {
-          return acc + ((row.quantity || 0) * (row.cost || 0));
-        }
-      }
-      return acc; // If row is approved, keep the current accumulator value
-    }, 0);
-  }
+  //  getTotalCost(): number {
+  //   return this.deList?.reduce((acc, row) => {
+  //     if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
+  //       if (this.IsApproved()) {
+  //         return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
+  //       }
+  //       else {
+  //         return acc + ((row.quantity || 0) * (row.cost || 0));
+  //       }
+  //     }
+  //     return acc; // If row is approved, keep the current accumulator value
+  //   }, 0);
+  // }
 
    IsApprovePart(rep: ResiduePartItem) {
       return rep.approve_part;
@@ -465,4 +487,157 @@ export class ResidueEstimateFormDialogComponent_View {
        getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
         return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
       }
+
+      getQtyTable_Text(): string {
+        var retval = `${this.translatedLangText.QTY}`;
+        
+        return retval;
+      }
+
+      getResultTable_HourText(): string {
+        var retval = `${this.translatedLangText.HOUR_RATE}`;
+        if (this.isSteamRepair) {
+          retval = `${this.translatedLangText.HOUR}`;
+        }
+        return retval;
+      }
+
+    getTotalLabourHours(): string {
+      let ret = 0;
+      if (this.isSteamRepair) {
+        if ((this.deList?.length||0) > 0) {
+          this.deList?.map(d => {
+
+            if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
+              && (d.approve_part == null || d.approve_part == true)) {
+              if (this.IsApproved()) {
+                ret += d.approve_labour;
+              }
+              else {
+                ret += d.labour;
+              }
+            }
+
+            // ret+=d.labour
+          }
+          );
+        }
+        return String(ret);
+      }
+      else {
+        return '';
+      }
+    }
+  getLabourCost(): number {
+    if (this.isSteamRepair) {
+      return this.packageLabourItem?.cost || 0;
+    }
+    else {
+      return 0;
+    }
+  }
+
+  getCustomerLabourPackage(customer_company_guid: string) {
+    const where = {
+      and: [
+        { customer_company_guid: { eq: customer_company_guid } }
+      ]
+    }
+    this.plDS.getCustomerPackageCost(where).subscribe(data => {
+      if (data?.length > 0) {
+        this.packageLabourItem = data[0];
+      }
+    });
+  }
+
+   getRateType(): string {
+    var flat_rate = this.selectedItem!.flat_rate??true;
+    return flat_rate ? this.translatedLangText.FLAT : this.translatedLangText.HOURLY;
+  }
+
+   calculateSteamItemCost(steamPart: SteamPartItem): number {
+    let calResCost: number = 0;
+
+    if (this.isSteamRepair) {
+      if (this.IsApproved()) {
+        calResCost = steamPart.approve_cost! * steamPart.approve_qty!;
+      }
+      else {
+        calResCost = steamPart.cost! * steamPart.quantity!;
+      }
+    }
+   
+    return calResCost;
+  }
+
+  getAutoSteamTotalCost():String
+  {
+    var cost = this.getRate();
+    var totalCost = this.parse2Decimal(cost);
+    if (!this.selectedItem!.flat_rate??true) {
+      cost *= this.labourHour;
+      totalCost = this.translatedLangText.BY_HOUR;
+    }
+
+    return totalCost;
+  }
+
+  getRate(): number {
+    if (this.isSteamRepair) {
+      return this.packageLabourItem?.cost || 0;
+    }
+    else {
+      if (this.deList!.length == 0) return 0;
+
+      if ((this.selectedItem!.flat_rate??false)) return this.IsApproved() ? (this.deList![0]!.approve_cost || 0) : (this.deList![0]!.cost || 0);
+      else return this.IsApproved() ? (this.deList![0]!.approve_labour || 0) : (this.deList![0]!.labour || 0);
+    }
+  }
+
+
+   getTotalLabourCost(): string {
+    let ret = 0;
+    if (this.deList!.length > 0 && this.isSteamRepair) {
+      this.deList!.map(d => {
+        if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
+          && (d.approve_part == null || d.approve_part == true)) {
+          if (this.IsApproved()) {
+            ret += (d.approve_labour * this.packageLabourItem?.cost!);
+          }
+          else {
+            ret += (d.labour * this.packageLabourItem?.cost!);
+          }
+        }
+      }
+      );
+      return (ret||0).toFixed(2);
+    }
+    else {
+      return '-';
+    }
+
+
+    
+  }
+
+   getTotalCost(): number {
+    if (this.isSteamRepair) {
+
+      var retval = this.deList!.reduce((acc, row) => {
+        if ((row.delete_dt === undefined || row.delete_dt === null) && (row.approve_part == null || row.approve_part == true)) {
+          if (this.IsApproved()) {
+            return acc + ((row.approve_qty || 0) * (row.approve_cost || 0)) + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
+          }
+          else {
+            return acc + ((row.quantity || 0) * (row.cost || 0)) + ((row.labour || 0) * (this.packageLabourItem?.cost || 0));
+          }
+        }
+        return acc; // If row is approved, keep the current accumulator value
+      }, 0);
+      return retval;
+    }
+    else {
+      return this.calculateSteamItemCost(this.deList![0]!);
+    }
+  }
 }
