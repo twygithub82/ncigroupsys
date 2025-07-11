@@ -492,8 +492,9 @@
                           <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
+                                appNumericText [allowDecimal]="true"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.PERCENTAGE_SYMBOL"
-                                type="number" min="0" max="99">
+                                type="text" min="0" max="99">
                             </mat-form-field>
                           </tlx-form-field>
                         </div>

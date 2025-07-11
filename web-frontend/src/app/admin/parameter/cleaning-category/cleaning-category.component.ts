@@ -780,7 +780,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
             break;
         
           default:
-            this.lastOrderBy = null;
+            this.lastOrderBy =  { name: "ASC" };
         }
     
         this.search();
