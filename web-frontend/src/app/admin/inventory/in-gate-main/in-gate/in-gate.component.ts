@@ -112,7 +112,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { storing_order: { so_no: "DESC" } };
+  lastOrderBy: any = { storing_order: { create_dt: "DESC" } };
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;
