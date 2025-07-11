@@ -169,6 +169,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   }
 
   public loadData() {
+    this.yardId = this.route.parent?.snapshot.paramMap.get('kioskId')?.toUpperCase();
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
     const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
@@ -192,7 +193,7 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     }
 
     if (!savedCriteria && !savedPagination) {
-      this.search();
+      //this.search();
     }
   }
 
