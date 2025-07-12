@@ -2356,7 +2356,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_EDIT1']);
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_EDIT']);
   }
 
   isAllowPublish() {
