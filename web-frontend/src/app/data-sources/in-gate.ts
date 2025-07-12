@@ -411,7 +411,11 @@ export const UPDATE_IN_GATE = gql`
 
 export const PUBLISH_IN_GATE_SURVEY = gql`
   mutation publishIngateSurvey($inGateRequest: in_gateInput!) {
-    publishIngateSurvey(inGateRequest: $inGateRequest)
+    publishIngateSurvey(inGateRequest: $inGateRequest) {
+      affected
+      guid
+      residue_guid
+    }
   }
 `;
 

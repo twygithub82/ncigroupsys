@@ -657,6 +657,7 @@ export const ADD_IN_GATE_SURVEY = gql`
     record: addInGateSurvey(inGateSurveyRequest: $inGateSurvey, inGateRequest: $inGate) {
       affected
       guid
+      residue_guid
     }
   }
 `;

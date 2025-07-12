@@ -61,6 +61,7 @@ import { EmptyFormConfirmationDialogComponent } from './confirmation-dialog/conf
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { UpdateTankNoDialogComponent } from './update-tank-no-dialog/update-tank-no-dialog.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
 
 @Component({
   selector: 'app-in-gate',
@@ -1603,7 +1604,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
           const record = result.data.record
           if (record?.affected) {
             this.uploadImages(record.guid[0], true);
-            this.onDownload(record.guid[0]);
+            this.onDownload(record.guid[0], record.residue_guid);
           }
         });
       }
@@ -1687,19 +1688,20 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   onPublish() {
     if (this.in_gate) {
-      const inGateSurveyItem = new InGateSurveyGO({ tank_comp_guid: this.in_gate?.in_gate_survey?.tank_comp_guid });
+      const inGateSurveyItem = new InGateSurveyGO(this.in_gate?.in_gate_survey);
       const inGateItem: any = new InGate(this.in_gate);
       inGateItem.in_gate_survey = inGateSurveyItem
       console.log('publishInGateSurvey: ', inGateItem)
       this.igDS.publishInGateSurvey(inGateItem!).subscribe(result => {
         console.log(result)
-        this.handleSaveSuccess(result.data?.publishIngateSurvey);
-        this.onDownload(this.in_gate?.in_gate_survey?.guid);
+        const record = result.data?.publishIngateSurvey
+        this.handleSaveSuccess(record?.affected);
+        this.onDownload(this.in_gate?.in_gate_survey?.guid, record.residue_guid);
       });
     }
   }
 
-  onDownload(igs_guid?: string) {
+  onDownload(igs_guid?: string, residue_guid?: string) {
     let tempDirection: Direction;
 
     if (localStorage.getItem('isRtl') === 'true') {
@@ -1724,6 +1726,32 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     this.fileManagerService.actionLoadingSubject.next(true);
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.fileManagerService.actionLoadingSubject.next(false);
+      if (residue_guid) {
+        this.onDownloadResidue(residue_guid);
+      } else {
+        this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
+      }
+    });
+  }
+
+  onDownloadResidue(residue_guid?: string) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(ResidueDisposalPdfComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        residue_guid: residue_guid,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.router.navigate(['/admin/inventory/in-gate-main'], { queryParams: { tabIndex: this.tabIndex } });
     });
   }
