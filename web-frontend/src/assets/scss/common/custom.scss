@@ -113,18 +113,17 @@ section.content {
   width: 37.5%;
 }
 
-.col-xl-5-25 {
+.col-5-25 {
   width: 43.75%;
 }
 
-.col-xl-5-5 {
+.col-5-5 {
   width: 45.83333333%;
 }
 
-.col-xl-5-75 {
+.col-5-75 {
   width: 47.91666667%;
 }
-
 
 .col-6-5 {
   width: 54.16666667%;
@@ -264,7 +263,7 @@ section.content {
   }
 
   .col-xs-8-25 {
-    width: 33.33333333%;
+    width: 68.75%;
   }
 
   .col-xs-8-5 {
@@ -343,7 +342,7 @@ section.content {
   }
 
   .col-sm-8-25 {
-    width: 33.33333333%;
+    width: 68.75%;
   }
 
   .col-sm-8 {
@@ -490,7 +489,7 @@ section.content {
   }
 
   .col-md-8-25 {
-    width: 33.33333333%;
+    width: 68.75%;
   }
 
   .col-md-8 {
@@ -638,7 +637,7 @@ section.content {
   }
 
   .col-lg-8-25 {
-    width: 33.33333333%;
+    width: 68.75%;
   }
 
   .col-lg-8 {
@@ -785,7 +784,7 @@ section.content {
   }
 
   .col-xl-8-25 {
-    width: 33.33333333%;
+    width: 68.75%;
   }
 
   .col-xl-8 {
@@ -1620,7 +1619,7 @@ $breakpoints: (
 }
 
 .td-col-8-25 {
-  width: 33.33333333%;
+  width: 68.75%;
 }
 
 .td-col-8 {
@@ -2088,7 +2087,7 @@ $grid-breakpoints: (
     }
   }
 
-    // When bg-light-white is applied, override .tank-header background
+  // When bg-light-white is applied, override .tank-header background
   &.bg-light-white {
     .tank-header {
       background-color: white !important;
@@ -2169,8 +2168,31 @@ mat-card-content.tank-card-content {
   z-index: 10;
 }
 
+// .card.cargo-nature {
+//   border: 0px;
+//   font-weight: 700;
+//   font-size: 1.5rem;
+
+//   .body {
+//     font-size: 1.25rem;
+//     font-weight: 700;
+//     padding-top: 5px;
+//     padding-bottom: 5px;
+//   }
+
+//   .mat-icon {
+//     font-size: 36px;
+//     line-height: 36px;
+//     width: 36px;
+//     height: 36px;
+//     display: inline-flex;
+//     align-items: center;
+//     justify-content: center;
+//   }
+// }
+
 .card.cargo-nature {
-  border: 0px;
+  border: 0;
   font-weight: 700;
   font-size: 1.5rem;
 
@@ -2181,18 +2203,31 @@ mat-card-content.tank-card-content {
     padding-bottom: 5px;
   }
 
-  .mat-icon {
+  mat-card-content {
+    display: flex;
+    align-items: flex-start; // Align top of icon and text
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+
+  mat-icon {
+    flex: 0 0 36px;
     font-size: 36px;
-    line-height: 36px;
     width: 36px;
     height: 36px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
   }
+
+  mat-label {
+    flex: 1 1 auto;
+    word-break: break-word;
+    line-height: 1.4;
+  }
 }
 
-.card .header-custom-padding{
+.card .header-custom-padding {
   padding-left: 0.6%;
   padding-bottom: 0%;
 }
@@ -2305,6 +2340,12 @@ mat-button-toggle.mat-button-toggle-appearance-standard .mat-button-toggle-label
     display: block;
     text-align: left;
   }
+
+  @media (min-width: 768px) {
+    .label-display-info {
+      text-align: right; // only for tablets and up
+    }
+  }
 }
 
 .div-bg-blue {
@@ -2382,7 +2423,8 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
 }
 
 .prefix-text {
-  font-size: 0.9em !important; /* Or any other desired size like 12px, etc. */
+  font-size: 0.9em !important;
+  /* Or any other desired size like 12px, etc. */
   font-family: Calibri, sans-serif !important;
 }
 
@@ -2466,4 +2508,34 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 
 .mdc-dialog__content.cancel-form {
   overflow: hidden;
+}
+
+.narrow-stepper {
+  .mat-vertical-content-container {
+    margin-left: 10px;
+
+    .mat-vertical-content {
+      padding-left: 5px;
+      padding-right: 0px;
+    }
+  }
+}
+
+// .stepper-scroll-wrapper {
+//   overflow-x: auto;
+//   -webkit-overflow-scrolling: touch;
+//   width: 100%;
+// }
+
+// .overflow-stepper {
+//   min-width: max-content;
+//   display: inline-block;
+// }
+
+.button-toggle-overflow {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  padding-bottom: 4px; // optional for scroll bar spacing
 }
