@@ -42,7 +42,8 @@
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                     </div>
-                    <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                    <div
+                      class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
                       <div class="d-flex align-items-center">
                         <span
                           [ngClass]="{'value-display-info me-2': true, 'cursor-pointer text-decoration-underline': canChangeTankNo()}"
@@ -166,7 +167,7 @@
                   @if (!(igDS.loading$ | async)) {
                   <mat-card-content>
                     <!-- <div class="row">
-                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 m-b-5">
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.DATE_OF_INSPECTION}}:</span>
@@ -390,9 +391,9 @@
                         }
                       </div>
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
                           <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2">
                             <mat-icon>chevron_right</mat-icon>
                           </button>
@@ -487,17 +488,16 @@
                               </div>
                             </div>
                           </div>
-
                         </mat-card-content>
                         }
                       </div>
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
                           <button mat-raised-button matStepperPrevious type="button" color="" class="msr-2">
                             <mat-icon>chevron_left</mat-icon>
                           </button>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
                           <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2">
                             <mat-icon>chevron_right</mat-icon>
                           </button>
@@ -577,7 +577,8 @@
                             </div>
                             <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 m-b-5">
                               <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 text-md-end text-start">
+                                <div
+                                  class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 text-md-end text-start">
                                   <span class="me-2">{{translatedLangText.LAST_UPDATE_ON}}:</span>
                                   <span class="contact-detail-info font-bold">{{displayDateTime(in_gate?.update_dt) ||
                                     displayDateTime(in_gate?.create_dt)}}</span>
@@ -589,12 +590,12 @@
                         }
                       </div>
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
                           <button mat-raised-button matStepperPrevious type="button" color="" class="msr-2">
                             <mat-icon>chevron_left</mat-icon>
                           </button>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
                           <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2">
                             <mat-icon>chevron_right</mat-icon>
                           </button>
@@ -1229,12 +1230,12 @@
                         }
                       </div>
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
                           <button mat-raised-button matStepperPrevious type="button" color="" class="msr-2">
                             <mat-icon>chevron_left</mat-icon>
                           </button>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
                           <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2">
                             <mat-icon>chevron_right</mat-icon>
                           </button>
@@ -1410,7 +1411,7 @@
                                     } -->
                                     </mat-form-field>
                                   </div>
-                                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <div class="row">
                                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                         <mat-label>{{translatedLangText.SPECIFICATION}}:</mat-label>
@@ -1688,7 +1689,7 @@
                                       <mat-icon>chevron_left</mat-icon>
                                     </button>
                                   </div>
-                                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
                                     <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2"
                                       [disabled]="!getTopFormGroup()!.valid">
                                       <mat-icon>chevron_right</mat-icon>
@@ -1717,7 +1718,7 @@
                                   </div>
                                 </div>
                                 <div class="row">
-                                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <div class="row">
                                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                         <mat-label>{{translatedLangText.BRAND}}:</mat-label>
@@ -1737,7 +1738,7 @@
                                     </div>
                                   </div>
                                   @if (displayOthers(getManlidFormGroup().get('manlid_cover_cv')?.value)) {
-                                  <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <mat-form-field class="example-full-width">
                                       <mat-label>{{translatedLangText.OTHERS}}</mat-label>
                                       <input matInput formControlName="manlid_cover_oth"
@@ -1752,7 +1753,7 @@
                                   }
                                 </div>
                                 <div class="row">
-                                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <mat-form-field class="example-full-width">
                                       <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                       <input matInput formControlName="manlid_cover_pcs" type="number"
@@ -1767,7 +1768,7 @@
                                     } -->
                                     </mat-form-field>
                                   </div>
-                                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                                  <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <mat-form-field class="example-full-width">
                                       <mat-label>{{translatedLangText.VOLUME}}</mat-label>
                                       <input matInput formControlName="manlid_cover_pts" type="number"
@@ -1784,15 +1785,7 @@
                                   </div>
                                 </div>
                                 <div class="row">
-                                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
-                                    <!-- <mat-form-field class="example-full-width">
-                                    <mat-label>{{translatedLangText.MANLID_SEAL}}</mat-label>
-                                    <mat-select formControlName="manlid_seal_cv">
-                                      @for (codeValue of manlidSealCvList; track codeValue) {
-                                      <mat-option [value]="codeValue.code_val">{{codeValue.description}}</mat-option>
-                                      }
-                                    </mat-select>
-                                  </mat-form-field> -->
+                                  <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <div class="row">
                                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                         <mat-label>{{translatedLangText.MANLID_SEAL}}:</mat-label>
@@ -1813,7 +1806,7 @@
                                   </div>
                                 </div>
                                 <div class="row">
-                                  <div class="col-xl-2-5 col-lg-3 col-md-12 col-sm-12 col-xs-12 m-b-0 p-r-0">
+                                  <div class="col-xl-2-5 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0 p-r-0">
                                     <div class="row">
                                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                         <mat-label>{{translatedLangText.PV}}:</mat-label>
@@ -1830,7 +1823,7 @@
                                       </div>
                                     </div>
                                   </div>
-                                  <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0 p-l-1">
+                                  <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <mat-form-field class="example-full-width">
                                       <mat-label>{{translatedLangText.PIECES}}</mat-label>
                                       <input matInput formControlName="pv_type_pcs" type="number"
@@ -1838,14 +1831,9 @@
                                       <h6 class="color-icon p-t-15 p-r-5 prefix-text" matSuffix>
                                         {{translatedLangText.PCS}}
                                       </h6>
-                                      <!-- @if (getManlidFormGroup().get('pv_type_pcs')?.hasError('required')) {
-                                    <mat-error>
-                                      {{translatedLangText.PIECES}} {{translatedLangText.SO_REQUIRED}}
-                                    </mat-error>
-                                    } -->
                                     </mat-form-field>
                                   </div>
-                                  <div class="col-xl-2-5 col-lg-3 col-md-3 col-sm-6 col-xs-6 m-b-0 p-r-0">
+                                  <div class="col-xl-2-5 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0 p-r-0">
                                     <div class="row">
                                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                         <mat-label>{{translatedLangText.SPECIFICATION}}:</mat-label>
@@ -1862,7 +1850,7 @@
                                       </div>
                                     </div>
                                   </div>
-                                  <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0 p-l-1">
+                                  <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                     <div class="row">
                                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                                         <mat-form-field class="example-full-width">
@@ -1931,7 +1919,7 @@
                                       <mat-icon>chevron_left</mat-icon>
                                     </button>
                                   </div>
-                                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
                                   </div>
                                 </div>
                               </form>
@@ -1946,7 +1934,7 @@
                             <mat-icon>chevron_left</mat-icon>
                           </button>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-right">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
                           @if ((compartmentStepper?.selectedIndex ?? 0) === ((compartmentStepper?._steps?.length ?? 0) -
                           1)) {
                           @if (canPublish()) {
