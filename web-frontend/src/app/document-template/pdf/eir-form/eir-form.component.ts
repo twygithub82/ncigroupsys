@@ -557,9 +557,18 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     //const contentWidth = pageWidth - leftMargin - rightMargin;
     const chartContentWidth = contentWidth;
 
-    const canvas = await html2canvas(element as HTMLElement, { scale: scale });
-    let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-    const imgHeight = ((canvas.height * chartContentWidth) / canvas.width);
+    // const canvas = await html2canvas(element as HTMLElement, { scale: scale });
+    // let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+    // const imgHeight = ((canvas.height * chartContentWidth) / canvas.width);
+
+    const imgData = await Utility.convertToImage(element as HTMLElement,"jpeg");
+    const imgInfo = await Utility.getImageSizeFromBase64(imgData);
+    const aspectRatio = imgInfo.width / imgInfo.height;
+
+    // Calculate scaled height based on available width
+    let imgHeight = contentWidth / aspectRatio;
+
+    
 
     pdf.addImage(imgData, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight);
 
