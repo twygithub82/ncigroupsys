@@ -379,7 +379,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
       .pipe(map(({ matches }) => (matches ? 'horizontal' : 'vertical')));
     this.compTypeStepperOrientation = breakpointObserver
       .observe('(min-width: 800px)')
-      .pipe(map(({ matches }) => (matches ? 'horizontal' : 'vertical')));
+      .pipe(map(({ matches }) => (matches ? 'horizontal' : 'horizontal')));
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
