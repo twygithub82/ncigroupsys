@@ -1105,10 +1105,17 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       const card = cardElements[i];
 
       // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
-      const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
+      // const canvas = await html2canvas(card, { scale: this.scale });
+      // const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with specified quality
 
-      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+      // const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+
+      const imgData = await Utility.convertToImage(card,"jpeg");
+    const imgInfo = await Utility.getImageSizeFromBase64(imgData);
+    const aspectRatio = imgInfo.width / imgInfo.height;
+
+    // Calculate scaled height based on available width
+    let imgHeight = contentWidth / aspectRatio;
 
       // Check if the card fits on the current page
       if (currentY + imgHeight > maxContentHeight) {

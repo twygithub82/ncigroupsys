@@ -1029,7 +1029,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
            {
              case 2:
              // if(showPreinspectSurcharge) prop="preinspection";
-               if(showGateSurcharge) prop="gate";
+               if(showGateSurcharge) prop="in_out";
               else if(showSteamSurcharge) prop="steaming";
               else if(showCleanSurcharge) prop="cleaning";
               else if(showRepairSurcharge) prop="repair";
@@ -1164,8 +1164,9 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       startY=topMargin+20;
     }
     const card1 = cardElements[i];
-    const canvas1 = await html2canvas(card1, { scale: scale });
-    Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
+    await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+    // const canvas1 = await html2canvas(card1, { scale: scale });
+    // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
   
   }
 

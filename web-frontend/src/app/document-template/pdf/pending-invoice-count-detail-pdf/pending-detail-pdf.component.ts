@@ -895,9 +895,16 @@ export class PendingDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     for (let i = 0; i < cardElements.length; i++) {
         const card = cardElements[i];
 
-        const canvas = await html2canvas(card, { scale: scale });
-        let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+        // const canvas = await html2canvas(card, { scale: scale });
+        // let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+        // const imgHeight = (canvas.height * contentWidth) / canvas.width;
+        const imgData = await Utility.convertToImage(card,"jpeg");
+        const imgInfo = await Utility.getImageSizeFromBase64(imgData);
+        const aspectRatio = imgInfo.width / imgInfo.height;
+    
+        // Calculate scaled height based on available width
+        let imgHeight = contentWidth / aspectRatio;
+        
 
         if (currentY + imgHeight > maxContentHeight) {
             let currentY_canvas = 0;

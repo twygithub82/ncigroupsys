@@ -380,7 +380,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const material_cost = this.repairPartForm?.get('material_cost');
     const quantity = this.repairPartForm?.get('quantity');
     const hour = this.repairPartForm?.get('hour');
-    var  currentMaterialCost = this.repairPart?.material_cost!.toFixed(2)
+    var  currentMaterialCost = this.parse2Decimal(this.repairPart?.material_cost) ;
     if (!isResetDisable) {
       quantity?.setValue(1);
       quantity?.disable();
@@ -622,4 +622,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
   }
+
+   parse2Decimal(input: number | string | undefined) {
+      return Utility.formatNumberDisplay(input);
+    }
 }

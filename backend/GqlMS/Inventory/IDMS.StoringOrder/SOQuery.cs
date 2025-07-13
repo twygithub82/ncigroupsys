@@ -23,6 +23,7 @@ namespace IDMS.StoringOrder.GqlTypes
         {
             try
             {
+                Console.WriteLine($"{DateTime.Now.ToString("yyyy-MMM-dd HH:mm:ss.ffff")} - QueryStoringOrder");
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
                      .Include(so => so.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0))

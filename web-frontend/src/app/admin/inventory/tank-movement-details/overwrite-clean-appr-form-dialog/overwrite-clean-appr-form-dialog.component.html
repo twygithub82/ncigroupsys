@@ -202,8 +202,8 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                      <span
-                        class="mobile-label">{{data.translatedLangText.ESTIMATE}}:</span>{{parse2Decimal(row.est_cleaning_cost)}}
+                      <!-- <span class="mobile-label">{{data.translatedLangText.ESTIMATE}}:</span>{{parse2Decimal(row.est_cleaning_cost)}} -->
+                       <span class="mobile-label">{{data.translatedLangText.ESTIMATE}}:</span>{{parse2Decimal(getCleaningCost(row,false))}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center">
@@ -217,12 +217,13 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                      <span
-                        class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>{{parse2Decimal(row.cleaning_cost)}}
+                      <!-- <span class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>{{parse2Decimal(row.cleaning_cost)}} -->
+                       <span class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>{{parse2Decimal(getCleaningCost(row,true))}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center">
-                      {{parse2Decimal(cleaningItem.cleaning_cost)}}
+                      <!-- {{parse2Decimal(cleaningItem.cleaning_cost)}} -->
+                       {{parse2Decimal(getTotalCleaningCost())}}
                     </mat-footer-cell>
                   </ng-container>
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

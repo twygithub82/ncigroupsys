@@ -19,7 +19,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule,Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -40,6 +40,8 @@ import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { UserDS ,UserItem } from 'app/data-sources/user';
+import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
   selector: 'app-user',
@@ -81,12 +83,12 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
   displayedColumns = [
     'fName',
-    'lName',
+    // 'lName',
     'role',
     'team',
     'mobile',
     'bDate',
-    'email',
+    // 'email',
   ];
 
   pageTitle = 'MENUITEMS.MANAGEMENT.LIST.USER'
@@ -105,13 +107,14 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   handledItemCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
 
+  usrDS:UserDS;
   ccDS: CustomerCompanyDS;
   // tariffResidueDS:TariffResidueDS;
   // packResidueDS:PackageResidueDS;
   // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
-  packResidueItems: PackageResidueItem[] = [];
+  userList: UserItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
@@ -120,7 +123,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { code: "ASC" };
+  lastOrderBy: any = { userName: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -129,7 +132,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
   searchField: string = "";
   selection = new SelectionModel<PackageResidueItem>(true, []);
-
+  pageStateType = 'User';
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
@@ -244,10 +247,12 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
+    private searchStateService: SearchStateService,
     private translate: TranslateService
 
   ) {
     super();
+    this.usrDS= new UserDS(this.apollo);
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.tariffResidueDS = new TariffResidueDS(this.apollo);
@@ -263,10 +268,12 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.translateLangText();
     var state = history.state;
-    if (state.type == "customer-company") {
+    
+    if (state.type == "user") {
       let showResult = state.pagination.showResult;
       if (showResult) {
         this.searchCriteriaService = state.pagination.where;
@@ -282,22 +289,23 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
       }
 
     }
+    this.search();
   }
 
   initPcForm() {
     this.pcForm = this.fb.group({
-      guid: [{ value: '' }],
+      // guid: [{ value: '' }],
       user: [''],
-      customer_code: this.customerCodeControl,
-      alias_name: [''],
-      phone: [''],
-      fax_no: [''],
-      email: [''],
-      country: [''],
-      contact_person: [''],
-      mobile_no: [''],
-      description: this.descriptionControl,
-      handled_item_cv: this.handledItemControl
+      // customer_code: this.customerCodeControl,
+      // alias_name: [''],
+      // phone: [''],
+      // fax_no: [''],
+      // email: [''],
+      // country: [''],
+      // contact_person: [''],
+      // mobile_no: [''],
+      // description: this.descriptionControl,
+      // handled_item_cv: this.handledItemControl
     });
   }
 
@@ -414,26 +422,26 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
   editCall(row: CustomerCompanyItem) {
 
-    this.router.navigate([`/admin/master/customer/new/${row.guid} `], {
-      state: {
-        id: row.guid,
-        type: 'customer-company',
-        selectedRow: row,
-        pagination: {
-          where: this.lastSearchCriteria,
-          pageSize: this.pageSize,
-          pageIndex: this.pageIndex,
-          hasPreviousPage: this.hasPreviousPage,
-          startCursor: this.startCursor,
-          endCursor: this.endCursor,
-          previous_endCursor: this.previous_endCursor,
+    // this.router.navigate([`/admin/master/customer/new/${row.guid} `], {
+    //   state: {
+    //     id: row.guid,
+    //     type: 'customer-company',
+    //     selectedRow: row,
+    //     pagination: {
+    //       where: this.lastSearchCriteria,
+    //       pageSize: this.pageSize,
+    //       pageIndex: this.pageIndex,
+    //       hasPreviousPage: this.hasPreviousPage,
+    //       startCursor: this.startCursor,
+    //       endCursor: this.endCursor,
+    //       previous_endCursor: this.previous_endCursor,
 
-          showResult: this.ccDS.totalCount > 0
+    //       showResult: this.ccDS.totalCount > 0
 
-        }
-      }
-    });
-    // this.preventDefault(event);  // Prevents the form submission
+    //     }
+    //   }
+    // });
+    // // this.preventDefault(event);  // Prevents the form submission
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
     //   tempDirection = 'rtl';
@@ -480,9 +488,9 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.packResidueItems.length;
-    return numSelected === numRows;
+  //   const numSelected = this.selection.selected.length;
+  //  // const numRows = this.packResidueItems.length;
+  //   return numSelected === numRows;
   }
 
   isSelected(option: any): boolean {
@@ -491,73 +499,43 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.packResidueItems.forEach((row) =>
-        this.selection.select(row)
-      );
+    // this.isAllSelected()
+    //   ? this.selection.clear()
+    //   : this.packResidueItems.forEach((row) =>
+    //     this.selection.select(row)
+    //   );
   }
 
 
 
-  search() {
-    const where: any = {};
+  // search() {
+  //   const where: any = {};
 
-    if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
+  
 
+  //   if (this.pcForm!.value["alias"]) {
+  //     where.alias = { contains: this.pcForm!.value["alias"] };
+  //   }
 
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
-        where.guid = { in: guids };
-      }
-    }
-
-    if (this.pcForm!.value["alias"]) {
-      where.alias = { contains: this.pcForm!.value["alias"] };
-    }
-
-    // if (this.pcForm!.value["fax_no"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
-    // }
-
-    // if (this.pcForm!.value["phone"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
-    // }
+   
 
 
-    // if (this.pcForm!.value["email"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
-    // }
-
-    if (this.pcForm!.value["country"]) {
-      where.country = { eq: this.pcForm!.value["country"] };
-    }
-
-    if (this.pcForm!.value["contact_person"]) {
-      where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
-    }
-
-
-    this.lastSearchCriteria = where;
-    this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.customer_companyList = data;
-      // data[0].storage_cal_cv
-      this.previous_endCursor = undefined;
-      this.endCursor = this.ccDS.pageInfo?.endCursor;
-      this.startCursor = this.ccDS.pageInfo?.startCursor;
-      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
+  //   this.lastSearchCriteria = where;
+  //   this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+  //     this.customer_companyList = data;
+  //     // data[0].storage_cal_cv
+  //     this.previous_endCursor = undefined;
+  //     this.endCursor = this.ccDS.pageInfo?.endCursor;
+  //     this.startCursor = this.ccDS.pageInfo?.startCursor;
+  //     this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
+  //     this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+  //     this.pageIndex = 0;
+  //     this.paginator.pageIndex = 0;
+  //     this.selection.clear();
+  //     if (!this.hasPreviousPage)
+  //       this.previous_endCursor = undefined;
+  //   });
+  // }
 
   selectStorageCalculateCV_Description(valCode?: string): string {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
@@ -582,82 +560,26 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
-  onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize, previousPageIndex } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-    let order: any | undefined = this.lastOrderBy;
-    // Check if the page size has changed
-    if (this.pageSize !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndex = 0;
-      this.pageSize = pageSize;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
-      if (pageIndex > this.pageIndex) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursor;
-      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursor;
-      }
-      else if (pageIndex == this.pageIndex) {
-
-        first = pageSize;
-        after = this.previous_endCursor;
+ 
 
 
-        //this.paginator.pageIndex=this.pageIndex;
+  // storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
+  //   previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
+  //   const sCriteria: any = {};
+  //   sCriteria.where = where;
+  //   sCriteria.order = order;
+  //   sCriteria.first = first;
+  //   sCriteria.after = after;
+  //   sCriteria.last = last;
+  //   sCriteria.before = before;
+  //   sCriteria.pageIndex = pageIndex;
+  //   sCriteria.previousPageIndex = previousPageIndex;
+  //   sCriteria.length = length;
+  //   sCriteria.hasNextPage = hasNextPage;
+  //   sCriteria.hasPreviousPage = hasPreviousPage;
 
-      }
-    }
-
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
-  }
-
-  searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number) {
-    this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.ccDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.customer_companyList = data;
-      this.endCursor = this.ccDS.pageInfo?.endCursor;
-      this.startCursor = this.ccDS.pageInfo?.startCursor;
-      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = pageIndex;
-      this.paginator.pageIndex = this.pageIndex;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
-
-  storeSearchCriteria(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
-    previousPageIndex?: number, length?: number, hasNextPage?: boolean, hasPreviousPage?: boolean) {
-    const sCriteria: any = {};
-    sCriteria.where = where;
-    sCriteria.order = order;
-    sCriteria.first = first;
-    sCriteria.after = after;
-    sCriteria.last = last;
-    sCriteria.before = before;
-    sCriteria.pageIndex = pageIndex;
-    sCriteria.previousPageIndex = previousPageIndex;
-    sCriteria.length = length;
-    sCriteria.hasNextPage = hasNextPage;
-    sCriteria.hasPreviousPage = hasPreviousPage;
-
-    this.searchCriteriaService.setCriteria(sCriteria);
-  }
+  //   this.searchCriteriaService.setCriteria(sCriteria);
+  // }
 
   removeSelectedRows() {
 
@@ -781,6 +703,122 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
+  
+    constructSearchCriteria() {
+      const where: any = {
+             };
+  
+    if (this.pcForm!.value["user"]) {
+       var value= this.pcForm!.value["user"]; 
+      where.or = [
+        {email:{ contains: value }},
+        {userName:{ contains: value }},
+      ];
+    }
+      this.lastSearchCriteria =where;
+    }
+  
+    search() {
+      this.constructSearchCriteria();
+      this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+        this.updatePageSelection();
+      });
+    }
+  
+    performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+      this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+      this.searchStateService.setPagination(this.pageStateType, {
+        pageSize,
+        pageIndex,
+        first,
+        after,
+        last,
+        before
+      });
+      console.log(this.searchStateService.getPagination(this.pageStateType))
+      this.subs.sink = this.usrDS.searchUser(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+        .subscribe(data => {
+          this.userList = data;
+          this.endCursor = this.usrDS.pageInfo?.endCursor;
+          this.startCursor = this.usrDS.pageInfo?.startCursor;
+          this.hasNextPage = this.usrDS.pageInfo?.hasNextPage ?? false;
+          this.hasPreviousPage = this.usrDS.pageInfo?.hasPreviousPage ?? false;
+        });
+  
+      this.pageSize = pageSize;
+      this.pageIndex = pageIndex;
+    }
+  
+    onPageEvent(event: PageEvent) {
+      const { pageIndex, pageSize } = event;
+      let first: number | undefined = undefined;
+      let after: string | undefined = undefined;
+      let last: number | undefined = undefined;
+      let before: string | undefined = undefined;
+  
+      // Check if the page size has changed
+      if (this.pageSize !== pageSize) {
+        // Reset pagination if page size has changed
+        this.pageIndex = 0;
+        first = pageSize;
+        after = undefined;
+        last = undefined;
+        before = undefined;
+      } else {
+        if (pageIndex > this.pageIndex && this.hasNextPage) {
+          // Navigate forward
+          first = pageSize;
+          after = this.endCursor;
+        } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+          // Navigate backward
+          last = pageSize;
+          before = this.startCursor;
+        }
+      }
+  
+      this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+        this.updatePageSelection();
+      });
+    }
+
+    updatePageSelection()
+    {
+
+    }
+
+     onSortChange(event: Sort): void {
+        const { active: field, direction } = event;
+    
+        // reset if no direction
+        if (!direction) {
+          this.lastOrderBy = null;
+          return this.search();
+        }
+    
+        // convert to GraphQL enum (uppercase)
+        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+    
+        switch (field) {
+          case 'fName':
+            this.lastOrderBy = {
+              
+                userName: dirEnum,
+              
+            };
+            break;
+    
+          default:
+            this.lastOrderBy = {userName:"ASC"};
+        }
+    
+        this.search();
+      }
+    
+      AutoSearch() {
+        if (Utility.IsAllowAutoSearch())
+          this.search();
+      }
 
 }
 

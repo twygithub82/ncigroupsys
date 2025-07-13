@@ -193,4 +193,17 @@ export class OverwriteCleaningApprovalFormDialogComponent {
   getProcessStatusDescription(codeValType: string | undefined): string | undefined {
     return BusinessLogicUtil.getCodeDescription(codeValType, this.data.populateData?.processStatusCvList);
   }
+
+  getCleaningCost( row :InGateCleaningItem, approval:boolean ): number | undefined {
+    var retval= (row.est_cleaning_cost||0)+(row.est_buffer_cost||0);
+    if (approval) {
+      retval= (row.cleaning_cost||0)+(row.buffer_cost||0);
+    }
+    return retval; 
+  }
+
+  getTotalCleaningCost(): number | undefined {
+    
+    return this.getCleaningCost(this.cleaningItem,true);
+  }
 }

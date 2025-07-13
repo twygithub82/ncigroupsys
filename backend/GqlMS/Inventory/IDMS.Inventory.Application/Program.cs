@@ -35,7 +35,46 @@ namespace IDMS.Inventory
             var JWT_secretKey = await GqlUtils.GetJWTKey(connectionString);
             string pingDurationMin = builder.Configuration.GetSection("PingDurationMin").Value ?? "3";
 
-            //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+
+            connectionString += ";ConnectionIdlePingTime=30;";   // 30 seconds
+                                //"Pooling=true;" +                 // Enable pooling
+                                //"MinimumPoolSize=5;" +            // Minimum connections to maintain
+                                //"MaximumPoolSize=100";            // Maximum connections in pool
+                                //                                  //builder.Services.AddPooledDbContextFactory<SODbContext>(o => o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)).LogTo(Console.WriteLine));
+
+            //builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(o =>
+            //{
+            //    o.UseMySql(
+            //            connectionString,
+            //            ServerVersion.AutoDetect(connectionString),
+            //            mysqlOptions =>
+            //            {
+            //                // Transient error handling
+            //                mysqlOptions.EnableRetryOnFailure(
+            //                    maxRetryCount: 5,
+            //                    maxRetryDelay: TimeSpan.FromSeconds(30),
+            //                    errorNumbersToAdd: new List<int> { 1205, 1213, 2006, 2013, 1042 });
+
+            //                // Connection resilience settings
+            //                mysqlOptions.EnableCommandRetries(true);
+            //                mysqlOptions.DefaultCommandTimeout(60); // 60 second command timeout
+
+            //                // Connection validation
+            //                mysqlOptions.EnableConnectionPreParing(true);
+            //                mysqlOptions.ConnectionPreparationTimeout(TimeSpan.FromSeconds(5));
+
+            //                // Connection lifetime management
+            //                mysqlOptions.ConnectionIdleTimeout(TimeSpan.FromMinutes(10));
+            //                mysqlOptions.ConnectionIdlePingTime(TimeSpan.FromMinutes(3));
+
+            //                // Custom execution strategy
+            //                mysqlOptions.ExecutionStrategy(dependencies =>
+            //                    new CustomMySqlExecutionStrategy(dependencies));
+            //            })
+            //        .EnableDetailedErrors(true)
+            //        .EnableSensitiveDataLogging(false)
+            //        .LogTo(Console.WriteLine, LogLevel.Information);
+            //});
             builder.Services.AddPooledDbContextFactory<ApplicationInventoryDBContext>(o =>
             {
                 o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
@@ -44,6 +83,7 @@ namespace IDMS.Inventory
                                   maxRetryDelay: TimeSpan.FromSeconds(10),
                                   errorNumbersToAdd: null)
                      .ExecutionStrategy(c => new MySqlExecutionStrategy(c))
+
                     ).LogTo(Console.WriteLine);
                 o.EnableSensitiveDataLogging(false);
             });
@@ -69,7 +109,8 @@ namespace IDMS.Inventory
 
             IMapper mapper = mappingConfig.CreateMapper();
             builder.Services.AddSingleton(mapper);
-            builder.Services.AddHostedService<KeepAliveService>();
+            builder.Services.AddHostedService<DbKeepAliveService>();
+            //builder.Services.AddHostedService<KeepAliveService>();
             //builder.Services.AddControllers();
             //// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             //builder.Services.AddEndpointsApiExplorer();

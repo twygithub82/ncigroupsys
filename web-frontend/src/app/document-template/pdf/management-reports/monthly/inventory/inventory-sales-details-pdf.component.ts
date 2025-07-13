@@ -1274,8 +1274,9 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       startY=topMargin+20;
     
     const card1 = cardElements[i];
-    const canvas1 = await html2canvas(card1, { scale: scale });
-    Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
+    await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+    // const canvas1 = await html2canvas(card1, { scale: scale });
+    // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
    
   }
 

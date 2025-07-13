@@ -324,7 +324,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   chunkedRepairCodeCvList: any[][] = [];
   unitTypeCvList: CodeValuesItem[] = [];
 
-  scale = 2.5;
+  scale = 2;
   imageQuality = 0.7;
 
   generatedPDF: any;
@@ -853,7 +853,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY-3 , 9);
 
     if(this.customer)
     {
@@ -1218,11 +1218,18 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       startY=topMargin+20;
     }
     const card1 = cardElements[i];
-    const canvas1 = await html2canvas(card1, { scale: scale });
-    const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+    card1.style.boxShadow = 'none';
+    card1.style.transition = 'none';
+    // const canvas1 = await html2canvas(card1, { useCORS: true, allowTaint:false,scale: scale });
+    //const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
     // Calculate aspect ratio
-    const aspectRatio = canvas1.width / canvas1.height;
+    //const aspectRatio = canvas1.width / canvas1.height;
+
+
+    const imgData1 = await Utility.convertToImage(card1,"jpeg");
+    const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
+    const aspectRatio = imgInfo.width / imgInfo.height;
 
     // Calculate scaled height based on available width
     let imgHeight1 = chartContentWidth / aspectRatio;

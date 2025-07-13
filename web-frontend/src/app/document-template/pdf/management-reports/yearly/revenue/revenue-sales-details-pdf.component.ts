@@ -1016,7 +1016,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
               else if(showCleanSurcharge) prop="cleaning";
               else if(showRepairSurcharge) prop="repair";
               else if(showResidueSurcharge) prop="residue";
-              else if(showGateSurcharge) prop="gate";
+              else if(showGateSurcharge) prop="in_out";
               else if(showLoloSurcharge) prop="lolo";
               else if(showStorageSurcharge) prop="storage";
                break;
@@ -1027,7 +1027,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
               if(showStorageSurcharge) prop="storage";
               break;
             case 10:
-              if(showGateSurcharge)prop="gate";
+              if(showGateSurcharge)prop="in_out";
                break;
             case 12:
               if(showSteamSurcharge)var prop="steaming";
@@ -1306,8 +1306,9 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       startY=topMargin+20;
     }
     const card1 = cardElements[i];
-    const canvas1 = await html2canvas(card1, { scale: scale });
-    Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
+    await Utility.DrawCardForImageAtCenterPage(pdf,card1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
+    //const canvas1 = await html2canvas(card1, { scale: scale });
+    //Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
    
   }
 

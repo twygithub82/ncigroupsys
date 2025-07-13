@@ -6,6 +6,7 @@ import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
 import { PDFUtility } from "./pdf-utility";
 import { systemCurrencyCode } from '../../environments/environment';
+import * as domtoimage from 'dom-to-image-more';
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -809,6 +810,46 @@ export class Utility {
     // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
   }
 
+
+  static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number, 
+    rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
+    let chartContentWidth = maxChartWidth;
+
+    let startY: number = topPosition;
+
+    // card.style.boxShadow = 'none';
+    // card.style.transition = 'none';
+    const imgData1 = await Utility.convertToImage(card,"jpeg");
+    const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
+    const aspectRatio = imgInfo.width / imgInfo.height;
+
+    // const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
+    // const aspectRatio = canvas.width / canvas.height;
+
+    // Calculate scaled height based on available width
+    let imgHeight1 = chartContentWidth / aspectRatio;
+
+    // Check if the scaled height exceeds the available page height
+    const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+    if (imgHeight1 > maxPageHeight) {
+      // Adjust height to fit within the page
+      imgHeight1 = maxPageHeight;
+      // Recalculate width to maintain aspect ratio
+      chartContentWidth = imgHeight1 * aspectRatio;
+    }
+
+    let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
+
+    // Add the image to the PDF
+    pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+
+
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
+    // Draw underline for the title
+    // pdf.setLineWidth(0.1); // Set line width for underline
+    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+  }
+
   static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
     let chartContentWidth = maxChartWidth;
 
@@ -1265,6 +1306,50 @@ export class Utility {
 
     return a.length - b.length;
   }
+
+
+ static  async  convertToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
+    if (!element) throw new Error('Invalid element');
+
+    const rect = element.getBoundingClientRect();
+    element.style.boxShadow = 'none';
+    element.style.animation = 'none';
+    element.style.transition = 'none';
+    return type === 'jpeg'
+      ? await domtoimage.toJpeg(element,
+       
+        {  quality: 0.95,
+          skipFonts: true ,
+           width: rect.width,
+        height:rect.height,
+        filter: (node:any) => {
+          // Optionally filter out problematic elements if needed
+          return true;
+        },
+        // Optional workaround: manually clone inline styles only
+        style: {
+          fontFamily: 'Material Symbols Outlined'
+        } })
+      : await domtoimage.toPng(element);
+  }
+
+  static async  getImageSizeFromBase64(base64: string): Promise<{ width: number; height: number }> {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+
+    return new Promise((resolve, reject) => {
+      img.onload = () => {
+        resolve({ width: img.width, height: img.height });
+      };
+
+      img.onerror = () => {
+        reject(new Error('Failed to load base64 image.'));
+      };
+
+      img.src = base64;
+    });
+  }
+
 }
 
 export const TANK_STATUS_PRE_IN_YARD = [
