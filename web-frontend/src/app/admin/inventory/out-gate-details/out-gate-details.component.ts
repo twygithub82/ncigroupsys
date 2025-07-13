@@ -32,7 +32,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { OutGateDS, OutGateItem } from 'app/data-sources/out-gate';
@@ -187,6 +187,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   yesnoCv: CodeValuesItem[] = [];
   yardCv: CodeValuesItem[] = [];
   loloCv: CodeValuesItem[] = [];
+  cleanStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -280,7 +281,8 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
       { alias: 'yardCv', codeValType: 'YARD' },
-      { alias: 'loloCv', codeValType: 'LOLO' }
+      { alias: 'loloCv', codeValType: 'LOLO' },
+      { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -297,6 +299,9 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
     });
     this.cvDS.connectAlias('loloCv').subscribe(data => {
       this.loloCv = data;
+    });
+    this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
+      this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
     });
   }
 
@@ -449,6 +454,10 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
 
   getCleaningConditionBadgeClass(status: string | undefined): string {
     return Utility.getCleaningConditionBadgeClass(status);
+  }
+
+  getCleanStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.cleanStatusCvList);
   }
 
   handleSaveSuccess(count: any) {
