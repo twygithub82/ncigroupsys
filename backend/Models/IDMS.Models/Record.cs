@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace IDMS.Models
 {
+    [NotMapped]
     public class Record
     {
-        [NotMapped]
         public int affected { get; set; }
-        [NotMapped]
-        public List<string> guid { get; set; }   
+        public List<string>? guid { get; set; }   
+        public string? residue_guid { get; set; }
     }
 }

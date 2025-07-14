@@ -90,5 +90,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
         public DbSet<steaming> steaming { get; set; }
         public DbSet<steaming_part> steaming_part { get; set; }
         public DbSet<steaming_temp> steaming_temp { get; set; }
+
+        public DbSet<role> role { get; set; }
     }
 }
