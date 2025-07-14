@@ -32,7 +32,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS, InGateGO } from 'app/data-sources/in-gate';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
@@ -176,6 +176,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
   hazardLevelCvList: CodeValuesItem[] = [];
   banTypeCvList: CodeValuesItem[] = [];
   natureTypeCvList: CodeValuesItem[] = [];
+  cleanStatusCvList: CodeValuesItem[] = [];
 
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
@@ -281,6 +282,7 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
       { alias: 'hazardLevelCv', codeValType: 'HAZARD_LEVEL' },
       { alias: 'banTypeCv', codeValType: 'BAN_TYPE' },
       { alias: 'natureTypeCv', codeValType: 'NATURE_TYPE' },
+      { alias: 'cleanStatusCv', codeValType: 'CLEAN_STATUS' },
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('soStatusCv').subscribe(data => {
@@ -294,9 +296,6 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('yardCv').subscribe(data => {
       this.yardCvList = data;
-      // if (this.yardCvList.length > 0) {
-      //   this.inGateForm!.get('yard_cv')?.setValue(this.yardCvList[0].code_val);
-      // }
     });
     this.cvDS.connectAlias('hazardLevelCv').subscribe(data => {
       this.hazardLevelCvList = data;
@@ -306,6 +305,9 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
     });
     this.cvDS.connectAlias('natureTypeCv').subscribe(data => {
       this.natureTypeCvList = data;
+    });
+    this.cvDS.connectAlias('cleanStatusCv').subscribe(data => {
+      this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
     });
   }
 
@@ -492,6 +494,10 @@ export class InGateDetailsComponent extends UnsubscribeOnDestroyAdapter implemen
 
   getCleaningConditionBadgeClass(status: string | undefined): string {
     return Utility.getCleaningConditionBadgeClass(status);
+  }
+
+  getCleanStatusDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.cleanStatusCvList);
   }
 
   handleSaveSuccess(count: any) {

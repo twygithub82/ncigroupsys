@@ -181,8 +181,7 @@
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <span class="contact-detail-label">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
                             <span
-                              [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{storingOrderTankItem?.clean_status_cv
-                              ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
+                              [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}</span>
                           </div>
                           <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-0 align-right p-0">
                             <span>{{translatedLangText.CLEANING_CONDITIONS}}:</span>

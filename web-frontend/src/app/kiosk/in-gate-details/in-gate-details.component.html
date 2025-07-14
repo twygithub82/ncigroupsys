@@ -73,8 +73,7 @@
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <span class="contact-detail-label">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
                             <span
-                              [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{storingOrderTankItem?.clean_status_cv
-                              ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
+                              [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}</span>
                           </div>
                         </div>
                       </div>
