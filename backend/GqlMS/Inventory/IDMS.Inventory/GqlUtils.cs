@@ -18,9 +18,11 @@ using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Data.Entity;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 
 namespace IDMS.Inventory.GqlTypes
@@ -209,9 +211,14 @@ namespace IDMS.Inventory.GqlTypes
                 var isCheckAuthorization = Convert.ToBoolean(config["JWT:CheckAuthorization"]);
                 if (!isCheckAuthorization) return "anonymous user";
 
+
                 var authUser = httpContextAccessor.HttpContext.User;
-                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value; //authUser.FindFirstValue(ClaimTypes.GroupSid);
-                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;//authUser.FindFirstValue(ClaimTypes.Name);
+                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value;
+                if (primarygroupSid == null)
+                    primarygroupSid = authUser.FindFirst("GroupSid")?.Value;
+                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;
+                if (uid == null)
+                    uid = authUser.FindFirst("Name").Value;
                 if (primarygroupSid != "s1")
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
@@ -234,7 +241,6 @@ namespace IDMS.Inventory.GqlTypes
                     var query = @"
                     query($message: MessageInput!) {
                         sendMessage(message: $message) {
-                  
                         }
                     }";
 
@@ -263,6 +269,52 @@ namespace IDMS.Inventory.GqlTypes
 
                     HttpClient _httpClient = new();
                     string queryStatement = JsonConvert.SerializeObject(query);
+                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                    var data = await _httpClient.PostAsync(httpURL, content);
+                    Console.WriteLine(data);
+                }
+            }
+            catch (Exception ex)
+            { }
+        }
+
+        public static async Task SendGlobalNotification1([Service] IConfiguration config,
+                        string topic, string eventId, string eventName, int count, string jsonString)
+        {
+            try
+            {
+                string httpURL = $"{config["GlobalNotificationURL"]}";
+                if (!string.IsNullOrEmpty(httpURL))
+                {
+                    //string jsonString = JsonConvert.SerializeObject(jobNotification);
+                    var message = new
+                    {
+                        topic = topic,
+                        count = 1,
+                        event_id = string.IsNullOrEmpty(eventId) ? Util.GenerateGUID() : eventId,
+                        event_name = eventName,
+                        event_dt = DateTime.Now.ToEpochTime(),
+                        payload = jsonString
+                    };
+
+                    var graphqlQuery = new
+                    {
+                        query = @"
+                        query SendMessage($message: Message_r1Input!) {
+                          sendMessage_r1(message: $message)
+                        }",
+                        variables = new
+                        {
+                            message
+                        }
+                    };
+
+                    // Serialize the payload to JSON
+                    var jsonPayload = JsonConvert.SerializeObject(graphqlQuery);
+                    //string jsonPayload = JObject.FromObject(requestPayload).ToString(Newtonsoft.Json.Formatting.None);
+
+                    HttpClient _httpClient = new();
+                    //string queryStatement = Newtonsoft.Json.JsonConvert.SerializeObject(query);
                     var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                     var data = await _httpClient.PostAsync(httpURL, content);
                     Console.WriteLine(data);
@@ -375,6 +427,8 @@ namespace IDMS.Inventory.GqlTypes
                             ingateCleaning.guid = Util.GenerateGUID();
                             ingateCleaning.create_by = "system";
                             ingateCleaning.create_dt = currentDateTime;
+                            ingateCleaning.update_by = "system";
+                            ingateCleaning.update_dt = currentDateTime;
                             ingateCleaning.sot_guid = sot.guid;
                             ingateCleaning.approve_dt = currentDateTime; //Change to this after daniel request //ingate_date;
                             ingateCleaning.approve_by = "system";
@@ -522,6 +576,8 @@ namespace IDMS.Inventory.GqlTypes
                         newSteam.guid = Util.GenerateGUID();
                         newSteam.create_by = "system";
                         newSteam.create_dt = currentDateTime;
+                        newSteam.update_by = "system";
+                        newSteam.update_dt = currentDateTime;
                         newSteam.sot_guid = sot.guid;
                         newSteam.status_cv = CurrentServiceStatus.APPROVED;
                         newSteam.job_no = newJob_no; //sot?.job_no;
@@ -559,6 +615,8 @@ namespace IDMS.Inventory.GqlTypes
                     steamingPart.guid = Util.GenerateGUID();
                     steamingPart.create_by = "system";
                     steamingPart.create_dt = currentDateTime;
+                    steamingPart.update_by = "system";
+                    steamingPart.update_dt = currentDateTime;
                     //if (isNew)
                     //  steamingPart.steaming_guid = newSteamingGuid;
                     steamingPart.steaming_guid = steamingGuid;
@@ -771,6 +829,8 @@ namespace IDMS.Inventory.GqlTypes
                     tf.guid = Util.GenerateGUID();
                     tf.create_by = user;
                     tf.create_dt = currentDateTime;
+                    tf.update_by = user;
+                    tf.update_dt = currentDateTime;
                     await context.AddAsync(tf);
                 }
                 else
@@ -948,23 +1008,206 @@ namespace IDMS.Inventory.GqlTypes
             }
         }
 
+        public static async Task<int> GetWaitingSOTCount(ApplicationInventoryDBContext context)
+        {
+            try
+            {
+                var sotCount = context.storing_order_tank.Where(s => s.status_cv == SOTankStatus.WAITING &&
+                                                   (s.delete_dt == null || s.delete_dt == 0)).Select(s => s.guid).Count();
+                return sotCount;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
+        public static async Task<int> GetPendingSurveyCount(ApplicationInventoryDBContext context, string gate)
+        {
+            try
+            {
+                if (gate.EqualsIgnore("IN")) 
+                {
+                    var count = context.in_gate.Where(ig => ig.eir_status_cv == EirStatus.YET_TO_SURVEY && (ig.delete_dt == null || ig.delete_dt == 0))
+                              .Select(ig => ig.guid)
+                              .Distinct()
+                              .Count();
+                    return count;
+                }
+                else
+                {
+                    var count = context.in_gate.Where(ig => ig.eir_status_cv == EirStatus.YET_TO_SURVEY && (ig.delete_dt == null || ig.delete_dt == 0))
+                      .Select(ig => ig.guid)
+                      .Distinct()
+                      .Count();
+                    return count;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
-        //private static bool AnyJobInProgress(ApplicationInventoryDBContext context, string processGuid)
-        //{
-        //    string sqlQuery = $@"SELECT * FROM job_order WHERE delete_dt IS NULL AND guid IN (
-        //                                SELECT distinct job_order_guid FROM repair_part 
-        //                                WHERE repair_guid = '{processGuid}' AND approve_part = 1 AND delete_dt IS NULL);";
+        public static async Task<PendingProcessCount> GetSOTPendingProcessCount(ApplicationInventoryDBContext context)
+        {
+            try
+            {
+                var SOT = context.storing_order_tank
+                         .Where(s => s.status_cv == SOTankStatus.ACCEPTED && (s.delete_dt == null || s.delete_dt == 0))
+                         .AsQueryable();
 
-        //    var jobOrderList = context.job_order.FromSqlRaw(sqlQuery).AsNoTracking().ToList();
-        //    if (jobOrderList?.Any() == true & !jobOrderList.Any(j => j == null))
-        //    {
-        //        bool pendingJob = false;
-        //        pendingJob = jobOrderList.Any(jobOrder => jobOrder.status_cv.EqualsIgnore(CurrentServiceStatus.JOB_IN_PROGRESS));
+                var cleanCount = await GetPendingCleaningCount(SOT);
+                var steamCount = await GetPendingSteamingCount(SOT);
+                var residueCount = await GetPendingResidueCount(SOT);
+                var repairCount = await GetPendingRepairCount(SOT);
 
-        //        return pendingJob;
-        //    }
-        //    return false;
-        //}
+                PendingProcessCount counts = new PendingProcessCount()
+                {
+                    Pending_Cleaning_Count = cleanCount,
+                    Pending_Residue_Count = residueCount,
+                    Pending_Steaming_Count = steamCount,
+                    Pending_Estimate_Count = repairCount,
+                };
+
+                return counts;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private static async Task<int> GetPendingCleaningCount(IQueryable<storing_order_tank>? SOT)
+        {
+            try
+            {
+                var count = SOT.Where(s => s.purpose_cleaning == true && s.tank_status_cv.ToUpper() == TankMovementStatus.CLEANING &&
+                              s.cleaning.Any(c => c.status_cv.ToUpper() == CurrentServiceStatus.APPROVED
+                                || c.status_cv.ToUpper() == CurrentServiceStatus.JOB_IN_PROGRESS
+                                && (c.delete_dt == null || c.delete_dt == 0)))
+                              .Select(s => s.guid)
+                              .Distinct()
+                              .Count();
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static async Task<int> GetPendingSteamingCount(IQueryable<storing_order_tank>? SOT)
+        {
+            try
+            {
+                var count = SOT.Where(s => s.purpose_steam == true && s.tank_status_cv.ToUpper() == TankMovementStatus.STEAM &&
+                              s.steaming.Any(c => c.status_cv.ToUpper() == CurrentServiceStatus.APPROVED
+                                || c.status_cv.ToUpper() == CurrentServiceStatus.JOB_IN_PROGRESS
+                                && (c.delete_dt == null || c.delete_dt == 0)))
+                              .Select(s => s.guid)
+                              .Distinct()
+                              .Count();
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static async Task<int> GetPendingResidueCount(IQueryable<storing_order_tank>? SOT)
+        {
+            try
+            {
+                var count = SOT.Where(s => s.purpose_cleaning == true && s.tank_status_cv.ToUpper() == TankMovementStatus.CLEANING &&
+                              s.residue.Any(c => c.status_cv.ToUpper() == CurrentServiceStatus.APPROVED
+                                || c.status_cv.ToUpper() == CurrentServiceStatus.JOB_IN_PROGRESS
+                                && (c.delete_dt == null || c.delete_dt == 0)))
+                              .Select(s => s.guid)
+                              .Distinct()
+                              .Count();
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private static async Task<int> GetPendingRepairCount(IQueryable<storing_order_tank>? SOT)
+        {
+            try
+            {
+                var repairPurpose = new List<string> { "OFFHIRE", "REPAIR" };
+                var count = SOT.Where(s => repairPurpose.Contains(s.purpose_repair_cv) && s.tank_status_cv.ToUpper() == TankMovementStatus.REPAIR)
+                               .Where(s => !s.repair.Any() || s.repair.All(r => r.status_cv.ToUpper() == CurrentServiceStatus.CANCELED))
+                               .Select(s => s.guid)
+                               .Distinct()
+                               .Count();
+
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async Task<int> GetGateCountOfDay(ApplicationInventoryDBContext context, string gate)
+        {
+
+            try
+            {
+                long sDate = GetStartOfDayEpoch(DateTime.Now);
+                long eDate = GetEndOfDayEpochSeconds(DateTime.Now);
+
+                if (gate.EqualsIgnore("IN"))
+                {
+                    var count = context.storing_order_tank.Where(s => s.delete_dt == null || s.delete_dt == 0)
+                                                           .Where(s => s.in_gate.Any(ig => ig.delete_dt == null &&
+                                                                       ig.eir_status_cv.ToUpper() == EirStatus.PUBLISHED &&
+                                                                       ig.eir_dt >= sDate &&
+                                                                       ig.eir_dt <= eDate))
+                                                           .Select(s => s.guid)
+                                                           .Distinct()
+                                                           .Count();
+                    return count;
+                }
+                else
+                {
+                    var count = context.storing_order_tank.Where(s => s.tank_status_cv.ToUpper() == TankMovementStatus.RELEASED && (s.delete_dt == null || s.delete_dt == 0))
+                                                           .Where(s => s.out_gate.Any(ig => ig.delete_dt == null &&
+                                                                       ig.eir_dt >= sDate &&
+                                                                       ig.eir_dt <= eDate))
+                                                           .Select(s => s.guid)
+                                                           .Distinct()
+                                                           .Count();
+                    return count;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static long GetStartOfDayEpoch(DateTime date)
+        {
+            var startOfDay = date.Date; // sets time to 00:00:00
+            var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var utcStartOfDay = startOfDay.ToUniversalTime(); // convert to UTC
+            return (long)(utcStartOfDay - unixEpoch).TotalSeconds;
+        }
+
+        public static long GetEndOfDayEpochSeconds(DateTime date)
+        {
+            // Get end of day: 23:59:59.999
+            var endOfDay = date.Date.AddDays(1).AddMilliseconds(-1);
+            // Treat as UTC to calculate epoch time
+            var endOfDayUtc = endOfDay.ToUniversalTime();
+            var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return (long)(endOfDayUtc - unixEpoch).TotalSeconds;
+        }
     }
 }
