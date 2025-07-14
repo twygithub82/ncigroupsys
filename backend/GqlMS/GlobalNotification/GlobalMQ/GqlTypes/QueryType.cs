@@ -143,9 +143,6 @@ namespace GlobalMQ.GqlTypes
                 long startdt = ((DateTimeOffset)startTargetTime).ToUnixTimeSeconds();
 
                 query = context.notification.Where(i => (i.delete_dt == null || i.delete_dt == 0) && (i.date >= startdt && i.date <= enddt)).OrderByDescending(i => i.date); ;
-
-
-
             }
             catch
             {
