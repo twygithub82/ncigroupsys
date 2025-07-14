@@ -26,6 +26,9 @@ namespace IDMS.Inventory.GqlTypes.LocalModel
         public string? owner_guid { get; set; }
         public string? unit_type_guid { get; set; } 
         public string? tank_no { get; set; }
+        public string? clean_status_remarks { get; set; }
+        public string? clean_status_cv { get; set; }    
+
     }
 
     [NotMapped]
