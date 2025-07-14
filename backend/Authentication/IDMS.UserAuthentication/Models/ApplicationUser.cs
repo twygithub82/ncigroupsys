@@ -9,6 +9,8 @@ namespace IDMS.UserAuthentication.Models
 
         public bool isStaff { get; set; } = false;
 
-        
+
+        public Guid? CurrentSessionId { get; set; } = null;
+
     }
 }

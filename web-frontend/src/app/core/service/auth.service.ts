@@ -56,7 +56,6 @@ export class AuthService {
     return this.authApiService.login(username, password, isStaff).pipe(
       switchMap(user => {
         if (!user?.token) throw new Error('No token in login response');
-
         const decodedToken = decodeToken(user.token);
         const userId = decodedToken[jwt_mapping.sid.key];
 
@@ -71,13 +70,13 @@ export class AuthService {
           map(claims => {
             const usr = new User();
             usr.id = userId;
-            usr.name = decodedToken[jwt_mapping.name.key];
-            usr.email = decodedToken[jwt_mapping.email.key];
-            usr.groupsid = decodedToken[jwt_mapping.groupsid.key];
-            usr.role = decodedToken[jwt_mapping.role.key];
+            usr.name = decodedToken[jwt_mapping.name.key] ?? decodedToken[jwt_mapping.name.value];
+            usr.email = decodedToken[jwt_mapping.email.key] ?? decodedToken[jwt_mapping.email.value];
+            usr.groupsid = decodedToken[jwt_mapping.groupsid.key] ?? decodedToken[jwt_mapping.groupsid.value];
+            usr.role = decodedToken[jwt_mapping.role.key] ?? decodedToken[jwt_mapping.role.value];
             usr.roles = claims.roles ?? [usr.role];
             usr.functions = claims.functions ?? [];
-            usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key];
+            usr.primarygroupsid = decodedToken[jwt_mapping.primarygroupsid.key] ?? decodedToken[jwt_mapping.primarygroupsid.value];
             usr.token = decodedToken;
             usr.plainToken = user.token;
             usr.expiration = user.expiration;

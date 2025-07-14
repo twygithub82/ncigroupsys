@@ -60,7 +60,7 @@ namespace IDMS.User.Authentication.API.Utilities
             return principal;
         }
 
-        public JwtSecurityToken GetToken(UserType userType, string loginId, string email, IList<string> roles, string userId)
+        public JwtSecurityToken GetToken(UserType userType, string loginId, string email, IList<string> roles, string userId, string currentSessionId)
         {
             //var functionNames = from f in _dbContext.functions
             //                    join rf in _dbContext.role_function
@@ -88,7 +88,7 @@ namespace IDMS.User.Authentication.API.Utilities
             //var exp = DateTime.Now.AddHours(_duration);
             //var exp = DateTime.Now.AddYears(1);
             var exp = DateTime.Now.AddMinutes(_duration);
-            List<Claim> authClaims = GetClaims(userType, userId, loginId, email, roles, functionNamesArray, teamsArray);
+            List<Claim> authClaims = GetClaims(userType, userId, loginId, email, roles, functionNamesArray, teamsArray, currentSessionId);
             var token = new JwtSecurityToken(
                   issuer: _issuer,
                   audience: _audience,
@@ -99,7 +99,7 @@ namespace IDMS.User.Authentication.API.Utilities
             return token;
         }
 
-        List<Claim> GetClaims(UserType userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight, JArray teams)
+        List<Claim> GetClaims(UserType userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight, JArray teams, string currentSessionId)
         {
             var authClaims = new List<Claim>();
 
@@ -108,6 +108,7 @@ namespace IDMS.User.Authentication.API.Utilities
             authClaims.Add(new Claim("Email", email));
             authClaims.Add(new Claim("Sid", userId));
             authClaims.Add(new Claim("UserData", teams.ToString()));
+            authClaims.Add(new Claim("sessionId", currentSessionId.ToString()));
 
 
             //authClaims.Add(new Claim(ClaimTypes.Name, loginId));

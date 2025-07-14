@@ -47,26 +47,26 @@ export const api_full_endpoints = {
 export const jwt_mapping = {
   'name': {
     'key': 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name',
-    'value': 'name'
+    'value': 'Name'
   },
   'email': {
     'key': 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
-    'value': 'email'
+    'value': 'Email'
   },
   'groupsid': {
     'key': 'http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid',
-    'value': 'groupsid'
+    'value': 'GroupSid'
   },
   'role': {
     'key': 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role',
-    'value': 'role'
+    'value': 'Role'
   },
   'primarygroupsid': {
     'key': 'http://schemas.microsoft.com/ws/2008/06/identity/claims/primarygroupsid',
-    'value': 'primarygroupsid'
+    'value': 'PrimaryGroupSid'
   },
   'sid': {
     'key': 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid',
-    'value': 'sid'
+    'value': 'Sid'
   }
 }

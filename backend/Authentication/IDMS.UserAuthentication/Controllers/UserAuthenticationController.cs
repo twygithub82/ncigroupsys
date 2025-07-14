@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -105,6 +106,7 @@ namespace IDMS.UserAuthentication.Controllers
                 }
 
                 var userRoles = await _userManager.GetRolesAsync(user);
+                user.CurrentSessionId = Guid.NewGuid();
                 var jwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
@@ -132,7 +134,7 @@ namespace IDMS.UserAuthentication.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var newJwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id);
+            var newJwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
 
             var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };

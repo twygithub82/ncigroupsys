@@ -18,8 +18,10 @@ using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Data.Entity;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +31,7 @@ namespace IDMS.Inventory.GqlTypes
 {
     public class GqlUtils
     {
+
         public static async void PingThread(IServiceScope scope, int duration)
         {
             Thread t = new Thread(async () =>
@@ -203,7 +206,38 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
+    
+
+
         public static string IsAuthorize([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            string? uid = "";
+            try
+            {
+                var isCheckAuthorization = Convert.ToBoolean(config["JWT:CheckAuthorization"]);
+                if (!isCheckAuthorization) return "anonymous user";
+
+                var authUser = httpContextAccessor.HttpContext.User;
+                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value; //authUser.FindFirstValue(ClaimTypes.GroupSid);
+                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;//authUser.FindFirstValue(ClaimTypes.Name);
+               
+                if (primarygroupSid != "s1")
+                {
+                    throw new GraphQLException(new Error("Unauthorized", "401"));
+                }
+              
+
+
+            }
+            catch
+            {
+                throw;
+            }
+            return uid;
+        }
+
+
+        public static async Task<string> IsAuthorize_R1([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             string? uid = "";
             try
@@ -213,6 +247,9 @@ namespace IDMS.Inventory.GqlTypes
 
 
                 var authUser = httpContextAccessor.HttpContext.User;
+                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value; //authUser.FindFirstValue(ClaimTypes.GroupSid);
+                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;//authUser.FindFirstValue(ClaimTypes.Name);
+                var sessionId = $"{authUser.FindFirst("sessionId")?.Value}";
                 var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value;
                 if (primarygroupSid == null)
                     primarygroupSid = authUser.FindFirst("GroupSid")?.Value;
@@ -223,6 +260,16 @@ namespace IDMS.Inventory.GqlTypes
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
+                else
+                {
+                    var dbSessionId=await GetCurrentSessionId(config, uid);
+                    if (sessionId != dbSessionId)
+                    {
+                        throw new GraphQLException(new Error("Unauthorized", "401"));
+                    }
+                }
+                
+              
             }
             catch
             {
@@ -1007,6 +1054,33 @@ namespace IDMS.Inventory.GqlTypes
                 throw ex;
             }
         }
+        public static async Task<string> GetCurrentSessionId([Service] IConfiguration config, string userId)
+        {
+            try
+            {
+                string connectionString = config.GetConnectionString("default"); // Use your Identity DB connection string
+
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var query = "SELECT CurrentSessionId FROM AspNetUsers WHERE UserName = @userId LIMIT 1";
+
+                    using (var cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@userId", userId);
+
+                        var result = await cmd.ExecuteScalarAsync();
+                        return result?.ToString() ?? string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"Failed to get session ID: {ex.Message}", "SESSION_ERROR"));
+            }
+        }
+
 
         public static async Task<int> GetWaitingSOTCount(ApplicationInventoryDBContext context)
         {
@@ -1021,6 +1095,8 @@ namespace IDMS.Inventory.GqlTypes
                 throw ex;
             }
         }
+
+
 
         public static async Task<int> GetPendingSurveyCount(ApplicationInventoryDBContext context, string gate)
         {
