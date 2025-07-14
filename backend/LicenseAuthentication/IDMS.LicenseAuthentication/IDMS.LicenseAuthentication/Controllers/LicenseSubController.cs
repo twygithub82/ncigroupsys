@@ -134,8 +134,8 @@ namespace IDMS.LicenseAuthentication.Controllers
                 //Check the license key file is authentic
                 //var licSub = await _context.license_sub.Include(l=>l.license_validity).Where(l=> l.lice)
 
-                var licKey = claim.FindFirst("LicenseKey")?.Value?.ToString() ?? "";
-                var userEmail = claim.FindFirst("LicenseEmail")?.Value?.ToString() ?? "";
+                var licKey = claim.FindFirst("lickey")?.Value?.ToString() ?? "";
+                var userEmail = claim.FindFirst("licemail")?.Value?.ToString() ?? "";
 
                 //----------------------------------------------
                 //Second verification check

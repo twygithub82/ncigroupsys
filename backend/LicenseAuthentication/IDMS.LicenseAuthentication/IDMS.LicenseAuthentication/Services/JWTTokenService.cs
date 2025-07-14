@@ -23,10 +23,10 @@ namespace IDMS.LicenseAuthentication.Services
 
             var claims = new[]
             {
-                new Claim("ClientID", licSub.client_id),
-                new Claim("LicenseKey", licSub.license_key),
-                new Claim("LicenseType", licSub.license_type),
-                new Claim("LicenseEmail", licEmail)
+                new Claim("clientid", licSub.client_id),
+                new Claim("lickey", licSub.license_key),
+                new Claim("lictype", licSub.license_type),
+                new Claim("licemail", licEmail)
             };
 
             var token = new JwtSecurityToken(
