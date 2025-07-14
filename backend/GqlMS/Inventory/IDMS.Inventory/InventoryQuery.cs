@@ -8,6 +8,7 @@ using IDMS.Models.Inventory;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models;
 using CommonUtil.Core.Service;
+using Microsoft.Extensions.Configuration;
 
 namespace IDMS.Inventory.GqlTypes
 {
@@ -17,10 +18,11 @@ namespace IDMS.Inventory.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting]
-        public IQueryable<tank> QueryTank([Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context)
+        public IQueryable<tank> QueryTank([Service] IHttpContextAccessor httpContextAccessor, ApplicationInventoryDBContext context, [Service] IConfiguration config)
         {
             try
             {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.tank.Where(t => t.delete_dt == null || t.delete_dt == 0);
             }
             catch (Exception ex)
