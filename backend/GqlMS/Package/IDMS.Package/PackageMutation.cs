@@ -6,6 +6,7 @@ using IDMS.Models.Package;
 using IDMS.Models.Parameter.CleaningSteps.GqlTypes.DB;
 using IDMS.Models.Tariff;
 using IDMS.Models.Tariff.Cleaning.GqlTypes.DB;
+using IDMS.Package.GqlTypes.LocalModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,12 +21,13 @@ namespace IDMS.Models.Package.GqlTypes
         #region Package Cleaning methods
 
         public async Task<int> UpdatePackageCleans(ApplicationPackageDBContext context, [Service] IConfiguration config,
-             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageClean_guids, string remarks, double adjusted_price)
+             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageClean_guids, string remarks, double adjusted_price, double? price_percentage)
         {
             int retval = 0;
+            double? finalAdjustedPrice;
+
             try
             {
-
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
 
                 var dbPackageCleans = context.customer_company_cleaning_category.Where(cc => UpdatePackageClean_guids.Contains(cc.guid)).ToList();
@@ -33,9 +35,18 @@ namespace IDMS.Models.Package.GqlTypes
                 {
                     throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
                 }
+
+                //Update by percentage
+                if (price_percentage != null)
+                    finalAdjustedPrice = adjusted_price * price_percentage;
+                else
+                    finalAdjustedPrice = adjusted_price;
+
+                finalAdjustedPrice = CalculateMaterialCostRoundedUp(finalAdjustedPrice);
+
                 foreach (var cc in dbPackageCleans)
                 {
-                    cc.adjusted_price = adjusted_price;
+                    if(adjusted_price > -1) cc.adjusted_price = finalAdjustedPrice;
                     if (!string.IsNullOrEmpty(cc.guid))
                         cc.remarks = remarks;
                     cc.update_by = uid;
@@ -66,7 +77,7 @@ namespace IDMS.Models.Package.GqlTypes
                 {
                     throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
                 }
-                dbPackageClean.adjusted_price = UpdatePackageClean.adjusted_price;
+                dbPackageClean.adjusted_price = CalculateMaterialCostRoundedUp(UpdatePackageClean.adjusted_price);
 
                 dbPackageClean.remarks = UpdatePackageClean.remarks;
                 dbPackageClean.update_by = uid;
@@ -88,7 +99,7 @@ namespace IDMS.Models.Package.GqlTypes
 
         public async Task<int> UpdatePackageDepots(ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageDepot_guids, int free_storage, double lolo_cost,
-           double preinspection_cost, double storage_cost, double gate_in_cost, double gate_out_cost, string remarks, string storage_cal_cv)
+           double preinspection_cost, double storage_cost, double gate_in_cost, double gate_out_cost, string remarks, string storage_cal_cv, CostPercentage? costPercentage)
         {
             int retval = 0;
             try
@@ -101,16 +112,30 @@ namespace IDMS.Models.Package.GqlTypes
                 {
                     throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
                 }
+
+
+                var finalLoloCost = (costPercentage != null && costPercentage.lolo_percentage != null) ? lolo_cost * costPercentage.lolo_percentage : lolo_cost;
+                var finalPreInspCost = (costPercentage != null && costPercentage.preinspect_percentage != null) ? preinspection_cost * costPercentage.preinspect_percentage : preinspection_cost;
+                var finalGateInCost = (costPercentage != null && costPercentage.gate_in_percentage != null) ? gate_in_cost * costPercentage.gate_in_percentage : gate_in_cost;
+                var finalGateOutCost = (costPercentage != null && costPercentage.gate_out_percentage != null) ? gate_out_cost * costPercentage.gate_out_percentage : gate_out_cost;
+                var finalStorageCost = (costPercentage != null && costPercentage.storage_percentage != null) ? storage_cost * costPercentage.storage_percentage : storage_cost;
+
+                finalLoloCost = CalculateMaterialCostRoundedUp(finalLoloCost);
+                finalPreInspCost = CalculateMaterialCostRoundedUp(finalPreInspCost);
+                finalGateInCost = CalculateMaterialCostRoundedUp(finalGateInCost);
+                finalGateOutCost = CalculateMaterialCostRoundedUp(finalGateOutCost);
+                finalStorageCost = CalculateMaterialCostRoundedUp(finalStorageCost);
+
                 foreach (var dbPackageDepot in dbPackageDepots)
                 {
                     if (free_storage > -1) dbPackageDepot.free_storage = free_storage;
-                    if (lolo_cost > -1) dbPackageDepot.lolo_cost = lolo_cost;
-                    if (preinspection_cost > -1) dbPackageDepot.preinspection_cost = preinspection_cost;
+                    if (lolo_cost > -1) dbPackageDepot.lolo_cost = finalLoloCost;
+                    if (preinspection_cost > -1) dbPackageDepot.preinspection_cost = finalPreInspCost;
                     if (!string.IsNullOrEmpty(remarks)) dbPackageDepot.remarks = (remarks == "--") ? "" : remarks;
                     if (!string.IsNullOrEmpty(storage_cal_cv)) dbPackageDepot.storage_cal_cv = storage_cal_cv;
-                    if (storage_cost > -1) dbPackageDepot.storage_cost = storage_cost;
-                    if (gate_in_cost > -1) dbPackageDepot.gate_in_cost = gate_in_cost;
-                    if (gate_out_cost > -1) dbPackageDepot.gate_out_cost = gate_out_cost;
+                    if (storage_cost > -1) dbPackageDepot.storage_cost = finalStorageCost;
+                    if (gate_in_cost > -1) dbPackageDepot.gate_in_cost = finalGateInCost;
+                    if (gate_out_cost > -1) dbPackageDepot.gate_out_cost = finalGateOutCost;
                     dbPackageDepot.update_by = uid;
                     dbPackageDepot.update_dt = GqlUtils.GetNowEpochInSec();
                 }
@@ -147,17 +172,15 @@ namespace IDMS.Models.Package.GqlTypes
                 }
                 // dbPackageDepot.customer_company_guid = UpdatePackageDepot.customer_company_guid;
                 dbPackageDepot.free_storage = UpdatePackageDepot.free_storage;
-                dbPackageDepot.lolo_cost = UpdatePackageDepot.lolo_cost;
-                dbPackageDepot.preinspection_cost = UpdatePackageDepot.preinspection_cost;
+                dbPackageDepot.lolo_cost = CalculateMaterialCostRoundedUp(UpdatePackageDepot.lolo_cost);
+                dbPackageDepot.preinspection_cost = CalculateMaterialCostRoundedUp(UpdatePackageDepot.preinspection_cost);
                 dbPackageDepot.remarks = UpdatePackageDepot.remarks;
                 dbPackageDepot.storage_cal_cv = UpdatePackageDepot.storage_cal_cv;
-                dbPackageDepot.storage_cost = UpdatePackageDepot.storage_cost;
-                dbPackageDepot.gate_in_cost = UpdatePackageDepot.gate_in_cost;
-                dbPackageDepot.gate_out_cost = UpdatePackageDepot.gate_out_cost;
+                dbPackageDepot.storage_cost = CalculateMaterialCostRoundedUp(UpdatePackageDepot.storage_cost);
+                dbPackageDepot.gate_in_cost =  CalculateMaterialCostRoundedUp(UpdatePackageDepot.gate_in_cost);
+                dbPackageDepot.gate_out_cost = CalculateMaterialCostRoundedUp(UpdatePackageDepot.gate_out_cost);
                 dbPackageDepot.update_by = uid;
                 dbPackageDepot.update_dt = GqlUtils.GetNowEpochInSec();
-
-
 
                 retval = context.SaveChanges();
 
@@ -202,9 +225,11 @@ namespace IDMS.Models.Package.GqlTypes
 
         #region Package Labour methods
         public async Task<int> UpdatePackageLabours(ApplicationPackageDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageLabour_guids, double cost, string remarks)
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> UpdatePackageLabour_guids, double cost, string remarks, double? cost_percentage)
         {
             int retval = 0;
+            double? finalAdjustedPrice;
+
             try
             {
 
@@ -216,9 +241,16 @@ namespace IDMS.Models.Package.GqlTypes
                 {
                     throw new GraphQLException(new Error("The Package Cleaning not found", "500"));
                 }
+
+                //Update by percentage
+                if (cost_percentage != null)
+                    finalAdjustedPrice = cost * cost_percentage;
+                else
+                    finalAdjustedPrice = cost;
+
                 foreach (var dbPackageLabour in dbPackageLabours)
                 {
-                    if (cost > -1) dbPackageLabour.cost = cost;
+                    if (cost > -1) dbPackageLabour.cost = CalculateMaterialCostRoundedUp(finalAdjustedPrice);
                     if (!string.IsNullOrEmpty(remarks)) dbPackageLabour.remarks = remarks;
                     dbPackageLabour.update_by = uid;
                     dbPackageLabour.update_dt = currentDateTime;
@@ -255,7 +287,7 @@ namespace IDMS.Models.Package.GqlTypes
                     throw new GraphQLException(new Error("The Package Labour not found", "500"));
                 }
                 // dbPackageDepot.customer_company_guid = UpdatePackageDepot.customer_company_guid;
-                dbPackageLabour.cost = UpdatePackageLabour.cost;
+                dbPackageLabour.cost = CalculateMaterialCostRoundedUp(UpdatePackageLabour.cost);
                 dbPackageLabour.remarks = UpdatePackageLabour.remarks;
 
                 dbPackageLabour.update_by = uid;
@@ -424,9 +456,12 @@ namespace IDMS.Models.Package.GqlTypes
 
         #region Package Buffer methods
         public async Task<int> UpdatePackageBuffers(ApplicationPackageDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageBuffer_guids, double cost, string remarks)
+            [Service] IHttpContextAccessor httpContextAccessor, List<string> updatePackageBuffer_guids, double cost, string remarks, double? cost_percentage)
         {
             int retval = 0;
+            double? finalAdjustedPrice;
+
+
             try
             {
                 //Ori code -------------------------
@@ -434,26 +469,23 @@ namespace IDMS.Models.Package.GqlTypes
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDateTime = DateTime.Now.ToEpochTime();
+
+
+                //Update by percentage
+                if (cost_percentage != null)
+                    finalAdjustedPrice = cost * cost_percentage;
+                else
+                    finalAdjustedPrice = cost;
+
                 foreach (var packageBuffer in packageBuffers)
                 {
-                    if (cost > -1) packageBuffer.cost = cost;
+                    if (cost > -1) packageBuffer.cost = CalculateMaterialCostRoundedUp(finalAdjustedPrice);
                     if (!string.IsNullOrEmpty(remarks)) packageBuffer.remarks = remarks;
                     packageBuffer.update_by = uid;
                     packageBuffer.update_dt = currentDateTime;
                 }
                 retval = await context.SaveChangesAsync();
 
-                //foreach (string bufferGuid in updatePackageBuffer_guids)
-                //{
-                //    var packageBuffer = new package_buffer() { guid = bufferGuid };
-                //    context.Attach(packageBuffer);
-
-                //    if (cost > -1) packageBuffer.cost = cost;
-                //    if (!string.IsNullOrEmpty(remarks)) packageBuffer.remarks = remarks.Replace("--", "");
-                //    packageBuffer.update_dt = currentDateTime;
-                //    packageBuffer.update_by = uid;
-                //}
-                //retval = await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -479,7 +511,7 @@ namespace IDMS.Models.Package.GqlTypes
                     //var packageBuffer = new package_buffer() { guid = updatePackageBuffer.guid };
                     //context.Attach(packageBuffer);
 
-                    packageBuffer.cost = updatePackageBuffer.cost;
+                    packageBuffer.cost = CalculateMaterialCostRoundedUp(updatePackageBuffer.cost);
                     packageBuffer.remarks = updatePackageBuffer.remarks;
                     packageBuffer.update_by = uid;
                     packageBuffer.update_dt = currentDateTime;
@@ -546,7 +578,7 @@ namespace IDMS.Models.Package.GqlTypes
                 {
                     //var packageRepair = new package_repair() { guid = repairGuid };
                     //context.Attach(packageRepair);
-                    if (material_cost > -1) packageRepair.material_cost = material_cost;
+                    if (material_cost > -1) packageRepair.material_cost = CalculateMaterialCostRoundedUp(material_cost);
                     if (labour_hour > -1) packageRepair.labour_hour = labour_hour;
                     if (!string.IsNullOrEmpty(remarks)) packageRepair.remarks = remarks.Replace("--", "");
 
@@ -586,7 +618,7 @@ namespace IDMS.Models.Package.GqlTypes
                     //};
                     //context.Attach(packageRepair);
 
-                    packageRepair.material_cost = updatePackageRepair.material_cost;
+                    packageRepair.material_cost = CalculateMaterialCostRoundedUp(updatePackageRepair.material_cost);
                     packageRepair.labour_hour = updatePackageRepair.labour_hour;
                     packageRepair.remarks = updatePackageRepair.remarks;
                     packageRepair.update_by = uid;
@@ -700,7 +732,13 @@ namespace IDMS.Models.Package.GqlTypes
                         var guids = dbPackRepairs.Select(p => p.guid).ToList();
                         string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
 
-                        string sql = $"UPDATE package_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                        //string sql = $"UPDATE package_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                        //             $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
+                        //             $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                        //             $"WHERE guid IN ({guidList})";
+
+
+                        string sql = $"UPDATE package_repair SET material_cost = (CEILING(COALESCE(material_cost, 0.0) * {material_cost_percentage} * 20.0) / 20.0), " +
                                      $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
                                      $"update_dt = {currentDateTime}, update_by = '{uid}' " +
                                      $"WHERE guid IN ({guidList})";
@@ -797,7 +835,8 @@ namespace IDMS.Models.Package.GqlTypes
                         retval = await context.package_repair.ExecuteUpdateAsync(s => s
                           .SetProperty(e => e.update_dt, currentDateTime)
                           .SetProperty(e => e.update_by, uid)
-                          .SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
+                          //.SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
+                          .SetProperty(e => e.material_cost, e => CalculateMaterialCostRoundedUp(e.material_cost * material_cost_percentage))
                           .SetProperty(e => e.labour_hour, e => (Math.Ceiling(Convert.ToDouble((e.labour_hour ?? 0) * labour_hour_percentage) * 4) / 4))
                            );
                     }
@@ -806,10 +845,13 @@ namespace IDMS.Models.Package.GqlTypes
                         var guids = dbPackRepairs.Select(p => p.guid).ToList();
                         string guidList = string.Join(", ", guids.ConvertAll(id => $"'{id}'"));
 
-                        //var st = "labour_hour = CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0";
-                        //string yy = "material_cost = ROUND(material_cost * {material_cost_percentage}, 2), ";
+                        //string sql = $"UPDATE package_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+                        //             $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
+                        //             $"update_dt = {currentDateTime}, update_by = '{uid}' " +
+                        //             $"WHERE guid IN ({guidList})";
 
-                        string sql = $"UPDATE package_repair SET material_cost = (ROUND(material_cost * {material_cost_percentage}, 2)), " +
+
+                        string sql = $"UPDATE package_repair SET material_cost = (CEILING(COALESCE(material_cost, 0.0) * {material_cost_percentage} * 20.0) / 20.0), " +
                                      $"labour_hour = (CEILING(COALESCE(labour_hour, 0.0) * {labour_hour_percentage} * 4.0) / 4.0), " +
                                      $"update_dt = {currentDateTime}, update_by = '{uid}' " +
                                      $"WHERE guid IN ({guidList})";
@@ -835,7 +877,7 @@ namespace IDMS.Models.Package.GqlTypes
 
 
 
-
+        [Obsolete]
         private async Task<int> UpdatePackageRepair_MaterialCost_New(ApplicationPackageDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, string? group_name_cv, string? subgroup_name_cv, string? part_name, string? dimension,
             int? length, string? tariff_repair_guid, string[]? customer_company_guids, double material_cost_percentage, double labour_hour_percentage)
@@ -962,7 +1004,7 @@ namespace IDMS.Models.Package.GqlTypes
         }
 
 
-
+        [Obsolete]
         private int BulkUpdate(ApplicationPackageDBContext context, List<string?> ids, string user, double percentageCost, double percentageLabour)
         {
             try
@@ -988,12 +1030,15 @@ namespace IDMS.Models.Package.GqlTypes
             //}
         }
 
-        private double CalculateMaterialCostRoundedUp(double materialCost, double materialCostPercentage)
+        private double CalculateMaterialCostRoundedUp(double? materialCost)
         {
-            double value = materialCost * materialCostPercentage;
-            double result = Math.Ceiling(value * 100) / 100;
+            if (materialCost == 0.0)
+                return 0.0;
+
+            double result = Math.Ceiling(Convert.ToDouble(materialCost * 20)) / 20.0;
             return result;
         }
+
         #endregion Package Repair methods
 
         #region Package Steaming methods
