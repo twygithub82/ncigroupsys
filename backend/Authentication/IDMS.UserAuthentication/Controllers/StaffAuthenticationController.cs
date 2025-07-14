@@ -105,13 +105,14 @@ namespace IDMS.User.Authentication.API.Controllers
             if (staff != null && await _userManager.CheckPasswordAsync(staff, staffModel.Password))
             {
                 var staffRoles = await _userManager.GetRolesAsync(staff);
-
+                staff.CurrentSessionId = Guid.NewGuid();
                 //generate the token with the claims
                 //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
-                var jwtToken = _jwtTokenService.GetToken(2, staff.UserName, staff.Email, staffRoles, staff.Id); //Utilities.utils.GetToken(_configuration,authClaims);
+                var jwtToken = _jwtTokenService.GetToken(2, staff.UserName, staff.Email, staffRoles, staff.Id,$"{staff.CurrentSessionId}"); //Utilities.utils.GetToken(_configuration,authClaims);
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
                 _refreshTokenStore.AddToken(refreshToken);
+                _dbContext.SaveChangesAsync();
                 //returning the token
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
             }
@@ -604,7 +605,7 @@ namespace IDMS.User.Authentication.API.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var newJwtToken = _jwtTokenService.GetToken(2, user.UserName, user.Email, userRoles, user.Id);
+            var newJwtToken = _jwtTokenService.GetToken(2, user.UserName, user.Email, userRoles, user.Id ,$"{user.CurrentSessionId}");
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
 
             var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };

@@ -18,13 +18,13 @@ namespace IDMS.StoringOrder.GqlTypes
         [UseProjection]
         [UseFiltering]
         [UseSorting(typeof(SOSorter))]
-        public IQueryable<storing_order> QueryStoringOrder([Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<IQueryable<storing_order>> QueryStoringOrder([Service] IHttpContextAccessor httpContextAccessor,
             ApplicationInventoryDBContext context, [Service] IConfiguration config)
         {
             try
             {
                 Console.WriteLine($"{DateTime.Now.ToString("yyyy-MMM-dd HH:mm:ss.ffff")} - QueryStoringOrder");
-                GqlUtils.IsAuthorize(config, httpContextAccessor);
+             _=  await GqlUtils.IsAuthorize_R1(config, httpContextAccessor);
                 return context.storing_order.Where(d => d.delete_dt == null || d.delete_dt == 0)
                      .Include(so => so.storing_order_tank.Where(d => d.delete_dt == null || d.delete_dt == 0))
                      .Include(so => so.customer_company);
@@ -36,11 +36,12 @@ namespace IDMS.StoringOrder.GqlTypes
         }
 
         [UseProjection]
-        public IQueryable<storing_order> QueryStoringOrderById(string id, [Service] IHttpContextAccessor httpContextAccessor,
+        public async IQueryable<storing_order> QueryStoringOrderById(string id, [Service] IHttpContextAccessor httpContextAccessor,
             ApplicationInventoryDBContext context, [Service] IConfiguration config)
         {
             try
             {
+                //_ = await GqlUtils.IsAuthorize_R1(config, httpContextAccessor);
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 return context.storing_order.Where(c => c.guid.Equals(id))
                     .Where(d => d.delete_dt == null || d.delete_dt == 0)

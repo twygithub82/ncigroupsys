@@ -58,7 +58,7 @@ namespace IDMS.User.Authentication.API.Utilities
 
             return principal;
         }
-        public JwtSecurityToken GetToken(int userType, string loginId, string email, IList<string> roles, string userId)
+        public JwtSecurityToken GetToken(int userType, string loginId, string email, IList<string> roles, string userId,string currentSessionId)
         {
             //var functionNames = from f in _dbContext.functions
             //                    join rf in _dbContext.role_function
@@ -86,7 +86,7 @@ namespace IDMS.User.Authentication.API.Utilities
             //var exp = DateTime.Now.AddHours(_duration);
             //var exp = DateTime.Now.AddYears(1);
             var exp = DateTime.Now.AddMinutes(_duration);
-            List<Claim> authClaims = GetClaims(userType, userId, loginId, email, roles, functionNamesArray, teamsArray);
+            List<Claim> authClaims = GetClaims(userType, userId, loginId, email, roles, functionNamesArray, teamsArray, currentSessionId);
             var token = new JwtSecurityToken(
                   issuer: _issuer,
                   audience: _audience,
@@ -97,7 +97,7 @@ namespace IDMS.User.Authentication.API.Utilities
             return token;
         }
 
-         List<Claim> GetClaims(int userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight,JArray teams)
+         List<Claim> GetClaims(int userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight,JArray teams,string currentSessionId)
         {
             var authClaims = new List<Claim>();
 
@@ -107,7 +107,7 @@ namespace IDMS.User.Authentication.API.Utilities
             authClaims.Add(new Claim(ClaimTypes.Sid, userId));
             authClaims.Add(new Claim(ClaimTypes.UserData, functionsRight.ToString()));
             authClaims.Add(new Claim(ClaimTypes.UserData, teams.ToString()));
-
+            authClaims.Add(new Claim("sessionId", currentSessionId.ToString()));
             if (userType == 1)
             {
                 authClaims.Add(new Claim(ClaimTypes.GroupSid, "c1"));
