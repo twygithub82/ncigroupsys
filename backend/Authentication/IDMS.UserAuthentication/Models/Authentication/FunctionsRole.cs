@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.User.Authentication.API.Models.Authentication
@@ -46,6 +48,32 @@ namespace IDMS.User.Authentication.API.Models.Authentication
         [ForeignKey("role")]
         public string role_guid { get; set; }
 
+    }
+
+    public class user_functions : base_date
+    {
+        [Key]
+        public string? guid { get; set; }
+        [ForeignKey("functions")]
+        public string? functions_guid { get; set; }
+        public string? user_guid { get; set; }
+        public bool? adhoc { get; set; }
+        public string? remarks { get; set; }
+        public virtual functions? functions { get; set; }
+        //public virtual user? user { get; set; }
+    }
+
+   public class user_license: base_date
+    {
+        [Key]
+        public string? guid { get; set; }
+        public string? license_key {  get; set; }
+        public string? user_email { get; set; }
+        public string? create_by {  get; set; }
+        public DateTime? create_dt {  get; set; }
+        public string? update_by {  get; set; }
+        public DateTime? update_dt {  get; set; }
+        public DateTime? delete_dt {  get; set; }
     }
 
     public class base_date

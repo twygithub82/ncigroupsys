@@ -18,6 +18,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using static IDMS.User.Authentication.API.Models.StaticConstant;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IDMS.UserAuthentication.Controllers
@@ -69,7 +70,7 @@ namespace IDMS.UserAuthentication.Controllers
                 return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
             }
 
-            var email = User.FindFirstValue(ClaimTypes.Email);
+            var email = User.FindFirstValue("Email");
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
@@ -92,11 +93,10 @@ namespace IDMS.UserAuthentication.Controllers
         {
             //checking the user
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
-
-
+            if (user == null)
+                return NotFound(new { username = loginModel.Email });
 
             //validate the user password
-
             if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
             {
                 if (!user.EmailConfirmed)
@@ -104,25 +104,8 @@ namespace IDMS.UserAuthentication.Controllers
                     return StatusCode(StatusCodes.Status401Unauthorized, new Response() { Status = "Error", Message = new string[] { "The user account is not yet activated. Please activate the account with the link sent previously" } });
                 }
 
-                // claimlist creation
-                //var authClaims = new List<Claim>
-                //    {
-                //        new Claim(ClaimTypes.Email, user.Email),
-                //        new Claim(ClaimTypes.GroupSid, "c1"),
-                //        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-
-                //    };
-
-
                 var userRoles = await _userManager.GetRolesAsync(user);
-                //foreach (var role in userRoles)
-                //{
-                //    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                //}
-                // var authClaims = DWMS.User.Authentication.API.Utilities.utils.GetClaims(1, user.UserName, user.Email, userRoles);
-                //generate the token with the claims
-
-                var jwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles, user.Id); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
+                var jwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
                 _refreshTokenStore.AddToken(refreshToken);
@@ -138,7 +121,8 @@ namespace IDMS.UserAuthentication.Controllers
         public async Task<IActionResult> Refresh([FromBody] RefreshRequestModel refreshRequest)
         {
             //var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
-            var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+            //var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+            var userName = User.FindFirstValue("Name");
             var refreshTokenKey = _refreshTokenStore.GetToken(userName);
             if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken)
             {
@@ -148,7 +132,7 @@ namespace IDMS.UserAuthentication.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var newJwtToken = _jwtTokenService.GetToken(1, user.UserName, user.Email, userRoles, user.Id);
+            var newJwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id);
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
 
             var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
@@ -171,14 +155,12 @@ namespace IDMS.UserAuthentication.Controllers
             string role = "Customer";
             try
             {
-
                 var userExist = await _userManager.FindByEmailAsync(registerUser.Email!);
                 if (userExist != null)
                 {
                     if (userExist.EmailConfirmed)
                     {
                         return StatusCode(StatusCodes.Status302Found, new Response() { Status = "Error", Message = new string[] { "The email had been registered previously" } });
-
                     }
 
                     var token1 = await _userManager.GenerateEmailConfirmationTokenAsync(userExist);
@@ -264,7 +246,7 @@ namespace IDMS.UserAuthentication.Controllers
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                     var encodedToken = WebUtility.UrlEncode(token); // or Uri.EscapeDataString(token)
-                    var resetPasswordLink = $"{_resetUrl}?token={encodedToken}&email={user.Email}";
+                    var resetPasswordLink = $"{_resetUrl}?token={encodedToken}&email={user.Email}&username={user.UserName}";
 
                     //var message = new Message(new string[] { user.Email! }, "Reset Password Link", resetPasswordLink);
 

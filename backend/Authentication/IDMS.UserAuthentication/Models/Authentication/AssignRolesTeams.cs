@@ -51,6 +51,6 @@ namespace IDMS.User.Authentication.API.Models.Authentication
         public string? create_by { get; set; }
         public string? update_by { get; set; }
 
-        public team? team { get; set; }
+        public virtual team? team { get; set; }
     }
 }

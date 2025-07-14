@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
+using static IDMS.User.Authentication.API.Models.StaticConstant;
 
 namespace IDMS.User.Authentication.API.Utilities
 {
@@ -36,7 +37,7 @@ namespace IDMS.User.Authentication.API.Utilities
             _dbContext = context;
         }
 
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        public ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -58,7 +59,8 @@ namespace IDMS.User.Authentication.API.Utilities
 
             return principal;
         }
-        public JwtSecurityToken GetToken(int userType, string loginId, string email, IList<string> roles, string userId)
+
+        public JwtSecurityToken GetToken(UserType userType, string loginId, string email, IList<string> roles, string userId)
         {
             //var functionNames = from f in _dbContext.functions
             //                    join rf in _dbContext.role_function
@@ -77,9 +79,9 @@ namespace IDMS.User.Authentication.API.Utilities
                         join t in _dbContext.team
                         on tu.team_guid equals t.guid
                         where (from u in _dbContext.Users where u.Id == userId select u.Id).Contains(tu.userId)
-                        select new { t.description, department= t.department_cv };
+                        select new { t.description, department = t.department_cv };
 
-            JArray teamsArray =  JArray.FromObject(teams);
+            JArray teamsArray = JArray.FromObject(teams);
             JArray functionNamesArray = new JArray(); //JArray.FromObject(functionNamesNew);
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
@@ -97,36 +99,44 @@ namespace IDMS.User.Authentication.API.Utilities
             return token;
         }
 
-         List<Claim> GetClaims(int userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight,JArray teams)
+        List<Claim> GetClaims(UserType userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight, JArray teams)
         {
             var authClaims = new List<Claim>();
 
             authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-            authClaims.Add(new Claim(ClaimTypes.Name, loginId));
-            authClaims.Add(new Claim(ClaimTypes.Email, email));
-            authClaims.Add(new Claim(ClaimTypes.Sid, userId));
-            authClaims.Add(new Claim(ClaimTypes.UserData, functionsRight.ToString()));
-            authClaims.Add(new Claim(ClaimTypes.UserData, teams.ToString()));
+            authClaims.Add(new Claim("Name", loginId));
+            authClaims.Add(new Claim("Email", email));
+            authClaims.Add(new Claim("Sid", userId));
+            authClaims.Add(new Claim("UserData", teams.ToString()));
 
-            if (userType == 1)
-            {
-                authClaims.Add(new Claim(ClaimTypes.GroupSid, "c1"));
-            }
-            else if (userType == 2)
-            {
-                authClaims.Add(new Claim(ClaimTypes.GroupSid, "s1"));
-            }
 
+            //authClaims.Add(new Claim(ClaimTypes.Name, loginId));
+            //authClaims.Add(new Claim(ClaimTypes.Email, email));
+            //authClaims.Add(new Claim(ClaimTypes.Sid, userId));
+            //authClaims.Add(new Claim(ClaimTypes.UserData, teams.ToString()));
+            //authClaims.Add(new Claim(ClaimTypes.UserData, functionsRight.ToString()));
+
+
+            if (userType == UserType.User)
+            {
+                //authClaims.Add(new Claim(ClaimTypes.GroupSid, "c1"));
+                authClaims.Add(new Claim("GroupSid", "c1"));
+            }
+            else if (userType == UserType.Staff)
+            {
+                //authClaims.Add(new Claim(ClaimTypes.GroupSid, "s1"));
+                authClaims.Add(new Claim("GroupSid", "s1"));
+            }
 
             foreach (var role in roles)
             {
-
                 //var userRole = _dbContext.UserRoles.FindAsync()
-                authClaims.Add(new Claim(ClaimTypes.Role, role));
-                if (userType == 2)
+                authClaims.Add(new Claim("Role", role));
+                if (userType == UserType.Staff)
                 {
                     if (role.Trim().ToLower() == "admin")
-                        authClaims.Add(new Claim(ClaimTypes.PrimaryGroupSid, "a1"));
+                        //authClaims.Add(new Claim(ClaimTypes.PrimaryGroupSid, "a1"));
+                        authClaims.Add(new Claim("PrimaryGroupSid", "a1"));
                 }
             }
 
