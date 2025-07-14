@@ -360,7 +360,7 @@ namespace IDMS.Billing.GqlTypes
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
-                               cost = 0, //s.buffer_cost ?? 0.0 + s.cleaning_cost ?? 0.0,
+                               cost = s.buffer_cost ?? 0.0 + s.cleaning_cost ?? 0.0,
                                appv_date = (long)s.approve_dt,
                                complete_date = (long)s.complete_dt,
                                status = s.status_cv
@@ -1384,18 +1384,22 @@ namespace IDMS.Billing.GqlTypes
                            };
                 case "storage":
                     return from result in query
-                               //join ig in context.in_gate on result.sot_guid equals ig.so_tank_guid
-                               //join og in context.out_gate on result.sot_guid equals og.so_tank_guid
-                           join s in context.billing_sot on result.sot_guid equals s.sot_guid
-                           join b in context.Set<billing>() on s.storage_billing_guid equals b.guid
-                           where s.storage_cal_cv != null && s.storage_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           join s in context.storage_detail on result.sot_guid equals s.sot_guid
+                           join b in context.Set<billing>() on s.billing_guid equals b.guid
+                           where s.billing_guid != null && s.delete_dt == null && b.delete_dt == null
                            && b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
+
+                           //join s in context.billing_sot on result.sot_guid equals s.sot_guid
+                           //join b in context.Set<billing>() on s.storage_billing_guid equals b.guid
+                           //where s.storage_cal_cv != null && s.storage_billing_guid != null && s.delete_dt == null && b.delete_dt == null
+                           //&& b.invoice_dt >= startEpoch && b.invoice_dt <= endEpoch
+
                            select new TempRevenueResult
                            {
                                sot_guid = result.sot_guid,
                                code = result.code,
                                cc_name = result.cc_name,
-                               cost = 0.0,
+                               cost = s.total_cost,
                                appv_date = (long)b.invoice_dt,
                            };
                 default:
