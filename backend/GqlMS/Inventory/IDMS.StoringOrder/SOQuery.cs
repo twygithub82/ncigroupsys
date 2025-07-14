@@ -36,7 +36,7 @@ namespace IDMS.StoringOrder.GqlTypes
         }
 
         [UseProjection]
-        public async IQueryable<storing_order> QueryStoringOrderById(string id, [Service] IHttpContextAccessor httpContextAccessor,
+        public async Task<IQueryable<storing_order>> QueryStoringOrderById(string id, [Service] IHttpContextAccessor httpContextAccessor,
             ApplicationInventoryDBContext context, [Service] IConfiguration config)
         {
             try

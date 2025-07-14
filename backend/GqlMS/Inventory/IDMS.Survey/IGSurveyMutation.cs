@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using IDMS.Models.Shared;
 using IDMS.Inventory.GqlTypes.LocalModel;
-
+using Newtonsoft.Json;
 
 namespace IDMS.Survey.GqlTypes
 {
@@ -28,10 +28,15 @@ namespace IDMS.Survey.GqlTypes
             InGateSurveyRequest inGateSurveyRequest, in_gate inGateRequest)
         {
             bool needAddCleaning = false;
+            bool needPublish = false;
+            string currentTankMovement = "";
+
+            string retResidueGuid = "";
+            int retResiueVal;
+
             int retval = 0;
             List<string> retGuids = new List<string>();
             Record record = new();
-
 
             using (var transaction = await context.Database.BeginTransactionAsync())
             {
@@ -47,6 +52,8 @@ namespace IDMS.Survey.GqlTypes
                     ingateSurvey.guid = Util.GenerateGUID();
                     ingateSurvey.create_by = user;
                     ingateSurvey.create_dt = currentDateTime;
+                    ingateSurvey.update_by = user;
+                    ingateSurvey.update_dt = currentDateTime;
                     await context.in_gate_survey.AddAsync(ingateSurvey);
 
                     //ingate handling
@@ -62,11 +69,11 @@ namespace IDMS.Survey.GqlTypes
                         ingate.update_by = user;
                         ingate.update_dt = currentDateTime;
 
-
                         //-------------------------------------------------------
                         if (!string.IsNullOrEmpty(inGateSurveyRequest?.action ?? "")
                             && inGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
                         {
+                            needPublish = true;
                             ingate.eir_status_cv = EirStatus.PUBLISHED;
                             ingate.publish_by = user;
                             ingate.publish_dt = currentDateTime;
@@ -95,20 +102,36 @@ namespace IDMS.Survey.GqlTypes
                     if (!string.IsNullOrEmpty(inGateSurveyRequest?.action ?? "")
                          && inGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
                     {
+                        needPublish = true;
                         if (sot.purpose_steam ?? false)
                         {
                             sot.tank_status_cv = TankMovementStatus.STEAM;
                             await AddSteaming(context, sot, ingate.create_dt);
+                            currentTankMovement = TankMovementStatus.STEAM;
                         }
                         else if (sot.purpose_cleaning ?? false)
                         {
                             sot.tank_status_cv = TankMovementStatus.CLEANING;
                             await AddCleaning(context, sot, ingate.create_dt, ingateSurvey.tank_comp_guid);
+                            currentTankMovement = TankMovementStatus.CLEANING;
                         }
                         else if (!string.IsNullOrEmpty(sot.purpose_repair_cv))
+                        {
                             sot.tank_status_cv = TankMovementStatus.REPAIR;
+                            currentTankMovement = TankMovementStatus.REPAIR;
+                        }
                         else
+                        {
                             sot.tank_status_cv = TankMovementStatus.STORAGE;
+                            currentTankMovement = TankMovementStatus.STORAGE;
+                        }
+
+                        //Newly added logic
+                        if ((!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM))
+                            && (ingateSurvey.residue != null && ingateSurvey.residue > 0.0))
+                        {
+                          (retResiueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, ingateSurvey.residue);
+                        }
                     }
                     //----------------------------------------------------------------------------
 
@@ -116,11 +139,6 @@ namespace IDMS.Survey.GqlTypes
                     retGuids.Add(ingateSurvey.guid);
 
                     retval = await context.SaveChangesAsync();
-                    //TODO
-                    string evtId = EventId.NEW_INGATE;
-                    string evtName = EventName.NEW_INGATE;
-                    GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-
 
                     //Tank info handling
                     await AddTankInfo(context, mapper, user, currentDateTime, sot, ingateSurvey, inGateRequest.yard_cv ?? "", inGateRequest.eir_no ?? "");
@@ -128,8 +146,14 @@ namespace IDMS.Survey.GqlTypes
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
 
+                    //Notification Handling
+                    if (needPublish)
+                    {
+                        string evtId = EventId.PUBLISH_EIR;
+                        await NotificationHandling(context, config, evtId);
+                    }
                     //Bundle the retVal and retGuid return as record object
-                    record = new Record() { affected = retval, guid = retGuids };
+                    record = new Record() { affected = retval, guid = retGuids, residue_guid = retResidueGuid };
                 }
                 catch (Exception ex)
                 {
@@ -139,7 +163,6 @@ namespace IDMS.Survey.GqlTypes
                     throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
                 }
             }
-
             return record;
         }
 
@@ -213,10 +236,11 @@ namespace IDMS.Survey.GqlTypes
                 //    sot.tank_status_cv = TankMovementStatus.STORAGE;
 
                 retval = await context.SaveChangesAsync();
+
                 //TODO
-                string evtId = EventId.NEW_INGATE;
-                string evtName = EventName.NEW_INGATE;
-                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                //string evtId = EventId.NEW_INGATE;
+                //string evtName = EventName.NEW_INGATE;
+                //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
 
 
                 //Tank info handling
@@ -291,10 +315,15 @@ namespace IDMS.Survey.GqlTypes
         //    return retval;
         //}
 
-        public async Task<int> PublishIngateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
+        public async Task<Record> PublishIngateSurvey(ApplicationInventoryDBContext context, [Service] IConfiguration config,
             [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, in_gate inGateRequest)
         {
+            int retResidueVal;
+            string retResidueGuid = "";
             int retval = 0;
+            string currentTankMovement = "";
+            Record record = new();
+
             try
             {
                 var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
@@ -309,7 +338,6 @@ namespace IDMS.Survey.GqlTypes
                 if (string.IsNullOrEmpty(inGateRequest?.in_gate_survey?.tank_comp_guid))
                     throw new GraphQLException(new Error("Tank Comp Guid cannot be null or empty.", "ERROR"));
 
-
                 var ingate = new in_gate() { guid = inGateRequest.guid };
                 context.in_gate.Attach(ingate);
                 ingate.eir_status_cv = EirStatus.PUBLISHED;
@@ -323,14 +351,26 @@ namespace IDMS.Survey.GqlTypes
                                             .Where(t => t.guid == inGateRequest.so_tank_guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefaultAsync();
 
                 if (sot.purpose_steam ?? false)
+                {
                     sot.tank_status_cv = TankMovementStatus.STEAM;
+                    currentTankMovement = TankMovementStatus.STEAM;
+                }
                 else if (sot.purpose_cleaning ?? false)
+                {
+                    currentTankMovement = TankMovementStatus.CLEANING;
                     sot.tank_status_cv = TankMovementStatus.CLEANING;
+                }
                 else if (!string.IsNullOrEmpty(sot.purpose_repair_cv))
+                {
+                    currentTankMovement = TankMovementStatus.REPAIR;
                     sot.tank_status_cv = TankMovementStatus.REPAIR;
+                }
                 else
+                {
+                    currentTankMovement = TankMovementStatus.STORAGE;
                     sot.tank_status_cv = TankMovementStatus.STORAGE;
-
+                }
+                  
                 //Add steaming by auto
                 if (sot?.purpose_steam ?? false)
                     await AddSteaming(context, sot, inGateRequest.create_dt);
@@ -339,13 +379,27 @@ namespace IDMS.Survey.GqlTypes
                 if (sot?.purpose_cleaning ?? false)
                     await AddCleaning(context, sot, inGateRequest.create_dt, inGateRequest?.in_gate_survey?.tank_comp_guid);
 
+                //Newly added logic
+                if ((!currentTankMovement.EqualsIgnore(TankMovementStatus.STEAM))
+                    && (inGateRequest?.in_gate_survey?.residue != null && inGateRequest?.in_gate_survey?.residue > 0.0))
+                {
+                    (retResidueVal, retResidueGuid) = await AddResidue(context, sot, ingate.create_dt, inGateRequest?.in_gate_survey?.residue);
+                }
+
                 retval = await context.SaveChangesAsync(true);
+
+                //Bundle the retVal and retGuid return as record object
+                record = new Record() { affected = retval, residue_guid = retResidueGuid };
+
+                //Notification Handling
+                string evtId = EventId.PUBLISH_EIR;
+                await NotificationHandling(context, config, evtId);
             }
             catch (Exception ex)
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
-            return retval;
+            return record;
         }
 
         private async Task<int> AddCleaning(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, string tariffBufferGuid)
@@ -356,13 +410,12 @@ namespace IDMS.Survey.GqlTypes
                 string user = "system";
                 long currentDateTime = DateTime.Now.ToEpochTime();
 
-                //var sot = context.storing_order_tank.Include(t => t.storing_order).Include(t => t.tariff_cleaning)
-                //    .Where(t => t.guid == sot_Guid && (t.delete_dt == null || t.delete_dt == 0)).FirstOrDefault();
-
                 var ingateCleaning = new cleaning();
                 ingateCleaning.guid = Util.GenerateGUID();
                 ingateCleaning.create_by = user;
                 ingateCleaning.create_dt = currentDateTime;
+                ingateCleaning.update_by = user;
+                ingateCleaning.update_dt = currentDateTime;
                 ingateCleaning.sot_guid = sot.guid;
                 ingateCleaning.approve_dt = ingate_date;
                 ingateCleaning.approve_by = user;
@@ -454,6 +507,8 @@ namespace IDMS.Survey.GqlTypes
                 newSteam.guid = Util.GenerateGUID();
                 newSteam.create_by = user;
                 newSteam.create_dt = currentDateTime;
+                newSteam.update_by = user;
+                newSteam.update_dt = currentDateTime;
                 newSteam.sot_guid = sot.guid;
                 newSteam.status_cv = CurrentServiceStatus.APPROVED;
                 newSteam.bill_to_guid = customerGuid;
@@ -492,6 +547,8 @@ namespace IDMS.Survey.GqlTypes
                 steamingPart.guid = Util.GenerateGUID();
                 steamingPart.create_by = user;
                 steamingPart.create_dt = currentDateTime;
+                steamingPart.update_by = user;
+                steamingPart.update_dt = currentDateTime;
                 steamingPart.steaming_guid = newSteam.guid;
                 if (isExclusive)
                     steamingPart.steaming_exclusive_guid = result?.steaming_guid;
@@ -516,6 +573,66 @@ namespace IDMS.Survey.GqlTypes
             return retval;
         }
 
+        private async Task<(int, string)> AddResidue(ApplicationInventoryDBContext context, storing_order_tank sot, long? ingate_date, float? residueQty)
+        {
+            int retval = 0;
+            string retGuid = "";
+            try
+            {
+                string desc = "Per Kg";
+                string user = "system";
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                var residueDis = new residue();
+                residueDis.guid = Util.GenerateGUID();
+                residueDis.create_by = user;
+                residueDis.create_dt = currentDateTime;
+                residueDis.update_by = user;
+                residueDis.update_dt = currentDateTime;
+                residueDis.sot_guid = sot.guid;
+                residueDis.approve_dt = ingate_date;
+                residueDis.approve_by = user;
+                residueDis.status_cv = CurrentServiceStatus.PENDING;
+                residueDis.job_no = sot?.job_no;
+                var customerGuid = sot?.storing_order?.customer_company_guid;
+                residueDis.bill_to_guid = customerGuid;
+
+                //TODO::
+                var tariffResiudeGuid = await context.Set<tariff_residue>().Where(t => t.description == desc).Select(t => t.guid).FirstOrDefaultAsync();
+                if (string.IsNullOrEmpty(tariffResiudeGuid))
+                    throw new GraphQLException(new Error($"Tariff residue GUID not found", "ERROR"));
+
+
+                var cost = await context.Set<package_residue>().Where(c => c.customer_company_guid == customerGuid && c.tariff_residue_guid == tariffResiudeGuid)
+                               .Select(c => c.cost).FirstOrDefaultAsync();
+                residueDis.total_cost = cost;
+                residueDis.est_cost = cost;
+                await context.residue.AddAsync(residueDis);
+
+                var residueParts = new residue_part();
+                residueParts.guid = Util.GenerateGUID();
+                residueParts.create_by = user;
+                residueParts.create_dt = currentDateTime;
+                residueParts.update_by = user;
+                residueParts.update_dt = currentDateTime;
+                residueParts.residue_guid = residueDis.guid;
+                residueParts.tariff_residue_guid = tariffResiudeGuid;
+                residueParts.description = desc;
+                residueParts.quantity = (int?)residueQty;
+                residueParts.qty_unit_type_cv = "KG";
+                residueParts.cost = cost;
+                await context.Set<residue_part>().AddAsync(residueParts);
+               
+
+                retval = 1;
+                retGuid = residueDis.guid;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+            return (retval, retGuid);
+        }
 
         private async Task AddTankInfo(ApplicationInventoryDBContext context, IMapper mapper, string user, long currentDateTime,
                                         storing_order_tank sot, in_gate_survey ingateSurvey, string yard, string eirNo)
@@ -544,7 +661,57 @@ namespace IDMS.Survey.GqlTypes
                 last_eir_no = eirNo,
             };
 
-            await GqlUtils.TankInfoHandling(mapper, context, user, currentDateTime, tankInfo);
+            //await GqlUtils.TankInfoHandling(mapper, context, user, currentDateTime, tankInfo);
+
+
+            try
+            {
+                var tf = await context.tank_info.Where(t => t.tank_no == tankInfo.tank_no && t.delete_dt == null).FirstOrDefaultAsync();
+                if (tf == null)
+                {
+                    tf = tankInfo;
+                    tf.guid = Util.GenerateGUID();
+                    tf.create_by = user;
+                    tf.create_dt = currentDateTime;
+                    tf.update_by = user;
+                    tf.update_dt = currentDateTime;
+                    await context.AddAsync(tf);
+                }
+                else
+                {
+                    //tf.storing_order_tank = null;
+                    mapper.Map(tankInfo, tf);
+                    //already ignore the guid, created_by, created_dt in program.config
+                    tf.update_by = user;
+                    tf.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                //return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
+        }
+
+        private async Task<bool> NotificationHandling(ApplicationInventoryDBContext context, [Service] IConfiguration config, string eventId)
+        {
+            string evtId = eventId;
+            string evtName = SotNotificationType.onPendingProcess_GateIn_Survey.ToString();
+            int count = 1;
+            int gateInCount_Day = await GqlUtils.GetGateCountOfDay(context, "IN");
+            int pendingSurveyCount = await GqlUtils.GetGateCountOfDay(context, "IN");
+            var pendingProcessCount = await GqlUtils.GetSOTPendingProcessCount(context);
+            var payload = new
+            {
+                pendingProcessCount,
+                Gate_In_Count = gateInCount_Day,
+                Pending_Ingate_Survey_Count = pendingSurveyCount
+            };
+
+            GqlUtils.SendGlobalNotification1(config, SotNotificationTopic.EIR_PUBLISHED, evtId, evtName, count, JsonConvert.SerializeObject(payload));
+            return true;
         }
 
         //public async Task<int> UpdateTankInfo([Service] IMapper mapper, ApplicationInventoryDBContext context, string user, long currentDateTime, tank_info tankInfo)

@@ -13,6 +13,9 @@ using IDMS.Inventory.GqlTypes;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
 using System.Data;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace IDMS.StoringOrder.GqlTypes
 {
@@ -34,6 +37,8 @@ namespace IDMS.StoringOrder.GqlTypes
                 soDomain.status_cv = SOStatus.PENDING;
                 soDomain.create_dt = currentDateTime;
                 soDomain.create_by = user;
+                soDomain.update_dt = currentDateTime;
+                soDomain.update_by = user;
 
                 if (soTanks is null || soTanks.Count <= 0)
                     throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "INVALID_OPERATION"));
@@ -46,6 +51,8 @@ namespace IDMS.StoringOrder.GqlTypes
                     newTank.so_guid = soDomain.guid;
                     newTank.create_dt = currentDateTime;
                     newTank.create_by = user;
+                    newTank.update_dt = currentDateTime;
+                    newTank.update_by = user;
                     if (SOTankAction.PREORDER.EqualsIgnore(tnk?.action))
                         newTank.status_cv = SOTankStatus.PREORDER;
                     else
@@ -67,12 +74,9 @@ namespace IDMS.StoringOrder.GqlTypes
                 await context.storing_order_tank.AddRangeAsync(newTankList);
                 var res = await context.SaveChangesAsync();
 
-                //TODO
-                string evtId = EventId.NEW_SOT;
-                string evtName = EventName.NEW_SOT;
+                //TODO--Send Notification
+                await NotificationHandling(context, config, EventId.NEW_SOT);
 
-                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-                //await topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
                 return res;
             }
             catch (Exception ex)
@@ -122,6 +126,8 @@ namespace IDMS.StoringOrder.GqlTypes
                         newTank.guid = Util.GenerateGUID(); // Ensure the foreign key is set
                         newTank.create_dt = currentDateTime;
                         newTank.create_by = user;
+                        newTank.update_dt = currentDateTime;
+                        newTank.update_by = user;
                         newTank.status_cv = SOTankAction.NEW.EqualsIgnore(tnk?.action) ? SOTankStatus.WAITING : SOTankStatus.PREORDER;
                         newTank.tank_status_cv = TankMovementStatus.SO;
                         await context.storing_order_tank.AddAsync(newTank);
@@ -213,9 +219,10 @@ namespace IDMS.StoringOrder.GqlTypes
 
                 if (isSendNotification)
                 {
-                    string evtId = EventId.NEW_SOT;
-                    string evtName = EventName.NEW_SOT;
-                    GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                    //string evtId = EventId.NEW_SOT;
+                    //string evtName = EventName.NEW_SOT;
+                    //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                    await NotificationHandling(context, config, EventId.UPDATE_SOT);
                 }
 
 
@@ -232,7 +239,6 @@ namespace IDMS.StoringOrder.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
 
         public async Task<int> CancelStoringOrder(List<StoringOrderRequest> so, [Service] ITopicEventSender sender,
           [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
@@ -264,7 +270,7 @@ namespace IDMS.StoringOrder.GqlTypes
                         {
                             foreach (var tnk in tanks)
                             {
-                                if (string.IsNullOrEmpty(tnk.status_cv) || SOTankStatus.WAITING.EqualsIgnore(tnk.status_cv) 
+                                if (string.IsNullOrEmpty(tnk.status_cv) || SOTankStatus.WAITING.EqualsIgnore(tnk.status_cv)
                                     || SOTankStatus.PREORDER.EqualsIgnore(tnk.status_cv))
                                 {
                                     tnk.status_cv = SOTankStatus.CANCELED;
@@ -293,10 +299,13 @@ namespace IDMS.StoringOrder.GqlTypes
                 }
 
                 var res = await context.SaveChangesAsync();
+
                 //TODO
-                string evtId = EventId.NEW_SOT;
-                string evtName = EventName.NEW_SOT;
-                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                //string evtId = EventId.NEW_SOT;
+                //string evtName = EventName.NEW_SOT;
+                //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                await NotificationHandling(context, config, EventId.CANCEL_SOT);
+
                 return res;
             }
             catch (Exception ex)
@@ -304,8 +313,6 @@ namespace IDMS.StoringOrder.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
         }
-
-
 
         public async Task<int> DeleteStoringOrder(string[] soGuids, [Service] ITopicEventSender sender,
         [Service] ITopicEventSender topicEventSender, [Service] IMapper mapper, [Service] IConfiguration config,
@@ -340,9 +347,11 @@ namespace IDMS.StoringOrder.GqlTypes
 
                 var res = await context.SaveChangesAsync();
                 //TODO
-                string evtId = EventId.NEW_SOT;
-                string evtName = EventName.NEW_SOT;
-                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                //string evtId = EventId.NEW_SOT;
+                //string evtName = EventName.NEW_SOT;
+                //GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+                await NotificationHandling(context, config, EventId.DELETE_SOT);
+                
                 return res;
             }
             catch (Exception ex)
@@ -351,7 +360,18 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-
+        private async Task<bool> NotificationHandling(ApplicationInventoryDBContext context, IConfiguration config, string eventId)
+        {
+            string evtId = eventId;
+            string evtName = SotNotificationType.onPendingIngate.ToString(); //EventName.NEW_SOT;
+            int count = await GqlUtils.GetWaitingSOTCount(context);
+            var payload = new
+            {
+                Pending_Ingate_Count = count
+            };
+            GqlUtils.SendGlobalNotification1(config, SotNotificationTopic.SOT_UPDATED, evtId, evtName, count, JsonConvert.SerializeObject(payload));
+            return true;    
+        }
 
         //private async Task<int> StoringOrderTankChanges(AppDbContext context, List<StoringOrderTankRequest> sot, bool forCancel)
         //{
@@ -439,7 +459,7 @@ namespace IDMS.StoringOrder.GqlTypes
 
         private void ResolvekAnyPreOrdrTank(ApplicationInventoryDBContext context, string tankNo, string user, long currentDate, string currentSOTGuid)
         {
-            var sot = context.storing_order_tank.Where(s => s.tank_no == tankNo && (s.status_cv == SOTankStatus.PREORDER) 
+            var sot = context.storing_order_tank.Where(s => s.tank_no == tankNo && (s.status_cv == SOTankStatus.PREORDER)
                                 && s.guid != currentSOTGuid && (s.delete_dt == null || s.delete_dt == 0)).FirstOrDefault();
 
             if (sot != null)
@@ -448,7 +468,7 @@ namespace IDMS.StoringOrder.GqlTypes
                 sot.update_by = user;
                 sot.update_dt = currentDate;
             }
-            
+
         }
     }
 }

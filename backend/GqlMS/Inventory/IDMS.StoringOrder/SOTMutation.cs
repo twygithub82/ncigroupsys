@@ -4,16 +4,10 @@ using HotChocolate;
 using HotChocolate.Subscriptions;
 using HotChocolate.Types;
 using IDMS.Inventory.GqlTypes;
-using IDMS.Inventory.GqlTypes.LocalModel;
 using IDMS.Models.Inventory;
 using IDMS.Models.Inventory.InGate.GqlTypes.DB;
 using IDMS.Models.Service;
-using IDMS.Models.Shared;
 using IDMS.StoringOrder.GqlTypes.LocalModel;
-
-
-
-//using IDMS.StoringOrder.Model.Domain.StoringOrder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -102,7 +96,7 @@ namespace IDMS.StoringOrder.GqlTypes
             }
         }
 
-        public async Task<int> OverwriteProcessCostHandling(ApplicationInventoryDBContext context, string sotGuid, string customerGuid,
+        private async Task<int> OverwriteProcessCostHandling(ApplicationInventoryDBContext context, string sotGuid, string customerGuid,
             string tariffBufferGuid, string user, long currentDateTime)
         {
 

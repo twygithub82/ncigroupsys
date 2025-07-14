@@ -46,7 +46,7 @@ namespace IDMS.Inventory.GqlTypes
                                 if (string.IsNullOrEmpty(tankPurpose.guid))
                                     throw new GraphQLException(new Error("Process guid cannot be null or empty.", "ERROR"));
 
-                                await RemoveCleaning(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank);
+                                await RemoveCleaning(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank, tankPurpose.residue_request ?? null);
                             }
                             break;
                         case PurposeType.STEAM:
@@ -68,7 +68,7 @@ namespace IDMS.Inventory.GqlTypes
                                 if (string.IsNullOrEmpty(tankPurpose.guid))
                                     throw new GraphQLException(new Error("Process guid cannot be null or empty.", "ERROR"));
 
-                                await RemoveRepair(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank);
+                                await RemoveRepair(context, config, user, currentDateTime, tankPurpose.guid, tankPurpose.storing_order_tank, tankPurpose.residue_request ?? null);
                             }
                             break;
                         case PurposeType.STORAGE:
@@ -105,6 +105,8 @@ namespace IDMS.Inventory.GqlTypes
                 newSuyDetail.guid = Util.GenerateGUID();
                 newSuyDetail.create_by = user;
                 newSuyDetail.create_dt = currentDateTime;
+                newSuyDetail.update_by = user;
+                newSuyDetail.update_dt = currentDateTime;
                 newSuyDetail.sot_guid = surveyDetail.sot_guid;
                 newSuyDetail.status_cv = surveyDetail.status_cv;
                 newSuyDetail.remarks = surveyDetail.remarks;
@@ -390,6 +392,8 @@ namespace IDMS.Inventory.GqlTypes
                 tank.guid = Util.GenerateGUID();
                 tank.create_by = user;
                 tank.create_dt = currentDateTime;
+                tank.update_by = user;
+                tank.update_dt = currentDateTime;
 
                 await context.AddAsync(tank);
                 var res = await context.SaveChangesAsync();
@@ -585,8 +589,14 @@ namespace IDMS.Inventory.GqlTypes
                     //SOT Handling
                     var tank = new storing_order_tank() { guid = tankSummaryRequest?.SOT?.guid };
                     context.storing_order_tank.Attach(tank);
-                    //if (!string.IsNullOrEmpty(sot.tank_no))
-                    //    tank.tank_no = sot.tank_no;
+
+                    //Even empty string need to update also
+                    if (tankSummaryRequest?.SOT.clean_status_cv != null)
+                        tank.clean_status_cv = tankSummaryRequest?.SOT.clean_status_cv;
+
+                    if (!string.IsNullOrEmpty(tankSummaryRequest?.SOT.clean_status_remarks))
+                        tank.clean_status_remarks = tankSummaryRequest?.SOT.clean_status_remarks;
+
                     if (!string.IsNullOrEmpty(tankSummaryRequest?.SOT?.owner_guid))
                     {
                         tank.owner_guid = tankSummaryRequest?.SOT?.owner_guid;
@@ -899,7 +909,7 @@ namespace IDMS.Inventory.GqlTypes
         }
 
         public async Task<int> UpdateTankInfo(ApplicationInventoryDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, [Service]IMapper mapper, TankInfoRequest tankInfoRequest)
+            [Service] IHttpContextAccessor httpContextAccessor, [Service] IMapper mapper, TankInfoRequest tankInfoRequest)
         {
             try
             {
@@ -990,56 +1000,14 @@ namespace IDMS.Inventory.GqlTypes
 
 
         #region Private Local Functions
-        //private async Task<SteamingPackageResult> SteamingCostHandling(ApplicationInventoryDBContext context, TankDetailRequest tankDetailRequest)
-        //{
-        //    //Added for later use
-        //    var unit_type_guid = tankDetailRequest?.unit_type_guid;
-        //    var isFlatRate = await context.Set<tank>().Where(t => t.guid == unit_type_guid).Select(t => t.flat_rate).FirstOrDefaultAsync();
-        //    var repTemp = tankDetailRequest?.required_temp;
-        //    var last_cargo_guid = tankDetailRequest?.last_cargo_guid;
-        //    var customerGuid = tankDetailRequest?.so_customer_company_guid;
 
-        //    bool isExclusive = false;
-        //    //First check whether have exclusive package cost
-        //    var result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
-        //                .Join(context.Set<steaming_exclusive>(), p => p.steaming_exclusive_guid, t => t.guid, (p, t) => new { p, t })
-        //                .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp && joined.t.tariff_cleaning_guid == last_cargo_guid)
-        //                .Select(joined => new SteamingPackageResult
-        //                {
-        //                    cost = joined.p.cost,  // Selecting cost
-        //                    labour = joined.p.labour, // Selecting labour
-        //                    steaming_guid = joined.p.steaming_exclusive_guid
-        //                })
-        //                .FirstOrDefaultAsync();
-        //    //If no exclusive found
-        //    if (result == null || string.IsNullOrEmpty(result.steaming_guid))
-        //    {
-        //        //we check the general package cost
-        //        result = await context.Set<package_steaming>().Where(p => p.customer_company_guid == customerGuid)
-        //                    .Join(context.Set<tariff_steaming>(), p => p.tariff_steaming_guid, t => t.guid, (p, t) => new { p, t })
-        //                    .Where(joined => joined.t.temp_min <= repTemp && joined.t.temp_max >= repTemp)
-        //                    .Select(joined => new SteamingPackageResult
-        //                    {
-        //                        cost = joined.p.cost,  // Selecting cost
-        //                        labour = joined.p.labour, // Selecting labour
-        //                        steaming_guid = joined.p.tariff_steaming_guid
-        //                    })
-        //                    .FirstOrDefaultAsync();
-        //    }
-        //    else //the customer have exclusive package cost
-        //        isExclusive = true;
-
-        //    if (result == null || string.IsNullOrEmpty(result.steaming_guid))
-        //        throw new GraphQLException(new Error($"Package steaming not found", "ERROR"));
-
-        //    return result;
-        //}
-
-        private async Task<int> RemoveCleaning(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
+        private async Task<int> RemoveCleaning(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank, ResidueRequest? residueRequest)
         {
             try
             {
                 string currentTankStatus = tank.tank_status_cv;
+                bool hasPendingResidue = false;
+
                 if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
                 {
                     var cleaning = await context.cleaning.Where(c => c.sot_guid == tank.guid && (c.delete_dt == null || c.delete_dt == 0)).ToListAsync();
@@ -1073,6 +1041,8 @@ namespace IDMS.Inventory.GqlTypes
                     var residues = await context.residue.Where(c => c.sot_guid == tank.guid && (c.delete_dt == null || c.delete_dt == 0)).ToListAsync();
                     foreach (var resd in residues)
                     {
+                        hasPendingResidue = true;
+
                         resd.update_by = user;
                         resd.update_dt = currentDateTime;
                         resd.na_dt = currentDateTime;
@@ -1110,6 +1080,9 @@ namespace IDMS.Inventory.GqlTypes
                         sot.update_by = user;
                         sot.update_dt = currentDateTime;
                         currentTankStatus = sot.tank_status_cv;
+
+                        if (hasPendingResidue)
+                            sot.purpose_repair_cv = "";
                     }
                     else
                         throw new GraphQLException(new Error("Tank not found.", "ERROR"));
@@ -1135,84 +1108,6 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
-
-        //private async Task<int> RemoveSteaming(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
-        //{
-        //    try
-        //    {
-        //        string currentTankStatus = tank.tank_status_cv;
-        //        if (TankMovementStatus.validTankStatus.Contains(tank.tank_status_cv))
-        //        {
-        //            var steams = await context.steaming.Where(s => s.sot_guid == tank.guid && (s.delete_dt == null || s.delete_dt == 0)).ToListAsync();
-        //            foreach (var steam in steams)
-        //            {
-        //                steam.update_by = user;
-        //                steam.update_dt = currentDateTime;
-        //                steam.na_dt = currentDateTime;
-        //                steam.status_cv = CurrentServiceStatus.NO_ACTION;
-
-        //                var jobOrders = await context.job_order.Where(j => j.steaming_part.Any(c => c.guid == steam.guid)).ToListAsync();
-        //                foreach (var item in jobOrders)
-        //                {
-        //                    if (CurrentServiceStatus.PENDING.EqualsIgnore(item.status_cv))
-        //                    {
-        //                        item.status_cv = CurrentServiceStatus.CANCELED;
-        //                        item.update_by = user;
-        //                        item.update_dt = currentDateTime;
-        //                    }
-        //                }
-
-        //                if (await StatusChangeConditionCheck(jobOrders))
-        //                {
-        //                    steam.status_cv = CurrentServiceStatus.COMPLETED;
-        //                    steam.complete_dt = currentDateTime;
-        //                }
-        //                else
-        //                    steam.status_cv = CurrentServiceStatus.NO_ACTION;
-        //            }
-
-        //            //Save the changes before do tank movement check
-        //            await context.SaveChangesAsync();
-
-        //            var sot = await context.storing_order_tank.FindAsync(tank.guid);
-        //            if (sot != null)
-        //            {
-        //                sot.purpose_steam = false;
-        //                sot.steaming_remarks = tank.steaming_remarks;
-        //                sot.tank_status_cv = await GqlUtils.TankMovementConditionCheck1(context, sot);
-        //                sot.required_temp = null;
-        //                sot.update_by = user;
-        //                sot.update_dt = currentDateTime;
-        //                currentTankStatus = sot.tank_status_cv;
-        //            }
-        //            else
-        //                throw new GraphQLException(new Error("Tank not found.", "ERROR"));
-
-        //            //var res = await context.SaveChangesAsync();
-        //            //var curTankStatus = await GqlUtils.TankMovementConditionCheck(context, config, user, currentDateTime, tank.guid, PurposeType.STEAM, tank.steaming_remarks);
-        //            //return res;
-        //        }
-        //        else
-        //        {
-        //            var sot = new storing_order_tank() { guid = tank.guid };
-        //            context.Attach(sot);
-        //            sot.update_by = user;
-        //            sot.update_dt = currentDateTime;
-        //            sot.steaming_remarks = tank.steaming_remarks;
-        //            sot.required_temp = null;
-        //            sot.purpose_steam = false;
-        //        }
-
-        //        var res = await context.SaveChangesAsync();
-        //        await GqlUtils.NotificationHandling(config, PurposeType.STEAM, tank.guid, currentTankStatus);
-        //        return res;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
-
         private async Task<int> RemoveSteaming(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
         {
             try
@@ -1279,8 +1174,7 @@ namespace IDMS.Inventory.GqlTypes
                 throw;
             }
         }
-
-        private async Task<int> RemoveRepair(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank)
+        private async Task<int> RemoveRepair(ApplicationInventoryDBContext context, IConfiguration config, string user, long currentDateTime, string processGuid, storing_order_tank tank, ResidueRequest? residueRequest)
         {
             try
             {
@@ -1322,6 +1216,25 @@ namespace IDMS.Inventory.GqlTypes
                             rep.status_cv = CurrentServiceStatus.NO_ACTION;
                     }
 
+
+                    if (residueRequest != null && !string.IsNullOrEmpty(residueRequest.residue_guid))
+                    {
+                        var pendingResidue = new residue() { guid = residueRequest.residue_guid };
+                        context.residue.Attach(pendingResidue);
+                        pendingResidue.update_by = user;
+                        pendingResidue.update_dt = currentDateTime;
+                        pendingResidue.na_dt = currentDateTime;
+                        pendingResidue.status_cv = CurrentServiceStatus.NO_ACTION;
+
+                        //foreach (var partGuid in residueRequest.residue_part_guid)
+                        //{
+                        //    var resPart = new residue_part() { guid = partGuid };
+                        //    context.Set<residue_part>().Attach(resPart);
+                        //    resPart.approve_part = false;
+                        //    resPart.update_dt = currentDateTime;
+                        //    resPart.update_by = user;
+                        //}
+                    }
                     //Save the changes before do tank movement check
                     await context.SaveChangesAsync();
 
