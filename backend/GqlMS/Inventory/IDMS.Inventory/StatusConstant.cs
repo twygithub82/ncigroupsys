@@ -119,4 +119,23 @@ namespace IDMS.Inventory.GqlTypes
         public const string ACCEPT = "ACCEPTED";
         public const string REJECT = "REJECTED";
     }
+
+    public static class SotNotificationTopic
+    {
+        public const string SOT_UPDATED = "SOT_UPDATED";
+        public const string INGATE_UPDATED = "INGATE_UPDATED";
+        public const string OUTGATE_UPDATED = "OUTGATE_UPDATED";
+        public const string EIR_PUBLISHED = "EIR_PUBLISHED";
+        public const string PROCESS_UPDATED = "PROCESS_UPDATED";
+    }
+
+    public enum SotNotificationType
+    {
+        onPendingIngate = 1,
+        onPendingIngate_Survey = 2,
+        onPendingOutgate = 3,
+        onPendingProcess_GateIn_Survey = 4,
+        onJobCompleted = 5,
+        onItemCompleted = 6
+    }
 }
