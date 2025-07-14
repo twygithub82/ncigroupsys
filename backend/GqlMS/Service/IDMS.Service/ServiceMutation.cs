@@ -11,6 +11,9 @@ using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using IDMS.Models.Shared;
+using System.Configuration;
+using System.Data.Entity;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -178,9 +181,9 @@ namespace IDMS.Service.GqlTypes
                 }
 
                 //handling steaming process for total hour
-                if (steaming != null && ! string.IsNullOrEmpty(steaming.guid)) 
+                if (steaming != null && !string.IsNullOrEmpty(steaming.guid))
                 {
-                    var steam = new steaming() {guid = steaming.guid};
+                    var steam = new steaming() { guid = steaming.guid };
                     context.Attach(steam);
                     steam.total_hour = steaming.total_hour;
                     steam.update_by = user;
@@ -410,7 +413,6 @@ namespace IDMS.Service.GqlTypes
                 throw;
             }
         }
-
         private async Task<bool> UpdateAccumalateHour(ApplicationServiceDBContext context, string user, long currentDateTime, List<string?> jobOrderGuid)
         {
             try
@@ -438,95 +440,275 @@ namespace IDMS.Service.GqlTypes
         }
 
 
+        public async Task<int> AddRole(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<role> rolesRequest)
+        {
+            try
+            {
+                if (rolesRequest == null)
+                    throw new GraphQLException(new Error($"Roles object cannot be null", "ERROR"));
 
-        //private async Task<int> SendNotification(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-        //    [Service] IConfiguration config, string eventId, string eventName, int count, JobNotification jobNotification)
-        //{
-        //    try
-        //    {
-        //        string httpURL = "http://localhost:5114/graphql/"; //$"{config["GlobalNotificationURL"]}";
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in rolesRequest)
+                {
+                    var newRole = new role();
+                    newRole.guid = Util.GenerateGUID();
+                    newRole.code = item.code;
+                    newRole.description = item.description;
+                    newRole.position = item.position;
+                    newRole.department = item.department;
+                    newRole.create_by = user;
+                    newRole.update_by = user;
+                    newRole.update_dt = currentDateTime;
+                    newRole.create_dt = currentDateTime;
+
+                    await context.role.AddAsync(newRole);
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateRole(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<role> rolesRequest)
+        {
+            try
+            {
+                if (rolesRequest == null)
+                    throw new GraphQLException(new Error($"Roles object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in rolesRequest)
+                {
+                    var updateRole = new role() { guid = item.guid };
+                    context.role.Attach(updateRole);
+
+                    updateRole.code = item.code;
+                    updateRole.description = item.description;
+                    updateRole.position = item.position;
+                    updateRole.department = item.department;
+
+                    updateRole.update_by = user;
+                    updateRole.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> DeleteRole(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<string> rolesGuid)
+        {
+            try
+            {
+                if (rolesGuid == null)
+                    throw new GraphQLException(new Error($"Roles guid cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var guid in rolesGuid)
+                {
+                    var deleteRole = new role() { guid = guid };
+                    context.role.Attach(deleteRole);
+
+                    deleteRole.update_by = user;
+                    deleteRole.update_dt = currentDateTime;
+                    deleteRole.delete_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> AddTeam(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, List<team> teamsRequest)
+        {
+            try
+            {
+                if (teamsRequest == null)
+                    throw new GraphQLException(new Error($"Team object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in teamsRequest)
+                {
+                    var newTeam = new team();
+                    newTeam.guid = Util.GenerateGUID();
+                    newTeam.description = item.description;
+                    newTeam.department_cv = item.department_cv;
+                    newTeam.create_by = user;
+                    newTeam.update_by = user;
+                    newTeam.update_dt = currentDateTime;
+                    newTeam.create_dt = currentDateTime;
+
+                    await context.team.AddAsync(newTeam);
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateTeam(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+           [Service] IConfiguration config, List<team> teamRequest)
+        {
+            try
+            {
+                if (teamRequest == null)
+                    throw new GraphQLException(new Error($"Roles object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var item in teamRequest)
+                {
+                    var updateTeam = new team() { guid = item.guid };
+                    context.team.Attach(updateTeam);
+                    updateTeam.description = item.description;
+                    updateTeam.department_cv = item.department_cv;
+
+                    updateTeam.update_by = user;
+                    updateTeam.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> DeleteTeam(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+           [Service] IConfiguration config, List<string> teamsGuid)
+        {
+            try
+            {
+                if (teamsGuid == null)
+                    throw new GraphQLException(new Error($"Teams guid cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
+
+                foreach (var guid in teamsGuid)
+                {
+                    var deleteTeam = new team() { guid = guid };
+                    context.team.Attach(deleteTeam);
+
+                    deleteTeam.update_by = user;
+                    deleteTeam.update_dt = currentDateTime;
+                    deleteTeam.delete_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        public async Task<int> UpdateUser(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
+            [Service] IConfiguration config, aspnetusers userRequest, List<role?> rolesRequest, List<team?> teamsRequest)
+        {
+            try
+            {
+                if (userRequest == null)
+                    throw new GraphQLException(new Error($"User object cannot be null", "ERROR"));
+
+                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                long currentDateTime = DateTime.Now.ToEpochTime();
 
 
-        //        if (!string.IsNullOrEmpty(httpURL))
-        //        {
-        //            //string jsonString = JsonSerializer.Serialize(jobNotification);
-        //            string jsonString = JsonConvert.SerializeObject(jobNotification);
-        //            var message = new
-        //            {
-        //                topic = jobNotification?.job_order_guid ?? Util.GenerateGUID(),
-        //                count = count,
-        //                event_id = Util.GenerateGUID(),
-        //                event_name = eventName,
-        //                event_dt = DateTime.Now.ToEpochTime(),
-        //                payload = jsonString
-        //            };
+                //Update User
+                var updateUser = new aspnetusers() { Id = userRequest.Id };
+                context.aspnetusers.Attach(updateUser);
+                updateUser.PhoneNumber = userRequest.PhoneNumber;
+                updateUser.CorporateID = userRequest.CorporateID;
 
+                foreach (var item in rolesRequest)
+                {
+                    if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
+                    {
+                        var newUserRole = new user_role();
+                        newUserRole.guid = Util.GenerateGUID();
+                        newUserRole.user_guid = userRequest.Id;
+                        newUserRole.role_guid = item.guid;
+                        newUserRole.create_by = user;
+                        newUserRole.update_by = user;
+                        newUserRole.create_dt = currentDateTime;
+                        newUserRole.update_dt = currentDateTime;
+                        await context.Set<user_role>().AddAsync(newUserRole);
+                    }
 
-        //            var graphqlQuery = new
-        //            {
-        //                query = @"
-        //                    query SendMessage($message: Message_r1Input!) {
-        //                      sendMessage_r1(message: $message)
-        //                    }",
-        //                variables = new
-        //                {
-        //                    message
-        //                }
-        //            };
+                    if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
+                    {
+                        var delUserRole = new user_role() { guid = item.guid };
+                        delUserRole.update_by = user;
+                        delUserRole.update_dt = currentDateTime;
+                        delUserRole.delete_dt = currentDateTime;
+                    }
+                }
 
-        //            // Serialize the payload to JSON
-        //            //var jsonPayload = JsonSerializer.Serialize(graphqlQuery);
-        //            var jsonPayload = JsonConvert.SerializeObject(graphqlQuery);
-        //            //string jsonPayload = JObject.FromObject(requestPayload).ToString(Newtonsoft.Json.Formatting.None);
+                foreach (var item in teamsRequest)
+                {
+                    if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
+                    {
+                        var newUserTeam = new team_user();
+                        newUserTeam.guid = Util.GenerateGUID();
+                        newUserTeam.userId = userRequest.Id;
+                        newUserTeam.team_guid = item.guid;
+                        newUserTeam.create_by = user;
+                        newUserTeam.update_by = user;
+                        newUserTeam.create_dt = currentDateTime;
+                        newUserTeam.update_dt = currentDateTime;
+                        await context.Set<team_user>().AddAsync(newUserTeam);
+                    }
 
-        //            HttpClient _httpClient = new();
-        //            //string queryStatement = Newtonsoft.Json.JsonConvert.SerializeObject(query);
-        //            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-        //            var data = await _httpClient.PostAsync(httpURL, content);
-        //            Console.WriteLine(data);
-        //        }
+                    if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
+                    {
+                        var delUserRole = new team_user() { guid = item.guid };
+                        delUserRole.update_by = user;
+                        delUserRole.update_dt = currentDateTime;
+                        delUserRole.delete_dt = currentDateTime;
+                    }
+                }
 
-
-
-
-        //        //    using var httpClient = new HttpClient();
-
-        //        //    var query = @"
-        //        //query {
-        //        //  sendMessage_r1(
-        //        //    message: {
-        //        //      topic: ""onStart""
-        //        //      count: 1
-        //        //      event_dt: 123
-        //        //      event_id: ""1""
-        //        //      event_name: ""notification""
-        //        //      payload: ""{ \""name\"": \""Edmund\"" }""
-        //        //    }
-        //        //  )
-        //        //}";
-
-        //        //    var requestPayload = new
-        //        //    {
-        //        //        query = query,
-        //        //        //variables = variables
-        //        //    };
-
-        //        //    var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
-
-        //        //    // Replace with your actual GraphQL endpoint
-        //        //    var response = await httpClient.PostAsync("https://your-graphql-endpoint.com/graphql", content);
-
-        //        //    var responseString = await response.Content.ReadAsStringAsync();
-        //        //    Console.WriteLine(responseString);
-
-
-        //        return 1;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return 0;
-        //    }
-        //}
+                var res = await context.SaveChangesAsync();
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
 
         private async Task<bool> TankMovementConditionCheck(ApplicationServiceDBContext context, string user, long currentDateTime, string sotGuid)
         {
