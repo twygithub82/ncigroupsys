@@ -104,10 +104,10 @@ namespace IDMS.User.Authentication.API.Utilities
             var authClaims = new List<Claim>();
 
             authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-            authClaims.Add(new Claim("Name", loginId));
-            authClaims.Add(new Claim("Email", email));
-            authClaims.Add(new Claim("Sid", userId));
-            authClaims.Add(new Claim("UserData", teams.ToString()));
+            authClaims.Add(new Claim("name", loginId));
+            authClaims.Add(new Claim("email", email));
+            authClaims.Add(new Claim("sid", userId));
+            authClaims.Add(new Claim("userdata", teams.ToString()));
             authClaims.Add(new Claim("sessionId", currentSessionId.ToString()));
 
 
@@ -121,23 +121,23 @@ namespace IDMS.User.Authentication.API.Utilities
             if (userType == UserType.User)
             {
                 //authClaims.Add(new Claim(ClaimTypes.GroupSid, "c1"));
-                authClaims.Add(new Claim("GroupSid", "c1"));
+                authClaims.Add(new Claim("groupsid", "c1"));
             }
             else if (userType == UserType.Staff)
             {
                 //authClaims.Add(new Claim(ClaimTypes.GroupSid, "s1"));
-                authClaims.Add(new Claim("GroupSid", "s1"));
+                authClaims.Add(new Claim("groupsid", "s1"));
             }
 
             foreach (var role in roles)
             {
                 //var userRole = _dbContext.UserRoles.FindAsync()
-                authClaims.Add(new Claim("Role", role));
+                authClaims.Add(new Claim("role", role));
                 if (userType == UserType.Staff)
                 {
                     if (role.Trim().ToLower() == "admin")
                         //authClaims.Add(new Claim(ClaimTypes.PrimaryGroupSid, "a1"));
-                        authClaims.Add(new Claim("PrimaryGroupSid", "a1"));
+                        authClaims.Add(new Claim("primarygroupsid", "a1"));
                 }
             }
 

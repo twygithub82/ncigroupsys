@@ -71,7 +71,7 @@ namespace IDMS.UserAuthentication.Controllers
                 return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
             }
 
-            var email = User.FindFirstValue("Email");
+            var email = User.FindFirstValue("email");
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
@@ -107,7 +107,7 @@ namespace IDMS.UserAuthentication.Controllers
 
                 var userRoles = await _userManager.GetRolesAsync(user);
                 user.CurrentSessionId = Guid.NewGuid();
-                var jwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
+                var jwtToken = _jwtTokenService.GetToken(UserType.User, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}"); //DWMS.User.Authentication.API.Utilities.utils.GetToken(_configuration, authClaims);
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = user.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
                 _refreshTokenStore.AddToken(refreshToken);
@@ -124,7 +124,7 @@ namespace IDMS.UserAuthentication.Controllers
         {
             //var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
             //var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-            var userName = User.FindFirstValue("Name");
+            var userName = User.FindFirstValue("name");
             var refreshTokenKey = _refreshTokenStore.GetToken(userName);
             if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken)
             {

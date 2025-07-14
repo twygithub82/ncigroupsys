@@ -201,7 +201,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
             try
             {
-                var UserName_action = User.FindFirstValue("Name");
+                var UserName_action = User.FindFirstValue("name");
 
 
                 var userTeams = from tu in _dbContext.team_user

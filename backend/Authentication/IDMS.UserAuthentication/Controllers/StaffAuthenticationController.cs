@@ -290,7 +290,7 @@ namespace IDMS.User.Authentication.API.Controllers
         {
             try
             {
-                var primarygroupSid = User.FindFirstValue("PrimaryGroupSid");
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
                 if (primarygroupSid != "a1")
                     return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
 
@@ -337,8 +337,8 @@ namespace IDMS.User.Authentication.API.Controllers
         {
             try
             {
-                var loginUser = User.FindFirstValue("Name");
-                var primarygroupSid = User.FindFirstValue("PrimaryGroupSid");
+                var loginUser = User.FindFirstValue("name");
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
 
                 if (primarygroupSid != "a1")
                     return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
@@ -381,7 +381,7 @@ namespace IDMS.User.Authentication.API.Controllers
         {
             try
             {
-                var primarygroupSid = User.FindFirstValue("PrimaryGroupSid");
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
                 if (primarygroupSid != "a1")
                 {
                     return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
@@ -449,8 +449,8 @@ namespace IDMS.User.Authentication.API.Controllers
         {
             try
             {
-                var primarygroupSid = User.FindFirstValue("PrimaryGroupSid");
-                var username = User.FindFirstValue("Name");
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                var username = User.FindFirstValue("name");
                 var currentDateTime = utils.GetNowEpochInSec();
 
                 if (primarygroupSid != "a1")
@@ -614,7 +614,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
             try
             {
-                var UserName_action = User.FindFirstValue("Name");
+                var UserName_action = User.FindFirstValue("name");
                 var userTeams = from tu in _dbContext.team_user
                                 join t in _dbContext.team
                                 on tu.team_guid equals t.guid
@@ -736,7 +736,7 @@ namespace IDMS.User.Authentication.API.Controllers
                 return BadRequest(new { Errors = new[] { "New password and confirmation password do not match." } });
             }
 
-            var username = User.FindFirstValue("Name");
+            var username = User.FindFirstValue("name");
             var user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
