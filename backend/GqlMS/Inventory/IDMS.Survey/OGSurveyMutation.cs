@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using IDMS.Models.Shared;
+using IDMS.Inventory.GqlTypes.LocalModel;
 
 namespace IDMS.Survey.GqlTypes
 {
@@ -24,99 +25,75 @@ namespace IDMS.Survey.GqlTypes
             List<string> retGuids = new List<string>();
             Record record = new();
 
-            try
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
-                var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
-                long currentDateTime = DateTime.Now.ToEpochTime();
-
-                out_gate_survey outgateSurvey = new();
-                mapper.Map(outGateSurveyRequest, outgateSurvey);
-
-                outgateSurvey.guid = Util.GenerateGUID();
-                outgateSurvey.create_by = user;
-                outgateSurvey.create_dt = currentDateTime;
-                context.out_gate_survey.Add(outgateSurvey);
-
-                //Outgate handling
-                var outgate = await context.out_gate.Where(i => i.guid == outGateRequest.guid && i.delete_dt == null).FirstOrDefaultAsync();
-                if (outgate != null)
+                try
                 {
+                    var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                    long currentDateTime = DateTime.Now.ToEpochTime();
+
+                    out_gate_survey outgateSurvey = new();
+                    mapper.Map(outGateSurveyRequest, outgateSurvey);
+
+                    outgateSurvey.guid = Util.GenerateGUID();
+                    outgateSurvey.create_by = user;
+                    outgateSurvey.create_dt = currentDateTime;
+                    outgateSurvey.update_by = user;
+                    outgateSurvey.update_dt = currentDateTime;
+                    context.out_gate_survey.Add(outgateSurvey);
+                    //Add the newly created guid into list for return
+                    retGuids.Add(outgateSurvey.guid);
+
+                    //Outgate handling
+                    var outgate = await context.out_gate.Where(i => i.guid == outGateRequest.guid && i.delete_dt == null).FirstOrDefaultAsync();
+                    if (outgate == null)
+                        throw new GraphQLException(new Error($"Outgate not found", "ERROR"));
+
                     outgate.remarks = outGateRequest.remarks;
                     outgate.vehicle_no = outGateRequest.vehicle_no;
                     outgate.driver_name = outGateRequest.driver_name;
                     outgate.haulier = outGateRequest.haulier;
+
                     //yet to survey --> pending
                     outgate.eir_status_cv = EirStatus.PENDING;
                     outgate.update_by = user;
                     outgate.update_dt = currentDateTime;
+                   
+                    //----------------------------------------------------------------------------------------
+                    if (!string.IsNullOrEmpty(outGateSurveyRequest?.action ?? "")
+                        && outGateSurveyRequest.action.EqualsIgnore(EirStatus.PUBLISHED))
+                    {
+                        outgate.eir_status_cv = EirStatus.PUBLISHED;
+                        outgate.publish_by = user;
+                        outgate.publish_dt = currentDateTime;
+
+                        outGateRequest.out_gate_survey = outgateSurvey;
+                        retval = await PublishEirHandling(context, user, currentDateTime, mapper, outGateRequest);
+                    }
+                    else
+                        retval = await context.SaveChangesAsync();
+                    //-----------------------------------------------------------------------------------------
+
+
+                    // Commit the transaction if all operations succeed
+                    await transaction.CommitAsync();
+
+                    //TODO
+                    string evtId = EventId.NEW_OUTGATE;
+                    string evtName = EventName.NEW_OUTGATE;
+                    GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
+
+
+                    //Bundle the retVal and retGuid return as record object
+                    record = new Record() { affected = retval, guid = retGuids };
                 }
-
-                //if (outgateSurvey == null)
-                //    throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
-
-                ////Get the SOT object
-                //if (outGateRequest.tank == null || string.IsNullOrEmpty(outGateRequest.tank.guid))
-                //    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
-
-                //var tnk = outGateRequest.tank;
-
-                //var tankDetail = new TankDetail();
-                //tankDetail.tank_no = tnk.tank_no;
-                //tankDetail.owner_guid = tnk.owner_guid;
-                //tankDetail.unit_type_guid = tnk.unit_type_guid;
-
-                //if (!outGateRequest.have_outgate_survrey)
-                //{
-                //    storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
-                //    context.storing_order_tank.Attach(sot);
-                //    sot.unit_type_guid = tnk.unit_type_guid;
-                //    sot.owner_guid = tnk.owner_guid;
-                //    sot.tank_no = string.IsNullOrEmpty(tnk.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tnk.tank_no;
-                //    sot.update_by = user;
-                //    sot.update_dt = currentDateTime;
-                //    sot.tank_status_cv = TankMovementStatus.RELEASED;
-
-                //    //Add the newly created guid into list for return
-                //    retGuids.Add(outgateSurvey.guid);
-
-                //    if (!string.IsNullOrEmpty(outGateRequest.release_order?.guid))
-                //    {
-                //        var RO = new release_order() { guid = outGateRequest.release_order.guid };
-                //        context.Attach(RO);
-                //        if (!string.IsNullOrEmpty(outGateRequest.haulier))
-                //        {
-                //            RO.haulier = outGateRequest.haulier;
-                //            RO.update_by = user;
-                //            RO.update_dt = currentDateTime;
-                //        }
-                //    }
-
-                //    var preOrderTank = await context.storing_order_tank.Where(s => s.tank_no == tnk.tank_no && s.status_cv == SOTankStatus.PREORDER
-                //                                                                 && s.delete_dt == null).FirstOrDefaultAsync();
-                //    if (preOrderTank != null)
-                //    {
-                //        preOrderTank.status_cv = SOTankStatus.WAITING;
-                //        preOrderTank.update_by = user;
-                //        preOrderTank.update_dt = currentDateTime;
-                //    }
-                //}
-
-                retval = await context.SaveChangesAsync();
-                //TODO
-                string evtId = EventId.NEW_OUTGATE;
-                string evtName = EventName.NEW_OUTGATE;
-                GqlUtils.SendGlobalNotification(config, evtId, evtName, 0);
-
-                //Tank info handling
-                //await AddTankInfo(context, mapper, user, currentDateTime, tankDetail, outgateSurvey, null);
-
-                //Bundle the retVal and retGuid return as record object
-                record = new Record() { affected = retval, guid = retGuids };
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+                }
             }
-            catch (Exception ex)
-            {
-                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
-            }
+
             return record;
         }
 
@@ -260,7 +237,6 @@ namespace IDMS.Survey.GqlTypes
             {
                 try
                 {
-
                     var user = GqlUtils.IsAuthorize(config, httpContextAccessor);
                     long currentDateTime = DateTime.Now.ToEpochTime();
 
@@ -273,43 +249,40 @@ namespace IDMS.Survey.GqlTypes
                     outgate.update_dt = currentDateTime;
                     outgate.publish_dt = currentDateTime;
 
-                    //TODO: Pending implementation of publish pdf -------------------------------
+                    ////SOT Handling
+                    //if (outGateRequest.tank == null || string.IsNullOrEmpty(outGateRequest.tank.guid))
+                    //    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
 
-                    //SOT Handling
-                    if (outGateRequest.tank == null || string.IsNullOrEmpty(outGateRequest.tank.guid))
-                        throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
+                    //if (outGateRequest.out_gate_survey == null)
+                    //    throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
 
-                    if (outGateRequest.out_gate_survey == null)
-                        throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
+                    //var tnk = outGateRequest.tank;
+                    //storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
+                    //context.storing_order_tank.Attach(sot);
+                    //sot.update_by = user;
+                    //sot.update_dt = currentDateTime;
+                    //sot.tank_status_cv = TankMovementStatus.RELEASED;
 
-                    var tnk = outGateRequest.tank;
-                    storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
-                    context.storing_order_tank.Attach(sot);
-                    //sot.unit_type_guid = tnk.unit_type_guid;
-                    //sot.owner_guid = tnk.owner_guid;
-                    //sot.tank_no = string.IsNullOrEmpty(tnk.tank_no) ? throw new GraphQLException(new Error("Tank no cannot bu null or empty.", "Error")) : tnk.tank_no;
-                    sot.update_by = user;
-                    sot.update_dt = currentDateTime;
-                    sot.tank_status_cv = TankMovementStatus.RELEASED;
+                    ////Pre-Order Handling
+                    //var preOrderTank = await context.storing_order_tank.Where(s => s.tank_no == tnk.tank_no &&
+                    //                                            s.status_cv == SOTankStatus.PREORDER && s.delete_dt == null).FirstOrDefaultAsync();
+                    //if (preOrderTank != null)
+                    //{
+                    //    preOrderTank.status_cv = SOTankStatus.WAITING;
+                    //    preOrderTank.update_by = user;
+                    //    preOrderTank.update_dt = currentDateTime;
+                    //}
 
-                    //Pre-Order Handling
-                    var preOrderTank = await context.storing_order_tank.Where(s => s.tank_no == tnk.tank_no &&
-                                                                s.status_cv == SOTankStatus.PREORDER && s.delete_dt == null).FirstOrDefaultAsync();
-                    if (preOrderTank != null)
-                    {
-                        preOrderTank.status_cv = SOTankStatus.WAITING;
-                        preOrderTank.update_by = user;
-                        preOrderTank.update_dt = currentDateTime;
-                    }
+                    //await context.SaveChangesAsync();
 
-                    await context.SaveChangesAsync();
+                    ////Tank info handling
+                    //var tankDetail = new TankDetail();
+                    //tankDetail.tank_no = tnk.tank_no;
+                    //tankDetail.owner_guid = tnk.owner_guid;
+                    //tankDetail.unit_type_guid = tnk.unit_type_guid;
+                    //await AddTankInfo(context, mapper, user, currentDateTime, tankDetail, outGateRequest.out_gate_survey, null);
 
-                    //Tank info handling
-                    var tankDetail = new TankDetail();
-                    tankDetail.tank_no = tnk.tank_no;
-                    tankDetail.owner_guid = tnk.owner_guid;
-                    tankDetail.unit_type_guid = tnk.unit_type_guid;
-                    await AddTankInfo(context, mapper, user, currentDateTime, tankDetail, outGateRequest.out_gate_survey, null);
+                    await PublishEirHandling(context, user, currentDateTime, mapper, outGateRequest);
 
                     // Commit the transaction if all operations succeed
                     await transaction.CommitAsync();
@@ -352,7 +325,84 @@ namespace IDMS.Survey.GqlTypes
                 //last_notify_dt = null,
             };
 
-            await GqlUtils.TankInfoHandling(mapper, context, user, currentDateTime, tankInfo);
+            //await GqlUtils.TankInfoHandling(mapper, context, user, currentDateTime, tankInfo);
+
+            try
+            {
+                var tf = await context.tank_info.Where(t => t.tank_no == tankInfo.tank_no && t.delete_dt == null).FirstOrDefaultAsync();
+                if (tf == null)
+                {
+                    tf = tankInfo;
+                    tf.guid = Util.GenerateGUID();
+                    tf.create_by = user;
+                    tf.create_dt = currentDateTime;
+                    tf.update_by = user;
+                    tf.update_dt = currentDateTime;
+                    await context.AddAsync(tf);
+                }
+                else
+                {
+                    //tf.storing_order_tank = null;
+                    mapper.Map(tankInfo, tf);
+                    //already ignore the guid, created_by, created_dt in program.config
+                    tf.update_by = user;
+                    tf.update_dt = currentDateTime;
+                }
+
+                var res = await context.SaveChangesAsync();
+                //return res;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
+            }
         }
+
+
+        private async Task<int> PublishEirHandling(ApplicationInventoryDBContext context, string user, long currentDateTime, IMapper mapper, OutGateRequest outGateRequest)
+        {
+            var retVal = 0;
+            try
+            {
+                //SOT Handling
+                if (outGateRequest.tank == null || string.IsNullOrEmpty(outGateRequest.tank.guid))
+                    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
+
+                if (outGateRequest.out_gate_survey == null)
+                    throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
+
+                var tnk = outGateRequest.tank;
+                storing_order_tank sot = new storing_order_tank() { guid = tnk.guid };
+                context.storing_order_tank.Attach(sot);
+                sot.update_by = user;
+                sot.update_dt = currentDateTime;
+                sot.tank_status_cv = TankMovementStatus.RELEASED;
+
+                //Pre-Order Handling
+                var preOrderTank = await context.storing_order_tank.Where(s => s.tank_no == tnk.tank_no &&
+                                                            s.status_cv == SOTankStatus.PREORDER && s.delete_dt == null).FirstOrDefaultAsync();
+                if (preOrderTank != null)
+                {
+                    preOrderTank.status_cv = SOTankStatus.WAITING;
+                    preOrderTank.update_by = user;
+                    preOrderTank.update_dt = currentDateTime;
+                }
+
+                retVal = await context.SaveChangesAsync();
+
+                //Tank info handling
+                var tankDetail = new TankDetail();
+                tankDetail.tank_no = tnk.tank_no;
+                tankDetail.owner_guid = tnk.owner_guid;
+                tankDetail.unit_type_guid = tnk.unit_type_guid;
+                await AddTankInfo(context, mapper, user, currentDateTime, tankDetail, outGateRequest.out_gate_survey, null);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return retVal;
+        }
+
     }
 }

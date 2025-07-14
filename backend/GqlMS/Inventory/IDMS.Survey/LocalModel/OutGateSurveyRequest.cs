@@ -78,5 +78,8 @@ namespace IDMS.Survey.GqlTypes.LocalModel
         public string? airline_valve_conn_oth { get; set; }
         public string? airline_valve_conn_spec_oth { get; set; }
         public string? manlid_cover_oth { get; set; }
+
+        [NotMapped]
+        public string? action { get; set; }
     }
 }
