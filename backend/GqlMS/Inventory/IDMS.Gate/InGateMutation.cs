@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 
 namespace IDMS.Gate.GqlTypes
@@ -19,20 +20,20 @@ namespace IDMS.Gate.GqlTypes
     public class InGateMutation
     {
         //[Authorize]
-        public async Task<int> AddInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor
-            , in_gate InGate)
+        public async Task<int> AddInGate(ApplicationInventoryDBContext context, [Service] IConfiguration config, 
+            [Service] IHttpContextAccessor httpContextAccessor, in_gate InGate)
         {
             int retval = 0;
             try
             {
                 string so_guid = "";
-                //GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in");
-                //long epochNow = GqlUtils.GetNowEpochInSec();
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var currentDate = GqlUtils.GetNowEpochInSec();
                 InGate.guid = (string.IsNullOrEmpty(InGate.guid) ? Util.GenerateGUID() : InGate.guid);
                 InGate.create_by = uid;
                 InGate.create_dt = currentDate;
+                InGate.update_by = uid;
+                InGate.update_dt = currentDate;
                 in_gate newInGate = new()
                 {
                     create_by = InGate.create_by,
@@ -42,30 +43,22 @@ namespace IDMS.Gate.GqlTypes
                     eir_no = InGate.eir_no,
                     guid = InGate.guid,
                     remarks = InGate.remarks,
-                    //lolo_cv = InGate.lolo_cv,
-                    //preinspection_cv = InGate.preinspection_cv,
                     so_tank_guid = InGate.so_tank_guid,
                     vehicle_no = InGate.vehicle_no,
                     yard_cv = InGate.yard_cv,
 
                 };
                 if (string.IsNullOrEmpty(InGate.so_tank_guid))
-                {
-                    throw new GraphQLException(new Error("Tank guid is empty", "404"));
-                }
+                    throw new GraphQLException(new Error("Tank guid cannot be null or empty", "NOT FOUND"));
 
                 var so_tank = await context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefaultAsync();
 
                 if (so_tank == null)
-                {
-                    throw new GraphQLException(new Error("Tank not found", "404"));
-                }
+                    throw new GraphQLException(new Error("Tank not found", "NOT FOUND"));
 
                 var so = so_tank.storing_order;
                 if (so == null)
-                {
-                    throw new GraphQLException(new Error("Storing Order not found", "404"));
-                }
+                    throw new GraphQLException(new Error("Storing Order not found", "NOT FOUND"));
 
                 if (so.haulier != InGate.haulier)
                     so.haulier = InGate.haulier;
@@ -77,7 +70,7 @@ namespace IDMS.Gate.GqlTypes
                     //string tankStatusGuid =$"{config["CodeValuesSetting:TankStatusGuid"]}";
 
                     if (SOTankStatus.WAITING != so_tank.status_cv)
-                        throw new GraphQLException(new Error("Tank status is not waiting", "404"));
+                        throw new GraphQLException(new Error("Tank status is not waiting", "ERROR"));
 
                     so_tank.job_no = InGate.tank.job_no;
                     so_tank.status_cv = SOTankStatus.ACCEPTED;
@@ -109,7 +102,9 @@ namespace IDMS.Gate.GqlTypes
                    .Include(s => s.tank).Where(i => i.tank != null)
                    .Where(i => i.tank.delete_dt == null || i.tank.delete_dt == 0).CountAsync();
 
-                    GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
+                    //GqlUtils.SendGlobalNotification(config, evtId, evtName, count);
+                    await NotificationHandling(context, config, EventId.NEW_INGATE);
+
                     string notification_uid = $"in-gate-{newInGate.eir_no}";
                     GqlUtils.AddAndTriggerStaffNotification(config, 3, "in-gate", "new in-gate was check-in", notification_uid);
                 }
@@ -147,23 +142,18 @@ namespace IDMS.Gate.GqlTypes
                     var so_tank = await context.storing_order_tank.Where(sot => sot.guid == InGate.so_tank_guid).Include(so => so.storing_order).FirstOrDefaultAsync();
 
                     if (string.IsNullOrEmpty(InGate.so_tank_guid))
-                    {
-                        throw new GraphQLException(new Error("Tank guid is empty", "404"));
-                    }
+                        throw new GraphQLException(new Error("Tank not found", "NOT FOUND"));
 
                     if (so_tank == null)
-                    {
-                        throw new GraphQLException(new Error("Tank not found", "404"));
-                    }
+                        throw new GraphQLException(new Error("Tank not found", "NOT FOUND"));
 
                     var so = so_tank.storing_order;
                     if (so == null)
-                    {
-                        throw new GraphQLException(new Error("Storing Order not found", "404"));
-                    }
+                        throw new GraphQLException(new Error("Storing Order not found", "NOT FOUND"));
 
                     if (!string.IsNullOrEmpty(InGate.haulier) & so.haulier != InGate.haulier)
                         so.haulier = InGate.haulier;
+
                     so.update_by = uid;
                     so.update_dt = epochNow;
 
@@ -181,12 +171,11 @@ namespace IDMS.Gate.GqlTypes
                     }
 
                     if (!string.IsNullOrEmpty(so_guid))
-                    {
                         CheckAndUpdateSOStatus(context, so_guid);
-                    }
 
                     retval = await context.SaveChangesAsync();
-                    // retval = InGate;
+
+                    await NotificationHandling(context, config, EventId.UPDATE_INGATE);
                 }
 
             }
@@ -232,7 +221,6 @@ namespace IDMS.Gate.GqlTypes
             }
             return retval;
         }
-
 
         private void CheckAndUpdateSOStatus(ApplicationInventoryDBContext context, string guid)
         {
@@ -286,7 +274,6 @@ namespace IDMS.Gate.GqlTypes
             }
         }
 
-
         private async Task<int> AddBillingSOT(ApplicationInventoryDBContext context, string user, long currentDateTime, in_gate inGate)
         {
             try
@@ -324,23 +311,6 @@ namespace IDMS.Gate.GqlTypes
                     existingBS.preinspection_cost = packageDepot.preinspection_cost;
                     existingBS.storage_cal_cv = packageDepot.storage_cal_cv;
                    
-                    //When update these flag can be ignore
-                    //existingBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
-                    //if (inGate.lolo_cv.EqualsIgnore("BOTH"))
-                    //{
-                    //    existingBS.lift_on = true;
-                    //    existingBS.lift_off = true;
-                    //}
-                    //else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
-                    //{
-                    //    existingBS.lift_on = true;
-                    //    existingBS.lift_off = false;
-                    //}
-                    //else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
-                    //{
-                    //    existingBS.lift_on = false;
-                    //    existingBS.lift_off = true;
-                    //}
                 }
                 else
                 {
@@ -348,6 +318,8 @@ namespace IDMS.Gate.GqlTypes
                     newBS.guid = Util.GenerateGUID();
                     newBS.create_by = user;
                     newBS.create_dt = currentDateTime;
+                    newBS.update_by = user;
+                    newBS.update_dt = currentDateTime;
                     newBS.sot_guid = inGate?.so_tank_guid;
 
                     newBS.tariff_depot_guid = tankUnitType.tariff_depot_guid;
@@ -366,23 +338,6 @@ namespace IDMS.Gate.GqlTypes
                     newBS.gate_in = tankUnitType.gate_in;
                     newBS.gate_out = tankUnitType.gate_out;
 
-                    //newBS.preinspection = inGate.preinspection_cv.EqualsIgnore("Y") ? true : false;
-                    //if (inGate.lolo_cv.EqualsIgnore("BOTH"))
-                    //{
-                    //    newBS.lift_on = true;
-                    //    newBS.lift_off = true;
-                    //}
-                    //else if (inGate.lolo_cv.EqualsIgnore("LIFT_ON"))
-                    //{
-                    //    newBS.lift_on = true;
-                    //    newBS.lift_off = false;
-                    //}
-                    //else if (inGate.lolo_cv.EqualsIgnore("LIFT_OFF"))
-                    //{
-                    //    newBS.lift_on = false;
-                    //    newBS.lift_off = true;
-                    //}
-
                     await context.billing_sot.AddAsync(newBS);
                 }
 
@@ -396,6 +351,60 @@ namespace IDMS.Gate.GqlTypes
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }
+
+        public async Task<bool> NotificationHandling(ApplicationInventoryDBContext context, [Service]IConfiguration config, string eventId)
+        {
+            string evtId = eventId;
+            string evtName = SotNotificationType.onPendingIngate_Survey.ToString();
+            int pendingIngateCount = await GqlUtils.GetWaitingSOTCount(context);
+            int pendingSurveyCount = await GqlUtils.GetGateCountOfDay(context, "IN");
+            var payload = new
+            {
+                Pending_Ingate_Count = pendingIngateCount,
+                Pending_Ingate_Survey_Count = pendingSurveyCount
+            };
+            GqlUtils.SendGlobalNotification1(config, SotNotificationTopic.INGATE_UPDATED, evtId, evtName, pendingIngateCount, JsonConvert.SerializeObject(payload));
+            return true;
+        }
+
+        //For Testing only
+        //public async Task<int> GetGateCountOfDay(ApplicationInventoryDBContext context, string gate)
+        //{
+
+        //    try
+        //    {
+        //        long sDate = GqlUtils.GetStartOfDayEpoch(DateTime.Now);
+        //        long eDate = GqlUtils.GetEndOfDayEpochSeconds(DateTime.Now);
+
+        //        if (gate.EqualsIgnore("IN"))
+        //        {
+        //            var count = context.storing_order_tank.Where(s => s.delete_dt == null || s.delete_dt == 0)
+        //                                                   .Where(s => s.in_gate.Any(ig => ig.delete_dt == null &&
+        //                                                               ig.eir_status_cv.ToUpper() == EirStatus.PUBLISHED &&
+        //                                                               ig.eir_dt >= sDate &&
+        //                                                               ig.eir_dt <= eDate))
+        //                                                   .Select(s => s.guid)
+        //                                                   .Distinct()
+        //                                                   .Count();
+        //            return count;
+        //        }
+        //        else
+        //        {
+        //            var count = context.storing_order_tank.Where(s => s.tank_status_cv.ToUpper() == TankMovementStatus.RELEASED && (s.delete_dt == null || s.delete_dt == 0))
+        //                                                   .Where(s => s.out_gate.Any(ig => ig.delete_dt == null &&
+        //                                                               ig.eir_dt >= sDate &&
+        //                                                               ig.eir_dt <= eDate))
+        //                                                   .Select(s => s.guid)
+        //                                                   .Distinct()
+        //                                                   .Count();
+        //            return count;
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
 
         //private async Task<int> AddBillingSOT(ApplicationInventoryDBContext context, string user, long currentDateTime, in_gate inGate)
         //{

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 
 
@@ -43,6 +44,8 @@ namespace IDMS.Gate.GqlTypes
                         guid = newGuid,
                         create_by = user,
                         create_dt = currentDate,
+                        update_by = user,
+                        update_dt = currentDate,
                         yard_cv = OutGate.yard_cv,
                         eir_dt = currentDate,
                         driver_name = OutGate.driver_name,
@@ -117,19 +120,6 @@ namespace IDMS.Gate.GqlTypes
 
         private async Task<bool> SurveyHandling(ApplicationInventoryDBContext context, string user, long currentDateTime, storing_order_tank tank)
         {
-            ////SOT Handling
-            //if (string.IsNullOrEmpty(tank.guid))
-            //    throw new GraphQLException(new Error("Storing order tank cannot be null or empty.", "ERROR"));
-
-            //if (out_gate_survey == null)
-            //    throw new GraphQLException(new Error("Outgate survey object cannot be null or empty.", "ERROR"));
-
-            //storing_order_tank sot = new storing_order_tank() { guid = tank.guid };
-            //context.storing_order_tank.Attach(sot);
-            //sot.update_by = user;
-            //sot.update_dt = currentDateTime;
-            //sot.tank_status_cv = TankMovementStatus.RELEASED;
-
             try
             {
                 //Pre-Order Handling
@@ -158,17 +148,6 @@ namespace IDMS.Gate.GqlTypes
             {
                 throw ex;
             }
-
-
-
-            //await context.SaveChangesAsync();
-
-            ////Tank info handling
-            //var tankDetail = new TankDetail();
-            //tankDetail.tank_no = tank.tank_no;
-            //tankDetail.owner_guid = tank.owner_guid;
-            //tankDetail.unit_type_guid = tank.unit_type_guid;
-            //await AddTankInfo(context, mapper, user, currentDateTime, tankDetail, out_gate_survey, null);
         }
 
         //[Authorize]
@@ -276,6 +255,22 @@ namespace IDMS.Gate.GqlTypes
                 throw;
 
             }
+        }
+
+
+        private async Task<bool> NotificationHandling(ApplicationInventoryDBContext context, [Service] IConfiguration config, string eventId)
+        {
+            string evtId = eventId;
+            string evtName = SotNotificationType.onPendingIngate.ToString();
+            int count = await GqlUtils.GetWaitingSOTCount(context);
+            int gateOutCount_Day = await GqlUtils.GetGateCountOfDay(context, "OUT");
+            var payload = new
+            {
+                Pending_Ingate_Count = count,
+                Gate_Out_Count = gateOutCount_Day
+            };
+            GqlUtils.SendGlobalNotification1(config, SotNotificationTopic.OUTGATE_UPDATED, evtId, evtName, count, JsonConvert.SerializeObject(payload));
+            return true;
         }
     }
 }
