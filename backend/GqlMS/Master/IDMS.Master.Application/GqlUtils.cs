@@ -55,7 +55,11 @@ namespace IDMS.Master.Application
 
                 var authUser = httpContextAccessor.HttpContext.User;
                 var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value;
+                if (primarygroupSid == null)
+                    primarygroupSid = authUser.FindFirst("groupsid")?.Value;
                 uid = authUser.FindFirst(ClaimTypes.Name)?.Value;
+                if (uid == null)
+                    uid = authUser.FindFirst("name").Value;
                 if (primarygroupSid != "s1")
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));

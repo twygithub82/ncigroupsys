@@ -206,9 +206,6 @@ namespace IDMS.Inventory.GqlTypes
             return retval;
         }
 
-    
-
-
         public static string IsAuthorize([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
             string? uid = "";
@@ -218,16 +215,19 @@ namespace IDMS.Inventory.GqlTypes
                 if (!isCheckAuthorization) return "anonymous user";
 
                 var authUser = httpContextAccessor.HttpContext.User;
-                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value; //authUser.FindFirstValue(ClaimTypes.GroupSid);
-                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;//authUser.FindFirstValue(ClaimTypes.Name);
-               
+
+                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;
+                if (uid == null)
+                    uid = authUser.FindFirst("name").Value;
+
+                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value;
+                if (primarygroupSid == null)
+                    primarygroupSid = authUser.FindFirst("groupsid")?.Value;
+
                 if (primarygroupSid != "s1")
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
-              
-
-
             }
             catch
             {
@@ -235,7 +235,6 @@ namespace IDMS.Inventory.GqlTypes
             }
             return uid;
         }
-
 
         public static async Task<string> IsAuthorize_R1([Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {
@@ -247,15 +246,17 @@ namespace IDMS.Inventory.GqlTypes
 
 
                 var authUser = httpContextAccessor.HttpContext.User;
-                var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value; //authUser.FindFirstValue(ClaimTypes.GroupSid);
-                uid = authUser.FindFirst(ClaimTypes.Name)?.Value;//authUser.FindFirstValue(ClaimTypes.Name);
-                var sessionId = $"{authUser.FindFirst("sessionId")?.Value}";
+
+                
+                var sessionId = $"{authUser.FindFirst("sessionid")?.Value}";
+
                 var primarygroupSid = authUser.FindFirst(ClaimTypes.GroupSid)?.Value;
                 if (primarygroupSid == null)
-                    primarygroupSid = authUser.FindFirst("GroupSid")?.Value;
+                    primarygroupSid = authUser.FindFirst("groupsid")?.Value;
+
                 uid = authUser.FindFirst(ClaimTypes.Name)?.Value;
                 if (uid == null)
-                    uid = authUser.FindFirst("Name").Value;
+                    uid = authUser.FindFirst("name").Value;
                 if (primarygroupSid != "s1")
                 {
                     throw new GraphQLException(new Error("Unauthorized", "401"));
