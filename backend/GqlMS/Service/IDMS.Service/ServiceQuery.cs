@@ -6,6 +6,8 @@ using IDMS.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 using IDMS.Models.Service;
 using Microsoft.Extensions.Configuration;
+using IDMS.Models;
+using IDMS.Service.GqlTypes.LocalModel;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -23,7 +25,7 @@ namespace IDMS.Service.GqlTypes
                 var jobOrders = context.job_order
                                 .Include(j => j.storing_order_tank)
                                 .Include(j => j.team)
-                                .Include(j=>j.repair_part).ThenInclude(p=>p.repair)
+                                .Include(j => j.repair_part).ThenInclude(p => p.repair)
                                 .Where(d => d.delete_dt == null || d.delete_dt == 0);
 
                 return jobOrders;
@@ -46,6 +48,34 @@ namespace IDMS.Service.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var teamDetails = context.team.Where(d => d.delete_dt == null || d.delete_dt == 0);
                 return teamDetails;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<TeamResult?> QueryTeamsWithCount(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var result = context.team
+                                      .Where(t => t.delete_dt == null || t.delete_dt == 0)
+                                      .Select(t => new TeamResult
+                                      {
+                                          team = t,
+                                          assign_count = t.team_user.Where(ts => ts.delete_dt == null).Count() + 
+                                                         t.job_order.Where(j => j.delete_dt == null).Count(),
+                                      })
+                                      .AsQueryable();
+                return result;
+
             }
             catch (Exception ex)
             {

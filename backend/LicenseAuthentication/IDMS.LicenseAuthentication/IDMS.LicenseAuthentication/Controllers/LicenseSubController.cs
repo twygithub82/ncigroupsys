@@ -95,28 +95,28 @@ namespace IDMS.LicenseAuthentication.Controllers
             }
         }
 
-        // POST: api/license_sub
-        [HttpPost("CreateLicenseJWTBySubID")]
-        public async Task<ActionResult<license_sub>> CreateLicenseJWTBySubID([FromBody] JWTDTO jWTDTO)
-        {
-            try
-            {
-                //var licenseKey = GenerateUniqueKey(existsInDb: key => _context.license_sub.Any(k => k.license_key == key), dto.SecrectKey);
+        //// POST: api/license_sub
+        //[HttpPost("CreateLicenseJWTBySubID")]
+        //public async Task<ActionResult<license_sub>> CreateLicenseJWTBySubID([FromBody] JWTDTO jWTDTO)
+        //{
+        //    try
+        //    {
+        //        //var licenseKey = GenerateUniqueKey(existsInDb: key => _context.license_sub.Any(k => k.license_key == key), dto.SecrectKey);
 
-                var licSub = await _context.license_sub.FindAsync(jWTDTO.LicSubId);
-                if (licSub != null)
-                {
-                    var licenseToken = _jWTTokenService.GenerateLicenseToken(licSub, jWTDTO.UserEmail);
-                    return CreatedAtAction(nameof(CreateLicenseJWTBySubID), new { token = licenseToken });
-                }
-                else
-                    return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex });
-            }
-        }
+        //        var licSub = await _context.license_sub.FindAsync(jWTDTO.LicSubId);
+        //        if (licSub != null)
+        //        {
+        //            var licenseToken = _jWTTokenService.GenerateLicenseToken(licSub, jWTDTO.UserEmail);
+        //            return CreatedAtAction(nameof(CreateLicenseJWTBySubID), new { token = licenseToken });
+        //        }
+        //        else
+        //            return NotFound();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { message = ex });
+        //    }
+        //}
 
         // POST: api/license_sub
         [AllowAnonymous]
@@ -134,8 +134,9 @@ namespace IDMS.LicenseAuthentication.Controllers
                 //Check the license key file is authentic
                 //var licSub = await _context.license_sub.Include(l=>l.license_validity).Where(l=> l.lice)
 
-                var licKey = claim.FindFirst("lickey")?.Value?.ToString() ?? "";
-                var userEmail = claim.FindFirst("licemail")?.Value?.ToString() ?? "";
+                var licSubId = claim.FindFirst("subid")?.Value?.ToString() ?? "";
+                var activationCode = claim.FindFirst("code")?.Value?.ToString() ?? "";
+                var userTag = claim.FindFirst("user")?.Value?.ToString() ?? "";
 
                 //----------------------------------------------
                 //Second verification check
@@ -146,13 +147,13 @@ namespace IDMS.LicenseAuthentication.Controllers
                 //    return StatusCode(StatusCodes.Status200OK, (licStatus.StatusCode = (int)LicenseStatusEnum.InvalidKey, licStatus.StatusMessage = "Invalid License Key File"));
 
 
-                var user = await _context.license_user.Where(u => u.user_email == userEmail && (u.delete_dt == null)).FirstOrDefaultAsync();
+                var user = await _context.license_user.Where(u => u.activation_code == activationCode && (u.user_tag == userTag) && (u.delete_dt == null)).FirstOrDefaultAsync();
                 if (user == null)
                     return StatusCode(StatusCodes.Status400BadRequest, "License User Not Found");
 
 
                 var result = await _context.license_sub.Include(l => l.license_validity.Where(v => v.deactivated == false && v.delete_dt == null))
-                                          .Where(l => l.license_key == licKey && (l.delete_dt == null))
+                                          .Where(l => l.id == licSubId && (l.delete_dt == null))
                                           .FirstOrDefaultAsync();
 
                 if (result == null || string.IsNullOrEmpty(result.dms_secret_key))
@@ -190,7 +191,7 @@ namespace IDMS.LicenseAuthentication.Controllers
                     }
                     else
                     {
-                        licStatus.StatusCode = (int)LicenseStatusEnum.HaventStart;
+                        licStatus.StatusCode = (int)LicenseStatusEnum.Forbidden;
                         licStatus.StatusMessage = "License Havent Start";
                         licStatus.StatusDescription = licValidity.valid_from.ToString();
                     }
@@ -205,7 +206,7 @@ namespace IDMS.LicenseAuthentication.Controllers
                 }
                 else
                 {
-                    licStatus.StatusCode = (int)LicenseStatusEnum.SubNotFound;
+                    licStatus.StatusCode = (int)LicenseStatusEnum.Forbidden;
                     licStatus.StatusMessage = "License Validity Not Found";
                 }
 

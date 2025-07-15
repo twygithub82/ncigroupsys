@@ -72,6 +72,9 @@ namespace IDMS.UserAuthentication.Controllers
             }
 
             var email = User.FindFirstValue("email");
+            if(email == null)
+                email = User.FindFirstValue(ClaimTypes.Email);
+
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {

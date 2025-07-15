@@ -42,41 +42,67 @@ namespace IDMS.LicenseAuthentication.Services
 
         private string GenerateRandomPayload(int length)
         {
-            var result = new StringBuilder(length);
-            using var rng = RandomNumberGenerator.Create();
-            var buffer = new byte[sizeof(uint)];
+            //var result = new StringBuilder(length);
+            //using var rng = RandomNumberGenerator.Create();
+            //var buffer = new byte[sizeof(uint)];
 
-            while (result.Length < length)
-            {
-                rng.GetBytes(buffer);
-                uint num = BitConverter.ToUInt32(buffer, 0);
-                result.Append(AllowedChars[(int)(num % AllowedChars.Length)]);
-            }
+            //while (result.Length < length)
+            //{
+            //    rng.GetBytes(buffer);
+            //    uint num = BitConverter.ToUInt32(buffer, 0);
+            //    result.Append(AllowedChars[(int)(num % AllowedChars.Length)]);
+            //}
 
-            return result.ToString();
+            //return result.ToString();
+
+            var random = RandomNumberGenerator.Create();
+            var bytes = new byte[length];
+            random.GetBytes(bytes);
+
+            var sb = new StringBuilder(length);
+            foreach (byte b in bytes)
+                sb.Append(AllowedChars[b % AllowedChars.Length]);
+
+            return sb.ToString();
         }
 
         private string ComputeHmacChecksum(string input, int length, string secretKey)
         {
+            //using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey));
+            //byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
+            //var sb = new StringBuilder(length);
+
+            //for (int i = 0; i < length; i++)
+            //    sb.Append(AllowedChars[hash[i] % AllowedChars.Length]);
+
+            //return sb.ToString();
             using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey));
             byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
-            var sb = new StringBuilder(length);
 
+            var sb = new StringBuilder(length);
             for (int i = 0; i < length; i++)
                 sb.Append(AllowedChars[hash[i] % AllowedChars.Length]);
 
             return sb.ToString();
         }
 
-        private string FormatWithDashes(string key, int groupSize)
+        private string FormatWithDashes(string input, int groupSize)
         {
-            return string.Join("-", Enumerable.Range(0, key.Length / groupSize)
-                .Select(i => key.Substring(i * groupSize, groupSize)));
+            //return string.Join("-", Enumerable.Range(0, key.Length / groupSize)
+            //    .Select(i => key.Substring(i * groupSize, groupSize)));
+
+            var groups = new List<string>();
+            for (int i = 0; i < input.Length; i += groupSize)
+            {
+                int size = Math.Min(groupSize, input.Length - i);
+                groups.Add(input.Substring(i, size));
+            }
+            return string.Join("-", groups);
         }
 
-        private string RemoveDashes(string key)
+        private string RemoveDashes(string input)
         {
-            return key.Replace("-", "").ToUpperInvariant();
+            return input.Replace("-", "", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
