@@ -132,13 +132,38 @@ namespace IDMS.User.Authentication.API.Utilities
         {
             var httpClient = new HttpClient();
 
-            string url = _config["License:Url"];
+            string url = _config["License:Url_Validity"];
 
             // Read JSON string from appsettings.json
             //string jsonPayload = _config["License:ActivationKey"];
 
             string encoded = WebUtility.UrlEncode(licKey);
             string jsonEncoded = JsonSerializer.Serialize(encoded);
+
+            // Wrap in StringContent for POST
+            var content = new StringContent(jsonEncoded, Encoding.UTF8, "application/json");
+
+            // Send HTTP POST request
+            var response = await httpClient.PostAsync(url, content);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"Status: {response.StatusCode}");
+            Console.WriteLine($"Response: {responseContent}");
+
+            return (response.StatusCode, responseContent);
+        }
+
+        public static async Task<(HttpStatusCode, string)> ActivateUserLicense(ApplicationDbContext _dbContext, StaffActivateDTO staffInfo, IConfiguration _config)
+        {
+            var httpClient = new HttpClient();
+
+            string url = _config["License:Url_Activation"];
+
+            // Read JSON string from appsettings.json
+            //string jsonPayload = _config["License:ActivationKey"];
+
+            //string encoded = WebUtility.UrlEncode(licKey);
+            string jsonEncoded = JsonSerializer.Serialize(staffInfo);
 
             // Wrap in StringContent for POST
             var content = new StringContent(jsonEncoded, Encoding.UTF8, "application/json");

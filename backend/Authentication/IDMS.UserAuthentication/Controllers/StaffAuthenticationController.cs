@@ -336,6 +336,65 @@ namespace IDMS.User.Authentication.API.Controllers
             }
         }
 
+        [HttpPost("StaffActivation")]
+        public async Task<IActionResult> StaffActivation([FromBody] StaffActivateDTO staffDTO)
+        {
+            try
+            {
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if (primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+                if (primarygroupSid != "a1")
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
+
+                if (string.IsNullOrEmpty(staffDTO.ActivationCode))
+                    return BadRequest("Activation code is required");
+
+                //Get and check the existing staff
+                var curStaff = await _userManager.FindByNameAsync(staffDTO.UserTag!);
+                if (curStaff == null)
+                    return StatusCode(StatusCodes.Status404NotFound, new Response() { Status = "Error", Message = new string[] { "User Not Found" } });
+
+                //Set the activation code for the staff
+                curStaff.ActivationCode = staffDTO.ActivationCode;
+                var result = await _userManager.UpdateAsync(curStaff);
+                if (!result.Succeeded)
+                {
+                    var Errors = result.Errors.Select(e => e.Description);
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new Response { Status = "Error", Message = Errors });
+                }
+
+
+                //Send to license server for actual activation
+                (var statusCode, var message) = await utils.ActivateUserLicense(_dbContext, staffDTO, _configuration);
+                //If the activation result is failed
+                if (statusCode != System.Net.HttpStatusCode.OK)
+                    return StatusCode((int)statusCode, new { message = message });
+
+                
+                JObject JWT = JObject.Parse(message);
+                curStaff = await _userManager.FindByNameAsync(staffDTO.UserTag!);
+                curStaff.LicenseToken = JWT["token"].ToString();
+                result = await _userManager.UpdateAsync(curStaff);
+                if (!result.Succeeded)
+                {
+                    var Errors = result.Errors.Select(e => e.Description);
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new Response { Status = "Error", Message = Errors });
+                }
+
+                return Ok(curStaff);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+        }
+
+
         [HttpDelete("RemoveStaff")]
         public async Task<IActionResult> RemoveStaff([FromBody] QueryStaff removeStaff)
         {
