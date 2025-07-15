@@ -55,6 +55,7 @@ namespace IDMS.User.Authentication.API.Controllers
             _jwtTokenService = new JwtTokenService(_configuration, _dbContext);
             _refreshTokenStore = refreshTokenStore;
 
+
             //InitDB();
         }
 
@@ -759,16 +760,20 @@ namespace IDMS.User.Authentication.API.Controllers
 
             try
             {
+                var kioskRoles = _configuration.GetSection("Kiosk:Role").Get<List<string>>(); 
                 // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
                 var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
                 var sessionId = User.Claims.FirstOrDefault(x => x.Type == "sessionId")?.Value;
+                var role = User.Claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value;
                 var refreshTokenKey = _refreshTokenStore.GetToken(userName);
                 var user = await _userManager.FindByNameAsync(userName);
-                if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
+                if (!kioskRoles.Contains(role))
                 {
-                    return Unauthorized();
+                    if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
+                    {
+                        return Unauthorized();
+                    }
                 }
-
 
                 var userRoles = await _userManager.GetRolesAsync(user);
 
