@@ -22,7 +22,7 @@ export class AuthService {
   tokenRefreshed = new Subject<void>();
   userLoggedIn = new Subject<void>();
   userLoggedOut = new Subject<void>();
-  
+
   private regexCache = new Map<string, RegExp>();
 
   constructor(private http: HttpClient, private authApiService: AuthApiService) {
@@ -57,8 +57,8 @@ export class AuthService {
       switchMap(user => {
         if (!user?.token) throw new Error('No token in login response');
         const decodedToken = decodeToken(user.token);
-        const userId = decodedToken[jwt_mapping.sid.key];
-
+        const userId = decodedToken[jwt_mapping.sid.key] ?? decodedToken[jwt_mapping.sid.value];
+        
         // Set the plain token in advance so interceptor works for getUserClaims
         const tempUserToken = new UserToken();
         tempUserToken.token = user.token;
@@ -270,7 +270,7 @@ export class AuthService {
     // Check if any of the user's roles match any of the expected roles
     return userRoles.some(userRole => userRole.toLowerCase() === 'sa') || expectedRoles.some(role => userRoles.some(userRole => userRole.toLowerCase() === role.toLowerCase())) || expectedRoles.some(role => role.toLowerCase() === userRole.toLowerCase());
   }
-  
+
   hasFunctions(expectedPatterns: string[] | undefined): boolean {
     const userFunctions = this.currentUserValue?.functions || [];
 
