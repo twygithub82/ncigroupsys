@@ -782,7 +782,8 @@ namespace IDMS.User.Authentication.API.Controllers
                 var user = await _userManager.FindByNameAsync(userName);
                 if (!kioskRoles.Contains(role))
                 {
-                    if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
+                    // if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
+                    if (userName == null ||  $"{sessionId}" != $"{user?.CurrentSessionId}")
                     {
                         return Unauthorized();
                     }
