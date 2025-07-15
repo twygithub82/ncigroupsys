@@ -21,7 +21,10 @@ namespace IDMS.Models.Shared
         public string? action { get; set; }
 
         [UseFiltering]
-        public IEnumerable<job_order?>? job_order {  get; set; } 
+        public virtual IEnumerable<job_order?>? job_order {  get; set; }
+
+        [UseFiltering]
+        public virtual IEnumerable<team_user?>? team_user { get; set; }
     }
 
     public class team_user: Dates
