@@ -15,7 +15,7 @@ namespace IDMS.LicenseAuthentication.Services
             _configuration = configuration;
         }
 
-        public string GenerateLicenseToken(license_sub licSub, string licEmail)
+        public string GenerateLicenseToken(license_sub licSub, string userTag, string avtCode)
         {
             var jwtSettings = _configuration.GetSection("JWT");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]));
@@ -23,10 +23,10 @@ namespace IDMS.LicenseAuthentication.Services
 
             var claims = new[]
             {
-                new Claim("clientid", licSub.client_id),
-                new Claim("lickey", licSub.license_key),
+                new Claim("subid", licSub.id),
+                new Claim("code", avtCode),
                 new Claim("lictype", licSub.license_type),
-                new Claim("licemail", licEmail)
+                new Claim("user", userTag)
             };
 
             var token = new JwtSecurityToken(

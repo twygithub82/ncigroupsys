@@ -11,4 +11,13 @@ namespace IDMS.LicenseAuthentication.DTO
         [Required]
         public string UserEmail { get; set; }
     }
+
+    [NotMapped]
+    public class UserActivateDTO
+    {
+        [Required]
+        public string ActivationCode { get; set; }
+        [Required]
+        public string UserTag { get; set; }
+    }
 }

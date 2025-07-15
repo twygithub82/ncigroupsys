@@ -10,8 +10,9 @@ namespace IDMS.LicenseAuthentication.Models
 
         [ForeignKey("license_sub")]
         public string sub_id { get; set; }
-        public string user_email { get; set; }
+        public string user_tag { get; set; }
         public string license_key_token { get; set; }
+        public string activation_code { get; set; }
         public bool is_active { get; set; }
         public DateTime create_dt { get; set; }
         public string? create_by { get; set; }

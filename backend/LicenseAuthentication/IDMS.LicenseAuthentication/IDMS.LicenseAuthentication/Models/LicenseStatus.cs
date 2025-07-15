@@ -18,6 +18,6 @@ namespace IDMS.LicenseAuthentication.Models
         Inactive = 4,
         Deactivated = 5,
         HaventStart = 6,
-        SubNotFound = 7
+        Forbidden = 7
     }
 }
