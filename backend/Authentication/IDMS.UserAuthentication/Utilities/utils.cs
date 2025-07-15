@@ -89,25 +89,38 @@ namespace IDMS.User.Authentication.API.Utilities
             }
         }
 
-        public static JArray GetTeamsByUser(ApplicationDbContext _dbContext, string userId)
+        public static List<string> GetTeamsByUser(ApplicationDbContext _dbContext, string userId)
         {
             try
             {
-                var teamDetails = from t in _dbContext.team
-                                  join ut in _dbContext.team_user
-                                  on t.guid equals ut.team_guid
-                                  where ut.userId == userId && t.delete_dt == null && ut.delete_dt == null
-                                  //select t.description;
+                //var teamDetails = from t in _dbContext.team
+                //                  join ut in _dbContext.team_user
+                //                  on t.guid equals ut.team_guid
+                //                  where ut.userId == userId && t.delete_dt == null && ut.delete_dt == null
+                //                  select t.description;
 
-                                  select new
-                                  {
-                                      Description = t.description,
-                                      Department = t.department_cv
-                                  };
+                //                  //select new
+                //                  //{
+                //                  //    Description = t.description,
+                //                  //    Department = t.department_cv
+                //                  //};
 
-                JArray teamDetailsArray = JArray.FromObject(teamDetails);
-                return teamDetailsArray;
+                //JArray teamDetailsArray = JArray.FromObject(teamDetails);
+                //return teamDetailsArray;
 
+                var teamDetails = (from t in _dbContext.team
+                                   join ut in _dbContext.team_user on t.guid equals ut.team_guid
+                                   where ut.userId == userId && t.delete_dt == null && ut.delete_dt == null
+                                   select new
+                                   {
+                                       Description = t.description,
+                                       Department = t.department_cv
+                                   }).ToList();
+               var result = teamDetails
+               .Select(t => $"{t.Description} - {t.Department}")
+               .ToList();
+
+                return result;
             }
             catch (Exception ex)
             {

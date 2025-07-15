@@ -292,6 +292,10 @@ namespace IDMS.User.Authentication.API.Controllers
             try
             {
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if(primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+
                 if (primarygroupSid != "a1")
                     return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
 
@@ -339,7 +343,10 @@ namespace IDMS.User.Authentication.API.Controllers
             try
             {
                 var loginUser = User.FindFirstValue("name");
+
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if(primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
 
                 if (primarygroupSid != "a1")
                     return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
@@ -383,6 +390,10 @@ namespace IDMS.User.Authentication.API.Controllers
             try
             {
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if(primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+
                 if (primarygroupSid != "a1")
                 {
                     return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
@@ -412,6 +423,8 @@ namespace IDMS.User.Authentication.API.Controllers
                         Username = usr.UserName,
                         Name = usr.NormalizedUserName,
                         ContactNo = usr.PhoneNumber,
+                        ActivateCode = usr.ActivationCode,
+                        LicenseToken = usr.LicenseToken
                     };
 
                     //var roles = await _userManager.GetRolesAsync(usr);
@@ -421,7 +434,7 @@ namespace IDMS.User.Authentication.API.Controllers
                     s.Roles = roles.ToObject<List<string>>();
 
                     var teamDetails = utils.GetTeamsByUser(_dbContext, usr.Id);
-                    s.Teams = teamDetails.ToObject<List<string>>();
+                    s.Teams = teamDetails;
 
                     //var userTeams = from tu in _dbContext.team_user
                     //                join t in _dbContext.team on tu.team_guid equals t.guid
@@ -451,6 +464,9 @@ namespace IDMS.User.Authentication.API.Controllers
             try
             {
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if(primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
                 var username = User.FindFirstValue("name");
                 var currentDateTime = utils.GetNowEpochInSec();
 
@@ -524,9 +540,6 @@ namespace IDMS.User.Authentication.API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
             }
-
-            return Unauthorized();
-
         }
 
         private async Task<IActionResult> AssignRolesTeams(string userGuid, List<string> roles, List<Team> teams)

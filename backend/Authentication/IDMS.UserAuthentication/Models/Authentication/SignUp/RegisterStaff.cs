@@ -10,7 +10,7 @@ namespace IDMS.UserAuthentication.Models.Authentication.SignUp
         [Required(ErrorMessage = "User Name is required")]
         public string? Username { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
+        //[Required(ErrorMessage = "Email is required")]
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
@@ -62,6 +62,8 @@ namespace IDMS.UserAuthentication.Models.Authentication.SignUp
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? ContactNo { get; set; }
+        public string? ActivateCode { get; set; }
+        public string? LicenseToken { get; set; }
         public List<string>? Roles { get; set; }
         public List<string>? Teams { get; set; }
     }
