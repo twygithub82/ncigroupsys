@@ -757,32 +757,60 @@ namespace IDMS.User.Authentication.API.Controllers
         public async Task<IActionResult> Refresh([FromBody] RefreshRequestModel refreshRequest)
         {
 
-
-            // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
-            var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-
-            var refreshTokenKey = _refreshTokenStore.GetToken(userName);
-            if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken)
+            try
             {
-                return Unauthorized();
+                // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
+                var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
+                var sessionId = User.Claims.FirstOrDefault(x => x.Type == "sessionId")?.Value;
+                var refreshTokenKey = _refreshTokenStore.GetToken(userName);
+                var user = await _userManager.FindByNameAsync(userName);
+                if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
+                {
+                    return Unauthorized();
+                }
+
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var newJwtToken = _jwtTokenService.GetToken(UserType.Staff, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
+                var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+                var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
+
+                _refreshTokenStore.AddToken(refreshToken);
+                _refreshTokenStore.RemoveToken(refreshRequest.RefreshToken);
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
+                    expiration = newJwtToken.ValidTo,
+                    refreshToken = newRefreshToken
+                });
+
+            }
+            catch(Exception ex)
+            {
+                var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
+                var user = await _userManager.FindByNameAsync(userName);
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var newJwtToken = _jwtTokenService.GetToken(UserType.Staff, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
+                var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+                var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
+
+                _refreshTokenStore.AddToken(refreshToken);
+                _refreshTokenStore.RemoveToken(refreshRequest.RefreshToken);
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
+                    expiration = newJwtToken.ValidTo,
+                    refreshToken = newRefreshToken
+                });
+
             }
 
-            var user = await _userManager.FindByNameAsync(userName);
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var newJwtToken = _jwtTokenService.GetToken(UserType.Staff, user.UserName, user.Email, userRoles, user.Id, $"{user.CurrentSessionId}");
-            var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
-
-            var refreshToken = new RefreshToken() { ExpiryDate = newJwtToken.ValidTo, UserId = user.UserName, Token = newRefreshToken };
-
-            _refreshTokenStore.AddToken(refreshToken);
-
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(newJwtToken),
-                expiration = newJwtToken.ValidTo,
-                refreshToken = newRefreshToken
-            });
+           
         }
 
     }
