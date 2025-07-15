@@ -61,17 +61,17 @@ namespace IDMS.User.Authentication.API.Controllers
 
         [HttpGet("CheckLicenseValidity")]
         [AllowAnonymous]
-        public async Task<IActionResult> HelloWorld(string email)
+        public async Task<IActionResult> HelloWorld(string username)
         {
             try
             {
-                string userEmail = email;
+                //string userEmail = email;
 
-                var userLic = await _dbContext.user_license.Where(u => u.user_email == userEmail).FirstOrDefaultAsync();
-                if (userLic == null)
+                var userLic = await _userManager.FindByNameAsync(username);
+                if (userLic == null || string.IsNullOrEmpty(userLic.LicenseToken))
                     return Unauthorized("User license not found.");
 
-                (var statusCode, var message) = await utils.GetLicenseValidity(_dbContext, userLic.license_key, _configuration);
+                (var statusCode, var message) = await utils.GetLicenseValidity(_dbContext, userLic.LicenseToken, _configuration);
                 if (statusCode != System.Net.HttpStatusCode.OK)
                     return Unauthorized(message);
 
@@ -180,7 +180,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
         //[HttpPost("StaffLogin")]
         //[AllowAnonymous]
-        //public async Task<IActionResult> StaffSignIn([FromBody] LoginStaffModel staffModel)
+        //public async Task<IActionResult> StaffSignIn1([FromBody] LoginStaffModel staffModel)
         //{
         //    try
         //    {
@@ -195,12 +195,12 @@ namespace IDMS.User.Authentication.API.Controllers
 
 
         //        //validate user license
-        //        var userLic = await _dbContext.user_license.Where(u => u.user_email == staff.Email).FirstOrDefaultAsync();
-        //        if (userLic == null || string.IsNullOrEmpty(userLic?.license_key))
-        //            return Unauthorized(new { message = "User license not found" });
+        //        //var userLic = await _dbContext.user_license.Where(u => u.user_email == staff.Email).FirstOrDefaultAsync();
+        //        if (string.IsNullOrEmpty(staff.LicenseToken))
+        //            return Unauthorized(new { message = "User license token not found" });
 
         //        //Get User license validity
-        //        (var statusCode, var message) = await utils.GetLicenseValidity(_dbContext, userLic.license_key, _configuration);
+        //        (var statusCode, var message) = await utils.GetLicenseValidity(_dbContext, staff.LicenseToken, _configuration);
         //        if (statusCode != System.Net.HttpStatusCode.OK)
         //            return Unauthorized(message);
 
@@ -217,10 +217,10 @@ namespace IDMS.User.Authentication.API.Controllers
         //            {
         //                //Continue to get actual user claims
         //                var staffRoles = await _userManager.GetRolesAsync(staff);
-
+        //                staff.CurrentSessionId = Guid.NewGuid();
         //                //generate the token with the claims
         //                //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
-        //                var jwtToken = _jwtTokenService.GetToken(UserType.Staff, staff.UserName, staff.Email, staffRoles, staff.Id); //Utilities.utils.GetToken(_configuration,authClaims);
+        //                var jwtToken = _jwtTokenService.GetToken(UserType.Staff, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}"); //Utilities.utils.GetToken(_configuration,authClaims);
         //                var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
         //                _refreshTokenStore.AddToken(refreshToken);
