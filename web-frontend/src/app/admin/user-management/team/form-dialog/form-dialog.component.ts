@@ -25,6 +25,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TeamItemWithCount,TeamGO,TeamDS } from 'app/data-sources/teams';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
@@ -33,7 +34,8 @@ export interface DialogData {
   selectedValue?: number;
   // item: StoringOrderTankItem;
   langText?: any;
-  selectedItems: PackageResidueItem[];
+  selectedItem: TeamItemWithCount;
+  departmentList: CodeValuesItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -86,11 +88,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   index?: number;
   dialogTitle?: string;
 
+  teamDS?: TeamDS;
   packageResidueItems?: PackageResidueItem[] = [];
   packageResidueDS?: PackageResidueDS;
   CodeValuesDS?: CodeValuesDS;
 
   storageCalCvList: CodeValuesItem[] = [];
+  departmentCvList:CodeValuesItem[]=[];
 
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
@@ -202,10 +206,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     DEPARTMENT:'COMMON-FORM.DEPARTMENT',
     POSITION:'COMMON-FORM.POSITION',
     TEAM:'COMMON-FORM.TEAM',
+    SAVE:'COMMON-FORM.SAVE',
+    
   };
 
 
-  selectedItems: PackageResidueItem[];
+  selectedItem: TeamItemWithCount;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -219,9 +225,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.selectedItems = data.selectedItems;
-    this.pcForm = this.createPackageResidue();
-    this.packageResidueDS = new PackageResidueDS(this.apollo);
+    this.selectedItem = data.selectedItem;
+    this.departmentCvList=data.departmentList;
+    this.pcForm = this.createTeamItem();
+    this.teamDS=new TeamDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.action = data.action!;
@@ -229,45 +236,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.loadData();
   }
 
-  createPackageResidue(): UntypedFormGroup {
+  createTeamItem(): UntypedFormGroup {
     return this.fb.group({
-      selectedItems: this.selectedItems,
-      name: [''],
-      contact: [''],
-      email: [''],
-      username: [''],
-      pwd: [''],
-      cofirm_pwd: [''],
-
+      selectedItem: this.selectedItem,
+      description: [''],
+      department: [''],
     });
   }
 
   getPageTitle() {
     return this.translatedLangText.NEW + ' ' + this.translatedLangText.TEAM;
   }
-  // profileChanged()
-  // {
-  //   if(this.profileNameControl.value)
-  //   {
-  //     const selectedProfile:PackageResidueItem= this.profileNameControl.value;
-  //     this.pcForm.patchValue({
-  //       preinspection_cost_cust: selectedProfile.preinspection_cost,
-  //       preinspection_cost_standard:selectedProfile.preinspection_cost,
-  //       lolo_cost_cust:selectedProfile.lolo_cost,
-  //       lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
-  //       storage_cost_cust:selectedProfile.storage_cost,
-  //       storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
-  //       free_storage_days:selectedProfile.free_storage,
-  //       gate_in_cost:selectedProfile.gate_in_cost,
-  //       gate_out_cost:selectedProfile.gate_out_cost,
-  //       remarks:selectedProfile.remarks,
-  //       //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-  //     });
-  //     this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-
-
-  //   }
-  // }
+  
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -307,13 +287,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.storageCalCvList = data;
 
 
-      if (this.selectedItems.length == 1) {
-        var pckResidueItm = this.selectedItems[0];
+      if (this.selectedItem!=null) {
+       
 
         this.pcForm.patchValue({
-          cost_cust: pckResidueItm.cost?.toFixed(2),
-          cost_standard: pckResidueItm.tariff_residue?.cost?.toFixed(2),
-          remarks: pckResidueItm.remarks,
+          description: this.selectedItem.team?.description,
+          department: this.departmentCvList.find((d: CodeValuesItem) => d.code_val === this.selectedItem.team?.department_cv),
         });
 
       }
@@ -358,6 +337,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return true;
   }
 
+  isNew() {
+    return this.action == 'new';
+  }
+
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
       let successMsg = this.langText.SAVE_SUCCESS;
@@ -373,44 +356,60 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    if (this.selectedItems.length == 1) {
-      var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
-      pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
-      pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
-      pckResidueItem.tariff_residue = undefined;
-      pckResidueItem.customer_company = undefined;
-      this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
-        if (result.data.updatePackageResidue > 0) {
+    if(this.isNew())
+    {
+      var team:any = new TeamGO();
+      team.action = "NEW";
+      team.description = this.pcForm?.value["description"];
+      team.department_cv = this.pcForm?.value["department"].code_val;
+      team.job_order =null;
+      this.teamDS?.addTeam([team]).subscribe(result => {
+          if (result.data.addTeam > 0) {
 
-          console.log('valid');
-          this.dialogRef.close(result.data.updatePackageResidue);
+            console.log('valid');
+            this.dialogRef.close(result.data.addTeam);
 
-        }
-      });
+          }
+        });
     }
-    else {
-      let pd_guids: string[] = this.selectedItems
-        .map(cc => cc.guid)
-        .filter((guid): guid is string => guid !== undefined);
+    // if (this.selectedItems.length == 1) {
+    //   var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
+    //   pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
+    //   pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
+    //   pckResidueItem.tariff_residue = undefined;
+    //   pckResidueItem.customer_company = undefined;
+    //   this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
+    //     if (result.data.updatePackageResidue > 0) {
 
-      var cost = -1;
-      if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
+    //       console.log('valid');
+    //       this.dialogRef.close(result.data.updatePackageResidue);
 
-      var remarks = this.pcForm!.value["remarks"] || "";
-      if (pd_guids.length == 1) {
-        if (!remarks) {
-          remarks = "--";
-        }
-      }
-      this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
-        if (result.data.updatePackageResidues > 0) {
+    //     }
+    //   });
+    // }
+    // else {
+    //   let pd_guids: string[] = this.selectedItems
+    //     .map(cc => cc.guid)
+    //     .filter((guid): guid is string => guid !== undefined);
 
-          console.log('valid');
-          this.dialogRef.close(result.data.updatePackageResidues);
+    //   var cost = -1;
+    //   if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
 
-        }
-      });
-    }
+    //   var remarks = this.pcForm!.value["remarks"] || "";
+    //   if (pd_guids.length == 1) {
+    //     if (!remarks) {
+    //       remarks = "--";
+    //     }
+    //   }
+    //   this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
+    //     if (result.data.updatePackageResidues > 0) {
+
+    //       console.log('valid');
+    //       this.dialogRef.close(result.data.updatePackageResidues);
+
+    //     }
+    //   });
+    // }
 
     // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
     // // tc.guid='';
