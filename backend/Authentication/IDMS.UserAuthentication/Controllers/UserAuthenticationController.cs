@@ -222,6 +222,58 @@ namespace IDMS.UserAuthentication.Controllers
 
         }
 
+
+        [HttpPost("CreateUserByAdmin")]
+        public async Task<IActionResult> CreateUserByAdmin([FromBody] CreateUser createUser)
+        {
+            try
+            {
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if (primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+
+                if (primarygroupSid != "a1")
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
+
+                var staffExist = await _userManager.FindByIdAsync(createUser.Username!);
+                if (staffExist != null)
+                    return StatusCode(StatusCodes.Status302Found, new Response() { Status = "Error", Message = new string[] { "The username had been registered previously" } });
+
+                ApplicationUser user = new()
+                {
+                    UserName = createUser.Username,
+                    Email = createUser.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    CorporateID = createUser.CorporateId.Value,
+                    isStaff = false,
+                    EmailConfirmed = true,
+                };
+
+                var result = await _userManager.CreateAsync(user, createUser.Password);
+                if (!result.Succeeded)
+                {
+                    var Errors = result.Errors.Select(e => e.Description);
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        new Response { Status = "Error", Message = Errors });
+                }
+
+                //var userGuid = user.Id;
+                //var rst = await AssignRolesTeams(userGuid, createUser.Roles, createUser.Teams);
+                //if (!(rst is ObjectResult objectResult && objectResult.StatusCode == StatusCodes.Status200OK
+                //                   || rst is StatusCodeResult statusCodeResult && statusCodeResult.StatusCode == StatusCodes.Status200OK))
+                //    return rst;
+
+                return StatusCode(StatusCodes.Status200OK,
+                   new Response { Status = "Success", Message = new string[] { $"Staff created  successfully - {user.UserName}  !" } });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+        }
+
         [HttpGet("ConfirmEmail")]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string token, string email)
