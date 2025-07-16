@@ -484,6 +484,7 @@ namespace IDMS.User.Authentication.API.Controllers
                         ContactNo = usr.PhoneNumber,
                         ActivateCode = usr.ActivationCode,
                         LicenseToken = usr.LicenseToken
+                        
                     };
 
                     //var roles = await _userManager.GetRolesAsync(usr);
@@ -536,7 +537,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
                 List<QueryStaffResult> result = new List<QueryStaffResult>();
                 // Start the query with users filtered by role and isStaff flag
-                var user = await _dbContext.Users.Where(u => u.Id == userId && u.isStaff == true).FirstOrDefaultAsync();
+                var user = await _dbContext.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
                 if (user == null)
                     return NotFound(new { message = "User not found." });
 
