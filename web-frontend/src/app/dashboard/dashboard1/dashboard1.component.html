@@ -1,166 +1,167 @@
 <section class="content watermark">
   <!-- <div class="watermark"> -->
-    <div class="content-block">
-      <div class="block-header">
-        <!-- breadcrumb -->
-        <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
-      </div>
-      @if (modulePackageService.isStarterPackage()) {
-      <div class="card info-card dashboard-logo p-0 mt-0">
-        <div class="dashboard-content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
+    </div>
+    @if (modulePackageService.isStarterPackage()) {
+    <div class="card info-card dashboard-logo p-0 mt-0">
+      <div class="dashboard-content">
 
-           <!-- <img src="assets/images/landing-logo.png" alt="bg-01" class="img-fluid" />  -->
-        </div>
+        <!-- <img src="assets/images/landing-logo.png" alt="bg-01" class="img-fluid" />  -->
       </div>
-      }
-      @else if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
-      <div class="dashboard-content-info">
-        <div class="row">
-          @if (AllowToView(translatedLangText.IN_GATE_SURVEY_PENDING)) {
-          <div class="col-md-6 col-xl-3 " >
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.IN_GATE_SURVEY_PENDING)">
-             <dashboard-ingate-survey-waiting/>
-            </div>
+    </div>
+    }
+    @else if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
+    <div class="dashboard-content-info">
+      <div class="row">
+        @if (AllowToView(translatedLangText.IN_GATE_SURVEY_PENDING)) {
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.IN_GATE_SURVEY_PENDING)">
+            <dashboard-ingate-survey-waiting />
           </div>
+        </div>
         }
-         @if (AllowToView(translatedLangText.OUT_GATE_SURVEY_PENDING)) {
-          <div class="col-md-6 col-xl-3 " >
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.OUT_GATE_SURVEY_PENDING)">
-             <dashboard-outgate-survey-waiting/>
-            </div>
+        @if (AllowToView(translatedLangText.OUT_GATE_SURVEY_PENDING)) {
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.OUT_GATE_SURVEY_PENDING)">
+            <dashboard-outgate-survey-waiting />
           </div>
+        </div>
         }
         @if (AllowToView(translatedLangText.GATE_IN_PENDING)) {
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.GATE_IN_PENDING)">
-              <dashboard-gatein-waiting/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.GATE_IN_PENDING)">
+            <dashboard-gatein-waiting />
           </div>
+        </div>
         }
         @if (AllowToView(translatedLangText.CLEANING_PENDING)) {
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.CLEANING_PENDING)">
-              <dashboard-cleaning-waiting/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.CLEANING_PENDING)">
+            <dashboard-cleaning-waiting />
           </div>
-             }
+        </div>
+        }
         @if (AllowToView(translatedLangText.CLEANING_KIV)) {
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer"  (click)="onIconClick($event, translatedLangText.CLEANING_KIV)" >
-              <dashboard-cleaning-kiv/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.CLEANING_KIV)">
+            <dashboard-cleaning-kiv />
           </div>
-             }
+        </div>
+        }
         @if (AllowToView(translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING)) {
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING)">
-              <dashboard-repair-customer-approval-waiting/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer"
+            (click)="onIconClick($event, translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING)">
+            <dashboard-repair-customer-approval-waiting />
           </div>
-             }
+        </div>
+        }
         @if (AllowToView(translatedLangText.REPAIR_ESTIMATE_PENDING)) {
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.REPAIR_ESTIMATE_PENDING)">
-              <dashboard-repair-estimate-waiting/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.REPAIR_ESTIMATE_PENDING)">
+            <dashboard-repair-estimate-waiting />
           </div>
-             }
+        </div>
+        }
         @if (AllowToView(translatedLangText.REPAIR_QC_PENDING)) {
-           <div class="col-md-6 col-xl-3">
-            <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.REPAIR_QC_PENDING)">
-              <dashboard-repair-qc-waiting/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card pointer" (click)="onIconClick($event, translatedLangText.REPAIR_QC_PENDING)">
+            <dashboard-repair-qc-waiting />
           </div>
-             }
+        </div>
+        }
         @if (AllowToView(translatedLangText.GATEIO)) {
-           
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card " >
-             <dashboard-gateio/>
-            </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card ">
+            <dashboard-gateio />
           </div>
-             }
+        </div>
+        }
         @if (AllowToView(translatedLangText.TANK_IN_YARD)) {
-           
-          <div class="col-md-6 col-xl-3">
-            <div class="card info-card " >
-             <dashboard-tank-in-yard/>
-            </div>
-          </div>
-             }
 
-          @if (AllowToView(translatedLangText.RESIDUE_PENDING)) {
-           
-          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
-            <div class="card info-card pointer" >
-             <dashboard-residue-waiting/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card info-card ">
+            <dashboard-tank-in-yard />
           </div>
-             }
-          @if (AllowToView(translatedLangText.STEAMING_PENDING)) {
-           
-          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">
-            <div class="card info-card pointer" >
-             <dashboard-steaming-waiting/>
-            </div>
-          </div>
-             }
-             
-          @if (AllowToView(translatedLangText.TANK_PERIODIC_TEST_DUE)){
-           
-          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.TANK_PERIODIC_TEST_DUE)">
-            <div class="card info-card pointer" >
-             <dashboard-tank-test-due/>
-            </div>
-          </div>
-             }
+        </div>
+        }
 
-          @if (AllowToView(translatedLangText.RELEASE_PENDING)){
-           
-          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.RELEASE_PENDING)">
-            <div class="card info-card pointer" >
-             <dashboard-release-waiting/>
-            </div>
-          </div>
-             }
-        
-              @if (AllowToView(translatedLangText.GATE_IN_PUBLISH_PENDING)){
-           
-          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.GATE_IN_PUBLISH_PENDING)">
-            <div class="card info-card pointer" >
-             <dashboard-gatein-publish-waiting/>
-            </div>
-          </div>
-             }
+        @if (AllowToView(translatedLangText.RESIDUE_PENDING)) {
 
-           @if (AllowToView(translatedLangText.GATE_OUT_PUBLISH_PENDING)){
-           
-          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.GATE_OUT_PUBLISH_PENDING)">
-            <div class="card info-card pointer" >
-             <dashboard-gateout-publish-waiting/>
-            </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-residue-waiting />
           </div>
-             }
-        
-             <!-- @if (AllowToView(translatedLangText.TANK_IN_STEAMING)) {
+        </div>
+        }
+        @if (AllowToView(translatedLangText.STEAMING_PENDING)) {
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-steaming-waiting />
+          </div>
+        </div>
+        }
+
+        @if (AllowToView(translatedLangText.TANK_PERIODIC_TEST_DUE)){
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.TANK_PERIODIC_TEST_DUE)">
+          <div class="card info-card pointer">
+            <dashboard-tank-test-due />
+          </div>
+        </div>
+        }
+
+        @if (AllowToView(translatedLangText.RELEASE_PENDING)){
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.RELEASE_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-release-waiting />
+          </div>
+        </div>
+        }
+
+        @if (AllowToView(translatedLangText.GATE_IN_PUBLISH_PENDING)){
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.GATE_IN_PUBLISH_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-gatein-publish-waiting />
+          </div>
+        </div>
+        }
+
+        @if (AllowToView(translatedLangText.GATE_OUT_PUBLISH_PENDING)){
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.GATE_OUT_PUBLISH_PENDING)">
+          <div class="card info-card pointer">
+            <dashboard-gateout-publish-waiting />
+          </div>
+        </div>
+        }
+
+        <!-- @if (AllowToView(translatedLangText.TANK_IN_STEAMING)) {
            
-          <div class="col-md-6 col-xl-3" (click)="onIconClick($event, translatedLangText.TANK_IN_STEAMING)">
+          <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.TANK_IN_STEAMING)">
             <div class="card info-card " >
              <dashboard-tank-in-steaming/>
             </div>
           </div>
              } -->
-          <!-- <div class="col-md-6 col-xl-5" hidden>
+        <!-- <div class="col-md-6 col-xl-5" hidden>
             <div class="card info-card ">
               <dashboard-consolidated-waiting/>
             </div>
           </div> -->
-         <!-- <div class="col-md-6 col-xl-3">
+        <!-- <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
           <div class="card info-card">
           <app-test1/>
           </div>
         </div> -->
-        <!--<div class="col-md-6 col-xl-3">
+        <!--<div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
           <div class="card info-card">
             <div class="info-box8">
               <i class="material-icons bg-blue card1-icon">attach_money</i>
@@ -173,8 +174,8 @@
             </div>
           </div>
         </div> -->
-        </div>
-        <!-- <div class="row ">
+      </div>
+      <!-- <div class="row ">
         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
           <div class="card">
             <div class="header">
@@ -1033,8 +1034,8 @@
           </div>
         </div>
       </div> -->
-      </div>
-      }
     </div>
+    }
+  </div>
   <!-- </div> -->
 </section>

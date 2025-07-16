@@ -120,9 +120,11 @@ export class AppComponent implements OnInit, OnDestroy {
     } else {
       // Set a timer to prompt for refresh 1 minute before expiration
       if (refreshPromptTime > 0) {
-        this.refreshPromptTimer = timer(refreshPromptTime).subscribe(() => {
-          this.showRefreshDialog();
-        });
+        if (!this.authService.hasRole(["KIOSK_IN_GATE", "KIOSK_OUT_GATE"])) {
+          this.refreshPromptTimer = timer(refreshPromptTime).subscribe(() => {
+            this.showRefreshDialog();
+          });
+        }
       }
     }
   }
