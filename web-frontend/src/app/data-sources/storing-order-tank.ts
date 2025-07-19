@@ -5227,19 +5227,39 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     return !!(sot && sot.owner_guid === sot.storing_order?.customer_company_guid);
   }
 
-  displayTankPurpose(sot: StoringOrderTankItem, getPurposeOptionDescription: (code: string | undefined) => string | undefined) {
+  displayTankPurpose(sot: StoringOrderTankItem, getPurposeOptionDescription: (code: string | undefined) => string | undefined, abbreviation: boolean = false) {
     let purposes: any[] = [];
     if (sot?.purpose_steam) {
-      purposes.push(getPurposeOptionDescription('STEAM'));
+      if (!abbreviation) {
+        purposes.push(getPurposeOptionDescription('STEAM'));
+      } else {
+        purposes.push("SE")
+      }
     }
     if (sot?.purpose_cleaning) {
-      purposes.push(getPurposeOptionDescription('CLEANING'));
+      if (!abbreviation) {
+        purposes.push(getPurposeOptionDescription('CLEANING'));
+      } else {
+        purposes.push("C")
+      }
     }
     if (sot?.purpose_repair_cv) {
-      purposes.push(getPurposeOptionDescription(sot?.purpose_repair_cv));
+      if (!abbreviation) {
+        purposes.push(getPurposeOptionDescription(sot?.purpose_repair_cv));
+      } else {
+        if (sot?.purpose_repair_cv == 'REPAIR') {
+          purposes.push("I")
+        } else {
+          purposes.push("O")
+        }
+      }
     }
     if (sot?.purpose_storage) {
-      purposes.push(getPurposeOptionDescription('STORAGE'));
+      if (!abbreviation) {
+        purposes.push(getPurposeOptionDescription('STORAGE'));
+      } else {
+        purposes.push("S")
+      }
     }
     return purposes.join('; ');
   }

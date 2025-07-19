@@ -58,7 +58,7 @@ export class AuthService {
         if (!user?.token) throw new Error('No token in login response');
         const decodedToken = decodeToken(user.token);
         const userId = decodedToken[jwt_mapping.sid.key] ?? decodedToken[jwt_mapping.sid.value];
-        
+
         // Set the plain token in advance so interceptor works for getUserClaims
         const tempUserToken = new UserToken();
         tempUserToken.token = user.token;
@@ -66,6 +66,9 @@ export class AuthService {
         tempUserToken.refreshToken = user.refreshToken;
         localStorage.setItem(this.tokenKey, JSON.stringify(tempUserToken));
 
+        if (!userId) {
+          console.log(`unexpected login token occurred: `, decodedToken)
+        }
         return this.authApiService.getUserClaims(userId).pipe(
           map(claims => {
             const usr = new User();

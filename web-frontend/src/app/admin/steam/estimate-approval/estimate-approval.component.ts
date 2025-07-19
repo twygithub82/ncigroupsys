@@ -47,6 +47,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
 
 @Component({
   selector: 'app-estimate',
@@ -78,23 +79,14 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
+    TlxCardListComponent
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
 export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
   displayedColumns = [
-    // 'select',
     'estimate_no',
     'net_cost',
     'status_cv',
@@ -207,6 +199,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   copiedSteamEst?: SteamItem;
 
+  isMobile = false;
+
   pageStateType = 'SteamEstimateApproval'
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -252,9 +246,22 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
+
     this.initializeFilterCustomerCompany();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 768;
+    this.displayedColumns = this.isMobile
+      ? ['estimate_no', 'status_cv', 'actions']
+      : ['estimate_no', 'net_cost', 'status_cv', 'remarks', 'actions'];
   }
 
   refresh() {
@@ -443,27 +450,27 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       if (!savedCriteria && !savedPagination) {
         this.search();
       }
-   }
-  //  else if(['pending'].includes(actionId))
-  //  {
-  //    const status = ["PENDING"];
-  //      const where: any = {and:[
-  //       { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-  //       { purpose_steam:{eq:true}},
-  //       { tank_status_cv: { eq: 'STEAM'  } },
-  //       { steaming: { some: {and: [
-  //             { status_cv: { in: status } },
-  //           ]}}
-  //       }
-  //     ]};
+    }
+    //  else if(['pending'].includes(actionId))
+    //  {
+    //    const status = ["PENDING"];
+    //      const where: any = {and:[
+    //       { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
+    //       { purpose_steam:{eq:true}},
+    //       { tank_status_cv: { eq: 'STEAM'  } },
+    //       { steaming: { some: {and: [
+    //             { status_cv: { in: status } },
+    //           ]}}
+    //       }
+    //     ]};
 
-  //      this.lastSearchCriteria = where;
-  //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-  //       this.updatePageSelection();
-  //     });
-  //     console.log("search pending records");
+    //      this.lastSearchCriteria = where;
+    //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+    //       this.updatePageSelection();
+    //     });
+    //     console.log("search pending records");
 
-  //  }
+    //  }
   }
 
   handleCancelSuccess(count: any) {
@@ -514,7 +521,7 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     const where: any = {
       tank_status_cv: { in: ['STEAM', 'STORAGE'] },
       purpose_steam: { eq: true }
-      
+
 
     };
 
@@ -601,13 +608,12 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
                 }
                 return {};
               }
-              else if(stm.status_cv!=='CANCELED'){
+              else if (stm.status_cv !== 'CANCELED') {
                 var stm_part = [...stm.steaming_part!];
                 stm.steaming_part = stm_part?.filter(data => !data.delete_dt);
                 return { ...stm, net_cost: this.calculateNetCost(stm) };
               }
-              else
-              {
+              else {
                 return {};
               }
             });
@@ -719,13 +725,13 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     let isApproved = this.IsApproved(steam);
     let total = this.IsApproved(steam) ? this.steamDS.getApprovalTotalWithLabourCost(steam?.steaming_part, LabourCost) : this.steamDS.getTotalWithLabourCost(steam?.steaming_part, LabourCost)
     const isAutoSteam = BusinessLogicUtil.isAutoApproveSteaming(steam);
-    if(isAutoSteam){
-       total.total_mat_cost=steam.rate;
+    if (isAutoSteam) {
+      total.total_mat_cost = steam.rate;
 
-      if(!steam?.flat_rate){
-        total.total_mat_cost*= isApproved?(steam?.total_hour||1):1;
+      if (!steam?.flat_rate) {
+        total.total_mat_cost *= isApproved ? (steam?.total_hour || 1) : 1;
       }
-     
+
     }
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
@@ -746,15 +752,15 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     let isApproved = this.IsApproved(steam);
     let total = isApproved ? this.steamDS.getApprovalTotal(steam?.steaming_part) : this.steamDS.getTotal(steam?.steaming_part);
     const isAutoSteam = BusinessLogicUtil.isAutoApproveSteaming(steam);
-    if(isAutoSteam){
-       total.total_mat_cost=steam.rate;
+    if (isAutoSteam) {
+      total.total_mat_cost = steam.rate;
 
-      if(!steam?.flat_rate){
-        total.total_mat_cost*= isApproved?(steam?.total_hour||1):1;
+      if (!steam?.flat_rate) {
+        total.total_mat_cost *= isApproved ? (steam?.total_hour || 1) : 1;
       }
-     
+
     }
-    
+
     return Utility.formatNumberDisplay(total.total_mat_cost);
 
     // const custGuid = steam.storing_order_tank?.storing_order?.customer_company_guid;

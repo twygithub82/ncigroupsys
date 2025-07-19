@@ -59,6 +59,7 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { ChangeDetectorRef } from '@angular/core';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -91,7 +92,8 @@ import { ChangeDetectorRef } from '@angular/core';
     MatMenuModule,
     MatCardModule,
     TlxFormFieldComponent,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ]
 })
 export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -102,6 +104,26 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     'unit_price',
     'hour',
     'cost',
+    'approve_part',
+    'actions'
+  ];
+  labourCostDisplayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'labourSummaryUnitPrice',
+    'labourSummaryHrs',
+    'labourSummaryCost',
+    'approve_part',
+    'actions'
+  ];
+  totalCostDisplayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'totalSummaryUnitPrice',
+    'totalSummaryHrs',
+    'totalSummaryCost',
     'approve_part',
     'actions'
   ];
@@ -223,6 +245,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     HOURLY: 'COMMON-FORM.HOURLY',
     BY_HOUR: 'COMMON-FORM.BY-HOUR',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
+    APPROVED: 'COMMON-FORM.APPROVED'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -238,8 +261,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   steamItem?: SteamItem;
   flat_rate: boolean = false;
   rateType: string = '';
-  //estItem:{flat_rate:false};
-  //repairEstItem?: RepairItem;
   packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
@@ -295,6 +316,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   autosteamCost: string = '';
   autosteamTotalCost: string = '';
 
+  isMobile = false;
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -322,7 +345,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.packSteamDS = new PackageSteamingDS(this.apollo);
     this.steamDS = new SteamDS(this.apollo);
     this.packRepDS = new PackageRepairDS(this.apollo);
-
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -331,9 +353,43 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
-    // this.cdr.detectChanges();
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initializeValueChanges();
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 1024;
+    this.labourCostDisplayedColumns = this.isMobile
+      ? ['labourSummaryCost']
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'labourSummaryUnitPrice',
+        'labourSummaryHrs',
+        'labourSummaryCost',
+        'approve_part',
+        'actions'
+      ];
+    this.totalCostDisplayedColumns = this.isMobile
+      ? ['totalSummaryCost']
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'totalSummaryUnitPrice',
+        'totalSummaryHrs',
+        'totalSummaryCost',
+        'approve_part',
+        'actions'
+      ];
   }
 
   initForm() {
@@ -1496,7 +1552,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       );
-      return (ret||0).toFixed(2);
+      return (ret || 0).toFixed(2);
     }
     else {
       return '-';
