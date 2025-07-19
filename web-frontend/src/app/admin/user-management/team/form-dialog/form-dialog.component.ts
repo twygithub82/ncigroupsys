@@ -245,7 +245,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getPageTitle() {
-    return this.translatedLangText.NEW + ' ' + this.translatedLangText.TEAM;
+    return this.translatedLangText.UPDATE + ' ' + this.translatedLangText.TEAM;
   }
   
   displayName(cc?: CustomerCompanyItem): string {

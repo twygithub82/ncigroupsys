@@ -29,12 +29,14 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
+import {RoleItem, RoleDS} from 'app/data-sources/role';
 export interface DialogData {
   action?: string;
-  selectedValue?: number;
+  
   // item: StoringOrderTankItem;
   langText?: any;
-  selectedItems: PackageResidueItem[];
+  selectedItem: RoleItem;
+  departmentList: CodeValuesItem[];
   // populateData?: any;
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
@@ -205,7 +207,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   };
 
 
-  selectedItems: PackageResidueItem[];
+  selectedItem: RoleItem;
+  departmentCvList:CodeValuesItem[]=[];
   updatedFeatureList: any[] = [];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
@@ -220,7 +223,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     // Set the defaults
     super();
-    this.selectedItems = data.selectedItems;
+    this.selectedItem = data.selectedItem;
+    this.departmentCvList=data.departmentList;
     this.pcForm = this.createPackageResidue();
     this.packageResidueDS = new PackageResidueDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
@@ -232,19 +236,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   createPackageResidue(): UntypedFormGroup {
     return this.fb.group({
-      selectedItems: this.selectedItems,
-      name: [''],
-      contact: [''],
-      email: [''],
-      username: [''],
-      pwd: [''],
-      cofirm_pwd: [''],
+      selectedItem: this.selectedItem,
+      description: [''],
+      department: [''],
+      position: [''],
+     
 
     });
   }
 
   getPageTitle() {
-    return this.translatedLangText.NEW + ' ' + this.translatedLangText.ROLE;
+    return this.translatedLangText.UPDATE + ' ' + this.translatedLangText.ROLE;
   }
   // profileChanged()
   // {
@@ -297,28 +299,48 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   loadData() {
-    this.queryDepotCost();
+    
+          if (this.selectedItem!=null) {
+           
+    
+            this.pcForm.patchValue({
+              description: this.selectedItem.description,
+              position:this.selectedItem.position,
+              department: this.departmentCvList.find((d: CodeValuesItem) => d.code_val === this.selectedItem.department),
+            });
+           if (!this.pcForm.get('department')?.value) {
+              const codeValueItem: CodeValuesItem = {
+                code_val: this.selectedItem.department,
+                description: this.selectedItem.department
+              };
+              
+              this.departmentCvList = [...this.departmentCvList, codeValueItem];
 
-    const queries = [
-      { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+              this.pcForm.get('department')?.setValue(codeValueItem);
+            }
+          }
+    // this.queryDepotCost();
 
-    ];
-    this.CodeValuesDS?.getCodeValuesByType(queries);
-    this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-      this.storageCalCvList = data;
+    // const queries = [
+    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
+
+    // ];
+    // this.CodeValuesDS?.getCodeValuesByType(queries);
+    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
+    //   this.storageCalCvList = data;
 
 
-      if (this.selectedItems.length == 1) {
-        var pckResidueItm = this.selectedItems[0];
+    //   if (this.selectedItems.length == 1) {
+    //     var pckResidueItm = this.selectedItems[0];
 
-        this.pcForm.patchValue({
-          cost_cust: pckResidueItm.cost?.toFixed(2),
-          cost_standard: pckResidueItm.tariff_residue?.cost?.toFixed(2),
-          remarks: pckResidueItm.remarks,
-        });
+    //     this.pcForm.patchValue({
+    //       cost_cust: pckResidueItm.cost?.toFixed(2),
+    //       cost_standard: pckResidueItm.tariff_residue?.cost?.toFixed(2),
+    //       remarks: pckResidueItm.remarks,
+    //     });
 
-      }
-    });
+    //   }
+    // });
 
 
 
@@ -372,46 +394,46 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   save() {
 
-    if (!this.pcForm?.valid) return;
+    // if (!this.pcForm?.valid) return;
 
-    if (this.selectedItems.length == 1) {
-      var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
-      pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
-      pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
-      pckResidueItem.tariff_residue = undefined;
-      pckResidueItem.customer_company = undefined;
-      this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
-        if (result.data.updatePackageResidue > 0) {
+    // if (this.selectedItems.length == 1) {
+    //   var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
+    //   pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
+    //   pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
+    //   pckResidueItem.tariff_residue = undefined;
+    //   pckResidueItem.customer_company = undefined;
+    //   this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
+    //     if (result.data.updatePackageResidue > 0) {
 
-          console.log('valid');
-          this.dialogRef.close(result.data.updatePackageResidue);
+    //       console.log('valid');
+    //       this.dialogRef.close(result.data.updatePackageResidue);
 
-        }
-      });
-    }
-    else {
-      let pd_guids: string[] = this.selectedItems
-        .map(cc => cc.guid)
-        .filter((guid): guid is string => guid !== undefined);
+    //     }
+    //   });
+    // }
+    // else {
+    //   let pd_guids: string[] = this.selectedItems
+    //     .map(cc => cc.guid)
+    //     .filter((guid): guid is string => guid !== undefined);
 
-      var cost = -1;
-      if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
+    //   var cost = -1;
+    //   if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
 
-      var remarks = this.pcForm!.value["remarks"] || "";
-      if (pd_guids.length == 1) {
-        if (!remarks) {
-          remarks = "--";
-        }
-      }
-      this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
-        if (result.data.updatePackageResidues > 0) {
+    //   var remarks = this.pcForm!.value["remarks"] || "";
+    //   if (pd_guids.length == 1) {
+    //     if (!remarks) {
+    //       remarks = "--";
+    //     }
+    //   }
+    //   this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
+    //     if (result.data.updatePackageResidues > 0) {
 
-          console.log('valid');
-          this.dialogRef.close(result.data.updatePackageResidues);
+    //       console.log('valid');
+    //       this.dialogRef.close(result.data.updatePackageResidues);
 
-        }
-      });
-    }
+    //     }
+    //   });
+    // }
 
     // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
     // // tc.guid='';

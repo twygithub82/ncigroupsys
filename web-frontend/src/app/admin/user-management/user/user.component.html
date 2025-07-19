@@ -73,7 +73,7 @@
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.ROLE }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-2'">
-                    <span class="mobile-label">{{this.translatedLangText.ROLE }}:</span> {{row.role}}</mat-cell>
+                    <span class="mobile-label">{{this.translatedLangText.ROLE }}:</span> {{row.userrole?.role||'-'}}</mat-cell>
                 </ng-container>
                  <ng-container matColumnDef="team">
                   <mat-header-cell *matHeaderCellDef 

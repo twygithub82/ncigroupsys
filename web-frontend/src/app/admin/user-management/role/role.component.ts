@@ -20,7 +20,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule,Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -36,11 +36,11 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
-import { SearchCriteriaService } from 'app/services/search-criteria.service';
+import { SearchCriteriaService, SearchStateService  } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-
+import {RoleDS, RoleItem} from 'app/data-sources/role';
 @Component({
   selector: 'app-role',
   standalone: true,
@@ -103,14 +103,16 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
 
   storageCalCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
+  departmentCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
-
+  
   ccDS: CustomerCompanyDS;
   // tariffResidueDS:TariffResidueDS;
   // packResidueDS:PackageResidueDS;
   // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
-
+  roleDS:RoleDS;
+  roleList: RoleItem[] = [];
   packResidueItems: PackageResidueItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
@@ -120,7 +122,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { code: "ASC" };
+  lastOrderBy: any = { description: "ASC" };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -133,6 +135,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
+  pageStateType = 'Role';
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -239,12 +242,14 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     // public advanceTableService: AdvanceTableService,
     private snackBar: MatSnackBar,
     private searchCriteriaService: SearchCriteriaService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private searchStateService: SearchStateService,
 
   ) {
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.roleDS=new RoleDS(this.apollo);
     // this.tariffResidueDS = new TariffResidueDS(this.apollo);
     // this.packResidueDS= new PackageResidueDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
@@ -362,8 +367,8 @@ addCall(event: Event) {
       maxHeight: '75vh',
       data: {
         action: 'new',
-        langText: this.langText,
-        selectedItems: this.selection.selected
+        langText: this.translatedLangText ,
+        selectedItem: this.selection.selected
       }
 
     });
@@ -380,61 +385,67 @@ addCall(event: Event) {
   }
 
 
-  editCall(row: CustomerCompanyItem) {
+  editCall(event: Event,row: RoleItem) {
 
-    this.router.navigate([`/admin/master/customer/new/${row.guid} `], {
-      state: {
-        id: row.guid,
-        type: 'customer-company',
-        selectedRow: row,
-        pagination: {
-          where: this.lastSearchCriteria,
-          pageSize: this.pageSize,
-          pageIndex: this.pageIndex,
-          hasPreviousPage: this.hasPreviousPage,
-          startCursor: this.startCursor,
-          endCursor: this.endCursor,
-          previous_endCursor: this.previous_endCursor,
+      event.stopPropagation(); // Stop the click event from propagating
 
-          showResult: this.ccDS.totalCount > 0
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    // if(this.selection.isEmpty()) return;
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '60vw',
+      maxHeight: '75vh',
+      data: {
+        action: 'new',
+        langText: this.translatedLangText ,
+        selectedItem: row,
+        departmentList:this.departmentCvList
+      }
 
+    });
+
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        if (result.selectedValue > 0) {
+          this.handleSaveSuccess(result.selectedValue);
+          this.search();
         }
       }
     });
-    // this.preventDefault(event);  // Prevents the form submission
+    //  event.stopPropagation(); // Stop the click event from propagating
+   
+
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
     //   tempDirection = 'rtl';
     // } else {
     //   tempDirection = 'ltr';
     // }
-    // var rows :PackageResidueItem[] =[] ;
-    // rows.push(row);
-    // const dialogRef = this.dialog.open(FormDialogComponent,{
-
-    //   width: '720px',
-    //   height:'auto',
+    // // if(this.selection.isEmpty()) return;
+    // const dialogRef = this.dialog.open(FormDialogComponent, {
+    //   width: '65vw',
+    //   maxHeight: '75vh',
     //   data: {
-    //     action: 'update',
-    //     langText: this.langText,
-    //     selectedItems:rows
-    //   },
-    //   position: {
-    //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+    //     action: 'edit',
+    //     langText: this.translatedLangText ,
+    //     selectedItem: row,
+    //     departmentList: this.departmentCvList
     //   }
 
     // });
 
     // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //      //if (result) {
-    //       if(result>0)
-    //         {
-    //           this.handleSaveSuccess(result);
-    //           //this.search();
-    //           this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    //         }
-    //   //}
-    //   });
+    //   if (result) {
+    //     if (result.selectedValue > 0) {
+    //       this.handleSaveSuccess(result.selectedValue);
+    //       this.search();
+    //     }
+    //   }
+    // });
 
   }
 
@@ -468,64 +479,49 @@ addCall(event: Event) {
 
 
 
-  search() {
-    const where: any = {};
+  // search() {
+  //   const where: any = {};
 
-    if (this.customerCodeControl.value) {
-      if (this.customerCodeControl.value.length > 0) {
-
-
-        const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-        var guids = customerCodes.map(cc => cc.guid);
-        where.guid = { in: guids };
-      }
-    }
-
-    if (this.pcForm!.value["alias"]) {
-      where.alias = { contains: this.pcForm!.value["alias"] };
-    }
-
-    // if (this.pcForm!.value["fax_no"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
-    // }
-
-    // if (this.pcForm!.value["phone"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
-    // }
+  //   if (this.customerCodeControl.value) {
+  //     if (this.customerCodeControl.value.length > 0) {
 
 
-    // if (this.pcForm!.value["email"]) {
-    //   where.customer_company = where.customer_company || {};
-    //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
-    // }
+  //       const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
+  //       var guids = customerCodes.map(cc => cc.guid);
+  //       where.guid = { in: guids };
+  //     }
+  //   }
 
-    if (this.pcForm!.value["country"]) {
-      where.country = { eq: this.pcForm!.value["country"] };
-    }
+  //   if (this.pcForm!.value["alias"]) {
+  //     where.alias = { contains: this.pcForm!.value["alias"] };
+  //   }
 
-    if (this.pcForm!.value["contact_person"]) {
-      where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
-    }
+   
+  //   if (this.pcForm!.value["country"]) {
+  //     where.country = { eq: this.pcForm!.value["country"] };
+  //   }
+
+  //   if (this.pcForm!.value["contact_person"]) {
+  //     where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
+  //   }
 
 
-    this.lastSearchCriteria = where;
-    this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-      this.customer_companyList = data;
-      // data[0].storage_cal_cv
-      this.previous_endCursor = undefined;
-      this.endCursor = this.ccDS.pageInfo?.endCursor;
-      this.startCursor = this.ccDS.pageInfo?.startCursor;
-      this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-      this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-      this.pageIndex = 0;
-      this.paginator.pageIndex = 0;
-      this.selection.clear();
-      if (!this.hasPreviousPage)
-        this.previous_endCursor = undefined;
-    });
-  }
+  //   this.lastSearchCriteria = where;
+  //   this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+  //     this.customer_companyList = data;
+  //     // data[0].storage_cal_cv
+  //     this.previous_endCursor = undefined;
+  //     this.endCursor = this.ccDS.pageInfo?.endCursor;
+  //     this.startCursor = this.ccDS.pageInfo?.startCursor;
+  //     this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
+  //     this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
+  //     this.pageIndex = 0;
+  //     this.paginator.pageIndex = 0;
+  //     this.selection.clear();
+  //     if (!this.hasPreviousPage)
+  //       this.previous_endCursor = undefined;
+  //   });
+  // }
 
   selectStorageCalculateCV_Description(valCode?: string): string {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
@@ -550,47 +546,47 @@ addCall(event: Event) {
     }
   }
 
-  onPageEvent(event: PageEvent) {
-    const { pageIndex, pageSize, previousPageIndex } = event;
-    let first: number | undefined = undefined;
-    let after: string | undefined = undefined;
-    let last: number | undefined = undefined;
-    let before: string | undefined = undefined;
-    let order: any | undefined = this.lastOrderBy;
-    // Check if the page size has changed
-    if (this.pageSize !== pageSize) {
-      // Reset pagination if page size has changed
-      this.pageIndex = 0;
-      this.pageSize = pageSize;
-      first = pageSize;
-      after = undefined;
-      last = undefined;
-      before = undefined;
-    } else {
-      //if (pageIndex > this.pageIndex && this.hasNextPage) {
-      if (pageIndex > this.pageIndex) {
-        // Navigate forward
-        first = pageSize;
-        after = this.endCursor;
-      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-        // Navigate backward
-        last = pageSize;
-        before = this.startCursor;
-      }
-      else if (pageIndex == this.pageIndex) {
+  // onPageEvent(event: PageEvent) {
+  //   const { pageIndex, pageSize, previousPageIndex } = event;
+  //   let first: number | undefined = undefined;
+  //   let after: string | undefined = undefined;
+  //   let last: number | undefined = undefined;
+  //   let before: string | undefined = undefined;
+  //   let order: any | undefined = this.lastOrderBy;
+  //   // Check if the page size has changed
+  //   if (this.pageSize !== pageSize) {
+  //     // Reset pagination if page size has changed
+  //     this.pageIndex = 0;
+  //     this.pageSize = pageSize;
+  //     first = pageSize;
+  //     after = undefined;
+  //     last = undefined;
+  //     before = undefined;
+  //   } else {
+  //     //if (pageIndex > this.pageIndex && this.hasNextPage) {
+  //     if (pageIndex > this.pageIndex) {
+  //       // Navigate forward
+  //       first = pageSize;
+  //       after = this.endCursor;
+  //     } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+  //       // Navigate backward
+  //       last = pageSize;
+  //       before = this.startCursor;
+  //     }
+  //     else if (pageIndex == this.pageIndex) {
 
-        first = pageSize;
-        after = this.previous_endCursor;
+  //       first = pageSize;
+  //       after = this.previous_endCursor;
 
 
-        //this.paginator.pageIndex=this.pageIndex;
+  //       //this.paginator.pageIndex=this.pageIndex;
 
-      }
-    }
+  //     }
+  //   }
 
-    this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
-    //}
-  }
+  //   this.searchData(this.lastSearchCriteria, order, first, after, last, before, pageIndex, previousPageIndex);
+  //   //}
+  // }
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
@@ -632,24 +628,19 @@ addCall(event: Event) {
   }
   public loadData() {
 
-    this.subs.sink = this.custCompDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
-      // this.customer_companyList1 = data
+   const queries = [
+      { alias: 'departmentCv', codeValType: 'DEPARTMENT' }
+     
+    ];
+    this.CodeValuesDS?.getCodeValuesByType(queries);
+    this.CodeValuesDS?.connectAlias('departmentCv').subscribe(data => {
+      this.departmentCvList = data;
+
+      this.search();
     });
 
-    // this.subs.sink = this.tariffResidueDS.SearchTariffResidue({},{description:'ASC'}).subscribe(data=>{});
-
-    // const queries = [
-    //   { alias: 'handledItem', codeValType: 'HANDLED_ITEM' },
-
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
-    //   this.handledItemCvList=data;
-    // });
-
-
-
   }
+
   showNotification(
     colorName: string,
     text: string,
@@ -702,20 +693,14 @@ addCall(event: Event) {
     return null;
   }
 
-  displayLastUpdated(r: PackageResidueItem) {
-    var updatedt = r.update_dt;
+  displayLastUpdated(r: RoleItem) {
+      var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;
     }
-    const date = new Date(updatedt! * 1000);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'short' });
-    const year = date.getFullYear();
+    
 
-    // Replace the '/' with '-' to get the required format
-
-
-    return `${day}/${month}/${year}`;
+    return Utility.convertEpochToDateStr(updatedt);
 
   }
 
@@ -753,5 +738,151 @@ addCall(event: Event) {
     return `${this.translatedLangText.ROLE}/${this.translatedLangText.USER}`;
   }
 
+  
+       constructSearchCriteria() {
+          const where: any = {
+                 };
+      
+        if (this.pcForm!.value["description"]) {
+           var value= this.pcForm!.value["description"]; 
+          where.or = [
+            {description:{ contains: value }},
+            {department:{ contains: value }},
+            {position:{ contains: value }}
+          ];
+        }
+          this.lastSearchCriteria =where;
+        }
+      
+        search() {
+          this.constructSearchCriteria();
+          this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+            this.updatePageSelection();
+          });
+        }
+      
+        performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+          this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+          this.searchStateService.setPagination(this.pageStateType, {
+            pageSize,
+            pageIndex,
+            first,
+            after,
+            last,
+            before
+          });
+          console.log(this.searchStateService.getPagination(this.pageStateType))
+          this.subs.sink = this.roleDS.searchRoles(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+            .subscribe(data => {
+              this.roleList = data;
+              this.endCursor = this.roleDS.pageInfo?.endCursor;
+              this.startCursor = this.roleDS.pageInfo?.startCursor;
+              this.hasNextPage = this.roleDS.pageInfo?.hasNextPage ?? false;
+              this.hasPreviousPage = this.roleDS.pageInfo?.hasPreviousPage ?? false;
+            });
+      
+          this.pageSize = pageSize;
+          this.pageIndex = pageIndex;
+        }
+      
+        onPageEvent(event: PageEvent) {
+          const { pageIndex, pageSize } = event;
+          let first: number | undefined = undefined;
+          let after: string | undefined = undefined;
+          let last: number | undefined = undefined;
+          let before: string | undefined = undefined;
+      
+          // Check if the page size has changed
+          if (this.pageSize !== pageSize) {
+            // Reset pagination if page size has changed
+            this.pageIndex = 0;
+            first = pageSize;
+            after = undefined;
+            last = undefined;
+            before = undefined;
+          } else {
+            if (pageIndex > this.pageIndex && this.hasNextPage) {
+              // Navigate forward
+              first = pageSize;
+              after = this.endCursor;
+            } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+              // Navigate backward
+              last = pageSize;
+              before = this.startCursor;
+            }
+          }
+      
+          this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+            this.updatePageSelection();
+          });
+        }
+    
+        updatePageSelection()
+        {
+    
+        }
+    
+         onSortChange(event: Sort): void {
+            const { active: field, direction } = event;
+        
+            // reset if no direction
+            if (!direction) {
+              this.lastOrderBy = null;
+              return this.search();
+            }
+        
+            // convert to GraphQL enum (uppercase)
+            const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+            // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+        
+            switch (field) {
+              case 'description':
+                this.lastOrderBy = {
+                  
+                   description: dirEnum 
+                  
+                };
+                break;
+              case 'last_update':
+                this.lastOrderBy = {
+                  
+                   update_dt: dirEnum 
+                  
+                };
+                break;
+              default:
+                this.lastOrderBy = { description: "ASC" };
+            }
+        
+            this.search();
+          }
+        
+          AutoSearch() {
+            if (Utility.IsAllowAutoSearch())
+              this.search();
+          }
+  
+          ShowDepartment(row:RoleItem):string{
+           var retval:string="";
+              this.departmentCvList.forEach(codeval => {
+                if(codeval.code_val==row.department)
+                {
+                  retval=codeval.description||'';
+                }
+                if(!retval) retval=row.department||'';
+              })
+           return retval;
+          }
+  
+          AllowDelete(row:RoleItem):boolean{
+            if(row.userrole?.length==0)
+            {
+              return true;
+            }
+            else
+            {
+              return false;
+            }
+          }
 }
 

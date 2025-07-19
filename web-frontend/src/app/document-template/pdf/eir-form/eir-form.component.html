@@ -1,11 +1,7 @@
 <div mat-dialog-title class="ms-3 mt-3">
   <h4>{{translatedLangText.PREVIEW_PDF}} ({{eir_no}})</h4>
 </div>
-<!-- <div mat-dialog-content class="eir-form-container">
-  @if (!(isImageLoading$ | async) && eirPdfSafeUrl) {
-  <iframe [src]="eirPdfSafeUrl" width="99%" height="99%"></iframe>
-  }
-</div> -->
+
 <div mat-dialog-content>
   <div id="eir-form-header" class="pdf-container pdf-header">
     <hr class="mt-2 mb-1" />
@@ -31,6 +27,11 @@
     </div>
     <hr class="mt-1 mb-2" />
   </div>
+  
+  <!-- <div id="capture">
+    <h3>Hello Canvas</h3>
+    <p>This content will be converted into a canvas image.</p>
+  </div> -->
 
   <div id="eir-form-body" class="pdf-container pdf-body">
     <div class="eir-title">
@@ -107,8 +108,8 @@
         </tbody>
       </table>
     </div>
-    <div class="d-flex align-items-center frame-info-section">
-      <div class="frame-info-content mt-1 mb-3">
+    <div #frameinfosection class="d-flex align-items-center frame-info-section" >
+      <div  #captureWalkwayElement class="frame-info-content mt-1 mb-3">
         <div class="frame-walkway-legend mb-2">
           <div class="d-flex align-items-center pt-5px">
             <div class="me-4 d-flex align-items-center">
@@ -123,15 +124,20 @@
             </div>
           </div>
         </div>
-        <div class="frame-type-info">
+        <div   class="frame-type-info">
           <div class="frame-line mt-1">
-            <div class="frame-type me-3">
+            <div  class="frame-type me-3">
+              
               <div class="frame-title">
                 {{translatedLangText.TOP_SIDE}}
               </div>
-              <div class="image-container frame-rect">
+              <div  #test1 class="image-container frame-rect">
                 <img mat-card-image src="assets/images/idms/tank_frame_type/top_side.png" class="img-fluid">
                 <div [ngClass]="{'grid-overlay': true, 'to-mark': true}">
+                  <!-- <div *ngFor="let cell of renderedCells; let i = index">
+                    <div class="cell" [class.highlighted]="cell.highlighted" [attr.data-index]="i"></div>
+                  </div> -->
+
                   @for (cell of cells; track cell; let index = $index) {
                   <div [ngClass]="{ highlighted: highlightedCellsTop[index] }" [attr.data-index]="index">
                   </div>
@@ -142,21 +148,24 @@
                     <div class="outer-top">
                     </div>
 
-                    <!-- Middle part with inner grid and side borders -->
                     <div class="outer-middle">
                       <div class="outer-left">
                       </div>
                       <div class="inner-grid">
-                        <!-- Top Row with 4 Columns -->
                         <div class="grid-top-row">
+                          <!-- <div *ngFor="let cell of renderedTopBottom; let i = index"
+                              class="grid-cell"
+                              [class.walkway-highlighted]="cell.highlighted"
+                              [attr.data-index]="i">
+                          </div> -->
                           @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
                           <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayTop[index],
                                               }" [attr.data-index]="index"></div>
                           }
                         </div>
 
-                        <!-- Middle Row (to be defined later) -->
                         <div class="grid-middle-row">
+                          
                           @for (cell of cellsInnerMiddle; track cell; let index = $index) {
                           <div class="grid-cell"
                             [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayMiddle[index]}"
@@ -164,8 +173,8 @@
                           }
                         </div>
 
-                        <!-- Bottom Row with 4 Columns -->
                         <div class="grid-bottom-row">
+                          
                           @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
                           <div class="grid-cell"
                             [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index]}"
@@ -176,14 +185,13 @@
                       <div class="outer-right">
                       </div>
                     </div>
-                    <!-- Bottom part of the outer layer -->
                     <div class="outer-bottom">
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="frame-type">
+            <div id="test2" class="frame-type">
               <div class="frame-title">
                 {{translatedLangText.BOTTOM_SIDE}}
               </div>
@@ -260,16 +268,14 @@
           </div>
         </div>
       </div>
-      <div class="manlid-info-content mt-1">
+      <div  #captureMalidElement class="manlid-info-content mt-1">
         <table class="manlid-info">
           <tbody>
             <tr class="th">
               <td class="td-col-12" colspan="2">
                 <b>{{translatedLangText.BOTTOM_DIS_COMP}}</b>
               </td>
-              <!-- <td class="td-col-1">
-                <b></b>
-              </td> -->
+             
             </tr>
             <tr>
               <td>
@@ -328,32 +334,7 @@
                 }
               </td>
             </tr>
-            <!-- <tr>
-              <td>
-                {{translatedLangText.BRAND}}
-                @if (eirDetails?.btm_valve_brand_cv) {
-                (
-                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
-                <span
-                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_valve_brand_cv}">
-                  {{codeValue.description}}
-                </span>
-                @if (index + 1 !== valveBrandCvList.length) {
-                /
-                }
-                }
-                )
-                }
-              </td>
-              <td>
-                @if (eirDetails?.btm_valve_brand_cv) {
-                <mat-icon>checked</mat-icon>
-                }
-                @else {
-                <mat-icon>close</mat-icon>
-                }
-              </td>
-            </tr> -->
+           
             <tr>
               <td>
                 {{translatedLangText.TYPE}}
@@ -459,9 +440,7 @@
               <td class="td-col-12" colspan="2">
                 <b>{{translatedLangText.TOP_DIS_COMP}}</b>
               </td>
-              <!-- <td class="td-col-1">
-                <b></b>
-              </td> -->
+         
             </tr>
             <tr>
               <td>
@@ -596,17 +575,7 @@
                 }
                 }
                 )
-                <!-- (
-                @for (codeValue of manlidCoverCvList; track codeValue; let index = $index) {
-                <span
-                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_conn_spec_cv}">
-                  {{codeValue.description}}
-                </span>
-                @if (index + 1 !== manlidCoverCvList.length) {
-                /
-                }
-                }
-                ) -->
+              
                 }
               </td>
               <td class="eir-mark">
@@ -652,16 +621,13 @@
               </td>
             </tr>
           </tbody>
-          <!-- </table>
-        <table class="manlid-info w-50"> -->
+       
           <tbody>
             <tr class="th">
               <td class="td-col-11" colspan="2">
                 <b>{{translatedLangText.MANLID_COMPARTMENT}}</b>
               </td>
-              <!-- <td class="td-col-1">
-                <b></b>
-              </td> -->
+       
             </tr>
             <tr>
               <td>
@@ -854,7 +820,6 @@
     </div>
     <div class="purpose-info-content mt-1">
       <span><b>{{translatedLangText.PURPOSE}}</b>: {{displayTankPurpose(eirDetails?.in_gate?.tank)}}</span>
-      <!-- <span>{{eirDetails?.in_gate?.tank?.remarks}}</span> -->
     </div>
     <div class="receiver-haulier-info-content mt-1">
       <table>
@@ -919,13 +884,10 @@
 
   <div id="eir-form-footer" class="pdf-container pdf-footer">
     <hr class="mt-0 mb-1" />
-    <!-- <div class="disclaimer">
-      <span class="font-bold text-decoration-underline">{{translatedLangText.DISCLAIMER}}: </span>
-      <span>{{eirDisclaimerNote}}</span>
-    </div> -->
+ 
     <div class="footer-info-content">
       <span>
-        <!-- {{customerInfo.eirDisclaimerVer}} -->
+ 
       </span>
       <span>
         {{translatedLangText.COMPUTER_GENERATED_NOTE}}
@@ -947,18 +909,718 @@
     {{translatedLangText.DOWNLOAD}}
   </button>
   }
-  <!-- <button mat-flat-button color="accent" (click)="onRepublishClick()" tabindex="-1"
-    [disabled]="(igsDS.actionLoading$| async) || (isFileActionLoading$| async) || (generatingPdfLoading$| async)">
-    <mat-icon>
-      @if (!(igsDS.actionLoading$ | async) && !(isFileActionLoading$| async) && !(generatingPdfLoading$| async)) {
-      publish
-      } @else {
-      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-      }
-    </mat-icon>
-    {{translatedLangText.REPUBLISH}}
-  </button> -->
+ 
   @if ((generatingPdfLoading$| async)) {
   <mat-progress-bar mode="determinate" [value]="generatingPdfProgress"></mat-progress-bar>
   }
 </div>
+
+<!-- <body>
+  <h2>Convert Element to Canvas</h2>
+
+  <div id="capture">
+    <h3>Hello Canvas</h3>
+    <p>This content will be converted into a canvas image.</p>
+  </div>
+
+  <div #frameinfosection id="frameinfosection" class="d-flex align-items-center frame-info-section" >
+      <div #captureWalkwayElement id="frameInfoContent" class="frame-info-content mt-1 mb-3">
+        <div class="frame-walkway-legend mb-2">
+          <div class="d-flex align-items-center pt-5px">
+            <div class="me-4 d-flex align-items-center">
+              <img mat-card-image src="assets/images/icons/walkway.jpg" class="walkway-img img-fluid me-2 mt-1 mb-1">
+              <span>{{translatedLangText.WALKWAY}}</span>
+            </div>
+
+            <div class="d-flex align-items-center pt-5px">
+              <img mat-card-image src="assets/images/icons/damage-image.png"
+                class="walkway-img img-fluid me-2 mt-1 mb-1">
+              <span>{{translatedLangText.DAMAGED}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="frame-type-info">
+          <div class="frame-line mt-1">
+            <div class="frame-type me-3">
+              <div class="frame-title">
+                {{translatedLangText.TOP_SIDE}}
+              </div>
+              <div class="image-container frame-rect">
+                <img mat-card-image src="assets/images/idms/tank_frame_type/top_side.png" class="img-fluid">
+                <div [ngClass]="{'grid-overlay': true, 'to-mark': true}">
+                  @for (cell of cells; track cell; let index = $index) {
+                  <div [ngClass]="{ highlighted: highlightedCellsTop[index] }" [attr.data-index]="index">
+                  </div>
+                  }
+                </div>
+                <div [ngClass]="{'custom-container': true, 'to-mark opacity-75': false}">
+                  <div class="outer-layer">
+                    <div class="outer-top">
+                    </div>
+
+                    <div class="outer-middle">
+                      <div class="outer-left">
+                      </div>
+                      <div class="inner-grid">
+                        <div class="grid-top-row">
+                          @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
+                          <div class="grid-cell" [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayTop[index],
+                                              }" [attr.data-index]="index"></div>
+                          }
+                        </div>
+
+                        <div class="grid-middle-row">
+                          @for (cell of cellsInnerMiddle; track cell; let index = $index) {
+                          <div class="grid-cell"
+                            [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayMiddle[index]}"
+                            [attr.data-index]="index"></div>
+                          }
+                        </div>
+
+                        <div class="grid-bottom-row">
+                          @for (cell of cellsInnerTopBottom; track cell; let index = $index) {
+                          <div class="grid-cell"
+                            [ngClass]="{'walkway-highlighted': highlightedCellsWalkwayBottom[index]}"
+                            [attr.data-index]="index"></div>
+                          }
+                        </div>
+                      </div>
+                      <div class="outer-right">
+                      </div>
+                    </div>
+                    <div class="outer-bottom">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="frame-type">
+              <div class="frame-title">
+                {{translatedLangText.BOTTOM_SIDE}}
+              </div>
+              <div class="image-container frame-rect">
+                <img mat-card-image src="assets/images/idms/tank_frame_type/bottom_side.png" class="img-fluid">
+                <div class="grid-overlay">
+                  @for (cell of cells; track cell; let index = $index) {
+                  <div [ngClass]="{ highlighted: highlightedCellsBottom[index] }" [attr.data-index]="index">
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-line">
+            <div class="frame-type me-3">
+              <div class="frame-title">
+                {{translatedLangText.LEFT_SIDE}}
+              </div>
+              <div class="image-container frame-rect">
+                <img mat-card-image src="assets/images/idms/tank_frame_type/left_side.png" class="img-fluid">
+                <div class="grid-overlay">
+                  @for (cell of cells; track cell; let index = $index) {
+                  <div [ngClass]="{ highlighted: highlightedCellsLeft[index] }" [attr.data-index]="index">
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="frame-type">
+              <div class="frame-title">
+                {{translatedLangText.RIGHT_SIDE}}
+              </div>
+              <div class="image-container frame-rect">
+                <img mat-card-image src="assets/images/idms/tank_frame_type/right_side.png" class="img-fluid">
+                <div class="grid-overlay">
+                  @for (cell of cells; track cell; let index = $index) {
+                  <div [ngClass]="{ highlighted: highlightedCellsRight[index] }" [attr.data-index]="index">
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="frame-line mt-1">
+            <div class="frame-type me-3">
+              <div class="frame-title">
+                {{translatedLangText.FRONT_SIDE}}
+              </div>
+              <div class="image-container frame-square">
+                <img mat-card-image src="assets/images/idms/tank_frame_type/front_side.png" class="img-fluid">
+                <div class="grid-overlay-square">
+                  @for (cell of cellsSquare; track cell; let index = $index) {
+                  <div [ngClass]="{ highlighted: highlightedCellsFront[index] }" [attr.data-index]="index">
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="frame-type">
+              <div class="frame-title">
+                {{translatedLangText.REAR_SIDE}}
+              </div>
+              <div class="image-container frame-square">
+                <img mat-card-image src="assets/images/idms/tank_frame_type/rear_side.png" class="img-fluid">
+                <div class="grid-overlay-square">
+                  @for (cell of cellsSquare; track cell; let index = $index) {
+                  <div [ngClass]="{ highlighted: highlightedCellsRear[index] }" [attr.data-index]="index">
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div #captureMalidElement id="manlidInfoContent" class="manlid-info-content mt-1">
+        <table class="manlid-info">
+          <tbody>
+            <tr class="th">
+              <td class="td-col-12" colspan="2">
+                <b>{{translatedLangText.BOTTOM_DIS_COMP}}</b>
+              </td>
+             
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.BOTTOM_DIS_COMP__ABB}}
+                @if (eirDetails?.btm_dis_comp_cv) {
+                (
+                @for (codeValue of disCompCvList; track codeValue; let index = $index) {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_dis_comp_cv}">
+                  {{codeValue.description}}
+                </span>
+                @if (index + 1 !== disCompCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.btm_dis_comp_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.BOTTOM_DIS_VALVE__ABB}}
+                @if (eirDetails?.foot_valve_cv) {
+                (
+                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.foot_valve_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.foot_valve_oth}}
+                </span>
+                }
+                @else {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.foot_valve_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== valveBrandCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.foot_valve_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+           
+            <tr>
+              <td>
+                {{translatedLangText.TYPE}}
+                @if (eirDetails?.btm_dis_valve_cv) {
+                (
+                @for (codeValue of disValveCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.btm_dis_valve_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.btm_dis_valve_oth}}
+                </span>
+                }
+                @else {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_dis_valve_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== disValveCvList.length) {
+                /
+                }
+                }
+                )
+                (
+                @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.btm_dis_valve_spec_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.btm_dis_valve_spec_oth}}
+                </span>
+                }
+                @else {
+                <span
+                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.btm_dis_valve_spec_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== disValveSpecCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.btm_dis_valve_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.THERMOMETER}}
+                @if (eirDetails?.thermometer) {
+                (
+                @for (codeValue of thermometerCvList; track codeValue; let index = $index) {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.thermometer_cv}">
+                  {{codeValue.description}}
+                </span>
+                @if (index + 1 !== thermometerCvList.length) {
+                /
+                }
+                }
+                )
+
+                <span class="text-decoration-underline">
+                  {{eirDetails?.thermometer}}
+                </span> &deg;C
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.thermometer) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>{{translatedLangText.LADDER}}</td>
+              <td class="eir-mark">
+                @if (eirDetails?.ladder) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>{{translatedLangText.DATA_SCS}}</td>
+              <td class="eir-mark">
+                @if (eirDetails?.data_csc_transportplate) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr class="th">
+              <td class="td-col-12" colspan="2">
+                <b>{{translatedLangText.TOP_DIS_COMP}}</b>
+              </td>
+         
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.TOP_DIS_COMP__ABB}}
+                @if (eirDetails?.top_dis_comp_cv) {
+                (
+                @for (codeValue of disCompCvList; track codeValue; let index = $index) {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_dis_comp_cv}">
+                  {{codeValue.description}}
+                </span>
+                @if (index + 1 !== disCompCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.top_dis_comp_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.TOP_DIS_VALVE__ABB}}
+                @if (eirDetails?.top_dis_valve_cv) {
+                (
+                @for (codeValue of disValveCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.top_dis_valve_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.top_dis_valve_oth}}
+                </span>
+                }
+                @else {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_dis_valve_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== disValveCvList.length) {
+                /
+                }
+                }
+                )
+                (
+                @for (codeValue of disValveSpecCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.top_dis_valve_spec_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.top_dis_valve_spec_oth}}
+                </span>
+                }
+                @else {
+                <span
+                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.top_dis_valve_spec_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== disValveSpecCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.top_dis_valve_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.AIRLINE_VALVE}}
+                @if (eirDetails?.airline_valve_cv) {
+                (
+                @for (codeValue of airlineCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.airline_valve_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.airline_valve_oth}}
+                </span>
+                }
+                @else {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== airlineCvList.length) {
+                /
+                }
+                }
+                )
+                (
+                <span class="text-decoration-underline">{{eirDetails?.airline_valve_pcs || '_'}}</span> pcs,
+                <span class="text-decoration-underline">{{eirDetails?.airline_valve_dim ?? '_'}}</span> inch
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.airline_valve_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.AIRLINE_VALVE_CONNECTIONS}}
+                @if (eirDetails?.airline_valve_conn_cv) {
+                (
+                @for (codeValue of airlineConnCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.airline_valve_conn_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.airline_valve_conn_oth}}
+                </span>
+                }
+                @else {
+                <span
+                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_conn_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== airlineConnCvList.length) {
+                /
+                }
+                }
+                )
+              
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.airline_valve_conn_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.TYPE}}
+                @if (eirDetails?.airline_valve_conn_spec_cv) {
+                (
+                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.airline_valve_conn_spec_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.airline_valve_conn_spec_oth}}
+                </span>
+                }
+                @else {
+                <span
+                  [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.airline_valve_conn_spec_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== valveBrandCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.airline_valve_conn_spec_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+          </tbody>
+       
+          <tbody>
+            <tr class="th">
+              <td class="td-col-11" colspan="2">
+                <b>{{translatedLangText.MANLID_COMPARTMENT}}</b>
+              </td>
+       
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.MANLID_COMP__ABB}}
+                @if (eirDetails?.manlid_comp_cv) {
+                (
+                @for (codeValue of disCompCvList; track codeValue; let index = $index) {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_comp_cv}">
+                  {{codeValue.description}}
+                </span>
+                @if (index + 1 !== disCompCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.manlid_comp_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.MANLID}}
+                @if (eirDetails?.manlid_cover_cv) {
+                (
+                @for (codeValue of valveBrandCvList; track codeValue; let index = $index) {
+                @if (isSelectedOthers(eirDetails?.manlid_cover_cv, codeValue.code_val)) {
+                <span [ngClass]="">
+                  {{eirDetails?.manlid_cover_oth}}
+                </span>
+                }
+                @else {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_cover_cv}">
+                  {{codeValue.description}}
+                </span>
+                }
+                @if (index + 1 !== valveBrandCvList.length) {
+                /
+                }
+                }
+                )
+                (
+                <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pcs}}</span> pcs /
+                <span class="text-decoration-underline">{{eirDetails?.manlid_cover_pts}}</span> pts
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.manlid_cover_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.MANLID_SEAL}}
+                @if (eirDetails?.manlid_seal_cv) {
+                (
+                @for (codeValue of manlidSealCvList; track codeValue; let index = $index) {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.manlid_seal_cv}">
+                  {{codeValue.description}}
+                </span>
+                @if (index + 1 !== manlidSealCvList.length) {
+                /
+                }
+                }
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.manlid_seal_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.PV}}
+                @if (eirDetails?.pv_type_cv) {
+                (
+                @for (codeValue of pvTypeCvList; track codeValue; let index = $index) {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.pv_type_cv}">
+                  {{codeValue.description}}
+                </span>
+                @if (index + 1 !== pvTypeCvList.length) {
+                /
+                }
+                }
+                )
+                <span class="text-decoration-underline">{{eirDetails?.pv_type_pcs}}</span> pcs
+
+                (
+                @for (codeValue of pvSpecCvList; track codeValue; let index = $index) {
+                <span [ngClass]="{'text-decoration-line-through': codeValue.code_val !== eirDetails?.pv_spec_cv}">
+                  {{codeValue.description}}
+                </span>
+                @if (index + 1 !== pvSpecCvList.length) {
+                /
+                }
+                }
+                )
+                <span class="text-decoration-underline">{{eirDetails?.pv_spec_pcs}}</span> pcs
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.pv_type_cv) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>{{translatedLangText.SAFETY_HANDRAIL}}</td>
+              <td class="eir-mark">
+                @if (eirDetails?.safety_handrail) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.BUFFER_PLATE}}
+                @if (eirDetails?.buffer_plate) {
+                (
+                <span class="text-decoration-underline">{{eirDetails?.buffer_plate}}</span> pcs
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.buffer_plate) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{translatedLangText.RESIDUE}}
+                @if (eirDetails?.residue) {
+                (
+                <span class="text-decoration-underline">{{eirDetails?.residue}}</span> KG
+                )
+                }
+              </td>
+              <td class="eir-mark">
+                @if (eirDetails?.residue) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+            <tr>
+              <td>{{translatedLangText.DIPSTICK}}</td>
+              <td class="eir-mark">
+                @if (eirDetails?.dipstick) {
+                <mat-icon>checked</mat-icon>
+                }
+                @else {
+                <mat-icon>close</mat-icon>
+                }
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  <button onclick="convertToCanvas()">Convert to Canvas</button>
+
+  <div id="result"></div>
+
+</body> -->

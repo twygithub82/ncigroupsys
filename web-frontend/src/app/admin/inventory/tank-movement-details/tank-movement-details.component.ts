@@ -3347,7 +3347,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(EirFormComponent, {
-      position: { top: '-9999px', left: '-9999px' },
+      position: { top: '-1999px', left: '-1999px' },
+      //position: { top: '100px', left: '100px' },
       width: '794px',
       height: '80vh',
       data: {
