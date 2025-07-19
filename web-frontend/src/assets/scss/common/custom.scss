@@ -1035,6 +1035,10 @@ $breakpoints: (
   min-height: 0 !important;
 }
 
+.mobile-tab-label {
+  display: none;
+}
+
 @media (max-width: 1400px) {
   .mobile-label {
     width: 100px;
@@ -1065,10 +1069,6 @@ $breakpoints: (
   }
 }
 
-.mobile-tab-label {
-  display: none;
-}
-
 @media (max-width: 1023px) {
   .mobile-tab-label {
     width: 100px;
@@ -1096,6 +1096,30 @@ $breakpoints: (
   .flex-item-right,
   .flex-item-left {
     flex: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+
+  mat-cell:first-of-type,
+  mat-header-cell:first-of-type,
+  mat-footer-cell:first-of-type {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .advance-table .mdc-data-table__row {
+    flex-direction: column;
+    align-items: start;
+    padding: 8px 8px;
+    display: grid;
+  }
+
+  mat-cell:last-of-type,
+  mat-header-cell:last-of-type,
+  mat-footer-cell:last-of-type {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
 }
 
@@ -2357,7 +2381,8 @@ mat-card-content.tank-card-content {
 
 .small-font-tbl table.advance-tab-table mat-header-cell,
 table.advance-table mat-header-cell,
-table.advance-table mat-cell {
+table.advance-table mat-cell,
+table mat-footer-cell {
   font-size: 0.8rem;
 }
 
@@ -2519,16 +2544,16 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   display: none !important;
 }
 
-// .truncate-2-lines {
-//   display: -webkit-box;
-//   display: flex; // legacy fallback (not critical but harmless)
-//   -webkit-box-orient: vertical;
-//   box-orient: vertical; // legacy fallback
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   -webkit-line-clamp: 2;
-//   line-clamp: 2; // modern standard property
-// }
+.ellipsis-2-lines {
+  display: -webkit-box;
+  display: flex; // legacy fallback (not critical but harmless)
+  -webkit-box-orient: vertical;
+  box-orient: vertical; // legacy fallback
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  line-clamp: 2; // modern standard property
+}
 
 h6[matsuffix] {
   font-size: 0.9rem
@@ -2627,5 +2652,19 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
   @media (max-width: 991px) {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+.mobile-label-value {
+  flex: 1;
+  white-space: normal;
+  word-wrap: break-word;
+
+  &.truncate-2-line {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

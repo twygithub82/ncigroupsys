@@ -151,153 +151,303 @@
                 </mat-accordion>
               </form>
               <div class="body overflow-auto">
+                <!-- <div class="scroll-x-container"> -->
                 @if (copiedSteamEst) {
-                <mat-card [ngClass]="{'card-content p-0  card-copied': true}" matRipple>
-                  <mat-card-content>
-                    <div class="row">
-                      <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-0">
-                        <strong>{{translatedLangText.ESTIMATE_NO}}</strong>: {{copiedSteamEst.estimate_no}}
-                      </div>
-                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
-                        <strong>{{translatedLangText.NO_OF_PARTS}}</strong>:
-                        {{filterDeleted(copiedSteamEst.steaming_part)?.length}}
-                      </div>
-                      <div class="col-xl col-lg col-md-12 col-sm-12 m-b-0 d-flex justify-content-end">
-                        <mat-icon (click)="clearCopiedRepairEst()"
-                          [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
+                <mat-card class="card-content p-0 ms-1 me-1 card-copied" matRipple>
+                  <mat-card-content class="d-flex align-items-center">
+                    <!-- Content section (grow) -->
+                    <div class="flex-grow-1">
+                      <div class="row">
+                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-0">
+                          <strong>{{ translatedLangText.ESTIMATE_NO }}</strong>: {{ copiedSteamEst.estimate_no }}
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0">
+                          <strong>{{ translatedLangText.NO_OF_PARTS }}</strong>: {{
+                          filterDeleted(copiedSteamEst.steaming_part)?.length }}
+                        </div>
                       </div>
                     </div>
+
+                    <!-- Close button (shrink) -->
+                    <div class="flex-shrink-0 ms-2 d-flex align-items-center">
+                      <mat-icon (click)="clearCopiedRepairEst()"
+                        [matTooltip]="translatedLangText.REMOVE_COPIED">close</mat-icon>
+                    </div>
                   </mat-card-content>
-                  <mat-card-actions class="empty-card-actions">
-                  </mat-card-actions>
+
+                  <mat-card-actions class="empty-card-actions"></mat-card-actions>
                 </mat-card>
                 }
-                @for(row of sotList; track row){
-                <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
-                  <mat-accordion>
-                    <mat-expansion-panel [ngClass]="{}" class="alternate-panel" [expanded]="false">
-                      <mat-expansion-panel-header class="tank-header">
-                        <mat-panel-description>
-                          <div class="w-xl-23 w-lg-51">
-                            <span class="font-bold">{{row.tank_no}}</span>
+
+                <tlx-card-list [items]="sotList">
+                  <ng-template #cardTemplate let-item>
+                    <div class="d-flex align-items-center ms-3">
+                      <!-- Data Section: flex-grow to fill remaining space -->
+                      <div class="flex-grow-1">
+                        <div class="row align-items-center">
+                          <div class="col-xl-2-75 col-lg-2-75 col-md-12 col-sm-12 m-b-0">
+                            <span class="font-bold">{{ item.tank_no }}</span>
                           </div>
-                          <div class="w-xl-47 w-lg-50 m-l-5">
-                            <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
-                            {{row.storing_order?.customer_company?.name}}
+                          <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 m-b-0 d-none d-md-block">
+                            <span class="font-bold">{{ translatedLangText.CUSTOMER }}:</span>
+                            {{ item.storing_order?.customer_company?.name }}
                           </div>
-                          <div class="w-xl-20 w-lg-50 m-l-5">
-                            <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
-                            {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
+                          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0 d-none d-md-block">
+                            <span class="font-bold">{{ translatedLangText.EIR_DATE }}:</span>
+                            {{ displayDate(igDS.getInGateItem(item.in_gate)?.eir_dt) }}
                           </div>
-                          <!-- <div class="w-xl-13 w-lg-50">
-                              <span class="font-bold">{{translatedLangText.STATUS}}:</span>
-                              {{getTankStatusDescription(row.tank_status_cv)}}
-                            </div> -->
-                          <div class="m-l-">
-                            @if (copiedSteamEst) {
-                            <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
-                              (click)="pasteSteamEstimate($event,row,copiedSteamEst)">
-                              <mat-icon class="col-white">content_paste</mat-icon>
-                            </button>
-                            }
-                            @else {
-                            <button mat-mini-fab class="primary-light" [matTooltip]="translatedLangText.NEW"
-                              (click)="addSteamEstimate($event,row)">
-                              <!-- [routerLink]="['/admin/repair/estimate/new', row.guid]"> -->
-                              <mat-icon class="col-white">add</mat-icon>
-                            </button>
-                            }
-                          </div>
-                        </mat-panel-description>
-                      </mat-expansion-panel-header>
-                      <mat-card-content [ngClass]="'p-0'">
-                        <mat-divider></mat-divider>
-                        @if ((filterDeleted(row.steaming || [])?.length ?? 0) > 0) {
-                        <div class="responsive_table">
-                          <table mat-table [dataSource]="filterDeleted(row.steaming || [])" matSort
-                            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                            <ng-container matColumnDef="id">
-                              <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                              <mat-cell *matCellDef="let steamRow">{{steamRow.guid}}</mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="estimate_no">
-                              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                {{translatedLangText.ESTIMATE_NO}}
-                              </mat-header-cell>
-                              <mat-cell mat-cell *matCellDef="let steamRow" class="">
-                                <span
-                                  class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{steamRow.estimate_no}}
-                              </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="net_cost">
-                              <mat-header-cell *matHeaderCellDef>
-                                {{translatedLangText.COST}}
-                              </mat-header-cell>
-                              <mat-cell *matCellDef="let steamRow">
-                                <span class="mobile-label">{{translatedLangText.COST}}:</span>
-                                <span>{{steamRow.net_cost}}</span>
-                              </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="status_cv">
-                              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                {{translatedLangText.STATUS}}
-                              </mat-header-cell>
-                              <mat-cell mat-cell *matCellDef="let steamRow" class="">
-                                <span
-                                  class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(steamRow.status_cv)}}
-                              </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="remarks">
-                              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                                {{translatedLangText.REMARKS}}
-                              </mat-header-cell>
-                              <mat-cell mat-cell *matCellDef="let steamRow" class="">
-                                <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{steamRow.remarks}}
-                              </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="actions">
-                              <mat-header-cell
-                                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                                *matHeaderCellDef></mat-header-cell>
-                              <mat-cell *matCellDef="let steamRow; let i=index;"
-                                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                                <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
-                                  <mat-icon>more_vert</mat-icon>
-                                </button>
-                                <mat-menu #menu="matMenu">
-                                  @if (steamDS.canCopy(steamRow)) {
-                                  <button mat-menu-item (click)="copySteamEst(steamRow)">
-                                    <mat-icon>content_copy</mat-icon>
-                                    <span>{{translatedLangText.COPY}}</span>
-                                  </button>
-                                  }
-                                  @if (steamDS.canRollbackEstimate(steamRow)) {
-                                  <button mat-menu-item (click)="rollbackRow(steamRow)">
-                                    <mat-icon>undo</mat-icon>
-                                    <span>{{translatedLangText.ROLLBACK}}</span>
-                                  </button>
-                                  }
-                                  @if (steamDS.canCancel(steamRow)) {
-                                  <button mat-menu-item (click)="cancelRow(steamRow)">
-                                    <mat-icon>delete_forever</mat-icon>
-                                    <span>{{translatedLangText.DELETE}}</span>
-                                  </button>
-                                  }
-                                </mat-menu>
-                              </mat-cell>
-                            </ng-container>
-                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                            <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
-                              matRipple (click)="updateSteamEstimate($event,row,residueRow)">
-                            </mat-row>
-                          </table>
                         </div>
-                        }
-                      </mat-card-content>
-                    </mat-expansion-panel>
-                  </mat-accordion>
-                </mat-card>
-                }
+                      </div>
+
+                      <!-- Button Section: shrink-to-fit -->
+                      <div class="ms-2 flex-shrink-0">
+                        <div class="d-flex justify-content-end">
+                          @if (copiedSteamEst) {
+                          <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
+                            (click)="pasteSteamEstimate($event, item, copiedSteamEst)">
+                            <mat-icon class="col-white">content_paste</mat-icon>
+                          </button>
+                          }
+                          @else {
+                          <button mat-mini-fab class="primary-light" [matTooltip]="translatedLangText.NEW"
+                            (click)="addSteamEstimate($event, item)">
+                            <mat-icon class="col-white">add</mat-icon>
+                          </button>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+
+                  <ng-template #expandedTemplate let-item>
+                    <div class="responsive_table">
+                      <table mat-table [dataSource]="filterDeleted(item.steaming || [])" matSort
+                        class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                        <ng-container matColumnDef="id">
+                          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                          <mat-cell *matCellDef="let steamRow">{{steamRow.guid}}</mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="estimate_no">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.ESTIMATE_NO}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                            <span
+                              class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{steamRow.estimate_no}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="net_cost">
+                          <mat-header-cell *matHeaderCellDef>
+                            {{translatedLangText.COST}}
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let steamRow">
+                            <span class="mobile-label">{{translatedLangText.COST}}:</span>
+                            <span>{{steamRow.net_cost}}</span>
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="status_cv">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.STATUS}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                            <span
+                              class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(steamRow.status_cv)}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="remarks">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                            {{translatedLangText.REMARKS}}
+                          </mat-header-cell>
+                          <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                            <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{steamRow.remarks}}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="actions">
+                          <mat-header-cell
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                            *matHeaderCellDef></mat-header-cell>
+                          <mat-cell *matCellDef="let steamRow; let i=index;"
+                            [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                            @if (isMobile) {
+                            @if (steamDS.canCopy(steamRow)) {
+                            <button mat-icon-button (click)="copySteamEst(steamRow)" (click)="stopEventTrigger($event)"
+                              matTooltip="{{translatedLangText.COPY}}">
+                              <mat-icon>content_copy</mat-icon>
+                            </button>
+                            }
+                            @if (steamDS.canRollbackEstimate(steamRow)) {
+                            <button mat-icon-button (click)="rollbackRow(steamRow)" (click)="stopEventTrigger($event)"
+                              matTooltip="{{translatedLangText.ROLLBACK}}">
+                              <mat-icon>undo</mat-icon>
+                            </button>
+                            }
+                            @if (steamDS.canCancel(steamRow)) {
+                            <button mat-icon-button (click)="cancelRow(steamRow)" (click)="stopEventTrigger($event)"
+                              matTooltip="{{translatedLangText.DELETE}}">
+                              <mat-icon>delete_forever</mat-icon>
+                            </button>
+                            }
+                            } @else {
+                            <!-- Default mat-menu for tablet/desktop -->
+                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                              <mat-icon>more_vert</mat-icon>
+                            </button>
+                            }
+
+                            <mat-menu #menu="matMenu">
+                              @if (steamDS.canCopy(steamRow)) {
+                              <button mat-menu-item (click)="copySteamEst(steamRow)">
+                                <mat-icon>content_copy</mat-icon>
+                                <span>{{translatedLangText.COPY}}</span>
+                              </button>
+                              }
+                              @if (steamDS.canRollbackEstimate(steamRow)) {
+                              <button mat-menu-item (click)="rollbackRow(steamRow)">
+                                <mat-icon>undo</mat-icon>
+                                <span>{{translatedLangText.ROLLBACK}}</span>
+                              </button>
+                              }
+                              @if (steamDS.canCancel(steamRow)) {
+                              <button mat-menu-item (click)="cancelRow(steamRow)">
+                                <mat-icon>delete_forever</mat-icon>
+                                <span>{{translatedLangText.DELETE}}</span>
+                              </button>
+                              }
+                            </mat-menu>
+                          </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let residueRow; columns: displayedColumns;" [style.cursor]="'pointer'"
+                          matRipple (click)="updateSteamEstimate($event, item, residueRow)">
+                        </mat-row>
+                      </table>
+                    </div>
+                  </ng-template>
+                </tlx-card-list>
+
+                <!-- @for(row of sotList; track row){
+                  <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+                    <mat-accordion>
+                      <mat-expansion-panel [ngClass]="{}" class="alternate-panel" [expanded]="false">
+                        <mat-expansion-panel-header class="tank-header">
+                          <mat-panel-description>
+                            <div class="w-xl-23 w-lg-51">
+                              <span class="font-bold">{{row.tank_no}}</span>
+                            </div>
+                            <div class="w-xl-47 w-lg-50 m-l-5">
+                              <span class="font-bold">{{translatedLangText.CUSTOMER}}:</span>
+                              {{row.storing_order?.customer_company?.name}}
+                            </div>
+                            <div class="w-xl-20 w-lg-50 m-l-5">
+                              <span class="font-bold">{{translatedLangText.EIR_DATE}}:</span>
+                              {{displayDate(igDS.getInGateItem(row.in_gate)?.eir_dt)}}
+                            </div>
+                            <div class="m-l-">
+                              @if (copiedSteamEst) {
+                              <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
+                                (click)="pasteSteamEstimate($event,row,copiedSteamEst)">
+                                <mat-icon class="col-white">content_paste</mat-icon>
+                              </button>
+                              }
+                              @else {
+                              <button mat-mini-fab class="primary-light" [matTooltip]="translatedLangText.NEW"
+                                (click)="addSteamEstimate($event,row)">
+                                <mat-icon class="col-white">add</mat-icon>
+                              </button>
+                              }
+                            </div>
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <mat-card-content [ngClass]="'p-0'">
+                          <mat-divider></mat-divider>
+                          @if ((filterDeleted(row.steaming || [])?.length ?? 0) > 0) {
+                          <div class="responsive_table">
+                            <table mat-table [dataSource]="filterDeleted(row.steaming || [])" matSort
+                              class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+                              <ng-container matColumnDef="id">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let steamRow">{{steamRow.guid}}</mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="estimate_no">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                  {{translatedLangText.ESTIMATE_NO}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                                  <span
+                                    class="mobile-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{steamRow.estimate_no}}
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="net_cost">
+                                <mat-header-cell *matHeaderCellDef>
+                                  {{translatedLangText.COST}}
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let steamRow">
+                                  <span class="mobile-label">{{translatedLangText.COST}}:</span>
+                                  <span>{{steamRow.net_cost}}</span>
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="status_cv">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                  {{translatedLangText.STATUS}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                                  <span
+                                    class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getProcessStatusDescription(steamRow.status_cv)}}
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="remarks">
+                                <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                                  {{translatedLangText.REMARKS}}
+                                </mat-header-cell>
+                                <mat-cell mat-cell *matCellDef="let steamRow" class="">
+                                  <span class="mobile-label">{{translatedLangText.REMARKS}}:</span>{{steamRow.remarks}}
+                                </mat-cell>
+                              </ng-container>
+                              <ng-container matColumnDef="actions">
+                                <mat-header-cell
+                                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                                  *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let steamRow; let i=index;"
+                                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+                                  <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                                    <mat-icon>more_vert</mat-icon>
+                                  </button>
+                                  <mat-menu #menu="matMenu">
+                                    @if (steamDS.canCopy(steamRow)) {
+                                    <button mat-menu-item (click)="copySteamEst(steamRow)">
+                                      <mat-icon>content_copy</mat-icon>
+                                      <span>{{translatedLangText.COPY}}</span>
+                                    </button>
+                                    }
+                                    @if (steamDS.canRollbackEstimate(steamRow)) {
+                                    <button mat-menu-item (click)="rollbackRow(steamRow)">
+                                      <mat-icon>undo</mat-icon>
+                                      <span>{{translatedLangText.ROLLBACK}}</span>
+                                    </button>
+                                    }
+                                    @if (steamDS.canCancel(steamRow)) {
+                                    <button mat-menu-item (click)="cancelRow(steamRow)">
+                                      <mat-icon>delete_forever</mat-icon>
+                                      <span>{{translatedLangText.DELETE}}</span>
+                                    </button>
+                                    }
+                                  </mat-menu>
+                                </mat-cell>
+                              </ng-container>
+                              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                              <mat-row *matRowDef="let residueRow; columns: displayedColumns;"
+                                [style.cursor]="'pointer'" matRipple
+                                (click)="updateSteamEstimate($event,row,residueRow)">
+                              </mat-row>
+                            </table>
+                          </div>
+                          }
+                        </mat-card-content>
+                      </mat-expansion-panel>
+                    </mat-accordion>
+                  </mat-card>
+                  } -->
+                <!-- </div> -->
                 <!-- No result -->
                 @if (!(sotDS.loading$ | async) && !sotList.length) {
                 <mat-divider></mat-divider>

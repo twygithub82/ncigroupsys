@@ -23,7 +23,7 @@
             @if (!(sotDS.loading$ | async)) {
             <mat-card-content>
               <div class="row justify-content-center">
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
@@ -46,7 +46,8 @@
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                    <div
+                      class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
                       <div class="d-flex align-items-center">
                         <span class="value-display-info me-2">
                           {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
@@ -58,7 +59,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
@@ -90,7 +91,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
@@ -150,7 +151,7 @@
                 <div class="row">
                   <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
                           <mat-select formControlName="bill_to" required>
@@ -164,9 +165,9 @@
                     <div class="row">
                     </div>
                   </div>
-                  <div class="col-xl-3-5 col-lg-3-5 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                  <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
                           <input matInput formControlName="job_no" [readonly]="!(steamDS.canAmend(this.steamItem!))">
@@ -174,9 +175,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                           <input matInput formControlName="remarks" [readonly]="!(steamDS.canAmend(this.steamItem!))">
@@ -236,7 +237,7 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
-                  <input matInput [formControl]="newQty" type="number" min="0" required="true">
+                  <input matInput [formControl]="newQty" type="text" [min]="0" appNumericText required>
                   <!-- @if (newQty.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
@@ -248,19 +249,18 @@
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.HOUR}}</mat-label>
-                  <input matInput [formControl]="newHour" type="number" min="0" required>
+                  <input matInput [formControl]="newHour" type="text" [min]="0" appNumericText required>
                   <!-- @if (newHour.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.HOUR}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
                   } -->
                 </mat-form-field>
-
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.PRICE}}</mat-label>
-                  <input matInput [formControl]="newUnitPrice" type="number" min="0" required="true">
+                  <input matInput [formControl]="newUnitPrice" type="text" [min]="0" appNumericText required>
                   <!-- @if (newUnitPrice.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
@@ -303,8 +303,9 @@
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
-                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                    </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="desc">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
@@ -313,9 +314,10 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                      <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span><span
+                        class="mobile-label-value">{{row.description}}</span>
                     </mat-cell>
-                    <mat-footer-cell *matFooterCellDef [ngClass]="''"
+                    <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
                   </ng-container>
@@ -333,32 +335,29 @@
                           {
                           @if(IsApproved())
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty" appNumericText
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            type="text" [min]="0">
                           }
                           @else
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity"
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity" appNumericText
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            type="text" [min]="0">
                           }
                           }
                           @else
                           {
-
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="labourHour"
-                            (change)="updateAction(row);" [disabled]="true" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
-
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="labourHour" appNumericText
+                            (change)="updateAction(row);" [disabled]="true" (focus)="selectText($event)" type="text"
+                            [min]="0">
                           }
                         </mat-form-field>
                       </tlx-form-field>
-                      <!-- <span
-                          class="mobile-label">{{translatedLangText.QUANTITY}}:</span>{{row.quantity}} -->
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                    </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="hour">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
@@ -368,25 +367,22 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{getResultTable_HourText()}}:</span>
-
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           @if(IsApproved())
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_labour"
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_labour" appNumericText
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            type="text" [min]="0">
                           }
                           @else
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.labour"
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0">
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.labour" appNumericText
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            type="text" [min]="0">
                           }
                         </mat-form-field>
                       </tlx-form-field>
-                      <!-- <span
-                          class="mobile-label">{{translatedLangText.HOUR}}:</span>{{row.labour}} -->
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
@@ -400,32 +396,29 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.PRICE}}:</span><tlx-form-field
-                        customClass="mat-table-form-txt-40px">
+                      <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
+                      <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           @if(IsApproved())
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost "
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0" step="0.01">
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost" appNumericText
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            type="text" [min]="0">
                           }
                           @else
                           {
-                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.cost"
-                            (change)="updateAction(row);" [disabled]="isDisabled()" (wheel)="preventDefault($event)"
-                            (focus)="selectText($event)" type="number" min="0" step="0.01">
+                          <input class="text-end" tlxFormInput matInput [(ngModel)]="row.cost" appNumericText
+                            (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
+                            type="text" [min]="0">
                           }
                         </mat-form-field>
                       </tlx-form-field>
-                      <!-- <span class="mobile-label">{{translatedLangText.UNIT_PRICE}}:</span>{{ this.parse2Decimal(row.cost)}} -->
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">{{translatedLangText.LABOUR}}
                       (${{parse2Decimal(getLabourCost())}}):</mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="approve_part">
-
-
                     @if(isSteamRepair)
                     {
                     <mat-header-cell *matHeaderCellDef
@@ -443,7 +436,6 @@
                       <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
                       }
                     </mat-cell>
-
                     }
                     @else{
                     <mat-header-cell *matHeaderCellDef
@@ -471,11 +463,11 @@
                           </span>
                         </label>
                       </div>
-
                     </mat-cell>
                     }
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                    </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="cost">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
@@ -493,7 +485,6 @@
                       {
                       <span class="mobile-label">{{translatedLangText.COST}}:</span>{{autosteamCost}}<br />
                       }
-
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
@@ -522,15 +513,68 @@
                       }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                    </mat-footer-cell>
                   </ng-container>
+
+                  <!-- Labour Cost Footer -->
+                  <ng-container matColumnDef="labourSummaryUnitPrice">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">
+                      {{translatedLangText.LABOUR}}
+                      (${{parse2Decimal(getLabourCost())}}):
+                    </mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="labourSummaryHrs">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
+                      {{getTotalLabourHours()}}
+                    </mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="labourSummaryCost">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      <span class="mobile-label">{{translatedLangText.LABOUR}}<br />
+                        (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}}):</span>
+                      {{getTotalLabourCost()}}
+                    </mat-footer-cell>
+                  </ng-container>
+
+                  <!-- Total Cost Footer -->
+                  <ng-container matColumnDef="totalSummaryUnitPrice">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">
+                      {{translatedLangText.TOTAL_COST}}
+                    </mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="totalSummaryHrs">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
+                    </mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="totalSummaryCost">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      <span class="mobile-label">{{translatedLangText.TOTAL_COST}}:</span>
+                      @if(this.isSteamRepair)
+                      {
+                      {{this.parse2Decimal(this.getTotalCost())}}
+                      }
+                      @else
+                      {
+                      {{autosteamTotalCost}}
+                      }
+                    </mat-footer-cell>
+                  </ng-container>
+
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
                     matRipple>
                   </mat-row>
-                  <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+                  <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
+                  <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>
                 </table>
-                <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
+                <!-- <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
                   <div class="row">
                     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1"></div>
                     <div
@@ -549,7 +593,7 @@
                       }
                     </div>
                   </div>
-                </div>
+                </div> -->
               </div>
               <!-- No result -->
               @if (!(packRepDS.loading$ | async) && !deList.length) {
@@ -574,7 +618,6 @@
             </mat-error>
             }
           </div>
-
           <div class="row m-t-3">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
               <button mat-flat-button type="button" aria-label="Back to previous page" (click)="GoBackPrevious($event)">
