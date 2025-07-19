@@ -105,6 +105,7 @@ export class CancelFormDialogComponent {
   getReleaseOrderTanksArray(so: AbstractControl<any, any>): UntypedFormArray {
     return so.get('storing_order_tank') as UntypedFormArray;
   }
+  
   displayTargetedSot(sotList: UntypedFormArray) {
     return sotList.controls.filter(sot => sot.get('status_cv')?.value === 'WAITING')
       .map(sot => sot.get('tank_no')?.value)

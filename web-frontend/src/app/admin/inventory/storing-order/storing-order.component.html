@@ -42,7 +42,7 @@
                   </div> -->
                         @if(isAllowDelete() &&(modulePackageService.isGrowthPackage() ||
                         modulePackageService.isCustomizedPackage())){
-                        <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                        <div class="m-l-10" [matTooltip]="translatedLangText.DELETE" (click)="$event.stopPropagation()">
                           <button mat-mini-fab (click)="cancelSelectedRows(soSelection.selected)"
                             [class.red-button]="!canCancelSelectedRows()" [disabled]="canCancelSelectedRows()">
                             <mat-icon class="col-white">close</mat-icon>
@@ -268,11 +268,11 @@
                     </button> -->
                         @if (canCancel(row)) {
                         <button mat-icon-button color="warn" (click)="$event.stopPropagation()"
-                          (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL" class="tbl-action-btn">
-                          <!-- <mat-icon>remove_selection</mat-icon> -->
-                          <span class="material-symbols-outlined">
-                            remove_selection
-                          </span>
+                          (click)="cancelItem(row)" [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                          <mat-icon>delete_forever</mat-icon>
+                          <!-- <span class="material-symbols-outlined">
+                            delete_forever
+                          </span> -->
                         </button>
                         }
                       </mat-cell>
