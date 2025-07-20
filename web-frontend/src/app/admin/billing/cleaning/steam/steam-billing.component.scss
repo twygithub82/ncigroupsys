@@ -15,3 +15,9 @@
     white-space: nowrap; /* Prevents wrapping */
     text-overflow: ellipsis; /* Adds "..." if text is too long */
 }
+
+.mat-mdc-card-content
+ {
+    display: block;
+    padding: 12px 12px 0px 12px;
+}

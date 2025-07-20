@@ -3,7 +3,7 @@
     <div class="card">
       <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
         <mat-accordion>
-          <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel [expanded]="true" disabled>
             <mat-expansion-panel-header>
               <mat-panel-title>
               </mat-panel-title>
@@ -183,14 +183,14 @@
         </mat-accordion>
       </form>
       <div class="row body card-aligned">
-        <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
+        <mat-card [ngClass]="{'card-content p-0 m-b-10': true}">
           <!-- <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title [ngClass]="{'pt-1': true}">
               {{translatedLangText.INVOICE_DETAILS}}
             </mat-card-title>
           </mat-card-header> -->
           <mat-card-content>
-            <div class="row p-l-3">
+            <div class="row mt-3 ms-0">
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
@@ -275,10 +275,10 @@
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5'">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
                 {{translatedLangText.TANK_NO}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5'">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
                 <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
               </mat-cell>
             </ng-container>
@@ -293,10 +293,10 @@
             </ng-container>
 
             <ng-container matColumnDef="eir_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
                 {{translatedLangText.EIR_NO}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
                 <span
                   class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no}}
               </mat-cell>
