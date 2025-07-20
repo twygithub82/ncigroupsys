@@ -66,3 +66,9 @@ label + input[type=radio] + label {
 .bigger-dash {
   font-size: 1.3em;
 }
+
+.mat-mdc-card-content
+ {
+    display: block;
+    padding: 0 12px;
+}
