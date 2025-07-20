@@ -102,11 +102,11 @@ export class FormDialogComponent {
     this.next_test_cv = data.next_test_cv;
 
     if (this.action === 'edit') {
-      this.dialogTitle = data.translatedLangText.EDIT + " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
+      this.dialogTitle = data.translatedLangText.EDIT_SURVEY; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
       // this.startDateToday = Utility.getEarlierDate(Utility.convertDate(this.booking.booking_dt) as Date, this.startDateToday);
       this.maxDate = Utility.getLaterDate(Utility.convertDate(this.surveyDetail.survey_dt) as Date, this.maxDate);
     } else {
-      this.dialogTitle = data.translatedLangText.NEW + " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
+      this.dialogTitle = data.translatedLangText.NEW_SURVEY; //+ " " + data.translatedLangText.PERIODIC_TEST_SURVEY;
     }
     this.surveyForm = this.createStorigOrderTankForm();
     this.initializeValueChange();

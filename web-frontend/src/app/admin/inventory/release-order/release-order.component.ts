@@ -114,6 +114,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     ETA_DATE: 'COMMON-FORM.ETA-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     CONFIRM_CANCEL: 'COMMON-FORM.CONFIRM-CANCEL',
+    CONFIRM_DELTE: 'COMMON-FORM.CONFIRM-DELETE',
     CANCEL: 'COMMON-FORM.CANCEL',
     CLOSE: 'COMMON-FORM.CLOSE',
     TO_BE_CANCELED: 'COMMON-FORM.TO-BE-CANCELED',
@@ -138,6 +139,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     SEARCH: 'COMMON-FORM.SEARCH',
+    DELETE: 'COMMON-FORM.DELETE',
   }
 
   searchForm?: UntypedFormGroup;
@@ -409,7 +411,7 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       disableClose: true,
-      width: "35vw",
+      width: "380px",
       data: {
         item: [...row],
         translatedLangText: this.translatedLangText

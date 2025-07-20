@@ -1204,7 +1204,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   //DisplayEirDate(billing_type: string, row: any) 
   DisplayEirDate(row: any) {
     //if (row.billing_type == "GATE_IN") {
-    return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt
+    return this.displayDate(this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt);
     // }
     // else {
     //   return this.ogDS.getOutGateItem(row.storing_order_tank?.out_gate)?.eir_dt
@@ -1367,10 +1367,10 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   GetTotalCostTypeLabel() {
-    var retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.GATE_IN})`;
+    var retval = `${this.translatedLangText.TOTAL_COST}`;
     if (this.processType === "GATE_OUT") {
 
-      retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.GATE_OUT})`;
+      retval = `${this.translatedLangText.TOTAL_COST}`;
     }
     return retval;
   }

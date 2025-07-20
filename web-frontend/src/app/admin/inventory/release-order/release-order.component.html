@@ -34,7 +34,7 @@
                           </button>
                         </div>
                         @if(modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()){
-                        <div class="m-l-10" [matTooltip]="translatedLangText.CANCEL" (click)="$event.stopPropagation()">
+                        <div class="m-l-10" [matTooltip]="translatedLangText.DELETE" (click)="$event.stopPropagation()">
                           <button mat-mini-fab (click)="cancelSelectedRows(roSelection.selected)"
                             [class.red-button]="!canCancelSelectedRows()"
                             [disabled]="canCancelSelectedRows()">
@@ -214,8 +214,8 @@
                     </button> -->
                         @if (roDS.canCancel(row)) {
                         <button mat-icon-button color="warn" (click)="$event.stopPropagation()"
-                          (click)="cancelItem(row)" [matTooltip]="translatedLangText.CANCEL" class="tbl-action-btn">
-                          <mat-icon>cancel</mat-icon>
+                          (click)="cancelItem(row)" [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn">
+                          <mat-icon>delete_forever</mat-icon>
                         </button>
                         }
                       </mat-cell>

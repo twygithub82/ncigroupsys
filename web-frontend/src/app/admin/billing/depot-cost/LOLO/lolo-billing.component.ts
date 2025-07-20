@@ -1269,10 +1269,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
     GetTotalCostTypeLabel(){
-      var retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.LIFT_ON})`;
+      var retval = `${this.translatedLangText.TOTAL_COST}`;
        if (this.processType === "LIFT_OFF") {
 
-           retval = `${this.translatedLangText.TOTAL_COST} (${this.translatedLangText.LIFT_OFF})`;
+           retval = `${this.translatedLangText.TOTAL_COST}`;
         }
       return retval;
     }

@@ -1,3 +1,0 @@
-INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('5290', 'Residue Disposal', 'DEPARTMENT', 'RESIDUE_DISPOSAL');
-INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('5291', 'Dashboard', 'DEPARTMENT', 'DASHBOARD');
-INSERT INTO `idms`.`code_values` (`guid`, `description`, `code_val_type`, `code_val`) VALUES ('5292', 'Steaming', 'DEPARTMENT', 'STEAM');
