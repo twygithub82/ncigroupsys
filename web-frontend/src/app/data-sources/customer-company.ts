@@ -666,6 +666,10 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
       );
   }
 
+   displayNameOnly(cc?: CustomerCompanyItem): string {
+    return cc?.name||'' ;
+  }
+
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? (cc?.name ? `${cc.code} (${cc.name})` : `${cc.code}`) : '';
   }

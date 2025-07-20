@@ -215,7 +215,9 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   isGeneratingReport = false;
   yearList: string[] = [];
   monthList: string[] = [];
-  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
+  //invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
+  invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
+  invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 
@@ -642,6 +644,10 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     }
 
     const dialogRef = this.dialog.open(RevenueYearlySalesReportDetailsPdfComponent, {
+      position: {
+       top: '-1999px',  // Move far above the screen
+       left: '-1999px'  // Move far to the left of the screen
+      },
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
@@ -659,10 +665,10 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       direction: tempDirection
     });
 
-    dialogRef.updatePosition({
-      top: '-9999px',  // Move far above the screen
-      left: '-9999px'  // Move far to the left of the screen
-    });
+    // dialogRef.updatePosition({
+    //   top: '-9999px',  // Move far above the screen
+    //   left: '-9999px'  // Move far to the left of the screen
+    // });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       this.isGeneratingReport = false;

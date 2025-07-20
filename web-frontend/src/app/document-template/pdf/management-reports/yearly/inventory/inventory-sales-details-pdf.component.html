@@ -13,7 +13,7 @@
             <div >
               <div class="chart-wrapper">
                 <div class="y-axis-label">{{getYAxisLabel()}}</div>
-                <canvas baseChart  [data]="lineChartData" [options]="lineChartOpts"
+                <canvas #chartLine baseChart  [data]="lineChartData" [options]="lineChartOpts"
                   type="line"></canvas>
               </div>
             </div>
@@ -33,7 +33,7 @@
           <div class="card">
             <div class="body">
               <div  style="display: flex; justify-content: center;">
-              <div style="width: 40vw">
+              <div #chartPie style="width: 40vw">
                 <apx-chart [series]="pieChartOptions.series2!" [chart]="pieChartOptions.chart!" [labels]="pieChartOptions.labels!"
                 [title]="pieChartOptions.title!" [legend]="pieChartOptions.legend!">
               </apx-chart>

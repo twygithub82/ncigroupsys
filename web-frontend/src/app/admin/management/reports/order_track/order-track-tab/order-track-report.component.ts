@@ -278,8 +278,8 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       ro_no: [''],
       so_no: [''],
       order_no: [''],
-      dt_start: [''],
-      dt_end: [''],
+      dt_start: ['', Validators.required],
+      dt_end: ['', Validators.required],
       tank_no: [''],
       job_no: [''],
       purpose: [''],
@@ -412,6 +412,10 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   search() {
+   if (this.searchForm?.invalid) {
+      this.searchForm.markAllAsTouched();
+      return;
+    }
     this.isGeneratingReport = true;
     var cond_counter = 0;
     var report_type: string = "ALL";

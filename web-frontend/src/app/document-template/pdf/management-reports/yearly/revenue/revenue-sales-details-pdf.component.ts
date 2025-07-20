@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -80,7 +80,7 @@ interface SeriesItem {
     BaseChartDirective
   ],
 })
-export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements AfterViewInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -471,8 +471,10 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
   }
 
-  async ngOnInit() {
-    await this.getCodeValuesData();
+
+
+  async ngAfterViewInit() {
+   await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     // this.repData = this.data.repData;
     // this.date= this.data.date;
@@ -481,10 +483,6 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     // this.invTypes=this.data.inventory_type;
     //this.InitChartValues();
     this.onDownloadClick();
-
-  }
-
-  ngAfterViewInit() {
 
 
   }
@@ -729,8 +727,10 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  // @ViewChild('chartLine')chartLine?:ChartComponent;
+  @ViewChild('chartPie',{ static: false }) chartPie!: ElementRef;
+   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
 
- 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
@@ -1295,22 +1295,50 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
 
  setTimeout(async()=>{
 
+  // this.chartLine.
   startY=lastTableFinalY+10;
   let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  for (var i = 0; i < cardElements.length; i++) {
-    if (i >= 0) {
-      pdf.addPage();
-      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY=topMargin+20;
-    }
-    const card1 = cardElements[i];
-    await Utility.DrawCardForImageAtCenterPage(pdf,card1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
-    //const canvas1 = await html2canvas(card1, { scale: scale });
-    //Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
-   
+ if (this.chartCanvas?.nativeElement) {
+    pdf.addPage();
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+     startY=topMargin+20;
+    const canvas = this.chartCanvas.nativeElement;
+    const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
+    await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
   }
+
+  if(this.chartPie.nativeElement){
+    pdf.addPage();
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+    pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+    startY=topMargin+20;
+    await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
+    // const canvas = this.chartPie.nativeElement;
+    // const base64Image =await Utility.ConvertApexChartSvgToImage64String_r1(canvas);
+    //  if(base64Image){
+    //     pdf.addPage();
+    //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+    //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+    //     startY=topMargin+20;
+    //     await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
+    //  }
+  }
+
+  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  // for (var i = 0; i < cardElements.length; i++) {
+  //   if (i >= 0) {
+  //     pdf.addPage();
+  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+  //     startY=topMargin+20;
+  //   }
+  //   const card1 = cardElements[i];
+  //   await Utility.DrawCardForImageAtCenterPage(pdf,card1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
+  //   //const canvas1 = await html2canvas(card1, { scale: scale });
+  //   //Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
+   
+  // }
 
     const totalPages = pdf.getNumberOfPages();
 
