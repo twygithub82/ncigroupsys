@@ -146,6 +146,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   customerCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
+  maxManuDOMDt: Date = new Date();
 
   billDS: BillingDS;
   ccDS: CustomerCompanyDS;

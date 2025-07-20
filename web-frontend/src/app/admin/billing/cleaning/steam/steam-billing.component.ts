@@ -19,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -390,7 +390,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.status_cv = { in: ['QC_COMPLETED','COMPLETED', 'APPROVED', 'JOB-IN_PROGRESS'] };
+    where.status_cv = { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB-IN_PROGRESS'] };
     where.bill_to_guid = { neq: null };
 
 
@@ -895,8 +895,8 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       //var cost:number = this.selectedEstimateLabourCost||0;
       var itm: any = s;
       var isSteamingEst = this.isSteamingEstimate(s);
-      var totalCost=0;
-      totalCost =itm.total_cost||0;
+      var totalCost = 0;
+      totalCost = itm.total_cost || 0;
       // if(isSteamingEst){
       //   totalCost = (itm.total_hour||1)*(itm.rate||0);
       // }
@@ -958,17 +958,14 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       if (data.length > 0) {
         var cost: number = data[0].cost;
         var isAutoApproveSteaming = BusinessLogicUtil.isAutoApproveSteaming(row);
-        if(isAutoApproveSteaming)
-        {
-          row.total_cost = (row.rate||0);
-          if(!row.flat_rate)
-          {
+        if (isAutoApproveSteaming) {
+          row.total_cost = (row.rate || 0);
+          if (!row.flat_rate) {
             row.total_cost *= row.total_hour;
           }
         }
-        else
-        {
-           row.total_cost = (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
+        else {
+          row.total_cost = (this.stmDS.getApprovalTotalWithLabourCost(row?.steaming_part, cost).total_mat_cost || 0);
         }
         //this.calculateTotalCost();
       }
@@ -1076,23 +1073,21 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.search();
   }
 
-   isSteamingEstimate(steam: SteamItem | undefined) {
+  isSteamingEstimate(steam: SteamItem | undefined) {
     var retval
     retval = (steam?.steaming_part?.[0]?.tariff_steaming_guid === null && steam?.steaming_part?.[0]?.steaming_exclusive_guid === null);
     return retval;
   }
 
-  CalculateCost(itm:SteamItem):number
-  {
-    var cost:number=0;
-    var isEst=this.isSteamingEstimate(itm);
-     if(isEst){
-        cost = (itm.total_hour||1)*(itm.rate||0);
-      }
-      else
-      {
-         cost = ((itm.total_hour||1)*(itm.rate||0))+(itm.total_cost||0);
-      }
+  CalculateCost(itm: SteamItem): number {
+    var cost: number = 0;
+    var isEst = this.isSteamingEstimate(itm);
+    if (isEst) {
+      cost = (itm.total_hour || 1) * (itm.rate || 0);
+    }
+    else {
+      cost = ((itm.total_hour || 1) * (itm.rate || 0)) + (itm.total_cost || 0);
+    }
 
     return cost;
   }
@@ -1101,4 +1096,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     return Utility.formatNumberDisplay(input);
   }
 
+  onToggleInvoiced(event: MatSlideToggleChange) {
+    this.search();
+  }
 }
