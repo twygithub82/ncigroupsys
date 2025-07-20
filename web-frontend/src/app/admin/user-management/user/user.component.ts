@@ -86,7 +86,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     // 'lName',
     'role',
     'team',
-    'mobile',
+    // 'mobile',
     'bDate',
     // 'email',
   ];

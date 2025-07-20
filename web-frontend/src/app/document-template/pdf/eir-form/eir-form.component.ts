@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, OnInit,AfterViewInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -12,7 +12,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyDS } from 'app/data-sources/in-gate-survey';
 import { Utility } from 'app/utilities/utility';
 import { customerInfo } from 'environments/environment';
-import html2canvas from 'html2canvas';
+//import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -26,7 +26,7 @@ import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import autoTable, { Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
 import { OutGateSurveyDS } from 'app/data-sources/out-gate-survey';
-
+import * as domtoimage from 'dom-to-image-more';
 export interface DialogData {
   type: string;
   gate_survey_guid: string;
@@ -38,6 +38,7 @@ export interface DialogData {
   eir_no?: string;
 }
 
+declare const html2canvas: any;
 @Component({
   selector: 'app-eir-form',
   templateUrl: './eir-form.component.html',
@@ -53,7 +54,7 @@ export interface DialogData {
     MatProgressBarModule
   ],
 })
-export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit  {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -283,6 +284,12 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
 
+  renderedCells: { highlighted: boolean }[] = [];
+renderedTopBottom: { highlighted: boolean }[] = [];
+renderedMiddle: { highlighted: boolean }[] = [];
+renderedBottom: { highlighted: boolean }[] = [];
+
+
   constructor(
     public dialogRef: MatDialogRef<EirFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -314,6 +321,12 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.generatePDF();
+    }, 300); // Let Angular render everything
+  }
+
   async ngOnInit() {
     this.eirTitle = this.type === "in" ? this.translatedLangText.IN_GATE : this.translatedLangText.OUT_GATE;
 
@@ -334,7 +347,9 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
       this.cdr.detectChanges();
 
-      await this.generatePDF();
+    //  this.updateCellValues();
+
+     
       // if (!this.eirPdf?.length) {
       //   await this.generatePDF();
       // }
@@ -346,6 +361,24 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     }
   }
 
+  updateCellValues()
+  {
+     this.renderedCells = this.cells.map((_, i) => ({
+    highlighted: this.highlightedCellsTop[i]
+  }));
+
+  this.renderedTopBottom = this.cellsInnerTopBottom.map((_, i) => ({
+    highlighted: this.highlightedCellsWalkwayTop[i]
+  }));
+
+  this.renderedMiddle = this.cellsInnerMiddle.map((_, i) => ({
+    highlighted: this.highlightedCellsWalkwayMiddle[i]
+  }));
+
+  this.renderedBottom = this.cellsInnerTopBottom.map((_, i) => ({
+    highlighted: this.highlightedCellsWalkwayBottom[i]
+  }));
+  }
   isInGate() {
     return this.type === "in";
   }
@@ -354,7 +387,60 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
     return this.isInGate() ? this.eirDetails?.in_gate : this.eirDetails?.out_gate;
   }
 
-  showPDF(): void {
+  //@ViewChild('frameinfosection') captureElement!: ElementRef;
+ async showPDF() {
+
+    //  const elements = document.getElementById('capture'); 
+    const element = document.getElementById('capture') as HTMLElement;
+    if (!element) {
+      console.error('Template element not found');
+       return;
+    }
+
+     const rect = element.getBoundingClientRect();
+  
+  const options = {
+    width: rect.width,
+    height: rect.height,
+    backgroundColor: 'white',
+    quality: 0.65,
+    skipFonts: true,
+    filter: (node: any) => {
+      // Optionally skip heavy parts
+      return !node.classList?.contains('exclude-from-image');
+    },
+    style: {
+      // Only override if necessary
+      fontFamily: 'sans-serif',
+      // boxShadow: 'none',
+      // animation: 'none',
+      // transition: 'none'
+    }
+  };
+
+ var body= await domtoimage.toJpeg(element, options);
+console.log(body);
+    // const element = document.getElementById("capture");
+
+      // html2canvas(element,{ allowTaint: true,
+      //               useCORS: true})
+      // .then((canvas: HTMLCanvasElement) => {
+      //   console.log("Canvas created!");
+      //   document.body.appendChild(canvas); // Optional: display it
+      // })
+      // .catch((err: any) => {
+      //   console.error("Canvas conversion failed:", err);
+      // });
+//    const canvas = await html2canvas(element, {
+//   foreignObjectRendering: true
+// });
+
+// const clippedImgData = canvas.toDataURL('image/png');
+
+    // html2canvas(this.captureElement.nativeElement).then((canvas) => {
+    //   const clippedImgData = canvas.toDataURL('image/png');
+    // });
+
     // const element = document.getElementById('eir-form-template');
     // if (!element) {
     //   console.error('Template element not found');
@@ -415,7 +501,10 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-
+@ViewChild('captureWalkwayElement', { static: false }) captureWalkwayElementRef!: ElementRef;
+@ViewChild('captureMalidElement', { static: false }) captureMalidElementRef!: ElementRef;
+@ViewChild('frameinfosection', { static: false }) captureInfoElementRef!: ElementRef;
+@ViewChild('test1', { static: false }) captureTesterElementRef!: ElementRef;
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -542,28 +631,91 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
       },
     });
 
+
+    
     //      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     startY = lastTableFinalY + 2;
     // Get the element correctly (remove the dot from className)
-    const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
-
-    if (!elements || elements.length === 0) {
-      console.error('Element not found');
-      return;
-    }
+   // const elements = document.getElementsByClassName('frame-info-section'); // Note: removed the dot
+   
+    // if (!elements || elements.length === 0) {
+    //   console.error('Element not found');
+    //   return;
+    // }
 
     // Get the first element with the class
-    const element = elements[0];
+     //const element = elements[0];
+   // const element =document.getElementById('test1') as HTMLElement;
+   // const styles = window.getComputedStyle(element);
+   // console.log(`Computed styles count: ${styles.length}`);
     //const contentWidth = pageWidth - leftMargin - rightMargin;
     const chartContentWidth = contentWidth;
 
     // const canvas = await html2canvas(element as HTMLElement, { scale: scale });
     // let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
     // const imgHeight = ((canvas.height * chartContentWidth) / canvas.width);
+    // const walkwayEl = this.captureWalkwayElementRef.nativeElement as HTMLElement;
+    //  const clonedEl= element.cloneNode(true) as HTMLElement;
+    // this.copyComputedStyles(originalEl,clonedEl);
+    const element = this.captureInfoElementRef.nativeElement as HTMLElement
+    
+  //   const clonedEl= element.cloneNode(true) as HTMLElement;
+  //  const computedStyle = window.getComputedStyle(element);
+  //   Array.from(computedStyle).forEach(prop => {
+  //     clonedEl.style.setProperty(prop, computedStyle.getPropertyValue(prop), 
+  //       computedStyle.getPropertyPriority(prop));
+  //   });
 
-    const imgData = await Utility.convertToImage(element as HTMLElement,"jpeg");
+  //   clonedEl.style.position = 'fixed';
+  //   clonedEl.style.top = '-9999px';
+  //   clonedEl.style.left = '-9999px';
+  //   clonedEl.style.zIndex = '-9999';
+  //   //clonedEl.style.opacity = '0'; // make sure it's invisible
+
+  //   // Append to DOM
+  //   document.body.appendChild(clonedEl);
+
+  //   // Wait for layout, fonts, images (especially if any are async)
+  //   await new Promise(resolve => requestAnimationFrame(resolve));
+  //   await new Promise(resolve => setTimeout(resolve, 100)); // give it a moment more
+
+    // // Append to body temporarily (but off-screen)
+    //  clonedEl.style.position = 'absolute';
+    // // clonedEl.style.left = '-9999px';
+    //  document.body.appendChild(clonedEl)
+
+    // //const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
+    // //const imgData = await Utility.convertToImage(originalEl as HTMLElement,"jpeg");
+    
+  //   const imgData = await Utility.convertWithDomToImage(clonedEl as HTMLElement,"jpeg");
+  //   const imgInfo = await Utility.getImageSizeFromBase64(imgData);
+  //   const aspectRatio = imgInfo.width / imgInfo.height;
+
+
+  //   const element1 =document.getElementById('test2') as HTMLElement;
+  //    const styles1 = window.getComputedStyle(element);
+  //   console.log(`Computed styles count: ${styles1.length}`);
+
+  // const MalidEl = this.captureMalidElementRef.nativeElement as HTMLElement;
+  //   // const clonedEl= element.cloneNode(true) as HTMLElement;
+    // this.copyComputedStyles(originalEl,clonedEl);
+
+    //const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
+    //const imgData = await Utility.convertToImage(originalEl as HTMLElement,"jpeg");
+
+    const perf = window.performance;
+    const startTotal = perf.now();
+
+     const startConversion = perf.now();
+
+    //const imgData = await Utility.convertToImage_domToImage(element as HTMLElement,"jpeg");
+     const imgData = await Utility.convertToImage_html2canvas(element as HTMLElement,"jpeg");
     const imgInfo = await Utility.getImageSizeFromBase64(imgData);
     const aspectRatio = imgInfo.width / imgInfo.height;
+
+    
+      const conversionTime = perf.now() - startConversion;
+      console.log(`HTML To Base64 Conversion took ${conversionTime}ms`);
 
     // Calculate scaled height based on available width
     let imgHeight = contentWidth / aspectRatio;
@@ -748,6 +900,7 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
 
 
   async generatePDF(): Promise<void> {
+   // this.showPDF();
     await this.exportToPDF_r1();
     /*  
       const element = document.getElementById('eir-form-body');
@@ -2008,4 +2161,76 @@ export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnI
   getJobNo() {
     return this.isInGate() ? this.getGate()?.tank?.job_no : this.getGate()?.tank?.release_job_no;
   }
+
+   copyComputedStyles(
+  source: HTMLElement,
+  target: HTMLElement,
+  options: {
+    recursive?: boolean;
+    includeProperties?: string[];
+    excludeProperties?: string[];
+  } = {}
+): void {
+  const {
+    recursive = true,
+    includeProperties,
+    excludeProperties = [
+      'width', 'height', 'top', 'left', 'right', 'bottom',
+      'margin', 'padding', 'position', 'display',
+      'content'
+    ]
+  } = options;
+
+  const computedStyle = window.getComputedStyle(source);
+  const allProperties = Array.from(computedStyle);
+
+  const propertiesToCopy = includeProperties
+    ? includeProperties
+    : allProperties.filter(prop => {
+        const value = computedStyle.getPropertyValue(prop);
+        return value &&
+               !excludeProperties.includes(prop) &&
+               !prop.startsWith('webkit') &&
+               !prop.startsWith('moz');
+      });
+
+  propertiesToCopy.forEach(prop => {
+    try {
+      const value = computedStyle.getPropertyValue(prop);
+      if (value) {
+        target.style.setProperty(prop, value);
+      }
+    } catch (e) {
+      console.warn(`Could not copy property "${prop}":`, e);
+    }
+  });
+
+  // Handle :before and :after pseudo-elements if needed
+  ['before', 'after'].forEach(pseudo => {
+    try {
+      const pseudoStyle = window.getComputedStyle(source, `:${pseudo}`);
+      const content = pseudoStyle.getPropertyValue('content');
+      if (content && content !== 'none') {
+        target.style.setProperty(`--pseudo-${pseudo}-content`, content);
+        // Optionally, you could render this into the DOM
+      }
+    } catch (e) {
+      console.warn(`Could not access pseudo-element ${pseudo}:`, e);
+    }
+  });
+
+  if (recursive) {
+    const sourceChildren = Array.from(source.children);
+    const targetChildren = Array.from(target.children);
+
+    for (let i = 0; i < sourceChildren.length; i++) {
+      const srcChild = sourceChildren[i] as HTMLElement;
+      const tgtChild = targetChildren[i] as HTMLElement;
+      if (srcChild && tgtChild) {
+        this.copyComputedStyles(srcChild, tgtChild, options);
+      }
+    }
+  }
+}
+
 }

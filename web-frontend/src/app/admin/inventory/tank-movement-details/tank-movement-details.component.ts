@@ -97,7 +97,7 @@ import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reown
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
 import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
-import{SteamEstimateFormDialogComponent_View} from '@shared/preview/preview_steam-estimate/form-dialog.component';
+import { SteamEstimateFormDialogComponent_View } from '@shared/preview/preview_steam-estimate/form-dialog.component';
 
 
 @Component({
@@ -3347,7 +3347,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(EirFormComponent, {
-      position: { top: '-9999px', left: '-9999px' },
+      position: { top: '-1999px', left: '-1999px' },
+      //position: { top: '100px', left: '100px' },
       width: '794px',
       height: '80vh',
       data: {
@@ -3654,7 +3655,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   ViewSteamEstimateItem(row: SteamItem) {
     let r = new SteamItem(row);
-    r.storing_order_tank=this.sot;
+    r.storing_order_tank = this.sot;
 
     let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
@@ -3670,9 +3671,21 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         action: 'view',
         langText: this.langText,
         selectedItem: r,
-        nextTestDesc:this.next_test_desc!,
-        lastTestDesc:this.last_test_desc!
+        nextTestDesc: this.next_test_desc!,
+        lastTestDesc: this.last_test_desc!
       }
     });
+  }
+
+  isAllowEdit() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_EDIT']);
+  }
+
+  isAllowPublish() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_PUBLISH']);
+  }
+
+  isAllowView() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_VIEW']);
   }
 }

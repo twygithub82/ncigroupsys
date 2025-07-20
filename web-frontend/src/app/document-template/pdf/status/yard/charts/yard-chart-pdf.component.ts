@@ -887,11 +887,16 @@ export class YardChartPdfComponent extends UnsubscribeOnDestroyAdapter implement
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
       }
       const card1 = cardElements[i];
-      const canvas1 = await html2canvas(card1, { scale: scale });
-      const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+
+      const imgData1=await Utility.convertToImage(card1,"jpeg");
+      const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
+      const aspectRatio = imgInfo.width / imgInfo.height;
+
+      // const canvas1 = await html2canvas(card1, { scale: scale });
+      // const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
       // Calculate aspect ratio
-      const aspectRatio = canvas1.width / canvas1.height;
+      // const aspectRatio = canvas1.width / canvas1.height;
 
       // Calculate scaled height based on available width
       let imgHeight1 = chartContentWidth / aspectRatio;

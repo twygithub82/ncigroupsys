@@ -358,20 +358,7 @@ export class OutGateDetailsComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   displayTankPurpose() {
-    let purposes: any[] = [];
-    if (this.storingOrderTankItem?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (this.storingOrderTankItem?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (this.storingOrderTankItem?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (this.storingOrderTankItem?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(this.storingOrderTankItem?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
+    return this.sotDS.displayTankPurpose(this.storingOrderTankItem!, this.getPurposeOptionDescription.bind(this));
   }
 
   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {

@@ -6,6 +6,7 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { UserRoleItem } from './userrole';
 
+
 export class UserGO {
   public id?: string;
   public userName?: string;
@@ -32,13 +33,27 @@ export class UserGO {
 
 export class UserItem extends UserGO {
   public userrole?: UserRoleItem[]
-
+  public aspnetuserroles?: AspnetUserRolesItem;
   constructor(item: Partial<UserItem> = {}) {
     super(item)
     this.userrole = item.userrole || undefined;
+    this.aspnetuserroles=item.aspnetuserroles || undefined;
   }
 }
 
+export class AspnetUserRolesItem {
+  public role?: AspRolesItem;
+  constructor(item: Partial<AspnetUserRolesItem> = {}) {
+    this.role = item.role||undefined;
+  }
+}
+
+export class AspRolesItem{
+  public role: string;
+  constructor(item: Partial<AspRolesItem> = {}) {
+    this.role = item.role || '';
+  }
+}
 const GET_USERS = gql`
   query queryUsers($where: aspnetusersFilterInput, $order: [aspnetusersSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryUsers(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {

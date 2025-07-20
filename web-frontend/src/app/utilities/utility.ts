@@ -7,6 +7,7 @@ import { Observable, from, map } from "rxjs";
 import { PDFUtility } from "./pdf-utility";
 import { systemCurrencyCode } from '../../environments/environment';
 import * as domtoimage from 'dom-to-image-more';
+import html2canvas from "html2canvas";
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -911,17 +912,17 @@ export class Utility {
     // a.target = '_blank';
     // a.click();
     // Try opening in a new window
-    const newWindow = window.open(blobUrl, '_blank');
-    if (!newWindow) {
+   // const newWindow = window.open(blobUrl, '_blank');
+   // if (!newWindow) {
       pdf.save(fileName);
-    } else {
-      newWindow.document.write(html);
-      newWindow.document.close();
-      // Cleanup the URL after some time
-      setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-      }, 10000); // Increased delay to ensure the PDF loads
-    }
+    // } else {
+    //   newWindow.document.write(html);
+    //   newWindow.document.close();
+    //   // Cleanup the URL after some time
+    //   setTimeout(() => {
+    //     URL.revokeObjectURL(blobUrl);
+    //   }, 10000); // Increased delay to ensure the PDF loads
+    // }
   }
 
   static async addHeaderWithCompanyLogo_Portriat(
@@ -1307,8 +1308,237 @@ export class Utility {
     return a.length - b.length;
   }
 
+  static async convertToImage_html2canvas(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
+    var imgScale=2;
+    var imgQty=0.95;
+    if (!element) throw new Error('Invalid element');
 
- static  async  convertToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
+  // Ensure all fonts and images are loaded first
+      await document.fonts.ready;
+      await Promise.all(Array.from(document.images).map(img =>
+        img.complete ? Promise.resolve() : new Promise(resolve => img.onload = img.onerror = resolve)
+      ));
+
+      await Promise.all([
+        document.fonts.load('1em Material Icons'),
+        // Add other fonts you're using
+      ]);
+       var canvas = await html2canvas(element, { scale: imgScale });
+       var imgType ="image/jpeg";
+       if(type === 'png') imgType="image/png";
+        return canvas.toDataURL(imgType, imgQty);
+  }
+
+ 
+static async convertToImage_domToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
+  if (!element) throw new Error('Invalid element');
+
+  // 1. Ensure all resources are loaded
+  await this.waitForResources();
+
+  // 2. Create a clone with proper dimensions
+  const clone = await this.createCloneForConversion(element);
+  
+ 
+  return await this.convertWithDomToImage_r1(clone, type);
+}
+
+static async convertToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
+  if (!element) throw new Error('Invalid element');
+
+  // 1. Ensure all resources are loaded
+  await this.waitForResources();
+
+  // 2. Create a clone with proper dimensions
+  const clone = await this.createCloneForConversion(element);
+  
+  // 3. Use html2canvas if available (more reliable)
+  // if (typeof html2canvas === 'function') {
+  //   try {
+  //     return await this.convertWithHtml2Canvas(clone, type);
+  //   } catch (error) {
+  //     console.warn('html2canvas failed, falling back to dom-to-image', error);
+  //   }
+  // }
+
+  // 4. Fallback to dom-to-image with proper sizing
+  return await this.convertWithDomToImage(clone, type);
+}
+
+private static async waitForResources(): Promise<void> {
+  await document.fonts.ready;
+  await Promise.all(Array.from(document.images).map(img => 
+    img.complete ? Promise.resolve() : new Promise(resolve => img.onload = img.onerror = resolve)
+  ));
+}
+
+private static async createCloneForConversion(element: HTMLElement): Promise<HTMLElement> {
+  // Create clone with proper dimensions
+  const clone = element.cloneNode(true) as HTMLElement;
+  const container = document.createElement('div');
+  
+  // Position clone off-screen but maintain layout
+  container.style.position = 'fixed';
+  container.style.left = '-10000px';
+  container.style.top = '0';
+  container.style.visibility = 'hidden';
+  container.style.width = `${element.scrollWidth}px`;
+  container.style.height = `${element.scrollHeight}px`;
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
+  // Copy all styles
+  await this.copyStyles(element, clone);
+  
+  // Force layout calculation
+  await this.forceReflow(clone);
+  
+  return clone;
+}
+
+private static async copyStyles(source: HTMLElement, target: HTMLElement): Promise<void> {
+  const computedStyle = window.getComputedStyle(source);
+  const styleProps = Array.from(computedStyle)
+    .filter(prop => {
+      const value = computedStyle.getPropertyValue(prop);
+      return value && !prop.startsWith('-webkit');
+    });
+
+  // Copy styles to target
+  styleProps.forEach(prop => {
+    target.style.setProperty(
+      prop, 
+      computedStyle.getPropertyValue(prop),
+      computedStyle.getPropertyPriority(prop)
+    );
+  });
+
+  // Handle children recursively
+  const sourceChildren = Array.from(source.children) as HTMLElement[];
+  const targetChildren = Array.from(target.children) as HTMLElement[];
+  
+  await Promise.all(sourceChildren.map((child, i) => {
+    if (targetChildren[i]) {
+      return this.copyStyles(child, targetChildren[i]);
+    }
+    return Promise.resolve();
+  }));
+}
+
+private static forceReflow(element: HTMLElement): Promise<void> {
+  return new Promise(resolve => {
+    void element.offsetHeight; // Trigger reflow
+    setTimeout(resolve, 50); // Small delay
+  });
+}
+
+private static async convertWithHtml2Canvas(element: HTMLElement, type: 'png' | 'jpeg'): Promise<string> {
+  const canvas = await html2canvas(element, {
+    backgroundColor: '#ffffff',
+    scale: 2, // Higher quality
+    logging: false,
+    useCORS: true,
+    allowTaint: true,
+    scrollX: 0,
+    scrollY: 0
+  });
+  
+  return type === 'jpeg' 
+    ? canvas.toDataURL('image/jpeg', 0.95)
+    : canvas.toDataURL('image/png');
+}
+
+public static async convertWithDomToImage_r1(
+  element: HTMLElement,
+  type: 'png' | 'jpeg'
+): Promise<string> {
+  // Use custom scale if provided, otherwise default to 2x device pixel ratio
+  const scale = 1.5 ; // || 2 * (window.devicePixelRatio || 1);
+  
+  // Calculate scaled dimensions
+  const originalWidth = element.scrollWidth;
+  const originalHeight = element.scrollHeight;
+  const scaledWidth = originalWidth * scale;
+  const scaledHeight = originalHeight * scale;
+
+  const options = {
+    width: scaledWidth,
+    height: scaledHeight,
+    quality: type === 'jpeg' ? 0.95 : 1.0, // Higher quality for PNG
+    bgcolor: '#ffffff',
+    style: {
+      transform: `scale(${scale})`,
+      transformOrigin: 'top left',
+      width: `${originalWidth}px`,
+      height: `${originalHeight}px`,
+      margin: '0',
+      padding: '0',
+      overflow: 'visible',
+      fontFamily: 'sans-serif, Material Icons'
+    },
+    filter: (node: Node) => {
+      // Skip hidden elements for better performance
+      if (node instanceof HTMLElement) {
+        return window.getComputedStyle(node).display !== 'none';
+      }
+      return true;
+    },
+  };
+
+  // Create wrapper with proper dimensions
+  const wrapper = document.createElement('div');
+  Object.assign(wrapper.style, {
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    width: `${originalWidth}px`,
+    height: `${originalHeight}px`,
+    transform: `scale(${scale})`,
+    transformOrigin: 'top left',
+    overflow: 'visible'
+  });
+
+  // Clone and append the element
+  wrapper.appendChild(element.cloneNode(true) as HTMLElement);
+
+  try {
+    return type === 'jpeg'
+      ? await domtoimage.toJpeg(wrapper, options)
+      : await domtoimage.toPng(wrapper, options);
+  } finally {
+    // Clean up if needed
+    if (wrapper.parentNode) {
+      wrapper.parentNode.removeChild(wrapper);
+    }
+  }
+}
+
+public static async convertWithDomToImage(element: HTMLElement, type: 'png' | 'jpeg'): Promise<string> {
+  const options = {
+    width: element.scrollWidth,
+    height: element.scrollHeight,
+    quality: 0.95,
+    bgcolor: '#ffffff',
+    style: {
+      
+      margin: '0',
+      padding: '0',
+      overflow: 'visible',
+      fontFamily: 'sans-serif, Material Icons' // Fallback fonts
+    },
+    filter: (node: Node) => {
+      // Skip problematic nodes if needed
+      return true;
+    }
+  };
+
+  return type === 'jpeg'
+    ? await domtoimage.toJpeg(element, options)
+    : await domtoimage.toPng(element, options);
+}
+
+
+ static  async  convertToImage_old(element: HTMLElement, type: 'png' | 'jpeg' = 'jpeg'): Promise<string> {
     if (!element) throw new Error('Invalid element');
 
     const rect = element.getBoundingClientRect();

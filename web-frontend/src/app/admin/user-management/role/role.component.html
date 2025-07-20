@@ -25,7 +25,7 @@
                         <mat-icon>clear_all</mat-icon>
                       </button>
                     </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+                    <div class="m-l-10" [matTooltip]="translatedLangText.NEW" >
                       <button mat-mini-fab class="primary-light" (click)="addCall($event)" (click)="$event.stopPropagation()">
                         <mat-icon class="col-white">add</mat-icon>
                       </button>
@@ -37,8 +37,8 @@
                   <div class="row">
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
-                        <mat-label>{{this.translatedLangText.DESCRIPTION }}</mat-label>
-                        <input matInput formControlName="description" type="text">
+                        <mat-label>{{this.translatedLangText.DESCRIPTION }} / {{this.translatedLangText.POSITION }} / {{this.translatedLangText.DEPARTMENT}} </mat-label>
+                        <input matInput formControlName="description" type="text" (keyup.enter)="search()">
                         <mat-icon matSuffix class="date-icon">search</mat-icon>
 
                       </mat-form-field>
@@ -54,10 +54,10 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="customer_companyList" matSort
+              <table mat-table [dataSource]="roleList" matSort  (matSortChange)="onSortChange($event)"
                 class="mat-cell advance-table striped-rows hover-highlight dark-header">
                 <ng-container matColumnDef="description">
-                  <mat-header-cell *matHeaderCellDef 
+                  <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.DESCRIPTION }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-3'">
@@ -68,7 +68,7 @@
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.DEPARTMENT
-                      }}:</span>{{row.department}}</mat-cell>
+                      }}:</span>{{ShowDepartment(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="position">
                   <mat-header-cell *matHeaderCellDef 
@@ -89,7 +89,7 @@
                     <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
                 </ng-container> -->
                 <ng-container matColumnDef="last_update">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.LAST_UPDATE
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
@@ -99,7 +99,7 @@
                 <ng-container matColumnDef="actions">
                   <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
                   <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall(row)"
+                    <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="editCall($event,row)"
                       class="tbl-action-btn">
                       <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                     </button>
@@ -110,27 +110,27 @@
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall(row)"
+                <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editCall($event,row)"
                   [style.cursor]="'pointer'" matRipple>
                 </mat-row>
               </table>
             </div>
             <!-- Loading spinner -->
-            @if (!(ccDS.loading$ | async) && !customer_companyList.length) {
+            @if (!(roleDS.loading$ | async) && !roleList.length) {
             <mat-divider></mat-divider>
-            <div class="no-results m-l-20 pt-3" [style.display]="customer_companyList.length === 0 ? '' : 'none'">
+            <div class="no-results m-l-20 pt-3" [style.display]="roleList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (ccDS.loading$ | async) {
+            @if (roleDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>
             </div>
             }
 
-            <mat-paginator #paginator [length]="ccDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+            <mat-paginator #paginator [length]="roleDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
               [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
             </mat-paginator>
           </div>
