@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -81,7 +81,7 @@ interface SeriesItem {
     BaseChartDirective
   ],
 })
-export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit ,AfterViewInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -466,7 +466,13 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   }
 
   async ngOnInit() {
-    await this.getCodeValuesData();
+  
+
+  }
+
+  async ngAfterViewInit() {
+
+      await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     // this.repData = this.data.repData;
     // this.date= this.data.date;
@@ -475,12 +481,6 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     // this.invTypes=this.data.inventory_type;
     //this.InitChartValues();
     this.onDownloadClick();
-
-  }
-
-  ngAfterViewInit() {
-
-
   }
 
  
@@ -723,7 +723,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
-
+ @ViewChild('chartPie',{ static: false }) chartPie!: ElementRef;
+   @ViewChild('chartLine') chartLine!: ElementRef<HTMLCanvasElement>;
  
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
@@ -1209,43 +1210,68 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
   startY=lastTableFinalY+10;
   let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  for (var i = 0; i < cardElements.length; i++) {
-    if (i > 0) {
-      pdf.addPage();
-      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY=topMargin+20;
-    }
-    const card1 = cardElements[i];
-    card1.style.boxShadow = 'none';
-    card1.style.transition = 'none';
-    // const canvas1 = await html2canvas(card1, { useCORS: true, allowTaint:false,scale: scale });
-    //const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
 
-    // Calculate aspect ratio
-    //const aspectRatio = canvas1.width / canvas1.height;
+  // var base64img = await Utility.convertToImage(this.pdfTable.nativeElement,"jpeg");
 
-
-    const imgData1 = await Utility.convertToImage(card1,"jpeg");
-    const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
+   if (this.chartLine?.nativeElement) {
+    // pdf.addPage();
+    // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+    //  pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+    //  startY=topMargin+20;
+    const canvas = this.chartLine.nativeElement;
+    const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
+    const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
     const aspectRatio = imgInfo.width / imgInfo.height;
-
-    // Calculate scaled height based on available width
     let imgHeight1 = chartContentWidth / aspectRatio;
+    pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+    // await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
 
-    // Check if the scaled height exceeds the available page height
-    const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-    if (imgHeight1 > maxPageHeight) {
-      // Adjust height to fit within the page
-      imgHeight1 = maxPageHeight;
-      // Recalculate width to maintain aspect ratio
-      chartContentWidth = imgHeight1 * aspectRatio;
-    }
-
-    // Add the image to the PDF
-    pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
   }
+
+  if(this.chartPie?.nativeElement){
+    pdf.addPage();
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+    pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+    startY=topMargin+20;
+    await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
+  }
+  // for (var i = 0; i < cardElements.length; i++) {
+  //   if (i > 0) {
+  //     pdf.addPage();
+  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+  //     startY=topMargin+20;
+  //   }
+  //   const card1 = cardElements[i];
+  //   card1.style.boxShadow = 'none';
+  //   card1.style.transition = 'none';
+  //   // const canvas1 = await html2canvas(card1, { useCORS: true, allowTaint:false,scale: scale });
+  //   //const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+
+  //   // Calculate aspect ratio
+  //   //const aspectRatio = canvas1.width / canvas1.height;
+
+
+  //   const imgData1 = await Utility.convertToImage(card1,"jpeg");
+  //   const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
+  //   const aspectRatio = imgInfo.width / imgInfo.height;
+
+  //   // Calculate scaled height based on available width
+  //   let imgHeight1 = chartContentWidth / aspectRatio;
+
+  //   // Check if the scaled height exceeds the available page height
+  //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+  //   if (imgHeight1 > maxPageHeight) {
+  //     // Adjust height to fit within the page
+  //     imgHeight1 = maxPageHeight;
+  //     // Recalculate width to maintain aspect ratio
+  //     chartContentWidth = imgHeight1 * aspectRatio;
+  //   }
+
+  //   // Add the image to the PDF
+  //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+  // }
 
     const totalPages = pdf.getNumberOfPages();
 

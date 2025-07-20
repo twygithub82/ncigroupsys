@@ -8,6 +8,9 @@ import { PDFUtility } from "./pdf-utility";
 import { systemCurrencyCode } from '../../environments/environment';
 import * as domtoimage from 'dom-to-image-more';
 import html2canvas from "html2canvas";
+import { ApexChart, ChartComponent } from "ng-apexcharts";
+import {ElementRef} from '@angular/core';
+import { Canvg } from 'canvg';
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -812,23 +815,214 @@ export class Utility {
   }
 
 
-  static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number, 
-    rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
-    let chartContentWidth = maxChartWidth;
+//   static async ConvertApexChartSvgToImage64String_r1(chartRef: any): Promise<string> {
+//     const containerEl = chartRef;
+//     if (!containerEl) return '';
 
-    let startY: number = topPosition;
 
-    // card.style.boxShadow = 'none';
-    // card.style.transition = 'none';
-    const imgData1 = await Utility.convertToImage(card,"jpeg");
-    const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
-    const aspectRatio = imgInfo.width / imgInfo.height;
 
-    // const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
-    // const aspectRatio = canvas.width / canvas.height;
 
-    // Calculate scaled height based on available width
-    let imgHeight1 = chartContentWidth / aspectRatio;
+// //     // Get both the chart SVG and legend elements
+// //     const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
+// //     if (!chartWrapper) return '';
+
+// //     const svgEl = chartWrapper.querySelector('svg');
+// //     // if (!svgEl) return '';
+// //  awa
+//     // const legendForeignObject = svgEl.querySelector('foreignObject');
+//     // if (!legendForeignObject) return '';
+
+//     // // Create a new SVG that will contain both chart and legend
+//     // const combinedSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    
+//     // // Copy attributes from original SVG
+//     // combinedSvg.setAttribute('width', svgEl.getAttribute('width') || '800');
+//     // combinedSvg.setAttribute('height', svgEl.getAttribute('height') || '600');
+//     // combinedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    
+//     // // Clone the chart content (without legend foreignObject)
+//     // const chartContent = svgEl.cloneNode(true) as SVGSVGElement;
+//     // const chartForeignObject = chartContent.querySelector('foreignObject');
+//     // if (chartForeignObject) {
+//     //     chartContent.removeChild(chartForeignObject);
+//     // }
+
+//     // // Add chart content to combined SVG
+//     // combinedSvg.appendChild(chartContent);
+
+//     // // Add legend back in a better position (adjust coordinates as needed)
+//     // const legendClone = legendForeignObject.cloneNode(true) as SVGForeignObjectElement;
+//     // legendClone.setAttribute('x', '10');  // Left position
+//     // legendClone.setAttribute('y', '10');  // Top position
+//     // combinedSvg.appendChild(legendClone);
+
+//     // // Serialize and render
+//     // const serializer = new XMLSerializer();
+//     // const svgString = serializer.serializeToString(combinedSvg);
+//     // const canvas = document.createElement('canvas');
+//     // const ctx = canvas.getContext('2d');
+
+//     // if (!ctx) throw new Error('Canvas context is null');
+
+//     // // Set canvas size - you may want to increase to accommodate legend
+//     // canvas.width = parseInt(combinedSvg.getAttribute('width') || '800');
+//     // canvas.height = parseInt(combinedSvg.getAttribute('height') || '600');
+
+//     // // Create a Canvg instance
+//     // const v = await Canvg.fromString(ctx, svgString);
+
+//     // // Render SVG onto canvas
+//     // await v.render();
+  
+// }
+
+
+  static async ConvertApexChartSvgToImage64String(chartRef: any): Promise<string> {
+      const containerEl = chartRef;
+      if (!containerEl) return '';
+
+      const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
+      if (!chartWrapper) return '';
+
+      const svgEl = chartWrapper.querySelector('svg');
+      if (!svgEl) return '';
+
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svgEl);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) throw new Error('Canvas context is null');
+
+      // Create a Canvg instance
+      const v = await Canvg.fromString(ctx, svgString);
+
+      // Set canvas size
+      canvas.width = svgEl.clientWidth;
+      canvas.height = svgEl.clientHeight;
+
+      // Render SVG onto canvas
+      await v.render();
+      return this.ConvertCanvasElementToImage64String(canvas);
+  // const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+  // const url = URL.createObjectURL(svgBlob);
+
+  // return new Promise((resolve) => {
+  //   const img = new Image();
+  //   img.onload = () => {
+  //     const canvas = document.createElement('canvas');
+  //     canvas.width = img.width;
+  //     canvas.height = img.height;
+
+  //     const ctx = canvas.getContext('2d');
+  //     if (ctx) ctx.drawImage(img, 0, 0);
+
+  //     URL.revokeObjectURL(url);
+  //     resolve(this.ConvertCanvasElementToImage64String(canvas));
+  //   };
+  //   img.src = url;
+  // });
+}
+
+  static ConvertApexChartToImage64String(chartRef:any):string
+  {
+     var retval :string ='';
+      
+      const containerEl = chartRef;
+      if (!containerEl) return retval;
+      const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
+      if (!chartWrapper) return retval;
+      const canvas = chartWrapper.querySelector('canvas');
+      if (!canvas) return retval;
+      retval =this.ConvertCanvasElementToImage64String(canvas);
+      return retval;
+
+  }
+ static ConvertCanvasElementToImage64String(canvas :HTMLCanvasElement ) :string
+ {
+   var retval :string ='';
+   var quality:number =0.9;
+    if(canvas)
+      { 
+        var cvs =this.adjustImageSizeAndBackground(canvas);
+        retval = cvs.toDataURL('image/jpeg', quality);
+       // retval =this.getPureBase64(retval);
+      }
+   return retval;
+ }
+
+/**
+ * Adjusts image size while maintaining aspect ratio and adds white background
+ * @param canvas - Source canvas element
+ * @param options - Configuration options
+ * @returns New canvas with adjusted size and background
+ */
+static adjustImageSizeAndBackground(
+  canvas: HTMLCanvasElement,
+  options: {
+    targetWidth?: number;
+    backgroundColor?: string;
+    maintainAspectRatio?: boolean;
+  } = {}
+): HTMLCanvasElement {
+  // Validate input
+  if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
+    throw new Error("Invalid canvas element provided");
+  }
+
+  // Set defaults
+  const {
+    targetWidth = 1280,
+    backgroundColor = '#ffffff',
+    maintainAspectRatio = true
+  } = options;
+
+  // Calculate new dimensions
+  let targetHeight: number;
+  if (maintainAspectRatio) {
+    const aspectRatio = canvas.height / canvas.width;
+    targetHeight = Math.round(targetWidth * aspectRatio);
+  } else {
+    targetHeight = canvas.height;
+  }
+
+  // Create new canvas
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = targetWidth;
+  tempCanvas.height = targetHeight;
+
+  const ctx = tempCanvas.getContext('2d');
+  if (!ctx) {
+    throw new Error("Failed to get 2D context");
+  }
+
+  // Fill background
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+  // Draw image with proper scaling and anti-aliasing
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+
+  return tempCanvas;
+}
+
+
+ static getPureBase64(base64Value:string): string {
+  const fullBase64 =base64Value; // Get full data URL
+  return fullBase64.split(',')[1]; // Returns just the Base64 data
+ }
+
+  static async DrawBase64ImageAtCenterPage(pdf: jsPDF,base64:string, pageWidth: number, leftMargin: number, 
+    rightMargin: number, topPosition: number, maxChartWidth: number)
+    {
+      let chartContentWidth = maxChartWidth;
+
+      let startY: number = topPosition;
+       const imgInfo = await Utility.getImageSizeFromBase64(base64);
+       const aspectRatio = imgInfo.width / imgInfo.height;
+       let imgHeight1 = chartContentWidth / aspectRatio;
 
     // Check if the scaled height exceeds the available page height
     const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
@@ -839,10 +1033,44 @@ export class Utility {
       chartContentWidth = imgHeight1 * aspectRatio;
     }
 
-    let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
+      let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
 
     // Add the image to the PDF
-    pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+      pdf.addImage(base64, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+    }
+
+  static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number, 
+    rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
+    let chartContentWidth = maxChartWidth;
+
+    let startY: number = topPosition;
+
+    // card.style.boxShadow = 'none';
+    // card.style.transition = 'none';
+    const imgData1 = await this.convertToImage(card,"jpeg");
+   await this.DrawBase64ImageAtCenterPage(pdf,imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
+    // const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
+    // const aspectRatio = imgInfo.width / imgInfo.height;
+
+    // // const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
+    // // const aspectRatio = canvas.width / canvas.height;
+
+    // // Calculate scaled height based on available width
+    // let imgHeight1 = chartContentWidth / aspectRatio;
+
+    // // Check if the scaled height exceeds the available page height
+    // const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+    // if (imgHeight1 > maxPageHeight) {
+    //   // Adjust height to fit within the page
+    //   imgHeight1 = maxPageHeight;
+    //   // Recalculate width to maintain aspect ratio
+    //   chartContentWidth = imgHeight1 * aspectRatio;
+    // }
+
+    // let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
+
+    // // Add the image to the PDF
+    // pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
 
 
     // pdf.setLineDashPattern([0.001, 0.001], 0);
@@ -1580,7 +1808,39 @@ public static async convertWithDomToImage(element: HTMLElement, type: 'png' | 'j
     });
   }
 
-}
+//   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
+//   {
+//     var imgRetval:string ='';
+//      const chartInstance = chartRef?.chart; 
+//     if(chartInstance)
+//     {
+//       const result = await chartInstance.dataURI();
+//       imgRetval =result.imgURI;
+//     }
+
+//     return imgRetval;
+    
+//   }
+//  static async getChartAsBase64(chartRef:ChartComponent): Promise<string> {
+//     return new Promise((resolve, reject) => {
+//       if (chartRef && chartRef.chart) {
+//         // Access the underlying ApexCharts instance
+//         chartRef.chart.exportSVG()
+//           .then(({ imgURI }) => {
+//             resolve(imgURI);
+//           })
+//           .catch(error => {
+//             console.error('Error exporting chart:', error);
+//             reject(error);
+//           });
+//       } else {
+//         reject('Chart instance not available');
+//       }
+//     });
+//   }
+ }
+
+
 
 export const TANK_STATUS_PRE_IN_YARD = [
   'SO_GENERATED',

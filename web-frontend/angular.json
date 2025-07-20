@@ -71,7 +71,7 @@
             "scripts": [
               "./node_modules/moment/min/moment.min.js",
               "./node_modules/apexcharts/dist/apexcharts.min.js",
-              "./node_modules/html2canvas/dist/html2canvas.min.js"
+               "./node_modules/html2canvas/dist/html2canvas.min.js"
             ]
           },
           "configurations": {
@@ -101,11 +101,11 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.development.ts"
-                  
                 }
               ]
             },
             "uat": {
+              "outputHashing": "all",
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
