@@ -213,7 +213,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   isGeneratingReport = false;
   yearList: string[] = [];
   monthList: string[] = [];
-  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
+ // invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
+  invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 

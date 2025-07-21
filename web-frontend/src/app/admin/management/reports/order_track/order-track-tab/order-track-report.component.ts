@@ -170,7 +170,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     [
       '',
       'WAITING',
-      'ACCEPTED',
+      // 'ACCEPTED',
       'PREORDER',
       'CANCELED'
     ]
