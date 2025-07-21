@@ -95,7 +95,6 @@ import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
 export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'seq',
-    // 'group_name_cv',
     'desc',
     'qty',
     'qty_unit',
@@ -103,7 +102,16 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     'cost',
     'approve_part',
     "actions"
-
+  ];
+  totalCostDisplayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'qty_unit',
+    'totalUnitPrice',
+    'totalCost',
+    'approve_part',
+    "actions"
   ];
   pageTitleNew = 'MENUITEMS.REPAIR.LIST.ESTIMATE-NEW'
   pageTitleEdit = 'MENUITEMS.REPAIR.LIST.ESTIMATE-EDIT'
@@ -282,6 +290,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   historyState: any = {};
   updateSelectedItem: any = undefined;
   isExportingPDF: boolean = false;
+  isMobile = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -318,8 +327,30 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initializeValueChanges();
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 1024;
+    this.totalCostDisplayedColumns = this.isMobile
+      ? ['totalCost']
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'qty_unit',
+        'totalUnitPrice',
+        'totalCost',
+        'approve_part',
+        "actions"
+      ];
   }
 
   initForm() {

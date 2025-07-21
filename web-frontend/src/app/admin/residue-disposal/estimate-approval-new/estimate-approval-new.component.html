@@ -23,7 +23,7 @@
             @if (!(sotDS.loading$ | async)) {
             <mat-card-content>
               <div class="row justify-content-center">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
@@ -46,19 +46,17 @@
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                     </div>
-                    <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                    <div
+                      class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
                       <div class="d-flex align-items-center">
                         <span class="value-display-info me-2">
                           {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
                         </span>
-                        <!-- <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner" [disabled]="!canToggleOwner()"
-                          (change)="onOwnerToggle($event)">
-                        </mat-checkbox> -->
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
@@ -90,7 +88,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
@@ -428,7 +426,8 @@
                       {{translatedLangText.DESCRIPTION}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
-                      <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                      <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
+                      <span class="mobile-label-value">{{row.description}}</span>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef [ngClass]="''"
                       class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
@@ -540,16 +539,16 @@
                   </ng-container>
                   <ng-container matColumnDef="cost">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-xl-center'">
                       {{translatedLangText.COST}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-xl-center'">
                       <span
                         class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateResidueItemCost(row))}}
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label"> </span>{{this.parse2Decimal(getTotalCost()) }}
                     </mat-footer-cell>
                   </ng-container>
@@ -577,12 +576,27 @@
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>
+
+                  <!-- Labour Cost Footer -->
+                  <ng-container matColumnDef="totalUnitPrice">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-xl-center p-0">
+                      {{translatedLangText.TOTAL_COST}}:
+                    </mat-footer-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="totalCost">
+                    <mat-footer-cell *matFooterCellDef
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-xl-center">
+                      <span class="">{{parse2Decimal(getTotalCost())}}</span>
+                    </mat-footer-cell>
+                  </ng-container>
+
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
                     [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
                     [style.cursor]="'pointer'" matRipple>
                   </mat-row>
-                  <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+                  <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>
                 </table>
               </div>
               <!-- No result -->

@@ -426,8 +426,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       })
     ).subscribe();
-
-
   }
 
   public loadData() {
