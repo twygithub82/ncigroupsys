@@ -1265,7 +1265,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         repCust.guid = b.customer_company?.guid;
         repCust.items = [];
       }
-      repCust.customer = this.ccDS.displayName(b.customer_company);
+      //repCust.customer = this.ccDS.displayName(b.customer_company);
+      repCust.customer = b.customer_company.code;
       if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
         repCust.invoice_period = `${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
       }

@@ -91,11 +91,6 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     //'cust_code',
     'cust_name',
     'curcy'
-
-
-    // 'bDate',
-    // 'mobile',
-    // 'actions',
   ];
 
   action: string;
@@ -365,7 +360,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
           {
             invoice_no: selItm.invoice_no,
             currency: this.getCurrency(selItm.currency?.guid!),
-            //  bill_to_customer_company:this.customerCodeControl,
+            //invoice_type_cv: selItm.invoice_type,
             invoice_dt: Utility.convertDate(selItm.invoice_dt),
             remarks: selItm.remarks,
           }
@@ -373,6 +368,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
         this.customerCodeControl.setValue(selItm.customer_company);
         // this.currencyControl.setValue(selItm.currency);
       }
+      
     });
 
   }
