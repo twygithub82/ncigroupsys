@@ -373,7 +373,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     const where: any = {};
     this.selectedEstimateItem = undefined;
 
-    if (this.searchForm?.invalid) return;
+    if (this.searchForm?.invalid){
+      this.searchForm.markAllAsTouched();
+      return;
+    } 
     // this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};

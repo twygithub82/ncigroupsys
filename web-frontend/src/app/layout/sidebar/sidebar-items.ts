@@ -532,7 +532,7 @@ export const ROUTES: RouteInfo[] = [
   {
     path: "admin/cleaning",
     title: "MENUITEMS.CLEANING.TEXT",
-    iconType: "material",
+    iconType: "material-symbols-outline",
     icon: "water_drop",
     class: "menu-toggle",
     groupTitle: false,

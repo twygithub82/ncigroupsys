@@ -115,6 +115,7 @@ constructor(item: Partial<InventoryYearly> = {}) {
   gate_out_inventory?:InventoryYearly;
   repair_yearly_inventory?:InventoryYearly;
   steaming_yearly_inventory?:InventoryYearly;
+  residue_yearly_inventory?:InventoryYearly;
   constructor(item: Partial<ManagementReportYearlyInventory> = {}) {
     this.cleaning_yearly_inventory=item.cleaning_yearly_inventory;
     this.depot_yearly_inventory=item.depot_yearly_inventory;
@@ -122,6 +123,7 @@ constructor(item: Partial<InventoryYearly> = {}) {
     this.gate_out_inventory=item.gate_out_inventory;
     this.repair_yearly_inventory=item.repair_yearly_inventory;
     this.steaming_yearly_inventory=item.steaming_yearly_inventory;
+    this.residue_yearly_inventory=item.residue_yearly_inventory;
     } 
  }
 
@@ -192,6 +194,7 @@ export class ManagementReportMonthlyInventory{
   cleaning_inventory?:MonthlyReportItem[];
   repair_inventory?:RepairMonthlyReportItem[];
   steaming_inventory?:MonthlyReportItem[];
+  residue_inventory?:MonthlyReportItem[];
   gate_in_out_inventory?:GateIOInventoryItem;
   
   constructor(item: Partial<ManagementReportMonthlyInventory> = {}) {
@@ -417,6 +420,7 @@ export class InventoryAnalyzer {
       { name: 'gateOut', data: data.gate_out_inventory?.inventory_per_month },
       { name: 'repair', data: data.repair_yearly_inventory?.inventory_per_month },
       { name: 'steaming', data: data.steaming_yearly_inventory?.inventory_per_month },
+       { name: 'residue', data: data.residue_yearly_inventory?.inventory_per_month },
     ];
 
     // Populate monthlyData with type-safe assignments
@@ -999,6 +1003,12 @@ export const GET_MANAGEMENT_REPORT_MONTHLY_INVENTORY_REPORT = gql`
         date
         day
       }
+      residue_inventory {
+        approved_count
+        completed_count
+        date
+        day
+      }
     }
   }
 `
@@ -1057,6 +1067,16 @@ export const GET_MANAGEMENT_REPORT_YEARLY_INVENTORY_REPORT = gql`
         }
       }
       steaming_yearly_inventory {
+        average_count
+        total_count
+        inventory_per_month {
+          count
+          key
+          name
+          percentage
+        }
+      }
+      residue_yearly_inventory {
         average_count
         total_count
         inventory_per_month {

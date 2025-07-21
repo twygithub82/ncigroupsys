@@ -42,7 +42,10 @@
               <i-feather [name]="sidebarItem.icon" class="sidebarIcon"></i-feather>
               }
               @else if(sidebarItem.iconType == 'material') {
-              <mat-icon class="sidebarIcon font-20 material-symbols-outlined">{{sidebarItem.icon}}</mat-icon>
+              <mat-icon class="sidebarIcon font-20  material-icons-outlined">{{sidebarItem.icon}}</mat-icon>
+              }
+              @else if(sidebarItem.iconType == 'material-symbols-outline') {
+                <mat-icon class="sidebarIcon font-20  material-symbols-outlined">{{sidebarItem.icon}}</mat-icon>
               }
               @else if(sidebarItem.iconType == 'fas') {
               <i [ngClass]="['sidebarIcon', 'font-20', sidebarItem.icon]"></i>

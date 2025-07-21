@@ -1215,17 +1215,17 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   // var base64img = await Utility.convertToImage(this.pdfTable.nativeElement,"jpeg");
 
    if (this.chartLine?.nativeElement) {
-    // pdf.addPage();
-    // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-    //  pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-    //  startY=topMargin+20;
+    pdf.addPage();
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+     startY=topMargin+20;
     const canvas = this.chartLine.nativeElement;
     const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
     const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
     const aspectRatio = imgInfo.width / imgInfo.height;
     let imgHeight1 = chartContentWidth / aspectRatio;
-    pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-    // await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
+   // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+     await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
 
   }
 
