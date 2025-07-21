@@ -48,6 +48,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { UpdateInvoicesDialogComponent } from '../form-dialog/update-invoices.component';
+import { tree } from 'd3';
 
 @Component({
   selector: 'app-invoices',
@@ -1062,6 +1063,14 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     return this.selection.selected.some(s => s.guid === row.guid);
   }
 
+  hasSelectedItem(): boolean {
+    // return !this.selection.hasValue() || !this.selection.selected.every((item) => {
+    //   const index: number = this.soList.findIndex((d) => d === item);
+    //   return this.soDS.canCancel(this.soList[index]);
+    // });
+    return this.selection.selected.length > 0 ? true : false;
+  }
+
   handleDelete(event: Event) {
     event.preventDefault(); // Prevents the form submission
     if (this.selection.selected.length === 0) return;
@@ -1073,7 +1082,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_REMOVE_INVOICES,
+        width: '380px',
+        headerText: this.translatedLangText.CONFIRM_DELETE,
         action: 'delete',
       },
       direction: tempDirection
@@ -1107,8 +1117,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
     if (billItems.length === 0) return;
     const dialogRef = this.dialog.open(UpdateInvoicesDialogComponent, {
-      width: '700px',
-      height: '650px',
+      width: '55vw',
+      //height: '650px',
       data: {
         action: 'update',
         langText: this.langText,
@@ -1307,13 +1317,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
   distinctSOT(estimate: any[], sot_guids: string[]): string[] {
     //var sGuids:string[]=sot_guids;
-
     var distinctSotGuids = [... new Set(estimate.map(item => item.storing_order_tank?.guid))];
     const sGuids = [...new Set([...sot_guids, ...distinctSotGuids])];
-
     return sGuids;
-
   }
+
   calculateCleaningCost(items: InGateCleaningItem[], rep_bill_items: report_billing_item[]) {
     var retval: string = "";
 

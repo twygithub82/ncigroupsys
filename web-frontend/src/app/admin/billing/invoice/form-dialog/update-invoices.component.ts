@@ -87,8 +87,10 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     // 'img',
     'inv_dt',
     'inv_no',
-    'cust_code',
+    'inv_type',
+    //'cust_code',
     'cust_name',
+    'curcy'
 
 
     // 'bDate',
@@ -136,6 +138,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     HEADER_OTHER: 'COMMON-FORM.CARGO-OTHER-DETAILS',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
+    CUSTOMER: 'COMMON-FORM.CUSTOMER',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
     HAULIER: 'COMMON-FORM.HAULIER',
@@ -210,6 +213,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     INVOICES: 'MENUITEMS.BILLING.LIST.INVOICES',
     INVOICE_NO: 'COMMON-FORM.INVOICE-NO',
     INVOICE_DATE: 'COMMON-FORM.INVOICE-DATE',
+    INVOICE_TYPE: 'COMMON-FORM.INVOICE-TYPE',
     CURRENCY: 'COMMON-FORM.CURRENCY',
     BILLING_BRANCH: 'COMMON-FORM.BILLING-BRANCH',
     CONVERSION_CURRENCY: 'COMMON-FORM.CONVERSION-CURRENCY',
@@ -220,6 +224,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   currencyList?: CurrencyItem[] = [];
   selectedItems: BillingItem[];
+  maxManuDOMDt: Date = new Date();
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
