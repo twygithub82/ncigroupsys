@@ -1127,9 +1127,9 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         langText: this.langText,
         selectedItems: billItems
       },
-      position: {
-        top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-      }
+      // position: {
+      //   top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      // }
 
     });
 

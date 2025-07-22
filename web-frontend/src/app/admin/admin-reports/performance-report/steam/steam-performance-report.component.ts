@@ -175,7 +175,7 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-
+  maxManuDOMDt: Date = new Date();
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;

@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div >
+    <div>
       <mat-accordion>
         <mat-expansion-panel expanded="true">
           <mat-expansion-panel-header>
@@ -22,19 +22,7 @@
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <div class="row">
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                  <input matInput formControlName="tank_no">
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                  <input matInput formControlName="eir_no">
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                   <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -48,19 +36,7 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.CLEANING_PROCESS}}</mat-label>
-                  <mat-select formControlName="clean_process">
-                    @for (prc of cleanProcessList; track prc) {
-                    <mat-option [value]="prc">
-                      {{prc.description}}
-                    </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CARGO}}</mat-label>
                   <input matInput formControlName="cargo" [matAutocomplete]="cargoCode">
@@ -73,6 +49,14 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
+
+              <!-- <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+                  <input matInput formControlName="tank_no">
+                </mat-form-field>
+              </div> -->
+
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEANING_PROCESS}}</mat-label>
@@ -85,7 +69,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEANING_BAY}}</mat-label>
                   <mat-select formControlName="team" multiple>
@@ -97,24 +81,27 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="allocation_picker" required>
-                    <input matStartDate placeholder="Start date" formControlName="cln_dt_start" required>
-                    <input matEndDate placeholder="End date" formControlName="cln_dt_end" required>
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="allocation_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #allocation_picker></mat-date-range-picker>
+                  <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+                  <input matInput formControlName="eir_no">
                 </mat-form-field>
-                <!-- @if ((searchForm?.get('cln_dt_start')?.hasError('required') && searchForm?.get('cln_dt_start')?.touched) 
-                   ||(searchForm?.get('cln_dt_end')?.hasError('required') && searchForm?.get('cln_dt_end')?.touched) ) {
-                  <mat-error>
-                    {{ translatedLangText.CLEAN_DATE }} {{ translatedLangText.SO_REQUIRED }}
-                  </mat-error>
-                } -->
-              </div>
-              <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+              </div> -->
+
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.CLEANING_PROCESS}}</mat-label>
+                  <mat-select formControlName="clean_process">
+                    @for (prc of cleanProcessList; track prc) {
+                    <mat-option [value]="prc">
+                      {{prc.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div> -->
+
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CLEANER}}</mat-label>
                   <input matInput formControlName="cleaner" [matAutocomplete]="cleanerName">
@@ -128,7 +115,18 @@
                 </mat-form-field>
               </div>
 
-              <!-- <div
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.CLEAN_DATE}}</mat-label>
+                  <mat-date-range-input [rangePicker]="allocation_picker" [max]="maxManuDOMDt" required>
+                    <input matStartDate placeholder="Start date" formControlName="cln_dt_start" required>
+                    <input matEndDate placeholder="End date" formControlName="cln_dt_end" required>
+                  </mat-date-range-input>
+                  <mat-datepicker-toggle matSuffix [for]="allocation_picker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #allocation_picker></mat-date-range-picker>
+                </mat-form-field>
+              </div>
+              <!-- <div 
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
                   [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.GENERATE_REPORT}}>
@@ -230,7 +228,7 @@
             </ng-container>
             <!-- ID Column -->
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
@@ -279,7 +277,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_cargo">
-              <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-2'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
                 {{translatedLangText.LAST_CARGO}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -374,8 +372,9 @@
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSizeInfo.defaultSize"
-          [pageSizeOptions]="pageSizeInfo.pageSize" (page)="onPageEvent($event)" hidden>
+        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex"
+          [pageSize]="pageSizeInfo.defaultSize" [pageSizeOptions]="pageSizeInfo.pageSize" (page)="onPageEvent($event)"
+          hidden>
         </mat-paginator>
       </div>
     </div>

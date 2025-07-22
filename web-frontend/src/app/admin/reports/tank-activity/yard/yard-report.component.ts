@@ -95,6 +95,11 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     // 'action'
   ];
 
+  availableReportTypes: string[] = [
+    'MASTER_OUT',
+    'MASTER_IN',
+  ]
+
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -158,6 +163,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
+  maxManuDOMDt: Date = new Date();
 
 
   sotDS: StoringOrderTankDS;
@@ -201,7 +207,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   invoiceDateControl = new FormControl('', [Validators.required]);
   invoiceTotalCostControl = new FormControl('0.00');
   noCond: boolean = false;
-  isGeneratingReport=false;
+  isGeneratingReport = false;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -368,7 +374,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   }
 
   search(report_type: number) {
-    this.isGeneratingReport=true;
+    this.isGeneratingReport = true;
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
@@ -379,10 +385,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
     var invType: string = this.inventoryTypeCvList.find(i => i.code_val == (this.searchForm!.get('inv_type')?.value))?.description || '';
 
-   // where.tank_status_cv = { in: TANK_STATUS_IN_YARD };
+    // where.tank_status_cv = { in: TANK_STATUS_IN_YARD };
     if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
       queryType = 2;
-    //  where.tank_status_cv = { eq: 'RELEASED' };
+      //  where.tank_status_cv = { eq: 'RELEASED' };
     }
 
     if (this.searchForm!.get('tank_no')?.value) {
@@ -431,10 +437,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       cond_counter++
     }
     this.noCond = (cond_counter === 0);
-    if (this.noCond)  {
-      this.isGeneratingReport=false;
+    if (this.noCond) {
+      this.isGeneratingReport = false;
       return;
-    } 
+    }
 
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, report_type, queryType, invType, date);
@@ -608,10 +614,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
 
   ProcessReportCustomerTankActivity(invType: string, date: string, report_type: number, queryType: number) {
-    if (this.sotList.length === 0) 
-      { this.isGeneratingReport=false;
-        return;
-      }
+    if (this.sotList.length === 0) {
+      this.isGeneratingReport = false;
+      return;
+    }
 
     var report_customer_tank_acts: report_customer_tank_activity[] = [];
 
@@ -671,7 +677,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
 
@@ -701,11 +707,10 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      this.isGeneratingReport=false;
+      this.isGeneratingReport = false;
     });
   }
-  onTabFocused()
-  {
+  onTabFocused() {
     this.resetForm();
   }
 
