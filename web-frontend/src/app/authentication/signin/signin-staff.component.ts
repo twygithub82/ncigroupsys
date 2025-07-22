@@ -78,7 +78,7 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     const rememberedUsername = this.authService.getRememberedUsername();
     this.authForm = this.formBuilder.group({
       username: [rememberedUsername, Validators.required],
-      password: ['P@ssw0rd', Validators.required], // TODO:: remove after
+      password: ['', Validators.required],
     });
 
     if (rememberedUsername) {
