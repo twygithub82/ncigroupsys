@@ -30,6 +30,7 @@ export const APP_ROUTE: Route[] = [
     {
         path: 'kiosk',
         component: KioskLayoutComponent,
+        canActivate: [AuthGuard],
         children: [
             {
                 path: ':kioskId',

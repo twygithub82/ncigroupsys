@@ -16,6 +16,7 @@ export class User {
   expiration!: string;
   refreshToken!: string;
   isStaff!: boolean;
+  userdata!: [];
 }
 
 export class UserToken {
