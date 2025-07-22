@@ -443,6 +443,11 @@ export const GET_RESIDUE_EST_JOB_ORDER = gql`
         unit_type_guid
         update_by
         update_dt
+        customer_company {
+          guid
+          code
+          name
+        }
         tariff_cleaning {
           guid
           open_on_gate_cv
