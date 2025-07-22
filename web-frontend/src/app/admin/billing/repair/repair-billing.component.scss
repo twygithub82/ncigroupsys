@@ -5,28 +5,30 @@
     text-overflow: ellipsis; /* Adds "..." if text is too long */
 }
 
-.custom-title {
-    font-size: 16px; /* Increase font size */
-    font-weight: bold;
-   // border: 2px solid black; /* Add a border */
-    padding: 2px; /* Add some spacing */
-    display: inline-block; /* Ensures border wraps around text properly */
-    //border-radius: 4px; /* Optional: Rounded corners */
-   // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3); /* Box shadow for panel */
-    //text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow effect */
-}
+// .custom-title {
+//     font-size: 16px; /* Increase font size */
+//     font-weight: bold;
+//    // border: 2px solid black; /* Add a border */
+//     padding: 2px; /* Add some spacing */
+//     display: inline-block; /* Ensures border wraps around text properly */
+//     //border-radius: 4px; /* Optional: Rounded corners */
+//    // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3); /* Box shadow for panel */
+//     //text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow effect */
+// }
 
 /* Reduce the gap between title and description */
 .mat-expansion-panel-header .mat-panel-title,
 .mat-expansion-panel-header .mat-panel-description {
   margin-right: 8px; /* Adjust as needed */
+  flex-grow: 0.4 !important;
 }
 
 /* Ensure the description content is aligned closely */
 .mat-expansion-panel-header .mat-panel-description {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Adjust as needed */
+  // display: flex;
+  // align-items: center;
+  // gap: 8px; /* Adjust as needed */
+   padding-left: 3%;
 }
 
 .card-aligned{

@@ -29,6 +29,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
+import { Underline } from 'angular-feather/icons';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -132,6 +133,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     MANLID_COVER: 'COMMON-FORM.MANLID-COVER',
     MANLID_SEAL: 'COMMON-FORM.MANLID-SEAL',
     PV: 'COMMON-FORM.PV',
+    S_N: 'COMMON-FORM.S_N',
     SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
     BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
     RESIDUE: 'COMMON-FORM.RESIDUE',
@@ -230,17 +232,16 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     OF: 'COMMON-FORM.OF',
     INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
     CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE: 'COMMON-FORM.IN-DATE',
-    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    LOLO: 'COMMON-FORM.LOLO',
+    STEAM: 'COMMON-FORM.STEAM-REPORT',
+    DATE_IN: 'COMMON-FORM.DATE-IN',
+    DATE_OUT: 'COMMON-FORM.DATE-OUT',
     TOTAL: 'COMMON-FORM.TOTAL',
     DAYS: 'COMMON-FORM.DAYS',
-    CLEAN_COST: 'COMMON-FORM.CLEAN-COST-REPORT',
-    REPAIR_COST: 'COMMON-FORM.REPAIR-COST-REPORT',
-    PREINSP_COST: 'COMMON-FORM.PREINSP-COST-REPORT',
-    STORAGE_COST: 'COMMON-FORM.STORAGE-COST-REPORT',
+    CLEAN: 'COMMON-FORM.CLEAN',
+    REPAIR: 'COMMON-FORM.REPAIR-REPORT',
+    PRE_INSPECTION: 'COMMON-FORM.PRE-INSPECTION',
+    STORAGE: 'MENUITEMS.BILLING.LIST.STORAGE',
     GATEIO: 'COMMON-FORM.GATEIO',
     GATEIO_S: 'COMMON-FORM.GATEIO-S'
   }
@@ -888,29 +889,39 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.JOB_NO,
-      this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
-      this.translatedLangText.LAST_CARGO, this.translatedLangText.IN_DATE,
-      this.translatedLangText.OUT_DATE, this.translatedLangText.CLEAN_COST,
-      this.translatedLangText.REPAIR_COST, this.translatedLangText.PREINSP_COST,
-      this.translatedLangText.LOLO_COST, this.translatedLangText.DAYS,
-      this.translatedLangText.STORAGE_COST, this.translatedLangText.STEAM_COST,
-      this.translatedLangText.RESIDUE_COST, this.translatedLangText.GATEIO_S,
-      this.translatedLangText.TOTAL
+      // this.translatedLangText.S_N, this.translatedLangText.JOB_NO,
+      // this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
+      // this.translatedLangText.LAST_CARGO, this.translatedLangText.DATE_IN,
+      // this.translatedLangText.DATE_OUT, this.translatedLangText.CLEAN,
+      // this.translatedLangText.REPAIR, this.translatedLangText.PRE_INSPECTION,
+      // this.translatedLangText.LOLO, this.translatedLangText.DAYS,
+      // this.translatedLangText.STORAGE, this.translatedLangText.STEAM,
+      // this.translatedLangText.RESIDUE, this.translatedLangText.GATEIO_S,
+      // this.translatedLangText.TOTAL
+
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
+      this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
+      this.translatedLangText.JOB_NO, this.translatedLangText.DATE_IN,
+      this.translatedLangText.DATE_OUT, this.translatedLangText.GATEIO_S, 
+      this.translatedLangText.PRE_INSPECTION, 
+      this.translatedLangText.LOLO,  this.translatedLangText.DAYS,
+      this.translatedLangText.STORAGE, this.translatedLangText.STEAM, 
+      this.translatedLangText.CLEAN, this.translatedLangText.RESIDUE,
+      this.translatedLangText.REPAIR, this.translatedLangText.TOTAL
     ]];
 
     const comStyles: any = {
-      0: { halign: 'center', valign: 'middle', cellWidth: 6, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', cellWidth: 20, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 21, minCellHeight: minHeightBodyCell },
-      4: { halign: 'left', valign: 'middle', cellWidth: 37, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', cellWidth: 22, minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle', cellWidth: 42, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       12: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       13: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
@@ -937,7 +948,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     var gap = 8;
 
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40, 14, false);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
@@ -998,13 +1009,13 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         for (let b = 0; b < (cust.items?.length || 0); b++) {
           var itm = cust.items?.[b]!;
           data.push([
-            (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
-            itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
-            (itm.clean_cost === "0.00" ? '' : itm.clean_cost), (itm.repair_cost === "0.00" ? '' : itm.repair_cost),
-            (itm.preins_cost === "0.00" ? '' : itm.preins_cost), (itm.lolo_cost === "0.00" ? '' : itm.lolo_cost),
-            itm.days, (itm.storage_cost === "0.00" ? '' : itm.storage_cost), (itm.steam_cost === "0.00" ? '' : itm.steam_cost),
-            (itm.residue_cost === "0.00" ? '' : itm.residue_cost), (itm.gateio_cost === "0.00" ? '' : itm.gateio_cost),
-            (itm.total === "0.00" ? '' : itm.total),
+            (b + 1).toString(), itm.tank_no || "", itm.eir_no || "", itm.last_cargo || "",
+            itm.job_no || "", itm.in_date || "", itm.out_date || "",
+            (itm.gateio_cost === "0.00" ? '' : itm.gateio_cost), (itm.preins_cost === "0.00" ? '' : itm.preins_cost),
+            (itm.lolo_cost === "0.00" ? '' : itm.lolo_cost), itm.days,
+            (itm.storage_cost === "0.00" ? '' : itm.storage_cost), (itm.steam_cost === "0.00" ? '' : itm.steam_cost),
+            (itm.clean_cost === "0.00" ? '' : itm.clean_cost), (itm.residue_cost === "0.00" ? '' : itm.residue_cost), 
+            (itm.repair_cost === "0.00" ? '' : itm.repair_cost), (itm.total === "0.00" ? '' : itm.total),
           ]);
         }
         pdf.setDrawColor(0, 0, 0); // red line color
@@ -1039,7 +1050,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin, 14, false);
               }
             }
           },
