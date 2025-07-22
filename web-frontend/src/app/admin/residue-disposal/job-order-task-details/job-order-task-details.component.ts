@@ -212,7 +212,8 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     PAUSE_JOB: 'COMMON-FORM.PAUSE-JOB',
     COMPLETE: 'COMMON-FORM.COMPLETE',
     JOB_ORDER_NO: 'COMMON-FORM.JOB-ORDER-NO',
-    DURATION: 'COMMON-FORM.DURATION'
+    DURATION: 'COMMON-FORM.DURATION',
+    APPROVED: 'COMMON-FORM.APPROVED',
   }
 
   clean_statusList: CodeValuesItem[] = [];

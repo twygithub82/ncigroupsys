@@ -5,18 +5,13 @@ import { InGateDetailsComponent } from "./in-gate-details/in-gate-details.compon
 
 export const KIOSK_ROUTE: Routes = [
   {
-    path: '',
-    redirectTo: 'in-gate',
-    pathMatch: 'full'
-  },
-  {
     path: "in-gate",
     component: InGateComponent,
-    canActivate: [],
+    canActivate: [AuthGuard],
   },
   {
     path: "in-gate-details/:id",
     component: InGateDetailsComponent,
-    canActivate: [],
+    canActivate: [AuthGuard],
   },
 ];

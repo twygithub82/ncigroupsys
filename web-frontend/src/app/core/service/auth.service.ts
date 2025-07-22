@@ -85,6 +85,7 @@ export class AuthService {
             usr.expiration = user.expiration;
             usr.refreshToken = user.refreshToken;
             usr.isStaff = isStaff;
+            usr.userdata = JSON.parse(decodedToken.userdata);
 
             localStorage.setItem(this.userKey, JSON.stringify(usr));
             this.currentUserSubject.next(usr);
@@ -283,6 +284,33 @@ export class AuthService {
 
     const regexes = expectedPatterns.map(p => this.getRegexFromPattern(p));
     return userFunctions.some(func => regexes.some(r => r.test(func)));
+  }
+
+  isKioskUserInGate() {
+    const userRoles = this.currentUserValue.roles;
+    return userRoles.some((func: string) => func == 'KIOSK_IN_GATE' || func == 'KIOSK_OUT_GATE')
+  }
+
+  isKioskUserOutGate() {
+    const userRoles = this.currentUserValue.roles;
+    return userRoles.some((func: string) => func == 'KIOSK_IN_GATE' || func == 'KIOSK_OUT_GATE')
+  }
+
+  getLandingPage() {
+    if (this.currentUserValue.token && this.isKioskUserInGate()) {
+      const kioskYard: any[] = this.currentUserValue?.userdata?.filter((x: any) => x.department == "YARD")
+      if (kioskYard?.length) {
+        return `/kiosk/${kioskYard[0].description}/in-gate`.toLowerCase();
+      }
+    }
+    
+    if (this.currentUserValue.token && this.isKioskUserOutGate()) {
+      const kioskYard: any[] = this.currentUserValue?.userdata?.filter((x: any) => x.department == "YARD")
+      if (kioskYard?.length) {
+        return `/kiosk/${kioskYard[0].description}/out-gate`.toLowerCase();
+      }
+    }
+    return '/';
   }
 
   private getRegexFromPattern(pattern: string): RegExp {
