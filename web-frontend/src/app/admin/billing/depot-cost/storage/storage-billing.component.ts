@@ -88,6 +88,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     "customer",
     'eir_no',
     'eir_dt',
+    'days',
     "cost",
     "cutoff_dt",
     "invoice_dt",
@@ -156,8 +157,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     DELETE: 'COMMON-FORM.DELETE',
     BILLING: 'COMMON-FORM.BILLING',
     FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
-    STORAGE: 'COMMON-FORM.STORAGE'
-
+    STORAGE: 'COMMON-FORM.STORAGE',
+    DAYS: 'COMMON-FORM.DAYS'
   }
 
   invForm?: UntypedFormGroup;

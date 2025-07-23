@@ -1,0 +1,178 @@
+<section class="kiosk-content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="pageTitleNew" [items]="[]" [active_item]="''" [showTitle]="true"
+        [showBreadList]="false"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <form class="ms-0" [formGroup]="outGateForm!" (ngSubmit)="onOutGateFormSubmit()" #formDirective="ngForm">
+          <div class="row d-flex justify-content-center">
+            <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12">
+              <div class="card">
+                <div class="header">
+                  <h2>
+                    {{translatedLangText.TANK_DETAILS}}
+                  </h2>
+                </div>
+                <div class="body">
+                  @if (sotDS.loading$ | async) {
+                  <div class="tbl-spinner">
+                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                    </mat-progress-spinner>
+                  </div>
+                  }
+                  @if (!(sotDS.loading$ | async)) {
+                  <mat-card-content>
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
+                            <span class="contact-detail-label">{{translatedLangText.TANK_NO}}:</span>
+                            <span class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</span>
+                          </div>
+                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
+                            <span>{{translatedLangText.TANK_NO}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
+                            <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
+                          </div> -->
+                        </div>
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
+                            <span class="contact-detail-label">{{translatedLangText.PURPOSE}}:</span>
+                            <span class="contact-detail-info font-bold">{{displayTankPurpose()}}</span>
+                          </div>
+                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
+                            <span>{{translatedLangText.PURPOSE}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
+                            <div class="contact-detail-info font-bold">{{displayTankPurpose()}}</div>
+                          </div> -->
+                        </div>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                            <span class="contact-detail-label">{{translatedLangText.EIR_NO}}:</span>
+                            <span class="contact-detail-info font-bold">{{eir_no}}</span>
+                          </div>
+                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
+                            <span>{{translatedLangText.EIR_NO}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
+                            <span [class]="'font-bold'">{{eir_no || '-'}}</span>
+                          </div> -->
+                        </div>
+                        <div class="row">
+                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <span class="contact-detail-label">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
+                            <span
+                              [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}</span>
+                          </div>
+                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-0 align-right p-0">
+                            <span>{{translatedLangText.CLEANING_CONDITIONS}}:</span>
+                          </div>
+                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
+                            <div class="contact-detail-info">
+                              <span
+                                [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{storingOrderTankItem?.clean_status_cv
+                                ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
+                            </div>
+                          </div> -->
+                        </div>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center">
+            <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12">
+              <div class="card">
+                <div class="header">
+                  <h2>
+                    {{translatedLangText.OUT_GATE}} {{translatedLangText.DETAILS}}
+                  </h2>
+                </div>
+                <div class="body">
+                  @if (sotDS.loading$ | async) {
+                  <div class="tbl-spinner">
+                    <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                    </mat-progress-spinner>
+                  </div>
+                  }
+                  @if (!(sotDS.loading$ | async)) {
+                  <mat-card-content>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                        <div class="row">
+                          <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                            <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.HAULIER}}</mat-label>
+                              <input matInput formControlName="haulier" class="text-uppercase"
+                                (input)="onAlphaOnly($event, 'haulier')" required>
+                            </mat-form-field>
+                          </div>
+                          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                            <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.VEHICLE_NO}}</mat-label>
+                              <input matInput formControlName="vehicle_no" class="text-uppercase"
+                                (input)="onAlphaNumericOnly($event, 'vehicle_no')" required>
+                            </mat-form-field>
+                          </div>
+                          <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 m-b-0">
+                            <mat-form-field class="example-full-width">
+                              <mat-label>{{translatedLangText.DRIVER_NAME}}</mat-label>
+                              <input matInput formControlName="driver_name" class="text-uppercase"
+                                (input)="onAlphaOnly($event, 'driver_name')" required>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="row m-t-10">
+                      <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
+                        <button mat-flat-button aria-label="Back to previous page"
+                          (click)="$event.preventDefault(); goToPrevious()">
+                          <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                        </button>
+                      </div>
+                      <div class=" col-xl-6 col-lg-8 col-md-12 col-sm-12 align-right">
+                        <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
+                          [disabled]="(ogDS.actionLoading$| async)">
+                          <mat-icon>
+                            @if (!(ogDS.actionLoading$ | async)) {
+                            move_to_inbox
+                            } @else if ((ogDS.actionLoading$ | async)) {
+                            <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                            }
+                          </mat-icon>
+                          {{translatedLangText.ACCEPT}}
+                        </button>
+                        <!-- <button mat-flat-button color="primary">
+                              <i class="fas fa-file-alt m-r-10"></i>{{translatedLangText.EIR_FORM}}
+                            </button> -->
+                        <button mat-flat-button class="bg-light-gold m-r-10 accent-light" (click)="resetDialog($event)">
+                          <mat-icon>
+                            close
+                          </mat-icon>
+                          {{translatedLangText.CLEAR_ALL}}
+                        </button>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

@@ -27,10 +27,10 @@
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-          <div class="card">
+          <!-- <div class="card"> -->
             <div class="row">
-              <div class="materialTableHeader">
-              </div>
+              <!-- <div class="materialTableHeader">
+              </div> -->
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="billingItems" matSort
@@ -84,10 +84,10 @@
               </div>
             </div>
 
-          </div>
+          <!-- </div> -->
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right">
+      <div mat-dialog-actions class="mt-2 mb-1 align-right">
         @if (canEdit()) {
         <button mat-flat-button color="primary" class="me-1" (click)="save()">
           <mat-icon>

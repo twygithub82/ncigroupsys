@@ -1752,6 +1752,12 @@ $breakpoints: (
 
 .navbar-header {
   width: 240px;
+
+  @media (max-width: 767.98px) {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .sidebar {
@@ -1792,7 +1798,10 @@ section.content {
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
-  section.content, .ls-closed section.content {
+
+  section.content,
+  .ls-closed section.content {
+    overflow: hidden;
     margin-left: 0px;
     margin-right: 0px;
   }
@@ -2366,6 +2375,10 @@ mat-card-content.tank-card-content {
   height: 100%;
   padding: 20px;
   border: none;
+
+  .mat-icon {
+    color: #8F8C91
+  }
 }
 
 .collapse-menu-button {
@@ -2387,7 +2400,7 @@ mat-card-content.tank-card-content {
   }
 }
 
-@media (min-width: 320px) and (max-width: 480px) {
+@media (min-width: 365px) and (max-width: 480px) {
   .collapse-menu-button {
     height: 100%;
     display: block;
