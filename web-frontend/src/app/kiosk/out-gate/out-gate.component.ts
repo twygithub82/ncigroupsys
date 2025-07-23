@@ -1,7 +1,7 @@
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -17,27 +17,31 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { OutGateDS } from 'app/data-sources/out-gate';
+import { ReleaseOrderSotDS } from 'app/data-sources/release-order-sot';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
-  selector: 'app-in-gate',
+  selector: 'app-out-gate',
   standalone: true,
-  templateUrl: './in-gate.component.html',
-  styleUrl: './in-gate.component.scss',
+  templateUrl: './out-gate.component.html',
+  styleUrl: './out-gate.component.scss',
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -63,36 +67,36 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
     FormsModule,
     MatAutocompleteModule,
     MatDividerModule,
+    GlobalMaxCharDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
   ]
 })
-export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+export class OutGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
+  pageTitle = 'MENUITEMS.INVENTORY.LIST.OUT-GATE'
+
   displayedColumns = [
-    'so_no',
+    'ro_no',
     'tank_no',
     'customer_code',
     'job_no',
     'last_cargo'
   ];
 
-  pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
-  breadcrumsMiddleList = [
-  ]
-
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
-    SO_NO: 'COMMON-FORM.SO-NO',
+    RO_NO: 'COMMON-FORM.RO-NO',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
-    SO_DATE: 'COMMON-FORM.SO-DATE',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
     PURPOSE: 'COMMON-FORM.PURPOSE',
-    ETA_DATE: 'COMMON-FORM.ETA-DATE',
+    EIR_NO: 'COMMON-FORM.EIR-NO',
+    EIR_DATE: 'COMMON-FORM.EIR-DATE',
     NO_RESULT: 'COMMON-FORM.NO-RESULT',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     CANCEL: 'COMMON-FORM.CANCEL',
@@ -102,13 +106,18 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     SEARCH: "COMMON-FORM.SEARCH"
   }
 
-  searchField: string = "";
+  searchForm?: UntypedFormGroup;
+  yardId?: string | null;
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
+  roSotDS: ReleaseOrderSotDS;
+  ogDS: OutGateDS;
+  igDS: InGateDS;
 
   sotList: StoringOrderTankItem[] = [];
 
+  pageStateType = 'OutGate'
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
@@ -117,21 +126,25 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  pageStateType = 'InGate';
+
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private fb: UntypedFormBuilder,
     private apollo: Apollo,
     private translate: TranslateService,
-    private searchStateService: SearchStateService,
+    private searchStateService: SearchStateService
   ) {
     super();
-    searchStateService.clearOtherPages(this.pageStateType);
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
+    this.roSotDS = new ReleaseOrderSotDS(this.apollo);
+    this.ogDS = new OutGateDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -140,32 +153,49 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.initSearchForm();
     this.initializeFilterCustomerCompany();
+    this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
   }
+
+  initSearchForm() {
+    this.searchForm = this.fb.group({
+      search_field: [''],
+    });
+  }
+
   refresh() {
     this.loadData();
   }
 
   public loadData() {
-    // this.subs.sink = this.soDS.searchStoringOrder({}).subscribe(data => {
-    //   if (this.soDS.totalCount > 0) {
-    //     this.soList = data;
-    //   }
-    // });
-  }
-  showNotification(
-    colorName: string,
-    text: string,
-    placementFrom: MatSnackBarVerticalPosition,
-    placementAlign: MatSnackBarHorizontalPosition
-  ) {
-    this.snackBar.open(text, '', {
-      duration: 2000,
-      verticalPosition: placementFrom,
-      horizontalPosition: placementAlign,
-      panelClass: colorName,
-    });
+    this.yardId = this.route.parent?.snapshot.paramMap.get('kioskId')?.toUpperCase();
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
+    }
+
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
+
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      // this.search();
+    }
   }
 
   // export table data in excel file
@@ -198,28 +228,57 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     }
   }
 
+  constructSearchCriteria() {
+    const searchField = this.searchForm?.get('search_field')?.value?.trim();
+    const where: any = {
+      and: [
+        {
+          or: [
+            { tank_status_cv: { eq: "RO_GENERATED" } },
+            { tank_status_cv: { eq: "OUT_GATE" } }
+          ]
+        },
+        {
+          or: [
+            {
+              release_order_sot: {
+                some: {
+                  release_order: {
+                    ro_no: { contains: searchField },
+                    status_cv: { nin: ['CANCELED'] }
+                  },
+                  status_cv: { in: ['WAITING'] }
+                }
+              }
+            },
+            // { storing_order: { so_no: { contains: searchField } } },
+            { tank_no: { contains: Utility.formatContainerNumber(searchField) } },
+            { tank_no: { contains: Utility.formatTankNumberForSearch(searchField) } },
+            { job_no: { contains: searchField } }
+          ]
+        }
+      ]
+    };
+    this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
+  }
+
   search() {
-    if (this.searchField) {
-      const searchField = this.searchField;
-      const where: any = {
-        and: [
-          { status_cv: { eq: "WAITING" } },
-          {
-            or: [
-              { storing_order: { so_no: { contains: searchField } } },
-              { tank_no: { contains: searchField } },
-              { job_no: { contains: searchField } }
-            ]
-          }
-        ]
-      };
-      this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
-      this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
-    }
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksInGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.searchStateService.setCriteria(this.pageStateType, this.searchForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.sotDS.searchStoringOrderTanksOutGate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
@@ -276,10 +335,23 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   }
 
   resetForm() {
-    this.searchField = '';
+    this.searchForm?.patchValue({
+      search_field: '',
+    });
   }
+
   onTabFocused() {
     this.resetForm();
     this.search();
+  }
+
+  resetDialog(event: Event) {
+    event.preventDefault(); // Prevents the form submission
+    this.resetForm();
+    this.search();
+  }
+
+  goToOutGateDetails(guid: string) {
+    this.router.navigate([`/kiosk/${this.yardId?.toLowerCase()}/out-gate-details`, guid]);
   }
 }

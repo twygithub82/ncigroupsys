@@ -44,7 +44,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer-invoices-pdf/customer-invoices-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility,BILLING_TANK_STATUS } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { UpdateInvoicesDialogComponent } from '../form-dialog/update-invoices.component';
@@ -395,6 +395,21 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     itm.or.push({ preinsp_billing_sot: { any: true } });
     itm.or.push({ storage_billing_sot: { any: true } });
     where.and.push(itm);
+
+
+      const itm1:any={ or: [] };
+    
+          itm1.or.push({ cleaning: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ repair_customer: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ repair_owner: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ residue: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ steaming: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ gateio_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ lolo_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ preinsp_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+          itm1.or.push({ storage_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+         where.and.push(itm);
+
 
 
     where.guid = { neq: null };

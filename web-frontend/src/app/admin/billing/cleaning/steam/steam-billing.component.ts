@@ -42,7 +42,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -394,12 +394,16 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     where.bill_to_guid = { neq: null };
 
 
-    if (this.searchForm!.get('depot_status_cv')?.value != "ALL") {
+    if (!where.storing_order_tank) where.storing_order_tank = {};
+         where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS};
+
+
+    if (this.searchForm?.get('depot_status_cv')?.value != "") {
       if (!where.storing_order_tank) where.storing_order_tank = {};
       if (!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv = {};
       var cond: any = { in: TANK_STATUS_POST_IN_YARD };
       if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
-        cond = { in: TANK_STATUS_IN_YARD };
+        cond = { in: BILLING_TANK_STATUS_IN_YARD };
       }
 
       where.storing_order_tank.tank_status_cv = cond;
