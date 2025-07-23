@@ -42,7 +42,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { PendingInvoiceCostDetailPdfComponent } from 'app/document-template/pdf/pending-invoice-cost-detail-pdf/pending-invoice-cost-detail.component';
 import { PendingSummaryPdfComponent } from 'app/document-template/pdf/pending-summary-pdf/pending-summary-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { Utility,BILLING_TANK_STATUS } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
@@ -349,6 +349,21 @@ export class PendingContentComponent extends UnsubscribeOnDestroyAdapter impleme
       }]
     });
     // where.and.push(itm);
+
+      const itm1:any={ or: [] };
+        
+              itm1.or.push({ cleaning: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ repair_customer: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ repair_owner: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ residue: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ steaming: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ gateio_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ lolo_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ preinsp_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+              itm1.or.push({ storage_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+             where.and.push(itm);
+
+             
 
     if (this.searchForm!.get('cutoff_dt')?.value) {
       const approveSearch: any = {};

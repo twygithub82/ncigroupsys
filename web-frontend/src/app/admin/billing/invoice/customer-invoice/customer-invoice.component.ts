@@ -42,7 +42,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer-invoices-pdf/customer-invoices-pdf.component';
-import { Utility } from 'app/utilities/utility';
+import { Utility,BILLING_TANK_STATUS,BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -527,7 +527,19 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
     itm.or.push({ preinsp_billing_sot: { any: true } });
     itm.or.push({ storage_billing_sot: { any: true } });
     where.and.push(itm);
+    
+      const itm1:any={ or: [] };
 
+      itm1.or.push({ cleaning: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ repair_customer: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ repair_owner: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ residue: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ steaming: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ gateio_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ lolo_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ preinsp_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+      itm1.or.push({ storage_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
+     where.and.push(itm);
 
     where.guid = { neq: null };
     if (this.searchForm!.get('tank_no')?.value) {

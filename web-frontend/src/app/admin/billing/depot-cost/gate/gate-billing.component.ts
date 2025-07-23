@@ -41,7 +41,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from "./form-dialog/form-dialog.component";
@@ -420,13 +420,14 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
-
+   where.storing_order_tank = {};
+    where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
       if (!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv = {};
       var cond: any = { in: TANK_STATUS_POST_IN_YARD };
       if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
-        cond = { in: TANK_STATUS_IN_YARD };
+        cond = { in: BILLING_TANK_STATUS_IN_YARD };
       }
 
 

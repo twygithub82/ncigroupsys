@@ -1859,6 +1859,25 @@ export const TANK_STATUS_IN_YARD = [
   'OUT_SURVEY',
 ]
 
+export const BILLING_TANK_STATUS_IN_YARD=[
+  'STEAM',
+  'RESIDUE',
+  'CLEANING',
+  'REPAIR',
+  'STORAGE',
+ 
+]
+
+export const BILLING_TANK_STATUS=[
+  'RELEASED',
+  'STEAM',
+  'RESIDUE',
+  'CLEANING',
+  'REPAIR',
+  'STORAGE',
+ 
+]
+
 export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE","COMPLETED", "ASSIGNED", "JOB_IN_PROGRESS"];
 
 export const TANK_STATUS_POST_IN_YARD = [

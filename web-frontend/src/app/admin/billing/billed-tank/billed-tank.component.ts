@@ -35,7 +35,7 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { pageSizeInfo, Utility } from 'app/utilities/utility';
+import { pageSizeInfo, Utility ,BILLING_TANK_STATUS} from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -300,7 +300,7 @@ export class BilledTankComponent extends UnsubscribeOnDestroyAdapter implements 
   }
 
   search() {
-    const where: any = {};
+    const where: any = {tank_status_cv:{in:BILLING_TANK_STATUS}};
 
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
