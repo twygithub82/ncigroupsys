@@ -866,7 +866,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         const pagePositions: { page: number; x: number; y: number }[] = [];
      //   const progressValue = 100 / cardElements.length;
       
-        const reportTitle = this.GetReportTitle();
+        const reportTitle = this.GetReportTitle() + " : " + `${this.invType}`;
         const headers = [[
           this.translatedLangText.S_N,this.translatedLangText.TANK_NO, 
           this.translatedLangText.IN_DATE,this.translatedLangText.TAKE_IN_REFERENCE, 
@@ -931,8 +931,8 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date}`;
         Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
   
-        const invType=`(${this.invType})`
-        Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,lastTableFinalY-2,9);
+        // const invType=`(${this.invType})`
+        // Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,lastTableFinalY-2,9);
 
         var CurrentPage=1;
         var buffer=20
@@ -1440,7 +1440,7 @@ addHeader_r1(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, r
    }
    GetReportTitle():string
    {
-     return `${this.translatedLangText.YARD_REPORT} - ${this.translatedLangText.DETAILS}`
+     return `${this.translatedLangText.YARD_REPORT}`
    }
 
    removeDeletedInGateAndOutGate(sot:StoringOrderTankItem)

@@ -1162,7 +1162,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_ACTIVITY}: ${this.translatedLangText.CUSTOMER}`
+    return `${this.translatedLangText.CLEANING_ACTIVITY} : ${this.translatedLangText.CUSTOMER}`
   }
 
   GetWiseTitle(): string {

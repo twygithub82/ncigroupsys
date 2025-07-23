@@ -243,6 +243,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
     YARD_REPORT:'COMMON-FORM.YARD-REPORT',
     SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
+    YARD:'COMMON-FORM.YARD',
     SUMMARY : 'COMMON-FORM.SUMMARY',
     INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
     STEAM:"COMMON-FORM.STEAM",
@@ -843,12 +844,12 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         let reportTitleCompanyLogo = 32;
         let tableHeaderHeight = 12;
         let tableRowHeight = 8.5;
-        let minHeightBodyCell=9;
+        let minHeightBodyCell=5;
       
         const pagePositions: { page: number; x: number; y: number }[] = [];
        // const progressValue = 100 / cardElements.length;
       
-        const reportTitle = this.GetReportTitle();
+        const reportTitle = this.GetReportTitle() + " : " + `${this.invType}`;
         const headers = [[
           this.translatedLangText.S_N,this.translatedLangText.CUSTOMER_CODE,
           this.translatedLangText.CUSTOMER, this.translatedLangText.NO_OF_TANKS
@@ -856,7 +857,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   
         const comStyles:any= {
           // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center',valign:'middle' , minCellHeight:minHeightBodyCell },
+          0: { halign: 'center',valign:'middle' , cellWidth: 10, minCellHeight:minHeightBodyCell },
           1: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
           2: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
           3: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
@@ -893,8 +894,8 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
         const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date}`;
         Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin+5,startY-3,8);
 
-        const invType=`(${this.invType})`
-        Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,startY-11,9);
+        //const invType=`(${this.invType})`
+        //Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,startY-11,9);
 
     
         var total_tank=0;
@@ -1330,7 +1331,7 @@ async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.YARD_REPORT} - ${this.translatedLangText.SUMMARY}`
+    return `${this.translatedLangText.YARD} ${this.translatedLangText.SUMMARY}`
   }
 
 }

@@ -13,12 +13,12 @@
                   <mat-icon>receipt</mat-icon>
                 </button>
               </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.SUMMARY_REPORT">
+              <!-- <div class="m-l-10" [matTooltip]="translatedLangText.SUMMARY_REPORT">
                 <button mat-mini-fab class="orange-button" (click)="search_summary()" (click)="$event.stopPropagation()"
                   [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
                   <mat-icon>show_chart</mat-icon>
                 </button>
-              </div>
+              </div> -->
               <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_SUMMARY">
                 <button mat-mini-fab class="accent-light" (click)="search_summary_detail()"
                   (click)="$event.stopPropagation()" [disabled]="(sotDS.loading$ | async) || isGeneratingReport">

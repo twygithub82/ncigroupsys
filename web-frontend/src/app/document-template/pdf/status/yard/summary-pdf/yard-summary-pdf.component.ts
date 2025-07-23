@@ -243,7 +243,10 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
+    YARD: 'COMMON-FORM.YARD',
+    SUMMARY: 'COMMON-FORM.SUMMARY',
     DETAIL_SUMMARY: 'COMMON-FORM.DETAIL-SUMMARY',
+    CLEAN: 'COMMON-FORM.CLEAN',
     STEAM: 'COMMON-FORM.STEAM',
     REPAIR: 'COMMON-FORM.REPAIR',
     CLEANING: 'COMMON-FORM.CLEANING',
@@ -851,20 +854,21 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 5.5;
+    let fontSz = 7;//5.5;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.CUSTOMER_CODE,
-      this.translatedLangText.CUSTOMER, this.translatedLangText.LOCATION,
-      this.translatedLangText.STEAM, this.translatedLangText.CLEANING,
+      //this.translatedLangText.CUSTOMER, this.translatedLangText.LOCATION,
+      this.translatedLangText.LOCATION,
+      this.translatedLangText.STEAM, this.translatedLangText.CLEAN,
       this.translatedLangText.REPAIR, this.translatedLangText.STORAGE,
-      this.translatedLangText.TOTAL, this.translatedLangText.PENDING,
-      this.translatedLangText.WITH_RO
+      this.translatedLangText.PENDING, this.translatedLangText.WITH_RO,
+      this.translatedLangText.TOTAL
     ]];
 
     const comStyles: any = {
@@ -879,7 +883,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      //10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -920,10 +924,10 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
       itm.yards?.forEach(yard => {
 
         data.push([
-          (++idx).toString(), itm.code || "", itm.customer || "", this.displayLocation(yard) || "",
+          (++idx).toString(), itm.code || "", this.displayLocation(yard) || "",
           yard.noTank_steam || "0", yard.noTank_clean || "0", yard.noTank_repair || "0",
-          yard.noTank_storage || "0", this.displayInYardTotal(yard) || "0", yard.noTank_pending || "0",
-          yard.noTank_withRO || "0"
+          yard.noTank_storage || "0", yard.noTank_pending || "0",
+          yard.noTank_withRO || "0", this.displayInYardTotal(yard) || "0"
 
         ]);
       });
@@ -931,9 +935,9 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     }
 
 
-    data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    this.displayTotalWithRO()]);
+    data.push([this.translatedLangText.TOTAL, "", "", this.displayTotalSteam(), this.displayTotalClean(),
+    this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotalPending(),
+    this.displayTotalWithRO(), this.displayTotal()]);
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -1208,7 +1212,7 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.YARD_STATUS} ${this.translatedLangText.DETAIL_SUMMARY}`
+    return `${this.translatedLangText.YARD} ${this.translatedLangText.SUMMARY}`
   }
 
   displayLocation(yard: report_status_yard): string {

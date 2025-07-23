@@ -1171,7 +1171,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_ACTIVITY}: ${this.GetWiseTitle()}`
+    return `${this.translatedLangText.CLEANING_ACTIVITY} : ${this.GetWiseTitle()}`
   }
 
   GetWiseTitle(): string {
