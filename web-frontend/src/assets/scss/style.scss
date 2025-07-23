@@ -32,6 +32,7 @@
 @import "fonts/fontawesome/regular.scss";
 @import "fonts/fontawesome/solid.scss";
 @import "fonts/fontawesome/brands.scss";
+  @import "fonts/fontawesome/material.scss";
 
 /*                 [3. Components ]                   		*/
 @import "components/_breadcrumbs.scss";
@@ -110,4 +111,4 @@
  @import "common/custom-kiosk.scss";
  @import "common/custom.scss";
  
- @import "/src/assets/fonts/iconfont/material-icons.css";
+// @import "assets/fonts/iconfont/material-icons.css";

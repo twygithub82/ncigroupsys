@@ -2,12 +2,12 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url(#{$ma-font-path}/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: url(/assets/fonts/iconfont/MaterialIcons-Regular.eot); /* For IE6-8 */
   src: local('Material Icons'),
        local('MaterialIcons-Regular'),
-       url(#{$ma-font-path}/MaterialIcons-Regular.woff2) format('woff2'),
-       url(#{$ma-font-path}/MaterialIcons-Regular.woff) format('woff'),
-       url(#{$ma-font-path}/MaterialIcons-Regular.ttf) format('truetype'),
+       url(/assets/fonts/iconfont/MaterialIcons-Regular.woff2) format('woff2'),
+       url(/assets/fonts/iconfont/MaterialIcons-Regular.woff) format('woff'),
+       url(/assets/fonts/iconfont/MaterialIcons-Regular.ttf) format('truetype'),
       
 }
 
@@ -15,7 +15,7 @@
   font-family: 'Material Symbols Outlined';
   font-style: normal;
   font-weight: 400;
-  src:  url(#{$ma-font-path}/MaterialSymbols-Outlined.woff2) format('woff2'); 
+  src:  url(/assets/fonts/iconfont/MaterialSymbols-Outlined.woff2) format('woff2'); 
 }
 
  .material-icons {
