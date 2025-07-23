@@ -7,14 +7,14 @@
       <mat-panel-title>
       </mat-panel-title>
       <mat-panel-description>
-        <div class="m-l-" [matTooltip]="translatedLangText.PENDING_INVOICE_SUMMARY">
+        <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY">
           <button mat-mini-fab color="primary" (click)="search(1)" (click)="$event.stopPropagation()"
             [disabled]="((sotDS.loading$ | async)||(isGeneratingReport))">
             <mat-icon>assessment</mat-icon>
           </button>
         </div>
-        <div class="m-l-10" [matTooltip]="translatedLangText.PENDING_INVOICE_DETAIL">
-          <button mat-mini-fab color="primary" (click)="search(2)" (click)="$event.stopPropagation()"
+        <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL">
+          <button mat-mini-fab class="primary-light" (click)="search(2)" (click)="$event.stopPropagation()"
             [disabled]="((sotDS.loading$ | async)||(isGeneratingReport))">
             <mat-icon>assignment</mat-icon>
           </button>
@@ -28,7 +28,7 @@
     </mat-expansion-panel-header>
     <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
       <div class="row">
-        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
             <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -42,7 +42,7 @@
             </mat-autocomplete>
           </mat-form-field>
         </div>
-        <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
             <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" formControlName="cutoff_dt" [max]="getMaxDate()">

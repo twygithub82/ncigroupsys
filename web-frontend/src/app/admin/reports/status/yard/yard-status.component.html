@@ -14,19 +14,19 @@
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.SUMMARY_REPORT">
-                <button mat-mini-fab color="primary" (click)="search_summary()" (click)="$event.stopPropagation()"
+                <button mat-mini-fab class="orange-button" (click)="search_summary()" (click)="$event.stopPropagation()"
                   [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
                   <mat-icon>show_chart</mat-icon>
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_SUMMARY">
-                <button mat-mini-fab color="primary" (click)="search_summary_detail()"
+                <button mat-mini-fab class="accent-light" (click)="search_summary_detail()"
                   (click)="$event.stopPropagation()" [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
                   <mat-icon>assessment</mat-icon>
                 </button>
               </div>
               <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
-                <button mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
+                <button mat-mini-fab class="primary-light" (click)="search_detail()" (click)="$event.stopPropagation()"
                   [disabled]="(sotDS.loading$ | async) || isGeneratingReport">
                   <mat-icon>assignment</mat-icon>
                 </button>

@@ -23,7 +23,7 @@
             @if (!(joDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
@@ -53,7 +53,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
@@ -85,7 +85,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
@@ -141,12 +141,13 @@
               }
               @if (!(joDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 ms-2 m-b-10 p-l-0">
-                  {{translatedLangText.JOB_ORDER_NO}}: <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 m-b-10 ms-xl-2 ps-xl-0">
+                  {{translatedLangText.JOB_ORDER_NO}}:
+                  <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
                 </div>
-                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-10 ms-5">
-                  {{translatedLangText.STATUS}}: <span
-                    class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
+                <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 m-b-10 ms-xl-5">
+                  {{translatedLangText.STATUS}}:
+                  <span class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
                 </div>
               </div>
               <div class="row">
@@ -214,7 +215,8 @@
                           {{translatedLangText.DESCRIPTION}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row" class="">
-                          <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>{{row.description}}
+                          <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
+                          <span class="mobile-label-value">{{row.description}}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="qty">
@@ -345,10 +347,10 @@
               }
               @if (!(joDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-10 p-l-10">
+                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-10 ps-xl-2">
                   {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{steamItem?.estimate_no}}</span>
                 </div>
-                <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 m-b-10 p-l-5">
+                <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 m-b-10 ps-xl-1">
                   {{translatedLangText.ESTIMATE_DATE}}: <span
                     class="font-bold">{{displayDate(steamItem?.create_dt)}}</span>
                 </div>

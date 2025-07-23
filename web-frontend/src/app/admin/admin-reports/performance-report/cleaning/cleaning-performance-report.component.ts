@@ -85,11 +85,11 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
     'select',
-    'tank_no',
     'customer',
+    'last_cargo',
+    'tank_no',
     'eir_no',
     'eir_dt',
-    'last_cargo',
     'purpose',
     'tank_status_cv',
     'cost',
@@ -178,7 +178,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-
+  maxManuDOMDt: Date = new Date();
 
   sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;

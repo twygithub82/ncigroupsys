@@ -1756,6 +1756,16 @@ $breakpoints: (
 
 .sidebar {
   width: 240px;
+
+  @media (max-width: 767.98px) {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .ls-closed .sidebar {
+    margin-left: -100%;
+  }
 }
 
 .sidebar .menu .list a span {
@@ -1779,6 +1789,13 @@ $breakpoints: (
 section.content {
   margin-left: 272px;
   margin-right: 28px;
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+  section.content, .ls-closed section.content {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
 }
 
 @media (min-width: 1200px) {

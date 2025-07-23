@@ -78,7 +78,7 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
     const rememberedUsername = this.authService.getRememberedUsername();
     this.authForm = this.formBuilder.group({
       username: [rememberedUsername, Validators.required],
-      password: ['P@ssw0rd', Validators.required], // TODO:: remove after
+      password: ['', Validators.required],
     });
 
     if (rememberedUsername) {
@@ -89,7 +89,8 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
 
     if (this.authService.currentUserValue.token) {
       // User is logged in, navigate to the dashboard or home
-      this.router.navigate(['/']);
+      const landingPage = this.authService.getLandingPage();
+      this.router.navigate([landingPage]);
     }
     this.dialog.closeAll();
   }
@@ -118,7 +119,8 @@ export class SigninStaffComponent extends UnsubscribeOnDestroyAdapter implements
           next: (res) => {
             const token = this.authService.currentUserValue?.token;
             if (token) {
-              this.router.navigate(['/']);
+              const landingPage = this.authService.getLandingPage();
+              this.router.navigate([landingPage]);
             } else {
               // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
               // this.error = 'Invalid Login';

@@ -225,6 +225,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     ABORT: 'COMMON-FORM.ABORT',
     DETAILS: 'COMMON-FORM.DETAILS',
     TYPE: 'COMMON-FORM.TYPE',
+    APPROVED: 'COMMON-FORM.APPROVED',
   }
 
   newDesc = new FormControl(null, [Validators.required]);
