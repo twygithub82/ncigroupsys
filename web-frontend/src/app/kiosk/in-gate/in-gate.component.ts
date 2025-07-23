@@ -74,9 +74,6 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 })
 export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   pageTitle = 'MENUITEMS.INVENTORY.LIST.IN-GATE'
-  breadcrumsMiddleList = [
-    { text: 'MENUITEMS.INVENTORY.TEXT', route: '/admin/inventory/in-gate-main', queryParams: { tabIndex: "app-in-gate" } }
-  ]
 
   displayedColumns = [
     'so_no',
@@ -112,7 +109,6 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
   yardId?: string | null;
 
   sotDS: StoringOrderTankDS;
-  ccDS: CustomerCompanyDS;
 
   sotList: StoringOrderTankItem[] = [];
 
@@ -141,7 +137,6 @@ export class InGateComponent extends UnsubscribeOnDestroyAdapter implements OnIn
     super();
     this.translateLangText();
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.ccDS = new CustomerCompanyDS(this.apollo);
     searchStateService.clearOtherPages(this.pageStateType);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;

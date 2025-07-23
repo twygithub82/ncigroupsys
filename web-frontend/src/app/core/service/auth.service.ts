@@ -288,12 +288,12 @@ export class AuthService {
 
   isKioskUserInGate() {
     const userRoles = this.currentUserValue.roles;
-    return userRoles.some((func: string) => func == 'KIOSK_IN_GATE' || func == 'KIOSK_OUT_GATE')
+    return userRoles.some((func: string) => func == 'KIOSK_IN_GATE')
   }
 
   isKioskUserOutGate() {
     const userRoles = this.currentUserValue.roles;
-    return userRoles.some((func: string) => func == 'KIOSK_IN_GATE' || func == 'KIOSK_OUT_GATE')
+    return userRoles.some((func: string) => func == 'KIOSK_OUT_GATE')
   }
 
   getLandingPage() {
