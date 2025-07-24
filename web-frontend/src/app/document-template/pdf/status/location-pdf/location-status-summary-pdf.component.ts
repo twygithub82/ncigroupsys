@@ -232,7 +232,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
-    S_N:'COMMON-FORM.S_N',
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -813,9 +813,10 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
+    let fontSize = 7;
     let minHeightHeaderCol = 3;
-    let fontSize = 5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
+    
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -1007,6 +1008,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
     let tableHeaderHeight = 7.6153;
     let tableRowHeight = 5.8974;
+
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
@@ -1319,7 +1321,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.LOCATION_STATUS} ${this.translatedLangText.SUMMARY_REPORT}`
+    return `${this.translatedLangText.LOCATION_STATUS}`
   }
 
   displayTankNo(yard_cv: CodeValuesItem, yards: report_status_yard[] | undefined): string | undefined {

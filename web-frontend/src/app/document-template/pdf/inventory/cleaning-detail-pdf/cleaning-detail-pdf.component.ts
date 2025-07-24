@@ -968,7 +968,7 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.CLEANING_ACTIVITY}: ${this.translatedLangText.MASTER}`
+    return `${this.translatedLangText.CLEANING_ACTIVITY} : ${this.translatedLangText.MASTER}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {
