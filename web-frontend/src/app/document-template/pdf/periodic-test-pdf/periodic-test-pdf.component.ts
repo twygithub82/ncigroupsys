@@ -28,7 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
-import {PDFUtility} from 'app/utilities/pdf-utility';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -558,7 +558,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
-    const vAlign ="bottom";
+    const vAlign = "bottom";
     const reportTitle = this.GetReportTitle();
     const headers = [
       [
@@ -579,7 +579,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
         '', '' // Empty cells for DUE_DAYS and DUE_TYPE (they are spanned by rowSpan: 2)
       ]
     ];
-  
+
 
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
@@ -602,21 +602,21 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell=4;
+    let minHeightBodyCell = 4;
     let fontSize = 5;
-    const comStyles: any = {  
-      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight:minHeightBodyCell},
-      1: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight:minHeightBodyCell },
-      2: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight:minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 15 , minCellHeight:minHeightBodyCell},
-      4: { halign: 'center', valign: 'middle', cellWidth: 12 , minCellHeight:minHeightBodyCell},
-      5: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight:minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight:minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 26, minCellHeight:minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight:minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight:minHeightBodyCell},
-      10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight:minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight:minHeightBodyCell },
+    const comStyles: any = {
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      2: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 26, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
     };
 
     //  lastTableFinalY +=8;
@@ -661,7 +661,7 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
       // pdf.setFontSize(8);
       // pdf.setTextColor(0, 0, 0); // Black text
       // pdf.text(`${this.DisplayCustomerName(cust)}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      PDFUtility.addText(pdf, `${cust.customer_name}`, lastTableFinalY, leftMargin,8 ,true);
+      PDFUtility.addText(pdf, `${this.translatedLangText.CUSTOMER} : ${cust.customer_code ?? ""}`, lastTableFinalY, leftMargin, 8, false);
       let startY = 0;
       if ((cust.periodic_test_due?.length || 0) > 0) {
         lastTableFinalY += 3;
@@ -1229,12 +1229,10 @@ export class PeriodicTestDuePdfComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   DisplayLastTestDate(itm: periodic_test_due_item): string {
-    if(itm?.test_dt)
-    {
-       return `${Utility.convertEpochToDateStr(itm?.test_dt)}`;
+    if (itm?.test_dt) {
+      return `${Utility.convertEpochToDateStr(itm?.test_dt)}`;
     }
-    else
-    {
+    else {
       return '';
     }
   }

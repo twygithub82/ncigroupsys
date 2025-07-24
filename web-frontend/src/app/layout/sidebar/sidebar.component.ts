@@ -183,6 +183,7 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
       this.renderer.addClass(this.document.body, className);
     }
   }
+  
   callSidemenuCollapse() {
     const hasClass = this.document.body.classList.contains('side-closed');
     if (hasClass) {

@@ -48,6 +48,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-estimate',
@@ -83,7 +84,19 @@ import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
-  ]
+  ],
+  animations: [
+    trigger('swipeAnimation', [
+      transition(':increment', [
+        style({ transform: 'translateX(100%)', opacity: 0 }),
+        animate('300ms ease-out', style({ transform: 'translateX(0)', opacity: 1 })),
+      ]),
+      transition(':decrement', [
+        style({ transform: 'translateX(-100%)', opacity: 0 }),
+        animate('300ms ease-out', style({ transform: 'translateX(0)', opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   displayedColumns = [
@@ -211,6 +224,13 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   hasNextPage = false;
   hasPreviousPage = false;
   previous_endCursor: any;
+
+  pagedSteamDataFull: { [guid: string]: any[][] } = {};
+  pagedSteamData: { [guid: string]: any[] } = {};
+  currentSteamIndex: { [guid: string]: number } = {};
+  currentIndex = 0;
+  touchStartX = 0;
+
   plDS: PackageLabourDS;
 
   constructor(
@@ -237,8 +257,8 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.steamDS = new SteamDS(this.apollo);
     this.pckRepDS = new PackageRepairDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
-    //this.repairEstDS = new RepairDS(this.apollo);
   }
+
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -422,55 +442,31 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       this.processStatusCvList = data;
     });
 
-    //   var actionId= this.route.snapshot.paramMap.get('id');
-    // if(!actionId)
-    {
-      const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
-      const savedPagination = this.searchStateService.getPagination(this.pageStateType);
+    const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
+    const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
-      if (savedCriteria) {
-        this.searchForm?.patchValue(savedCriteria);
-        this.constructSearchCriteria();
-      }
-
-      if (savedPagination) {
-        this.pageIndex = savedPagination.pageIndex;
-        this.pageSize = savedPagination.pageSize;
-
-        this.performSearch(
-          savedPagination.pageSize,
-          savedPagination.pageIndex,
-          savedPagination.first,
-          savedPagination.after,
-          savedPagination.last,
-          savedPagination.before
-        );
-      }
-
-      if (!savedCriteria && !savedPagination) {
-        this.search();
-      }
+    if (savedCriteria) {
+      this.searchForm?.patchValue(savedCriteria);
+      this.constructSearchCriteria();
     }
-    //  else if(['pending'].includes(actionId))
-    //  {
-    //    const status = ["PENDING"];
-    //      const where: any = {and:[
-    //       { or:[{ delete_dt:{eq: null}},{ delete_dt:{eq:0}}]},
-    //       { purpose_steam:{eq:true}},
-    //       { tank_status_cv: { eq: 'STEAM'  } },
-    //       { steaming: { some: {and: [
-    //             { status_cv: { in: status } },
-    //           ]}}
-    //       }
-    //     ]};
 
-    //      this.lastSearchCriteria = where;
-    //     this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-    //       this.updatePageSelection();
-    //     });
-    //     console.log("search pending records");
+    if (savedPagination) {
+      this.pageIndex = savedPagination.pageIndex;
+      this.pageSize = savedPagination.pageSize;
 
-    //  }
+      this.performSearch(
+        savedPagination.pageSize,
+        savedPagination.pageIndex,
+        savedPagination.first,
+        savedPagination.after,
+        savedPagination.last,
+        savedPagination.before
+      );
+    }
+
+    if (!savedCriteria && !savedPagination) {
+      this.search();
+    }
   }
 
   handleCancelSuccess(count: any) {
@@ -597,33 +593,50 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.subs.sink = this.sotDS.searchStoringOrderTanksSteamEstimate(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
         if (data) {
-          var steamingStatusFilter = this.searchForm!.value['est_status_cv'];
+          const steamingStatusFilter = this.searchForm!.value['est_status_cv'];
+
           this.sotList = data.map(sot => {
-            sot.steaming = sot.steaming?.map(stm => {
-              if (steamingStatusFilter.length) {
-                if (steamingStatusFilter.includes(stm.status_cv)) {
-                  var stm_part = [...stm.steaming_part!];
-                  stm.steaming_part = stm_part?.filter(data => !data.delete_dt);
-                  return { ...stm, net_cost: this.calculateNetCost(stm) };
-                }
-                return {};
+            sot.steaming = (sot.steaming || []).map(stm => {
+              const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);
+
+              if (steamingStatusFilter.length && steamingStatusFilter.includes(stm.status_cv)) {
+                return { ...stm, steaming_part: stm_part, net_cost: this.calculateNetCost(stm) };
+              } else if (!steamingStatusFilter.length && stm.status_cv !== 'CANCELED') {
+                return { ...stm, steaming_part: stm_part, net_cost: this.calculateNetCost(stm) };
               }
-              else if (stm.status_cv !== 'CANCELED') {
-                var stm_part = [...stm.steaming_part!];
-                stm.steaming_part = stm_part?.filter(data => !data.delete_dt);
-                return { ...stm, net_cost: this.calculateNetCost(stm) };
-              }
-              else {
-                return {};
-              }
-            });
+
+              return {};
+            }).filter(stm => Object.keys(stm).length > 0);
+
             return sot;
           });
+
+          if (this.isMobile) {
+            const chunkSize = 1;
+            this.pagedSteamDataFull = {};
+            this.pagedSteamData = {};
+            this.currentSteamIndex = {};
+
+            this.sotList.forEach((sot: any) => {
+              const steaming = sot.steaming || [];
+              const chunks: any[][] = [];
+
+              for (let i = 0; i < steaming.length; i += chunkSize) {
+                chunks.push(steaming.slice(i, i + chunkSize));
+              }
+
+              this.pagedSteamDataFull[sot.guid] = chunks;
+              this.currentSteamIndex[sot.guid] = 0;
+              this.pagedSteamData[sot.guid] = chunks[0] || [];
+            });
+          } else {
+            // Reset if not in mobile view
+            this.pagedSteamDataFull = {};
+            this.pagedSteamData = {};
+            this.currentSteamIndex = {};
+          }
         }
-        this.sotList = this.sotList.map(sot => {
-          sot.steaming = sot.steaming?.filter(stm => Object.keys(stm).length > 0);
-          return sot;
-        });
+
         this.RefreshSotNetCost();
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
@@ -982,4 +995,48 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
 
   // }
 
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(event: TouchEvent, item: any): void {
+    const deltaX = event.changedTouches[0].clientX - this.touchStartX;
+    const threshold = 50;
+
+    if (deltaX > threshold) {
+      this.goToPrevPage(item);
+    } else if (deltaX < -threshold) {
+      this.goToNextPage(item);
+    }
+  }
+
+  goToPage(item: any, index: number): void {
+    const guid = item.guid;
+    const allPages = this.pagedSteamDataFull[guid] || [];
+    const total = allPages.length;
+
+    if (index >= 0 && index < total) {
+      this.currentSteamIndex[guid] = index;
+      this.pagedSteamData[guid] = allPages[index];
+    }
+  }
+
+  goToNextPage(item: any): void {
+    const guid = item.guid;
+    const current = this.currentSteamIndex[guid];
+    const max = this.pagedSteamDataFull[guid]?.length || 0;
+
+    if (current < max - 1) {
+      this.goToPage(item, current + 1);
+    }
+  }
+
+  goToPrevPage(item: any): void {
+    const guid = item.guid;
+    const current = this.currentSteamIndex[guid];
+
+    if (current > 0) {
+      this.goToPage(item, current - 1);
+    }
+  }
 }
