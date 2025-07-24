@@ -781,7 +781,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 11);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 0.5, 11);
 
     if(this.customer)
     {
@@ -1563,13 +1563,15 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
   GetReportTitle(): string {
     var title:string='';
      title = `${this.translatedLangText.MONTHLY_SALES_REPORT}`;
-     if(this.repName)
-     {
-      title += `: ${this.repName}`;
-     }else
-     {
-      // title += `: ${this.translatedLangText.MASTER}`;
-     }
+    //  if(this.repName)
+    //  {
+    //   title += `: ${this.repName}`;
+    //  }else
+    //  {
+    //   // title += `: ${this.translatedLangText.MASTER}`;
+    //  }
+
+    
     // switch(this.repType?.toUpperCase())
     // {
     //   case "CLEANING":

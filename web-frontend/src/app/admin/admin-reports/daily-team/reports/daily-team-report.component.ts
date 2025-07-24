@@ -912,4 +912,8 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
   get pageSizeInfo() {
     return pageSizeInfo
   }
+
+  getMaxDate() {
+    return new Date();
+  }
 }

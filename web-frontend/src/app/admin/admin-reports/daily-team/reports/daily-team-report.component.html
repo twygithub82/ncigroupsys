@@ -63,7 +63,7 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="est_picker">
+                  <mat-date-range-input [rangePicker]="est_picker" [max]="getMaxDate()">
                     <input matStartDate placeholder="Start date" formControlName="est_dt_start">
                     <input matEndDate placeholder="End date" formControlName="est_dt_end">
                   </mat-date-range-input>
@@ -76,7 +76,7 @@
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{ translatedLangText.APPROVED_DATE }}</mat-label>
                   <input matInput [matDatepicker]="approved_picker" formControlName="app_dt" placeholder="Select date"
-                    [required]="isDateRequired('APPROVED')">
+                    [required]="isDateRequired('APPROVED')" [max]="getMaxDate()">
                   <mat-datepicker-toggle matSuffix [for]="approved_picker"></mat-datepicker-toggle>
                   <mat-datepicker #approved_picker></mat-datepicker>
                 </mat-form-field>
@@ -109,7 +109,7 @@
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.ALLOCATION_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="allocation_picker">
+                  <mat-date-range-input [rangePicker]="allocation_picker" [max]="getMaxDate()">
                     <input matStartDate placeholder="Start date" formControlName="all_dt_start">
                     <input matEndDate placeholder="End date" formControlName="all_dt_end">
                   </mat-date-range-input>
@@ -121,7 +121,7 @@
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{ translatedLangText.QC_DATE }}</mat-label>
                   <input matInput [matDatepicker]="qc_picker" formControlName="qc_dt" placeholder="Select date"
-                    [required]="isDateRequired('QC')">
+                    [required]="isDateRequired('QC')" [max]="getMaxDate()">
                   <mat-datepicker-toggle matSuffix [for]="qc_picker"></mat-datepicker-toggle>
                   <mat-datepicker #qc_picker></mat-datepicker>
                 </mat-form-field>
