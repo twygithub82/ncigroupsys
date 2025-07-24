@@ -277,7 +277,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     TANK_STATUS: 'COMMON-FORM.TANK-STATUS',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     TOP_TEN_CUSTOMER: 'COMMON-FORM.TOP-TEN-CUSTOMER',
-    CLEAN_DATE: 'COMMON-FORM.CLEAN-DATE',
+    CLEAN_BEING: 'COMMON-FORM.CLEAN-BEING',
+    CLEAN_END: 'COMMON-FORM.CLEAN-END',
     REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
     REPAIR_IN_DATE: 'COMMON-FORM.REPAIR-IN-DATE',
     PENDING_REPAIR_ESTIMATE: 'COMMON-FORM.PENDING-REPAIR-ESTIMATE',
@@ -367,7 +368,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     await this.getCodeValuesData();
-    this.sotList=this.data.sot;
+    this.sotList = this.data.sot;
     this.onDownloadClick();
   }
 
@@ -382,11 +383,10 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('purposeOptionCv').subscribe(data => {
-      if(data.length)
-        {
-          this.purposeOptionCvList = data;
-         
-        }
+      if (data.length) {
+        this.purposeOptionCvList = data;
+
+      }
     });
 
     this.cvDS.connectAlias('yardCv').subscribe(data => {
@@ -418,8 +418,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
     // Wrap all alias connections in promises
     const promises = [
-     
-   
+
+
       firstValueFrom(this.cvDS.connectAlias('purposeOptionCv')).then(data => {
         this.purposeOptionCvList = data || [];
 
@@ -787,7 +787,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSz = 6;
+    let fontSz = 7;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -795,25 +795,25 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CUSTOMER, this.translatedLangText.EIR_NO, 
+      this.translatedLangText.CUSTOMER, this.translatedLangText.EIR_NO,
       // this.translatedLangText.OWNER, 
       this.translatedLangText.EIR_DATE,
-      this.translatedLangText.CLEAN_DATE, this.translatedLangText.REPAIR_TYPE,
-      this.translatedLangText.REPAIR_IN_DATE, this.translatedLangText.DAYS
+      this.translatedLangText.CLEAN_BEING, this.translatedLangText.CLEAN_END,
+      this.translatedLangText.REPAIR_TYPE, this.translatedLangText.DAYS
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 11, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: 27, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 34, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 26, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
-      
+
     };
 
     // Define headStyles with valid fontStyle
@@ -846,19 +846,19 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     // pdf.setTextColor(0, 0, 0); // Black text
     //const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}:${this.cut_off_dt}`; // Replace with your actual cutoff date
     // pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
-   // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+3,lastTableFinalY + 10,8);
+    // Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+3,lastTableFinalY + 10,8);
 
 
-   var repPage = pdf.getNumberOfPages();
-   // if(repPage==1)lastTableFinalY=45;
+    var repPage = pdf.getNumberOfPages();
+    // if(repPage==1)lastTableFinalY=45;
 
-   if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-     pdf.addPage();
-     lastTableFinalY = 5 + topMargin;
-   }
-   else {
-     CurrentPage = repPage;
-   }
+    if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      pdf.addPage();
+      lastTableFinalY = 5 + topMargin;
+    }
+    else {
+      CurrentPage = repPage;
+    }
 
 
     var idx = 0;
@@ -867,10 +867,10 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.sotList[n];
       data.push([
-        (++idx).toString(), itm.tank_no || "", this.DisplayCustomerName(itm) || "", this.DisplayEIRNo(itm) || "", 
+        (++idx).toString(), itm.tank_no || "", this.DisplayCustomerCode(itm) || "", this.DisplayEIRNo(itm) || "",
         //this.DisplayOwner(itm) || "", 
-        this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "",
-        this.DisplayRepairType(itm) || "", this.DisplayRepairInDate(itm) || "", this.DisplayDays(itm) || "0",
+        this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "", this.DisplayRepairInDate(itm) || "", 
+        this.DisplayRepairType(itm) || "", this.DisplayDays(itm) || "0",
       ]);
     }
 
@@ -1110,12 +1110,12 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
       // const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
-      const imgData = await Utility.convertToImage(card,"jpeg");
-    const imgInfo = await Utility.getImageSizeFromBase64(imgData);
-    const aspectRatio = imgInfo.width / imgInfo.height;
+      const imgData = await Utility.convertToImage(card, "jpeg");
+      const imgInfo = await Utility.getImageSizeFromBase64(imgData);
+      const aspectRatio = imgInfo.width / imgInfo.height;
 
-    // Calculate scaled height based on available width
-    let imgHeight = contentWidth / aspectRatio;
+      // Calculate scaled height based on available width
+      let imgHeight = contentWidth / aspectRatio;
 
       // Check if the card fits on the current page
       if (currentY + imgHeight > maxContentHeight) {
@@ -1714,6 +1714,10 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
   DisplayCustomerName(sot: StoringOrderTankItem) {
     return `${sot.storing_order?.customer_company?.name}`
+  }
+
+  DisplayCustomerCode(sot: StoringOrderTankItem) {
+    return `${sot.storing_order?.customer_company?.code}`
   }
 
   DisplayEIRNo(sot: StoringOrderTankItem) {
