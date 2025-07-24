@@ -314,8 +314,8 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span><span
-                        class="mobile-label-value">{{row.description}}</span>
+                      <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
+                      <span class="mobile-label-value">{{row.description}}</span>
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
@@ -534,9 +534,9 @@
                   <ng-container matColumnDef="labourSummaryCost">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
-                      <span class="mobile-label">{{translatedLangText.LABOUR}}<br />
+                      <span class="mobile-label footer-label">{{translatedLangText.LABOUR}} 
                         (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}}):</span>
-                      {{getTotalLabourCost()}}
+                      <span class="">{{getTotalLabourCost()}}</span>
                     </mat-footer-cell>
                   </ng-container>
 
@@ -555,7 +555,7 @@
                   <ng-container matColumnDef="totalSummaryCost">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
-                      <span class="mobile-label">{{translatedLangText.TOTAL_COST}}:</span>
+                      <span class="mobile-label footer-label">{{translatedLangText.TOTAL_COST}}:</span>
                       @if(this.isSteamRepair)
                       {
                       {{this.parse2Decimal(this.getTotalCost())}}
