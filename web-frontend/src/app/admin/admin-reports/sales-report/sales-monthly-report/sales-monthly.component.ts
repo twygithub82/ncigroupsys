@@ -215,7 +215,7 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   monthList: string[] = [];
   repData: any;
   invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
-  invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
+  invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
 
   constructor(
     public httpClient: HttpClient,
@@ -310,6 +310,14 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
         this.invTypes =this.invTypes.filter(c=>c != "RESIDUE" && c != "STEAMING");
       }
       this.costTypeCvList = addDefaultSelectOption(data, 'All', 'ALL');
+      this.costTypeCvList.sort((a, b) => {
+        const indexA = this.invTypes.indexOf(a.code_val!);
+        const indexB = this.invTypes.indexOf(b.code_val!);
+
+        // Put missing values at the end
+        return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+      });
+
       var allType = this.costTypeCvList.find(c => c.code_val == 'ALL');
       this.searchForm?.patchValue({
         cost_type: allType
