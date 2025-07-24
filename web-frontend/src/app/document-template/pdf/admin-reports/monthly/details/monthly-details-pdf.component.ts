@@ -814,7 +814,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
     const pageCount = pdf.getNumberOfPages();
     lastTableFinalY=15;
-    //await this.AddCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
+   // await this.AddCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
 
     setTimeout(() => {
        const totalPages = pdf.getNumberOfPages();

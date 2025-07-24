@@ -790,7 +790,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
       return billingEstReq;
       //return { ...cln, action:'' };
     });
-    const existingGuids = new Set(billingEstimateRequests.map((item: { guid: any; }) => item.guid));
+    const existingGuids = billingEstimateRequests.map((item: { guid: any; }) => item.guid);
     this.selection.selected.forEach(cln => {
       if (!existingGuids.has(cln.guid)) {
         var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();

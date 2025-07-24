@@ -214,7 +214,8 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
-  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
+  invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
+  invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
 
   constructor(
     public httpClient: HttpClient,
@@ -385,7 +386,7 @@ this.isGeneratingReport = true;
 
 
     var customerName: string = "";
-    var invTypes = this.invTypes.filter(v => v !== "ALL");
+    var invTypes = this.invTypesAll.filter(v => v !== "ALL");
     where.revenue_type = invTypes;
     if (this.searchForm?.get('cost_type')?.value.code_val != "ALL") {
       where.revenue_type = [this.searchForm?.get('cost_type')?.value.code_val];

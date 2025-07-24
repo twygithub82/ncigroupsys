@@ -1024,57 +1024,57 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       });
     
 
-      const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    //   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
 
 
-      if(cardElements.length==3)
-      {
-        pdf.addPage();
+    //   if(cardElements.length==3)
+    //   {
+    //     pdf.addPage();
 
         
-        var chartContentWidth=pageWidth/2.2;
-        var startX=leftMargin;
-        startY=50;
-        await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 15);
-      for (var i = 0; i < cardElements.length; i++) {
+    //     var chartContentWidth=pageWidth/2.2;
+    //     var startX=leftMargin;
+    //     startY=50;
+    //     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 15);
+    //   for (var i = 0; i < cardElements.length; i++) {
 
          
-          const card1 = cardElements[i];
-          const canvas1 = await html2canvas(card1, { scale: scale });
-          const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+    //       const card1 = cardElements[i];
+    //       const canvas1 = await html2canvas(card1, { scale: scale });
+    //       const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
-          // Calculate aspect ratio
-          const aspectRatio = canvas1.width / canvas1.height;
+    //       // Calculate aspect ratio
+    //       const aspectRatio = canvas1.width / canvas1.height;
 
-          // Calculate scaled height based on available width
-          let imgHeight1 = chartContentWidth / aspectRatio;
+    //       // Calculate scaled height based on available width
+    //       let imgHeight1 = chartContentWidth / aspectRatio;
 
-          // Check if the scaled height exceeds the available page height
-          const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-          if (imgHeight1 > maxPageHeight) {
-            // Adjust height to fit within the page
-            imgHeight1 = maxPageHeight;
-            // Recalculate width to maintain aspect ratio
-            chartContentWidth = imgHeight1 * aspectRatio;
-          }
+    //       // Check if the scaled height exceeds the available page height
+    //       const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+    //       if (imgHeight1 > maxPageHeight) {
+    //         // Adjust height to fit within the page
+    //         imgHeight1 = maxPageHeight;
+    //         // Recalculate width to maintain aspect ratio
+    //         chartContentWidth = imgHeight1 * aspectRatio;
+    //       }
 
         
           
-          // Add the image to the PDF
-          pdf.addImage(imgData1, 'JPEG', startX, startY, chartContentWidth, imgHeight1);
-          if((startX+chartContentWidth+leftMargin+rightMargin+50)>pageWidth )
-          {
-            startX=leftMargin;
-            startY+=imgHeight1+5;
-            chartContentWidth=chartContentWidth*2;
-          }
-          else
-          {
-            startX += chartContentWidth+2;
-          }
+    //       // Add the image to the PDF
+    //       pdf.addImage(imgData1, 'JPEG', startX, startY, chartContentWidth, imgHeight1);
+    //       if((startX+chartContentWidth+leftMargin+rightMargin+50)>pageWidth )
+    //       {
+    //         startX=leftMargin;
+    //         startY+=imgHeight1+5;
+    //         chartContentWidth=chartContentWidth*2;
+    //       }
+    //       else
+    //       {
+    //         startX += chartContentWidth+2;
+    //       }
 
-      }
-    }
+    //   }
+    // }
 
     const totalPages = pdf.getNumberOfPages();
 

@@ -742,6 +742,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     // console.log(this.repairCost)
   }
 
+
   async onDownloadClick() {
     this.exportToPDF_r1();
 
@@ -820,13 +821,23 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
   GetReportColumnsHeader(): any{
     const headerRow: string[] = [
       this.translatedLangText.S_N,
-      this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
-      this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
+       this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
+        this.translatedLangText.LAST_CARGO, this.translatedLangText.JOB_NO,
+      
       this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
       this.translatedLangText.GATEIO_S, this.translatedLangText.PREINSP_COST,
-      this.translatedLangText.LOLO_COST, this.translatedLangText.STORAGE_COST,
-      this.translatedLangText.DAYS,this.translatedLangText.CLEAN_COST, 
+      this.translatedLangText.LOLO_COST, this.translatedLangText.DAYS,
+      this.translatedLangText.STORAGE_COST,  
     ];
+    // const headerRow: string[] = [
+    //   this.translatedLangText.S_N,
+    //   this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
+    //   this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
+    //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
+    //   this.translatedLangText.GATEIO_S, this.translatedLangText.PREINSP_COST,
+    //   this.translatedLangText.LOLO_COST, this.translatedLangText.STORAGE_COST,
+    //   this.translatedLangText.DAYS,this.translatedLangText.CLEAN_COST, 
+    // ];
 
     // this.translatedLangText.NO,
     // this.translatedLangText.JOB_NO, this.translatedLangText.TANK_NO,
@@ -839,10 +850,19 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     
     if (!this.modulePackageService.isStarterPackage()) {
       headerRow.push(
-        this.translatedLangText.RESIDUE_COST,
+       
         this.translatedLangText.STEAM_COST, 
       );
     }
+    headerRow.push(this.translatedLangText.CLEAN_COST);
+
+    if (!this.modulePackageService.isStarterPackage()) {
+      headerRow.push(
+       
+        this.translatedLangText.RESIDUE_COST, 
+      );
+    }
+
     headerRow.push(this.translatedLangText.REPAIR_COST);
     headerRow.push(this.translatedLangText.TOTAL);
     return headerRow;
@@ -948,21 +968,40 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       for (let b = 0; b < cust.items!.length; b++) {
         var itm = cust.items?.[b]!;
 
+        
         const row = [
-          (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
-          itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
+          (b + 1).toString(), itm.tank_no || "",  itm.eir_no || "",
+          itm.last_cargo || "", itm.job_no || "",itm.in_date || "", itm.out_date || "",
           this.displayGateIOCost(itm) || "", this.displayPreinsCost(itm) || "",
-          this.displayLOLOCost(itm) || "", this.displayStorageCost(itm) || "", itm.days,
-          this.displayCleanCost(itm) || "", 
+          this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
         ];
 
         if (!this.modulePackageService.isStarterPackage()) {
           row.push(
-            this.displayResidueCost(itm) || "",
-            this.displaySteamCost(itm) || ""
-          );
+            this.displaySteamCost(itm) || "");
         }
-        row.push(this.displayRepairCost(itm) || "");
+        
+         row.push(   this.displayCleanCost(itm) || "");
+         if (!this.modulePackageService.isStarterPackage()) {
+          row.push(
+            this.displayResidueCost(itm) || "");
+        }
+           row.push(   this.displayRepairCost(itm) || "");
+        // const row = [
+        //   (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
+        //   itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
+        //   this.displayGateIOCost(itm) || "", this.displayPreinsCost(itm) || "",
+        //   this.displayLOLOCost(itm) || "", this.displayStorageCost(itm) || "", itm.days,
+        //   this.displayCleanCost(itm) || "", 
+        // ];
+
+        // if (!this.modulePackageService.isStarterPackage()) {
+        //   row.push(
+        //     this.displayResidueCost(itm) || "",
+        //     this.displaySteamCost(itm) || ""
+        //   );
+        // }
+        // row.push(this.displayRepairCost(itm) || "");
         row.push((itm.total === "0.00" ? '' : this.displaySubTotalCost(itm)));
         data.push(row);
         // data.push([
@@ -993,10 +1032,10 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         columnStyles: {
           // Set columns 0 to 16 to be center aligned
           0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
-          3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-          4: { halign: 'left', valign: 'middle', cellWidth: 40, minCellHeight: minHeightBodyCell },
+          1: { halign: 'center', valign: 'middle', cellWidth: 25,minCellHeight: minHeightBodyCell },
+          2: { halign: 'center', valign: 'middle',  cellWidth: 25,minCellHeight: minHeightBodyCell },
+          3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+          4: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
           5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
           6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
           7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
