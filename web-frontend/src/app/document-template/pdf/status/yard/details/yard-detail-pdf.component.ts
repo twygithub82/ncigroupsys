@@ -1092,7 +1092,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    return `${this.translatedLangText.YARD_DETAIL_REPORT}`
+    return `${this.translatedLangText.DETAIL_REPORT}`
   }
 
   removeDeletedInGateAndOutGate(sot: StoringOrderTankItem) {

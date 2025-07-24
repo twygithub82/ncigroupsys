@@ -562,6 +562,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
 
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
@@ -580,8 +581,8 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.EIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.FROM_YARD, rowSpan: 2, styles: { halign: 'center' } },
-        { content: this.translatedLangText.TO_YARD, rowSpan: 2, styles: { halign: 'center' } },
+        { content: this.translatedLangText.FROM_YARD, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+        { content: this.translatedLangText.TO_YARD, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.TRANSFER, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
         //{ content: this.translatedLangText.STORAGE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       ],
@@ -589,7 +590,6 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
         // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
         this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
         this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE, // Sub-headers for NEXT_PERIODIC_TEST
-
       ]
     ];
     // Define headStyles with valid fontStyle
@@ -613,11 +613,12 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSize = 7;
+
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 24, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
@@ -658,7 +659,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       //lastTableFinalY+=gap;
       pdf.setFontSize(10);
       pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.code}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       lastTableFinalY += 3;
       if ((cust.storing_order_tank?.length || 0) > 0) {
         // lastTableFinalY+=5;
@@ -733,7 +734,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     });
 
     this.generatingPdfProgress = 100;
-    Utility.previewPDF(pdf);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
 
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
