@@ -217,6 +217,7 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
   repData: any;
   invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
   invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
+
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -366,7 +367,7 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
 
     var customerName: string = "";
-    var invTypes = this.invTypes.filter(v => v !== "ALL");
+    var invTypes = this.invTypesAll.filter(v => v !== "ALL");
     where.revenue_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
       where.revenue_type = this.searchForm?.get('inventory_type')?.value;

@@ -756,7 +756,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
       },
     });
 
-    await this.AddYearlyCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
+    // await this.AddYearlyCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
 
     setTimeout(() => {
       
