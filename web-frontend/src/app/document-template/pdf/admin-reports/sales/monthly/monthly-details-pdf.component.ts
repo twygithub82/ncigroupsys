@@ -651,7 +651,8 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
  
 
-  
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
@@ -780,7 +781,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 4, 11);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 11);
 
     if(this.customer)
     {
@@ -999,9 +1000,9 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+    //  startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { top: 18 }, // top margin for all pages
+      margin: { top: 55 }, // top margin for all pages
       styles: {
         fontSize: fontSz,
         minCellHeight: minHeightHeaderCol
@@ -1095,7 +1096,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
         //   data.cell.colSpan = 0; // Hide these columns
         // }
       },
-      didDrawPage: (d: any) => {
+      didDrawPage :  (d: any) => {
         const pageCount = pdf.getNumberOfPages();
 
         lastTableFinalY = d.cursor.y;
@@ -1104,7 +1105,9 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+           
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+35);
+           
           }
         }
 
@@ -1182,9 +1185,9 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
   
   
       pdf.addPage();
-      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
       pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY=topMargin+20;
+      startY=55;
   
     const card1 = cardElements[0];
     const canvas1 = await html2canvas(card1, { scale: scale });
@@ -1195,16 +1198,21 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const totalPages = pdf.getNumberOfPages();
 
 
-    pagePositions.forEach(({ page, x, y }) => {
+   for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
+
+      const lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }
 
   //  this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -1560,7 +1568,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       title += `: ${this.repName}`;
      }else
      {
-       title += `: ${this.translatedLangText.MASTER}`;
+      // title += `: ${this.translatedLangText.MASTER}`;
      }
     // switch(this.repType?.toUpperCase())
     // {
