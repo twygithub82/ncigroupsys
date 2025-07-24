@@ -725,7 +725,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY , 12);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2 , 12);
 
     if(this.customer)
     {
@@ -814,7 +814,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
     const pageCount = pdf.getNumberOfPages();
     lastTableFinalY=15;
-    await this.AddCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
+    //await this.AddCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
 
     setTimeout(() => {
        const totalPages = pdf.getNumberOfPages();
