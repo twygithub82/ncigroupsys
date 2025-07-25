@@ -23,6 +23,11 @@
           </a>
         </li>
       </ul>
+      @if (isMobile) {
+      <span class="mobile-close-btn" (click)="mobileMenuSidebarOpen($event,'overlay-open')" matTooltip="Close Menu">
+        <mat-icon>close</mat-icon>
+      </span>
+      }
     </div>
     <!-- Menu -->
     <div class="menu">
@@ -45,7 +50,7 @@
               <mat-icon class="sidebarIcon font-20  material-icons-outlined">{{sidebarItem.icon}}</mat-icon>
               }
               @else if(sidebarItem.iconType == 'material-symbols-outline') {
-                <mat-icon class="sidebarIcon font-20  material-symbols-outlined">{{sidebarItem.icon}}</mat-icon>
+              <mat-icon class="sidebarIcon font-20  material-symbols-outlined">{{sidebarItem.icon}}</mat-icon>
               }
               @else if(sidebarItem.iconType == 'fas') {
               <i [ngClass]="['sidebarIcon', 'font-20', sidebarItem.icon]"></i>
@@ -105,8 +110,7 @@
           }
           <mat-divider></mat-divider>
           <li [routerLinkActive]="'active'">
-            <a  [ngClass]="['menu-toggle']" (click)="callToggleMenu($event, 1)"
-              class="menu-top">
+            <a [ngClass]="['menu-toggle']" (click)="callToggleMenu($event, 1)" class="menu-top">
               <mat-icon class="sidebarIcon font-20">{{'account_circle'}}</mat-icon>
               <span class="hide-menu">{{ translatedLangText.ACCOUNT }}
               </span>

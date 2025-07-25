@@ -1805,6 +1805,11 @@ section.content {
     margin-left: 0px;
     margin-right: 0px;
   }
+
+  section.content .content-block>.card {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 @media (min-width: 1200px) {
@@ -2698,6 +2703,20 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 }
 
 .mobile-label-value {
+  flex: 1;
+  white-space: normal;
+  word-wrap: break-word;
+
+  &.truncate-2-line {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.mobile-tab-label-value {
   flex: 1;
   white-space: normal;
   word-wrap: break-word;
