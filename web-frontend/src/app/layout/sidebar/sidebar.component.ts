@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Direction } from '@angular/cdk/bidi';
-import { DOCUMENT, NgClass, NgStyle } from '@angular/common';
+import { DOCUMENT, NgClass } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -36,7 +36,6 @@ import { RouteInfo } from './sidebar.metadata';
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    NgStyle,
     NgScrollbar,
     RouterLinkActive,
     NgClass,
@@ -69,6 +68,7 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
   routerObj;
   menuIcon = 'chevron_left';
   isHovered = false;
+  isMobile = false;
 
   envTest = environment.title;
 
@@ -118,6 +118,8 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
     }
   }
   ngOnInit() {
+    this.checkScreen();
+    window.addEventListener('resize', () => this.checkScreen());
     if (this.authService.currentUserValue) {
       this.userFullName = this.authService.currentUserValue.name;
       this.userImg = this.authService.currentUserValue.img;
@@ -173,17 +175,16 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
       this.renderer.addClass(this.document.body, 'submenu-closed');
     }
   }
-  mobileMenuSidebarOpen(event: Event, className: string) {
-    const hasClass = (event.target as HTMLInputElement).classList.contains(
-      className
-    );
+  mobileMenuSidebarOpen(event: Event, className: string): void {
+    const hasClass = this.document.body.classList.contains(className);
+
     if (hasClass) {
       this.renderer.removeClass(this.document.body, className);
     } else {
       this.renderer.addClass(this.document.body, className);
     }
   }
-  
+
   callSidemenuCollapse() {
     const hasClass = this.document.body.classList.contains('side-closed');
     if (hasClass) {
@@ -294,5 +295,9 @@ export class SidebarComponent extends UnsubscribeOnDestroyAdapter implements OnI
         };
       })
       .filter((item): item is RouteInfo => item !== null);
+  }
+
+  checkScreen(): void {
+    this.isMobile = window.innerWidth <= 767.98;
   }
 }

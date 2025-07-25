@@ -21,15 +21,28 @@
 
 .navbar-nav {
     display: flex;
-    align-items: center; /* Align items vertically in the center */
-    flex-wrap: nowrap; /* Prevent wrapping to the next line */
+    align-items: center;
+    /* Align items vertically in the center */
+    flex-wrap: nowrap;
+    /* Prevent wrapping to the next line */
 }
 
 .nav-item.logo {
-    flex-shrink: 0; /* Prevent the logo from shrinking */
+    flex-shrink: 0;
+    /* Prevent the logo from shrinking */
 }
 
 .nav-item.nav-toggle {
-    margin-left: auto; /* Push the toggle button to the right side */
-    flex-shrink: 0; /* Prevent the toggle button from shrinking */
+    margin-left: auto;
+    /* Push the toggle button to the right side */
+    flex-shrink: 0;
+    /* Prevent the toggle button from shrinking */
+}
+
+.mobile-close-btn {
+    margin-left: auto;
+    padding-right: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
