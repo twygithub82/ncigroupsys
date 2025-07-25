@@ -254,7 +254,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     AVERAGE:'COMMON-FORM.AVERAGE',
     OFFHIRE:'COMMON-FORM.OFFHIRE',
     IN_SERVICE:'COMMON-FORM.IN-SERVICE',
-    TANK_IN_QTY:"COMMON-FORM.TANK-IN-QTY",
+    GATE_IN_QTY:"COMMON-FORM.GATE-IN-QTY",
     TANK:"COMMON-FORM.TANK",
     COST:"COMMON-FORM.COST",
     S_N:"COMMON-FORM.S_N"
@@ -606,7 +606,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const headerRow: any[] = [
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 1, styles: { halign: 'center', valign: 'bottom' } },
-      { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.GATE_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
     ];
 
     if (!this.modulePackageService.isStarterPackage()) {
@@ -652,7 +652,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     // const headers = [[
     //   { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
     //   { content: this.translatedLangText.CUSTOMER, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-    //   { content: this.translatedLangText.TANK_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+    //   { content: this.translatedLangText.GATE_IN_QTY, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
     //   { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
     //   { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
     //   { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } },
@@ -721,13 +721,14 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 12);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 6, 12);
 
-    if(this.customer)
-    {
-      const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-    }
+    // if(this.customer)
+    // {
+    //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
+    //   Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+    // }
+
     var idx = 0;
     for (let n = 0; n < (this.repData?.customer_sales?.length||0); n++) {
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
@@ -735,7 +736,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
         const row = [          
           (++idx).toString(), 
-          (itm?.code || '') + ' (' + (itm?.name || '') + ')', 
+          (itm?.name || ''), 
           (itm?.tank_in_count),];
 
         if(!this.modulePackageService.isStarterPackage()){

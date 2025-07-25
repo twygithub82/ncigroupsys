@@ -1682,13 +1682,13 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
   GetReportTitle(): string {
     var title:string='';
     title = `${this.translatedLangText.YEARLY_SALES_REPORT}`;
-    if(this.repName)
-     {
-      title += `: ${this.repName}`;
-     }else
-     {
-       title += `: ${this.translatedLangText.MASTER}`;
-     }
+    // if(this.repName)
+    //  {
+    //   title += `: ${this.repName}`;
+    //  }else
+    //  {
+    //    title += `: ${this.translatedLangText.MASTER}`;
+    //  }
     
     return title;
 

@@ -703,7 +703,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     }
     else if (itm?.length == 1) {
      // retval = `${itm[0].cargo}`
-        const buffer =10;
+        const buffer = 0;
         const maxLength = (maxLengthDisplaySingleSelectedItem-buffer);
             const value=`${itm[0].cargo}`;
             retval = `${value.length > maxLength 

@@ -596,9 +596,9 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 6;
+    let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -664,7 +664,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       const repairCost = itm?.repair_cost || 0;
       totalRepairCost += repairCost; // Add to the total
         data.push([
-          (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no ||"",this.displayDateTime(itm?.estimate_date)||'',
+          (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no ||"",this.displayDate(itm?.estimate_date)||'',
           this.getRepairOption(itm?.repair_type||""),itm?.qc_by||"",Utility.formatNumberDisplay(itm?.repair_cost)
         ]);
     }
