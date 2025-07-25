@@ -293,7 +293,8 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     COST:'COMMON-FORM.COST',
     S_N:'COMMON-FORM.S_N',
     MASTER:'COMMON-FORM.MASTER',
-    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE'
+    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
+   
     
   }
 
@@ -735,6 +736,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
     let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
     let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
+    const NoTankTitle = this.translatedLangText.NO_OF_TANKS;
     const reportTitle = this.GetReportTitle();
     const vAlign ="bottom"
     const headers = [[
@@ -748,19 +750,19 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
-      { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+    //  { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
 
     ],
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      ...(showPreinspectSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
-      ...(showLoloSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
-      ...(showStorageSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for storage
-      ...(showGateSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for STEAM
-      ...(showResidueSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for residue
-      ...(showCleanSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge?[this.translatedLangText.TANK, this.translatedLangText.COST]:[]), // Sub-headers for CLEANING
+      ...(showPreinspectSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for preinspection
+      ...(showLoloSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for LOLO
+      ...(showStorageSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for storage
+      ...(showGateSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for GATE_SURCHARGE
+      ...(showSteamSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for STEAM
+      ...(showResidueSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for residue
+      ...(showCleanSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for RESIDUE
+      ...(showRepairSurcharge?[NoTankTitle, this.translatedLangText.COST]:[]), // Sub-headers for CLEANING
      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
 
@@ -843,11 +845,20 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     var prcsValues:number[]=[]
     var total_all_cost:number=0;
     var average_counter=0;
+    var total_tank_In_out=0,total_tank_lolo=0,total_tank_storage=0,total_tank_steam=0,total_tank_residue=0,total_tank_clean=0,total_tank_repair=0,total_tank_preinspect=0;
+    var average_tank_In_out=0,average_tank_lolo=0,average_tank_storage=0,average_tank_steam=0,average_tank_residue=0,average_tank_clean=0,average_tank_repair=0,average_tank_preinspect=0;
     for (const monthData of grpData.monthlyData) {
       var total:number =(monthData.in_out?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.in_out?.cost||0)
       +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
       total_all_cost+=total;
       average_counter++;
+      total_tank_In_out+=monthData.in_out?.count||0; total_tank_lolo+=monthData.lolo?.count||0; total_tank_storage+=monthData.storage?.count||0;
+      total_tank_steam+=monthData.steaming?.count||0; total_tank_residue+=monthData.residue?.count||0;total_tank_clean+=monthData.cleaning?.count||0;
+      total_tank_repair+=monthData.repair?.count||0;
+
+      average_tank_In_out+=(monthData.in_out?.count||0>0?1:0);  average_tank_lolo+=(monthData.lolo?.count||0>0?1:0);  average_tank_storage+=(monthData.storage?.count||0>0?1:0);
+      average_tank_steam+=(monthData.steaming?.count||0>0?1:0);  average_tank_residue+=(monthData.residue?.count||0>0?1:0);average_tank_clean+=(monthData.cleaning?.count||0>0?1:0);
+      average_tank_repair+=(monthData.repair?.count||0>0?1:0);average_tank_preinspect+=(monthData.preinspection?.count||0>0?1:0);
       data.push([
         (++idx).toString(),monthData.key,
         ...(showGateSurcharge?[ monthData.in_out?.count||'',Utility.formatNumberDisplay(monthData.in_out?.cost)]:[]),
@@ -906,31 +917,58 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         }
       });
     }
-    data.push([
+
+      data.push([
       this.translatedLangText.TOTAL,"",
-      ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.total_cost),'']:[]),
-      ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost),'']:[]),
-      ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost),'']:[]),
-      ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost),'']:[]),
-      ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.total_cost),'']:[]),
-      ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.total_cost),'']:[]),
-      ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.total_cost),'']:[]),
-      ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.total_cost),'']:[]),
+      ...(showGateSurcharge?[total_tank_In_out,Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.total_cost)]:[]),
+      ...(showPreinspectSurcharge?[total_tank_preinspect,Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost)]:[]),
+      ...(showLoloSurcharge?[total_tank_lolo,Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost)]:[]),
+      ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost)]:[]),
+      ...(showSteamSurcharge?[total_tank_steam,Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.total_cost)]:[]),
+      ...(showResidueSurcharge?[total_tank_residue,Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.total_cost)]:[]),
+      ...(showCleanSurcharge?[total_tank_clean,Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.total_cost)]:[]),
+      ...(showRepairSurcharge?[total_tank_repair,Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.total_cost)]:[]),
       Utility.formatNumberDisplay(total_all_cost)
     ]);
 
     data.push([
       this.translatedLangText.AVERAGE,"",
-      ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.average_cost||''),'']:[]),
-      ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.average_cost||''),'']:[]),  
+      ...(showGateSurcharge?[average_tank_In_out,Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||'')]:[]),
+      ...(showPreinspectSurcharge?[average_tank_preinspect,Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||'')]:[]),
+      ...(showLoloSurcharge?[average_tank_lolo,Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||'')]:[]),
+      ...(showStorageSurcharge?[average_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||'')]:[]),
+      ...(showSteamSurcharge?[average_tank_steam,Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.average_cost||'')]:[]),
+      ...(showResidueSurcharge?[average_tank_residue,Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.average_cost||'')]:[]),
+      ...(showCleanSurcharge?[average_tank_clean,Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.average_cost||'')]:[]),
+      ...(showRepairSurcharge?[average_tank_repair,Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.average_cost||'')]:[]),  
       Utility.formatNumberDisplay((total_all_cost/average_counter))
     ]);
+    
+    // data.push([
+    //   this.translatedLangText.TOTAL,"",
+    //   ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.total_cost),'']:[]),
+    //   ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.total_cost),'']:[]),
+    //   ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.total_cost),'']:[]),
+    //   ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost),'']:[]),
+    //   ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.total_cost),'']:[]),
+    //   ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.total_cost),'']:[]),
+    //   ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.total_cost),'']:[]),
+    //   ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.total_cost),'']:[]),
+    //   Utility.formatNumberDisplay(total_all_cost)
+    // ]);
+
+    // data.push([
+    //   this.translatedLangText.AVERAGE,"",
+    //   ...(showGateSurcharge?[Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||''),'']:[]),
+    //   ...(showPreinspectSurcharge?[Utility.formatNumberDisplay(this.repData?.preinspection_yearly_revenue?.average_cost||''),'']:[]),
+    //   ...(showLoloSurcharge?[Utility.formatNumberDisplay(this.repData?.lolo_yearly_revenue?.average_cost||''),'']:[]),
+    //   ...(showStorageSurcharge?[Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||''),'']:[]),
+    //   ...(showSteamSurcharge?[Utility.formatNumberDisplay(this.repData?.steam_yearly_revenue?.average_cost||''),'']:[]),
+    //   ...(showResidueSurcharge?[Utility.formatNumberDisplay(this.repData?.residue_yearly_revenue?.average_cost||''),'']:[]),
+    //   ...(showCleanSurcharge?[Utility.formatNumberDisplay(this.repData?.cleaning_yearly_revenue?.average_cost||''),'']:[]),
+    //   ...(showRepairSurcharge?[Utility.formatNumberDisplay(this.repData?.repair_yearly_revenue?.average_cost||''),'']:[]),  
+    //   Utility.formatNumberDisplay((total_all_cost/average_counter))
+    // ]);
     
     prcsValues=[
       ...(showGateSurcharge?[(this.repData?.gate_yearly_revenue?.total_cost||0)]:[]),
@@ -950,9 +988,10 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+     // startY: startY, // Start table at the current startY value
+      margin: { top: 55,left: leftMargin }, // top margin for all pages
       theme: 'grid',
-      tableWidth: 'auto',
+      tableWidth: pageWidth - leftMargin - rightMargin,
       styles: {
         fontSize: fontSz,
         minCellHeight: minHeightHeaderCol
@@ -1029,33 +1068,26 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
               }
           }
         }
-        if((data.row.index==totalRowIndex ||data.row.index==averageRowIndex)){
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
-          data.cell.styles.valign = 'middle'; // Center text vertically
-          data.cell.fontSize=8;
-          if (data.column.index %2==0 &&(lastColumnIndex!=data.column.index)) {
-            data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+        // if((data.row.index==totalRowIndex ||data.row.index==averageRowIndex)){
+        //   data.cell.styles.fontStyle = 'bold';
+        //   data.cell.styles.fillColor=[231, 231, 231];
+        //   data.cell.styles.valign = 'middle'; // Center text vertically
+        //   data.cell.fontSize=8;
+        //   if (data.column.index %2==0 &&(lastColumnIndex!=data.column.index)) {
+        //     data.cell.colSpan = colSpan;  // Merge 4 columns into one
+        //     if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
             
-          }
+        //   }
         
-        }
-        // else if (depotCell.includes(data.column.index))
-        // {
-        //   var dpWidth=10
-        //   data.cell.colSpan = colSpan;
-        //   data.column.width = `${dpWidth}px`;  // Add unit
-        //   data.column.minWidth = dpWidth;
-        //   data.column.maxWidth = dpWidth;
         // }
+       
 
-        if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)) 
-          && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
-        ) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
+        // if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)) 
+        //   && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
+        // ) {
+        //   data.cell.text = ''; // Remove text from hidden columns
+        //   data.cell.colSpan = 0; // Hide these columns
+        // }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
@@ -1066,7 +1098,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin +35);
           }
         }
 
@@ -1265,35 +1297,40 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
  setTimeout(async()=>{
 
-  startY=lastTableFinalY+10;
-  let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  for (var i = 0; i < cardElements.length; i++) {
-    if (i >= 0) {
-      pdf.addPage();
-      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY=topMargin+20;
-    }
-    const card1 = cardElements[i];
-    const canvas1 = await html2canvas(card1, { scale: scale });
-    Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
+  // startY=lastTableFinalY+10;
+  // let chartContentWidth = pageWidth - leftMargin - rightMargin;
+  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  // for (var i = 0; i < cardElements.length; i++) {
+  //   if (i >= 0) {
+  //     pdf.addPage();
+  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+  //     startY=topMargin+20;
+  //   }
+  //   const card1 = cardElements[i];
+  //   const canvas1 = await html2canvas(card1, { scale: scale });
+  //   Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, imgQuality);
    
-  }
+  // }
 
     const totalPages = pdf.getNumberOfPages();
 
     let lineOffset = 0;
-    pagePositions.forEach(({ page, x, y }) => {
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.setLineDashPattern([0.01, 0.01], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
+
+      const lineBuffer = 13;
       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin + lineOffset, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - lineOffset), pdf.internal.pageSize.height - lineBuffer);
-    });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }
 
   //  this.generatingPdfProgress = 100;
     //pdf.save(fileName);
