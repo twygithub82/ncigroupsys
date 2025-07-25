@@ -333,9 +333,6 @@
             <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.ESTIMATE_SUMMARY}}
-                <!-- - <span class="font-bold m-r-5">{{repairItem?.estimate_no}}</span>
-                <span
-                  [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span> -->
               </h2>
             </div>
             <div class="body">
@@ -354,27 +351,8 @@
                   {{translatedLangText.ESTIMATE_DATE}}: <span
                     class="font-bold">{{displayDate(steamItem?.create_dt)}}</span>
                 </div>
-                <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10">
-                  {{translatedLangText.STATUS}}: <span
-                    [ngClass]="'font-bold badge ' + getBadgeClass(steamItem?.status_cv)">{{getProcessStatusDescription(steamItem?.status_cv)}}</span>
-                </div> -->
               </div>
               <div class="row">
-                <!-- <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
-                    </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.ESTIMATE_DATE}}: <span
-                        class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
-                    </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-10">
-                      {{translatedLangText.STATUS}}: <span
-                        [ngClass]="'font-bold badge ' + getBadgeClass(repairItem?.status_cv)">{{repairItem?.status_cv}}</span>
-                    </div>
-                  </div>
-                </div> -->
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row p-l-10 p-r-10">
                     <div class="col-xl-1-25 col-lg-1-25 col-md-2 col-sm-2 m-b-0">
@@ -456,7 +434,7 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">
-                            {{steamItem?.remarks}}
+                            {{steamItem?.remarks || '-'}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
@@ -475,14 +453,12 @@
               </div>
               }
               <div class="row m-t-5">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
                     (click)="$event.preventDefault();" [routerLink]="['/admin/steam/job-order']"
                     [queryParams]="{tabIndex: tabIndex}">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
-                </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
                 </div>
               </div>
             </div>

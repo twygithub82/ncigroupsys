@@ -85,21 +85,26 @@
                           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="tank_no">
-                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                             {{translatedLangText.TANK_NO}}
                           </mat-header-cell>
-                          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
+                          <mat-cell mat-cell *matCellDef="let row"
+                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs justify-content-start'">
                             <span
                               class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="customer">
-                          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <mat-header-cell mat-header-cell *matHeaderCellDef
+                            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             {{translatedLangText.CUSTOMER}}
                           </mat-header-cell>
-                          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                          <mat-cell mat-cell *matCellDef="let row"
+                            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                            <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>
                             <span
-                              class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
+                              class="mobile-label-value">{{row.storing_order_tank?.storing_order?.customer_company?.name}}</span>
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="estimate_no">
@@ -160,7 +165,7 @@
                             <button mat-icon-button (click)="ConfirmUnassignTeam($event,row)"
                               [matTooltip]="translatedLangText.UNASSIGNED">
                               <!-- <mat-icon>chip_extraction</mat-icon> -->
-                               <span class="material-symbols-outlined rotate-180">chip_extraction</span>
+                              <span class="material-symbols-outlined rotate-180">chip_extraction</span>
                             </button>
                             }
                             <!-- <span
