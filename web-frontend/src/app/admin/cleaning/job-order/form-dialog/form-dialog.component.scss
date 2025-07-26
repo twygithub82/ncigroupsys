@@ -52,6 +52,7 @@ td div img {
 .team-button {
   width: 150px;
   padding: 10px;
+  margin: 7px;
   text-align: center;
 }
 
@@ -93,4 +94,8 @@ td div img {
 
 ::ng-deep .card{
   margin-bottom: 0px !important;
+}
+
+.mat-mdc-dialog-content.mdc-dialog__content {
+  overflow-x: hidden;
 }
