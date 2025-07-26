@@ -667,7 +667,7 @@
     "ARE-YOU-SURE": "Are you sure?",
     "PACKAGE-LABOUR": "Package Labour",
     "CONFIRM-RESET": "Confirm Reset?",
-    "CONFIRM-UPDATE-INVOICE": "Proceed To Overwrite Existing Invoice?",
+    "CONFIRM-UPDATE-INVOICE": "Overwrite Existing Invoice?",
     "CONFIRM-REMOVE-ESITMATE": "Would like to remove the estimate(s) from the existing Invoice?",
     "CONFIRM-REMOVE-ITEMS": "Would like to remove the item(s) from the existing Invoice?",
     "CONFIRM-REMOVE-INVOICES": "Would like to remove the selected invoice(s)?",

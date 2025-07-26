@@ -647,13 +647,6 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
  
 
-
-
- 
-
-
-
-
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
  async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -996,6 +989,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     pdf.setLineDashPattern([0.001, 0.001], 0);
 
     startY+=5;
+    //Add Second Page Header
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,
@@ -1106,7 +1100,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
            
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+35);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+35); //Add Second Page
            
           }
         }
@@ -1193,10 +1187,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const canvas1 = await html2canvas(card1, { scale: scale });
     Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
     
-  
-
     const totalPages = pdf.getNumberOfPages();
-
 
    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
@@ -1212,7 +1203,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       if (page > 1) {
         await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
       }
-    }
+    }// Add Second Page, Add For Loop
 
   //  this.generatingPdfProgress = 100;
     //pdf.save(fileName);

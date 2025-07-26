@@ -230,8 +230,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     FAX: 'COMMON-FORM.FAX',
     EMAIL: 'COMMON-FORM.EMAIL',
     WEB: 'COMMON-FORM.WEB',
-    IN_GATE: 'COMMON-FORM.IN-GATE',
-    OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    GATE_IN: 'COMMON-FORM.GATE-IN',
+    GATE_OUT: 'COMMON-FORM.GATE-OUT',
     EQUIPMENT_INTERCHANGE_RECEIPT: 'COMMON-FORM.EQUIPMENT-INTERCHANGE-RECEIPT',
     TAKE_IN_DATE: 'COMMON-FORM.TAKE-IN-DATE',
     LAST_RELEASE_DATE: 'COMMON-FORM.LAST-RELEASE-DATE',
@@ -848,8 +848,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.CUSTOMER_CODE,
-      this.translatedLangText.CUSTOMER, this.translatedLangText.IN_GATE,
-      this.translatedLangText.OUT_GATE
+      this.translatedLangText.CUSTOMER, this.translatedLangText.GATE_IN,
+      this.translatedLangText.GATE_OUT
     ]];
 
     const comStyles: any = {
@@ -897,8 +897,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         startY = lastTableFinalY + 15;
         const subHeaders = [[
           this.translatedLangText.S_N, this.translatedLangText.LOCATION,
-          this.translatedLangText.OPENING_BALANCE, this.translatedLangText.IN_GATE,
-          this.translatedLangText.OUT_GATE, this.translatedLangText.CLOSING_BALANCE
+          this.translatedLangText.OPENING_BALANCE, this.translatedLangText.GATE_IN,
+          this.translatedLangText.GATE_OUT, this.translatedLangText.CLOSING_BALANCE
         ]];
 
         const subComStyles: any = {
@@ -1132,8 +1132,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     //Add table using autoTable plugin
 
     const headers = [[
-      this.translatedLangText.OPENING_BALANCE, this.translatedLangText.IN_GATE,
-      this.translatedLangText.OUT_GATE, this.translatedLangText.CLOSING_BALANCE,
+      this.translatedLangText.OPENING_BALANCE, this.translatedLangText.GATE_IN,
+      this.translatedLangText.GATE_OUT, this.translatedLangText.CLOSING_BALANCE,
     ]];
 
     var cWidth =contentWidth/4;
@@ -1963,22 +1963,22 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       if (this.queryType == 3) {
         series = [
           {
-            name: this.translatedLangText.IN_GATE,
+            name: this.translatedLangText.GATE_IN,
             data: in_gate_tank_no
           },
           {
-            name: this.translatedLangText.OUT_GATE,
+            name: this.translatedLangText.GATE_OUT,
             data: out_gate_tank_no
           }
         ];
       } else if (this.queryType == 1) {
         series = [
           {
-            name: this.translatedLangText.IN_GATE,
+            name: this.translatedLangText.GATE_IN,
             data: in_gate_tank_no
           },
           {
-            name: this.translatedLangText.OUT_GATE,
+            name: this.translatedLangText.GATE_OUT,
             data: []
           }
         ];
@@ -1986,11 +1986,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       else {
         series = [
           {
-            name: this.translatedLangText.IN_GATE,
+            name: this.translatedLangText.GATE_IN,
             data: []
           },
           {
-            name: this.translatedLangText.OUT_GATE,
+            name: this.translatedLangText.GATE_OUT,
             data: out_gate_tank_no
           }
         ];
