@@ -328,7 +328,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
     // TODO :: search criteria
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.catDS.loadItems(where, order).subscribe(data => {
+    this.subs.sink = this.catDS.loadItems(where, order, 100).subscribe(data => {
       this.catList = data;
       this.endCursor = this.catDS.pageInfo?.endCursor;
       this.startCursor = this.catDS.pageInfo?.startCursor;
