@@ -215,7 +215,8 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
-  invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
+  // invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
+   invTypes: string[] = ["ALL", "CLEANING","REPAIR","STEAMING", "RESIDUE"];
 
   constructor(
     public httpClient: HttpClient,
@@ -300,7 +301,9 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', "ALL");;
+      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', "ALL");
+
+      this.inventoryTypeCvList=Utility.SortCodeValues(this.inventoryTypeCvList,this.invTypes);
     });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear - 5;

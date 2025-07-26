@@ -720,63 +720,63 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
  
 
     //Sign , verified tables-------------start--------------
-    var content:string[]=[];
-    var values:string[]=[];
-    var maxSpace = 20;
-    var str='';
-    str= `${this.translatedLangText.SIGN}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": ");
-    str= `${this.translatedLangText.REPORTED_BY}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": ");
-    str= `${this.translatedLangText.APPROVED_DATE}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": "+`${this.date}`);
-    str= `${this.translatedLangText.TEAM}`;
-    content.push(str.padEnd(maxSpace," "));
-    values.push(": "+`${this.team}`);
-    var startX=leftMargin;
+    // var content:string[]=[];
+    // var values:string[]=[];
+    // var maxSpace = 20;
+    // var str='';
+    // str= `${this.translatedLangText.SIGN}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": ");
+    // str= `${this.translatedLangText.REPORTED_BY}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": ");
+    // str= `${this.translatedLangText.APPROVED_DATE}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": "+`${this.date}`);
+    // str= `${this.translatedLangText.TEAM}`;
+    // content.push(str.padEnd(maxSpace," "));
+    // values.push(": "+`${this.team}`);
+    // var startX=leftMargin;
     
-    startY = pageHeight-(bottomMargin+10);
-    var buffer = maxSpace *3;
+    // startY = pageHeight-(bottomMargin+10);
+    // var buffer = maxSpace *3;
    
-    pdf.setPage(pdf.getNumberOfPages());
-    pdf.setLineWidth(0.01);
-    pdf.setLineDashPattern([1,1], 1);
-    pdf.setFontSize(8);
-    var bufferStartXValue=1.1;
-    var indx:number=0;
-    content.forEach(c=>{
-      var startXValue=startX+(maxSpace *bufferStartXValue);
-      var valueContent = values[indx++];
-      pdf.line(startX-1, startY, startX+buffer,startY);
-      startY-=2;
-      pdf.text(c,startX, startY , { align: 'left' });
-      pdf.text(valueContent,startXValue,startY , { align: 'left' });
-      startY-=gap;
-    });
-    startX=pageWidth-rightMargin-(buffer);
-    startY =  pageHeight-(bottomMargin+10);
-    content=[];
-    values=[];
-    indx=0;
-    maxSpace = 20;
-    str= `${this.translatedLangText.SIGN}`;
-    content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' ')  );
-    values.push(": ");
-    str= `${this.translatedLangText.VERIFIED_BY}`;
-    content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' '));
-    values.push(": ");
-    content.forEach(c=>{
-      var startXValue=startX+(maxSpace *bufferStartXValue);
-      var valueContent = values[indx++];
-      pdf.line(startX-1, startY, startX+buffer,startY);
-      startY-=2;
-      pdf.text(c,startX, startY, { align: 'left' });
-      pdf.text(valueContent,startXValue,startY , { align: 'left' });
-      startY-=gap;
-    });
+    // pdf.setPage(pdf.getNumberOfPages());
+    // pdf.setLineWidth(0.01);
+    // pdf.setLineDashPattern([1,1], 1);
+    // pdf.setFontSize(8);
+    // var bufferStartXValue=1.1;
+    // var indx:number=0;
+    // content.forEach(c=>{
+    //   var startXValue=startX+(maxSpace *bufferStartXValue);
+    //   var valueContent = values[indx++];
+    //   pdf.line(startX-1, startY, startX+buffer,startY);
+    //   startY-=2;
+    //   pdf.text(c,startX, startY , { align: 'left' });
+    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
+    //   startY-=gap;
+    // });
+    // startX=pageWidth-rightMargin-(buffer);
+    // startY =  pageHeight-(bottomMargin+10);
+    // content=[];
+    // values=[];
+    // indx=0;
+    // maxSpace = 20;
+    // str= `${this.translatedLangText.SIGN}`;
+    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' ')  );
+    // values.push(": ");
+    // str= `${this.translatedLangText.VERIFIED_BY}`;
+    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' '));
+    // values.push(": ");
+    // content.forEach(c=>{
+    //   var startXValue=startX+(maxSpace *bufferStartXValue);
+    //   var valueContent = values[indx++];
+    //   pdf.line(startX-1, startY, startX+buffer,startY);
+    //   startY-=2;
+    //   pdf.text(c,startX, startY, { align: 'left' });
+    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
+    //   startY-=gap;
+    // });
     //Sign , verified tables-------------end--------------
 
 

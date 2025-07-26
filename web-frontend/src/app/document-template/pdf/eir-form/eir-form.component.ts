@@ -54,7 +54,7 @@ declare const html2canvas: any;
     MatProgressBarModule
   ],
 })
-export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit  {
+export class EirFormComponent extends UnsubscribeOnDestroyAdapter implements OnInit  {
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -321,10 +321,10 @@ renderedBottom: { highlighted: boolean }[] = [];
       .replace(/{companyAbb}/g, this.customerInfo.companyAbb);
   }
 
-  ngAfterViewInit(): void {
+  StartGeneratingPDF(): void {
     setTimeout(() => {
       this.generatePDF();
-    }, 300); // Let Angular render everything
+    }, 50); // Let Angular render everything
   }
 
   async ngOnInit() {
@@ -346,7 +346,7 @@ renderedBottom: { highlighted: boolean }[] = [];
       this.highlightedCellsBottom = this.populateHighlightedCells(this.highlightedCellsBottom, JSON.parse(this.eirDetails?.bottom_coord || '[]'));
 
       this.cdr.detectChanges();
-
+      this.StartGeneratingPDF();
     //  this.updateCellValues();
 
      
