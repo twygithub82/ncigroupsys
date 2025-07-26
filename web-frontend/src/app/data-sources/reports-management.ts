@@ -377,6 +377,7 @@ export class GroupedInventoryMonthly {
   [date: string]: {
     day: string;
     cleaning?: any;
+    residue?:any;
     gateInOut?: {
       gate?: any;
       lolo?: any;
@@ -767,6 +768,14 @@ export class InventoryAnalyzer {
         grouped[item.date!] = { day: item.day! };
       }
       grouped[item.date!].steaming = item;
+    });
+
+     // Group steaming inventory
+    data.residue_inventory?.forEach(item => {
+      if (!grouped[item.date!]) {
+        grouped[item.date!] = { day: item.day! };
+      }
+      grouped[item.date!].residue = item;
     });
   
     return grouped;

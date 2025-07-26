@@ -11,6 +11,7 @@ import html2canvas from "html2canvas";
 import { ApexChart, ChartComponent } from "ng-apexcharts";
 import {ElementRef} from '@angular/core';
 import { Canvg } from 'canvg';
+import { CodeValuesItem } from 'app/data-sources/code-values';
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -1807,6 +1808,18 @@ public static async convertWithDomToImage(element: HTMLElement, type: 'png' | 'j
       img.src = base64;
     });
   }
+
+static SortCodeValues(codeValueList: CodeValuesItem[], seqList: string[]): CodeValuesItem[] {
+  return codeValueList.slice().sort((a, b) => {
+    const indexA = seqList.indexOf(a.code_val!);
+    const indexB = seqList.indexOf(b.code_val!);
+
+    // Missing values go to the end
+    return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+  });
+}
+  
+
 
 //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
 //   {
