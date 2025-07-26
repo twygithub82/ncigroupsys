@@ -120,6 +120,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
     NO_OF_TANKS: 'COMMON-FORM.NO-OF-TANKS',
+    NO_OF_ESTIMATE: 'COMMON-FORM.NO-OF-ESTIMATE',
     LAST_CARGO: 'COMMON-FORM.LAST-CARGO',
     TANK_NO: 'COMMON-FORM.TANK-NO',
     JOB_NO: 'COMMON-FORM.JOB-NO',
@@ -686,9 +687,12 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
+
+    let customColHeaderText = this.repType === "REPAIR" ? this.translatedLangText.NO_OF_ESTIMATE : this.translatedLangText.NO_OF_TANKS;
+
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.DATE,
-      this.translatedLangText.DAY, this.translatedLangText.NO_OF_TANKS
+      this.translatedLangText.DAY, customColHeaderText
     ]];
 
     const comStyles: any = {
@@ -1040,6 +1044,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
   GeneratedDate(): string {
     return Utility.convertDateToStr(new Date());
   }
+
   GetReportTitle(): string {
     var title:string='';
     switch(this.repType)

@@ -229,30 +229,30 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD:'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE:'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST:'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST:'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST:'COMMON-FORM.RESIDUE-COST-REPORT',
-    IN_DATE:'COMMON-FORM.IN-DATE',
-    OUT_DATE:'COMMON-FORM.OUT-DATE',
-    TOTAL:'COMMON-FORM.TOTAL',
-    DAYS:'COMMON-FORM.DAYS',
-    GATEIO:'COMMON-FORM.GATEIO',
-    INVENTORY_TYPE:'COMMON-FORM.INVENTORY-TYPE',
-    TANK_ACTIVITY:'COMMON-FORM.TANK-ACTIVITY',
-    YARD_REPORT:'COMMON-FORM.YARD-REPORT',
-    SUMMARY_REPORT:'COMMON-FORM.SUMMARY-REPORT',
-    YARD:'COMMON-FORM.YARD',
-    SUMMARY : 'COMMON-FORM.SUMMARY',
-    INVENTORY_PERIOD:'COMMON-FORM.INVENTORY-PERIOD',
-    STEAM:"COMMON-FORM.STEAM",
-    CLEANING:"COMMON-FORM.CLEANING",
-    REPAIR:"COMMON-FORM.STORAGE",
-    STORAGE:"COMMON-FORM.STORAGE",
-    PENDING:"COMMON-FORM.PENDING",
-    WITH_RO:"COMMON-FORM.WITH-RO",
-    S_N:'COMMON-FORM.S_N',
+    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
+    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
+    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
+    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
+    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
+    IN_DATE: 'COMMON-FORM.IN-DATE',
+    OUT_DATE: 'COMMON-FORM.OUT-DATE',
+    TOTAL: 'COMMON-FORM.TOTAL',
+    DAYS: 'COMMON-FORM.DAYS',
+    GATEIO: 'COMMON-FORM.GATEIO',
+    INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
+    TANK_ACTIVITY: 'COMMON-FORM.TANK-ACTIVITY',
+    YARD_REPORT: 'COMMON-FORM.YARD-REPORT',
+    SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
+    YARD: 'COMMON-FORM.YARD',
+    SUMMARY: 'COMMON-FORM.SUMMARY',
+    INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
+    STEAM: "COMMON-FORM.STEAM",
+    CLEANING: "COMMON-FORM.CLEANING",
+    REPAIR: "COMMON-FORM.STORAGE",
+    STORAGE: "COMMON-FORM.STORAGE",
+    PENDING: "COMMON-FORM.PENDING",
+    WITH_RO: "COMMON-FORM.WITH-RO",
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
@@ -825,317 +825,315 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
-      const pageWidth = 210; // A4 width in mm (portrait)
-      const pageHeight = 297; // A4 height in mm (portrait)
-      const leftMargin = 10; 
-      const rightMargin = 10;
-      const topMargin = 5;
-      const bottomMargin = 5;
-      const contentWidth = pageWidth - leftMargin - rightMargin; 
-      const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-    
-      this.generatingPdfLoadingSubject.next(true);
-      this.generatingPdfProgress = 0;
-    
-      const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-        //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-        let pageNumber = 1;
-      
-        let reportTitleCompanyLogo = 32;
-        let tableHeaderHeight = 12;
-        let tableRowHeight = 8.5;
-        let minHeightBodyCell=5;
-      
-        const pagePositions: { page: number; x: number; y: number }[] = [];
-       // const progressValue = 100 / cardElements.length;
-      
-        const reportTitle = this.GetReportTitle() + " : " + `${this.invType}`;
-        const headers = [[
-          this.translatedLangText.S_N,this.translatedLangText.CUSTOMER_CODE,
-          this.translatedLangText.CUSTOMER, this.translatedLangText.NO_OF_TANKS
-        ]];
-  
-        const comStyles:any= {
-          // Set columns 0 to 16 to be center aligned
-          0: { halign: 'center',valign:'middle' , cellWidth: 10, minCellHeight:minHeightBodyCell },
-          1: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
-          2: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
-          3: { halign: 'center',valign:'middle', minCellHeight:minHeightBodyCell },
-      };
-      
-        // Define headStyles with valid fontStyle
-        const headStyles: Partial<Styles> = {
-          fillColor: [211, 211, 211], // Background color
-          textColor: 0, // Text color (white)
-          fontStyle: "bold", // Valid fontStyle value
-          halign: 'center', // Centering header text
-          valign:'middle',
-          lineColor:201,
-          lineWidth:0.1
-        };
-      
-        let currentY = topMargin;
-        let scale = this.scale;
-        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-      
-        
-        await Utility.addHeaderWithCompanyLogo_Portriat(pdf,pageWidth,topMargin,bottomMargin,leftMargin,rightMargin,this.translate);
-        await Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin+35);
-        
-        // Variable to store the final Y position of the last table
-        let lastTableFinalY = 40;
-        let minHeightHeaderCol=3;
-        
-        let fontSz=5.5;
-        let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-        const data: any[][] = []; // Explicitly define data as a 2D array
-        pdf.setFontSize(8);
-        pdf.setTextColor(0, 0, 0); // Black text
-        const invDate =`${this.translatedLangText.INVENTORY_PERIOD}:${this.date}`;
-        Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin+5,startY-3,8);
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-        //const invType=`(${this.invType})`
-        //Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,startY-11,9);
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
 
-    
-        var total_tank=0;
-        for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
-         
-          //let startY = lastTableFinalY + 15; // Start Y position for the current table
-          let cust = this.report_customer_tank_activity[n];
-      
-              // Calculate space required for customer name and table
-            const customerNameHeight = 10; // Height required for customer name
-            const tableHeight = this.report_customer_tank_activity!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
-        
-            total_tank+=cust.number_tank||0;
-                data.push([
-                  (n+1).toString(), cust.code || "", cust.customer || "", cust.number_tank || ""
-                ]);
-              
-      
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightBodyCell = 5;
+
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
+
+    const reportTitle = this.GetReportTitle() + " : " + `${this.invType}`;
+    const headers = [[
+      this.translatedLangText.S_N, this.translatedLangText.CUSTOMER_CODE,
+      this.translatedLangText.CUSTOMER, this.translatedLangText.NO_OF_TANKS
+    ]];
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 40;
+    let minHeightHeaderCol = 3;
+
+    let fontSz = 5.5;
+    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+    const data: any[][] = []; // Explicitly define data as a 2D array
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:${this.date}`;
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 8);
+
+    //const invType=`(${this.invType})`
+    //Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,startY-11,9);
+
+
+    var total_tank = 0;
+    for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
+
+      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+      let cust = this.report_customer_tank_activity[n];
+
+      // Calculate space required for customer name and table
+      const customerNameHeight = 10; // Height required for customer name
+      const tableHeight = this.report_customer_tank_activity!.length * tableRowHeight + tableHeaderHeight; // Approximate table height
+
+      total_tank += cust.number_tank || 0;
+      data.push([
+        (n + 1).toString(), cust.code || "", cust.customer || "", cust.number_tank || ""
+      ]);
+
+
+    }
+    data.push([this.translatedLangText.TOTAL, "", "", total_tank]);
+    // pdf.setDrawColor(0, 0, 0); // red line color
+
+    // pdf.setLineWidth(0.1);
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
+    // Add table using autoTable plugin
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+        let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        if (data.row.index === lastRowIndex) {
+          data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
+          data.cell.styles.fontStyle = 'bold';
+          if (data.column.index === 0) {
+            data.cell.colSpan = 3;  // Merge 4 columns into one
+            data.cell.styles.halign = 'right'; // Center text horizontally
+            data.cell.styles.valign = 'middle'; // Center text vertically
+
+          }
         }
-        data.push([this.translatedLangText.TOTAL,"","",total_tank]);
-        // pdf.setDrawColor(0, 0, 0); // red line color
-    
-        // pdf.setLineWidth(0.1);
-        // pdf.setLineDashPattern([0.001, 0.001], 0);
-        // Add table using autoTable plugin
-        autoTable(pdf, {
-          head: headers,
-          body: data,
-          startY: startY, // Start table at the current startY value
-          theme: 'grid',
-          styles: { 
-            fontSize: fontSz,
-             minCellHeight: minHeightHeaderCol
-           
-          },
-          columnStyles:comStyles,
-          headStyles: headStyles, // Custom header styles
-          bodyStyles: { 
-            fillColor: [255, 255, 255],
-            halign: 'left', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
-           },
-           didParseCell: (data: any) => {
-            let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-            if (data.row.index === lastRowIndex)
-            {
-               data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
-               data.cell.styles.fontStyle = 'bold';
-                if(data.column.index === 0) {
-                data.cell.colSpan = 3;  // Merge 4 columns into one
-                data.cell.styles.halign = 'right'; // Center text horizontally
-                data.cell.styles.valign = 'middle'; // Center text vertically
-                
-              }
-            }
-            if (data.row.index === lastRowIndex && data.column.index > 0 && data.column.index < 3) {
-              data.cell.text = ''; // Remove text from hidden columns
-              data.cell.colSpan = 0; // Hide these columns
-            }
-          },
-          didDrawPage: (data: any) => {
-            const pageCount = pdf.getNumberOfPages();
-              
-            lastTableFinalY = data.cursor.y;
-        
-            var pg = pagePositions.find(p=>p.page==pageCount);
-            if(!pg){
-              pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
-              if(pageCount>1)
-              {
-                Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-              }
-            } 
-          },
-        });
-      
-        const totalPages = pdf.getNumberOfPages();
-      
-       
-        pagePositions.forEach(({ page, x, y }) => {
-          pdf.setDrawColor(0, 0, 0); // black line color
-          pdf.setLineWidth(0.1);
-          pdf.setLineDashPattern([0.001, 0.001], 0);
-          pdf.setFontSize(8);
-          pdf.setPage(page);
-          var lineBuffer=13;
-          pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-          pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-        });
-      
-        this.generatingPdfProgress = 100;
-        //pdf.save(fileName);
-        this.generatingPdfProgress = 0;
-        this.generatingPdfLoadingSubject.next(false);
-        Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-        this.dialogRef.close();
-      }
+        if (data.row.index === lastRowIndex && data.column.index > 0 && data.column.index < 3) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
+        }
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = data.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+          }
+        }
+      },
+    });
+
+    const totalPages = pdf.getNumberOfPages();
+
+
+    pagePositions.forEach(({ page, x, y }) => {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+      var lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    });
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
 
   async exportToPDF_r3(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10; 
+    const leftMargin = 10;
     const rightMargin = 10;
     const topMargin = 20;
     const bottomMargin = 20;
-    const contentWidth = pageWidth - leftMargin - rightMargin; 
-    const maxContentHeight = pageHeight - topMargin - bottomMargin; 
-  
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
     this.generatingPdfLoadingSubject.next(true);
     this.generatingPdfProgress = 0;
-  
+
     const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
-  
+
     let tableHeaderHeight = 7.6153;
     let tableRowHeight = 5.8974;
-  
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
     const progressValue = 100 / cardElements.length;
-  
+
     const reportTitle = this.GetReportTitle();
-  
+
     this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-    let currentY = topMargin; 
+    let currentY = topMargin;
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
     for (let i = 0; i < cardElements.length; i++) {
-        const card = cardElements[i];
+      const card = cardElements[i];
 
-        const canvas = await html2canvas(card, { scale: scale });
-        let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+      const canvas = await html2canvas(card, { scale: scale });
+      let imgData = canvas.toDataURL('image/jpeg', this.imageQuality);
+      const imgHeight = (canvas.height * contentWidth) / canvas.width;
 
-        if (currentY + imgHeight > maxContentHeight) {
-            let currentY_canvas = 0;
-            let nextPage = false;
-            const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
-            let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
+      if (currentY + imgHeight > maxContentHeight) {
+        let currentY_canvas = 0;
+        let nextPage = false;
+        const tableHeaderHeight_canvas = Math.floor((tableHeaderHeight * canvas.width) / contentWidth);
+        let tableRowHeight_canvas = Math.floor((tableRowHeight * canvas.width) / contentWidth);
 
-            const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
-            const pageTHeaderHeight = tableHeaderHeight;
+        const canvasTHeader = await this.CopyCanvas(canvas, 0, 0, canvas.width, tableHeaderHeight_canvas);
+        const pageTHeaderHeight = tableHeaderHeight;
 
-            do {
-                nextPage = false;
+        do {
+          nextPage = false;
 
-                if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
-                    imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
-                    currentY += pageTHeaderHeight;
-                    currentY_canvas += tableHeaderHeight_canvas;
+          if ((currentY + pageTHeaderHeight + tableRowHeight) < maxContentHeight) {
+            imgData = canvasTHeader.toDataURL('image/jpeg', this.imageQuality);
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, pageTHeaderHeight);
+            currentY += pageTHeaderHeight;
+            currentY_canvas += tableHeaderHeight_canvas;
 
-                    const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
-                    const remainingTableHeight_canvas = canvas.height - currentY_canvas;
-                    const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
-                    let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
-                    let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
+            const remainingPageImgHeight_canvas = ((pageHeight - currentY - bottomMargin) * canvas.width) / contentWidth;
+            const remainingTableHeight_canvas = canvas.height - currentY_canvas;
+            const copyTableHeight_canvas = Math.min(remainingPageImgHeight_canvas, remainingTableHeight_canvas);
+            let cpImgHeight_canvas = Math.floor(copyTableHeight_canvas / tableRowHeight_canvas) * tableRowHeight_canvas;
+            let cpImgHeight = (cpImgHeight_canvas * contentWidth) / canvas.width;
 
-                    const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
-                    imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
-                    pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
+            const cpImgPage_canvas = await this.CopyCanvas(canvas, 0, currentY_canvas, canvas.width, cpImgHeight_canvas);
+            imgData = cpImgPage_canvas.toDataURL('image/jpeg', this.imageQuality);
+            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, cpImgHeight);
 
-                    currentY_canvas += cpImgHeight_canvas;
-                    currentY += cpImgHeight;
+            currentY_canvas += cpImgHeight_canvas;
+            currentY += cpImgHeight;
 
-                    nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
-                } else {
-                    if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-                        pdf.addPage();
-                        pageNumber++;
-                        this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                        currentY = topMargin;
-                    }
-
-                    nextPage = (currentY + imgHeight > maxContentHeight);
-                    if (!nextPage) {
-                        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-                        currentY += imgHeight + 5;
-                    }
-                }
-
-                if (nextPage) {
-                    pdf.addPage();
-                    currentY = topMargin;
-                    pageNumber++;
-                    this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                    currentY_canvas -= tableHeaderHeight_canvas;
-                    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                } else {
-                    currentY += 5;
-                }
-
-            } while (nextPage);
-
-        } else {
+            nextPage = (currentY_canvas + tableRowHeight_canvas) < canvas.height;
+          } else {
             if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
-                pdf.addPage();
-                pageNumber++;
-                this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-                currentY = topMargin;
+              pdf.addPage();
+              pageNumber++;
+              this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+              pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+              currentY = topMargin;
             }
 
-            pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
-            currentY += imgHeight + 5;
+            nextPage = (currentY + imgHeight > maxContentHeight);
+            if (!nextPage) {
+              pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+              currentY += imgHeight + 5;
+            }
+          }
+
+          if (nextPage) {
+            pdf.addPage();
+            currentY = topMargin;
+            pageNumber++;
+            this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            currentY_canvas -= tableHeaderHeight_canvas;
+            pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+          } else {
+            currentY += 5;
+          }
+
+        } while (nextPage);
+
+      } else {
+        if ((currentY + tableHeaderHeight + tableRowHeight) > maxContentHeight) {
+          pdf.addPage();
+          pageNumber++;
+          this.addHeader_r1(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+          pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+          currentY = topMargin;
         }
 
-        this.generatingPdfProgress += progressValue;
+        pdf.addImage(imgData, 'JPEG', leftMargin, currentY, contentWidth, imgHeight);
+        currentY += imgHeight + 5;
+      }
+
+      this.generatingPdfProgress += progressValue;
     }
 
     const totalPages = pdf.getNumberOfPages();
 
     pagePositions.forEach(({ page, x, y }) => {
-        pdf.setPage(page);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
+      pdf.setPage(page);
+      pdf.setFontSize(10);
+      pdf.text(`Page ${page} of ${totalPages}`, x, y, { align: 'right' });
     });
 
     this.generatingPdfProgress = 100;
     pdf.save(fileName);
     this.generatingPdfProgress = 0;
     this.generatingPdfLoadingSubject.next(false);
-}
-
-async CopyCanvas(canvas: HTMLCanvasElement, sx:number , sy:number, sw:number,sh:number): Promise<HTMLCanvasElement> {
-    
-  
-  const splitCanvas = document.createElement('canvas');
-  splitCanvas.width = sw;
-  splitCanvas.height = sh;
-
-  const ctx = splitCanvas.getContext('2d');
-  if (ctx) {
-      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
   }
 
-  return splitCanvas;
-}
+  async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
+
+
+    const splitCanvas = document.createElement('canvas');
+    splitCanvas.width = sw;
+    splitCanvas.height = sh;
+
+    const ctx = splitCanvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, splitCanvas.width, splitCanvas.height);
+    }
+
+    return splitCanvas;
+  }
   async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
