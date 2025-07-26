@@ -66,12 +66,11 @@
               "src/assets/scss/theme/all-themes.scss",
               "src/assets/scss/theme/custom-material-theme.scss",
               "src/assets/scss/theme/custom-theme.scss"
-              // "src/styles.scss"
             ],
             "scripts": [
               "./node_modules/moment/min/moment.min.js",
               "./node_modules/apexcharts/dist/apexcharts.min.js",
-               "./node_modules/html2canvas/dist/html2canvas.min.js"
+              "./node_modules/html2canvas/dist/html2canvas.min.js"
             ]
           },
           "configurations": {
