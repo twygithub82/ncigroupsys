@@ -50,12 +50,6 @@
                           </mat-autocomplete>
                         </mat-form-field>
                       </div>
-                      <!-- <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                    <mat-form-field class="example-full-width" appearance="fill">
-                      <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                      <input matInput formControlName="eir_no">
-                    </mat-form-field>
-                  </div> -->
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
@@ -89,16 +83,6 @@
                           </mat-select>
                         </mat-form-field>
                       </div>
-                      <!-- <div
-                    class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                    <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
-                      <mat-icon>search</mat-icon>
-                    </button>
-                    <button mat-mini-fab class="m-l-5 bg-dark-gold" (click)="resetDialog($event)"
-                      matTooltip={{translatedLangText.CLEAR_ALL}}>
-                      <mat-icon>clear_all</mat-icon>
-                    </button>
-                  </div> -->
                     </div>
                   </mat-expansion-panel>
                 </mat-accordion>
@@ -131,8 +115,10 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class=""
                         [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                        <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>
                         <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company?row.storing_order_tank?.storing_order?.customer_company.name:'-'}}
+                          class="mobile-label-value truncate-2-line">{{row.storing_order_tank?.storing_order?.customer_company?row.storing_order_tank?.storing_order?.customer_company?.name
+                          : '-'}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="eir_no">
@@ -163,8 +149,9 @@
                         {{translatedLangText.LAST_CARGO}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
+                        <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>
                         <span
-                          class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.storing_order_tank?.tariff_cleaning?.cargo?row.storing_order_tank?.tariff_cleaning?.cargo:'-'}}
+                          class="mobile-label-value truncate-2-line">{{row.storing_order_tank?.tariff_cleaning?.cargo?row.storing_order_tank?.tariff_cleaning?.cargo:'-'}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="method">

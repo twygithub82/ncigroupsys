@@ -103,8 +103,9 @@
                           <mat-cell mat-cell *matCellDef="let row"
                             [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                             <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>
-                            <span
-                              class="mobile-label-value">{{row.storing_order_tank?.storing_order?.customer_company?.name}}</span>
+                            <span class="mobile-label-value truncate-2-line">
+                              {{row.storing_order_tank?.storing_order?.customer_company?.name}}
+                            </span>
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="estimate_no">

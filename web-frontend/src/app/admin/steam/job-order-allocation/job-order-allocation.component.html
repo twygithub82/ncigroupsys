@@ -260,7 +260,9 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
                         <span class="mobile-label">{{translatedLangText.DESCRIPTION}}:</span>
-                        <span class="mobile-label-value">{{row.description}}</span>
+                        <span class="mobile-label-value">
+                          {{row.description}}
+                        </span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="qty">
