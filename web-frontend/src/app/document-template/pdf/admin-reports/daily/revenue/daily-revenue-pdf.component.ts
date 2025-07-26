@@ -642,11 +642,14 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
-    let lastTableFinalY = 45;
+    let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
+    var date= new Date();
+    await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(date),  pageWidth, leftMargin, rightMargin, startY, 9);
+    startY+=5;
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
 
@@ -692,6 +695,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth: pageWidth - leftMargin - rightMargin,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

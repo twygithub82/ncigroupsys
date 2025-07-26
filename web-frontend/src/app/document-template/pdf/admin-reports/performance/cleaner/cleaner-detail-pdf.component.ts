@@ -706,6 +706,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth: pageWidth - leftMargin - rightMargin,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

@@ -954,7 +954,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
 
 
     const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, 8);
+   // Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
   
@@ -1005,6 +1006,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
           minCellHeight: minHeightHeaderCol
 
         },
+         tableWidth: pageWidth - leftMargin - rightMargin,
         columnStyles:comStyles,
         headStyles: headStyles, // Custom header styles
         bodyStyles: {

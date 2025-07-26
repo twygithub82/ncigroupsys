@@ -1381,6 +1381,13 @@ static adjustImageSizeAndBackground(
     return `${day}-${month}`;
   }
 
+  static formatUKDateString(date: Date): string {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
   static extractYearFromMonthYear(monthYearStr: string): number | null {
     // Split the string at " - " and get the second part (year)
     const parts = monthYearStr.split(' - ');

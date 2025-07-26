@@ -215,8 +215,8 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
-  invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
-  invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
+ invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
+  
 
   constructor(
     public httpClient: HttpClient,
@@ -300,7 +300,8 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
     ];
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
-      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', "ALL");;
+      this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', "ALL");
+      this.inventoryTypeCvList = Utility.SortCodeValues(this.inventoryTypeCvList, this.invTypes);
     });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear - 5;
@@ -367,7 +368,7 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
 
     var customerName: string = "";
-    var invTypes = this.invTypesAll.filter(v => v !== "ALL");
+    var invTypes = this.invTypes.filter(v => v !== "ALL");
     where.revenue_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
       where.revenue_type = this.searchForm?.get('inventory_type')?.value;

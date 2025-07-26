@@ -571,9 +571,11 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     // {
     this.subs.sink = this.reportDS.searchAdminReportDailyQCDetail(this.lastSearchCriteria)
       .subscribe(data => {
+         this.repData = data;
+          this.onExportDailyQCDetailReport(this.repData, date!, team!);
         if (data.length > 0) {
           this.repData = data;
-          this.onExportDailyQCDetailReport(this.repData, date!, team!);
+         // this.onExportDailyQCDetailReport(this.repData, date!, team!);
         }
         else {
           this.isGeneratingReport = false
@@ -591,9 +593,11 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     // {
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamRevenue(this.lastSearchCriteria)
       .subscribe(data => {
+        this.repData = data;
+          this.onExportDailyRevenueReport(this.repData, date!, team!);
         if (data.length > 0) {
           this.repData = data;
-          this.onExportDailyRevenueReport(this.repData, date!, team!);
+         // this.onExportDailyRevenueReport(this.repData, date!, team!);
         }
         else {
           this.isGeneratingReport = false
@@ -610,9 +614,10 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamApproval(this.lastSearchCriteria)
       .subscribe(data => {
+         this.onExportDailyApprovalReport(this.repData, date!, team!);
         if (data.length > 0) {
           this.repData = data;
-          this.onExportDailyApprovalReport(this.repData, date!, team!);
+        //  this.onExportDailyApprovalReport(this.repData, date!, team!);
         }
         else {
           this.isGeneratingReport = false
@@ -776,11 +781,11 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if (repData?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
 
-    }
+    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -811,11 +816,11 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if (repData?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
 
-    }
+    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -845,11 +850,11 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if (repData?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
 
-    }
+    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

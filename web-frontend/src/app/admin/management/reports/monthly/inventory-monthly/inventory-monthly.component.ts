@@ -216,7 +216,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   monthList: string[] = [];
   repData: any;
   // invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
-   invTypes: string[] = ["ALL", "CLEANING","REPAIR","STEAMING", "RESIDUE"];
+   invTypes: string[] =["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
 
   constructor(
     public httpClient: HttpClient,
@@ -415,7 +415,8 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchManagementReportInventoryMonthlyReport(this.lastSearchCriteria)
+    // this.subs.sink = this.reportDS.searchManagementReportInventoryMonthlyReport(this.lastSearchCriteria)
+    this.subs.sink=this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
         this.ProcessReport(this.repData, date!, reportType!, customerName!, invTypes!);
