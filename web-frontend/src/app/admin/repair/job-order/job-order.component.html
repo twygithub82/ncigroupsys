@@ -114,8 +114,10 @@
                           </mat-header-cell>
                           <mat-cell mat-cell *matCellDef="let row"
                             [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                            <span
-                              class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
+                            <span class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>
+                            <span class="mobile-tab-label-value truncate-2-line">
+                              {{row.storing_order_tank?.storing_order?.customer_company.name}}
+                            </span>
                           </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="estimate_no">
@@ -159,7 +161,7 @@
                             @if (canUnassignTeam(row)) {
                             <button mat-icon-button (click)="onUnassignTeam($event, row.guid)"
                               [matTooltip]="translatedLangText.UNASSIGN">
-                               <span class="material-symbols-outlined rotate-180">chip_extraction</span>
+                              <span class="material-symbols-outlined rotate-180">chip_extraction</span>
                               <!-- <mat-icon>remove_circle_outline</mat-icon> -->
                             </button>
                             }

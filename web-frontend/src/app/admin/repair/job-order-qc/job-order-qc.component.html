@@ -58,7 +58,6 @@
     </mat-accordion>
   </form>
   <div class="body">
-
     <div class="responsive_table">
       <table mat-table [dataSource]="repEstList" matSort
         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
@@ -83,8 +82,10 @@
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-4_25-xl tbl-col-width-per-4_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            <span
-              class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
+            <span class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>
+            <span class="mobile-tab-label-value truncate-2-line">
+              {{row.storing_order_tank?.storing_order?.customer_company.name}}
+            </span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="estimate_no">
@@ -172,8 +173,8 @@
       </mat-progress-spinner>
     </div>
     }
-    <mat-paginator #paginator [length]="repairDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
-      [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
+    <mat-paginator #paginator [length]="repairDS.totalCount" [pageIndex]="pageIndexJobOrder"
+      [pageSize]="pageSizeJobOrder" [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
     </mat-paginator>
   </div>
 </div>

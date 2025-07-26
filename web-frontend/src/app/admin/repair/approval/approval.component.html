@@ -164,8 +164,10 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span
-                        class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order_tank?.storing_order?.customer_company.name}}
+                      <span class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>
+                      <span class="mobile-tab-label-value truncate-2-line">
+                        {{row.storing_order_tank?.storing_order?.customer_company.name}}
+                      </span>
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="eir_dt">
