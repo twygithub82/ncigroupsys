@@ -582,7 +582,8 @@ this.isGeneratingReport = true;
 
   ProcessMonthlyReport(repData: any, date: string, report_type: number, customerName: string, invTypes?: string[],reportName?:string) {
 
-
+ this.onExportDetail(repData, date, customerName,invTypes,reportName);
+ return;
     
     if (!this.ZeroTransaction(repData)) {
 

@@ -395,8 +395,10 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     this.selection.clear();
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-
-    where.repair = { some: { status_cv: { in: ["JOB_IN_PROGRESS", "ASSIGNED"] } }, any: true };
+    where.and=[
+      {repair:{any:false}},
+      {tank_status_cv:{in:["REPAIR"]}}
+    ]
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;

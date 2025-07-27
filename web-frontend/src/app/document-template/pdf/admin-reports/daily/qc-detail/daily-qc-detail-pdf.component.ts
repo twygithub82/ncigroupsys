@@ -654,9 +654,12 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   var date= new Date();
-       await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(date),  pageWidth, leftMargin, rightMargin, startY, 9);
+   var dt= new Date();
+    await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(dt),  pageWidth, leftMargin, rightMargin, startY, 9);
+    var approvalDt = `${this.translatedLangText.APPROVAL_DATE}: ${this.date}`;
+    await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);    
        startY+=5;
+
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
 
@@ -680,7 +683,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
       totalMaterialCost += materialCost; // Add to the total
       totalHours+=appHour;
         data.push([
-          (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no ||"",this.displayDateTime(itm?.estimate_date)||'',
+          (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no ||"",this.displayDate(itm?.estimate_date)||'',
           this.getRepairOption(itm?.repair_type||""),Utility.formatNumberDisplay(itm?.appv_hour),Utility.formatNumberDisplay(itm?.appv_material_cost),
           Utility.formatNumberDisplay(itm?.repair_cost),itm?.qc_by
         ]);

@@ -761,6 +761,7 @@ constructor(item: Partial<InventoryYearly> = {}) {
   gate_out_inventory?:InventoryYearly;
   repair_yearly_inventory?:InventoryYearly;
   steaming_yearly_inventory?:InventoryYearly;
+  residue_yearly_inventory?:InventoryYearly;
   constructor(item: Partial<ManagementReportYearlyInventory> = {}) {
     this.cleaning_yearly_inventory=item.cleaning_yearly_inventory;
     this.depot_yearly_inventory=item.depot_yearly_inventory;
@@ -768,6 +769,7 @@ constructor(item: Partial<InventoryYearly> = {}) {
     this.gate_out_inventory=item.gate_out_inventory;
     this.repair_yearly_inventory=item.repair_yearly_inventory;
     this.steaming_yearly_inventory=item.steaming_yearly_inventory;
+    this.residue_yearly_inventory=item.steaming_yearly_inventory;
     } 
  }
 
@@ -859,6 +861,7 @@ export class MonthlyProcessData {
   gateOut?: { count?: number; percentage?: number,key?:string,name?:string };
   repair?: { count?: number; percentage?: number,key?:string,name?:string };
   steaming?: { count?: number; percentage?: number,key?:string,name?:string };
+  residue?: { count?: number; percentage?: number,key?:string,name?:string };
   constructor(item: Partial<MonthlyProcessData> = {}) {
     this.key=item.key;
     this.cleaning=item.cleaning;
@@ -867,6 +870,7 @@ export class MonthlyProcessData {
     this.gateOut=item.gateOut;
     this.repair=item.repair;
     this.steaming=item.steaming;
+    this.residue=item.residue;
     } 
 }
 
@@ -890,6 +894,7 @@ export class InventoryAnalyzer {
       { name: 'gateOut', data: data.gate_out_inventory?.inventory_per_month },
       { name: 'repair', data: data.repair_yearly_inventory?.inventory_per_month },
       { name: 'steaming', data: data.steaming_yearly_inventory?.inventory_per_month },
+       { name: 'residue', data: data.residue_yearly_inventory?.inventory_per_month },
     ];
 
     // Populate monthlyData with type-safe assignments
@@ -950,6 +955,14 @@ export class InventoryAnalyzer {
               break;
             case 'steaming':
               monthlyEntry.steaming = {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'residue':
+              monthlyEntry.residue = {
                 count: monthData.count,
                 percentage: monthData.percentage,
                 key:monthData.key,

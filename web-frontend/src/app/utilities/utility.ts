@@ -788,6 +788,20 @@ export class Utility {
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
   }
 
+   static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+    pdf.saveGraphicsState();
+    pdf.setFontSize(fontSize); // Title font size 
+    const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX =leftMargin+1; // Centering the title
+
+    pdf.text(text, titleX, topPosition); // Position it at the top
+
+    // pdf.setLineDashPattern([0.001, 0.001], 0);
+    // Draw underline for the title
+    // pdf.setLineWidth(0.1); // Set line width for underline
+    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+  }
+
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
     pdf.saveGraphicsState();
     pdf.setFontSize(fontSize); // Title font size 
@@ -816,66 +830,7 @@ export class Utility {
   }
 
 
-//   static async ConvertApexChartSvgToImage64String_r1(chartRef: any): Promise<string> {
-//     const containerEl = chartRef;
-//     if (!containerEl) return '';
 
-
-
-
-// //     // Get both the chart SVG and legend elements
-// //     const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
-// //     if (!chartWrapper) return '';
-
-// //     const svgEl = chartWrapper.querySelector('svg');
-// //     // if (!svgEl) return '';
-// //  awa
-//     // const legendForeignObject = svgEl.querySelector('foreignObject');
-//     // if (!legendForeignObject) return '';
-
-//     // // Create a new SVG that will contain both chart and legend
-//     // const combinedSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    
-//     // // Copy attributes from original SVG
-//     // combinedSvg.setAttribute('width', svgEl.getAttribute('width') || '800');
-//     // combinedSvg.setAttribute('height', svgEl.getAttribute('height') || '600');
-//     // combinedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    
-//     // // Clone the chart content (without legend foreignObject)
-//     // const chartContent = svgEl.cloneNode(true) as SVGSVGElement;
-//     // const chartForeignObject = chartContent.querySelector('foreignObject');
-//     // if (chartForeignObject) {
-//     //     chartContent.removeChild(chartForeignObject);
-//     // }
-
-//     // // Add chart content to combined SVG
-//     // combinedSvg.appendChild(chartContent);
-
-//     // // Add legend back in a better position (adjust coordinates as needed)
-//     // const legendClone = legendForeignObject.cloneNode(true) as SVGForeignObjectElement;
-//     // legendClone.setAttribute('x', '10');  // Left position
-//     // legendClone.setAttribute('y', '10');  // Top position
-//     // combinedSvg.appendChild(legendClone);
-
-//     // // Serialize and render
-//     // const serializer = new XMLSerializer();
-//     // const svgString = serializer.serializeToString(combinedSvg);
-//     // const canvas = document.createElement('canvas');
-//     // const ctx = canvas.getContext('2d');
-
-//     // if (!ctx) throw new Error('Canvas context is null');
-
-//     // // Set canvas size - you may want to increase to accommodate legend
-//     // canvas.width = parseInt(combinedSvg.getAttribute('width') || '800');
-//     // canvas.height = parseInt(combinedSvg.getAttribute('height') || '600');
-
-//     // // Create a Canvg instance
-//     // const v = await Canvg.fromString(ctx, svgString);
-
-//     // // Render SVG onto canvas
-//     // await v.render();
-  
-// }
 
 
   static async ConvertApexChartSvgToImage64String(chartRef: any): Promise<string> {

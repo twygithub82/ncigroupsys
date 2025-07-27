@@ -1177,8 +1177,8 @@
     "REVENUE": "Revenue",
     "QC-DETAIL": "QC Detail",
     "DAILY-TEAM-REVENUE-REPORT": "Daily Team Revenue",
-    "DAILY-TEAM-APPROVAL-REPORT": "Daily Team Approval Report",
-    "DAILY-QC-DETAIL-REPORT": "Daily QC Detail Report",
+    "DAILY-TEAM-APPROVAL-REPORT": "Daily Team Approval",
+    "DAILY-QC-DETAIL-REPORT": "Daily Team QC",
     "QC-BY": "QC by",
     "REPAIR-COST": "Repair Cost",
     "REPORTED-BY": "Reported by",
@@ -1187,8 +1187,8 @@
     "MAN-HOUR": "Man Hour",
     "SURVEYOR-PERFORMANCE-SUMMARY-REPORT": "Surveyor Performance Summary Report",
     "SURVEYOR-PERFORMANCE-DETAIL-REPORT": "Surveyor Performance Detail Report",
-    "CLEANER-PERFORMANCE-REPORT": "Cleaner Performance Report",
-    "STEAMING-PERFORMANCE-REPORT": "Steaming Performance Report",
+    "CLEANER-PERFORMANCE-REPORT": "Cleaner Performance",
+    "STEAMING-PERFORMANCE-REPORT": "Steaming Performance",
     "CLEANER": "Cleaner",
     "STEAM-DATE": "Steam Date",
     "GENERATE-REPORT": "Generate Report",
@@ -1371,7 +1371,8 @@
     "FEATURES":"Features",
     "RESIDUE-ESTIMATE-DETAILS": "Residue Disposal Estimate Details",
     "STEAM-ESTIMATE-DETAILS": "Steam Estimate Details",
-    "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details"
+    "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details",
+    "APPROVAL_DATE": "Approval Date"
    
   },
   "CLEAN-PROCEDURES": {

@@ -754,35 +754,36 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
-    let showGateSurcharge: boolean = this.invTypes?.includes("IN_OUT")!;
-    let showSteamSurcharge: boolean = this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge: boolean = this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge: boolean = this.invTypes?.includes("REPAIR")!;
+    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
+    let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
+    let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
+    let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
+    let showResidueSurcharge:boolean =this.invTypes?.includes("RESIDUE")!;
     const reportTitle = this.GetReportTitle();
     const vAlign = 'bottom';
     const headers = [[
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      ...(showGateSurcharge ?
-        [{ content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.ON_DEPOT, rowSpan: 2, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
-      ...(showSteamSurcharge ? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
-      //{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } },
-      ...(showCleanSurcharge ? [{ content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }] : []),
-      ...(showRepairSurcharge ? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } }] : []),
-
+      ...(showGateSurcharge?
+      [{ content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.translatedLangText.ON_DEPOT, rowSpan: 2,colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
+       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
+      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
+      ...(showSteamSurcharge? [{ content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center', valign: vAlign } }]:[]),
+      ...(showResidueSurcharge?[{ content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
     ],
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      ...(showGateSurcharge ? [
-        this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for PREINSPECTION
-        this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL] : []), // Sub-headers for LOLO
-      //  ...(showGateSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge ? [this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL] : []), // Sub-headers for STEAM
-      ...(showCleanSurcharge ? [this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL] : []), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge ? [this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL] : []), // Sub-headers for CLEANING
-      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
+      ...(showGateSurcharge?[
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL, // Sub-headers for PREINSPECTION
+      this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for LOLO
+    //  ...(showGateSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for GATE_SURCHARGE
+      ...(showCleanSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for CLEANING
+      ...(showRepairSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for CLEANING
+      ...(showSteamSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]), // Sub-headers for STEAM
+       ...(showResidueSurcharge?[this.translatedLangText.QTY, this.translatedLangText.PERCENTAGE_SYMBOL]:[]),
+     // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
 
     // const headers = [[
@@ -865,24 +866,27 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     var grpData = InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
 
 
-    var series: SeriesItem[] = [];
-    var index: number = 1;
-    var prcss: string[] = [
-      ...(showGateSurcharge ? [this.translatedLangText.IN_GATE, this.translatedLangText.OUT_GATE] : []),
-      ...(showSteamSurcharge ? [this.translatedLangText.STEAM] : []),
-      ...(showCleanSurcharge ? [this.translatedLangText.CLEANING] : []),
-      ...(showRepairSurcharge ? [this.translatedLangText.REPAIR] : [])
+    var series:SeriesItem[]=[];
+    var index:number=1;
+    var prcss:string[]=[
+      ...(showGateSurcharge?[this.translatedLangText.IN_GATE,this.translatedLangText.OUT_GATE]:[]),
+      ...(showCleanSurcharge?[this.translatedLangText.CLEANING]:[]),
+      ...(showRepairSurcharge?[this.translatedLangText.REPAIR]:[]),
+      ...(showSteamSurcharge?[this.translatedLangText.STEAM]:[]),
+      ...(showResidueSurcharge?[this.translatedLangText.RESIDUE]:[])
     ]
     var prcsValues: number[] = []
     for (const monthData of grpData.monthlyData) {
       data.push([
-        (++idx).toString(), monthData.key,
-        ...(showGateSurcharge ? [monthData.gateIn?.count || '', Utility.formatNumberDisplay(monthData.gateIn?.percentage),
-        monthData.gateOut?.count || '', Utility.formatNumberDisplay(monthData.gateOut?.percentage), monthData.depot?.count || '', ""] : []),
-
-        ...(showSteamSurcharge ? [monthData.steaming?.count || '', Utility.formatNumberDisplay(monthData.steaming?.percentage)] : []),
-        ...(showCleanSurcharge ? [monthData.cleaning?.count || '', Utility.formatNumberDisplay(monthData.cleaning?.percentage)] : []),
-        ...(showRepairSurcharge ? [monthData.repair?.count || '', Utility.formatNumberDisplay(monthData.repair?.percentage)] : []),
+        (++idx).toString(),monthData.key,
+        ...(showGateSurcharge?[ monthData.gateIn?.count||'',Utility.formatNumberDisplay(monthData.gateIn?.percentage),
+        monthData.gateOut?.count||'',Utility.formatNumberDisplay(monthData.gateOut?.percentage),monthData.depot?.count||'',""]:[]),
+        
+       
+        ...(showCleanSurcharge?[monthData.cleaning?.count||'',Utility.formatNumberDisplay(monthData.cleaning?.percentage)]:[]),
+        ...(showRepairSurcharge?[monthData.repair?.count||'',Utility.formatNumberDisplay(monthData.repair?.percentage)]:[]),
+        ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.percentage)]:[]),
+        ...(showResidueSurcharge?[monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.percentage)]:[]),
       ]);
       prcss.forEach(p => {
         var s = series.find(s => s.name == p);
@@ -908,8 +912,11 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
             if (showCleanSurcharge) s.data.push(monthData.cleaning?.count || 0);
             break;
           case this.translatedLangText.REPAIR:
-            if (showRepairSurcharge) s.data.push(monthData.repair?.count || 0);
-            break;
+            if(showRepairSurcharge)  s.data.push(monthData.repair?.count||0);
+          break;
+           case this.translatedLangText.RESIDUE:
+            if(showResidueSurcharge)  s.data.push(monthData.residue?.count||0);
+          break;
         }
         if (bInsert) {
           series.push(s);
@@ -917,33 +924,40 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       });
     }
     data.push([
-      this.translatedLangText.TOTAL, "",
-      ...(showGateSurcharge ? [
-        this.repData?.gate_in_inventory?.total_count || '', '',
-        this.repData?.gate_out_inventory?.total_count || '', '', '', ''] : []),
-
-      ...(showSteamSurcharge ? [this.repData?.steaming_yearly_inventory?.total_count || '', ''] : []),
-      ...(showCleanSurcharge ? [this.repData?.cleaning_yearly_inventory?.total_count || '', ''] : []),
-      ...(showRepairSurcharge ? [this.repData?.repair_yearly_inventory?.total_count || '', ''] : [])
+      this.translatedLangText.TOTAL,"",
+      ...(showGateSurcharge?[ 
+      this.repData?.gate_in_inventory?.total_count||'','',
+      this.repData?.gate_out_inventory?.total_count||'','','','']:[]),
+      
+      ...(showCleanSurcharge?[ this.repData?.cleaning_yearly_inventory?.total_count||'','']:[]),
+      ...(showRepairSurcharge?[this.repData?.repair_yearly_inventory?.total_count||'','']:[]),
+      ...(showSteamSurcharge?[ this.repData?.steaming_yearly_inventory?.total_count||'','']:[]),
+      ...(showResidueSurcharge?[ this.repData?.residue_yearly_inventory?.total_count||'','']:[])
     ]);
 
     data.push([
-      this.translatedLangText.AVERAGE, "",
-      ...(showGateSurcharge ? [
-        this.repData?.gate_in_inventory?.average_count || '', "",
-        this.repData?.gate_out_inventory?.average_count || '', '', '', ''] : []),
-
-      ...(showSteamSurcharge ? [this.repData?.steaming_yearly_inventory?.average_count || '', ''] : []),
-      ...(showCleanSurcharge ? [this.repData?.cleaning_yearly_inventory?.average_count || '', ''] : []),
-      ...(showRepairSurcharge ? [this.repData?.repair_yearly_inventory?.average_count || '', ''] : [])]);
-
-    prcsValues = [
-      ...(showGateSurcharge ? [
-        this.repData?.gate_in_inventory?.total_count || 0,
-        this.repData?.gate_out_inventory?.total_count || 0] : []),
-      ...(showSteamSurcharge ? [this.repData?.steaming_yearly_inventory?.total_count || 0] : []),
-      ...(showCleanSurcharge ? [this.repData?.cleaning_yearly_inventory?.total_count || 0] : []),
-      ...(showRepairSurcharge ? [this.repData?.repair_yearly_inventory?.total_count || 0] : [])];
+      this.translatedLangText.AVERAGE,"",
+      ...(showGateSurcharge?[ 
+      this.repData?.gate_in_inventory?.average_count||'',"",
+      this.repData?.gate_out_inventory?.average_count||'', '','','']:[]),
+    
+        ...(showCleanSurcharge?[ this.repData?.cleaning_yearly_inventory?.average_count||'', '']:[]),
+      ...(showRepairSurcharge?[this.repData?.repair_yearly_inventory?.average_count||'', '']:[]),   
+      ...(showSteamSurcharge?[ this.repData?.steaming_yearly_inventory?.average_count||'', '']:[]),
+      ...(showResidueSurcharge?[ this.repData?.residue_yearly_inventory?.average_count||'', '']:[])
+    
+    ]);
+    
+    prcsValues=[
+      ...(showGateSurcharge?[ 
+      this.repData?.gate_in_inventory?.total_count||0,
+      this.repData?.gate_out_inventory?.total_count||0]:[]),
+      ...(showCleanSurcharge?[ this.repData?.cleaning_yearly_inventory?.total_count||0]:[]),
+      ...(showRepairSurcharge?[this.repData?.repair_yearly_inventory?.total_count||0]:[]), 
+      ...(showSteamSurcharge?[ this.repData?.steaming_yearly_inventory?.total_count||0]:[]),
+      ...(showResidueSurcharge?[ this.repData?.residue_yearly_inventory?.total_count||0]:[]),
+      
+    ];
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -969,47 +983,52 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
       didParseCell: (data: any) => {
         let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-        let colSpan = 2;
-        let averageRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        let depotCell = [6, 7];
-        if (!showGateSurcharge) depotCell = [];
-        if (data.section == "body" && ((data.column.index % 2) == 0)) {
-          var key = `${data.row.raw[1]}`;
-
-          var matched = 0;
-          var prop = "";
-          switch (data.column.index) {
-            case 2:
-              if (showGateSurcharge) prop = "gateIn";
-              else if (showSteamSurcharge) prop = "steaming";
-              else if (showCleanSurcharge) prop = "cleaning";
-              else if (showRepairSurcharge) prop = "repair";
-              break;
-            case 4:
-              if (showGateSurcharge) prop = "gateOut";
+        let colSpan=2;
+        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+        let depotCell=[6,7];
+        if(!showGateSurcharge) depotCell=[];
+        if(data.section=="body" && ((data.column.index%2)==0))
+        {
+           var key = `${data.row.raw[1]}`;
+          
+           var matched=0;
+           var prop="";
+           switch (data.column.index)
+           {
+             case 2:
+              if(showGateSurcharge) prop="gateIn";
+              else if(showSteamSurcharge) prop="steaming";
+              else if(showCleanSurcharge) prop="cleaning";
+              else if(showRepairSurcharge) prop="repair";
+              else if(showResidueSurcharge) prop="residue";
+               break;
+             case 4:
+              if(showGateSurcharge) prop="repair";
               break;
             case 8:
               if (showSteamSurcharge) prop = "steaming";
               break;
             case 10:
-              if (showCleanSurcharge) prop = "cleaning";
-              break;
-            case 12:
-              if (showRepairSurcharge) var prop = "repair";
-              break;
-          }
-          if (prop) {
-            var textColor = "";
-            if (grpData.processExtremes[prop].highest?.key == key) {
-              textColor = "#009F00";
-            }
-            else if (grpData.processExtremes[prop].lowest?.key == key) {
-              textColor = "#EF0000";
-            }
-            if (textColor) {
-              data.cell.styles.textColor = textColor;
-            }
-          }
+              if(showCleanSurcharge)prop="residue";
+               break;
+          
+           }
+          //  if(prop)
+          //  {
+          //    var textColor="";
+          //   if(grpData.processExtremes[prop].highest?.key==key)
+          //     {
+          //       textColor="#009F00";
+          //     }
+          //     else if(grpData.processExtremes[prop].lowest?.key==key)
+          //     {
+          //       textColor="#EF0000";
+          //     }
+          //     if(textColor)
+          //     {
+          //       data.cell.styles.textColor=textColor;
+          //     }
+          // }
         }
         if (data.row.index == totalRowIndex || data.row.index == averageRowIndex) {
           data.cell.styles.fontStyle = 'bold';
@@ -1122,50 +1141,67 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         pointBorderColor: 'transparent',
         pointBackgroundColor: colors[indx++],
       });
-
-    }
-
-
-    if (showCleanSurcharge) {
-      var lbl = "Cleaning";
-      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-      ds.push({
-        label: lbl,
-        data: s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-
-    }
-    if (showRepairSurcharge) {
-      var lbl = "Repair";
-      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
-      ds.push({
-        label: lbl,
-        data: s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
-      });
-
-    }
-    this.lineChartData.datasets = ds;
-    this.lineChartData.labels = catgries;
-    this.chart?.data != this.lineChartData;
-    this.chart?.update();
+      
+      }
+   
+      
+      if(showCleanSurcharge){
+        var lbl="Cleaning";
+        var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+        ds.push({
+          label:lbl,
+          data:s[0].data,
+          backgroundColor: 'transparent',
+          borderColor: colors[indx],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.5,
+          pointStyle: 'circle',
+          pointRadius: 3,
+          pointBorderColor: 'transparent',
+          pointBackgroundColor: colors[indx++],
+        });
+        
+        }
+        if(showRepairSurcharge){
+          var lbl="Repair";
+          var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+          ds.push({
+            label:lbl,
+            data:s[0].data,
+            backgroundColor: 'transparent',
+            borderColor: colors[indx],
+            borderWidth: 2,
+            fill: false,
+            tension: 0.5,
+            pointStyle: 'circle',
+            pointRadius: 3,
+            pointBorderColor: 'transparent',
+            pointBackgroundColor: colors[indx++],
+          });
+          }
+        if(showResidueSurcharge){
+          var lbl="Residue";
+          var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+          ds.push({
+            label:lbl,
+            data:s[0].data,
+            backgroundColor: 'transparent',
+            borderColor: colors[indx],
+            borderWidth: 2,
+            fill: false,
+            tension: 0.5,
+            pointStyle: 'circle',
+            pointRadius: 3,
+            pointBorderColor: 'transparent',
+            pointBackgroundColor: colors[indx++],
+          });
+          
+          }
+      this.lineChartData.datasets=ds;
+      this.lineChartData.labels=catgries;
+      this.chart?.data!=this.lineChartData;
+      this.chart?.update();
 
     // if(!showGateSurcharge) 
     //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["In Gate","Out Gate"].includes(s.name));}
