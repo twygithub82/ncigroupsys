@@ -1031,8 +1031,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
           body: data,
           //startY: startY, // Start table at the current startY value
           //margin: { left: leftMargin },
-          margin: { top: 55 },
           theme: 'grid',
+          margin: { left: leftMargin, top: 55 }, // top margin for all pages
           styles: {
             fontSize: fontSize,
             minCellHeight: minHeightHeaderCol
