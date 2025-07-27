@@ -24,6 +24,7 @@ import { SurveyDetailItem } from 'app/data-sources/survey-detail';
 import { TankInfoItem } from 'app/data-sources/tank-info';
 import { TransferItem } from 'app/data-sources/transfer';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { TANK_STATUS_IN_YARD, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -97,10 +98,10 @@ export class EditSotSummaryFormDialogComponent {
     public dialogRef: MatDialogRef<EditSotSummaryFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     this.dialogTitle = `${data.translatedLangText?.TANK_SUMMARY_DETAILS}`;
-    // this.maxDate = Utility.getLaterDate(Utility.convertDate(this.surveyDetail.survey_dt) as Date, this.maxDate);
     this.sot = data.sot!;
     this.ig = data.ig!;
     this.igs = data.igs!;
@@ -125,6 +126,17 @@ export class EditSotSummaryFormDialogComponent {
       clean_status_cv: this.sot?.clean_status_cv,
       clean_status_remarks: ''
     });
+    if (!this.isAllowEditLastTest()) {
+      formGroup.get('last_test_cv')?.disable()
+      formGroup.get('test_dt')?.disable()
+      formGroup.get('test_class_cv')?.disable()
+    }
+    if (!this.isAllowEditYard()) {
+      formGroup.get('yard_cv')?.disable()
+    }
+    if (!this.isAllowEditCleanStatus()) {
+      formGroup.get('clean_status_cv')?.disable()
+    }
     this.overwriteForm = formGroup;
     this.initializeValueChange();
     this.ownerCodeControl.setValue(this.sot?.customer_company);
@@ -255,5 +267,21 @@ export class EditSotSummaryFormDialogComponent {
 
   canEditYard() {
     return !this.transferList?.length && TANK_STATUS_IN_YARD.includes(this.sot?.tank_status_cv || '');
+  }
+
+  // isAllowEditEirDate() {
+  //   return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_EIR_DATE']);
+  // }
+
+  isAllowEditLastTest() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_LAST_TEST']);
+  }
+
+  isAllowEditYard() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_YARD']);
+  }
+
+  isAllowEditCleanStatus() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEAN_STATUS']);
   }
 }

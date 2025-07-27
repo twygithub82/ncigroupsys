@@ -29,7 +29,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -44,12 +43,12 @@ import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
+import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility, selected_job_task_color } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { ConfirmDialogService } from 'app/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-job-order-allocation',
@@ -207,6 +206,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
     ARE_YOU_SURE_ABORT: 'COMMON-FORM.ARE-YOU-SURE-ABORT',
     UNASSIGN: 'COMMON-FORM.UNASSIGN',
     CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
+    APPROVED: 'COMMON-FORM.APPROVED'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -250,7 +250,7 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   prDS: PackageRepairDS;
   teamDS: TeamDS;
   joDS: JobOrderDS;
-  isOwner = false;
+  isMobile = false;
   selectedJobTaskClass = selected_job_task_color;
   constructor(
     public httpClient: HttpClient,
@@ -287,8 +287,17 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initializeValueChanges();
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    this.isMobile = width < 1024;
   }
 
   initForm() {
@@ -417,7 +426,6 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   populateRepair(repair: RepairItem) {
-    this.isOwner = repair.owner_enable ?? false;
     repair.repair_part = this.filterDeleted(repair.repair_part);
 
     this.oldJobOrderList = repair.repair_part?.filter((item, index, self) => {

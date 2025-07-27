@@ -222,11 +222,11 @@
                       </ng-container>
                       <ng-container matColumnDef="damange">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           {{translatedLangText.DAMAGE}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           <span class="truncate-text">
                             <span class="mobile-tab-label">{{translatedLangText.DAMAGE}}:</span>
                             <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
@@ -238,11 +238,11 @@
                       </ng-container>
                       <ng-container matColumnDef="repair">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           {{translatedLangText.REPAIR}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           <span class="mobile-tab-label">{{translatedLangText.REPAIR}}:</span>
                           <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
                             matTooltipClass="multiline-tooltip">
@@ -258,27 +258,27 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-tab-label">{{translatedLangText.DESCRIPTION}}:</span>
-                          {{row.description}}
+                          <span class="mobile-tab-label-value">{{row.description}}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="quantity">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           {{translatedLangText.QTY}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           <span class="mobile-tab-label">{{translatedLangText.QTY}}:</span>
                           {{row.approve_qty}}
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="hour">
                         <mat-header-cell *matHeaderCellDef
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           {{translatedLangText.HOUR}}
                         </mat-header-cell>
                         <mat-cell mat-cell *matCellDef="let row"
-                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                          [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'" [class.justify-content-center]="!isMobile">
                           <span class="mobile-tab-label">{{translatedLangText.HOUR}}:</span>
                           {{row.approve_hour}}
                         </mat-cell>
@@ -354,14 +354,14 @@
               }
               @if (!(repairDS.loadingSubject | async)) {
               <div class="row">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-10">
+                <div class="col-xl-2-5 col-lg-2-5 col-md-4 col-sm-12 m-b-10">
                   {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{repairItem?.estimate_no}}</span>
                 </div>
-                <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-10 p-l-5">
+                <div class="col-xl-2-5 col-lg-2-5 col-md-4 col-sm-12 m-b-10">
                   {{translatedLangText.ESTIMATE_DATE}}: <span
                     class="font-bold">{{displayDate(repairItem?.create_dt)}}</span>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-10 p-l-20">
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 m-b-10">
                   {{translatedLangText.STATUS}}: <span
                     [ngClass]="'font-bold badge ' + repairDS.getStatusBadgeClass(repairItem?.status_cv)">{{getProcessStatusDescription(repairItem?.status_cv)}}</span>
                 </div>
@@ -422,7 +422,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-xl-1-25 col-lg-1-25 col-md-1-5 col-sm-1-5 m-b-0">
+                    <div class="col-xl-1-25 col-lg-1-25 col-md-2 col-sm-2 m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.UPDATE_DATE}}</span>
@@ -449,7 +449,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6-5 col-sm-6-5 m-b-0">
+                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.REMARKS}}</span>
@@ -475,14 +475,14 @@
               </div>
               }
               <div class="row mt-3">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 mb-0">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
                     (click)="$event.preventDefault();" [routerLink]="['/admin/repair/job-order']"
                     [queryParams]="{ tabIndex: tabIndex }">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right mb-0">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right mb-0">
                   <!-- @if (repairDS.canAbort(repairItem, repList)) {
                   <button mat-flat-button color="warn" [disabled]="(repairDS.loading$ | async)" class="m-r-5"
                     (click)="onAbort($event)">

@@ -27,6 +27,7 @@ import { TransferItem } from 'app/data-sources/transfer';
 import { ExclusiveToggleDirective } from 'app/directive/exclusive-toggle.directive';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
@@ -101,6 +102,7 @@ export class EditSotDetailsFormDialogComponent {
     public dialogRef: MatDialogRef<EditSotDetailsFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     private fb: UntypedFormBuilder,
+    private modulePackageService: ModulePackageService
   ) {
     // Set the defaults
     this.dialogTitle = `${data.translatedLangText?.TANK_DETAILS}`;
@@ -129,6 +131,31 @@ export class EditSotDetailsFormDialogComponent {
       max_weight_cv: this.igs?.max_weight_cv,
       walkway_cv: this.igs?.walkway_cv
     });
+    if (!this.isAllowEditUnitType()) {
+      formGroup.get('unit_type_guid')?.disable()
+    }
+    if (!this.isAllowEditCladding()) {
+      formGroup.get('cladding_cv')?.disable()
+    }
+    if (!this.isAllowEditTareWeight()) {
+      formGroup.get('tare_weight')?.disable()
+    }
+    if (!this.isAllowEditDischargeType()) {
+      formGroup.get('btm_dis_comp_cv')?.disable()
+    }
+    if (!this.isAllowEditManufacturer()) {
+      formGroup.get('manufacturer_cv')?.disable()
+      formGroup.get('dom_dt')?.disable()
+    }
+    if (!this.isAllowEditCapacity()) {
+      formGroup.get('capacity')?.disable()
+    }
+    if (!this.isAllowEditGrossWeight()) {
+      formGroup.get('max_weight_cv')?.disable()
+    }
+    if (!this.isAllowEditWalkway()) {
+      formGroup.get('walkway_cv')?.disable()
+    }
     this.overwriteForm = formGroup;
     return formGroup;
   }
@@ -196,5 +223,37 @@ export class EditSotDetailsFormDialogComponent {
 
   onNumericOnly(event: Event, controlName: string): void {
     Utility.onNumericOnly(event, this.overwriteForm?.get(controlName)!);
+  }
+
+  isAllowEditUnitType() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_UNIT_TYPE']);
+  }
+
+  isAllowEditCladding() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLADDING']);
+  }
+
+  isAllowEditTareWeight() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TARE_WEIGHT']);
+  }
+
+  isAllowEditDischargeType() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_DISCHARGE_TYPE']);
+  }
+
+  isAllowEditManufacturer() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_MANUFACTURER']);
+  }
+
+  isAllowEditCapacity() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CAPACITY']);
+  }
+
+  isAllowEditGrossWeight() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_GROSS_WEIGHT']);
+  }
+
+  isAllowEditWalkway() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_WALKWAY']);
   }
 }

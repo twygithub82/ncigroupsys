@@ -202,6 +202,7 @@ export class RepairQCViewComponent extends UnsubscribeOnDestroyAdapter implement
     OVERWRITE: 'COMMON-FORM.OVERWRITE',
     OVERWRITE_QC: 'COMMON-FORM.OVERWRITE-QC',
     CONFIRM_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    APPROVED: 'COMMON-FORM.APPROVED'
   }
 
   clean_statusList: CodeValuesItem[] = [];

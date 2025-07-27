@@ -435,7 +435,6 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
       last,
       before
     });
-    console.log(this.searchStateService.getPagination(this.pageStateType))
     this.subs.sink = this.residueDS.search(this.lastSearchCriteriaResidue, this.lastOrderByResidue, first, after, last, before)
       .subscribe(data => {
         this.rsdEstList = data.map(re => {
