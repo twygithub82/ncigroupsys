@@ -611,8 +611,10 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     let startY = lastTableFinalY +10 ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   var date= new Date();
-    await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(date),  pageWidth, leftMargin, rightMargin, startY, 9);
+   var dt= new Date();
+    await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(dt),  pageWidth, leftMargin, rightMargin, startY, 9);
+    var approvalDt = `${this.translatedLangText.APPROVAL_DATE}: ${this.date}`;
+    await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);
     startY+=5;
     
     var idx = 0;

@@ -297,7 +297,7 @@ export class MonthlyProcessData {
   // preinspection?: { count?: number; percentage?: number,key?:string,name?:string };
   // lolo?: { count?: number; percentage?: number,key?:string,name?:string };
   // storage?: { count?: number; percentage?: number,key?:string,name?:string };
-  // residue?: { count?: number; percentage?: number,key?:string,name?:string };
+   residue?: { count?: number; percentage?: number,key?:string,name?:string };
 
   constructor(item: Partial<MonthlyProcessData> = {}) {
     this.key=item.key;
@@ -308,6 +308,7 @@ export class MonthlyProcessData {
     this.gateOut=item.gateOut;
     this.repair=item.repair;
     this.steaming=item.steaming;
+    this.residue=item.residue;
     // this.gate=item.gate;
     // this.lolo=item.lolo;
     // this.preinspection=item.preinspection;
@@ -482,6 +483,14 @@ export class InventoryAnalyzer {
               break;
             case 'steaming':
               monthlyEntry.steaming = {
+                count: monthData.count,
+                percentage: monthData.percentage,
+                key:monthData.key,
+                name:monthData.name
+              };
+              break;
+            case 'residue':
+              monthlyEntry.residue = {
                 count: monthData.count,
                 percentage: monthData.percentage,
                 key:monthData.key,

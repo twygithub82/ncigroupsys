@@ -473,13 +473,13 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     // this.customer=this.data.customer;
     // this.invTypes=this.data.inventory_type;
     //this.InitChartValues();
-    this.onDownloadClick();
+    
 
   }
 
   ngAfterViewInit() {
 
-
+    this.onDownloadClick();
   }
 
   
@@ -722,7 +722,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
-
+   @ViewChild('chartLine') chartLine!: ElementRef<HTMLCanvasElement>;
  
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -790,7 +790,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         this.translatedLangText.LIFT_ON, this.translatedLangText.LIFT_OFF
       ]:[]), // Sub-headers for GATE_SURCHARGE
       ...(showSteamSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for STEAM
-      ...(showResidueSurcharge?[this.translatedLangText.QTY, this.translatedLangText.COST]:[]), // Sub-headers for residue
+      ...(showResidueSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for residue
       ...(showCleanSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for RESIDUE
       ...(showRepairSurcharge?[this.translatedLangText.APPROVED_HOUR, this.translatedLangText.COMPLETED_HOUR]:[]), // Sub-headers for CLEANING
      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
@@ -1268,20 +1268,36 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
   startY=lastTableFinalY+10;
   let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  for (var i = 0; i < cardElements.length; i++) {
-    
-      pdf.addPage();
-      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY=topMargin+20;
-    
-    const card1 = cardElements[i];
-    await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
-    // const canvas1 = await html2canvas(card1, { scale: scale });
-    // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
-   
+
+ if (this.chartLine?.nativeElement) {
+    pdf.addPage();
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+     startY=topMargin+20;
+    const canvas = this.chartLine.nativeElement;
+    const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
+    const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
+    const aspectRatio = imgInfo.width / imgInfo.height;
+    let imgHeight1 = chartContentWidth / aspectRatio;
+   // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+     await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
+
   }
+  
+  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+  // for (var i = 0; i < cardElements.length; i++) {
+    
+  //     pdf.addPage();
+  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+  //     startY=topMargin+20;
+    
+  //   const card1 = cardElements[i];
+  //   await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
+  //   // const canvas1 = await html2canvas(card1, { scale: scale });
+  //   // Utility.DrawImageAtCenterPage(pdf,canvas1,pageWidth,leftMargin,rightMargin,startY,chartContentWidth, this.imageQuality);
+   
+  // }
 
     const totalPages = pdf.getNumberOfPages();
 

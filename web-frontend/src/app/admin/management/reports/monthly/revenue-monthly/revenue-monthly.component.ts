@@ -215,8 +215,8 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
- invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
-  
+ //invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
+  invTypes:string[] = ["ALL", "CLEANING",  "REPAIR","STEAMING", "RESIDUE"];
 
   constructor(
     public httpClient: HttpClient,
