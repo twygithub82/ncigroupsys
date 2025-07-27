@@ -902,10 +902,10 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.EIR_NO, this.translatedLangText.LAST_CARGO,
       this.translatedLangText.JOB_NO, this.translatedLangText.DATE_IN,
-      this.translatedLangText.DATE_OUT, this.translatedLangText.GATEIO_S, 
-      this.translatedLangText.PRE_INSPECTION, 
-      this.translatedLangText.LOLO,  this.translatedLangText.DAYS,
-      this.translatedLangText.STORAGE, this.translatedLangText.STEAM, 
+      this.translatedLangText.DATE_OUT, this.translatedLangText.GATEIO_S,
+      this.translatedLangText.PRE_INSPECTION,
+      this.translatedLangText.LOLO, this.translatedLangText.DAYS,
+      this.translatedLangText.STORAGE, this.translatedLangText.STEAM,
       this.translatedLangText.CLEAN, this.translatedLangText.RESIDUE,
       this.translatedLangText.REPAIR, this.translatedLangText.TOTAL
     ]];
@@ -1014,7 +1014,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
             (itm.gateio_cost === "0.00" ? '' : itm.gateio_cost), (itm.preins_cost === "0.00" ? '' : itm.preins_cost),
             (itm.lolo_cost === "0.00" ? '' : itm.lolo_cost), itm.days,
             (itm.storage_cost === "0.00" ? '' : itm.storage_cost), (itm.steam_cost === "0.00" ? '' : itm.steam_cost),
-            (itm.clean_cost === "0.00" ? '' : itm.clean_cost), (itm.residue_cost === "0.00" ? '' : itm.residue_cost), 
+            (itm.clean_cost === "0.00" ? '' : itm.clean_cost), (itm.residue_cost === "0.00" ? '' : itm.residue_cost),
             (itm.repair_cost === "0.00" ? '' : itm.repair_cost), (itm.total === "0.00" ? '' : itm.total),
           ]);
         }
@@ -1023,10 +1023,14 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         pdf.setLineWidth(0.1);
         pdf.setLineDashPattern([0.001, 0.001], 0);
         // Add table using autoTable plugin
+
+        //Add Second Page Header
+        startY += 5;
+
         autoTable(pdf, {
           head: headers,
           body: data,
-          startY: startY, // Start table at the current startY value
+          //startY: startY, // Start table at the current startY value
           margin: { left: leftMargin },
           theme: 'grid',
           styles: {
@@ -1050,7 +1054,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin, 14, false);
+                //Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin, 14, false);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);  //Add Second Page
               }
             }
           },
@@ -1060,16 +1065,32 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
 
     const totalPages = pdf.getNumberOfPages();
 
-    pagePositions.forEach(({ page, x, y }) => {
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.setLineDashPattern([0.01, 0.01], 0);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 10, pdf.internal.pageSize.height - 9, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.001, 0.001], 0);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 10, pdf.internal.pageSize.height - 9, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);

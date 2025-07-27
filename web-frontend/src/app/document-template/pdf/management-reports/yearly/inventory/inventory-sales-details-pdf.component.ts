@@ -23,7 +23,7 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard,  MonthlyProcessData,InventoryAnalyzer, ManagementReportYearlyInventory } from 'app/data-sources/reports';
+import { report_status_yard, MonthlyProcessData, InventoryAnalyzer, ManagementReportYearlyInventory } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
@@ -53,10 +53,10 @@ import { BaseChartDirective } from 'ng2-charts';
 
 export interface DialogData {
   repData: ManagementReportYearlyInventory,
-  date:string,
-  repType:string,
-  customer:string,
-  inventory_type:string[]
+  date: string,
+  repType: string,
+  customer: string,
+  inventory_type: string[]
 }
 
 interface SeriesItem {
@@ -81,7 +81,7 @@ interface SeriesItem {
     BaseChartDirective
   ],
 })
-export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit ,AfterViewInit {
+export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
   translatedLangText: any = {};
   langText = {
     STATUS: 'COMMON-FORM.STATUS',
@@ -264,31 +264,31 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_MONTHLY_DETAILS_REPORT:'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
-    RESIDUE_MONTHLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
-    REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
-    CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
-    CUSTOMER_MONTHLY_SALES_REPORT:'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT',
-    YEARLY_INVENTORY_REPORT:'COMMON-FORM.YEARLY-INVENTORY-REPORT',
-    SUMMARY_OF_INVENTORY:"COMMON-FORM.SUMMARY-OF-INVENTORY",
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    OFFHIRE:'COMMON-FORM.OFFHIRE',
-    IN_SERVICE:'COMMON-FORM.IN-SERVICE',
-    TANK_IN_QTY:"COMMON-FORM.TANK-IN-QTY",
-    TANK:"COMMON-FORM.TANK",
-    COST:"COMMON-FORM.COST",
-    YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT',
-    GATE_SURCHARGE:'COMMON-FORM.GATE-SURCHARGE',
-    LOLO:'COMMON-FORM.LOLO',
-    PREINSPECTION:'COMMON-FORM.PREINSPECTION',
-    ON_DEPOT:'COMMON-FORM.ON-DEPOT',
-    OUT_GATE:'COMMON-FORM.OUT-GATE',
-    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
-    TEMPERATURE:'COMMON-FORM.TEMPERATURE',
-    S_N:'COMMON-FORM.S_N',
-    
+    STEAM_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
+    RESIDUE_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
+    REPAIR_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
+    CLEAN_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
+    CUSTOMER_MONTHLY_SALES_REPORT: 'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT',
+    YEARLY_INVENTORY_REPORT: 'COMMON-FORM.YEARLY-INVENTORY-REPORT',
+    SUMMARY_OF_INVENTORY: "COMMON-FORM.SUMMARY-OF-INVENTORY",
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    OFFHIRE: 'COMMON-FORM.OFFHIRE',
+    IN_SERVICE: 'COMMON-FORM.IN-SERVICE',
+    TANK_IN_QTY: "COMMON-FORM.TANK-IN-QTY",
+    TANK: "COMMON-FORM.TANK",
+    COST: "COMMON-FORM.COST",
+    YEARLY_SALES_REPORT: 'COMMON-FORM.YEARLY-SALES-REPORT',
+    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
+    LOLO: 'COMMON-FORM.LOLO',
+    PREINSPECTION: 'COMMON-FORM.PREINSPECTION',
+    ON_DEPOT: 'COMMON-FORM.ON-DEPOT',
+    OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
+    TEMPERATURE: 'COMMON-FORM.TEMPERATURE',
+    S_N: 'COMMON-FORM.S_N',
+
   }
 
   type?: string | null;
@@ -337,96 +337,96 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: ManagementReportYearlyInventory;
-  date?:string;
-  repType?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  customer?: string;
   index: number = 0;
-  lineChartOptions?:any; 
-  pieChartOptions?:any;
-  invTypes?:string[];
+  lineChartOptions?: any;
+  pieChartOptions?: any;
+  invTypes?: string[];
   // date:string='';
   // invType:string='';
 
 
-   lineChartData: ChartConfiguration['data'] = {
-        datasets: [
-          {
-            label: 'Foods',
-            data: [0, 30, 10, 120, 50, 63, 10],
-            backgroundColor: 'transparent',
-            borderColor: '#9f78ff',
-            borderWidth: 2,
-            fill: false,
-            tension: 0.5,
-            pointStyle: 'circle',
-            pointRadius: 3,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: '#222222',
-          },
-          {
-            label: 'Electronics',
-            data: [0, 50, 40, 80, 40, 79, 120],
-            backgroundColor: 'transparent',
-            borderColor: '#f96332',
-            borderWidth: 2,
-            fill: false,
-            tension: 0.5,
-            pointStyle: 'circle',
-            pointRadius: 3,
-            pointBorderColor: 'transparent',
-            pointBackgroundColor: '#f96332',
-          },
-        ],
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      };
-    
-      lineChartOpts: ChartConfiguration['options'] = {
-        responsive: true,
-        animation: false, // 👈 disables all animations
-        elements: {
-          line: {
-            tension: 0.5,
-          },
-        },
-        scales: {
-          y: {
-            title: {
-              display: true,
-              text: '', // <- your label here
-              color: '#9aa0ac',
-              font: {
-                size: 14,
-              },
-            },
-            position: 'left',
-            ticks: {
-              color: '#9aa0ac', // Font Color
-            },
-          },
-          x: {
-            ticks: {
-              color: '#9aa0ac', // Font Color
-            },
+  lineChartData: ChartConfiguration['data'] = {
+    datasets: [
+      {
+        label: 'Foods',
+        data: [0, 30, 10, 120, 50, 63, 10],
+        backgroundColor: 'transparent',
+        borderColor: '#9f78ff',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: '#222222',
+      },
+      {
+        label: 'Electronics',
+        data: [0, 50, 40, 80, 40, 79, 120],
+        backgroundColor: 'transparent',
+        borderColor: '#f96332',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: '#f96332',
+      },
+    ],
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  };
+
+  lineChartOpts: ChartConfiguration['options'] = {
+    responsive: true,
+    animation: false, // 👈 disables all animations
+    elements: {
+      line: {
+        tension: 0.5,
+      },
+    },
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: '', // <- your label here
+          color: '#9aa0ac',
+          font: {
+            size: 14,
           },
         },
-    
-        plugins: {
-          legend: {
-            display: true,
-            // 👇 Customize legend appearance
-            // labels: {
-            //   font: {
-            //     size: 10, // Font size (default: 10)
-            //     family: "'Helvetica Neue', 'Arial', sans-serif", // Optional
-            //   },
-            //   padding: 10, // Space between legend items (default: 10)
-            //   boxWidth: 12, // Width of the color box (default: 12)
-            //   boxHeight: 12, // Height of the color box (default: 12)
-              // usePointStyle: true, // Uses pointStyle from dataset (e.g., circles)
-            // },
-          },
+        position: 'left',
+        ticks: {
+          color: '#9aa0ac', // Font Color
         },
-      };
+      },
+      x: {
+        ticks: {
+          color: '#9aa0ac', // Font Color
+        },
+      },
+    },
+
+    plugins: {
+      legend: {
+        display: true,
+        // 👇 Customize legend appearance
+        // labels: {
+        //   font: {
+        //     size: 10, // Font size (default: 10)
+        //     family: "'Helvetica Neue', 'Arial', sans-serif", // Optional
+        //   },
+        //   padding: 10, // Space between legend items (default: 10)
+        //   boxWidth: 12, // Width of the color box (default: 12)
+        //   boxHeight: 12, // Height of the color box (default: 12)
+        // usePointStyle: true, // Uses pointStyle from dataset (e.g., circles)
+        // },
+      },
+    },
+  };
 
 
 
@@ -448,10 +448,10 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.repData = data.repData;
-    this.date= data.date;
-    this.repType=data.repType;
-    this.customer=data.customer;
-    this.invTypes=data.inventory_type;
+    this.date = data.date;
+    this.repType = data.repType;
+    this.customer = data.customer;
+    this.invTypes = data.inventory_type;
     // this.repair_guid = data.repair_guid;
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
@@ -466,13 +466,13 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
   }
 
   async ngOnInit() {
-  
+
 
   }
 
   async ngAfterViewInit() {
 
-      await this.getCodeValuesData();
+    await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     // this.repData = this.data.repData;
     // this.date= this.data.date;
@@ -483,7 +483,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     this.onDownloadClick();
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -713,19 +713,19 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-@ViewChild(BaseChartDirective) chart?: BaseChartDirective;
- @ViewChild('chartPie',{ static: false }) chartPie!: ElementRef;
-   @ViewChild('chartLine') chartLine!: ElementRef<HTMLCanvasElement>;
- 
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  @ViewChild('chartPie', { static: false }) chartPie!: ElementRef;
+  @ViewChild('chartLine') chartLine!: ElementRef<HTMLCanvasElement>;
+
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -743,7 +743,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
 
-    
+
 
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
@@ -760,7 +760,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
     let showResidueSurcharge:boolean =this.invTypes?.includes("RESIDUE")!;
     const reportTitle = this.GetReportTitle();
-    const vAlign ='bottom';
+    const vAlign = 'bottom';
     const headers = [[
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
@@ -818,15 +818,15 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-     // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-     // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -853,19 +853,18 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY-3 , 9);
 
-    if(this.customer)
-    {
-      const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+
+    if (this.customer) {
+      const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`
+      Utility.addText(pdf, customer, startY - 2, leftMargin + 4, 9);
     }
     var idx = 0;
 
-    var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
-   
+    var grpData = InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
+
 
     var series:SeriesItem[]=[];
     var index:number=1;
@@ -876,7 +875,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       ...(showSteamSurcharge?[this.translatedLangText.STEAM]:[]),
       ...(showResidueSurcharge?[this.translatedLangText.RESIDUE]:[])
     ]
-    var prcsValues:number[]=[]
+    var prcsValues: number[] = []
     for (const monthData of grpData.monthlyData) {
       data.push([
         (++idx).toString(),monthData.key,
@@ -889,31 +888,29 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         ...(showSteamSurcharge?[ monthData.steaming?.count||'',Utility.formatNumberDisplay(monthData.steaming?.percentage)]:[]),
         ...(showResidueSurcharge?[monthData.residue?.count||'',Utility.formatNumberDisplay(monthData.residue?.percentage)]:[]),
       ]);
-      prcss.forEach(p=>{
-        var s = series.find(s=>s.name==p);
-        var bInsert=false;
-        if(!s)
-        {
-          s={
+      prcss.forEach(p => {
+        var s = series.find(s => s.name == p);
+        var bInsert = false;
+        if (!s) {
+          s = {
             name: p,
             data: [] // initialize with an empty array or default values
           };
-          bInsert=true;
+          bInsert = true;
         }
-        switch (p)
-        {
+        switch (p) {
           case this.translatedLangText.IN_GATE:
-           if(showGateSurcharge) s.data.push(monthData.gateIn?.count||0);
-          break;
+            if (showGateSurcharge) s.data.push(monthData.gateIn?.count || 0);
+            break;
           case this.translatedLangText.OUT_GATE:
-            if(showGateSurcharge) s.data.push(monthData.gateOut?.count||0);
-          break;
+            if (showGateSurcharge) s.data.push(monthData.gateOut?.count || 0);
+            break;
           case this.translatedLangText.STEAM:
-            if(showSteamSurcharge) s.data.push(monthData.steaming?.count||0);
-          break;
+            if (showSteamSurcharge) s.data.push(monthData.steaming?.count || 0);
+            break;
           case this.translatedLangText.CLEANING:
-            if(showCleanSurcharge) s.data.push(monthData.cleaning?.count||0);
-          break;
+            if (showCleanSurcharge) s.data.push(monthData.cleaning?.count || 0);
+            break;
           case this.translatedLangText.REPAIR:
             if(showRepairSurcharge)  s.data.push(monthData.repair?.count||0);
           break;
@@ -921,8 +918,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
             if(showResidueSurcharge)  s.data.push(monthData.residue?.count||0);
           break;
         }
-        if(bInsert)
-        {
+        if (bInsert) {
           series.push(s);
         }
       });
@@ -1009,8 +1005,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
              case 4:
               if(showGateSurcharge) prop="repair";
               break;
-             case 8:
-              if(showSteamSurcharge) prop="steaming";
+            case 8:
+              if (showSteamSurcharge) prop = "steaming";
               break;
             case 10:
               if(showCleanSurcharge)prop="residue";
@@ -1034,38 +1030,37 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
           //     }
           // }
         }
-        if(data.row.index==totalRowIndex ||data.row.index==averageRowIndex){
+        if (data.row.index == totalRowIndex || data.row.index == averageRowIndex) {
           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
+          data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
-          if (data.column.index %2==0) {
+          if (data.column.index % 2 == 0) {
             data.cell.colSpan = colSpan;  // Merge 4 columns into one
-            data.cell.fontSize=8;
-            if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
-            
+            data.cell.fontSize = 8;
+            if (data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+
           }
-        
+
         }
-        else if (depotCell.includes(data.column.index))
-        {
-          var dpWidth=10
+        else if (depotCell.includes(data.column.index)) {
+          var dpWidth = 10
           data.cell.colSpan = colSpan;
           data.column.width = `${dpWidth}px`;  // Add unit
-    
-    // Alternative approach if above doesn't work
-    // setTimeout(() => {
-    //     data.column.width = `${dpWidth}px`;
-    //     // If your framework has a refresh/update method, call it here
-    //     // e.g., gridApi.refreshHeader() for AG-Grid
-    // }, 0);
-    
-    // Or try setting minWidth and maxWidth as well
-    data.column.minWidth = dpWidth;
-    data.column.maxWidth = dpWidth;
+
+          // Alternative approach if above doesn't work
+          // setTimeout(() => {
+          //     data.column.width = `${dpWidth}px`;
+          //     // If your framework has a refresh/update method, call it here
+          //     // e.g., gridApi.refreshHeader() for AG-Grid
+          // }, 0);
+
+          // Or try setting minWidth and maxWidth as well
+          data.column.minWidth = dpWidth;
+          data.column.maxWidth = dpWidth;
         }
 
-        if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)||depotCell.includes(data.column.index)) 
-          && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
+        if (((data.row.index == totalRowIndex) || (data.row.index == averageRowIndex) || depotCell.includes(data.column.index))
+          && (data.column.index % 2 == 1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
         ) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
@@ -1087,55 +1082,55 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
     });
 
-    var catgries= grpData.monthlyData.map((mData: {key?: string}) => mData.key || "") as string[];
+    var catgries = grpData.monthlyData.map((mData: { key?: string }) => mData.key || "") as string[];
     // var x
-    this.lineChartOptions.xaxis={
+    this.lineChartOptions.xaxis = {
       categories: catgries,
     };
 
 
-    this.lineChartOptions.series=series;
+    this.lineChartOptions.series = series;
 
-    
 
-    var colors =  [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
+
+    var colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
       "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
 
-    this.lineChartData.datasets=[];
-    this.lineChartData.labels=[];
-    var ds=[];
-    var cats=[];
-    var indx=0;
-  
+    this.lineChartData.datasets = [];
+    this.lineChartData.labels = [];
+    var ds = [];
+    var cats = [];
+    var indx = 0;
 
-   
-    if(showGateSurcharge){
-      var lbls =["In Gate","Out Gate"];
-      
-      lbls.forEach(lbl=>{
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
-      ds.push({
-        label:lbl,
-        data:s[0].data,
-        backgroundColor: 'transparent',
-        borderColor: colors[indx],
-        borderWidth: 2,
-        fill: false,
-        tension: 0.5,
-        pointStyle: 'circle',
-        pointRadius: 3,
-        pointBorderColor: 'transparent',
-        pointBackgroundColor: colors[indx++],
+
+
+    if (showGateSurcharge) {
+      var lbls = ["In Gate", "Out Gate"];
+
+      lbls.forEach(lbl => {
+        var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
+        ds.push({
+          label: lbl,
+          data: s[0].data,
+          backgroundColor: 'transparent',
+          borderColor: colors[indx],
+          borderWidth: 2,
+          fill: false,
+          tension: 0.5,
+          pointStyle: 'circle',
+          pointRadius: 3,
+          pointBorderColor: 'transparent',
+          pointBackgroundColor: colors[indx++],
+        });
+
       });
-      
-    });
-  }
-    if(showSteamSurcharge){
-      var lbl="Steam";
-      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+    }
+    if (showSteamSurcharge) {
+      var lbl = "Steam";
+      var s = series.filter((s: { name: string }) => [lbl].includes(s.name));
       ds.push({
-        label:lbl,
-        data:s[0].data,
+        label: lbl,
+        data: s[0].data,
         backgroundColor: 'transparent',
         borderColor: colors[indx],
         borderWidth: 2,
@@ -1216,9 +1211,9 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
     // if(!showRepairSurcharge) 
     //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
-    
-    this.pieChartOptions.labels=prcss;
-    this.pieChartOptions.series2=prcsValues;
+
+    this.pieChartOptions.labels = prcss;
+    this.pieChartOptions.series2 = prcsValues;
 
     // var lineChartValues={
     //   xaxis:{
@@ -1236,104 +1231,103 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     // };
 
 
- setTimeout(async()=>{
+    setTimeout(async () => {
 
-  startY=lastTableFinalY+10;
-  let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+      startY = lastTableFinalY + 10;
+      let chartContentWidth = pageWidth - leftMargin - rightMargin;
+      // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
 
-  // var base64img = await Utility.convertToImage(this.pdfTable.nativeElement,"jpeg");
+      // var base64img = await Utility.convertToImage(this.pdfTable.nativeElement,"jpeg");
 
-   if (this.chartLine?.nativeElement) {
-    pdf.addPage();
-    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-     startY=topMargin+20;
-    const canvas = this.chartLine.nativeElement;
-    const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
-    const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
-    const aspectRatio = imgInfo.width / imgInfo.height;
-    let imgHeight1 = chartContentWidth / aspectRatio;
-   // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-     await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
+      if (this.chartLine?.nativeElement) {
+        pdf.addPage();
+        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+        startY = topMargin + 20;
+        const canvas = this.chartLine.nativeElement;
+        const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
+        const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
+        const aspectRatio = imgInfo.width / imgInfo.height;
+        let imgHeight1 = chartContentWidth / aspectRatio;
+        // pdf.addImage(base64Image, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+        await Utility.DrawBase64ImageAtCenterPage(pdf, base64Image, pageWidth, leftMargin, rightMargin, startY, chartContentWidth);
 
+      }
+
+      if (this.chartPie?.nativeElement) {
+        pdf.addPage();
+        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+        pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+        startY = topMargin + 20;
+        await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
+      }
+      // for (var i = 0; i < cardElements.length; i++) {
+      //   if (i > 0) {
+      //     pdf.addPage();
+      //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+      //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      //     startY=topMargin+20;
+      //   }
+      //   const card1 = cardElements[i];
+      //   card1.style.boxShadow = 'none';
+      //   card1.style.transition = 'none';
+      //   // const canvas1 = await html2canvas(card1, { useCORS: true, allowTaint:false,scale: scale });
+      //   //const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+
+      //   // Calculate aspect ratio
+      //   //const aspectRatio = canvas1.width / canvas1.height;
+
+
+      //   const imgData1 = await Utility.convertToImage(card1,"jpeg");
+      //   const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
+      //   const aspectRatio = imgInfo.width / imgInfo.height;
+
+      //   // Calculate scaled height based on available width
+      //   let imgHeight1 = chartContentWidth / aspectRatio;
+
+      //   // Check if the scaled height exceeds the available page height
+      //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+      //   if (imgHeight1 > maxPageHeight) {
+      //     // Adjust height to fit within the page
+      //     imgHeight1 = maxPageHeight;
+      //     // Recalculate width to maintain aspect ratio
+      //     chartContentWidth = imgHeight1 * aspectRatio;
+      //   }
+
+      //   // Add the image to the PDF
+      //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+      // }
+
+      const totalPages = pdf.getNumberOfPages();
+
+
+      pagePositions.forEach(({ page, x, y }) => {
+        pdf.setDrawColor(0, 0, 0); // black line color
+        pdf.setLineWidth(0.1);
+        pdf.setLineDashPattern([0.001, 0.001], 0);
+        pdf.setFontSize(8);
+        pdf.setPage(page);
+        var lineBuffer = 13;
+        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      });
+
+      //  this.generatingPdfProgress = 100;
+      //pdf.save(fileName);
+      //  this.generatingPdfProgress = 0;
+      this.generatingPdfLoadingSubject.next(false);
+      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      this.dialogRef.close();
+
+    }, 50);
+
+    // this.dialogRef.close();
   }
 
-  if(this.chartPie?.nativeElement){
-    pdf.addPage();
-    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-    pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-    startY=topMargin+20;
-    await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
-  }
-  // for (var i = 0; i < cardElements.length; i++) {
-  //   if (i > 0) {
-  //     pdf.addPage();
-  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-  //     startY=topMargin+20;
-  //   }
-  //   const card1 = cardElements[i];
-  //   card1.style.boxShadow = 'none';
-  //   card1.style.transition = 'none';
-  //   // const canvas1 = await html2canvas(card1, { useCORS: true, allowTaint:false,scale: scale });
-  //   //const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-  //   // Calculate aspect ratio
-  //   //const aspectRatio = canvas1.width / canvas1.height;
-
-
-  //   const imgData1 = await Utility.convertToImage(card1,"jpeg");
-  //   const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
-  //   const aspectRatio = imgInfo.width / imgInfo.height;
-
-  //   // Calculate scaled height based on available width
-  //   let imgHeight1 = chartContentWidth / aspectRatio;
-
-  //   // Check if the scaled height exceeds the available page height
-  //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-  //   if (imgHeight1 > maxPageHeight) {
-  //     // Adjust height to fit within the page
-  //     imgHeight1 = maxPageHeight;
-  //     // Recalculate width to maintain aspect ratio
-  //     chartContentWidth = imgHeight1 * aspectRatio;
-  //   }
-
-  //   // Add the image to the PDF
-  //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-  // }
-
-    const totalPages = pdf.getNumberOfPages();
-
-
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.001, 0.001], 0);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
-
-  //  this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-  //  this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.dialogRef.close();
-
-  },50);
-
-   // this.dialogRef.close();
-  }
-
-  getYAxisLabel()
- {
+  getYAxisLabel() {
     return `${this.translatedLangText.QTY}`;
     //return '';
- }
+  }
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -1438,8 +1432,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-         title = `${this.translatedLangText.YEARLY_INVENTORY_REPORT} - ${this.repType}`;
+    var title: string = '';
+    title = `${this.translatedLangText.YEARLY_INVENTORY_REPORT} - ${this.repType}`;
     return `${title}`
   }
 
@@ -1477,7 +1471,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
   }
 
-  InitChartValues(){
+  InitChartValues() {
     this.pieChartOptions = {
       title: {
         text: this.translatedLangText.SUMMARY_OF_INVENTORY,
@@ -1496,17 +1490,17 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
       labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
       series2: [44, 55, 13, 43, 22],
-      legend:{
-        fontSize:'14px',
+      legend: {
+        fontSize: '14px',
         // position: "bottom",
         // horizontalAlign: "center",
         // itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
         labels: {
           colors: "#333", // Set label text color
           useSeriesColors: false, // Use the color of the series for labels
-      //    padding: 10, // Adjust space between marker and label
+          //    padding: 10, // Adjust space between marker and label
         },
-      
+
       },
       // series: [
       //   {
@@ -1558,7 +1552,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     };
 
     this.lineChartOptions = {
-      
+
       chart: {
         height: 350,
         type: 'line',
@@ -1617,17 +1611,17 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         min: 5,
         max: 40,
       },
-      legend:{
-        fontSize:'14px',
+      legend: {
+        fontSize: '14px',
         position: "bottom",
         horizontalAlign: "center",
         itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
         labels: {
           colors: "#333", // Set label text color
           useSeriesColors: false, // Use the color of the series for labels
-      //    padding: 10, // Adjust space between marker and label
+          //    padding: 10, // Adjust space between marker and label
         },
-      
+
       },
       // legend: {
       //   position: 'top',
@@ -1647,5 +1641,5 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       },
     };
   }
- 
+
 }

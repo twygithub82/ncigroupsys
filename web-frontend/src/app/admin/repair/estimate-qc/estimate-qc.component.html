@@ -23,7 +23,7 @@
             @if (!(repairDS.loading$ | async)) {
             <mat-card-content>
               <div class="row">
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
@@ -53,7 +53,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
@@ -85,7 +85,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
                     <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                       <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
@@ -215,7 +215,7 @@
                         <mat-cell mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                           <span class="mobile-tab-label">{{translatedLangText.DESCRIPTION}}:</span>
-                          {{row.description}}
+                          <span class="mobile-tab-label-value">{{row.description}}</span>
                         </mat-cell>
                       </ng-container>
                       <ng-container matColumnDef="approve_part">
@@ -286,7 +286,6 @@
                 </div>
               </div>
               }
-              <mat-divider></mat-divider>
             </div>
           </div>
         </div>
@@ -349,9 +348,9 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-xl-1-25 col-lg-1-25 col-md-1-5 col-sm-1-5 m-b-0">
+                    <div class="col-xl-1-25 col-lg-1-25 col-md-2-25 col-sm-2-25 m-b-0">
                       <div class="row">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center  div-bg-blue">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.UPDATE_DATE}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
@@ -375,7 +374,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6-5 m-b-0">
+                    <div class="col-xl-4 col-lg-4 col-md-5-75 col-sm-5-75 m-b-0">
                       <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                           <span class="font-bold">{{translatedLangText.REMARKS}}</span>
@@ -401,14 +400,14 @@
               </div>
               }
               <div class="row mt-3">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                   <button mat-flat-button type="button" aria-label="Back to previous page"
                     (click)="$event.preventDefault();" [routerLink]="['/admin/repair/job-order']"
                     [queryParams]="{ tabIndex: tabIndex }">
                     <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                   </button>
                 </div>
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 align-right">
                   @if (repairDS.canQCComplete(repairItem)) {
                   <button mat-flat-button color="accent"
                     [disabled]="(joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)" class="m-l-5 mt-2"

@@ -37,7 +37,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { ManagementReportDS,ManagementReportMonthlyInventory } from 'app/data-sources/reports-management';
+import { ManagementReportDS, ManagementReportMonthlyInventory } from 'app/data-sources/reports-management';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { InventoryMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/inventory/inventory-sales-details-pdf.component';
 import { Utility } from 'app/utilities/utility';
@@ -237,7 +237,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
 
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.reportDS = new ManagementReportDS(this.apollo);
-    
+
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -303,7 +303,7 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
       this.inventoryTypeCvList = addDefaultSelectOption(data, 'All', "ALL");
 
-      this.inventoryTypeCvList=Utility.SortCodeValues(this.inventoryTypeCvList,this.invTypes);
+      this.inventoryTypeCvList = Utility.SortCodeValues(this.inventoryTypeCvList, this.invTypes);
     });
     var thisYear = new Date().getFullYear();
     var startYear = thisYear - 5;
@@ -512,26 +512,20 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   }
 
   ProcessReport(repData: any, date: string, report_type: number, customerName: string, invTypes: string[]) {
-
-
-
     if (repData) {
-      //if (report_type == 1) {
-      if(!this.ZeroTransaction(repData)){
+      //if (!this.ZeroTransaction(repData)) {
+      if (true) {
         this.onExportChart_r1(repData, date, customerName, invTypes);
-      }else {
-      this.sotList = [];
-      this.isGeneratingReport = false;
-    }
-      
-      //}
+      }
+      else {
+        this.sotList = [];
+        this.isGeneratingReport = false;
+      }
     }
     else {
       this.sotList = [];
       this.isGeneratingReport = false;
     }
-
-
   }
 
 
@@ -650,15 +644,15 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   }
 
   ZeroTransaction(data: ManagementReportMonthlyInventory): boolean {
-      var retval: boolean = false;
-      if (data) {
-        retval = ((data.cleaning_inventory?.length||0) == 0) &&
-          ((data.gate_in_out_inventory?.gate_inventory?.length||0) == 0) &&
-          ((data.gate_in_out_inventory?.lolo_inventory?.length||0) == 0) &&
-          ((data.repair_inventory?.length||0) == 0) &&
-          ((data.steaming_inventory?.length||0) == 0) 
-      }
-      return retval;
+    var retval: boolean = false;
+    if (data) {
+      retval = ((data.cleaning_inventory?.length || 0) == 0) &&
+        ((data.gate_in_out_inventory?.gate_inventory?.length || 0) == 0) &&
+        ((data.gate_in_out_inventory?.lolo_inventory?.length || 0) == 0) &&
+        ((data.repair_inventory?.length || 0) == 0) &&
+        ((data.steaming_inventory?.length || 0) == 0)
     }
+    return retval;
+  }
 
 }

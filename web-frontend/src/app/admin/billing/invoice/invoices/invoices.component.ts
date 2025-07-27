@@ -44,7 +44,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer-invoices-pdf/customer-invoices-pdf.component';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility,BILLING_TANK_STATUS } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, BILLING_TANK_STATUS } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { UpdateInvoicesDialogComponent } from '../form-dialog/update-invoices.component';
@@ -373,42 +373,77 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     const where: any = {};
     this.selectedEstimateItem = undefined;
 
-    if (this.searchForm?.invalid){
+    if (this.searchForm?.invalid) {
       this.searchForm.markAllAsTouched();
       return;
-    } 
+    }
     // this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.and = [];
 
+
+
     const itm: any = { or: [] };
-    itm.or.push({ cleaning: { any: true } });
-    itm.or.push({ repair_customer: { any: true } });
-    itm.or.push({ repair_owner: { any: true } });
-    itm.or.push({ residue: { any: true } });
-    itm.or.push({ steaming: { any: true } });
-    itm.or.push({ gin_billing_sot: { any: true } });
-    itm.or.push({ gout_billing_sot: { any: true } });
-    itm.or.push({ lon_billing_sot: { any: true } });
-    itm.or.push({ loff_billing_sot: { any: true } });
-    itm.or.push({ preinsp_billing_sot: { any: true } });
-    itm.or.push({ storage_billing_sot: { any: true } });
+    const invType = this.searchForm!.get('invoice_type_cv')?.value;
+    if (invType === "CLEANING")
+      itm.or.push({ cleaning: { any: true } });
+    else if (invType === "REPAIR") {
+      itm.or.push({ repair_customer: { any: true } });
+      itm.or.push({ repair_owner: { any: true } });
+    }
+    else if (invType === "RESIDUE")
+      itm.or.push({ residue: { any: true } });
+    else if (invType === "STEAMING")
+      itm.or.push({ steaming: { any: true } });
+    else if (invType === "GATE_IN") {
+      itm.or.push({ gin_billing_sot: { any: true } });
+    }
+    else if (invType === "GATE_OUT") {
+      itm.or.push({ gout_billing_sot: { any: true } });
+    }
+    else if (invType === "LIFT_ON") {
+      itm.or.push({ lon_billing_sot: { any: true } });
+    }
+    else if (invType === "LIFT_OFF") {
+      itm.or.push({ loff_billing_sot: { any: true } });
+    }
+    else if (invType === "PREINSPECTION") {
+      itm.or.push({ preinsp_billing_sot: { any: true } });
+    }
+    else if (invType === "STORAGE") {
+      itm.or.push({ storage_billing_sot: { any: true } });
+    }
+    else {
+      itm.or.push({ cleaning: { any: true } });
+      itm.or.push({ repair_customer: { any: true } });
+      itm.or.push({ repair_owner: { any: true } });
+      itm.or.push({ residue: { any: true } });
+      itm.or.push({ steaming: { any: true } });
+      itm.or.push({ gin_billing_sot: { any: true } });
+      itm.or.push({ gout_billing_sot: { any: true } });
+      itm.or.push({ lon_billing_sot: { any: true } })
+      itm.or.push({ loff_billing_sot: { any: true } });
+      itm.or.push({ preinsp_billing_sot: { any: true} });
+      itm.or.push({ storage_billing_sot: { any: true } });
+    }
+
+
+
     where.and.push(itm);
 
 
-      const itm1:any={ or: [] };
-    
-          itm1.or.push({ cleaning: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ repair_customer: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ repair_owner: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ residue: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ steaming: { some: { storing_order_tank: { tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ gateio_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ lolo_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ preinsp_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-          itm1.or.push({ storage_billing_sot: { some: { storing_order_tank:{ tank_status_cv:{in:BILLING_TANK_STATUS}} } } });
-         where.and.push(itm);
+    const itm1: any = { or: [] };
+    itm1.or.push({ cleaning: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ repair_customer: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ repair_owner: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ residue: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ steaming: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ gateio_billing_sot: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ lolo_billing_sot: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    itm1.or.push({ storage_billing_sot: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
+    where.and.push(itm);
 
 
 
@@ -1013,6 +1048,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       inv_dt_end: '',
       tank_no: '',
       job_no: '',
+      invoice_no: '',
       purpose: '',
       tank_status_cv: '',
       eir_status_cv: '',

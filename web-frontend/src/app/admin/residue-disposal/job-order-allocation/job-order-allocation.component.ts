@@ -217,6 +217,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     ABORT: 'COMMON-FORM.ABORT',
     VIEW: 'COMMON-FORM.VIEW',
     UNASSIGN: 'COMMON-FORM.UNASSIGN',
+    APPROVED: 'COMMON-FORM.APPROVED'
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -864,7 +865,6 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
   loadHistoryState() {
     this.historyState = history.state;
     if (this.historyState.selectedRow != null) {
-
       this.residueItem = this.historyState.selectedRow;
       this.sotItem = this.residueItem?.storing_order_tank;
 

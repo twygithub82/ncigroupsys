@@ -251,6 +251,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   joDS: JobOrderDS;
   teamDS: TeamDS;
   isOwner = false;
+  isMobile = false;
   canApproveFlag = false;
 
   constructor(
@@ -287,8 +288,18 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.updateView(window.innerWidth);
+
+    window.addEventListener('resize', () => {
+      this.updateView(window.innerWidth);
+    });
     this.initializeValueChanges();
     this.loadData();
+  }
+
+  private updateView(width: number): void {
+    console.log(width)
+    this.isMobile = width < 1024;
   }
 
   initForm() {

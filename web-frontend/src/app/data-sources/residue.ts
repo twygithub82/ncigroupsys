@@ -329,6 +329,11 @@ export const GET_RESIDUE_EST = gql`
               delete_dt
             }
           }
+          customer_company {
+            guid
+            code
+            name
+          }
         }
         residue_part {
             action

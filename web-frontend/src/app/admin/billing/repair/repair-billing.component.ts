@@ -42,7 +42,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility,BILLING_TANK_STATUS } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, BILLING_TANK_STATUS } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -105,6 +105,15 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     'JOB_IN_PROGRESS',
     'COMPLETED',
     'QC_COMPLETED'
+  ]
+
+  availableDisplayProcessStatus: string[] = [
+    //'ASSIGNED',
+    //'PARTIAL_ASSIGNED',
+    'APPROVED',
+    'JOB_IN_PROGRESS',
+    'COMPLETED',
+    //'QC_COMPLETED'
   ]
 
   pageTitle = 'MENUITEMS.BILLING.LIST.REPAIR-BILL'
@@ -451,12 +460,29 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     }
 
     if (this.searchForm!.get('estimate_status_cv')?.value?.length) {
-      where.repair.some.and.push({ status_cv: { in: this.searchForm!.get('estimate_status_cv')?.value } },
+
+      const selectedStatus = this.searchForm!.get('estimate_status_cv')?.value;
+      if (Array.isArray(selectedStatus) && selectedStatus.includes("COMPLETED")) {
+        if (!selectedStatus.includes("QC_COMPLETED")) {
+          selectedStatus.push("QC_COMPLETED");
+        }
+      }
+
+      if (Array.isArray(selectedStatus) && selectedStatus.includes("APPROVED")) {
+        if (!selectedStatus.includes("ASSIGNED")) {
+          selectedStatus.push("ASSIGNED");
+        }
+        if (!selectedStatus.includes("PARTIAL_ASSIGNED")) {
+          selectedStatus.push("PARTIAL_ASSIGNED");
+        }
+      }
+
+      where.repair.some.and.push({ status_cv: { in: selectedStatus } },
         { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] });
-      // where.repair={some:{and:[ 
-      //   {status_cv:{in:this.searchForm!.get('estimate_status_cv')?.value}},
-      //   {or:[{delete_dt:{eq:null}},{delete_dt:{eq:0}}]}
-      // ]}}; 
+
+      // where.repair.some.and.push({ status_cv: { in: this.searchForm!.get('estimate_status_cv')?.value } },
+      //   { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] });
+
     }
     else {
       where.repair.some.and.push({ status_cv: { in: this.availableProcessStatus } }, { or: [{ delete_dt: { eq: null } }, { delete_dt: { eq: 0 } }] });
@@ -687,6 +713,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       job_no: '',
       purpose: '',
       tank_status_cv: '',
+      estimate_status_cv: '',
       eir_status_cv: '',
       ro_no: '',
       eir_dt: '',
@@ -1045,7 +1072,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         ownerList.forEach(updatedItem => {
           res.repair?.push(updatedItem); // Add each updated item to res.repair
         });
-        
+
         res.repair?.forEach(repItm => {
           this.calculateOwnerAndCustomerNetCost(repItm);
         });

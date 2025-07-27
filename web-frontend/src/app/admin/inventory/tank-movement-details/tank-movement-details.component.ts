@@ -1307,6 +1307,14 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
+  canEditTankNotes() {
+    return this.isAllowEditNotes();
+  }
+
+  canEditTankReleaseNotes() {
+    return this.isAllowEditReleaseNotes();
+  }
+
   editTankNotes(event: Event) {
     this.preventDefault(event);
     let tempDirection: Direction = this.getViewDirection();
@@ -2597,11 +2605,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (this.sot) {
       if (this.allowAddPurposeTankStatuses.includes(this.sot.tank_status_cv || '')) {
         if (purpose === 'steaming') {
-          return !this.steamItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+          return this.isAllowSteamRemove() && !this.steamItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
         } else if (purpose === 'cleaning') {
-          return !this.cleaningItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && !this.residueItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+          return this.isAllowCleaningRemove() && !this.cleaningItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || '')) && !this.residueItem?.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
         } else if (purpose === 'repair') {
-          return !this.repairItem.length || !this.repairItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
+          return this.isAllowRepairRemove() && !this.repairItem.length || !this.repairItem.some(item => !this.allowRemovePurposeStatuses.includes(item.status_cv || ''));
         }
       }
       return false;
@@ -2613,11 +2621,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     if (this.sot) {
       if (this.allowAddPurposeTankStatuses.includes(this.sot.tank_status_cv || '')) {
         if (purpose === 'steaming') {
-          return this.isNoPurpose(this.sot, 'steaming') && this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'repair');
+          return this.isAllowSteamAdd() && this.isNoPurpose(this.sot, 'steaming') && this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'repair');
         } else if (purpose === 'cleaning') {
-          return this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming') && !this.anyActiveRepair(true);
+          return this.isAllowCleaningAdd() && this.isNoPurpose(this.sot, 'cleaning') && this.isNoPurpose(this.sot, 'steaming') && !this.anyActiveRepair(true);
         } else if (purpose === 'repair') {
-          return this.isNoPurpose(this.sot, 'repair') && this.isNoPurpose(this.sot, 'steaming');
+          return this.isAllowRepairAdd() && this.isNoPurpose(this.sot, 'repair') && this.isNoPurpose(this.sot, 'steaming');
         } else if (purpose === 'storage') {
           return this.isNoPurpose(this.sot, 'storage');
         }
@@ -2667,15 +2675,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canRenumberTank() {
     // check is the eir_no same as the tank_info.last_eir_no. only when its same can do renumber
-    return this.ig?.eir_no === this.tiItem?.last_eir_no
+    return this.isAllowEditTankNo() && this.ig?.eir_no === this.tiItem?.last_eir_no
   }
 
   canReownership() {
     // check is the eir_no same as the tank_info.last_eir_no. only when its same can do reownership
-    return this.ig?.eir_no === this.tiItem?.last_eir_no;
+    return this.isAllowEditTankOwner() && this.ig?.eir_no === this.tiItem?.last_eir_no;
   }
 
   canChangeCustomer() {
+    if (!this.isAllowEditTankCustomer()) return false;
+
     // check whether any billing done
     const billing_sot = this.sot?.billing_sot;
     if (billing_sot?.lon_billing_guid || billing_sot?.loff_billing_guid || billing_sot?.preinsp_billing_guid || billing_sot?.gin_billing_guid || billing_sot?.gout_billing_guid) {
@@ -2706,29 +2716,20 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteTankSummaryDetails() {
-    // if (this.sot?.status_cv) {
-    //   if (!this.cleaningItem?.[0]?.customer_billing_guid) {
-    //     return true;
-    //   }
-    // }
-    return true;
+    return this.isAllowTankMovementEdit() || this.isAllowEditLastTest() || this.isAllowEditYard() || this.isAllowEditCleanStatus();
   }
 
   canOverwriteTankDetails() {
-    // if (this.sot?.status_cv) {
-    //   if (!this.cleaningItem?.[0]?.customer_billing_guid) {
-    //     return true;
-    //   }
-    // }
-    return true;
+    return this.isAllowEditUnitType() || this.isAllowEditCladding() || this.isAllowEditTareWeight() || this.isAllowEditDischargeType()
+      || this.isAllowEditManufacturer() || this.isAllowEditCapacity() || this.isAllowEditGrossWeight() || this.isAllowEditWalkway();
   }
 
   canOverwriteInGateDetails() {
-    return !!this.ig?.guid;
+    return this.isAllowEditGateOverwrite() && !!this.ig?.guid;
   }
 
   canOverwriteOutGateDetails() {
-    return !!this.og?.guid;
+    return this.isAllowEditGateOverwrite() && !!this.og?.guid;
   }
 
   canOverwriteStoragePurpose() {
@@ -2737,6 +2738,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteLastCargo() {
+    if (!this.isAllowEditLastCargo()) return false;
+
     if (this.sot?.purpose_cleaning) {
       if (!this.cleaningItem?.[0]?.customer_billing_guid) {
         return true;
@@ -2765,18 +2768,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteSteamingApproval(row: SteamItem) {
-    return false;
     const allowOverwriteStatus = ['APPROVED', 'JOB_IN_PROGRESS', 'COMPLETED'];
-    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
+    return this.isAllowSteamReinstate() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
-    return (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
+    return this.isAllowSteamOverwrite() && (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
   }
 
   canOverwriteCleaningApproval() {
     const allowOverwriteStatus = ['APPROVED', 'JOB_IN_PROGRESS', 'COMPLETED'];
-    return allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '') && !this.cleaningItem?.[0]?.customer_billing_guid;
+    return this.isAllowCleaningOverwrite() && allowOverwriteStatus.includes(this.cleaningItem?.[0]?.status_cv || '') && !this.cleaningItem?.[0]?.customer_billing_guid;
   }
 
   canOverwriteResidueApproval(row: ResidueItem) {
@@ -2889,7 +2891,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackCleaningCompleted(row?: InGateCleaningItem) {
-    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'COMPLETED';
+    return this.isAllowCleaningReinstate() && (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'COMPLETED';
   }
 
   onRollbackCleaningJobs(event: Event, row?: InGateCleaningItem) {
@@ -2934,7 +2936,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackCleaning(row?: InGateCleaningItem) {
-    return (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.anyActiveRepair())) && row?.status_cv === 'NO_ACTION';
+    return this.isAllowCleaningReinstate() && (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.anyActiveRepair())) && row?.status_cv === 'NO_ACTION';
   }
 
   onRollbackCleaning(event: Event, row?: InGateCleaningItem) {
@@ -3338,6 +3340,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   onDownloadEir(isInGate: boolean = true) {
+    if (!isInGate && !this.ogs?.guid) return;
     let tempDirection: Direction = this.getViewDirection();
 
     if (localStorage.getItem('isRtl') === 'true') {
@@ -3439,96 +3442,98 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_EDIT']);
   }
 
-  isAllowTankNo() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TANK_NO']);
-  }
+  // isAllowEditEirDate() {
+  //   return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_EIR_DATE']);
+  // }
 
-  isAllowTankMovementCustomer() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CUSTOMER']);
-  }
-
-  isAllowLastCargo() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_LAST_CARGO']);
-  }
-
-  isAllowTankOwner() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_OWNER']);
-  }
-
-  isAllowCleanStatus() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEAN_STATUS']);
-  }
-
-  isAllowEirDate() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_EIR_DATE']);
-  }
-
-  isAllowLastTest() {
+  isAllowEditLastTest() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_LAST_TEST']);
   }
 
-  isAllowYard() {
+  isAllowEditYard() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_YARD']);
   }
 
-  isAllowUnitType() {
+  isAllowEditCleanStatus() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEAN_STATUS']);
+  }
+
+  isAllowEditTankNo() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TANK_NO']);
+  }
+
+  isAllowEditTankCustomer() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CUSTOMER']);
+  }
+
+  isAllowEditLastCargo() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_LAST_CARGO']);
+  }
+
+  isAllowEditTankOwner() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_OWNER']);
+  }
+
+  isAllowEditUnitType() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_UNIT_TYPE']);
   }
 
-  isAllowCladding() {
+  isAllowEditCladding() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLADDING']);
   }
 
-  isAllowTareWeight() {
+  isAllowEditTareWeight() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TARE_WEIGHT']);
   }
 
-  isAllowDischargeType() {
+  isAllowEditDischargeType() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_DISCHARGE_TYPE']);
   }
 
-  isAllowNotes() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_NOTES']);
-  }
-
-  isAllowReleaseNotes() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RELEASE_NOTES']);
-  }
-
-  isAllowManufacturer() {
+  isAllowEditManufacturer() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_MANUFACTURER']);
   }
 
-  isAllowCapacity() {
+  isAllowEditCapacity() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CAPACITY']);
   }
 
-  isAllowGrossWeight() {
+  isAllowEditGrossWeight() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_GROSS_WEIGHT']);
   }
 
-  isAllowCompartmentType() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_COMPARTMENT_TYPE']);
-  }
-
-  isAllowWalkway() {
+  isAllowEditWalkway() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_WALKWAY']);
   }
 
-  isAllowGateOverwrite() {
+  isAllowEditNotes() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_NOTES']);
+  }
+
+  isAllowEditReleaseNotes() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RELEASE_NOTES']);
+  }
+
+  isAllowEditCompartmentType() {
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_COMPARTMENT_TYPE']);
+  }
+
+  isAllowEditGateOverwrite() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_GATE_OVERWRITE']);
   }
 
+  // Storage Purposes
   isAllowStorageOverwrite() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STORAGE_OVERWRITE']);
   }
 
+  // Steaming Purpose
   isAllowSteamAdd() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_ADD']);
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_ADD']); // add purpose
   }
 
   isAllowSteamRemove() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_REMOVE']);
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_REMOVE']); // reomve purpose
   }
 
   isAllowSteamReinstate() {
@@ -3539,12 +3544,13 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_STEAM_OVERWRITE']);
   }
 
+  // Cleaning Purpose
   isAllowResidueAdd() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_ADD']);
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_ADD']); // add purpose
   }
 
   isAllowResidueRemove() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_REMOVE']);
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_RESIDUE_REMOVE']); // remove purpose
   }
 
   isAllowResidueReinstate() {
@@ -3556,11 +3562,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   isAllowCleaningAdd() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_ADD']);
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_ADD']); // add purpose
   }
 
   isAllowCleaningRemove() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_REMOVE']);
+    return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_REMOVE']); // remove purpose
   }
 
   isAllowCleaningReinstate() {
@@ -3571,6 +3577,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_CLEANING_OVERWRITE']);
   }
 
+  // Repair Purpose
   isAllowRepairAdd() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_REPAIR_ADD']);
   }
@@ -3587,6 +3594,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_REPAIR_OVERWRITE']);
   }
 
+  // Depot Section
   isAllowDepotJobOverwrite() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_DEPOT_JOB_OVERWRITE']);
   }
@@ -3595,26 +3603,31 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_DEPOT_COST_OVERWRITE']);
   }
 
+  // Booking Section
   isAllowBooking() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_BOOKING']);
   }
 
+  // Scheduling Section
   isAllowScheduling() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_SCHEDULING']);
   }
 
+  // Survey Section
   isAllowSurvey() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_SURVEY']);
   }
 
+  // Transfer Section
   isAllowTransfer() {
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_TRANSFER']);
   }
 
-  getViewDirection() {
-    // this.preventDefault(event);  // Prevents the form submission
+  isAllowViewCost() {
+    return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
+  }
 
-    //r.storing_order_tank.customer_company=new CustomerCompanyItem(this.sot?.customer_company);
+  getViewDirection() {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -3675,17 +3688,5 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         lastTestDesc: this.last_test_desc!
       }
     });
-  }
-
-  isAllowEdit() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_EDIT']);
-  }
-
-  isAllowPublish() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_PUBLISH']);
-  }
-
-  isAllowView() {
-    return this.modulePackageService.hasFunctions(['INVENTORY_IN_GATE_SURVEY_VIEW']);
   }
 }
