@@ -158,7 +158,8 @@
                           <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                           <mat-select formControlName="tank_status_cv" (selectionChange)="AutoSearch()">
                             @for (codeValue of tankStatusCvList; track codeValue) {
-                            @if (codeValue.code_val === '' || availableProcessStatus.includes(codeValue.code_val ?? '')) {
+                            @if (codeValue.code_val === '' || availableProcessStatus.includes(codeValue.code_val ?? ''))
+                            {
                             <mat-option [value]="codeValue.code_val">
                               {{codeValue.description}}
                             </mat-option>
@@ -219,8 +220,8 @@
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-2_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
-                        <span
-                          class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>{{row.storing_order?.customer_company.name}}
+                        <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span>
+                        <span class="mobile-label-value">{{row.storing_order?.customer_company.name}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="eir_no">
@@ -258,14 +259,14 @@
                     </ng-container>
                     <ng-container matColumnDef="last_cargo">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">  
+                        [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                         {{translatedLangText.LAST_CARGO}}
                       </mat-header-cell>
-                      <mat-cell *matCellDef="let row" 
-                       [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'"
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'"
                         (contextmenu)="onContextMenu($event, row)">
-                        <span
-                          class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>{{row.tariff_cleaning?.cargo}}
+                        <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>
+                        <span class="mobile-label-value">{{row.tariff_cleaning?.cargo}}</span>
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="purpose">
