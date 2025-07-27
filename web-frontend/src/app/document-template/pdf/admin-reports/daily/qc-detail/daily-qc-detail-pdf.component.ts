@@ -654,11 +654,11 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   var dt= new Date();
-    await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(dt),  pageWidth, leftMargin, rightMargin, startY, 9);
-    var approvalDt = `${this.translatedLangText.APPROVAL_DATE}: ${this.date}`;
+   var dtstr=await Utility.GetReportGeneratedDate(this.translate);
+    await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
+    var approvalDt = `${this.translatedLangText.QC_DATE}: ${this.date}`;
     await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);    
-       startY+=5;
+       startY+=3;
 
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
@@ -706,7 +706,8 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      startY: startY,
+       margin:{left: leftMargin, right: rightMargin},
       theme: 'grid',
       styles: {
         fontSize: fontSz,

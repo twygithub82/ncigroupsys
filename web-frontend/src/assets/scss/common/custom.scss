@@ -940,6 +940,7 @@ section.content {
   }
 
   .mat-mdc-dialog-content.mdc-dialog__content {
+    overflow-x: hidden !important;
     padding-left: 0 !important;
     padding-right: 0 !important;
   }

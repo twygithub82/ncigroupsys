@@ -263,7 +263,10 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     CLEANER:'COMMON-FORM.CLEANER',
     CARGO:'COMMON-FORM.CARGO',
     CLEANING_PERIOD:'COMMON-FORM.CLEANING-PERIOD',
-    CLEANER_PERFORMANCE_REPORT:"COMMON-FORM.CLEANER-PERFORMANCE-REPORT"
+    CLEANER_PERFORMANCE_REPORT:"COMMON-FORM.CLEANER-PERFORMANCE-REPORT",
+    S_N:'COMMON-FORM.S_N',
+    CLEAN_CATEGORY:'COMMON-FORM.CLEAN-CATEGORY',
+    CLEAN_DURATION:'COMMON-FORM.CLEAN-DURATION'
   }
 
   type?: string | null;
@@ -612,9 +615,12 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,this.translatedLangText.EIR_NO,
-      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_DATE,this.translatedLangText.CARGO,
-      this.translatedLangText.COMPLETED_ON,this.translatedLangText.COST, this.translatedLangText.CLEANING_PROCESS,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,this.translatedLangText.CODE,this.translatedLangText.CARGO,
+      this.translatedLangText.CLEAN_DURATION,
+      this.translatedLangText.CLEAN_CATEGORY,this.translatedLangText.COST, 
+      // this.translatedLangText.EIR_NO,
+      //  this.translatedLangText.ESTIMATE_DATE,
+      // this.translatedLangText.COMPLETED_ON,
       this.translatedLangText.BAY,this.translatedLangText.CLEANER
       
     ]];
@@ -624,9 +630,9 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
       0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle',  cellWidth: 20, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle',cellWidth: 40, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle',  cellWidth: 40,minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -661,8 +667,10 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
    
     
     const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
-    startY +=5;
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY, 9);
+     var dtstr=await Utility.GetReportGeneratedDate(this.translate);
+    await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
+    startY +=2;
     // if(this.customer)
     // {
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -673,13 +681,18 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     for (let n = 0; n < (this.repData?.length||0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm = this.repData?.[n];
+      let itm :any = this.repData?.[n];
       // const repairCost = itm?.repair_cost || 0;
       // totalRepairCost += repairCost; // Add to the total
-        data.push([
-          (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", itm?.customer_code ||"",this.displayDate(itm?.eir_dt)||'',
-          itm?.last_cargo||'',this.displayDate(itm?.complete_dt)||'',Utility.formatNumberDisplay(itm?.cost),itm?.method||'',
-          itm?.bay||'',itm?.cleaner_name||''
+        // data.push([
+        //   (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", itm?.customer_code ||"",this.displayDate(itm?.eir_dt)||'',
+        //   itm?.last_cargo||'',this.displayDate(itm?.complete_dt)||'',Utility.formatNumberDisplay(itm?.cost),itm?.method||'',
+        //   itm?.bay||'',itm?.cleaner_name||''
+        // ]);
+
+         data.push([
+          (++idx).toString(), itm?.tank_no || "",  itm?.customer_code ||"", itm?.last_cargo||'',itm?.duration||'',itm?.method||'',
+         Utility.formatNumberDisplay(itm?.cost), itm?.bay||'',itm?.cleaner_name||''
         ]);
     }
 
@@ -694,12 +707,14 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.001, 0.001], 0);
+    pdf.setLineDashPattern([0.01, 0.01], 0);
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      //startY: startY, // Start table at the current startY value
+      
+      margin:{top:startY,left: leftMargin, right: rightMargin},
       theme: 'grid',
       styles: {
         fontSize: fontSz,

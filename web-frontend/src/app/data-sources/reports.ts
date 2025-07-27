@@ -602,6 +602,7 @@ export class SurveyorDetail
     last_cargo?:string;
     method?:string;
     tank_no?:string;
+    duration?:number;
     constructor(item: Partial<CleanerPerformance> = {}) {
 
       this.bay=item.bay;
@@ -614,6 +615,7 @@ export class SurveyorDetail
       this.last_cargo=item.last_cargo;
       this.method=item.method;
       this.tank_no=item.tank_no;
+      this.duration=item.duration;
     }
   }
 
@@ -1423,6 +1425,7 @@ export const GET_ADMIN_REPORT_CLEANER_PERFORMANCE_REPORT = gql`
         complete_dt
         cost
         customer_code
+        duration
         eir_dt
         eir_no
         last_cargo

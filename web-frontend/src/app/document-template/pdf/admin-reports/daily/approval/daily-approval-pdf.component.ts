@@ -257,6 +257,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     SIGN:'COMMON-FORM.SIGN',
     VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
     APPROVED_DATE:'COMMON-FORM.APPROVED-DATE',
+    APPROVAL_DATE:'COMMON-FORM.APPROVAL-DATE',
     S_N:'COMMON-FORM.S_N',
   }
 
@@ -611,11 +612,11 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     let startY = lastTableFinalY +10 ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   var dt= new Date();
-    await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(dt),  pageWidth, leftMargin, rightMargin, startY, 9);
+   var dtstr=await Utility.GetReportGeneratedDate(this.translate);
+    await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
     var approvalDt = `${this.translatedLangText.APPROVAL_DATE}: ${this.date}`;
     await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);
-    startY+=5;
+    startY+=3;
     
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
@@ -647,7 +648,9 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      startY:startY,
+        margin:{left: leftMargin, right: rightMargin},
+      // startY: startY, // Start table at the current startY value
       theme: 'grid',
       styles: {
         fontSize: fontSz,

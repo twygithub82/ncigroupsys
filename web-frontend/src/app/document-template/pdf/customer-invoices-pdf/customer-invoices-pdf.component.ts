@@ -860,9 +860,203 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
   GetReportTitle(): string {
     return `${this.translatedLangText.CUSTOMER_INVOICE} `
   }
+async exportToPDF_r1(fileName: string = 'document.pdf') {
+    // Improved PDF generation code
+const pageWidth = 297; // A4 width in mm (landscape)
+const pageHeight = 210; // Correct A4 height in mm (landscape)
+const leftMargin = 5;
+const rightMargin = 5;
+const topMargin = 5;
+const bottomMargin = 5;
+const contentWidth = pageWidth - leftMargin - rightMargin;
+const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
+// Initialize PDF
+const pdf = new jsPDF('l', 'mm', 'a4');
+let pageNumber = 1;
 
-  async exportToPDF_r1(fileName: string = 'document.pdf') {
+// Layout constants
+const reportTitleCompanyLogo = 32;
+const tableHeaderHeight = 12;
+const tableRowHeight = 8.5;
+const minHeightBodyCell = 9;
+const customerGap = 10;
+const bufferSpace = 30;
+
+// Define report title
+const reportTitle = this.GetReportTitle(); // Make sure this function exists and returns a string
+
+// Define table headers
+const headers = [[
+  this.translatedLangText.S_N, 
+  this.translatedLangText.TANK_NO,
+  this.translatedLangText.EIR_NO, 
+  this.translatedLangText.LAST_CARGO,
+  this.translatedLangText.JOB_NO, 
+  this.translatedLangText.DATE_IN,
+  this.translatedLangText.DATE_OUT, 
+  this.translatedLangText.GATEIO_S,
+  this.translatedLangText.PRE_INSPECTION,
+  this.translatedLangText.LOLO, 
+  this.translatedLangText.DAYS,
+  this.translatedLangText.STORAGE, 
+  this.translatedLangText.STEAM,
+  this.translatedLangText.CLEAN, 
+  this.translatedLangText.RESIDUE,
+  this.translatedLangText.REPAIR, 
+  this.translatedLangText.TOTAL
+]];
+
+// Define column styles
+const comStyles: any = {
+  0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+  1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+  2: { halign: 'center', cellWidth: 22, minCellHeight: minHeightBodyCell },
+  3: { halign: 'left', valign: 'middle', cellWidth: 63, minCellHeight: minHeightBodyCell },
+  4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  5: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+  6: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+  7: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+  8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  9: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+  10: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+  11: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+  12: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+  13: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+  14: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+  15: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+  16: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+};
+
+// Define header styles
+const headStyles: Partial<Styles> = {
+  fillColor: [211, 211, 211], // Light gray background
+  textColor: 0, // Black text
+  fontStyle: "bold",
+  halign: 'center',
+  valign: 'middle',
+  lineColor: 201,
+  lineWidth: 0.1
+};
+
+// Add initial header and title
+await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40, 14, false);
+
+let currentY = topMargin + 40+5; // Start after header and title
+const invPeriod = this.repBillingCustomers?.[0].invoice_period;
+const invDate = `${this.translatedLangText.INVOICE_PERIOD}: ${invPeriod}`;
+
+// Add invoice period at top right
+pdf.setFontSize(8);
+Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY, 8);
+
+// Process each customer
+for (let n = 0; n < this.repBillingCustomers.length; n++) {
+    const cust:any= this.repBillingCustomers[n];
+    
+    // Calculate required space
+    const customerNameHeight = 6;
+    const tableHeight = (cust.items?.length || 0) * tableRowHeight + tableHeaderHeight;
+    const totalSectionHeight = customerNameHeight + tableHeight + customerGap;
+    
+    // Check if we need a new page
+    if (currentY + totalSectionHeight > maxContentHeight - bottomMargin) {
+        pdf.addPage();
+        pageNumber++;
+        currentY = topMargin;
+        
+        // Add header to new page
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+        await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, currentY + 40, 14, false);
+        currentY = topMargin + 40+5; 
+        Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY, 8);
+    }
+    
+    // Add customer name
+    pdf.setFontSize(10);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, currentY);
+
+    currentY += customerNameHeight;
+    
+    // Prepare table data if items exist
+    if (cust.items?.length > 0) {
+        const data: any[][] = [];
+        
+        for (let b = 0; b < cust.items.length; b++) {
+            const itm = cust.items[b];
+            data.push([
+                (b + 1).toString(), 
+                itm.tank_no || "", 
+                itm.eir_no || "", 
+                itm.last_cargo || "",
+                itm.job_no || "", 
+                itm.in_date || "", 
+                itm.out_date || "",
+                (itm.gateio_cost === "0.00" ? '' : itm.gateio_cost), 
+                (itm.preins_cost === "0.00" ? '' : itm.preins_cost),
+                (itm.lolo_cost === "0.00" ? '' : itm.lolo_cost), 
+                itm.days,
+                (itm.storage_cost === "0.00" ? '' : itm.storage_cost), 
+                (itm.steam_cost === "0.00" ? '' : itm.steam_cost),
+                (itm.clean_cost === "0.00" ? '' : itm.clean_cost), 
+                (itm.residue_cost === "0.00" ? '' : itm.residue_cost),
+                (itm.repair_cost === "0.00" ? '' : itm.repair_cost), 
+                (itm.total === "0.00" ? '' : itm.total),
+            ]);
+        }
+        
+        // Add table
+        autoTable(pdf, {
+            head: headers,
+            body: data,
+            startY: currentY,
+            margin: { horizontal: leftMargin },
+            theme: 'grid',
+            styles: {
+                fontSize: 6,
+                minCellHeight: minHeightBodyCell,
+                cellPadding: 1
+            },
+            columnStyles: comStyles,
+            headStyles: headStyles,
+            bodyStyles: {
+                fillColor: [255, 255, 255],
+                halign: 'left',
+                valign: 'middle',
+            },
+            didDrawPage: (data:any) => {
+                currentY = data.cursor.y;
+            }
+        });
+        
+        currentY += customerGap;
+    }
+}
+
+// Add page numbers to all pages
+const totalPages = pdf.getNumberOfPages();
+for (let i = 1; i <= totalPages; i++) {
+    pdf.setPage(i);
+    
+    // Footer line
+    pdf.setDrawColor(0, 0, 0);
+    pdf.setLineWidth(0.1);
+    pdf.line(leftMargin, pageHeight - bottomMargin - 10, pageWidth - rightMargin, pageHeight - bottomMargin - 10);
+    
+    // Page number
+    pdf.setFontSize(8);
+    pdf.text(`Page ${i} of ${totalPages}`, pageWidth - rightMargin - 10, pageHeight - bottomMargin - 5, { align: 'right' });
+}
+
+this.generatingPdfLoadingSubject.next(false);
+this.generatingPdfProgress = 100;
+pdf.save(fileName);
+    this.dialogRef.close();
+  }
+
+  async exportToPDF_r1_b(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 5;
@@ -1021,7 +1215,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         pdf.setDrawColor(0, 0, 0); // red line color
 
         pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0.001, 0.001], 0);
+        pdf.setLineDashPattern([0.01, 0.01], 0.1);
         // Add table using autoTable plugin
 
         //Add Second Page Header
@@ -1030,9 +1224,9 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
           head: headers,
           body: data,
           //startY: startY, // Start table at the current startY value
-          //margin: { left: leftMargin },
+          margin:{top:startY,left: leftMargin, right: rightMargin},
           theme: 'grid',
-          margin: { left: leftMargin, top: 55 }, // top margin for all pages
+          //margin: { left: leftMargin, top: 55 }, // top margin for all pages
           styles: {
             fontSize: fontSize,
             minCellHeight: minHeightHeaderCol

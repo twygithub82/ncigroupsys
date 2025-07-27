@@ -255,7 +255,8 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     TEAM:'COMMON-FORM.TEAM',
     QC_DATE:'COMMON-FORM.QC-DATE',
     SIGN:'COMMON-FORM.SIGN',
-    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY'
+    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
+    APPROVAL_DATE:'COMMON-FORM.APPROVAL-DATE'
   }
 
   type?: string | null;
@@ -647,9 +648,12 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
-    var date= new Date();
-    await Utility.AddTextAtRightCornerPage(pdf, Utility.formatUKDateString(date),  pageWidth, leftMargin, rightMargin, startY, 9);
-    startY+=5;
+   var dtstr=await Utility.GetReportGeneratedDate(this.translate);
+    await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
+   var approvalDt = `${this.translatedLangText.QC_DATE}: ${this.date}`;
+    await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);    
+       startY+=3;
+   
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
 
@@ -688,7 +692,8 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      startY: startY,
+       margin:{left: leftMargin, right: rightMargin},
       theme: 'grid',
       styles: {
         fontSize: fontSz,

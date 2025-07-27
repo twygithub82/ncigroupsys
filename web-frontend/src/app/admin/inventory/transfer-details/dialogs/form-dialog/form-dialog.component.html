@@ -63,7 +63,7 @@
                 <textarea matInput formControlName="remarks"></textarea>
               </mat-form-field>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
               <mat-label>
                 {{data.translatedLangText.CURRENT_LOCATION}}:
                 {{getYardDescription(lastLocation)}}
@@ -72,7 +72,7 @@
           </div>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right">
+      <div mat-dialog-actions class="mb-1 mt-2 align-right">
         <button mat-flat-button color="primary" class="me-1" (click)="submit()">
           <mat-icon>
             save

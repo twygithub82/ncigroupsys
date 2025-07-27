@@ -1372,7 +1372,9 @@
     "RESIDUE-ESTIMATE-DETAILS": "Residue Disposal Estimate Details",
     "STEAM-ESTIMATE-DETAILS": "Steam Estimate Details",
     "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details",
-    "APPROVAL_DATE": "Approval Date"
+    "APPROVAL_DATE": "Approval Date",
+    "CLEAN-DURATION":"Cleaning Duration"
+   
    
   },
   "CLEAN-PROCEDURES": {

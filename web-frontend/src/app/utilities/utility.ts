@@ -1780,7 +1780,29 @@ static SortCodeValues(codeValueList: CodeValuesItem[], seqList: string[]): CodeV
     return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
   });
 }
-  
+
+static async GetReportGeneratedDate(translateService: TranslateService):Promise<string>{
+   const translatedLangText: any = {};
+    const langText = {
+      DATE: 'COMMON-FORM.DATE'
+    };
+
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+
+  var dt= new Date();
+  var dtStr= this.formatUKDateString(dt);
+  var result =`${translatedLangText.DATE}: ${dtStr}`;
+
+  return `${result}`;
+}
 
 
 //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
