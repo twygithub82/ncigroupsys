@@ -1219,8 +1219,7 @@ pdf.save(fileName);
         // Add table using autoTable plugin
 
         //Add Second Page Header
-        startY += 5;
-
+        //startY += 5;
         autoTable(pdf, {
           head: headers,
           body: data,
