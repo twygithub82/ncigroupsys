@@ -1025,13 +1025,13 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         // Add table using autoTable plugin
 
         //Add Second Page Header
-        startY += 5;
-
+        //startY += 5;
         autoTable(pdf, {
           head: headers,
           body: data,
           //startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin },
+          //margin: { left: leftMargin },
+          margin: { top: 55 },
           theme: 'grid',
           styles: {
             fontSize: fontSize,
