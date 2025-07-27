@@ -837,7 +837,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
@@ -847,7 +847,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY -3, 9);
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY -3, 9);
 
     if(this.customer)
     {
@@ -1047,6 +1047,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth: pageWidth - leftMargin - rightMargin,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {
