@@ -226,6 +226,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   repData: any[] = [];
   monthList: string[] = [];
   yearList: string[] = [];
+  today :Date =new Date();
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,

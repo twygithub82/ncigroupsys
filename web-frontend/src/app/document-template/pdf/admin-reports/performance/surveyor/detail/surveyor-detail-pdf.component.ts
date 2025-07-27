@@ -259,7 +259,11 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     COST:'COMMON-FORM.COST',
     ESTIMATED:'COMMON-FORM.ESTIMATED',
     APPROVAL:'COMMON-FORM.APPROVAL',
-    ESTIMATE_PERIOD:'COMMON-FORM.ESTIMATE-PERIOD'
+    ESTIMATE_PERIOD:'COMMON-FORM.ESTIMATE-PERIOD',
+    S_N:'COMMON-FORM.S_N',
+    ESTIMATE_AMOUNT:'COMMON-FORM.ESTIMATE-AMOUNT',
+    ESTIMATE_APPROVAL:'COMMON-FORM.ESTIMATE-APPROVAL',
+    SURVEY_PERIOD:'COMMON-FORM.SURVEY-PERIOD',
   }
 
 
@@ -530,12 +534,12 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
       [
         { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
+        // { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.EIR_DATE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.ESTIMATE_TYPE, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
         { content: this.translatedLangText.ESTIMATE_NO, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
-        { content: this.translatedLangText.ESTIMATED, colSpan: 2, styles: { halign: 'center' } },
-        { content: this.translatedLangText.APPROVAL, colSpan: 2, styles: { halign: 'center' } },
+        { content: this.translatedLangText.ESTIMATE_AMOUNT, colSpan: 2, styles: { halign: 'center' } },
+        { content: this.translatedLangText.ESTIMATE_APPROVAL, colSpan: 2, styles: { halign: 'center' } },
        // { content: this.translatedLangText.STATUS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } }
       ],
       [
@@ -584,22 +588,22 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     let fontSize = 6;
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10 },
-      1: { halign: 'left', valign: 'middle', cellWidth: 20 },
-      2: { halign: 'left', valign: 'middle', cellWidth: 22 },
-      3: { halign: 'center', valign: 'middle', cellWidth: 20 },
-      4: { halign: 'center', valign: 'middle', cellWidth: 20 },
-      5: { halign: 'center', valign: 'middle', cellWidth: 20 },
-      6: { halign: 'center', valign: 'middle', cellWidth: 20 },
-      7: { halign: 'center', valign: 'middle', cellWidth: 20 },
-      8: { halign: 'center', valign: 'middle', cellWidth: 20 },
-      9: { halign: 'center', valign: 'middle', cellWidth: 20 },
+      1: { halign: 'left', valign: 'middle', cellWidth: 30 },
+      // 2: { halign: 'left', valign: 'middle', cellWidth: 22 },
+      2: { halign: 'center', valign: 'middle' },
+      3: { halign: 'center', valign: 'middle' },
+      4: { halign: 'center', valign: 'middle' },
+      5: { halign: 'center', valign: 'middle'},
+      6: { halign: 'center', valign: 'middle'},
+      7: { halign: 'center', valign: 'middle' },
+      8: { halign: 'center', valign: 'middle'},
     //  10: { halign: 'center', valign: 'middle', cellWidth: 15 },
     };
 
-      lastTableFinalY +=2;
+      lastTableFinalY +=4;
       pdf.setFontSize(8);
-      const invDate =`${this.translatedLangText.ESTIMATE_PERIOD} : ${this.date}`;
-      Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+      const invDate =`${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`;
+      Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY+4,8);
       lastTableFinalY +=2;
     var CurrentPage = 1;
     var buffer = 20;
@@ -650,12 +654,12 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
         for (let b = 0; b < (sur.surveyor_details?.length || 0); b++) {
           var itm = sur.surveyor_details?.[b]!;
           data.push([
-            (b + 1).toString(), itm.tank_no || "",itm.eir_no || "", this.displayDate(itm.eir_date) || "",
+            (b + 1).toString(), itm.tank_no || "", this.displayDate(itm.eir_date) || "",
             this.getRepairTypeDescription(itm.est_type) || "", itm.est_no || "", this.displayDate(itm.est_date) || "",
             Utility.formatNumberDisplay(itm.est_cost) || "",  this.displayDate(itm.appv_date) || "", Utility.formatNumberDisplay(itm.appv_cost) || ""
           ]);
         }
-        data.push([this.translatedLangText.TOTAL,"","","","","","",Utility.formatNumberDisplay(sur.total_est_cost),"",Utility.formatNumberDisplay(sur.total_appv_cost)])
+        data.push([this.translatedLangText.TOTAL,"","","","","",Utility.formatNumberDisplay(sur.total_est_cost),"",Utility.formatNumberDisplay(sur.total_appv_cost)])
 
         pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -668,11 +672,13 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
           startY: startY, // Start table at the current startY value
           theme: 'grid',
           margin: { left: leftMargin },
+          tableWidth: pageWidth - leftMargin - rightMargin,
           styles: {
             fontSize: fontSize,
             minCellHeight: minHeightHeaderCol
 
           },
+          
           columnStyles: comStyles,
           headStyles: headStyles, // Custom header styles
           bodyStyles: {
@@ -681,7 +687,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
             valign: 'middle', // Vertically align content
           },
           didParseCell: (data: any) => {
-            let colSpan:number=6;
+            let colSpan:number=5;
             let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
            
            
