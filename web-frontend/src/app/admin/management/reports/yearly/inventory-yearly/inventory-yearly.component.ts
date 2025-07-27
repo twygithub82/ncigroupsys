@@ -213,8 +213,8 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   isGeneratingReport = false;
   yearList: string[] = [];
   monthList: string[] = [];
- // invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
-  invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
+  // invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR"];
+  invTypes: string[] = ["ALL", "CLEANING", "REPAIR", "STEAMING", "RESIDUE"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 
@@ -434,12 +434,12 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   ZeroTransaction(data: ManagementReportYearlyInventory): boolean {
     var retval: boolean = true;
     if (data) {
-      retval = ((data.cleaning_yearly_inventory?.average_count||0) == 0) &&
-        ((data.depot_yearly_inventory?.average_count||0) == 0) &&
-        ((data.gate_in_inventory?.average_count||0) == 0) &&
-        ((data.gate_out_inventory?.average_count||0) == 0) &&
-        ((data.repair_yearly_inventory?.average_count||0) == 0) &&
-        ((data.steaming_yearly_inventory?.average_count||0) == 0)
+      retval = ((data.cleaning_yearly_inventory?.average_count || 0) == 0) &&
+        ((data.depot_yearly_inventory?.average_count || 0) == 0) &&
+        ((data.gate_in_inventory?.average_count || 0) == 0) &&
+        ((data.gate_out_inventory?.average_count || 0) == 0) &&
+        ((data.repair_yearly_inventory?.average_count || 0) == 0) &&
+        ((data.steaming_yearly_inventory?.average_count || 0) == 0)
     }
     return retval;
   }
@@ -550,24 +550,15 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   ProcessYearlyReport(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {
 
-
-
-    if (!this.ZeroTransaction(this.repData)) {
-
+    //if (!this.ZeroTransaction(this.repData)) {
+    if (true) {
       this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
-
-
     }
     else {
       this.repData = [];
       this.isGeneratingReport = false;
     }
-
-
   }
-
-
-
 
 
   onExportChart_r1(repData: ManagementReportYearlyInventory, date: string, customerName: string, report_type: string, invTypes: string[]) {

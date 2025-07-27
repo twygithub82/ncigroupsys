@@ -382,23 +382,58 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.and = [];
 
+
+
     const itm: any = { or: [] };
-    itm.or.push({ cleaning: { any: true } });
-    itm.or.push({ repair_customer: { any: true } });
-    itm.or.push({ repair_owner: { any: true } });
-    itm.or.push({ residue: { any: true } });
-    itm.or.push({ steaming: { any: true } });
-    itm.or.push({ gin_billing_sot: { any: true } });
-    itm.or.push({ gout_billing_sot: { any: true } });
-    itm.or.push({ lon_billing_sot: { any: true } });
-    itm.or.push({ loff_billing_sot: { any: true } });
-    itm.or.push({ preinsp_billing_sot: { any: true } });
-    itm.or.push({ storage_billing_sot: { any: true } });
+    const invType = this.searchForm!.get('invoice_type_cv')?.value;
+    if (invType === "CLEANING")
+      itm.or.push({ cleaning: { any: true } });
+    else if (invType === "REPAIR") {
+      itm.or.push({ repair_customer: { any: true } });
+      itm.or.push({ repair_owner: { any: true } });
+    }
+    else if (invType === "RESIDUE")
+      itm.or.push({ residue: { any: true } });
+    else if (invType === "STEAMING")
+      itm.or.push({ steaming: { any: true } });
+    else if (invType === "GATE_IN") {
+      itm.or.push({ gin_billing_sot: { any: true } });
+    }
+    else if (invType === "GATE_OUT") {
+      itm.or.push({ gout_billing_sot: { any: true } });
+    }
+    else if (invType === "LIFT_ON") {
+      itm.or.push({ lon_billing_sot: { any: true } });
+    }
+    else if (invType === "LIFT_OFF") {
+      itm.or.push({ loff_billing_sot: { any: true } });
+    }
+    else if (invType === "PREINSPECTION") {
+      itm.or.push({ preinsp_billing_sot: { any: true } });
+    }
+    else if (invType === "STORAGE") {
+      itm.or.push({ storage_billing_sot: { any: true } });
+    }
+    else {
+      itm.or.push({ cleaning: { any: true } });
+      itm.or.push({ repair_customer: { any: true } });
+      itm.or.push({ repair_owner: { any: true } });
+      itm.or.push({ residue: { any: true } });
+      itm.or.push({ steaming: { any: true } });
+      itm.or.push({ gin_billing_sot: { any: true } });
+      itm.or.push({ gout_billing_sot: { any: true } });
+      itm.or.push({ lon_billing_sot: { any: true } })
+      itm.or.push({ loff_billing_sot: { any: true } });
+      itm.or.push({ preinsp_billing_sot: { any: true} });
+      itm.or.push({ storage_billing_sot: { any: true } });
+    }
+
+
+
     where.and.push(itm);
 
 
     const itm1: any = { or: [] };
-
     itm1.or.push({ cleaning: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
     itm1.or.push({ repair_customer: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
     itm1.or.push({ repair_owner: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
