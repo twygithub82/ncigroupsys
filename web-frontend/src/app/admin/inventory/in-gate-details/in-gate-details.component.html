@@ -40,77 +40,108 @@
                   @if (!(sotDS.loading$ | async)) {
                   <mat-card-content>
                     <div class="row">
-                      <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                      <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.SO_NO}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_no}}</span>
                           </div>
-                          <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_no}}</div>
-                      </div> -->
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.SO_NO}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span
+                                [ngClass]="{'value-display-info': true}">{{storingOrderTankItem?.storing_order?.so_no}}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.SO_NOTES}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}</span>
                           </div>
-                          <!-- <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5">
-                        <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.so_notes}}
-                        </div>
-                      </div> -->
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.SO_NOTES}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span
+                                [ngClass]="{'value-display-info': true}">{{storingOrderTankItem?.storing_order?.so_notes}}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="col-xl-5-5 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                      <div class="col-xl-5-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.CUSTOMER}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</span>
                           </div>
-                          <!-- <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
-                      </div> -->
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span
+                                [ngClass]="{'value-display-info': true}">{{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.BRANCH_NAME}}:</span>
                             <span class="contact-detail-info font-bold">{{ccDS.displayName(customerBranch) ||
                               '-'}}</span>
                           </div>
-                          <!-- <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{ccDS.displayName(customerBranch) || 'N.A.'}}</div>
-                      </div> -->
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.BRANCH_NAME}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{ccDS.displayName(customerBranch) || '-'}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                      <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.SO_DATE}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}</span>
                           </div>
-                          <!-- <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          {{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
-                        </div>
-                      </div> -->
-                        </div>
-                        <!-- <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.STATUS}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.SO_DATE}}:</span>
                           </div>
-                          <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
-                          <div class="contact-detail-info font-bold">{{storingOrderTankItem?.storing_order?.status_cv}}
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{displayDate(storingOrderTankItem?.storing_order?.create_dt)}}
+                              </span>
+                            </div>
                           </div>
-                        </div> 
-                        </div>-->
+                        </div>
                       </div>
                     </div>
                   </mat-card-content>
@@ -136,51 +167,87 @@
                   <mat-card-content>
                     <div class="row">
                       <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.TANK_NO}}:</span>
                             <span class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</span>
                           </div>
-                          <!-- <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
-                            <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
-                          </div> -->
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{storingOrderTankItem?.tank_no}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.PURPOSE}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}</span>
                           </div>
-                          <!-- <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 m-b-5">
-                            <div class="contact-detail-info font-bold">{{displayTankPurpose(storingOrderTankItem!)}}
-                            </div> -->
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{displayTankPurpose(storingOrderTankItem!)}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.EIR_NO}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
                           </div>
-                          <!-- <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
-                          <span
-                            [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
                         </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <span class="contact-detail-label">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
                             <span
                               [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}</span>
                           </div>
-                          <!-- <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 m-b-5">
-                            <div class="contact-detail-info">
-                              <span
-                                [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{storingOrderTankItem?.clean_status_cv
-                                ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}"
+                                [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">
+                                {{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}
+                              </span>
                             </div>
-                          </div> -->
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -415,14 +482,14 @@
                           </div>
                         </div>
                         <div class="row m-t-10">
-                          <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
+                          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3">
                             <button mat-flat-button aria-label="Back to previous page"
                               (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/in-gate-main']"
                               [queryParams]="{ tabIndex: tabIndex }">
                               <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                             </button>
                           </div>
-                          <div class="col-xl-6 col-lg-8 col-md-12 col-sm-12 align-right pt-2">
+                          <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 align-right pt-0">
                             <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
                               [disabled]="(igDS.actionLoading$| async)">
                               <mat-icon>
@@ -471,130 +538,130 @@
                   <mat-card-content>
                     <div class="container pt-2">
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CARGO_NAME}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.cargo ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.DESCRIPTION}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.description ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.ALIAS_NAME}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.alias ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CARGO_CLASS}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.class_cv ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CARGO_UN_NO}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.un_no ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CARGO_FLASH_POINT}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.flash_point ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CARGO_HAZARD_LEVEL}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{getHazardLevelDescription(cargoDetails?.hazard_level_cv) ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CARGO_BAN_TYPE}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{getBanTypeDescription(cargoDetails?.ban_type_cv) ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CARGO_NATURE}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{getNatureTypeDescription(cargoDetails?.nature_cv) ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.CLEANING_CATEGORY}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.cleaning_category?.name ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.TOTAL_CLEANED}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info">
                             {{cargoDetails?.cargo ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.IN_GATE_ALERT}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info text-danger-bright">
                             {{cargoDetails?.in_gate_alert ?? "-"}}
                           </span>
                         </div>
                       </div>
                       <div class="row right-align-display">
-                        <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 mb-2">
                           <span class="label-display-info">{{translatedLangText.MSDS}}:</span>
                         </div>
-                        <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12 mb-2">
+                        <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 mb-2">
                           <span class="value-display-info text-decoration-underline cursor-pointer"
                             (click)="onDownloadClick()">{{sdsPdf?.description ? cargoDetails?.cargo + ".pdf" :
                             ""}}</span>

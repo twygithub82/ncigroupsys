@@ -26,94 +26,105 @@
                   @if (!(sotDS.loading$ | async)) {
                   <mat-card-content>
                     <div class="row">
-                      <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                      <div class="col-xl-3-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.RO_NO}}:</span>
                             <span class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_no}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-2 align-right p-0">
-                            <span>{{translatedLangText.RO_NO}}:</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.RO_NO}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-0 ps-1">
-                            <div class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_no}}</div>
-                          </div> -->
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">{{roSotItem?.release_order?.ro_no}}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.NOTES}}:</span>
                             <span class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_notes}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.RO_NOTES}}:</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.NOTES}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info font-bold">{{roSotItem?.release_order?.ro_notes}}
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span
+                                [ngClass]="{'value-display-info': true}">{{roSotItem?.release_order?.ro_notes}}</span>
                             </div>
-                          </div> -->
+                          </div>
                         </div>
                       </div>
-                      <div class="col-xl-5-5 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.CUSTOMER}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info font-bold">
-                              {{ccDS.displayName(roSotItem?.release_order?.customer_company)}}</div>
-                          </div> -->
+                      <div class="col-xl-5-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.CUSTOMER}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{ccDS.displayName(roSotItem?.release_order?.customer_company)}}</span>
                           </div>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span
+                                [ngClass]="{'value-display-info': true}">{{ccDS.displayName(roSotItem?.release_order?.customer_company)}}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.BRANCH_NAME}}:</span>
                             <span class="contact-detail-info font-bold">{{ccDS.displayName(customerBranch) ||
                               '-'}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.BRANCH_NAME}}:</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.BRANCH_NAME}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info font-bold">
-                              {{ccDS.displayName(customerBranch) || '-'}}</div>
-                          </div> -->
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{ccDS.displayName(customerBranch) || '-'}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                      <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.RO_DATE}}:</span>
                             <span
                               class="contact-detail-info font-bold">{{displayDate(roSotItem?.release_order?.release_dt!)}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.RO_DATE}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info font-bold">
-                              {{displayDate(roSotItem?.release_order?.release_dt!)}}
-                            </div>
-                          </div> -->
-                        </div>
-                        <!-- <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
-                            <span class="contact-detail-label">{{translatedLangText.STATUS}}:</span>
-                            <span
-                              class="contact-detail-info font-bold">{{getROSotStatusDescription(roSotItem?.release_order?.status_cv)}}</span>
-                          </div>
-                          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.STATUS}}:</span>
-                          </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info font-bold">
-                              {{getROSotStatusDescription(roSotItem?.release_order?.status_cv)}}
-                            </div>
-                          </div>
                         </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.RO_DATE}}:</span>
+                          </div>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{displayDate(roSotItem?.release_order?.release_dt!)}}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </mat-card-content>
@@ -139,60 +150,85 @@
                   <mat-card-content>
                     <div class="row">
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.TANK_NO}}:</span>
                             <span class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.TANK_NO}}:</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info font-bold">{{storingOrderTankItem?.tank_no}}</div>
-                          </div> -->
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{storingOrderTankItem?.tank_no}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.PURPOSE}}:</span>
                             <span class="contact-detail-info font-bold">{{displayTankPurpose()}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.PURPOSE}}:</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info font-bold">{{displayTankPurpose()}}</div>
-                          </div> -->
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{displayTankPurpose()}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.EIR_NO}}:</span>
                             <span class="contact-detail-info font-bold">{{eir_no}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-5 align-right p-0">
-                            <span>{{translatedLangText.EIR_NO}}:</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <span [class]="'font-bold'">{{eir_no || '-'}}</span>
-                          </div> -->
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}">
+                                {{eir_no}}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <span class="contact-detail-label">{{translatedLangText.CLEANING_CONDITIONS}}:</span>
                             <span
                               [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}</span>
                           </div>
-                          <!-- <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 m-b-0 align-right p-0">
-                            <span>{{translatedLangText.CLEANING_CONDITIONS}}:</span>
+                        </div> -->
+                        <div class="row right-align-display">
+                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                            <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                           </div>
-                          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 m-b-5 ps-1">
-                            <div class="contact-detail-info">
-                              <span
-                                [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">{{storingOrderTankItem?.clean_status_cv
-                                ? storingOrderTankItem?.clean_status_cv : "NA"}}</span>
+                          <div
+                            class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
+                              <span [ngClass]="{'value-display-info': true}"
+                                [class]="getCleaningConditionBadgeClass(storingOrderTankItem?.clean_status_cv || '')">
+                                {{getCleanStatusDescription(storingOrderTankItem?.clean_status_cv)}}
+                              </span>
                             </div>
-                          </div> -->
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -293,13 +329,13 @@
                     </div>
                     <mat-divider></mat-divider>
                     <div class="row m-t-10">
-                      <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12">
+                      <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-xs-3">
                         <button mat-flat-button aria-label="Back to previous page" (click)="$event.preventDefault();"
                           [routerLink]="['/admin/inventory/out-gate-main/']" [queryParams]=" {tabIndex: tabIndex }">
                           <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
                         </button>
                       </div>
-                      <div class=" col-xl-6 col-lg-8 col-md-12 col-sm-12 align-right">
+                      <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-xs-9 align-right">
                         <button mat-flat-button color="primary" [ngClass]="'m-r-10'"
                           [disabled]="(ogDS.actionLoading$| async)">
                           <mat-icon>
