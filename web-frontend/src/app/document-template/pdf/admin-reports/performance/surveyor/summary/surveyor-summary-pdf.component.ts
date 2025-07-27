@@ -271,7 +271,8 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     REJECTED:"COMMON-FORM.REJECTED",
     MONTH_TOTAL:"COMMON-FORM.MONTH-TOTAL",
     GRAND_TOTAL:"COMMON-FORM.GRAND-TOTAL",
-    STEAM_PERIOD:"COMMON-FORM.STEAM-PERIOD"
+    STEAM_PERIOD:"COMMON-FORM.STEAM-PERIOD",
+    ESTIMATE_AMOUNT:"COMMON-FORM.ESTIMATE-AMOUNT",
   }
 
   type?: string | null;
@@ -621,7 +622,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.MONTH, this.translatedLangText.SURVEYOR,this.translatedLangText.NO_OF_ESTIMATE,
-      this.translatedLangText.ESTIMATE_DATE, this.translatedLangText.APPROVED_COST,this.translatedLangText.DIFFERENCE_COST,
+      this.translatedLangText.ESTIMATE_AMOUNT, this.translatedLangText.APPROVED_COST,this.translatedLangText.DIFFERENCE_COST,
       this.translatedLangText.AVERAGE_APPROVAL,this.translatedLangText.REJECTED
       
     ]];
@@ -727,6 +728,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
         minCellHeight: minHeightHeaderCol
 
       },
+       tableWidth: pageWidth - leftMargin - rightMargin,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

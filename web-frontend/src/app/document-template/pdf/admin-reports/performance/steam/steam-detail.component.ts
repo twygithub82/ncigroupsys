@@ -886,20 +886,21 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     const headers : CellInput[][]= [[
       { content: this.translatedLangText.S_N, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.TANK_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
-      { content: this.translatedLangText.EIR_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      // { content: this.translatedLangText.EIR_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
       { content: this.translatedLangText.CUSTOMER, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
       { content: this.translatedLangText.CARGO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.COMPLETED_DATE, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },    
-      { content: this.translatedLangText.DURATION, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: this.translatedLangText.DURATION, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: `${this.translatedLangText.REQUIRED_TEMP} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
       { content: this.translatedLangText.STEAM_COST, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
-      { content: this.translatedLangText.TEMPERATURE, colSpan: 6, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.BAY, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } }  
+      { content: this.translatedLangText.BAY, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } } , 
+      { content: this.translatedLangText.TEMPERATURE, colSpan: 6, styles: { halign: 'center', valign: 'middle' } }
+      
     
     ],[ 
-      { content: this.translatedLangText.THERMOMETER, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },  
-      { content: this.translatedLangText.TOP_LASER, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      { content: this.translatedLangText.BOTTOM_LASER, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }
+      { content: `${this.translatedLangText.THERMOMETER} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },  
+      { content: `${this.translatedLangText.TOP_LASER} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+      { content: `${this.translatedLangText.BOTTOM_LASER} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }
       ],[
         { content: this.translatedLangText.BEGIN,  styles: { halign: 'center', valign: 'middle' } },  
         { content: this.translatedLangText.CLOSE,  styles: { halign: 'center', valign: 'middle' } },
@@ -914,9 +915,9 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
         0: { halign: 'center', valign: 'middle',  cellWidth: 10,minCellHeight: minHeightBodyCell },
         1: { halign: 'center', valign: 'middle',  cellWidth: 18, minCellHeight: minHeightBodyCell },
         2: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
-        3: { halign: 'center', valign: 'middle', cellWidth: 20,minCellHeight: minHeightBodyCell },
-        4: { halign: 'left', cellWidth: 40,minCellHeight: minHeightBodyCell },
-        5: { halign: 'center', valign: 'middle',  cellWidth: 18,minCellHeight: minHeightBodyCell },
+        3: { halign: 'left', valign: 'middle', cellWidth: 40,minCellHeight: minHeightBodyCell },
+        4: { halign: 'center', valign: 'middle' ,cellWidth: 18,minCellHeight: minHeightBodyCell },
+        5: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
         6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -926,7 +927,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
         12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+        // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
         
       };
     // Define headStyles with valid fontStyle
@@ -983,11 +984,11 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       for (let n = 0; n < this.repData.length; n++) {
         let itm = this.repData[n];
         data.push([
-          (n + 1).toString(), itm.tank_no || "", itm.eir_no || "",
-          itm.customer_code||'', itm.last_cargo || "",Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "", itm.require_temp || "",
+          (n + 1).toString(), itm.tank_no || "", 
+          itm.customer_code||'', itm.last_cargo || "",Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "",itm.bay, itm.require_temp || "",
           Utility.formatNumberDisplay(itm.cost) || "", (itm.themometer?.begin_temp) || "",(itm.themometer?.close_temp) || "",
           (itm.top?.begin_temp) || "", (itm.top?.close_temp) || "",(itm.bottom?.begin_temp) || "", (itm.bottom?.close_temp) || "",
-          itm.bay
+          
         ]);
       }
       pdf.setDrawColor(0, 0, 0); // red line color

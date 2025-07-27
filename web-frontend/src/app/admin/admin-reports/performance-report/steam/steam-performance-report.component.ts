@@ -491,13 +491,17 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     // {
     this.subs.sink = this.reportDS.searchAdminReportSteamPerformance(this.lastSearchCriteria)
       .subscribe(data => {
-        if (data.length > 0) {
-          this.repData = data;
+
+         this.repData = data;
           this.onExportSteamPerformanceReport(this.repData, date!, team!);
-        }
-        else {
-          this.isGeneratingReport = false
-        }
+          this.isGeneratingReport = false;
+        // if (data.length > 0) {
+        //   this.repData = data;
+        //   this.onExportSteamPerformanceReport(this.repData, date!, team!);
+        // }
+        // else {
+        //   this.isGeneratingReport = false
+        // }
 
       });
 

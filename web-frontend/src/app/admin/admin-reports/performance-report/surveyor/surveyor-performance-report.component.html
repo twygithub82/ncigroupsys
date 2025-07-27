@@ -138,7 +138,21 @@
             <mat-panel-title>
               {{this.translatedLangText.DETAIL_REPORT}}
             </mat-panel-title>
-            <mat-panel-description>
+           <mat-panel-description>
+              <div
+                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
+                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
+                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.GENERATE_REPORT}}>
+                  <mat-icon>assignment</mat-icon>
+                </button>
+                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
+                  <mat-icon>cached</mat-icon>
+                </button> -->
+                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event,2)" (click)="$event.stopPropagation()"
+                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.CLEAR_ALL}}>
+                  <mat-icon>clear_all</mat-icon>
+                </button>
+              </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchFormDetail!" #formDirective="ngForm">
@@ -169,6 +183,23 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <mat-form-field class="example-full-width" appearance="fill">
+                  <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
+                  <mat-date-range-input [rangePicker]="est_picker" [max]="today" required>
+                    <input matStartDate placeholder="Start date" formControlName="est_dt_start"  [max]="today" required>
+                    <input matEndDate placeholder="End date" formControlName="est_dt_end"  [max]="today" required>
+                  </mat-date-range-input>
+                  <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #est_picker></mat-date-range-picker>
+                </mat-form-field>
+                <!-- @if ((searchFormDetail?.get('est_dt_start')?.hasError('required') && searchFormDetail?.get('est_dt_start')?.touched) 
+                ||(searchFormDetail?.get('est_dt_end')?.hasError('required') && searchFormDetail?.get('est_dt_end')?.touched) ) {
+               <mat-error>
+                 {{ translatedLangText.CLEAN_DATE }} {{ translatedLangText.SO_REQUIRED }}
+               </mat-error>
+             } -->
+              </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
@@ -181,23 +212,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.ESTIMATE_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="est_picker" required>
-                    <input matStartDate placeholder="Start date" formControlName="est_dt_start" required>
-                    <input matEndDate placeholder="End date" formControlName="est_dt_end" required>
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="est_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #est_picker></mat-date-range-picker>
-                </mat-form-field>
-                <!-- @if ((searchFormDetail?.get('est_dt_start')?.hasError('required') && searchFormDetail?.get('est_dt_start')?.touched) 
-                ||(searchFormDetail?.get('est_dt_end')?.hasError('required') && searchFormDetail?.get('est_dt_end')?.touched) ) {
-               <mat-error>
-                 {{ translatedLangText.CLEAN_DATE }} {{ translatedLangText.SO_REQUIRED }}
-               </mat-error>
-             } -->
-              </div>
+            
               <div class="col-xl-3 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.SURVEYOR_NAME}}</mat-label>
@@ -223,20 +238,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div
-                class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
-                <button class="m-l-10" mat-mini-fab color="primary" (click)="search_detail()"
-                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.GENERATE_REPORT}}>
-                  <mat-icon>assignment</mat-icon>
-                </button>
-                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                  <mat-icon>cached</mat-icon>
-                </button> -->
-                <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event,2)"
-                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.CLEAR_ALL}}>
-                  <mat-icon>clear_all</mat-icon>
-                </button>
-              </div>
+              
             </div>
           </form>
         </mat-expansion-panel>
