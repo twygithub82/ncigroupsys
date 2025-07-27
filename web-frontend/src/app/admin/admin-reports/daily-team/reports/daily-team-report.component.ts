@@ -512,6 +512,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       cond_counter++;
     }
 
+    if([1,3].includes(report_type)){
     if ((this.searchForm!.get('qc_dt')?.value)) {
       var start_dt = new Date(this.searchForm!.value['qc_dt']);
       var end_dt = new Date(this.searchForm!.value['qc_dt']);
@@ -520,6 +521,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       if ([1, 3].includes(report_type)) date = Utility.convertDateToStr(start_dt);
       cond_counter++;
     }
+  }
 
     if ((this.searchForm!.get('qc_dt_start')?.value) && (this.searchForm!.get('qc_dt_end')?.value)) {
       var start_dt = new Date(this.searchForm!.value['qc_dt_start']);
@@ -594,7 +596,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamRevenue(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
-          this.onExportDailyRevenueReport(this.repData, date!, team!);
+          this.onExportDailyRevenueReport(this.repData, date!, team!);``
         if (data.length > 0) {
           this.repData = data;
          // this.onExportDailyRevenueReport(this.repData, date!, team!);
@@ -614,6 +616,7 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
 
     this.subs.sink = this.reportDS.searchAdminReportDailyTeamApproval(this.lastSearchCriteria)
       .subscribe(data => {
+        this.repData = data;
          this.onExportDailyApprovalReport(this.repData, date!, team!);
         if (data.length > 0) {
           this.repData = data;
