@@ -435,7 +435,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
         }
       });
     } else {
-      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time);
+      const found = jobOrderItem?.time_table?.filter(x => x?.start_time && !x?.stop_time && !x?.delete_dt);
       if (found?.length) {
         const newParam = new TimeTableItem(found[0]);
         newParam.stop_time = Utility.convertDate(new Date()) as number;
@@ -446,7 +446,6 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
           if (result.data.stopJobTimer > 0) {
             this.completeJob(event, jobOrderItem);
           }
-
         });
       }
     }
