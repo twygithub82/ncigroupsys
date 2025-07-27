@@ -42,6 +42,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-survey-others-details',
@@ -187,6 +188,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   sot_guid?: string | null;
   last_test_desc? = "";
+  next_test_desc? = "";
 
   lastSearchCriteria: any;
   lastOrderBy: any = { storing_order: { so_no: 'DESC' } };
@@ -268,6 +270,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     this.cvDS.connectAlias('testTypeCv').subscribe(data => {
       this.testTypeCvList = data;
       this.last_test_desc = this.getLastTest();
+      this.next_test_desc = this.getNextTest();
     });
     this.cvDS.connectAlias('testClassCv').subscribe(data => {
       this.testClassCvList = this.sortByDescription(data);
@@ -503,7 +506,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return purposes.join('; ');
   }
 
-  getPurposeOptionDescription(codeValType: string): string | undefined {
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
   }
 
@@ -519,15 +522,15 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     return this.cvDS.getCodeDescription(codeValType, this.yardCvList);
   }
 
-  getTestTypeDescription(codeVal: string): string | undefined {
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
   }
 
-  getTestClassDescription(codeValType: string): string | undefined {
+  getTestClassDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.testClassCvList);
   }
 
-  getSurveyTypeDescription(codeValType: string): string | undefined {
+  getSurveyTypeDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.surveyTypeCvList);
   }
 
@@ -537,6 +540,10 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   getLastTest(): string | undefined {
     return this.getLastTestTI() || this.getLastTestIGS();
+  }
+
+  getNextTest(): string | undefined {
+    return this.getNextTestTI() || this.getNextTestIGS();
   }
 
   getLastTestIGS(): string | undefined {
@@ -560,6 +567,29 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
       return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(this.tiItem.test_dt as number, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
     return "";
+  }
+
+  getNextTestIGS(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.sotItem?.in_gate) return "";
+
+    const igs = this.igDS.getInGateItem(this.sotItem?.in_gate)?.in_gate_survey
+    if (!igs?.test_dt || !igs?.last_test_cv) return "-";
+    const test_type = igs?.last_test_cv;
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
+    const resultDt = Utility.addYearsToEpoch(igs?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(igs?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
+  }
+
+  getNextTestTI(): string | undefined {
+    if (!this.testTypeCvList?.length || !this.tiItem) return "";
+
+    if (!this.tiItem?.test_dt || !this.tiItem?.last_test_cv) return "-";
+    const test_type = this.tiItem?.last_test_cv;
+    const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
+    const resultDt = Utility.addYearsToEpoch(this.tiItem?.test_dt as number, yearCount) as number;
+    const output = this.getTestTypeDescription(this.tiItem?.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    return output;
   }
 
   updateValidators(untypedFormControl: UntypedFormControl, validOptions: any[]) {
