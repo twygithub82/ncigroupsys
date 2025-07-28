@@ -987,11 +987,9 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
   displayTotalSteam() {
     var retval = 0;
     // this.reportStatus.forEach(r => {
-
     //   r.yards?.forEach(y => {
     //     retval += y.noTank_steam || 0;
     //   })
-
     // });
 
     return retval;
