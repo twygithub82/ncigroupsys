@@ -999,6 +999,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       head: headers,
       body: data,
       startY: startY, // Start table at the current startY value
+       margin: { left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz,

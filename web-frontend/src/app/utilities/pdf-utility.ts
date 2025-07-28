@@ -251,14 +251,32 @@ export class PDFUtility {
     // });
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
-    // Add the image to the PDF
-    const posX1_img = pageWidth / 1.7; //leftMargin + 5;
-    const posY1_img = topMargin + 1;
-    const aspectRatio= height/width;
-    const w=77.5;
-    const h=aspectRatio*w;
+     const posX1_img = pageWidth / 1.7; //leftMargin + 5;
+     const posY1_img = topMargin + 1;
+    // Calculate dimensions to fit your desired space while maintaining aspect ratio
+      const maxWidth = 77.5; // Your desired width
+      const maxHeight = 25; // Maximum height you want to allow
+      const aspectRatio = height / width;
+
+      let finalWidth = maxWidth;
+      let finalHeight = maxWidth * aspectRatio;
+
+      // If the calculated height exceeds maxHeight, recalculate
+      if (finalHeight > maxHeight) {
+          finalHeight = maxHeight;
+          finalWidth = maxHeight / aspectRatio;
+      }
+
+      pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, finalWidth, finalHeight);
+
+    // // Add the image to the PDF
+    // const posX1_img = pageWidth / 1.7; //leftMargin + 5;
+    // const posY1_img = topMargin + 1;
+    // const aspectRatio= height/width;
+    // const w=77.5;
+    // const h=aspectRatio*w;
     
-    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
+    // pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
     // const imgHeight = heightHeader - 0;
     // const imgWidth = 80;
    // pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
@@ -348,11 +366,25 @@ export class PDFUtility {
     // Add the image to the PDF
     const posX1_img = pageWidth / 1.45;
     const posY1_img = topMargin + 1;
-    const aspectRatio= height/width;
-    const w=77.5;
-    const h=aspectRatio*w;
+  
+   
     
-    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
+
+     const maxWidth = 77.5; // Your desired width
+      const maxHeight = 25; // Maximum height you want to allow
+      const aspectRatio = height / width;
+
+      let finalWidth = maxWidth;
+      let finalHeight = maxWidth * aspectRatio;
+
+      // If the calculated height exceeds maxHeight, recalculate
+      if (finalHeight > maxHeight) {
+          finalHeight = maxHeight;
+          finalWidth = maxHeight / aspectRatio;
+      }
+
+
+    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img,finalWidth, finalHeight);// (imageElement, format, x, y, width, height)
     // const imgHeight = heightHeader - 0;
     // const imgWidth = 70;
     //pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, width, height,'',"FAST"); // (imageElement, format, x, y, width, height)
