@@ -310,7 +310,7 @@
         "LOGOUT": "Logout"
       }
     },
-     "USER-MANAGEMENT": {
+    "USER-MANAGEMENT": {
       "TEXT": "User Management",
       "LIST": {
         "USERS": "Users",
@@ -1361,21 +1361,20 @@
     "PTS": "Pts",
     "MAX-TEMP-EXCEED-FLASH-POINT": "Max Temp Exceeds Flash Point",
     "ROLE": "Role",
-    "USER":"User",
-    "POSITION":"Position",
-    "ADHOC":"Adhoc Feature",
-     "SELECTED-ROLES":"Selected Roles",
-    "SELECTED-TEAMS":"Selected Teams",
-    "SELECTED-ADHOC":"Selected Adhoc Features",
-    "SELECTED-FEATURES":"Selected Features",
-    "FEATURES":"Features",
+    "USER": "User",
+    "POSITION": "Position",
+    "ADHOC": "Adhoc Feature",
+    "SELECTED-ROLES": "Selected Roles",
+    "SELECTED-TEAMS": "Selected Teams",
+    "SELECTED-ADHOC": "Selected Adhoc Features",
+    "SELECTED-FEATURES": "Selected Features",
+    "FEATURES": "Features",
     "RESIDUE-ESTIMATE-DETAILS": "Residue Disposal Estimate Details",
-    "STEAM-ESTIMATE-DETAILS": "Steam Estimate Details",
+    "STEAMING-ESTIMATE-DETAILS": "Steaming Estimate Details",
     "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details",
     "APPROVAL_DATE": "Approval Date",
-    "CLEAN-DURATION":"Cleaning Duration",
-    "ESTIMATE-AMOUNT":"Estimate Amount"
-   
+    "CLEAN-DURATION": "Cleaning Duration",
+    "ESTIMATE-AMOUNT": "Estimate Amount"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
