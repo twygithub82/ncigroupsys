@@ -1579,7 +1579,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
               startY+=7;
               pdf.setLineWidth(0.1);
       
-              pdf.setLineDashPattern([0.01, 0.01], 0);
+             pdf.setLineDashPattern([0.01, 0.01], 0.1);
   
             var yPos=startY;
             //   // 

@@ -773,10 +773,11 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         { content: this.translatedLangText.GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.LOLO, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
       ]:[]),
+       ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
+      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
       ...(showSteamSurcharge? [ { content: this.translatedLangText.STEAM, colSpan: 2, styles: { halign: 'center' } }]:[]),
       ...(showResidueSurcharge? [ { content: this.translatedLangText.RESIDUE, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showCleanSurcharge? [ { content: this.translatedLangText.CLEANING, colSpan: 2, styles: { halign: 'center' } }]:[]),
-      ...(showRepairSurcharge? [{ content: this.translatedLangText.REPAIR, colSpan: 2, styles: { halign: 'center', valign: vAlign }}]:[]),
+     
       // { content: this.translatedLangText.TOTAL, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
 
     ],
@@ -789,10 +790,11 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         this.translatedLangText.GATE_IN, this.translatedLangText.GATE_OUT,
         this.translatedLangText.LIFT_ON, this.translatedLangText.LIFT_OFF
       ]:[]), // Sub-headers for GATE_SURCHARGE
+         ...(showCleanSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for RESIDUE
+      ...(showRepairSurcharge?[this.translatedLangText.APPROVED_HOUR, this.translatedLangText.COMPLETED_HOUR]:[]), // Sub-headers for CLEANING
       ...(showSteamSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for STEAM
       ...(showResidueSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for residue
-      ...(showCleanSurcharge?[this.translatedLangText.APPROVED_COUNT, this.translatedLangText.COMPLETED_COUNT]:[]), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge?[this.translatedLangText.APPROVED_HOUR, this.translatedLangText.COMPLETED_HOUR]:[]), // Sub-headers for CLEANING
+   
      // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
 
@@ -871,10 +873,11 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         this.translatedLangText.LIFT_ON,  
         this.translatedLangText.LIFT_OFF,  
       ]:[]),
+       ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
+      ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
       ...(showSteamSurcharge? [ this.translatedLangText.STEAM]:[]),
       ...(showResidueSurcharge? [ this.translatedLangText.RESIDUE]:[]),
-      ...(showCleanSurcharge? [ this.translatedLangText.CLEANING]:[]),
-      ...(showRepairSurcharge? [this.translatedLangText.REPAIR]:[]),
+     
     ]
     var prcsValues:number[]=[]
     var total_all_cost:number=0;
@@ -902,10 +905,11 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
           Utility.formatNumberDisplay(entry.gateInOut?.gate?.gate_in_count),Utility.formatNumberDisplay(entry.gateInOut?.gate?.gate_out_count),
           Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count),Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
         ]:[]),
+         ...(showCleanSurcharge?[Utility.formatNumberDisplay(entry.cleaning?.approved_count),Utility.formatNumberDisplay(entry.cleaning?.completed_count)]:[]),
+        ...(showRepairSurcharge?[Utility.formatNumberDisplay(entry.repair?.approved_hour),Utility.formatNumberDisplay(entry.repair?.completed_hour)]:[]),
         ...(showSteamSurcharge?[Utility.formatNumberDisplay( entry.steaming?.approved_count),Utility.formatNumberDisplay(entry.steaming?.completed_count)]:[]),
         ...(showResidueSurcharge?[Utility.formatNumberDisplay( entry.residue?.approved_count),Utility.formatNumberDisplay(entry.residue?.completed_count)]:[]),
-        ...(showCleanSurcharge?[Utility.formatNumberDisplay(entry.cleaning?.approved_count),Utility.formatNumberDisplay(entry.cleaning?.completed_count)]:[]),
-        ...(showRepairSurcharge?[Utility.formatNumberDisplay(entry.repair?.approved_hour),Utility.formatNumberDisplay(entry.repair?.completed_hour)]:[]),
+       
        // Utility.formatNumberDisplay(total)
       ]);
 
@@ -953,9 +957,9 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
           case this.translatedLangText.REPAIR:
             if(showRepairSurcharge)  s.data.push(entry.repair?.completed_hour||0);
           break;
-          // case this.translatedLangText.RESIDUE:
-          //   if(showResidueSurcharge) s.data.push(monthData.residue?.cost||0);
-          // break;
+          case this.translatedLangText.RESIDUE:
+            if(showResidueSurcharge) s.data.push(entry.residue?.completed_count||0);
+          break;
           case this.translatedLangText.GATE_IN:
             if(showGateSurcharge) 
               { 
@@ -1008,10 +1012,11 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         Utility.formatNumberDisplay(gateInCount),Utility.formatNumberDisplay(gateOutCount),
         Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
         ]:[]),
-      ...(showSteamSurcharge?[Utility.formatNumberDisplay(stmAppCount),Utility.formatNumberDisplay(stmCmpCount)]:[]),
-      ...(showResidueSurcharge?[Utility.formatNumberDisplay(residueAppCount),Utility.formatNumberDisplay(stmCmpCount)]:[]),
       ...(showCleanSurcharge?[Utility.formatNumberDisplay(clnAppCount),Utility.formatNumberDisplay(clnCmpCount)]:[]),
       ...(showRepairSurcharge?[Utility.formatNumberDisplay(repAppHour),Utility.formatNumberDisplay(repCmpHour)]:[]),
+      ...(showSteamSurcharge?[Utility.formatNumberDisplay(stmAppCount),Utility.formatNumberDisplay(stmCmpCount)]:[]),
+      ...(showResidueSurcharge?[Utility.formatNumberDisplay(residueAppCount),Utility.formatNumberDisplay(residueCmpCount)]:[]),
+    
       //Utility.formatNumberDisplay(total_all_cost)
     ]);
 
@@ -1024,10 +1029,11 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         (gateInCount-gateOutCount),'',
         (liftOnCount-liftOffCount),'',  
       ]:[]),
-      ...(showSteamSurcharge?[(stmAppCount-stmCmpCount),'']:[]),
-      ...(showResidueSurcharge?[(residueAppCount-residueCmpCount),'']:[]),
       ...(showCleanSurcharge?[(clnAppCount-clnCmpCount),'']:[]),
       ...(showRepairSurcharge?[(repAppHour-repCmpHour),'']:[]),  
+      ...(showSteamSurcharge?[(stmAppCount-stmCmpCount),'']:[]),
+      ...(showResidueSurcharge?[(residueAppCount-residueCmpCount),'']:[]),
+     
       //Utility.formatNumberDisplay((total_all_cost/average_counter))
     ]);
    
@@ -1035,7 +1041,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.001, 0.001], 0);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,
@@ -1073,20 +1079,35 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
            {
              case 2:
              // if(showPreinspectSurcharge) prop="preinspection";
-               if(showGateSurcharge) prop="gate";
-              else if(showSteamSurcharge) prop="steaming";
-              else if(showCleanSurcharge) prop="cleaning";
+            //    if(showGateSurcharge) prop="gate";
+            //   else if(showSteamSurcharge) prop="steaming";
+            //   else if(showCleanSurcharge) prop="cleaning";
+            //   else if(showRepairSurcharge) prop="repair";
+            //   else if(showResidueSurcharge) prop="residue";
+            //    break;
+            //  case 6:
+            //   if(showSteamSurcharge) prop="steaming";
+            //   break;
+            //  case 8:
+            //   if(showCleanSurcharge) prop="cleaning";
+            //   break;
+            // case 10:
+            //   if(showRepairSurcharge)var prop="repair";
+            //    break;
+             // if(showGateSurcharge) prop="gate";
+              if(showCleanSurcharge) prop="cleaning";
               else if(showRepairSurcharge) prop="repair";
+              else if(showSteamSurcharge) prop="steaming";
               else if(showResidueSurcharge) prop="residue";
                break;
              case 6:
-              if(showSteamSurcharge) prop="steaming";
+              if(showRepairSurcharge) prop="repair";
               break;
              case 8:
-              if(showCleanSurcharge) prop="cleaning";
+              if(showSteamSurcharge) prop="steaming";
               break;
             case 10:
-              if(showRepairSurcharge)var prop="repair";
+              if(showResidueSurcharge)var prop="residue";
                break;
            
            }
@@ -1170,8 +1191,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     
       {
 
-     
-    
+       
 
      var colors =  [ "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", 
           "#bcbd22", "#17becf", "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173"];
@@ -1258,6 +1278,25 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       });
       
       }
+
+    if(showResidueSurcharge){
+      var lbl="Residue";
+      var s = series.filter((s:{ name: string })=>[lbl].includes(s.name));
+      ds.push({
+        label:lbl,
+        data:s[0].data,
+        backgroundColor: 'transparent',
+        borderColor: colors[indx],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.5,
+        pointStyle: 'circle',
+        pointRadius: 3,
+        pointBorderColor: 'transparent',
+        pointBackgroundColor: colors[indx++],
+      });
+      
+      }
       this.lineChartData.datasets=ds;
       this.lineChartData.labels=catgries;
       this.chart?.data!=this.lineChartData;
@@ -1307,7 +1346,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;

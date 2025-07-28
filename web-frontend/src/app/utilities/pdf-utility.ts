@@ -70,7 +70,7 @@ export class PDFUtility {
     if(underline){
      pdf.setLineWidth(0.1);
       // Set dashed line pattern
-      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.line(titleX, topPosition + 1, titleX + titleWidth + 1, topPosition + 1); // Draw the line under the title
     }
   }

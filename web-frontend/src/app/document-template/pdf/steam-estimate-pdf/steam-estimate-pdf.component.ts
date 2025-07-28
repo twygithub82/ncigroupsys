@@ -620,7 +620,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
 
         pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0.001, 0.001], 0);
+        pdf.setLineDashPattern([0.01, 0.01], 0.1);
         
         
         //pdf.setLineWidth(0.1);
@@ -1061,7 +1061,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
             startY+=7;
             pdf.setLineWidth(0.1);
 
-            pdf.setLineDashPattern([0.01, 0.01], 0);
+           pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
           var yPos=startY;
           //   // 
@@ -1210,7 +1210,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
               var  yPos = startY+5;
               pdf.setLineWidth(0.1);
         // Set dashed line pattern
-              pdf.setLineDashPattern([0.01, 0.01], 0);
+             pdf.setLineDashPattern([0.01, 0.01], 0.1);
     
                 // Draw top line
             //  pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
@@ -1460,8 +1460,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
               var  yPos = startY+5;
               pdf.setLineWidth(0.1);
         // Set dashed line pattern
-              pdf.setLineDashPattern([0.01, 0.01], 0);
-    
+             pdf.setLineDashPattern([0.01, 0.01], 0.1);
                 // Draw top line
             //  pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
     

@@ -688,7 +688,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
   
           pdf.setLineWidth(0.1);
-          pdf.setLineDashPattern([0.001, 0.001], 0);
+          pdf.setLineDashPattern([0.01, 0.01], 0.1);
           
           // pdf.setFontSize(8);
           // pdf.setTextColor(0, 0, 0); // Black text
@@ -1067,7 +1067,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
           startY+=7;
            pdf.setLineWidth(0.1);
     
-          pdf.setLineDashPattern([0.01, 0.01], 0);
+          pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
           var yPos=startY;
             // 

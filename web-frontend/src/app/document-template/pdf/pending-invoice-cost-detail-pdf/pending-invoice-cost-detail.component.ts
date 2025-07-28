@@ -1016,7 +1016,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       }
       pdf.setDrawColor(0, 0, 0); // red line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
       // Add table using autoTable plugin
       autoTable(pdf, {
         head: headers,
@@ -1077,7 +1077,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.001, 0.001], 0);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;

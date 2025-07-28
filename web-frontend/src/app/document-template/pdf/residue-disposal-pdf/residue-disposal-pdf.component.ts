@@ -513,7 +513,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
 
     pdf.setLineWidth(0.1);
-    pdf.setLineDashPattern([0.001, 0.001], 0);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
     // pdf.setFontSize(8);
     // pdf.setTextColor(0, 0, 0); // Black text
@@ -893,7 +893,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     startY += 7;
     pdf.setLineWidth(0.1);
 
-    pdf.setLineDashPattern([0.01, 0.01], 0);
+   pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
     var yPos = startY;
     pdf.line(leftMargin, yPos, (pageWidth + 2 - rightMargin), yPos);
@@ -1021,7 +1021,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
     var yPos = startY + 5;
     pdf.setLineWidth(0.1);
     // Set dashed line pattern
-    pdf.setLineDashPattern([0.01, 0.01], 0);
+   pdf.setLineDashPattern([0.01, 0.01], 0.1);
     //      var  yPos = startY+5;
     //       pdf.setLineWidth(0.3);
     // // Set dashed line pattern
