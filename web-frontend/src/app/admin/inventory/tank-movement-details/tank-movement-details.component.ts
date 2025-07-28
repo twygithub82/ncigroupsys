@@ -1441,6 +1441,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sot.job_no = result.job_no;
         this.sot.release_job_no = result.release_job_no;
         this.sot.job_no_remarks = result.job_no_remarks;
+        this.loadSotDepotCost();
 
         console.log(newSot)
         this.sotDS.updateJobNo(newSot).subscribe(result => {
