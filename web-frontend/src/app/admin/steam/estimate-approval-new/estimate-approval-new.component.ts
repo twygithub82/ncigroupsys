@@ -1841,7 +1841,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       data: {
         steam_guid: this.steamItem?.guid,
         estimate_no: this.steamItem?.estimate_no,
-        packageLabourCost: this.packageLabourItem?.cost
+        packageLabourCost: this.steamItem?.rate || this.packageLabourItem?.cost
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection
