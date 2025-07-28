@@ -485,16 +485,23 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
   DisplayTankPurpose(sot: any) {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
+      //purposes.push(this.getPurposeOptionDescription('STORAGE'));
+      purposes.push('S');
     }
     if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
+      //purposes.push(this.getPurposeOptionDescription('CLEANING'));
+      purposes.push('C');
     }
     if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
+      // purposes.push(this.getPurposeOptionDescription('STEAM'));
+      purposes.push('SE');
     }
     if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
+      // purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
+       if(this.getPurposeOptionDescription(sot?.purpose_repair_cv) === 'Offhire')
+          purposes.push('O')
+       else if(this.getPurposeOptionDescription(sot?.purpose_repair_cv) === 'In-Service')
+        purposes.push('I')
     }
     return purposes.join('; ');
   }
@@ -679,24 +686,24 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     let lastTableFinalY = 40;
 
     const comStyles: any = {
-      0: { halign: 'center', valign: 'middle', cellWidth: 6, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 7, minCellHeight: minHeightBodyCell },
       1: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      7: { halign: 'left', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      12: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      14: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      15: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      16: { halign: 'left', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      17: { halign: 'left', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      7: { halign: 'left', valign: 'middle', cellWidth: 55, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      12: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      13: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      14: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      15: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      16: { halign: 'left', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      17: { halign: 'center', valign: 'middle', cellWidth: 12, minCellHeight: minHeightBodyCell },
 
     };
 
@@ -718,15 +725,6 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
       const sum = cust.yards?.reduce((acc, y) => acc + (y.storing_order_tank?.length || 0), 0);
       var tableHeight = ((sum || 0) * tableRowHeight + tableHeaderHeight); // Approximate table height
 
-
-      // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-
-      //   if (n>0) pdf.addPage();
-      //   pageNumber++;
-      //   lastTableFinalY = topMargin; // Reset Y position for the new page
-      //   if (n>0) lastTableFinalY+=8;
-      //   else lastTableFinalY=45;
-      // }
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
