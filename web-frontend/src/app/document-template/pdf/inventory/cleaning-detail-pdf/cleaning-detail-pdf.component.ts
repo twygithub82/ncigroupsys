@@ -554,6 +554,8 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
+    let bufferTableWidth=8;
+    let tableWidth=pageWidth-leftMargin-rightMargin-bufferTableWidth;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
     let fontSz = 5.5;
@@ -609,14 +611,15 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const cutoffDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
-    //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+    
     Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, lastTableFinalY+9, 8);
 
     var buffer = 25;
     var CurrentPage = 1;
     for (let n = 0; n < this.report_inventory_cln_dtl.length; n++) {
-      if (n > 0) lastTableFinalY += 8;
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
+      if (n > 0) lastTableFinalY += 5; // 2nd table
+      else lastTableFinalY +=13; //1st Page 1st table
+     
       let cust = this.report_inventory_cln_dtl[n];
 
 
@@ -625,12 +628,13 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
 
       if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
-        lastTableFinalY = 5 + topMargin;
+        lastTableFinalY = topMargin+49; // buffer for 2nd page onward first table's Method
+
       }
       else {
         CurrentPage = repPage;
       }
-      lastTableFinalY += 7;
+     // lastTableFinalY += 7;
       startY = lastTableFinalY + 8;
       pdf.setFontSize(8);
       pdf.setTextColor(0, 0, 0); // Black text
@@ -647,7 +651,8 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
         unNo = itm?.tariff_cleaning?.un_no || "";
         process = this.DisplayCleanMethod(itm!);
       }
-      pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin, lastTableFinalY+5);
+   //   pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin, lastTableFinalY+5);
+      pdf.text(`${cust.cargo}  |  ${unNo}  |  ${process}`, leftMargin+(bufferTableWidth/2), lastTableFinalY)
       pdf.setDrawColor(0, 0, 0); // red line color
 
       pdf.setLineWidth(0.1);
@@ -656,9 +661,10 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
       autoTable(pdf, {
         head: headers,
         body: data,
-        startY: startY, // Start table at the current startY value
+        //startY: startY, // Start table at the current startY value
         theme: 'grid',
-        margin: { left: leftMargin },
+        margin: { top:topMargin+50 },
+        tableWidth: tableWidth,
         styles: {
           fontSize: fontSz,
           minCellHeight: minHeightHeaderCol
@@ -680,7 +686,9 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
           if (!pg) {
             pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
             if (pageCount > 1) {
-              Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 3);
+              // new Page (2nd Page onward) to add Report Title and date , Report title Y: top margin + 45(Company Logo:35 + space :10) , Date Y: top margin + 42 (Company Logo:35 + space :7)  
+              Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+              Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, topMargin+42, 8);
             }
           }
         },
@@ -688,16 +696,32 @@ export class CleaningDetailInventoryPdfComponent extends UnsubscribeOnDestroyAda
     }
     const totalPages = pdf.getNumberOfPages();
 
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-     pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
-    });
+    
+          for (const { page, x, y } of pagePositions) {
+            pdf.setDrawColor(0, 0, 0); // black line color
+            pdf.setLineWidth(0.1);
+            pdf.setLineDashPattern([0.01, 0.01], 0.1);
+            pdf.setFontSize(8);
+            pdf.setPage(page);
+    
+            const lineBuffer = 13;
+            pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+            pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    
+            if (page > 1) {
+              await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+            }
+          }// Add Second Page, Add For Loop
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);

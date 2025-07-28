@@ -31,7 +31,7 @@ export class BusinessLogicUtil {
 
     static isAutoApproveSteaming(row: any) {
         if (!row) return false;
-        return row?.estimate_no?.startsWith('SE');
+        return row?.create_by == 'system';
     }
 
     static isEstimateApproved(row: any) {

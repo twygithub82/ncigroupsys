@@ -292,7 +292,6 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.cvDS = new CodeValuesDS(this.apollo);
     this.repair_guid = data.repair_guid;
     this.customer_company_guid = data.customer_company_guid;
-    this.estimate_no = data.estimate_no;
     this.repairEstimatePdf = data.repairEstimatePdf;
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -310,6 +309,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     ]);
     if (data?.length > 0) {
       this.repairItem = data[0];
+      this.estimate_no = this.repairItem?.estimate_no;
       await this.getCodeValuesData();
       this.updateData(this.repairItem?.repair_part);
       this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
@@ -318,15 +318,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
       this.repairEstimatePdf = pdfData ?? this.repairEstimatePdf;
       console.log(this.repairEstimatePdf)
-      // if (!this.repairEstimatePdf?.length) 
-      {
-        this.generatePDF();
-      }
-      // else {
-      //   const eirBlob = await Utility.urlToBlob(this.repairEstimatePdf?.[0]?.url);
-      //   const pdfUrl = URL.createObjectURL(eirBlob);
-      //   this.repairEstimatePdfSafeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(pdfUrl + '#toolbar=0');
-      // }
+      this.generatePDF();
     }
   }
 
@@ -407,7 +399,6 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   // }
 
   async generatePDF(): Promise<void> {
-
     await this.exportToPDF_r2();
     // const repTableElement = document.getElementById('repair-part-table');
     // const remarksElement = document.getElementById('repair-remarks');
@@ -1421,7 +1412,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     return this.translatedLangText.REPAIR_ESTIMATE;
   }
 
-   async exportToPDF_r2(fileName: string = 'document.pdf') {
+  async exportToPDF_r2(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10;
@@ -1444,156 +1435,156 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 7;
     let fontSz = 8.5;
-  
-      const pagePositions: { page: number; x: number; y: number }[] = [];
-      // const progressValue = 100 / cardElements.length;
-  
-      const reportTitle ='';
-  
-      const comStyles: any = {
-          // Set columns 0 to 16 to be center aligned
-          0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
-          1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
-          2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
-          3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
-        };
 
-        // Define headStyles with valid fontStyle
-        const headStyles: Partial<Styles> = {
-          fillColor: [250, 250, 250], // Background color
-          textColor: 0, // Text color (white)
-          fontStyle: "bold", // Valid fontStyle value
-          halign: 'center', // Centering header text
-          valign: 'middle',
-          lineColor: [255,255, 255],
-          lineWidth: 0.1
-        };
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
 
-        let currentY = topMargin;
-        let scale = this.scale;
-        pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+    const reportTitle = '';
 
-        // await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-        // await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '50%' },
+      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '10%' },
+      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+    };
 
-        // Variable to store the final Y position of the last table
-        let lastTableFinalY = 0;
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [250, 250, 250], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: [255, 255, 255],
+      lineWidth: 0.1
+    };
 
-        let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
-        var item = this.repairItem;
-        var cc= item.storing_order_tank?.storing_order?.customer_company;
-        pdf.setFontSize(8);
-        pdf.setTextColor(0, 0, 0); // Black text
-        await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin-5, bottomMargin, 
-          leftMargin, rightMargin, this.translate,cc);
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
-          startY=43;
-        PDFUtility.addReportTitle(pdf,this.pdfTitle,pageWidth,leftMargin,rightMargin,startY,12,false,1
-          ,'#000000',false);
-        startY+=8;
-        var data: any[][] = [
-          [
-            { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${item?.storing_order_tank?.tank_no}` },
-            { content: `${this.translatedLangText.ESTIMATE_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${this.estimate_no}` }
-          ],
-          [
-            { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${item?.storing_order_tank?.storing_order?.customer_company?.name}` },
-            { content: `${this.translatedLangText.EIR_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${this.displayDate(item?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
-          ],
-          [
-            { content: `${this.translatedLangText.LAST_CARGO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
-            { content: `${this.translatedLangText.ESTIMATE_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${this.displayDate(item?.create_dt)}` }
-          ],
-          [
-            { content: `${this.translatedLangText.MANUFACTURER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${item?.storing_order_tank?.in_gate?.[0]?.in_gate_survey?.manufacturer_cv}` },
-            { content: `${this.translatedLangText.UNIT_TYPE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${item?.storing_order_tank?.tank?.unit_type}` }
-          ],
-          [
-            { content: `${this.translatedLangText.LAST_TEST}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
-            { content: `${this.last_test_desc}` },
-            { content: `${this.translatedLangText.QUOTATION_DATE}`,styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz}  },
-            { content: `${this.displayDate(Utility.getTodayDateInEpoch())}` }
-          ],
-        ];
+    // await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
 
-        autoTable(pdf, {
-          body: data,
-          startY: startY, // Start table at the current startY value
-          theme: 'grid',
-          margin: { left: leftMargin },
-          styles: {
-            cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
-            fontSize: fontSz,
-            minCellHeight: minHeightHeaderCol,
-            lineWidth: 0.05, // cell border thickness
-            lineColor: [0, 0, 0], // black
-          },
-          tableWidth: contentWidth,
-          columnStyles: {
-            0: { cellWidth: 35 },
-            1: { cellWidth: 61 },
-            2: { cellWidth: 35 },
-            3: { cellWidth: 61 }
-          },
-          // headStyles: headStyles, // Custom header styles
-          bodyStyles: {
-            fillColor: [255, 255, 255],
-            halign: 'left', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 0;
 
-          },
-          didDrawPage: (data: any) => {
-            const pageCount = pdf.getNumberOfPages();
+    let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
+    var item = this.repairItem;
+    var cc = item.storing_order_tank?.storing_order?.customer_company;
+    pdf.setFontSize(8);
+    pdf.setTextColor(0, 0, 0); // Black text
+    await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin - 5, bottomMargin,
+      leftMargin, rightMargin, this.translate, cc);
 
-            lastTableFinalY = data.cursor.y;
-            var pg = pagePositions.find(p => p.page == pageCount);
-            if (!pg) {
-              pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-              if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-              }
-            }
-          },
-        });
+    startY = 43;
+    PDFUtility.addReportTitle(pdf, this.pdfTitle, pageWidth, leftMargin, rightMargin, startY, 12, false, 1
+      , '#000000', false);
+    startY += 8;
+    var data: any[][] = [
+      [
+        { content: `${this.translatedLangText.TANK_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tank_no}` },
+        { content: `${this.translatedLangText.ESTIMATE_NO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.estimate_no}` }
+      ],
+      [
+        { content: `${this.translatedLangText.CUSTOMER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.storing_order?.customer_company?.name}` },
+        { content: `${this.translatedLangText.EIR_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDate(item?.storing_order_tank?.in_gate?.[0]?.eir_dt)}` }
+      ],
+      [
+        { content: `${this.translatedLangText.LAST_CARGO}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tariff_cleaning?.cargo}` },
+        { content: `${this.translatedLangText.ESTIMATE_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDate(item?.create_dt)}` }
+      ],
+      [
+        { content: `${this.translatedLangText.MANUFACTURER}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.in_gate?.[0]?.in_gate_survey?.manufacturer_cv}` },
+        { content: `${this.translatedLangText.UNIT_TYPE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${item?.storing_order_tank?.tank?.unit_type}` }
+      ],
+      [
+        { content: `${this.translatedLangText.LAST_TEST}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.last_test_desc}` },
+        { content: `${this.translatedLangText.QUOTATION_DATE}`, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+        { content: `${this.displayDate(Utility.getTodayDateInEpoch())}` }
+      ],
+    ];
 
-          //   this.isEstimateApproved = BusinessLogicUtil.isEstimateApproved(item);
-            startY=lastTableFinalY+2;
+    autoTable(pdf, {
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: leftMargin },
+      styles: {
+        cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol,
+        lineWidth: 0.05, // cell border thickness
+        lineColor: [0, 0, 0], // black
+      },
+      tableWidth: contentWidth,
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 61 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 61 }
+      },
+      // headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
 
-            this.createOffhireEstimate_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
 
-            startY += 61; //gap between chunked tables and Estimate List
-            //startY=lastTableFinalY+15;
-            this.createRepairEstimateDetail_r1(pdf,startY,leftMargin,rightMargin,pageWidth);
-            startY=pageHeight-25;
-            // var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
-            // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
-  
-              startY+=7;
-              pdf.setLineWidth(0.1);
-      
-             pdf.setLineDashPattern([0.01, 0.01], 0.1);
-  
-            var yPos=startY;
-            //   // 
-            pdf.line(leftMargin, yPos, (pageWidth+2-rightMargin ), yPos);
-            startY= yPos +4;
-            await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf,pageWidth,startY,bottomMargin,leftMargin ,rightMargin,this.translate); // ReportFooter_CompanyInfo_portrait
-  
-              //var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
-            this.downloadFile(pdf.output('blob'), this.getReportTitle())
-              this.dialogRef.close(); 
-    }
-  
-  
-     
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+          }
+        }
+      },
+    });
+
+    //   this.isEstimateApproved = BusinessLogicUtil.isEstimateApproved(item);
+    startY = lastTableFinalY + 2;
+
+    this.createOffhireEstimate_r1(pdf, startY, leftMargin, rightMargin, pageWidth);
+
+    startY += 61; //gap between chunked tables and Estimate List
+    //startY=lastTableFinalY+15;
+    this.createRepairEstimateDetail_r1(pdf, startY, leftMargin, rightMargin, pageWidth);
+    startY = pageHeight - 25;
+    // var estTerms ="[Estimate Terms and Conditions / Disclaimer]";
+    // PDFUtility.addText(pdf,estTerms,startY,leftMargin,9,true);
+
+    startY += 7;
+    pdf.setLineWidth(0.1);
+
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+    var yPos = startY;
+    //   // 
+    pdf.line(leftMargin, yPos, (pageWidth + 2 - rightMargin), yPos);
+    startY = yPos + 4;
+    await PDFUtility.ReportFooter_CompanyInfo_portrait_r1(pdf, pageWidth, startY, bottomMargin, leftMargin, rightMargin, this.translate); // ReportFooter_CompanyInfo_portrait
+
+    //var pdfFileName=`CLEANING_QUOTATION-${item?.storing_order_tank?.in_gate?.[0]?.eir_no}`
+    this.downloadFile(pdf.output('blob'), this.getReportTitle())
+    this.dialogRef.close();
+  }
+
+
+
 
   createOffhireEstimate_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
 
@@ -1705,85 +1696,111 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   createRepairEstimateDetail_r1(pdf: jsPDF, startY: number, leftMargin: number, rightMargin: number, pageWidth: number) {
     const fontSz = 6;
     const vAlign = "bottom";
-    const backgroundColor_header= 250
+    const backgroundColor_header = 250
     const lineWidth = 0.0;
     const lineColor = 250;
-    const bufferY=5;
+    const bufferY = 5;
     const headers: RowInput[] = [
       [
         {
           content: this.translatedLangText.NO_DOT,
           rowSpan: 2,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header, 
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.ITEM,
           rowSpan: 2,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header, 
-            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.DAMAGE_CODE,
           rowSpan: 2,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.REPAIR_CODE,
           rowSpan: 2,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.DEPOT_ESTIMATE,
           colSpan: 3,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header, 
-            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.CUSTOMER_APPROVAL,
           colSpan: 4,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         }
 
       ],
       [
         {
           content: this.translatedLangText.QTY,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,  
-            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.LABOUR,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-             lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.MATERIAL,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.QTY,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header, 
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.LABOUR,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header, 
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.MATERIAL,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         },
         {
           content: this.translatedLangText.LESSEE_OWNER__ABB,
-          styles: { fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header, 
-          lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2 }
+          styles: {
+            fontSize: fontSz, halign: 'center', valign: vAlign, fillColor: backgroundColor_header,
+            lineColor: lineColor, lineWidth: lineWidth, cellPadding: 2
+          }
         }
       ]
     ];
@@ -1793,8 +1810,10 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.repList?.forEach((rep, index) => {
 
       if (rep.isGroupHeader) {
-        repData.push([{ content: `${rep.group_name_cv}`, colSpan: 11, 
-        styles: { fillColor: backgroundColor_header, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz } }]);
+        repData.push([{
+          content: `${rep.group_name_cv}`, colSpan: 11,
+          styles: { fillColor: backgroundColor_header, halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: grpFontSz }
+        }]);
       }
 
       var isOwner = (rep.owner) ? "O" : "L";
@@ -1836,29 +1855,29 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         10: { cellWidth: 16, halign: 'center', valign: 'middle' },
       },
       didDrawCell: function (data) {
-          const doc = data.doc;
-         
-          const isLastRow =( data.row.index === data.table.body.length - 1 );
-          if(data.row.index === 0 && data.column.index === 0 && data.section==="head"){
+        const doc = data.doc;
+
+        const isLastRow = (data.row.index === data.table.body.length - 1);
+        if (data.row.index === 0 && data.column.index === 0 && data.section === "head") {
           doc.setLineWidth(0.3);
           doc.setDrawColor(0, 0, 0); // Set line color to black
-            doc.line(
+          doc.line(
             data.cell.x,
             data.cell.y - bufferY,
-            pageWidth+1-rightMargin,
+            pageWidth + 1 - rightMargin,
             data.cell.y - bufferY
           );
-          }
-          else if(isLastRow && data.section==="body" &&data.column.index === 0){
-            doc.setLineWidth(0.3);
-            doc.setDrawColor(0, 0, 0); // Set line color to black
-            doc.line(
+        }
+        else if (isLastRow && data.section === "body" && data.column.index === 0) {
+          doc.setLineWidth(0.3);
+          doc.setDrawColor(0, 0, 0); // Set line color to black
+          doc.line(
             data.cell.x,
-            data.cell.y+ data.cell.height + bufferY,
-            pageWidth+1-rightMargin,
+            data.cell.y + data.cell.height + bufferY,
+            pageWidth + 1 - rightMargin,
             data.cell.y + data.cell.height + bufferY
           );
-          }
+        }
       },
       didDrawPage: (data: any) => {
         startY = data.cursor.y;
@@ -1872,5 +1891,5 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     startY += 8;
     PDFUtility.addText(pdf, remarksValue, startY, leftMargin, fontSz);
   }
-  
+
 }
