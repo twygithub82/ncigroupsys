@@ -811,7 +811,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-
+   @ViewChild('chartRef') chartRef!: ChartComponent;
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -1084,7 +1084,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
   {
     const tablewidth=10;
     const fontSz=6;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const bufferContent=8;
+    const contentWidth = pageWidth - leftMargin - rightMargin -bufferContent;
     const chartContentWidth= contentWidth ;
     const reportTitle = this.GetReportTitle();
     // const headers = [[
@@ -1121,7 +1122,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
 
      const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin , lastTableFinalY + 8, 8)
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+(bufferContent/2) , lastTableFinalY + 8, 8)
 
    
 
@@ -1153,7 +1154,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       head: headers,
       body: data,
       startY: startY , // Start table at the current startY value
-      margin: { left: leftMargin },
+      //margin: { left: leftMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1180,13 +1181,17 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
 
     var bufferY :number=10;
+    var bufferX :number=5;
     startY =lastTableFinalY +bufferY;
      if (cardElements.length > 0) {
-      const card = cardElements[0];
-      const canvas = await html2canvas(card, { scale: scale });
-      let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
-      const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPG', leftMargin, startY, chartContentWidth, imgHeight);
+
+
+       const card = cardElements[0];
+       
+       const canvas = await html2canvas(card, { scale: 1.5 });
+       let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
+       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
+       pdf.addImage(imgData, 'JPG', leftMargin+bufferX, startY, chartContentWidth, imgHeight);
     }
     
 
@@ -1812,13 +1817,13 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         
       },
       stroke: {
-        width: 7,
+        width: 10,
         curve: 'smooth',
       },
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '10%',
+          columnWidth: '30%',
           borderRadius: 3,
           dataLabels: {
             position: 'top', // top, center, bottom
@@ -1830,7 +1835,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         formatter: function (val: number) {
           return val; // Display the value as is
         },
-        offsetY: -20, // Move the labels upward by 20 pixels
+        offsetY: -22, // Move the labels upward by 20 pixels
+        offsetX: 5,
         style: {
           fontSize: '12px',
           colors: ['#9aa0ac'],
