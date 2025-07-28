@@ -1226,6 +1226,7 @@ pdf.save(fileName);
           //startY: startY, // Start table at the current startY value
           margin:{top:startY,left: leftMargin, right: rightMargin},
           theme: 'grid',
+          //margin: { left: leftMargin, top: 55 }, // top margin for all pages
           styles: {
             fontSize: fontSize,
             minCellHeight: minHeightHeaderCol
