@@ -917,8 +917,7 @@
                                           </mat-header-cell>
                                           <mat-cell *matCellDef="let row; let i=index;"
                                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-end'">
-                                            @if (canRollbackSteamingCompleted(row) || canOverwriteSteamingApproval(row))
-                                            {
+                                            @if (canRollbackSteamingCompleted(row) || canOverwriteSteamingApproval(row) || true) {
                                             <button mat-icon-button [matMenuTriggerFor]="menu"
                                               (click)="stopEventTrigger($event)">
                                               <mat-icon>more_vert</mat-icon>
@@ -933,10 +932,14 @@
                                               @if (canOverwriteSteamingApproval(row)) {
                                               <button mat-menu-item
                                                 (click)="overwriteSteamingApprovalDialog($event, row)">
-                                                <mat-icon>change_circle</mat-icon>
-                                                <span>{{translatedLangText.OVERWRITE_APPROVAL}}</span>
+                                                <mat-icon>edit</mat-icon>
+                                                <span>{{translatedLangText.APPROVAL}}</span>
                                               </button>
                                               }
+                                              <button mat-menu-item (click)="exportSteamingEst($event, row)">
+                                                <mat-icon>file_download</mat-icon>
+                                                <span>{{translatedLangText.DOWNLOAD}}</span>
+                                              </button>
                                             </mat-menu>
                                             }
                                           </mat-cell>
@@ -1141,10 +1144,10 @@
                                               <span>{{translatedLangText.APPROVAL}}</span>
                                             </button>
                                             }
-                                            <!-- <button mat-menu-item (click)="exportResidueEst($event, row)">
-                                              <mat-icon>edit</mat-icon>
-                                              <span>{{translatedLangText.OVERWRITE_APPROVAL}}</span>
-                                            </button> -->
+                                            <button mat-menu-item (click)="exportResidueEst($event, row?.guid)">
+                                              <mat-icon>file_download</mat-icon>
+                                              <span>{{translatedLangText.DOWNLOAD}}</span>
+                                            </button>
                                           </mat-menu>
                                         </mat-cell>
                                       </ng-container>
@@ -1529,7 +1532,7 @@
                                           <mat-cell *matCellDef="let row; let i=index;"
                                             [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm pr-0 justify-content-center'">
                                             @if ((canRollbackRepairQC(row) && allowPerformAction()) ||
-                                            canRollbackRepairQC(row) || canOverwriteRepairApproval(row)) {
+                                            canRollbackRepairQC(row) || canOverwriteRepairApproval(row) || true) {
                                             <button mat-icon-button [matMenuTriggerFor]="menu"
                                               (click)="stopEventTrigger($event)">
                                               <mat-icon>more_vert</mat-icon>
@@ -1554,6 +1557,10 @@
                                                 <span>{{translatedLangText.REINSTATE}}</span>
                                               </button>
                                               }
+                                              <button mat-menu-item (click)="exportRepairEst($event, row?.guid)">
+                                                <mat-icon>file_download</mat-icon>
+                                                <span>{{translatedLangText.DOWNLOAD}}</span>
+                                              </button>
                                             </mat-menu>
                                             }
                                           </mat-cell>

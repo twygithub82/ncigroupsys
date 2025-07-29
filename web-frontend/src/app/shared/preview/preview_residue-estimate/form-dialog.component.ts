@@ -31,18 +31,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
-import {InGateSurveyItem} from 'app/data-sources/in-gate-survey';
-import {BusinessLogicUtil} from 'app/utilities/businesslogic-util';
-import { CodeValuesDS,CodeValuesItem } from 'app/data-sources/code-values';
+import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { MatCardModule } from '@angular/material/card';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
   langText?: any;
   selectedItem: ResidueItem;
-  nextTestDesc?:string;
-  lastTestDesc?:string;
-  
+  nextTestDesc?: string;
+  lastTestDesc?: string;
+
 }
 
 
@@ -99,42 +99,42 @@ export class ResidueEstimateFormDialogComponent_View {
   action: string;
   index?: number;
   dialogTitle?: string;
-  deList?: any[]=[];
+  deList?: any[] = [];
 
-  sotDS:StoringOrderTankDS;
+  sotDS: StoringOrderTankDS;
   igDS: InGateDS;
-  ccDS:CustomerCompanyDS;
+  ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
   sotItem?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
-   unit_type_control = new UntypedFormControl();
+  unit_type_control = new UntypedFormControl();
 
   selectedItem: ResidueItem;
   startDate = new Date();
-  
+
   lastCargoControl = new UntypedFormControl();
-  lastTestDesc :string='';
-  nextTestDesc :string='';
-   groupNameCvList: CodeValuesItem[] = []
-    subgroupNameCvList: CodeValuesItem[] = []
-    yesnoCvList: CodeValuesItem[] = []
-    soTankStatusCvList: CodeValuesItem[] = []
-    purposeOptionCvList: CodeValuesItem[] = []
-    testTypeCvList: CodeValuesItem[] = []
-    testClassCvList: CodeValuesItem[] = []
-    partLocationCvList: CodeValuesItem[] = []
-    damageCodeCvList: CodeValuesItem[] = []
-    repairCodeCvList: CodeValuesItem[] = []
-    unitTypeCvList: CodeValuesItem[] = []
-    processStatusCvList: CodeValuesItem[] = []
-    clean_statusList: CodeValuesItem[] = [];
-    isOwner = false;
+  lastTestDesc: string = '';
+  nextTestDesc: string = '';
+  groupNameCvList: CodeValuesItem[] = []
+  subgroupNameCvList: CodeValuesItem[] = []
+  yesnoCvList: CodeValuesItem[] = []
+  soTankStatusCvList: CodeValuesItem[] = []
+  purposeOptionCvList: CodeValuesItem[] = []
+  testTypeCvList: CodeValuesItem[] = []
+  testClassCvList: CodeValuesItem[] = []
+  partLocationCvList: CodeValuesItem[] = []
+  damageCodeCvList: CodeValuesItem[] = []
+  repairCodeCvList: CodeValuesItem[] = []
+  unitTypeCvList: CodeValuesItem[] = []
+  processStatusCvList: CodeValuesItem[] = []
+  clean_statusList: CodeValuesItem[] = [];
+  isOwner = false;
   //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
   //catDS :CleaningCategoryDS;
   translatedLangText: any = {};
   langText = {
-     NEW: 'COMMON-FORM.NEW',
+    NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
@@ -239,7 +239,7 @@ export class ResidueEstimateFormDialogComponent_View {
     TYPE: 'COMMON-FORM.TYPE',
     RESIDUE_ESTIMATE_DETAILS: 'COMMON-FORM.RESIDUE-ESTIMATE-DETAILS',
   };
- 
+
 
   constructor(
     public dialogRef: MatDialogRef<ResidueEstimateFormDialogComponent_View>,
@@ -250,24 +250,22 @@ export class ResidueEstimateFormDialogComponent_View {
     private snackBar: MatSnackBar,
   ) {
     // Set the defaults
-    
-    this.sotDS=new StoringOrderTankDS(this.apollo);
-    this.cvDS=new CodeValuesDS(this.apollo);
-    this.igDS= new InGateDS(this.apollo);
-    this.ccDS= new CustomerCompanyDS(this.apollo);
+
+    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
     this.loadData();
     this.translateLangText();
     this.selectedItem = data.selectedItem;
-    this.sotItem=this.selectedItem.storing_order_tank;
-    this.deList=this.selectedItem.residue_part;
-    this.lastTestDesc= data.lastTestDesc||'';
-    this.nextTestDesc=data.nextTestDesc||'';
+    this.sotItem = this.selectedItem.storing_order_tank;
+    this.deList = this.selectedItem.residue_part;
+    this.lastTestDesc = data.lastTestDesc || '';
+    this.nextTestDesc = data.nextTestDesc || '';
     this.action = data.action!;
-    
   }
 
-
- public loadData() {
+  public loadData() {
     const queries = [
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
@@ -283,7 +281,7 @@ export class ResidueEstimateFormDialogComponent_View {
     ];
     this.cvDS.getCodeValuesByType(queries);
 
-   
+
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
     });
@@ -314,10 +312,10 @@ export class ResidueEstimateFormDialogComponent_View {
     this.cvDS.connectAlias('processStatusCv').subscribe(data => {
       this.processStatusCvList = data;
     });
-    
+
   }
 
- 
+
 
   GetTitle() {
     return this.translatedLangText.RESIDUE_ESTIMATE_DETAILS;
@@ -330,7 +328,7 @@ export class ResidueEstimateFormDialogComponent_View {
   }
 
 
- 
+
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -347,7 +345,7 @@ export class ResidueEstimateFormDialogComponent_View {
     //   where.name = { contains: this.pcForm!.value['name'] };
     // }
 
-   
+
   }
 
   displayLastUpdated(r: TariffDepotItem) {
@@ -385,15 +383,15 @@ export class ResidueEstimateFormDialogComponent_View {
     return ''; // 'light-blue';
   }
 
-   IsApproved() {
+  IsApproved() {
     const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
     return validStatus.includes(this.selectedItem?.status_cv!);
-    
+
   }
 
   parse2Decimal(figure: number | string) {
-      return Utility.formatNumberDisplay(figure)
-    }
+    return Utility.formatNumberDisplay(figure)
+  }
 
   calculateResidueItemCost(residuePart: ResiduePartItem): number {
     let calResCost: number = 0;
@@ -409,7 +407,7 @@ export class ResidueEstimateFormDialogComponent_View {
 
   }
 
-   getTotalCost(): number {
+  getTotalCost(): number {
     return this.deList?.reduce((acc, row) => {
       if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
@@ -423,46 +421,46 @@ export class ResidueEstimateFormDialogComponent_View {
     }, 0);
   }
 
-   IsApprovePart(rep: ResiduePartItem) {
-      return rep.approve_part;
+  IsApprovePart(rep: ResiduePartItem) {
+    return rep.approve_part;
+  }
+
+  getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      const testDt = igs.test_dt as number;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
+    return "";
+  }
 
-    getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
-        if (igs) {
-          const test_type = igs.last_test_cv;
-          const test_class = igs.test_class_cv;
-          const testDt = igs.test_dt as number;
-          return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
-        }
-        return "";
-      }
-    
-      getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
-        if (igs && igs.next_test_cv && igs.test_dt) {
-          const test_type = igs.last_test_cv;
-          const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
-          const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
-          return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
-        }
-        return "";
-      }
+  getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs && igs.next_test_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
+      const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
+      return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    }
+    return "";
+  }
 
-      getTestTypeDescription(codeVal: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-      }
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+  }
 
-      getTestClassDescription(codeVal: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
-      }
+  getTestClassDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
+  }
 
-     displayDate(input: number | undefined): string | undefined {
-        return Utility.convertEpochToDateStr(input);
-      }
-      displayTankPurpose(sot: StoringOrderTankItem) {
-         return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
-      }
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
+  }
 
-       getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-      }
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
 }
