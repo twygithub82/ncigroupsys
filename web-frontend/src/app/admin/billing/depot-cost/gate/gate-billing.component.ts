@@ -413,6 +413,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     where.and.push({ or: [{ gate_in: { eq: true } }, { gate_out: { eq: true } }] });
     // where.or=[{gate_in:{eq:true}},{gate_out:{eq:true}}];
     //where.status_cv={in:['COMPLETED','APPROVED']};
+
+    where.storing_order_tank = {};
     where.guid = { neq: null };
     if (this.searchForm!.get('tank_no')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -420,7 +422,6 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
-    where.storing_order_tank = {};
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -429,8 +430,6 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
         cond = { in: BILLING_TANK_STATUS_IN_YARD };
       }
-
-
       where.storing_order_tank.tank_status_cv = cond;
     }
 

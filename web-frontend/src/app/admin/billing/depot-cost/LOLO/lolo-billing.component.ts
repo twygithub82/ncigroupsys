@@ -390,6 +390,8 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
+
+    where.storing_order_tank = {};
     where.and = [];
     where.and.push({ or: [{ lift_on: { eq: true } }, { lift_off: { eq: true } }] });
     //where.and=[{lift_on:{eq:true}},{lift_off:{eq:true}}];
@@ -404,7 +406,6 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       ];
     }
 
-    where.storing_order_tank = {};
     where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
 
     if (this.searchForm!.get('depot_status_cv')?.value) {

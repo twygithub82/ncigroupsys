@@ -382,6 +382,8 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
+
+    where.storing_order_tank = {};
     where.preinspection = { eq: true };
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
@@ -394,8 +396,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
       ];
     }
 
-    where.storing_order_tank = {};
-       where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
+    where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
 
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
