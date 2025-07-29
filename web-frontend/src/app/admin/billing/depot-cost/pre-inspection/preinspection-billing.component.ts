@@ -822,6 +822,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     newBilling.invoice_dt = Number(Utility.convertDate(invoiceDate));
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    newBilling.invoice_type = "PreInspection"
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     this.selection.selected.map(c => {

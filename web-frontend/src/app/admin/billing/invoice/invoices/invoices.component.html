@@ -234,6 +234,16 @@
                     <span class="mobile-label">{{translatedLangText.INVOICE_NO}}:</span>{{row.invoice_no}}
                   </mat-cell>
                 </ng-container>
+
+                <ng-container matColumnDef="invoice_type">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    {{translatedLangText.INVOICE_TYPE}}
+                  </mat-header-cell>
+                  <mat-cell mat-cell *matCellDef="let row" class="">
+                    <span class="mobile-label">{{translatedLangText.INVOICE_TYPE}}:</span>{{row.invoice_type}}
+                  </mat-cell>
+                </ng-container>
+
                 <ng-container matColumnDef="customer">
                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                     {{translatedLangText.CUSTOMER}}

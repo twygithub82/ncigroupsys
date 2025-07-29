@@ -145,7 +145,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     LIFT_ON: 'COMMON-FORM.LIFT-ON',
     LIFT_OFF: 'COMMON-FORM.LIFT-OFF',
     INVOICE_TYPE: 'COMMON-FORM.INVOICE-TYPE',
-     BILLING:'COMMON-FORM.BILLING',
+    BILLING: 'COMMON-FORM.BILLING',
   }
 
   invForm?: UntypedFormGroup;
@@ -405,7 +405,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
 
     where.storing_order_tank = {};
-     where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
+    where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
 
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -719,21 +719,21 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result.action === 'confirmed') {
-       // const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
+        // const guids = this.selection.selected.map(item => item.guid).filter((guid): guid is string => guid !== undefined);
         //this.RemoveEstimatesFromInvoice(event, guids!);
         this.RemoveSelectedEstimatesFromInvoice(event);
       }
     });
   }
-   RemoveSelectedEstimatesFromInvoice(event: Event) {
+  RemoveSelectedEstimatesFromInvoice(event: Event) {
     var updateBilling: any = null;
     let billingEstimateRequests: BillingEstimateRequest[] = [];
     this.selection.selected.forEach(g => {
       var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
       billingEstReq.action = "CANCEL";
       billingEstReq.billing_party = this.billingParty;
-      billingEstReq.process_guid = g.guid.replace('-1','').replace('-2','');
-      billingEstReq.process_type =`${this.invoiceTypeControl.value}`;
+      billingEstReq.process_guid = g.guid.replace('-1', '').replace('-2', '');
+      billingEstReq.process_type = `${this.invoiceTypeControl.value}`;
       billingEstimateRequests.push(billingEstReq);
     })
 
@@ -800,6 +800,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     updateBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     updateBilling.status_cv = billingItem.status_cv;
     updateBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    if (this.processType === "LIFT_ON")
+      updateBilling.invoice_type = "Lift On";
+    else
+      updateBilling.invoice_type = "Lift Off";
 
     let billingEstimateRequests: any = billingItem.residue?.map(cln => {
       var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
@@ -841,6 +845,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     newBilling.invoice_dt = Number(Utility.convertDate(invoiceDate));
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    if (this.processType === "LIFT_ON")
+      newBilling.invoice_type = "Lift On";
+    else
+      newBilling.invoice_type = "Lift Off";
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     this.selection.selected.map(c => {
@@ -892,17 +900,17 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     const totalCost = this.selection.selected.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
       var itm: any = s;
-     var cost:number =s.lift_on_cost;
+      var cost: number = s.lift_on_cost;
 
-        if (this.processType === "LIFT_OFF") {
+      if (this.processType === "LIFT_OFF") {
 
-          cost =s.lift_off_cost;
+        cost = s.lift_off_cost;
 
-        }
-        
+      }
 
 
-       return accumulator + cost;
+
+      return accumulator + cost;
       // if (this.processType === "LIFT_ON") {
       //   if (s.lon_billing) {
       //     invalidItm.push(s);
@@ -959,10 +967,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       //   return (row.loff_billing);
       // }
       // const normalizedRowGuid = row.guid?.replace('-1', '').replace('-2', '');
-    
+
       // for (const item of this.selection.selected) {
       //     const normalizedItemGuid = item.guid?.replace('-1', '').replace('-2', '');
-          
+
       //     if (normalizedItemGuid === normalizedRowGuid) {
       //         if (item.billing_type !== (row as any).billing_type) {
       //             return true;
@@ -1057,10 +1065,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
 
 
-      
-      var billing_type:string='';
-      var invoice_no:string='';
-      var invoice_date:Number=0;
+
+      var billing_type: string = '';
+      var invoice_no: string = '';
+      var invoice_date: Number = 0;
       //if (item.gin_billing)
       // if(item.lift_on)
       // {
@@ -1107,10 +1115,9 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     return transformedList;
   }
 
-   DisplayEirNo(row: BillingSOTItem) 
-  {
+  DisplayEirNo(row: BillingSOTItem) {
 
-     return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no;
+    return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no;
     // if (billing_type == "LIFT_ON") {
     //   return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_no
     // }
@@ -1120,8 +1127,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   //DisplayEirDate(billing_type: string, row: any) 
-  DisplayEirDate( row: any) 
-  {
+  DisplayEirDate(row: any) {
     return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt
     // if (billing_type == "LIFT_ON") {
     //   return this.igDS.getInGateItem(row.storing_order_tank?.in_gate)?.eir_dt
@@ -1131,7 +1137,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     // }
   }
 
-  DisplayInvoiceNo( row: any) {
+  DisplayInvoiceNo(row: any) {
     // if (billing_type == "LIFT_ON") {
     //   if (row.lon_billing) {
     //     return (row.lon_billing?.invoice_no || '-');
@@ -1161,7 +1167,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     // }
   }
   DisplayCost(row: any) {
-     return this.displayNumber(row.lift_on_cost+row.lift_off_cost); //row.lift_on_cost+row.lift_off_cost
+    return this.displayNumber(row.lift_on_cost + row.lift_off_cost); //row.lift_on_cost+row.lift_off_cost
     // if (billing_type == "LIFT_ON") {
     //   if (row.lon_billing) {
     //     return this.displayNumber(row.lift_on_cost);
@@ -1175,10 +1181,10 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     //   else { return '-'; }
     // }
   }
- 
+
   //DisplayInvoiceNo(billing_type: string, row: any) 
- 
- 
+
+
 
 
   displayNumber(value: number) {
@@ -1224,59 +1230,57 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     this.search();
   }
 
-   viewCall(row: BillingSOTItem) {
-        // this.preventDefault(event);  // Prevents the form submission
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        
-  
-        const dialogRef = this.dialog.open(FormDialogComponent, {
-          width: '65vw',
-          maxWidth:'800px',
-          //height: '80vh',
-          data: {
-            action: 'view',
-            langText: this.langText,
-            selectedItem: row
-          },
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          // if (result > 0) {
-          //   this.handleSaveSuccess(result);
-          //   // if (this.packRepairItems.length > 1)
-          //   //   this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-          // }
-        });
-      }
-      
-  isLiftOnInvoice(row:BillingSOTItem)
-  {
-    var bRetval:boolean =false;
-
-      bRetval =row.lon_billing===null?false:true;
-
-    return bRetval;
-
-  }
-
-  isLiftOffInvoice(row:BillingSOTItem)
-  {
-    var bRetval:boolean =false;
-     bRetval =row.loff_billing===null?false:true;
-
-    return bRetval;
-  }
-
-    GetTotalCostTypeLabel(){
-      var retval = `${this.translatedLangText.TOTAL_COST}`;
-       if (this.processType === "LIFT_OFF") {
-
-           retval = `${this.translatedLangText.TOTAL_COST}`;
-        }
-      return retval;
+  viewCall(row: BillingSOTItem) {
+    // this.preventDefault(event);  // Prevents the form submission
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
     }
+
+
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '65vw',
+      maxWidth: '800px',
+      //height: '80vh',
+      data: {
+        action: 'view',
+        langText: this.langText,
+        selectedItem: row
+      },
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      // if (result > 0) {
+      //   this.handleSaveSuccess(result);
+      //   // if (this.packRepairItems.length > 1)
+      //   //   this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+      // }
+    });
+  }
+
+  isLiftOnInvoice(row: BillingSOTItem) {
+    var bRetval: boolean = false;
+
+    bRetval = row.lon_billing === null ? false : true;
+
+    return bRetval;
+
+  }
+
+  isLiftOffInvoice(row: BillingSOTItem) {
+    var bRetval: boolean = false;
+    bRetval = row.loff_billing === null ? false : true;
+
+    return bRetval;
+  }
+
+  GetTotalCostTypeLabel() {
+    var retval = `${this.translatedLangText.TOTAL_COST}`;
+    if (this.processType === "LIFT_OFF") {
+
+      retval = `${this.translatedLangText.TOTAL_COST}`;
+    }
+    return retval;
+  }
 }

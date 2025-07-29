@@ -325,6 +325,7 @@ export class BillingInputRequest {
   public invoice_dt?: number;
   public invoice_due?: number;
   public invoice_no?: string;
+  public invoice_type?: string;
   public remarks?: string;
   public status_cv?: string;
 
@@ -335,6 +336,7 @@ export class BillingInputRequest {
     this.invoice_dt = item.invoice_dt;
     this.invoice_due = item.invoice_due;
     this.invoice_no = item.invoice_no;
+    this.invoice_type = item.invoice_type;
     this.remarks = item.remarks;
     this.status_cv = item.status_cv;
   }
@@ -718,6 +720,7 @@ const SEARCH_BILLING_SOT_BILLING_QUERY = gql`
         invoice_dt
         invoice_due
         invoice_no
+        invoice_type
         remarks
         status_cv
         currency{

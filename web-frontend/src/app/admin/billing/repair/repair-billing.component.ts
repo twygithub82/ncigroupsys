@@ -933,6 +933,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     newBilling.invoice_dt = Number(Utility.convertDate(this.invoiceDateControl.value));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
+    newBilling.invoice_type = "REPAIR";
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     this.reSelection.selected.map(c => {
