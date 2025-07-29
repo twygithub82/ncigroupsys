@@ -35,6 +35,7 @@ import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { MatCardModule } from '@angular/material/card';
+import { ModulePackageService } from 'app/services/module-package.service';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
@@ -248,6 +249,7 @@ export class ResidueEstimateFormDialogComponent_View {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService,
   ) {
     // Set the defaults
 
@@ -390,7 +392,7 @@ export class ResidueEstimateFormDialogComponent_View {
   }
 
   parse2Decimal(figure: number | string) {
-    return Utility.formatNumberDisplay(figure)
+    return Utility.formatNumberDisplay(figure, this.isAllowViewCost())
   }
 
   calculateResidueItemCost(residuePart: ResiduePartItem): number {
@@ -462,5 +464,9 @@ export class ResidueEstimateFormDialogComponent_View {
 
   getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
     return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
+
+  isAllowViewCost() {
+    return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
   }
 }
