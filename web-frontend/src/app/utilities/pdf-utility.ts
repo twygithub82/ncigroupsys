@@ -255,7 +255,7 @@ export class PDFUtility {
      const posY1_img = topMargin + 1;
     // Calculate dimensions to fit your desired space while maintaining aspect ratio
       const maxWidth = 77.5; // Your desired width
-      const maxHeight = 25; // Maximum height you want to allow
+      const maxHeight = 32; // Maximum height you want to allow
       const aspectRatio = height / width;
 
       let finalWidth = maxWidth;
@@ -371,7 +371,7 @@ export class PDFUtility {
     
 
      const maxWidth = 77.5; // Your desired width
-      const maxHeight = 25; // Maximum height you want to allow
+      const maxHeight =32; // Maximum height you want to allow
       const aspectRatio = height / width;
 
       let finalWidth = maxWidth;
