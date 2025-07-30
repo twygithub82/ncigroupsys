@@ -44,6 +44,7 @@ import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, B
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { invoice_type_mapping } from 'app/utilities/businesslogic-util';
 
 
 @Component({
@@ -801,10 +802,12 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     updateBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     updateBilling.status_cv = billingItem.status_cv;
     updateBilling.invoice_no = `${this.invoiceNoControl.value}`;
-    if (this.processType === "LIFT_ON")
-      updateBilling.invoice_type = "Lift On";
-    else
-      updateBilling.invoice_type = "Lift Off";
+    if (this.processType === "LIFT_ON") {
+      updateBilling.invoice_type = invoice_type_mapping.LIFT_ON;
+    }
+    else {
+      updateBilling.invoice_type = invoice_type_mapping.LIFT_OFF;
+    }
 
     let billingEstimateRequests: any = billingItem.residue?.map(cln => {
       var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
@@ -846,10 +849,12 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     newBilling.invoice_dt = Number(Utility.convertDate(invoiceDate));
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
-    if (this.processType === "LIFT_ON")
-      newBilling.invoice_type = "Lift On";
-    else
-      newBilling.invoice_type = "Lift Off";
+    if (this.processType === "LIFT_ON") {
+      newBilling.invoice_type = invoice_type_mapping.LIFT_ON;
+    }
+    else {
+      newBilling.invoice_type = invoice_type_mapping.LIFT_OFF;
+    }
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     this.selection.selected.map(c => {

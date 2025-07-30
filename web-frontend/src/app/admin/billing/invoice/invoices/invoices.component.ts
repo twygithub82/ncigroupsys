@@ -25,9 +25,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
-import { GuidSelectionModel } from '@shared/GuidSelectionModel';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingEstimateRequest, BillingItem, BillingSOTItem, report_billing_customer, report_billing_item } from 'app/data-sources/billing';
 import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
@@ -43,12 +43,12 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { CustomerInvoicesPdfComponent } from 'app/document-template/pdf/customer-invoices-pdf/customer-invoices-pdf.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility, BILLING_TANK_STATUS } from 'app/utilities/utility';
+import { BILLING_TANK_STATUS, Utility, pageSizeInfo } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { UpdateInvoicesDialogComponent } from '../form-dialog/update-invoices.component';
-import { tree } from 'd3';
 
 @Component({
   selector: 'app-invoices',
@@ -422,15 +422,11 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       itm.or.push({ gout_billing_sot: { any: true } });
       itm.or.push({ lon_billing_sot: { any: true } })
       itm.or.push({ loff_billing_sot: { any: true } });
-      itm.or.push({ preinsp_billing_sot: { any: true} });
+      itm.or.push({ preinsp_billing_sot: { any: true } });
       itm.or.push({ storage_billing_sot: { any: true } });
     }
 
-
-
     where.and.push(itm);
-
-
     const itm1: any = { or: [] };
     itm1.or.push({ cleaning: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
     itm1.or.push({ repair_customer: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
@@ -442,8 +438,6 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     itm1.or.push({ preinsp_billing_sot: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
     itm1.or.push({ storage_billing_sot: { some: { storing_order_tank: { tank_status_cv: { in: BILLING_TANK_STATUS } } } } });
     where.and.push(itm);
-
-
 
     where.guid = { neq: null };
     if (this.searchForm!.get('tank_no')?.value) {
@@ -492,9 +486,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
-      // if(!where.storing_order) where.storing_order={};
       const itm: any = { or: [] };
-
       itm.or.push({ cleaning: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
       itm.or.push({ repair_customer: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
       itm.or.push({ repair_owner: { some: { storing_order_tank: { storing_order: { customer_company_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } } } });
@@ -514,9 +506,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-
       const itm: any = { or: [] };
-
       itm.or.push({ cleaning: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       itm.or.push({ repair_customer: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
       itm.or.push({ repair_owner: { some: { bill_to_guid: { eq: this.searchForm!.get('branch_code')?.value.guid } } } });
@@ -532,12 +522,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('eir_dt')?.value) {
-      //  if(!where.storing_order_tank) where.storing_order_tank={};
-      //  where.storing_order_tank.in_gate = { some:{and:[{eir_dt:{lte: Utility.convertDate(this.searchForm!.value['eir_dt'],true) }},
-      //      {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}};
-
       const itm: any = { or: [] };
-
       itm.or.push({
         cleaning: {
           some: {
@@ -696,9 +681,6 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       where.and.push(itm);
     }
     if (this.searchForm!.get('eir_no')?.value) {
-      //  if(!where.storing_order_tank) where.storing_order_tank={};
-      //  where.storing_order_tank.in_gate = { some:{eir_no:{contains: this.searchForm!.get('eir_no')?.value }}};
-
       const itm: any = { or: [] };
 
       itm.or.push({ cleaning: { some: { storing_order_tank: { in_gate: { some: { eir_no: { contains: this.searchForm!.get('eir_no')?.value } } } } } } });
@@ -717,23 +699,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     }
 
     if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
-      //if(!where.gateio_billing) where.gateio_billing={};
       where.invoice_dt = { gte: Utility.convertDate(this.searchForm!.value['inv_dt_start']), lte: Utility.convertDate(this.searchForm!.value['inv_dt_end'], true) };
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
-    //  if (this.searchForm!.get('cutoff_dt')?.value) {
-
-    //    where.create_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
-    //    //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-    //  }
-
     if (this.searchForm!.get('release_dt')?.value) {
-      //  if(!where.storing_order_tank) where.storing_order_tank={};
-      //  where.storing_order_tank.out_gate={some:{out_gate_survey:{and:[{create_dt:{lte:Utility.convertDate(this.searchForm!.value['release_dt'],true)}},
-      //  {or:[{delete_dt:{eq:0}},{delete_dt:{eq:null}}]}]}}};
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-
       const itm: any = { or: [] };
 
       itm.or.push({
@@ -912,16 +881,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
           }
         }
       });
-
       where.and.push(itm);
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
-
-      //where.storing_order_tank.tariff_cleaning={guid:{eq:this.searchForm!.get('last_cargo')?.value.guid} };
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-
       const itm: any = { or: [] };
 
       itm.or.push({ cleaning: { some: { storing_order_tank: { tariff_cleaning: { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } } } } } });
@@ -939,7 +902,6 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       where.and.push(itm);
     }
 
-
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
@@ -949,12 +911,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.selection.clear();
     this.subs.sink = this.billDS.searchBillingWithBillingSOT(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-
         this.billList = data;
-        // if(searchType==2)
-        // {
-        //   this.export_report();
-        // }
+        console.log(this.billList)
         this.endCursor = this.billDS.pageInfo?.endCursor;
         this.startCursor = this.billDS.pageInfo?.startCursor;
         this.hasNextPage = this.billDS.pageInfo?.hasNextPage ?? false;
@@ -1691,5 +1649,13 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
 
     });
+  }
+
+  convertInvoiceType(row: any) {
+    return BusinessLogicUtil.getInvoiceTypeMapping(row);
+  }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 }

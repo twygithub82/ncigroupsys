@@ -204,4 +204,54 @@ export class BusinessLogicUtil {
     static sumOfStorageDetails(storageDetails?: BillingStorageDetail[]) {
         return storageDetails?.reduce((sum, detail) => sum + (detail.total_cost ?? 0), 0) ?? 0;
     }
+
+    static getInvoiceTypeMapping(row: any): string {
+        const invoiceType = [];
+        if (row) {
+            if (row.storage_billing_sot?.length || row.storage_detail?.length) {
+                invoiceType.push(invoice_type_mapping.STORAGE);
+            }
+            if (row.gin_billing_sot?.length) {
+                invoiceType.push(invoice_type_mapping.GATE_IN);
+            }
+            if (row.gout_billing_sot?.length) {
+                invoiceType.push(invoice_type_mapping.GATE_OUT);
+            }
+            if (row.loff_billing_sot?.length) {
+                invoiceType.push(invoice_type_mapping.LIFT_OFF);
+            }
+            if (row.lon_billing_sot?.length) {
+                invoiceType.push(invoice_type_mapping.LIFT_ON);
+            }
+            if (row.preinsp_billing_sot?.length) {
+                invoiceType.push(invoice_type_mapping.PREINSPECTION);
+            }
+            if (row.steaming?.length) {
+                invoiceType.push(invoice_type_mapping.STEAMING);
+            }
+            if (row.cleaning?.length) {
+                invoiceType.push(invoice_type_mapping.CLEANING);
+            }
+            if (row.residue?.length) {
+                invoiceType.push(invoice_type_mapping.RESIDUE);
+            }
+            if (row.repair_customer?.length || row.repair_owner?.length) {
+                invoiceType.push(invoice_type_mapping.REPAIR);
+            }
+        }
+        return invoiceType.join(', ');
+    }
+}
+
+export const invoice_type_mapping: any = {
+    CLEANING: 'Cleaning',
+    STEAMING: 'Steaming',
+    RESIDUE: 'Residue Disposal',
+    REPAIR: 'Repair',
+    STORAGE: 'Storage',
+    PREINSPECTION: 'Preinspection',
+    LIFT_ON: 'Lift-On',
+    LIFT_OFF: 'Lift-Off',
+    GATE_OUT: 'Gate-Out',
+    GATE_IN: 'Gate-In',
 }

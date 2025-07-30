@@ -44,6 +44,7 @@ import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, B
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from "./form-dialog/form-dialog.component";
+import { invoice_type_mapping } from 'app/utilities/businesslogic-util';
 
 @Component({
   selector: 'app-storage-billing',
@@ -413,7 +414,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       ];
     }
 
-    where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
+    where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
 
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -969,7 +970,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     newBilling.invoice_dt = Number(Utility.convertDate(today));
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
-    newBilling.invoice_type = "Storage";
+    newBilling.invoice_type = invoice_type_mapping.STORAGE;
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     var billingStorageDetailReqs: StorageDetailRequest[] = [];
