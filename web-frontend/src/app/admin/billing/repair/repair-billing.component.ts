@@ -41,6 +41,7 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { invoice_type_mapping } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility, BILLING_TANK_STATUS } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -933,7 +934,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
     newBilling.invoice_dt = Number(Utility.convertDate(this.invoiceDateControl.value));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
-    newBilling.invoice_type = "REPAIR";
+    newBilling.invoice_type = invoice_type_mapping.REPAIR;
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     this.reSelection.selected.map(c => {

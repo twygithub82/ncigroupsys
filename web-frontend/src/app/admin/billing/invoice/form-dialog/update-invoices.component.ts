@@ -31,6 +31,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageDepotDS, PackageDepotItem } from 'app/data-sources/package-depot';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
@@ -368,7 +369,7 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
         this.customerCodeControl.setValue(selItm.customer_company);
         // this.currencyControl.setValue(selItm.currency);
       }
-      
+
     });
 
   }
@@ -555,4 +556,11 @@ export class UpdateInvoicesDialogComponent extends UnsubscribeOnDestroyAdapter {
     return false;
   }
 
+  convertInvoiceType(row: any) {
+    return BusinessLogicUtil.getInvoiceTypeMapping(row);
+  }
+
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
 }
