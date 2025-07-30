@@ -30,6 +30,7 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -71,6 +72,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
     STATUS: 'COMMON-FORM.STATUS',
     SO_NO: 'COMMON-FORM.SO-NO',
+    S_N: 'COMMON-FORM.S_N',
     CUSTOMER_CODE: 'COMMON-FORM.CUSTOMER-CODE',
     CUSTOMER_NAME: 'COMMON-FORM.CUSTOMER-NAME',
     SO_DATE: 'COMMON-FORM.SO-DATE',
@@ -730,22 +732,26 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
     }).join('/');
   }
 
-  displayTankPurpose(sot: any) {
-    let purposes: any[] = [];
-    if (sot?.purpose_storage) {
-      purposes.push(this.getPurposeOptionDescription('STORAGE'));
-    }
-    if (sot?.purpose_cleaning) {
-      purposes.push(this.getPurposeOptionDescription('CLEANING'));
-    }
-    if (sot?.purpose_steam) {
-      purposes.push(this.getPurposeOptionDescription('STEAM'));
-    }
-    if (sot?.purpose_repair_cv) {
-      purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
-    }
-    return purposes.join('; ');
+  displayTankPurpose(sot: any){
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this), true);
   }
+
+  // displayTankPurpose(sot: any) {
+  //   let purposes: any[] = [];
+  //   if (sot?.purpose_storage) {
+  //     purposes.push(this.getPurposeOptionDescription('STORAGE'));
+  //   }
+  //   if (sot?.purpose_cleaning) {
+  //     purposes.push(this.getPurposeOptionDescription('CLEANING'));
+  //   }
+  //   if (sot?.purpose_steam) {
+  //     purposes.push(this.getPurposeOptionDescription('STEAM'));
+  //   }
+  //   if (sot?.purpose_repair_cv) {
+  //     purposes.push(this.getPurposeOptionDescription(sot?.purpose_repair_cv));
+  //   }
+  //   return purposes.join('; ');
+  // }
 
   translateLangText() {
     Utility.translateAllLangText(this.translate, this.langText).subscribe((translations: any) => {
@@ -862,7 +868,7 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         let reportTitleCompanyLogo = 32;
         let tableHeaderHeight = 12;
         let tableRowHeight = 8.5;
-        let minHeightBodyCell=9;
+        let minHeightBodyCell=5;
         const pagePositions: { page: number; x: number; y: number }[] = [];
      //   const progressValue = 100 / cardElements.length;
       
@@ -881,25 +887,25 @@ export class YardDetailPdfComponent extends UnsubscribeOnDestroyAdapter implemen
         ]];
       
         const comStyles : any={ 
-          0: { halign: 'center' ,valign:'middle',cellWidth:6 , minCellHeight:minHeightBodyCell},
+          0: { halign: 'center' ,valign:'middle',cellWidth:7 , minCellHeight:minHeightBodyCell},
           1: { halign: 'left'   ,valign:'middle',cellWidth: 18, minCellHeight:minHeightBodyCell },
           2: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          3: { halign: 'center' ,valign:'middle',cellWidth: 20 , minCellHeight:minHeightBodyCell},
-          4: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell },
-          5: { halign: 'center' ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-          6: { halign: 'left'   ,valign:'middle',cellWidth: 33 , minCellHeight:minHeightBodyCell},
-          7: { halign: 'center' ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
-          8: { halign: 'center' ,valign:'middle',cellWidth: 15 , minCellHeight:minHeightBodyCell},
+          3: { halign: 'center' ,valign:'middle',cellWidth: 16 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize' },
+          4: { halign: 'center' ,valign:'middle',cellWidth: 11 , minCellHeight:minHeightBodyCell },
+          5: { halign: 'center' ,valign:'middle',cellWidth: 10 , minCellHeight:minHeightBodyCell},
+          6: { halign: 'left'   ,valign:'middle',cellWidth: 36 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize' },
+          7: { halign: 'center' ,valign:'middle',cellWidth: 13 , minCellHeight:minHeightBodyCell},
+          8: { halign: 'center' ,valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
           9: { halign: 'center' ,valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
           10: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          11: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          11: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize'},
           12: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          13: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          14: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
-          15: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell},
+          13: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell}, //Last-Test
+          14: { halign: 'center',valign:'middle',cellWidth: 12 , minCellHeight:minHeightBodyCell}, //Release Date
+          15: { halign: 'center',valign:'middle',cellWidth: 16 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize'}, //Release-Reference
           16: { halign: 'center',valign:'middle',cellWidth: 18 , minCellHeight:minHeightBodyCell},
-          17: { halign: 'left'  ,valign:'middle',cellWidth: 22 , minCellHeight:minHeightBodyCell},
-          18: { halign: 'left'  ,valign:'middle',cellWidth: 17 , minCellHeight:minHeightBodyCell},
+          17: { halign: 'left'  ,valign:'middle',cellWidth: 16 , minCellHeight:minHeightBodyCell, overflow: 'ellipsize'},
+          18: { halign: 'left'  ,valign:'middle',cellWidth: 13 , minCellHeight:minHeightBodyCell},
           };
           
   

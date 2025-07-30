@@ -1034,7 +1034,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
           0: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
           1: { halign: 'center', valign: 'middle', cellWidth: 20,minCellHeight: minHeightBodyCell },
           2: { halign: 'center', valign: 'middle',  cellWidth: 23,minCellHeight: minHeightBodyCell },
-          3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell },
+          3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
           4: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
           5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
           6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -1069,10 +1069,8 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     }
 
 
-    this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,lastTableFinalY+5,
-      minHeightBodyCell,fontSize,pagePositions,reportTitle);
+    this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,lastTableFinalY+5,minHeightBodyCell,fontSize,pagePositions,reportTitle);    
     const totalPages = pdf.getNumberOfPages();
-
 
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
