@@ -29,7 +29,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 //import autoTable from 'jspdf-autotable'; // Import autoTable
-import autoTable, { Styles,CellInput  } from 'jspdf-autotable';
+import autoTable, { Styles, CellInput } from 'jspdf-autotable';
 import { SteamPerformance, SteamPerformanceChart } from 'app/data-sources/reports';
 // import { fileSave } from 'browser-fs-access';
 import { NgApexchartsModule } from "ng-apexcharts";
@@ -71,9 +71,9 @@ export interface DialogData {
 })
 export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
   chartOptions: any;
-  chartVerticalOptions:any;
-  pieChartOptions:any;
-  pie2ChartOptions:any;
+  chartVerticalOptions: any;
+  pieChartOptions: any;
+  pie2ChartOptions: any;
   translatedLangText: any = {};
   langText = {
     SURVEY_FORM: 'COMMON-FORM.SURVEY-FORM',
@@ -259,25 +259,25 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     GATEIO_S: 'COMMON-FORM.GATEIO-S',
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
     TOTAL_COST: "COMMON-FORM.TOTAL-COST",
-    COMPLETED_DATE:"COMMON-FORM.COMPLETED-DATE",
-    CARGO:"COMMON-FORM.CARGO",
-    DURATION:"COMMON-FORM.DURATION",
-    REQUIRED_TEMP:"COMMON-FORM.REQUIRED-TEMP",
-    TEMPERATURE:"COMMON-FORM.TEMPERATURE",
-    BEGIN:"COMMON-FORM.BEGIN",
-    BAY:"COMMON-FORM.BAY",
-    TOP_LASER:"COMMON-FORM.TOP-LASER",
-    BOTTOM_LASER:"COMMON-FORM.BOTTOM-LASER",
-    STEAMING_PERIOD:"COMMON-FORM.STEAMING-PERIOD",
-    DEGREE_CELSIUS_SYMBOL:"COMMON-FORM.DEGREE-CELSIUS-SYMBOL",
-    NO_OF_TANKS_BAYS:"COMMON-FORM.NO-OF-TANKS-BAYS",
-    NO_OF_TANKS_REQ_TEMP:"COMMON-FORM.NO-OF-TANKS-REQ-TEMP",
-    NO_OF_TANKS_STEAM_CARGO:"COMMON-FORM.NO-OF-TANKS-STEAM-CARGO",
-    S_N:'COMMON-FORM.S_N',
+    COMPLETED_DATE: "COMMON-FORM.COMPLETED-DATE",
+    CARGO: "COMMON-FORM.CARGO",
+    DURATION: "COMMON-FORM.DURATION",
+    REQUIRED_TEMP: "COMMON-FORM.REQUIRED-TEMP",
+    TEMPERATURE: "COMMON-FORM.TEMPERATURE",
+    BEGIN: "COMMON-FORM.BEGIN",
+    BAY: "COMMON-FORM.BAY",
+    TOP_LASER: "COMMON-FORM.TOP-LASER",
+    BOTTOM_LASER: "COMMON-FORM.BOTTOM-LASER",
+    STEAMING_PERIOD: "COMMON-FORM.STEAMING-PERIOD",
+    DEGREE_CELSIUS_SYMBOL: "COMMON-FORM.DEGREE-CELSIUS-SYMBOL",
+    NO_OF_TANKS_BAYS: "COMMON-FORM.NO-OF-TANKS-BAYS",
+    NO_OF_TANKS_REQ_TEMP: "COMMON-FORM.NO-OF-TANKS-REQ-TEMP",
+    NO_OF_TANKS_STEAM_CARGO: "COMMON-FORM.NO-OF-TANKS-STEAM-CARGO",
+    S_N: 'COMMON-FORM.S_N',
 
   }
 
-  
+
   type?: string | null;
   steamDS: SteamDS;
   steamPartDS: SteamPartDS;
@@ -325,7 +325,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData: SteamPerformance[] = [];
-  date:string="";
+  date: string = "";
 
 
 
@@ -375,10 +375,10 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
   }
 
   ngAfterViewInit() {
-    setTimeout(()=>{
+    setTimeout(() => {
       this.onDownloadClick();
-    },1500);
-   // this.onDownloadClick();
+    }, 1500);
+    // this.onDownloadClick();
   }
 
   async generatePDF(): Promise<void> {
@@ -876,60 +876,60 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let fontSize = 5.5;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
     const reportTitle = this.GetReportTitle();
-    const headers : CellInput[][]= [[
+    const headers: CellInput[][] = [[
       { content: this.translatedLangText.S_N, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
-      { content: this.translatedLangText.TANK_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: this.translatedLangText.TANK_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       // { content: this.translatedLangText.EIR_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
-      { content: this.translatedLangText.CUSTOMER, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
+      { content: this.translatedLangText.CUSTOMER, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.CARGO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
-      { content: this.translatedLangText.COMPLETED_DATE, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },    
+      { content: this.translatedLangText.COMPLETED_DATE, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.DURATION, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
-      { content: `${this.translatedLangText.REQUIRED_TEMP} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
-      { content: this.translatedLangText.STEAM_COST, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
-      { content: this.translatedLangText.BAY, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } } , 
+      { content: `${this.translatedLangText.REQUIRED_TEMP} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.STEAM_COST, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.BAY, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.TEMPERATURE, colSpan: 6, styles: { halign: 'center', valign: 'middle' } }
-      
-    
-    ],[ 
-      { content: `${this.translatedLangText.THERMOMETER} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },  
+
+
+    ], [
+      { content: `${this.translatedLangText.THERMOMETER} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: `${this.translatedLangText.TOP_LASER} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 2, styles: { halign: 'center', valign: 'middle' } },
       { content: `${this.translatedLangText.BOTTOM_LASER} ${this.translatedLangText.DEGREE_CELSIUS_SYMBOL}`, colSpan: 2, styles: { halign: 'center', valign: 'middle' } }
-      ],[
-        { content: this.translatedLangText.BEGIN,  styles: { halign: 'center', valign: 'middle' } },  
-        { content: this.translatedLangText.CLOSE,  styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.BEGIN,  styles: { halign: 'center', valign: 'middle' } },  
-        { content: this.translatedLangText.CLOSE,  styles: { halign: 'center', valign: 'middle' } },
-        { content: this.translatedLangText.BEGIN,  styles: { halign: 'center', valign: 'middle' } },  
-        { content: this.translatedLangText.CLOSE,  styles: { halign: 'center', valign: 'middle' } }
-      ]];
+    ], [
+      { content: this.translatedLangText.BEGIN, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.CLOSE, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.BEGIN, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.CLOSE, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.BEGIN, styles: { halign: 'center', valign: 'middle' } },
+      { content: this.translatedLangText.CLOSE, styles: { halign: 'center', valign: 'middle' } }
+    ]];
 
-      const comStyles: any = {
-        // Set columns 0 to 16 to be center aligned
-        0: { halign: 'center', valign: 'middle',  cellWidth: 10,minCellHeight: minHeightBodyCell },
-        1: { halign: 'center', valign: 'middle',  cellWidth: 18, minCellHeight: minHeightBodyCell },
-        2: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
-        3: { halign: 'left', valign: 'middle', cellWidth: 40,minCellHeight: minHeightBodyCell },
-        4: { halign: 'center', valign: 'middle' ,cellWidth: 18,minCellHeight: minHeightBodyCell },
-        5: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
-        6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-        
-      };
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle', cellWidth: 70, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      12: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      13: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      14: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+
+    };
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [211, 211, 211], // Background color
@@ -955,77 +955,77 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
 
 
     const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, 8);
-   // Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 10, 8);
+    // Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
-  
-      const data: any[][] = []; // Explicitly define data as a 2D array
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
-    
 
-      // Calculate space required for customer name and table
-      const customerNameHeight = 10; // Height required for customer name
-     
+    const data: any[][] = []; // Explicitly define data as a 2D array
+    //let startY = lastTableFinalY + 15; // Start Y position for the current table
 
 
-      var repPage = pdf.getNumberOfPages();
-   // if(repPage==1)lastTableFinalY=45;
+    // Calculate space required for customer name and table
+    const customerNameHeight = 10; // Height required for customer name
 
-        if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-          pdf.addPage();
-          lastTableFinalY = 5 + topMargin;
-        }
-        else {
-          CurrentPage = repPage;
-        }
 
-      let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
-      for (let n = 0; n < this.repData.length; n++) {
-        let itm = this.repData[n];
-        data.push([
-          (n + 1).toString(), itm.tank_no || "", 
-          itm.customer_code||'', itm.last_cargo || "",Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "",itm.bay, itm.require_temp || "",
-          Utility.formatNumberDisplay(itm.cost) || "", (itm.themometer?.begin_temp) || "",(itm.themometer?.close_temp) || "",
-          (itm.top?.begin_temp) || "", (itm.top?.close_temp) || "",(itm.bottom?.begin_temp) || "", (itm.bottom?.close_temp) || "",
-          
-        ]);
-      }
-      pdf.setDrawColor(0, 0, 0); // red line color
 
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      // Add table using autoTable plugin
-      autoTable(pdf, {
-        head: headers,
-        body: data,
-        startY: startY, // Start table at the current startY value
-        theme: 'grid',
-        margin: { left: leftMargin },
-        styles: {
-          fontSize: fontSize,
-          minCellHeight: minHeightHeaderCol
+    var repPage = pdf.getNumberOfPages();
+    // if(repPage==1)lastTableFinalY=45;
 
-        },
-         tableWidth: pageWidth - leftMargin - rightMargin,
-        columnStyles:comStyles,
-        headStyles: headStyles, // Custom header styles
-        bodyStyles: {
-          fillColor: [255, 255, 255],
-          halign: 'left', // Left-align content for body by default
-          valign: 'middle', // Vertically align content
-        },
-        didDrawPage: (data: any) => {
-          const pageCount = pdf.getNumberOfPages();
+    if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      pdf.addPage();
+      lastTableFinalY = 5 + topMargin;
+    }
+    else {
+      CurrentPage = repPage;
+    }
 
-          if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-          // Capture the final Y position of the table
-          lastTableFinalY = data.cursor.y;
-          var pg = pagePositions.find(p => p.page == pageCount);
-          if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-        },
-      });
-    
+    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+    for (let n = 0; n < this.repData.length; n++) {
+      let itm = this.repData[n];
+      data.push([
+        (n + 1).toString(), itm.tank_no || "",
+        itm.customer_code || '', itm.last_cargo || "", Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "", itm.bay, itm.require_temp || "",
+        Utility.formatNumberDisplay(itm.cost) || "", (itm.themometer?.begin_temp) || "", (itm.themometer?.close_temp) || "",
+        (itm.top?.begin_temp) || "", (itm.top?.close_temp) || "", (itm.bottom?.begin_temp) || "", (itm.bottom?.close_temp) || "",
+
+      ]);
+    }
+    pdf.setDrawColor(0, 0, 0); // red line color
+
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    // Add table using autoTable plugin
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: leftMargin },
+      styles: {
+        fontSize: fontSize,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      tableWidth: pageWidth - leftMargin - rightMargin,
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'left', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      },
+      didDrawPage: (data: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+        // Capture the final Y position of the table
+        lastTableFinalY = data.cursor.y;
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+      },
+    });
+
 
     //   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
 
@@ -1034,14 +1034,14 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     //   {
     //     pdf.addPage();
 
-        
+
     //     var chartContentWidth=pageWidth/2.2;
     //     var startX=leftMargin;
     //     startY=50;
     //     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 15);
     //   for (var i = 0; i < cardElements.length; i++) {
 
-         
+
     //       const card1 = cardElements[i];
     //       const canvas1 = await html2canvas(card1, { scale: scale });
     //       const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
@@ -1061,8 +1061,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     //         chartContentWidth = imgHeight1 * aspectRatio;
     //       }
 
-        
-          
+
+
     //       // Add the image to the PDF
     //       pdf.addImage(imgData1, 'JPEG', startX, startY, chartContentWidth, imgHeight1);
     //       if((startX+chartContentWidth+leftMargin+rightMargin+50)>pageWidth )
@@ -1373,8 +1373,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     return (total || 0).toFixed(2);
   }
 
-  initChartsDefaultValue()
-  {
+  initChartsDefaultValue() {
     const colors = [
       "#1f497d", "#e69f40", "#4f81bd", "#9bbb59", "#8064a2",
       "#c0504d", "#ffcc00", "#66ccff", "#ff6600", "#009933",
@@ -1383,29 +1382,31 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     ];
     const categories = [
       "SMA-01", "SMB-01"];
-      const tankData = [4, 2, 6, 3, 5, 1, 7, 8, 9, 2, 4, 5, 3, 6, 7, 8, 2, 1, 5, 3];
-      // const series = categories.map((category, index) => ({
-      //   name: category,
-      //   data: [tankData[index]], // Single value per category
-      //   color: colors[index], // Assign unique color
-      // }));
-      
-      var bayCharts = this.groupByBay(this.repData);
-      const chartData =bayCharts.map((chart,index) => ({
-        name: chart.name,
-        value: chart.value, // Single value per category
-      }));
-    
+    const tankData = [4, 2, 6, 3, 5, 1, 7, 8, 9, 2, 4, 5, 3, 6, 7, 8, 2, 1, 5, 3];
+    // const series = categories.map((category, index) => ({
+    //   name: category,
+    //   data: [tankData[index]], // Single value per category
+    //   color: colors[index], // Assign unique color
+    // }));
 
-    this.chartVerticalOptions={
+    var bayCharts = this.groupByBay(this.repData);
+    const chartData = bayCharts.map((chart, index) => ({
+      name: chart.name,
+      value: chart.value, // Single value per category
+    }));
+
+
+    this.chartVerticalOptions = {
       view: [700, 400], // Width x Height
-     chartData : chartData,
-    colorScheme : { domain: ['#1f497d', '#e69f40', '#ff6361', '#bc5090', '#58508d', '#003f5c', 
-      '#7a5195', '#ef5675', '#ffa600', '#FF9F40', '#2f4b7c', '#665191', 
-      '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600', '#ff4500', 
-      '#1e90ff', '#008000']  },
-      xAxisLabel:this.translatedLangText.BAY,
-      yAxisLabel:this.translatedLangText.NO_OF_TANKS
+      chartData: chartData,
+      colorScheme: {
+        domain: ['#1f497d', '#e69f40', '#ff6361', '#bc5090', '#58508d', '#003f5c',
+          '#7a5195', '#ef5675', '#ffa600', '#FF9F40', '#2f4b7c', '#665191',
+          '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600', '#ff4500',
+          '#1e90ff', '#008000']
+      },
+      xAxisLabel: this.translatedLangText.BAY,
+      yAxisLabel: this.translatedLangText.NO_OF_TANKS
     }
     var tempGroup = this.groupByRequireTemp(this.repData);
     var tempCargo = this.groupByLastCargo(this.repData);
@@ -1417,8 +1418,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
           enabled: false // This disables all animations
         },
         width: 1250,
-        height:362,
-       // offsetX: -200, // Moves legend leftward
+        height: 362,
+        // offsetX: -200, // Moves legend leftward
         type: 'donut',
         foreColor: '#9aa0ac',
         toolbar: {
@@ -1434,18 +1435,18 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
         horizontalAlign: 'left', // For top/bottom positioning
         fontSize: '10px',
         markers: {
-            width: 12,
-            height: 12,
+          width: 12,
+          height: 12,
         },
         height: '100%',
         itemMargin: { horizontal: 5, vertical: 2 }
       },
       labels: tempCargo.map(chart => chart.name || '').filter(name => name !== ''),
-      series2:  tempCargo.map(chart => chart.value || 0),
-     
+      series2: tempCargo.map(chart => chart.value || 0),
+
     };
 
-   
+
 
     this.pieChartOptions = {
       colors: colors.slice(0, tempGroup.length), // Use only needed colors
@@ -1461,10 +1462,10 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
         },
       },
       labels: tempGroup.map(chart => chart.name || '').filter(name => name !== ''),
-      series2:  tempGroup.map(chart => chart.value || 0),
+      series2: tempGroup.map(chart => chart.value || 0),
     };
   }
-  
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['chartData']) {
       console.log('Chart data changed, re-rendering chart...', changes['chartData'].currentValue);
@@ -1473,51 +1474,51 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
 
   groupByRequireTemp(performances: SteamPerformance[]): SteamPerformanceChart[] {
     const tempMap = new Map<number, number>();
-    
-    performances.forEach(performance => {
-        if (performance.require_temp === undefined) return;
-        
-        const currentCount = tempMap.get(performance.require_temp) || 0;
-        tempMap.set(performance.require_temp, currentCount + 1);
-    });
-    
-    return Array.from(tempMap.entries()).map(([name, count]) => 
-        new SteamPerformanceChart({ name: name.toString(), count,value:count })
-    );
- }
 
- groupByLastCargo(performances: SteamPerformance[]): SteamPerformanceChart[] {
-  const cargoMap = new Map<string, number>();
-  
-  performances.forEach(performance => {
+    performances.forEach(performance => {
+      if (performance.require_temp === undefined) return;
+
+      const currentCount = tempMap.get(performance.require_temp) || 0;
+      tempMap.set(performance.require_temp, currentCount + 1);
+    });
+
+    return Array.from(tempMap.entries()).map(([name, count]) =>
+      new SteamPerformanceChart({ name: name.toString(), count, value: count })
+    );
+  }
+
+  groupByLastCargo(performances: SteamPerformance[]): SteamPerformanceChart[] {
+    const cargoMap = new Map<string, number>();
+
+    performances.forEach(performance => {
       if (!performance.last_cargo) return;
-      
+
       const currentCount = cargoMap.get(performance.last_cargo) || 0;
       cargoMap.set(performance.last_cargo, currentCount + 1);
-  });
-  
-  return Array.from(cargoMap.entries()).map(([name, count]) => 
-    new SteamPerformanceChart({ name, count,value:count })
-  );
-}
+    });
 
-groupByBay(performances: SteamPerformance[]): SteamPerformanceChart[] {
-  const bayMap = new Map<string, number>();
-  
-  performances.forEach(performance => {
+    return Array.from(cargoMap.entries()).map(([name, count]) =>
+      new SteamPerformanceChart({ name, count, value: count })
+    );
+  }
+
+  groupByBay(performances: SteamPerformance[]): SteamPerformanceChart[] {
+    const bayMap = new Map<string, number>();
+
+    performances.forEach(performance => {
       if (!performance.bay) return;
-      
+
       const currentCount = bayMap.get(performance.bay) || 0;
       bayMap.set(performance.bay, currentCount + 1);
-  });
-  
-  return Array.from(bayMap.entries()).map(([name, count]) => 
-        new SteamPerformanceChart({ name, count,value:count })
-  );
-}
+    });
 
-onChartRendered(event: any) {
-  
-}
+    return Array.from(bayMap.entries()).map(([name, count]) =>
+      new SteamPerformanceChart({ name, count, value: count })
+    );
+  }
+
+  onChartRendered(event: any) {
+
+  }
 
 }

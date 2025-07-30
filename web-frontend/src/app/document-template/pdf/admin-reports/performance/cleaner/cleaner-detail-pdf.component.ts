@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -607,7 +608,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 5.5;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -615,9 +616,11 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,this.translatedLangText.CODE,this.translatedLangText.CARGO,
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
+      this.translatedLangText.CODE,this.translatedLangText.CARGO,
       this.translatedLangText.CLEAN_DURATION,
-      this.translatedLangText.CLEAN_CATEGORY,this.translatedLangText.COST, 
+      this.translatedLangText.CLEAN_CATEGORY,
+      this.translatedLangText.COST, 
       // this.translatedLangText.EIR_NO,
       //  this.translatedLangText.ESTIMATE_DATE,
       // this.translatedLangText.COMPLETED_ON,
@@ -629,15 +632,15 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle',  cellWidth: 20, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
-      3: { halign: 'left', valign: 'middle',cellWidth: 40, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle',  cellWidth: 14,minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle',cellWidth: 60, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      4: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle',  cellWidth: 20, minCellHeight: minHeightBodyCell , overflow: 'ellipsize'},
+      //9: { halign: 'center', valign: 'middle', cellWidth: 8,  minCellHeight: minHeightBodyCell },
+      //10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle

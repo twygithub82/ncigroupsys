@@ -602,7 +602,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
 
       lastTableFinalY +=4;
       pdf.setFontSize(8);
-      const invDate =`${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`;
+      const invDate =`${this.translatedLangText.SURVEY_PERIOD} : ${this.date}`;
       Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY+4,8);
       lastTableFinalY +=2;
     var CurrentPage = 1;
