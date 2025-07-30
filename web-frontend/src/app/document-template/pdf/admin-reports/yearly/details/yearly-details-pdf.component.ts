@@ -28,7 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
-import {PDFUtility}from 'app/utilities/pdf-utility';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 import {
   ApexAxisChartSeries, ApexChart,
   ApexDataLabels,
@@ -44,7 +44,7 @@ import {
   ApexXAxis,
   ApexYAxis,
   NgApexchartsModule,
-  
+
 } from 'ng-apexcharts';
 // import { fileSave } from 'browser-fs-access';
 
@@ -70,9 +70,9 @@ export type ChartOptions = {
 
 export interface DialogData {
   repData: AdminReportYearlyReport,
-  date:string,
-  repType:string,
-  customer:string
+  date: string,
+  repType: string,
+  customer: string
 }
 
 @Component({
@@ -89,7 +89,7 @@ export interface DialogData {
     MatCardModule,
     MatProgressBarModule,
     NgApexchartsModule,
-        
+
   ],
 })
 export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -284,15 +284,15 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_YEARLY_DETAILS_REPORT:'COMMON-FORM.STEAM-YEARLY-DETAILS-REPORT',
-    RESIDUE_YEARLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-YEARLY-DETAILS-REPORT',
-    REPAIR_YEARLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-YEARLY-DETAILS-REPORT',
-    CLEAN_YEARLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    S_N:'COMMON-FORM.S_N',
-    TOTAL_TANK:'COMMON-FORM.TOTAL-TANK',
+    STEAM_YEARLY_DETAILS_REPORT: 'COMMON-FORM.STEAM-YEARLY-DETAILS-REPORT',
+    RESIDUE_YEARLY_DETAILS_REPORT: 'COMMON-FORM.RESIDUE-YEARLY-DETAILS-REPORT',
+    REPAIR_YEARLY_DETAILS_REPORT: 'COMMON-FORM.REPAIR-YEARLY-DETAILS-REPORT',
+    CLEAN_YEARLY_DETAILS_REPORT: 'COMMON-FORM.CLEAN-YEARLY-DETAILS-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    S_N: 'COMMON-FORM.S_N',
+    TOTAL_TANK: 'COMMON-FORM.TOTAL-TANK',
   }
 
   public lineChart2Options!: Partial<ChartOptions>;
@@ -343,10 +343,10 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: AdminReportYearlyReport;
-  date?:string;
-  repType?:string;
+  date?: string;
+  repType?: string;
   index: number = 0;
-  customer?:string;
+  customer?: string;
   // date:string='';
   // invType:string='';
 
@@ -388,8 +388,8 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
     this.date = this.data.date;
-    this.repType=this.data.repType;
-    this.customer=this.data.customer;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
     this.onDownloadClick();
 
   }
@@ -399,7 +399,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -606,13 +606,13 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
@@ -681,29 +681,28 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 17; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY -3, 12);
 
-    if(this.customer)
-      {
-        const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-        Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-      }
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 9, 12);
+
+    if (this.customer) {
+      const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`
+      Utility.addText(pdf, customer, startY - 2, leftMargin + 4, 9);
+    }
 
     var idx = 0;
-    for (let n = 0; n < (this.repData?.result_per_month?.length||0); n++) {
+    for (let n = 0; n < (this.repData?.result_per_month?.length || 0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.repData?.result_per_month?.[n];
-        data.push([
-          (++idx).toString(), itm?.month || "", itm?.count || "0"
-        ]);
+      data.push([
+        (++idx).toString(), itm?.month || "", itm?.count || "0"
+      ]);
     }
-    data.push([this.translatedLangText.TOTAL,"",this.repData?.total]);
-    data.push([this.translatedLangText.AVERAGE,"",this.repData?.average]);
+    data.push([this.translatedLangText.TOTAL, "", this.repData?.total]);
+    data.push([this.translatedLangText.AVERAGE, "", this.repData?.average]);
 
 
     pdf.setDrawColor(0, 0, 0); // red line color
@@ -730,8 +729,8 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
       },
       didParseCell: (data: any) => {
         let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-        let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-        if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
+        let averageRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        if (data.row.index == totalRowIndex || data.row.index == averageRowIndex) {
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.valign = 'middle'; // Center text vertically
           if (data.column.index === 0) {
@@ -739,7 +738,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
             data.cell.styles.halign = 'right'; // Center text horizontally
           }
         }
-        if ((data.row.index==totalRowIndex || data.row.index==averageRowIndex) && data.column.index > 0 && data.column.index < 2) {
+        if ((data.row.index == totalRowIndex || data.row.index == averageRowIndex) && data.column.index > 0 && data.column.index < 2) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
@@ -763,32 +762,32 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     // await this.AddYearlyCleaningOverviewChart(pdf, reportTitle, pageWidth, leftMargin, rightMargin, pagePositions);
 
     setTimeout(() => {
-      
-       const totalPages = pdf.getNumberOfPages();
 
-        pagePositions.forEach(({ page, x, y }) => {
-          pdf.setDrawColor(0, 0, 0); // black line color
-          pdf.setLineWidth(0.1);
-          pdf.setLineDashPattern([0.01, 0.01], 0.1);
-          pdf.setFontSize(8);
-          pdf.setPage(page);
-          var lineBuffer = 13;
-          pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-          pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
-        });
+      const totalPages = pdf.getNumberOfPages();
 
-        this.generatingPdfProgress = 100;
-        //pdf.save(fileName);
-        this.generatingPdfProgress = 0;
-        this.generatingPdfLoadingSubject.next(false);
-        Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-        this.dialogRef.close();
+      pagePositions.forEach(({ page, x, y }) => {
+        pdf.setDrawColor(0, 0, 0); // black line color
+        pdf.setLineWidth(0.1);
+        pdf.setLineDashPattern([0.01, 0.01], 0.1);
+        pdf.setFontSize(8);
+        pdf.setPage(page);
+        var lineBuffer = 13;
+        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+        pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
+      });
 
-    },100);
-   
+      this.generatingPdfProgress = 100;
+      //pdf.save(fileName);
+      this.generatingPdfProgress = 0;
+      this.generatingPdfLoadingSubject.next(false);
+      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      this.dialogRef.close();
+
+    }, 100);
+
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -895,20 +894,19 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-    switch(this.repType)
-    {
+    var title: string = '';
+    switch (this.repType) {
       case "CLEANING":
-         title = `${this.translatedLangText.CLEAN_YEARLY_DETAILS_REPORT}`
+        title = `${this.translatedLangText.CLEAN_YEARLY_DETAILS_REPORT}`
         break;
-        case "STEAMING":
-          title = `${this.translatedLangText.STEAM_YEARLY_DETAILS_REPORT}`
+      case "STEAMING":
+        title = `${this.translatedLangText.STEAM_YEARLY_DETAILS_REPORT}`
         break;
-        case "REPAIR":
-          title = `${this.translatedLangText.REPAIR_YEARLY_DETAILS_REPORT}`
+      case "REPAIR":
+        title = `${this.translatedLangText.REPAIR_YEARLY_DETAILS_REPORT}`
         break;
-        case "RESIDUE":
-          title = `${this.translatedLangText.RESIDUE_YEARLY_DETAILS_REPORT}`
+      case "RESIDUE":
+        title = `${this.translatedLangText.RESIDUE_YEARLY_DETAILS_REPORT}`
         break;
     }
     return `${title}`
@@ -948,18 +946,18 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-   processTankStatus(repStatus: AdminReportYearlyReport) {
+  processTankStatus(repStatus: AdminReportYearlyReport) {
 
-    
-    var maxYAxisValue=12;
-    var months = repStatus.result_per_month?.map((i,index)=>i.month);
+
+    var maxYAxisValue = 12;
+    var months = repStatus.result_per_month?.map((i, index) => i.month);
     const counts: number[] = repStatus.result_per_month
-  ?.map(i => i.count) // Extract the count property
-  .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
-  maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
-   maxYAxisValue = Math.round( maxYAxisValue*1.5  );
-  const computedTickAmount = maxYAxisValue ; // since range starts at 0
-   const tickAmount = computedTickAmount <=3 ? computedTickAmount : undefined;
+      ?.map(i => i.count) // Extract the count property
+      .filter(count => count !== undefined && count !== null) as number[]; // Filter out undefined/null values
+    maxYAxisValue = counts.length > 0 ? Math.max(...counts) : maxYAxisValue;
+    maxYAxisValue = Math.round(maxYAxisValue * 1.5);
+    const computedTickAmount = maxYAxisValue; // since range starts at 0
+    const tickAmount = computedTickAmount <= 3 ? computedTickAmount : undefined;
     this.lineChart2Options.yaxis = {
       max: maxYAxisValue,
       min: 0,
@@ -972,36 +970,34 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
         maxWidth: 100,  // Set a maximum width for the labels
         offsetX: 10,    // Add horizontal offset to the labels
         formatter: (value: number) => {
-            return Math.round(value).toString(); // ensures no decimal values on Y-axis
+          return Math.round(value).toString(); // ensures no decimal values on Y-axis
         }
       }
     }
 
-    if(tickAmount)
-    {
-      this.lineChart2Options.yaxis.tickAmount=tickAmount;
+    if (tickAmount) {
+      this.lineChart2Options.yaxis.tickAmount = tickAmount;
     }
 
-    for(var i=counts.length;i<=3;i++)
-    {
+    for (var i = counts.length; i <= 3; i++) {
       counts.push(0);
     }
-    
-    this.lineChart2Options.series=[
+
+    this.lineChart2Options.series = [
       {
         name: 'Inflation',
         data: counts,
       },
     ]
-    
 
-  
-    this.lineChart2Options.xaxis={
+
+
+    this.lineChart2Options.xaxis = {
       type: 'category',
       categories: months,
       position: 'bottom',
       labels: {
-        show : true,
+        show: true,
         offsetY: -2,
         style: {
           colors: '#9aa0ac',
@@ -1025,106 +1021,106 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
           },
         },
       }
-      
+
     }
-  
-   
+
+
   }
 
-  
-   async AddYearlyCleaningOverviewChart(pdf: jsPDF, reportTitle:string, pageWidth: number, 
-    leftMargin: number,rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
-     let tablewidth=55;
+
+  async AddYearlyCleaningOverviewChart(pdf: jsPDF, reportTitle: string, pageWidth: number,
+    leftMargin: number, rightMargin: number, pagePositions: { page: number; x: number; y: number }[]) {
+    let tablewidth = 55;
     pdf.addPage();
-     var pageNumber=pdf.getNumberOfPages();
+    var pageNumber = pdf.getNumberOfPages();
     const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-     const card = cardElements[0];
-     const contentWidth=pageWidth - leftMargin - rightMargin-tablewidth;
+    const card = cardElements[0];
+    const contentWidth = pageWidth - leftMargin - rightMargin - tablewidth;
 
-      // Convert card to image (JPEG format)
-      const canvas = await html2canvas(card, { scale: this.scale });
-     // const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
-      const imgData = await PDFUtility.captureFullCardImage(card);
+    // Convert card to image (JPEG format)
+    const canvas = await html2canvas(card, { scale: this.scale });
+    // const imgData = canvas.toDataURL('image/jpeg', this.imageQuality); // Convert to JPEG with 80% quality
+    const imgData = await PDFUtility.captureFullCardImage(card);
 
-      const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
+    const imgHeight = (canvas.height * contentWidth) / canvas.width; // Adjust height proportionally
 
-      // Add the report title at the top of every page, centered
-      const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
-      const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
+    // Add the report title at the top of every page, centered
+    const titleWidth = pdf.getStringUnitWidth(reportTitle) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (210 - titleWidth) / 2; // Centering the title (210mm is page width)
 
-      const pos = 15;
-      pdf.text(reportTitle, titleX, pos); // Position it at the top
+    const pos = 15;
+    pdf.text(reportTitle, titleX, pos); // Position it at the top
 
-      // Draw underline for the title
-      pdf.setLineWidth(0.5); // Set line width for underline
-      pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
+    // Draw underline for the title
+    pdf.setLineWidth(0.5); // Set line width for underline
+    pdf.line(titleX, pos + 2, titleX + titleWidth, pos + 2); // Draw the line under the title
 
-      pdf.addImage(imgData, 'JPEG', leftMargin, pos+5, contentWidth, imgHeight); // Adjust y position to leave space for the title
+    pdf.addImage(imgData, 'JPEG', leftMargin, pos + 5, contentWidth, imgHeight); // Adjust y position to leave space for the title
 
 
-       let minHeightBodyCell = 9;
+    let minHeightBodyCell = 9;
     let fontSz = 6.5;
     const headers = [[
-          this.translatedLangText.DESCRIPTION,
-          this.translatedLangText.NO_OF_TANKS
-        ]];
-    
-        // Define headStyles with valid fontStyle
-        const headStyles: Partial<Styles> = {
-          fillColor: [211, 211, 211], // Background color
-          textColor: 0, // Text color (white)
-          fontStyle: "bold", // Valid fontStyle value
-          halign: 'center', // Centering header text
-          valign: 'middle',
-          lineColor: 201,
-          lineWidth: 0.1
-        };
+      this.translatedLangText.DESCRIPTION,
+      this.translatedLangText.NO_OF_TANKS
+    ]];
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
 
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 20, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', cellWidth: 'auto', minCellHeight: minHeightBodyCell },
     };
 
-    let lastTableFinalY = pos+5;
-    let startY = pos+5;
-    let minHeightHeaderCol=8;
+    let lastTableFinalY = pos + 5;
+    let startY = pos + 5;
+    let minHeightHeaderCol = 8;
     const data: any[][] = [];
     data.push([this.translatedLangText.TOTAL_TANK, this.repData?.total]);
     data.push([this.translatedLangText.AVERAGE, this.repData?.average]);
-   
-        
-        startY = lastTableFinalY + 10;
-        let startX = pageWidth - rightMargin - tablewidth+6;
-        //Add table using autoTable plugin
-    
-        // pdf.setFontSize(8);
-        // pdf.setTextColor(0, 0, 0); // Black text
-        // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
-        // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
-    
-        autoTable(pdf, {
-          head: headers,
-          body: data,
-          startY: startY + 5, // Start table at the current startY value
-          margin: { left: startX },
-          theme: 'grid',
-          styles: {
-            fontSize: fontSz,
-            minCellHeight: minHeightHeaderCol
-    
-          },
-          columnStyles: comStyles,
-          headStyles: headStyles, // Custom header styles
-          bodyStyles: {
-            fillColor: [255, 255, 255],
-            halign: 'center', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
-          }
-         
-        });
 
-   }
- 
+
+    startY = lastTableFinalY + 10;
+    let startX = pageWidth - rightMargin - tablewidth + 6;
+    //Add table using autoTable plugin
+
+    // pdf.setFontSize(8);
+    // pdf.setTextColor(0, 0, 0); // Black text
+    // const invDate = `${this.translatedLangText.INVENTORY_DATE}:${this.date}`; // Replace with your actual cutoff date
+    // Utility.AddTextAtCenterPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY, 9);
+
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY + 5, // Start table at the current startY value
+      margin: { left: startX },
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        halign: 'center', // Left-align content for body by default
+        valign: 'middle', // Vertically align content
+      }
+
+    });
+
+  }
+
 
   InitialDefaultData() {
     this.lineChart2Options = {
@@ -1151,7 +1147,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
         foreColor: '#9aa0ac',
         toolbar: {
           show: false,
-         
+
         },
       },
       colors: ['#6777EF'],
@@ -1160,7 +1156,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
       },
       stroke: {
         curve: 'smooth',
-        width:2
+        width: 2
       },
       markers: {
         size: 3, // ✅ shows a visible dot
@@ -1192,7 +1188,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
           show: true,
         },
       },
-    
+
     };
   }
 }
