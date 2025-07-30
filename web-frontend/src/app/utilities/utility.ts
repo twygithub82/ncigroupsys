@@ -551,7 +551,11 @@ export class Utility {
     URL.revokeObjectURL(url);
   }
 
-  static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
+  static formatNumberDisplay(input: number | string | undefined, isNotMask: boolean = true, locale: string = 'en-US'): string {
+    if (!isNotMask) {
+      return 'xxx.xx';
+    }
+
     if (input === undefined || input === null || input === '') {
       return '';
     }

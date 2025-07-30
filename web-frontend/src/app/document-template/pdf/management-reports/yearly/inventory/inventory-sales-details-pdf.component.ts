@@ -851,11 +851,11 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 15; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, 9);
 
     if (this.customer) {
       const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`

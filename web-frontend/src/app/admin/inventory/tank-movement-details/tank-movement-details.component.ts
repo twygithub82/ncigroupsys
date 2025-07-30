@@ -1166,7 +1166,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
+    return Utility.formatNumberDisplay(input, this.isAllowViewCost());
   }
 
   updatePurposeDialog(event: Event, type: string, action: string) {
@@ -2640,15 +2640,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteJobNo() {
-    return true;
+    return this.isAllowDepotJobOverwrite();
   }
 
   canOverwriteDepotCost() {
-    return true;
-  }
-
-  canOverwriteTankDetail() {
-
+    return this.isAllowDepotCostOverwrite();
   }
 
   allowPerformAction() {
@@ -2787,12 +2783,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canOverwriteResidueApproval(row: ResidueItem) {
     const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED'];
-    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
+    return this.isAllowResidueOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
   canOverwriteRepairApproval(row: RepairItem) {
     const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
-    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
+    return this.isAllowRepairOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
+  }
+
+  canOverwriteRepairQC(row: RepairItem) {
+    const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
+    return this.isAllowRepairOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
   onRollbackSteamingJobs(event: Event, row: SteamItem) {
@@ -2843,7 +2844,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackResidueCompleted(row: ResidueItem) {
-    return this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && (this.cleaningItem?.[0]?.status_cv === 'APPROVED' || this.cleaningItem?.[0]?.status_cv === 'JOB_IN_PROGRESS');
+    return this.isAllowResidueReinstate() && this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && (this.cleaningItem?.[0]?.status_cv === 'APPROVED' || this.cleaningItem?.[0]?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   onRollbackResidueJobs(event: Event, row: ResidueItem) {
@@ -3000,7 +3001,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackRepairQC(row: RepairItem) {
-    return (this.sot?.tank_status_cv === "REPAIR" || this.sot?.tank_status_cv === "STORAGE") && this.repairDS.canRollbackQC(row);
+    return this.isAllowRepairReinstate() && (this.sot?.tank_status_cv === "REPAIR" || this.sot?.tank_status_cv === "STORAGE") && this.repairDS.canRollbackQC(row);
   }
 
   onRollbackRepairQC(event: Event, row: RepairItem) {
@@ -3334,7 +3335,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         },
         {
           "description": this.translatedLangText.STORAGE,
-          "job_no": this.sot?.release_job_no,
+          "job_no": '-',
           "billing_guid": this.sot?.billing_sot?.storage_billing_guid,
           "invoice_no": this.sot?.billing_sot?.storage_billing?.storage_detail?.length,
           "cost": BusinessLogicUtil.sumOfStorageDetails(this.sot?.billing_sot?.storage_billing?.storage_detail)
@@ -3435,6 +3436,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       return false;
     }
+  }
+
+  canExportSteamingEst(row: any) {
+    return this.isAllowViewCost();
+  }
+
+  canExportResidueEst(row: any) {
+    return this.isAllowViewCost();
+  }
+
+  canExportRepairEst(row: any) {
+    return this.isAllowViewCost();
   }
 
   loadFullPage() {

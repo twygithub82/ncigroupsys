@@ -46,6 +46,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -264,6 +265,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     private router: Router,
     private translate: TranslateService,
     private fileManagerService: FileManagerService,
+    private modulePackageService: ModulePackageService,
   ) {
     super();
     this.translateLangText();
@@ -784,7 +786,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
   }
 
   parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
+    return Utility.formatNumberDisplay(input, this.isAllowViewCost());
   }
 
   calculateCost() {
@@ -970,5 +972,9 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     event.stopPropagation();
     event.preventDefault(); // Prevents the form submission
     this.dialogRef.close();
+  }
+
+  isAllowViewCost() {
+    return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
   }
 }

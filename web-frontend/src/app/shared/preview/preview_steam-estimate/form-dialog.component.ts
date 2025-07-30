@@ -39,6 +39,7 @@ import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { ModulePackageService } from 'app/services/module-package.service';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
@@ -255,6 +256,7 @@ export class SteamEstimateFormDialogComponent_View {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService,
   ) {
     // Set the defaults
     this.plDS = new PackageLabourDS(this.apollo);
@@ -387,7 +389,7 @@ export class SteamEstimateFormDialogComponent_View {
   }
 
   parse2Decimal(figure: number | string) {
-    return Utility.formatNumberDisplay(figure)
+    return Utility.formatNumberDisplay(figure, this.isAllowViewCost())
   }
 
   calculateResidueItemCost(residuePart: ResiduePartItem): number {
@@ -596,5 +598,9 @@ export class SteamEstimateFormDialogComponent_View {
     else {
       return this.calculateSteamItemCost(this.deList![0]!);
     }
+  }
+
+  isAllowViewCost() {
+    return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
   }
 }

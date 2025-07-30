@@ -413,6 +413,8 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     where.and.push({ or: [{ gate_in: { eq: true } }, { gate_out: { eq: true } }] });
     // where.or=[{gate_in:{eq:true}},{gate_out:{eq:true}}];
     //where.status_cv={in:['COMPLETED','APPROVED']};
+
+    where.storing_order_tank = {};
     where.guid = { neq: null };
     if (this.searchForm!.get('tank_no')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -420,8 +422,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       where.storing_order_tank.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     }
 
-   where.storing_order_tank = {};
-    where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
+    where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
       if (!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv = {};
@@ -429,8 +430,6 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
         cond = { in: BILLING_TANK_STATUS_IN_YARD };
       }
-
-
       where.storing_order_tank.tank_status_cv = cond;
     }
 
@@ -644,18 +643,20 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+    this.resetForm();
+    this.search();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_CLEAR_ALL,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -873,6 +874,10 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     updateBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     updateBilling.status_cv = billingItem.status_cv;
     updateBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    if (this.processType === "GATE_IN")
+      updateBilling.invoice_type = "Gate In";
+    else
+      updateBilling.invoice_type = "Gate Out";
 
     let billingEstimateRequests_GateIn: any = billingItem.gin_billing_sot?.map(cln => {
       var billingEstReq: BillingEstimateRequest = new BillingEstimateRequest();
@@ -930,6 +935,10 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     newBilling.invoice_dt = Number(Utility.convertDate(invoiceDate));
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    if (this.processType === "GATE_IN")
+      newBilling.invoice_type = "Gate In";
+    else
+      newBilling.invoice_type = "Gate Out";
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     this.selection.selected.map(c => {

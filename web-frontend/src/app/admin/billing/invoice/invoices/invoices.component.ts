@@ -89,6 +89,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     'select',
     'invoice_dt',
     'invoice_no',
+    'invoice_type',
     'customer',
     'currency',
     // 'last_cargo',
@@ -378,11 +379,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
       return;
     }
     // this.calculateTotalCost();
-
     //where.status_cv={in:['COMPLETED','APPROVED']};
     where.and = [];
-
-
 
     const itm: any = { or: [] };
     const invType = this.searchForm!.get('invoice_type_cv')?.value;
