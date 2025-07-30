@@ -21,9 +21,14 @@
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
                       <input matInput formControlName="description" type="text" required>
-                      @if (pcForm.get('name')?.hasError('required')) {
+                      @if (pcForm.get('description')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.DESCRIPTION }} {{translatedLangText.CARGO_REQUIRED }}
+                      </mat-error>
+                      }
+                      @if (pcForm.get('description')?.hasError('existed')) {
+                      <mat-error>
+                        {{translatedLangText.DESCRIPTION }} {{translatedLangText.EXISTED }}
                       </mat-error>
                       }
                     </mat-form-field>

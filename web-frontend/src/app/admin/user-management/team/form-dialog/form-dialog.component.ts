@@ -245,6 +245,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getPageTitle() {
+    if (this.isNew()) {
+      return this.translatedLangText.NEW + ' ' + this.translatedLangText.TEAM;
+    }
     return this.translatedLangText.UPDATE + ' ' + this.translatedLangText.TEAM;
   }
   
@@ -363,81 +366,101 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       team.description = this.pcForm?.value["description"];
       team.department_cv = this.pcForm?.value["department"].code_val;
       team.job_order =null;
-      this.teamDS?.addTeam([team]).subscribe(result => {
-          if (result.data.addTeam > 0) {
 
-            console.log('valid');
-            this.dialogRef.close(result.data.addTeam);
+      var where:any = {
+        team:{
+          and:[
+            {description: { eq: team.description }},
+            {department_cv: { eq: team.department_cv }}
+          ]
+          
+        }
+        
+      }
+      this.teamDS?.loadItemsWithAssigedCount(where).subscribe((data:any)=>{
+        if(data.length==0)
+        {
+          this.teamDS?.addTeam([team]).subscribe(result => {
+              if (result.data.addTeam > 0) {
 
-          }
-        });
-    }
-    // if (this.selectedItems.length == 1) {
-    //   var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
-    //   pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
-    //   pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
-    //   pckResidueItem.tariff_residue = undefined;
-    //   pckResidueItem.customer_company = undefined;
-    //   this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
-    //     if (result.data.updatePackageResidue > 0) {
-
-    //       console.log('valid');
-    //       this.dialogRef.close(result.data.updatePackageResidue);
-
-    //     }
-    //   });
-    // }
-    // else {
-    //   let pd_guids: string[] = this.selectedItems
-    //     .map(cc => cc.guid)
-    //     .filter((guid): guid is string => guid !== undefined);
-
-    //   var cost = -1;
-    //   if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
-
-    //   var remarks = this.pcForm!.value["remarks"] || "";
-    //   if (pd_guids.length == 1) {
-    //     if (!remarks) {
-    //       remarks = "--";
-    //     }
-    //   }
-    //   this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
-    //     if (result.data.updatePackageResidues > 0) {
-
-    //       console.log('valid');
-    //       this.dialogRef.close(result.data.updatePackageResidues);
-
-    //     }
-    //   });
-    // }
-
-    // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
-    // // tc.guid='';
-    // pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
-    // pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
-    // pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
-    // pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
-    // pdItem.remarks = this.pcForm.value['remarks'];
-    // var storageCalValue;
-    // if(this.storageCalControl.value)
-    // {
-    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-    //     storageCalValue = storage_calCv.code_val;
-    // }
-    // pdItem.storage_cal_cv = storageCalValue;
-    // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
-    //   if(result.data.updatePackageDepot>0)
-    //   {
-
-    //             console.log('valid');
-    //             this.dialogRef.close(result.data.updatePackageDepot);
-
-    //   }
-    // });
-
-
+                console.log('valid');
+                this.dialogRef.close(result.data.addTeam);
+               // this.handleSaveSuccess(result?.data?.addTeam);
+              }
+            });
+        }
+        else
+        {
+          
+            this.pcForm?.get('description')?.setErrors({ existed: true });
+        
+        }
+    });
+    
   }
+  else
+  {
+    this.UpdateItem(this.selectedItem);
+  }
+}
 
+UpdateItem(itm:any){
+
+  var team:any = new TeamGO(itm.team);
+      team.action = "EDIT";
+      team.description = this.pcForm?.value["description"];
+      team.department_cv = this.pcForm?.value["department"].code_val;
+    var where:any = {
+        team:{
+          and:[
+            {description: { eq: team.description }},
+            {department_cv: { eq: team.department_cv }}
+          ]
+          
+        }
+        
+      }
+     this.teamDS?.loadItemsWithAssigedCount(where).subscribe((data:any)=>{
+      if(data.length==0)
+      {
+        this.teamDS?.updateTeam([team]).subscribe(result => {
+            if (result.data.updateTeam > 0) {
+
+              console.log('valid');
+              this.dialogRef.close(result.data.updateTeam);
+             // this.handleSaveSuccess(result?.data?.addTeam);
+            }
+          });
+      }
+      else if(data.length==1)
+      {
+        if(data[0].team.guid == team.guid)
+        {
+          this.teamDS?.updateTeam([team]).subscribe(result => {
+            if (result.data.updateTeam > 0) {
+
+              console.log('valid');
+              this.dialogRef.close(result.data.updateTeam);
+             // this.handleSaveSuccess(result?.data?.addTeam);
+            }
+          });
+        }
+        else
+        {
+            
+              this.pcForm?.get('description')?.setErrors({ existed: true });
+          
+        }
+      }
+      else if(data[0].guid != itm.guid)
+      {
+        
+          this.pcForm?.get('description')?.setErrors({ existed: true });
+      
+      }
+    });
+
+}
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
@@ -448,6 +471,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }

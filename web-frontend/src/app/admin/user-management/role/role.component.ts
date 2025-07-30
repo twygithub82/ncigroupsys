@@ -772,7 +772,7 @@ addCall(event: Event) {
             before
           });
           console.log(this.searchStateService.getPagination(this.pageStateType))
-          this.subs.sink = this.roleDS.searchRoles(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+          this.subs.sink = this.roleDS.searchRolesWithFunctions(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
             .subscribe(data => {
               this.roleList = data;
               this.endCursor = this.roleDS.pageInfo?.endCursor;

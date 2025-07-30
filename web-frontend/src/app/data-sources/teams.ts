@@ -116,8 +116,8 @@ mutation addTeam($teamsRequest:[teamInput!]!) {
 
 export const UPDATE_TEAM = gql`
 
-mutation updateTeam($teamsRequest:[teamInput!]!) {
-  updateTeam(teamsRequest: $teamsRequest)
+mutation updateTeam($teamRequest:[teamInput!]!) {
+  updateTeam(teamRequest: $teamRequest)
 }
 `;
 
@@ -220,11 +220,40 @@ export class TeamDS extends BaseDataSource<TeamItem> {
       );
   }
 
-  addTeam(teamRequest: any): Observable<any> {
+  addTeam(teamsRequest: any): Observable<any> {
       return this.apollo.mutate({
         mutation: ADD_TEAM,
         variables: {
+          teamsRequest
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
+
+    updateTeam(teamRequest: any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: UPDATE_TEAM,
+        variables: {
           teamRequest
+        }
+      }).pipe(
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of(0); // Return an empty array on error
+        }),
+      );
+    }
+
+
+     deleteTeam(teamsGuid: any): Observable<any> {
+      return this.apollo.mutate({
+        mutation: DELETE_TEAM,
+        variables: {
+          teamsGuid
         }
       }).pipe(
         catchError((error: ApolloError) => {

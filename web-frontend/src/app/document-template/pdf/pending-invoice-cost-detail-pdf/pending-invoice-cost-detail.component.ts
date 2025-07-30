@@ -913,7 +913,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     let currentY = topMargin;
     let scale = this.scale;
     var CurrentPage = 1;
-    var buffer = 20;
+    var buffer = 30;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
@@ -922,7 +922,13 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
+     this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,lastTableFinalY+5,
+      minHeightBodyCell,fontSize,pagePositions,reportTitle);
+      
 
+   pdf.addPage();
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
+    lastTableFinalY=topMargin+5;
     const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
     Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,lastTableFinalY+10,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
@@ -987,31 +993,10 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
             this.displayResidueCost(itm) || "");
         }
            row.push(   this.displayRepairCost(itm) || "");
-        // const row = [
-        //   (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
-        //   itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
-        //   this.displayGateIOCost(itm) || "", this.displayPreinsCost(itm) || "",
-        //   this.displayLOLOCost(itm) || "", this.displayStorageCost(itm) || "", itm.days,
-        //   this.displayCleanCost(itm) || "", 
-        // ];
-
-        // if (!this.modulePackageService.isStarterPackage()) {
-        //   row.push(
-        //     this.displayResidueCost(itm) || "",
-        //     this.displaySteamCost(itm) || ""
-        //   );
-        // }
-        // row.push(this.displayRepairCost(itm) || "");
+      
         row.push((itm.total === "0.00" ? '' : this.displaySubTotalCost(itm)));
         data.push(row);
-        // data.push([
-        //   (b + 1).toString(), itm.job_no || "", itm.tank_no || "", itm.eir_no || "",
-        //   itm.last_cargo || "", itm.in_date || "", itm.out_date || "",
-        //   this.displayCleanCost(itm) || "", this.displayRepairCost(itm) || "", this.displayPreinsCost(itm) || "",
-        //   this.displayLOLOCost(itm) || "", itm.days, this.displayStorageCost(itm) || "",
-        //   this.displaySteamCost(itm) || "", this.displayResidueCost(itm) || "", this.displayGateIOCost(itm) || "",
-        //   (itm.total === "0.00" ? '' : itm.total)
-        // ]);
+      
 
       }
       pdf.setDrawColor(0, 0, 0); // red line color
@@ -1069,7 +1054,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     }
 
 
-    this.AddSummaryTable(pdf,pageWidth,leftMargin,rightMargin,topMargin,lastTableFinalY+5,minHeightBodyCell,fontSize,pagePositions,reportTitle);    
+   
     const totalPages = pdf.getNumberOfPages();
 
     pagePositions.forEach(({ page, x, y }) => {
@@ -1097,9 +1082,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     lastTableFinalY: number, 
     minHeightBodyCell:any,fontsz:number,pagePositions:any,reportTitle:string)
   {
-       pdf.addPage();
+      //  pdf.addPage();
 
-       lastTableFinalY=15;
+       lastTableFinalY=45;
        PDFUtility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
        const tableWidthTotal = 10 + 60 + 40;
        const columnStyles:any= {
