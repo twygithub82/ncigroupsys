@@ -260,7 +260,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     STORAGE_DAYS: 'COMMON-FORM.STORAGE-DAYS',
     EIR: 'COMMON-FORM.EIR',
     TRANSFER: 'COMMON-FORM.TRANSFER',
-    S_N:'COMMON-FORM.S_N',
+    S_N: 'COMMON-FORM.S_N',
   }
 
 
@@ -574,7 +574,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE
     // ]];
 
-    const vAlign="bottom";
+    const vAlign = "bottom";
     const headers = [
       [
         { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
@@ -632,7 +632,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     lastTableFinalY += 8;
     pdf.setFontSize(8);
     const invDate = `${this.translatedLangText.TRANSFER_PERIOD}:${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY, 8);
 
     var CurrentPage = 1;
     var buffer = 20;
@@ -642,9 +642,6 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.report_transfer_location[n];
-
-
-
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
@@ -674,7 +671,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
           data.push([
             (b + 1).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "",
             this.DisplayEIRDateIn(itm), this.DisplayEIRDateOut(itm), this.DisplayFromYard(itm) || "",
-            this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "", 
+            this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "",
             // this.DisplayStorageDays(itm) || ""
           ]);
         }
