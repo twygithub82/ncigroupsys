@@ -29,6 +29,7 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import autoTable, { RowInput, Styles } from 'jspdf-autotable';
 import { PDFUtility } from 'app/utilities/pdf-utility';
+import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
 
 // import { fileSave } from 'browser-fs-access';
 
@@ -627,7 +628,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       3: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      6: { halign: 'left', cellWidth: 26, minCellHeight: minHeightBodyCell },
+      6: { halign: 'left', cellWidth: 26, minCellHeight: minHeightBodyCell,overflow:'ellipsize' },
       7: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
       9: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },

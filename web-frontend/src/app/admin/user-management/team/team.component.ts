@@ -376,8 +376,8 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        if (result.selectedValue > 0) {
-          this.handleSaveSuccess(result.selectedValue);
+        if (result > 0) {
+          this.handleSaveSuccess(result);
           this.search();
         }
       }
@@ -411,8 +411,8 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        if (result.selectedValue > 0) {
-          this.handleSaveSuccess(result.selectedValue);
+        if (result > 0) {
+          this.handleSaveSuccess(result);
           this.search();
         }
       }
@@ -422,10 +422,6 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-
-  deleteItem(row: any) {
-
-  }
   private refreshTable() {
     this.paginator._changePageSize(this.paginator.pageSize);
   }
@@ -451,64 +447,6 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
 
 
-  // search() {
-  //   const where: any = {};
-
-  //   if (this.customerCodeControl.value) {
-  //     if (this.customerCodeControl.value.length > 0) {
-
-
-  //       const customerCodes: CustomerCompanyItem[] = this.customerCodeControl.value;
-  //       var guids = customerCodes.map(cc => cc.guid);
-  //       where.guid = { in: guids };
-  //     }
-  //   }
-
-  //   if (this.pcForm!.value["alias"]) {
-  //     where.alias = { contains: this.pcForm!.value["alias"] };
-  //   }
-
-  //   // if (this.pcForm!.value["fax_no"]) {
-  //   //   where.customer_company = where.customer_company || {};
-  //   //    where.customer_company  = {fax: { eq: this.pcForm!.value["fax_no"] }};
-  //   // }
-
-  //   // if (this.pcForm!.value["phone"]) {
-  //   //   where.customer_company = where.customer_company || {};
-  //   //    where.customer_company  = {phone: { eq: this.pcForm!.value["phone"] }};
-  //   // }
-
-
-  //   // if (this.pcForm!.value["email"]) {
-  //   //   where.customer_company = where.customer_company || {};
-  //   //    where.customer_company  = {email: { eq: this.pcForm!.value["email"] }};
-  //   // }
-
-  //   if (this.pcForm!.value["country"]) {
-  //     where.country = { eq: this.pcForm!.value["country"] };
-  //   }
-
-  //   if (this.pcForm!.value["contact_person"]) {
-  //     where.cc_contact_person = { some: { name: { eq: this.pcForm!.value["contact_person"] } } };
-  //   }
-
-
-  //   this.lastSearchCriteria = where;
-  //   this.subs.sink = this.ccDS.search(where, this.lastOrderBy, this.pageSize).subscribe(data => {
-  //     this.customer_companyList = data;
-  //     // data[0].storage_cal_cv
-  //     this.previous_endCursor = undefined;
-  //     this.endCursor = this.ccDS.pageInfo?.endCursor;
-  //     this.startCursor = this.ccDS.pageInfo?.startCursor;
-  //     this.hasNextPage = this.ccDS.pageInfo?.hasNextPage ?? false;
-  //     this.hasPreviousPage = this.ccDS.pageInfo?.hasPreviousPage ?? false;
-  //     this.pageIndex = 0;
-  //     this.paginator.pageIndex = 0;
-  //     this.selection.clear();
-  //     if (!this.hasPreviousPage)
-  //       this.previous_endCursor = undefined;
-  //   });
-  // }
 
   selectStorageCalculateCV_Description(valCode?: string): string {
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
@@ -828,6 +766,46 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
           }
         }
 
+         handleDelete(event: Event, row: any,): void {
+            event.preventDefault();
+            event.stopPropagation();
+            this.deleteItem(row);
+          }
+
+      deleteItem(row: any) {
+
+        let tempDirection: Direction;
+        if (localStorage.getItem('isRtl') === 'true') {
+          tempDirection = 'rtl';
+        } else {
+          tempDirection = 'ltr';
+        }
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+          data: {
+            headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+            action: 'new',
+          },
+          direction: tempDirection
+        });
+        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+          if (result?.action === 'confirmed') {
+            this.RemoveTeam(row.team.guid!);
+          }
+        });
+      }
+
+      RemoveTeam(guid: string) {
+        this.subs.sink = this.teamDS.deleteTeam([guid]).subscribe(result => {
+          if (result.data.deleteTeam > 0) {
+            this.handleSaveSuccess(result.data.deleteTeam);
+            this.search();
+          } else {
+            ComponentUtil.showCustomNotification('error', 'snackbar-danger', this.translatedLangText.INVALID, 'top', 'center', this.snackBar);
+          }
+        }, error => {
+          ComponentUtil.showCustomNotification('error', 'snackbar-danger', error.message, 'top', 'center', this.snackBar);
+        });
+      }
 
 }
 

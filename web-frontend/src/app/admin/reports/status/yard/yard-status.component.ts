@@ -376,7 +376,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   search_summary() {
-    this.search(1);
+    this.search(1);//not calling
   }
 
   search_summary_detail() {
