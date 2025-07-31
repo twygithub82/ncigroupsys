@@ -890,12 +890,10 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       return [2].includes(repType);
     }
     else if (date_type == "QC") {
-
       return [1, 3].includes(repType);
+      //return [3].includes(repType);
     }
-
     return retval;
-
   }
 
   onReportTypeChange(event: Event) {

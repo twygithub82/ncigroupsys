@@ -32,10 +32,10 @@ import { autoTable, Styles } from 'jspdf-autotable';
 
 export interface DialogData {
   repData: DailyTeamRevenue[],
-  date:string,
-  repType:string,
-  customer:string,
-  team:string
+  date: string,
+  repType: string,
+  customer: string,
+  team: string
 }
 @Component({
   selector: 'app-daily-revenue-pdf',
@@ -243,20 +243,20 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    DAILY_TEAM_REVENUE_REPORT:'COMMON-FORM.DAILY-TEAM-REVENUE-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    CODE:'COMMON-FORM.CODE',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    QC_BY:'COMMON-FORM.QC-BY',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST',
-    REPORTED_BY:'COMMON-FORM.REPORTED-BY',
-    TEAM:'COMMON-FORM.TEAM',
-    QC_DATE:'COMMON-FORM.QC-DATE',
-    SIGN:'COMMON-FORM.SIGN',
-    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    APPROVAL_DATE:'COMMON-FORM.APPROVAL-DATE'
+    DAILY_TEAM_REVENUE_REPORT: 'COMMON-FORM.DAILY-TEAM-REVENUE-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    CODE: 'COMMON-FORM.CODE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    QC_BY: 'COMMON-FORM.QC-BY',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
+    REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    SIGN: 'COMMON-FORM.SIGN',
+    VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE'
   }
 
   type?: string | null;
@@ -306,10 +306,10 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: DailyTeamRevenue[];
-  date?:string;
-  repType?:string;
-  team?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  team?: string;
+  customer?: string;
   index: number = 0;
   // date:string='';
   // invType:string='';
@@ -349,10 +349,10 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    this.date= this.data.date;
-    this.repType=this.data.repType;
-    this.customer=this.data.customer;
-    this.team=this.data.team;
+    this.date = this.data.date;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
+    this.team = this.data.team;
     this.onDownloadClick();
 
   }
@@ -362,7 +362,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -566,13 +566,13 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
@@ -606,16 +606,16 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATE_DATE,
-      this.translatedLangText.REPAIR_TYPE,this.translatedLangText.QC_BY, this.translatedLangText.REPAIR_COST
-      
+      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATE_DATE,
+      this.translatedLangText.REPAIR_TYPE, this.translatedLangText.QC_BY, this.translatedLangText.REPAIR_COST
+
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 15,minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -645,15 +645,20 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
-   var dtstr=await Utility.GetReportGeneratedDate(this.translate);
-    await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
-   var approvalDt = `${this.translatedLangText.QC_DATE}: ${this.date}`;
-    await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);    
-       startY+=3;
-   
+
+    var dtstr = await Utility.GetReportGeneratedDate(this.translate);
+    var approvalDt = `${this.translatedLangText.QC_DATE} : ${this.date}`;
+
+    await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);
+
+    var teamStr = `${this.translatedLangText.TEAM} : ${this.team}`;
+    await Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, 9);
+    startY += 3;
+
+
+
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
 
@@ -662,23 +667,25 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
     //   Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
     // }
+
+
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
-    for (let n = 0; n < (this.repData?.length||0); n++) {
+    for (let n = 0; n < (this.repData?.length || 0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.repData?.[n];
       const repairCost = itm?.repair_cost || 0;
       totalRepairCost += repairCost; // Add to the total
-        data.push([
-          (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no ||"",this.displayDate(itm?.estimate_date)||'',
-          this.getRepairOption(itm?.repair_type||""),itm?.qc_by||"",Utility.formatNumberDisplay(itm?.repair_cost)
-        ]);
+      data.push([
+        (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no || "", this.displayDate(itm?.estimate_date) || '',
+        this.getRepairOption(itm?.repair_type || ""), itm?.qc_by || "", Utility.formatNumberDisplay(itm?.repair_cost)
+      ]);
     }
 
 
-    data.push([this.translatedLangText.TOTAL,"","","","","","",Utility.formatNumberDisplay(totalRepairCost)]);
-    
+    data.push([this.translatedLangText.TOTAL, "", "", "", "", "", "", Utility.formatNumberDisplay(totalRepairCost)]);
+
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
     // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
@@ -693,7 +700,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       head: headers,
       body: data,
       startY: startY,
-       margin:{left: leftMargin, right: rightMargin},
+      margin: { left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -709,22 +716,22 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
-        let colSpan:number=7;
+        let colSpan: number = 7;
         let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
         // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
         // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
-        
+
         //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        if(data.row.index==totalRowIndex){
+        if (data.row.index == totalRowIndex) {
           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
+          data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
           if (data.column.index === 0) {
             data.cell.colSpan = colSpan;  // Merge 4 columns into one
             data.cell.styles.halign = 'right'; // Center text horizontally
           }
         }
-        if ((data.row.index==totalRowIndex ) && data.column.index > 0 && data.column.index < colSpan) {
+        if ((data.row.index == totalRowIndex) && data.column.index > 0 && data.column.index < colSpan) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
@@ -745,13 +752,12 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       },
     });
 
-    var gap=7;
+    var gap = 7;
 
-    if(lastTableFinalY+ topMargin+bottomMargin+ (gap*4.5)> pageHeight)
-    {
-        pdf.addPage();
-        const pageCount = pdf.getNumberOfPages();
-        pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
+      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
     }
 
     const totalPages = pdf.getNumberOfPages();
@@ -768,7 +774,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 
- 
+
 
     //Sign , verified tables-------------start--------------
     // var content:string[]=[];
@@ -788,10 +794,10 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     // content.push(str.padEnd(maxSpace," "));
     // values.push(": "+`${this.team}`);
     // var startX=leftMargin;
-    
+
     // startY = pageHeight-(bottomMargin+10);
     // var buffer = maxSpace *3;
-   
+
     // pdf.setPage(pdf.getNumberOfPages());
     // pdf.setLineWidth(0.01);
     // pdf.setLineDashPattern([1,1], 1);
@@ -837,7 +843,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     this.dialogRef.close();
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -942,8 +948,8 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-     title = `${this.translatedLangText.DAILY_TEAM_REVENUE_REPORT}`
+    var title: string = '';
+    title = `${this.translatedLangText.DAILY_TEAM_REVENUE_REPORT}`
     return `${title}`
   }
 
@@ -980,5 +986,5 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     return retval;
 
   }
- 
+
 }

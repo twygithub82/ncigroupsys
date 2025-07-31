@@ -613,7 +613,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 5.5;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -667,7 +667,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
    
     
     const repGeneratedDate = `${this.translatedLangText.STEAM_PERIOD} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
     startY +=5;
     // if(this.customer)
     // {

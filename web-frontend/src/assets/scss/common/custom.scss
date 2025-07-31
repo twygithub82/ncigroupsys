@@ -2608,7 +2608,7 @@ table.squeeze-form-field mat-form-field div.mdc-text-field {
   display: none !important;
 }
 
-.ellipsis-2-lines {
+.ellipsis-2-line {
   display: -webkit-box;
   display: flex; // legacy fallback (not critical but harmless)
   -webkit-box-orient: vertical;
@@ -3510,5 +3510,40 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 
   .ps-xl-5 {
     padding-left: 3rem !important;
+  }
+}
+
+.mobile-img {
+  display: none;
+}
+
+@media (max-width: 575.98px) {
+  .mobile-img {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40vh;
+    justify-content: center;
+    z-index: 1000;
+
+    img {
+      max-width: 80%;
+      align-self: center;
+    }
+
+    .caption {
+      color: $theme-gold-purple-disabled-menu;
+      font-style: italic;
+      font-size: 1.2rem;
+    }
+
+    .divider {
+      margin: 10px 0;
+      width: 100%;
+    }
   }
 }
