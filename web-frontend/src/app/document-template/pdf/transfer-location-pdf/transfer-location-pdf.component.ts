@@ -748,211 +748,211 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.dialogRef.close();
   }
 
-  async exportToPDF_r1_old(fileName: string = 'document.pdf') {
-    const pageWidth = 210; // A4 width in mm (portrait)
-    const pageHeight = 297; // A4 height in mm (portrait)
-    const leftMargin = 10;
-    const rightMargin = 10;
-    const topMargin = 5;
-    const bottomMargin = 5;
-    const contentWidth = pageWidth - leftMargin - rightMargin;
-    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+  // async exportToPDF_r1_old(fileName: string = 'document.pdf') {
+  //   const pageWidth = 210; // A4 width in mm (portrait)
+  //   const pageHeight = 297; // A4 height in mm (portrait)
+  //   const leftMargin = 10;
+  //   const rightMargin = 10;
+  //   const topMargin = 5;
+  //   const bottomMargin = 5;
+  //   const contentWidth = pageWidth - leftMargin - rightMargin;
+  //   const maxContentHeight = pageHeight - topMargin - bottomMargin;
 
-    this.generatingPdfLoadingSubject.next(true);
-    this.generatingPdfProgress = 0;
+  //   this.generatingPdfLoadingSubject.next(true);
+  //   this.generatingPdfProgress = 0;
 
-    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
-    let pageNumber = 1;
+  //   const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+  //   let pageNumber = 1;
 
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
-
-
-    const pagePositions: { page: number; x: number; y: number }[] = [];
-    //   const progressValue = 100 / cardElements.length;
-
-    const reportTitle = this.GetReportTitle();
-    // const headers = [[
-    //   this.translatedLangText.NO,
-    //   this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
-    //   this.translatedLangText.FROM_YARD, this.translatedLangText.TO_YARD,
-    //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE
-    // ]];
-
-    const vAlign="bottom";
-    const headers = [
-      [
-        { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.EIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.FROM_YARD, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.TO_YARD, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        { content: this.translatedLangText.TRANSFER, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
-        //{ content: this.translatedLangText.STORAGE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
-      ],
-      [
-        // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-        this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
-        this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE, // Sub-headers for NEXT_PERIODIC_TEST
-      ]
-    ];
-    // Define headStyles with valid fontStyle
-    const headStyles: Partial<Styles> = {
-      fillColor: [211, 211, 211], // Background color
-      textColor: 0, // Text color (white)
-      fontStyle: "bold", // Valid fontStyle value
-      halign: 'center', // Centering header text
-      valign: 'middle',
-      lineColor: 201,
-      lineWidth: 0.1
-    };
-
-    let currentY = topMargin;
-    let scale = this.scale;
-    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
-    var gap = 8;
-
-    await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
-    // Variable to store the final Y position of the last table
-    let lastTableFinalY = 40;
-    let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 5;
-    let fontSize = 7;
-
-    const comStyles: any = {
-      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 24, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      6: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      //9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-    };
-
-    lastTableFinalY += 8;
-    pdf.setFontSize(8);
-    const invDate = `${this.translatedLangText.TRANSFER_PERIOD}:${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
-
-    var CurrentPage = 1;
-    var buffer = 20;
-    let startY = 0;
-    for (let n = 0; n < this.report_transfer_location.length; n++) {
-      //if (n > 0) lastTableFinalY += 9;
-      if (n > 0) lastTableFinalY += 5;
-
-      const data: any[][] = []; // Explicitly define data as a 2D array
-      //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let cust = this.report_transfer_location[n];
+  //   let reportTitleCompanyLogo = 32;
+  //   let tableHeaderHeight = 12;
+  //   let tableRowHeight = 8.5;
 
 
+  //   const pagePositions: { page: number; x: number; y: number }[] = [];
+  //   //   const progressValue = 100 / cardElements.length;
 
-      var repPage = pdf.getNumberOfPages();
-      // if(repPage==1)lastTableFinalY=45;
+  //   const reportTitle = this.GetReportTitle();
+  //   // const headers = [[
+  //   //   this.translatedLangText.NO,
+  //   //   this.translatedLangText.TANK_NO, this.translatedLangText.EIR_NO,
+  //   //   this.translatedLangText.FROM_YARD, this.translatedLangText.TO_YARD,
+  //   //   this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE
+  //   // ]];
 
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-        pdf.addPage();
-         lastTableFinalY =49; // buffer for 2nd page onward first table's Method
-      }
-      else {
-        CurrentPage = repPage;
-      }
+  //   const vAlign="bottom";
+  //   const headers = [
+  //     [
+  //       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+  //       { content: this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+  //       { content: this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+  //       { content: this.translatedLangText.EIR, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+  //       { content: this.translatedLangText.FROM_YARD, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+  //       { content: this.translatedLangText.TO_YARD, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+  //       { content: this.translatedLangText.TRANSFER, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
+  //       //{ content: this.translatedLangText.STORAGE_DAYS, rowSpan: 2, styles: { halign: 'center', valign: 'middle' } },
+  //     ],
+  //     [
+  //       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
+  //       this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE,
+  //       this.translatedLangText.IN_DATE, this.translatedLangText.OUT_DATE, // Sub-headers for NEXT_PERIODIC_TEST
+  //     ]
+  //   ];
+  //   // Define headStyles with valid fontStyle
+  //   const headStyles: Partial<Styles> = {
+  //     fillColor: [211, 211, 211], // Background color
+  //     textColor: 0, // Text color (white)
+  //     fontStyle: "bold", // Valid fontStyle value
+  //     halign: 'center', // Centering header text
+  //     valign: 'middle',
+  //     lineColor: 201,
+  //     lineWidth: 0.1
+  //   };
 
-      //lastTableFinalY+=gap;
-      pdf.setFontSize(10);
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.code}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      lastTableFinalY += 3;
-      if ((cust.storing_order_tank?.length || 0) > 0) {
-        // lastTableFinalY+=5;
-        // pdf.setFontSize(8);
-        // var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
-        // pdf.text(subTitle, leftMargin, lastTableFinalY);
-        // lastTableFinalY+=2;            
-        startY = lastTableFinalY; // Start table 20mm below the customer name
+  //   let currentY = topMargin;
+  //   let scale = this.scale;
+  //   pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+  //   var gap = 8;
 
-        for (let b = 0; b < (cust.storing_order_tank?.length || 0); b++) {
-          var itm = cust.storing_order_tank?.[b]!;
-          data.push([
-            (b + 1).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "",
-            this.DisplayEIRDateIn(itm), this.DisplayEIRDateOut(itm), this.DisplayFromYard(itm) || "",
-            this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "", 
-            // this.DisplayStorageDays(itm) || ""
-          ]);
-        }
-        pdf.setDrawColor(0, 0, 0); // red line color
+  //   await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+  //   await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+  //   // Variable to store the final Y position of the last table
+  //   let lastTableFinalY = 40;
+  //   let minHeightHeaderCol = 3;
+  //   let minHeightBodyCell = 5;
+  //   let fontSize = 7;
 
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0.01, 0.01], 0.1);
-        // Add table using autoTable plugin
-        autoTable(pdf, {
-          head: headers,
-          body: data,
-         // startY: startY, // Start table at the current startY value
-          theme: 'grid',
-           margin: {left:leftMargin, top:topMargin+46 },
-          styles: {
-            fontSize: fontSize,
-            minCellHeight: minHeightHeaderCol
+  //   const comStyles: any = {
+  //     0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+  //     1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+  //     2: { halign: 'center', valign: 'middle', cellWidth: 24, minCellHeight: minHeightBodyCell },
+  //     3: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  //     4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  //     5: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  //     6: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  //     7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  //     8: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+  //     //9: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+  //   };
 
-          },
-          columnStyles: comStyles,
-          headStyles: headStyles, // Custom header styles
-          bodyStyles: {
-            fillColor: [255, 255, 255],
-            halign: 'left', // Left-align content for body by default
-            valign: 'middle', // Vertically align content
-          },
-          didDrawPage: (data: any) => {
-            const pageCount = pdf.getNumberOfPages();
+  //   lastTableFinalY += 8;
+  //   pdf.setFontSize(8);
+  //   const invDate = `${this.translatedLangText.TRANSFER_PERIOD}:${this.date}`;
+  //   Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
 
-            lastTableFinalY = data.cursor.y;
+  //   var CurrentPage = 1;
+  //   var buffer = 20;
+  //   let startY = 0;
+  //   for (let n = 0; n < this.report_transfer_location.length; n++) {
+  //     //if (n > 0) lastTableFinalY += 9;
+  //     if (n > 0) lastTableFinalY += 5;
 
-            var pg = pagePositions.find(p => p.page == pageCount);
-            if (!pg) {
-              pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-              if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-                Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
-              }
-            }
-          },
-        });
-      }
-    }
-
-    const totalPages = pdf.getNumberOfPages();
+  //     const data: any[][] = []; // Explicitly define data as a 2D array
+  //     //let startY = lastTableFinalY + 15; // Start Y position for the current table
+  //     let cust = this.report_transfer_location[n];
 
 
-     for (const { page, x, y } of pagePositions) {
-        pdf.setDrawColor(0, 0, 0); // black line color
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0.01, 0.01], 0.1);
-        pdf.setFontSize(8);
-        pdf.setPage(page);
 
-        const lineBuffer = 13;
-        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+  //     var repPage = pdf.getNumberOfPages();
+  //     // if(repPage==1)lastTableFinalY=45;
 
-        if (page > 1) {
-          await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-        }
-      }// Add Second Page, Add For Loop
+  //     if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+  //       pdf.addPage();
+  //        lastTableFinalY =49; // buffer for 2nd page onward first table's Method
+  //     }
+  //     else {
+  //       CurrentPage = repPage;
+  //     }
 
-    this.generatingPdfProgress = 100;
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+  //     //lastTableFinalY+=gap;
+  //     pdf.setFontSize(10);
+  //     pdf.setTextColor(0, 0, 0); // Black text
+  //     pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.code}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+  //     lastTableFinalY += 3;
+  //     if ((cust.storing_order_tank?.length || 0) > 0) {
+  //       // lastTableFinalY+=5;
+  //       // pdf.setFontSize(8);
+  //       // var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
+  //       // pdf.text(subTitle, leftMargin, lastTableFinalY);
+  //       // lastTableFinalY+=2;            
+  //       startY = lastTableFinalY; // Start table 20mm below the customer name
 
-    this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-    this.dialogRef.close();
-  }
+  //       for (let b = 0; b < (cust.storing_order_tank?.length || 0); b++) {
+  //         var itm = cust.storing_order_tank?.[b]!;
+  //         data.push([
+  //           (b + 1).toString(), itm.tank_no || "", this.DisplayEIRNo(itm) || "",
+  //           this.DisplayEIRDateIn(itm), this.DisplayEIRDateOut(itm), this.DisplayFromYard(itm) || "",
+  //           this.DisplayToYard(itm) || "", this.DisplayDateIn(itm) || "", this.DisplayDateOut(itm) || "", 
+  //           // this.DisplayStorageDays(itm) || ""
+  //         ]);
+  //       }
+  //       pdf.setDrawColor(0, 0, 0); // red line color
+
+  //       pdf.setLineWidth(0.1);
+  //       pdf.setLineDashPattern([0.01, 0.01], 0.1);
+  //       // Add table using autoTable plugin
+  //       autoTable(pdf, {
+  //         head: headers,
+  //         body: data,
+  //        // startY: startY, // Start table at the current startY value
+  //         theme: 'grid',
+  //          margin: {left:leftMargin, top:topMargin+46 },
+  //         styles: {
+  //           fontSize: fontSize,
+  //           minCellHeight: minHeightHeaderCol
+
+  //         },
+  //         columnStyles: comStyles,
+  //         headStyles: headStyles, // Custom header styles
+  //         bodyStyles: {
+  //           fillColor: [255, 255, 255],
+  //           halign: 'left', // Left-align content for body by default
+  //           valign: 'middle', // Vertically align content
+  //         },
+  //         didDrawPage: (data: any) => {
+  //           const pageCount = pdf.getNumberOfPages();
+
+  //           lastTableFinalY = data.cursor.y;
+
+  //           var pg = pagePositions.find(p => p.page == pageCount);
+  //           if (!pg) {
+  //             pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+  //             if (pageCount > 1) {
+  //               Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+  //               Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
+  //             }
+  //           }
+  //         },
+  //       });
+  //     }
+  //   }
+
+  //   const totalPages = pdf.getNumberOfPages();
+
+
+  //    for (const { page, x, y } of pagePositions) {
+  //       pdf.setDrawColor(0, 0, 0); // black line color
+  //       pdf.setLineWidth(0.1);
+  //       pdf.setLineDashPattern([0.01, 0.01], 0.1);
+  //       pdf.setFontSize(8);
+  //       pdf.setPage(page);
+
+  //       const lineBuffer = 13;
+  //       pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+  //       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+  //       if (page > 1) {
+  //         await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+  //       }
+  //     }// Add Second Page, Add For Loop
+
+  //   this.generatingPdfProgress = 100;
+  //   Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+
+  //   this.generatingPdfProgress = 0;
+  //   this.generatingPdfLoadingSubject.next(false);
+  //   this.dialogRef.close();
+  // }
 
   async exportToPDF_r1_old(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)

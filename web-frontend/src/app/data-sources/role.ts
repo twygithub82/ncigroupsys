@@ -130,53 +130,53 @@ const GET_ROLES= gql`
   }
 }
 `
-const GET_ROLES_WITH_FUNCTIONS= gql`
- query queryRoles($where: roleFilterInput, $order: [roleSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
- resultList:  queryRoles (where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-    totalCount
-    nodes {
-     role_functions {
-        create_by
-        create_dt
-        delete_dt
-        functions_guid
-        guid
-        role_guid
-        update_by
-        update_dt
-        functions {
-          code
-          create_by
-          create_dt
-          delete_dt
-          guid
-          module
+// const GET_ROLES_WITH_FUNCTIONS= gql`
+//  query queryRoles($where: roleFilterInput, $order: [roleSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+//  resultList:  queryRoles (where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+//     totalCount
+//     nodes {
+//      role_functions {
+//         create_by
+//         create_dt
+//         delete_dt
+//         functions_guid
+//         guid
+//         role_guid
+//         update_by
+//         update_dt
+//         functions {
+//           code
+//           create_by
+//           create_dt
+//           delete_dt
+//           guid
+//           module
           
-          submodule
-          update_by
-          update_dt
-        }
-      }
-      code
-      create_by
-      create_dt
-      delete_dt
-      department
-      description
-      guid
-      position
-      update_by
-      update_dt
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
-    }
-  }
-}
-`
+//           submodule
+//           update_by
+//           update_dt
+//         }
+//       }
+//       code
+//       create_by
+//       create_dt
+//       delete_dt
+//       department
+//       description
+//       guid
+//       position
+//       update_by
+//       update_dt
+//     }
+//     pageInfo {
+//       endCursor
+//       hasNextPage
+//       hasPreviousPage
+//       startCursor
+//     }
+//   }
+// }
+// `
 
 const GET_FUNCTIONS= gql`
  query queryFunctions($where: functionsFilterInput, $order: [functionsSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
