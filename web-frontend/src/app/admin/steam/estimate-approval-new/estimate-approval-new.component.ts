@@ -959,9 +959,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
       newSteamItem.status_cv = "PENDING";
       newSteamItem.sot_guid = this.sotItem?.guid;
-      newSteamItem.est_cost = this.getTotalCost();
-      newSteamItem.est_hour = this.getTotalLabourHour();
-      newSteamItem.rate = this.getRate(); //this.packageLabourItem?.cost;
+      newSteamItem.est_cost = Utility.convertNumber(this.getTotalCost(), 2);
+      newSteamItem.est_hour = Utility.convertNumber(this.getTotalLabourHour(), 2);
+      newSteamItem.rate = Utility.convertNumber(this.getRate(), 2); //this.packageLabourItem?.cost;
       newSteamItem.flat_rate = this.flat_rate;//this.sotItem?.tank?.flat_rate;
       newSteamItem.steaming_part = [];
       this.deList.forEach(data => {
@@ -985,9 +985,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.remarks = this.steamEstForm.get("remarks")?.value;
       updSteamItem.sot_guid = this.sotItem?.guid;
       updSteamItem.steaming_part = [];
-      updSteamItem.est_cost = this.getTotalCost();
-      updSteamItem.est_hour = (this.isSteamRepair) ? this.getTotalLabourHour() : 1;
-      updSteamItem.rate = this.getRate();//this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
+      updSteamItem.est_cost = Utility.convertNumber(this.getTotalCost(), 2);
+      updSteamItem.est_hour = Utility.convertNumber((this.isSteamRepair) ? this.getTotalLabourHour() : 1, 2);
+      updSteamItem.rate = Utility.convertNumber(this.getRate(), 2);//this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
       updSteamItem.flat_rate = this.flat_rate;
       updSteamItem.total_material_cost = this.getTotalMaterialCost();
       updSteamItem.total_labour_cost = this.getTotalApprovedLabourCost();
@@ -1515,14 +1515,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
             && (d.approve_part == null || d.approve_part == true)) {
             if (this.IsApproved()) {
-              ret += d.approve_labour;
+              ret += Utility.convertNumber(d.approve_labour, 2);
             }
             else {
-              ret += d.labour;
+              ret += Utility.convertNumber(d.labour, 2);
             }
           }
-
-          // ret+=d.labour
         }
         );
       }
@@ -1531,8 +1529,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     else {
       return '';
     }
-
-
   }
 
   getTotalLabourCost(): string {
