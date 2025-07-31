@@ -551,7 +551,11 @@ export class Utility {
     URL.revokeObjectURL(url);
   }
 
-  static formatNumberDisplay(input: number | string | undefined, locale: string = 'en-US'): string {
+  static formatNumberDisplay(input: number | string | undefined, isNotMask: boolean = true, locale: string = 'en-US'): string {
+    if (!isNotMask) {
+      return 'xxx.xx';
+    }
+
     if (input === undefined || input === null || input === '') {
       return '';
     }
@@ -754,37 +758,13 @@ export class Utility {
 
   static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
     topPosition: number, fontSize: number = 14, underline: boolean = true, additionalBufferX: number = 0) {
-    // pdf.setFontSize(14); // Title font size 
-    // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-    // if (topPosition <= 10) {
-    //   topPosition = 11;
-    // }
-    // pdf.text(title, titleX, topPosition); // Position it at the top
-
-    // pdf.setLineDashPattern([0.001, 0.001], 0);
-    // // Draw underline for the title
-    // pdf.setLineWidth(0.1); // Set line width for underline
-    // pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
+   
 
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline, additionalBufferX);
   }
 
   static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean, fontSize: number = 14) {
-    // pdf.setFontSize(14); // Title font size 
-    // const titleWidth = pdf.getStringUnitWidth(title) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    // const titleX = (pageWidth - titleWidth) / 2; // Centering the title
-    // if (topPosition <= 10) {
-    //   topPosition = 11;
-    // }
-    // pdf.text(title, titleX, topPosition); // Position it at the top
-
-    // pdf.setLineDashPattern([0.001, 0.001], 0);
-    // // Draw underline for the title
-    // pdf.setLineWidth(0.1); // Set line width for underline
-    // if (underline) {
-    //   pdf.line(titleX, topPosition + 2, titleX + titleWidth + 1, topPosition + 2); // Draw the line under the title
-    // }
+   
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
   }
 
@@ -796,10 +776,7 @@ export class Utility {
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
-    // pdf.setLineDashPattern([0.001, 0.001], 0);
-    // Draw underline for the title
-    // pdf.setLineWidth(0.1); // Set line width for underline
-    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+   
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
@@ -810,10 +787,7 @@ export class Utility {
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
-    // pdf.setLineDashPattern([0.001, 0.001], 0);
-    // Draw underline for the title
-    // pdf.setLineWidth(0.1); // Set line width for underline
-    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+ 
   }
 
   static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
@@ -823,10 +797,7 @@ export class Utility {
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
-    // pdf.setLineDashPattern([0.001, 0.001], 0);
-    // Draw underline for the title
-    // pdf.setLineWidth(0.1); // Set line width for underline
-    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+  
   }
 
 
@@ -860,24 +831,7 @@ export class Utility {
       // Render SVG onto canvas
       await v.render();
       return this.ConvertCanvasElementToImage64String(canvas);
-  // const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-  // const url = URL.createObjectURL(svgBlob);
-
-  // return new Promise((resolve) => {
-  //   const img = new Image();
-  //   img.onload = () => {
-  //     const canvas = document.createElement('canvas');
-  //     canvas.width = img.width;
-  //     canvas.height = img.height;
-
-  //     const ctx = canvas.getContext('2d');
-  //     if (ctx) ctx.drawImage(img, 0, 0);
-
-  //     URL.revokeObjectURL(url);
-  //     resolve(this.ConvertCanvasElementToImage64String(canvas));
-  //   };
-  //   img.src = url;
-  // });
+  
 }
 
   static ConvertApexChartToImage64String(chartRef:any):string
@@ -1005,34 +959,7 @@ static adjustImageSizeAndBackground(
     // card.style.transition = 'none';
     const imgData1 = await this.convertToImage(card,"jpeg");
    await this.DrawBase64ImageAtCenterPage(pdf,imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
-    // const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
-    // const aspectRatio = imgInfo.width / imgInfo.height;
-
-    // // const imgData1 = canvas.toDataURL('image/jpeg', imgQuality);
-    // // const aspectRatio = canvas.width / canvas.height;
-
-    // // Calculate scaled height based on available width
-    // let imgHeight1 = chartContentWidth / aspectRatio;
-
-    // // Check if the scaled height exceeds the available page height
-    // const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-    // if (imgHeight1 > maxPageHeight) {
-    //   // Adjust height to fit within the page
-    //   imgHeight1 = maxPageHeight;
-    //   // Recalculate width to maintain aspect ratio
-    //   chartContentWidth = imgHeight1 * aspectRatio;
-    // }
-
-    // let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
-
-    // // Add the image to the PDF
-    // pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
-
-
-    // pdf.setLineDashPattern([0.001, 0.001], 0);
-    // Draw underline for the title
-    // pdf.setLineWidth(0.1); // Set line width for underline
-    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
+   
   }
 
   static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
@@ -1061,10 +988,6 @@ static adjustImageSizeAndBackground(
     pdf.addImage(imgData1, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
 
 
-    // pdf.setLineDashPattern([0.001, 0.001], 0);
-    // Draw underline for the title
-    // pdf.setLineWidth(0.1); // Set line width for underline
-    // pdf.line(titleX, topPosition+2, titleX + titleWidth, topPosition+2); // Draw the line under the title
   }
 
   static previewPDF_window(pdf: jsPDF, win: Window) {
@@ -1225,12 +1148,7 @@ static adjustImageSizeAndBackground(
         lastTest += ` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
       }
     }
-    // if (this.queryType == 1) {
-    //   //lastTest = this.cvDS.getCodeDescription(sot.in_gate?.[0]?.in_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    // }
-    // else {
-    //   lastTest = this.cvDS.getCodeDescription(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv, this.testTypeCvList) || '';
-    // }
+   
     return lastTest;
   }
 
@@ -1802,6 +1720,68 @@ static async GetReportGeneratedDate(translateService: TranslateService):Promise<
   var result =`${translatedLangText.DATE}: ${dtStr}`;
 
   return `${result}`;
+}
+
+static displayTankPurpose_InShort(sot: any):string {
+    let purposes: any[] = [];
+    if (sot?.purpose_storage) {
+      purposes.push("S");
+    }
+    if (sot?.purpose_cleaning) {
+      purposes.push("C");
+    }
+    if (sot?.purpose_steam) {
+      purposes.push("SE");
+    }
+    if (sot?.purpose_repair_cv) {
+      purposes.push("R");
+    }
+    
+    return purposes.join('; ');
+  }
+static displayTankStatus_InShort(status_codevalue: string): string {
+  let sRetval: string = "";
+
+  switch (status_codevalue) {
+    case 'SO_GENERATED':
+      sRetval = "SO";
+      break;
+    case 'IN_GATE':
+      sRetval = "IG";
+      break;
+    case 'IN_SURVEY':
+      sRetval = "IS";
+      break;
+    case 'STEAM':
+      sRetval = "SE";
+      break;
+    case 'RESIDUE':
+      sRetval = "RE";
+      break;
+    case 'CLEANING':
+      sRetval = "C";
+      break;
+    case 'REPAIR':
+      sRetval = "R";
+      break;
+    case 'STORAGE':
+      sRetval = "S";
+      break;
+    case 'RO_GENERATED':
+      sRetval = "RO";
+      break;
+    case 'OUT_GATE':
+      sRetval = "OG";
+      break;
+    case 'OUT_SURVEY':
+      sRetval = "OS";
+      break;
+    case 'RELEASED':
+      sRetval = "RL";
+      break;
+  }
+
+  return sRetval;
 }
 
 

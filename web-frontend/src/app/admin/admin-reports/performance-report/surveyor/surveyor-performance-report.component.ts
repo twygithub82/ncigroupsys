@@ -275,14 +275,15 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   initSearchFormDetail() {
     this.searchFormDetail = this.fb.group(
       {
-        tank_no: [''],
+        est_dt_start: [''],
+        est_dt_end: [''],
+        est_status: [''],
+         tank_no: [''],
         eir_no: [''],
         customer_code: this.customerCodeControlDetail,
         repair_type: [''],
         surveyor: [''],
-        est_dt_start: [''],
-        est_dt_end: [''],
-        est_status: [''],
+       
       },
     );
   }
@@ -297,7 +298,12 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         surveyor: [''],
         month_start: [`${thisMonth}`],
         month_end: [`${thisMonth}`],
-        year: [`${thisYear}`]
+        year: [`${thisYear}`],
+         est_dt_start: [''],
+        est_dt_end: [''],
+        est_status: [''],
+         tank_no: [''],
+        eir_no: ['']
       },
     );
   }
@@ -610,7 +616,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     //   where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
     //   cond_counter++;
     // }
-    var searchFrm = this.searchFormDetail;
+    var searchFrm = this.searchFormSummary;
     if (searchFrm?.invalid) {
       if (!(searchFrm!.get('est_dt_start')?.value) || !(searchFrm!.get('est_dt_end')?.value)) {
         const requiredControl = searchFrm!.get('est_dt_start');
@@ -836,6 +842,11 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       month_end: thisMonth,
       surveyor: '',
       year: thisYear,
+      eir_no:'',
+      tank_no:'',
+      est_dt_start: '',
+      est_dt_end: '',
+      est_status: ''
     });
     this.customerCodeControlSummary.reset('');
     this.noCond = false;

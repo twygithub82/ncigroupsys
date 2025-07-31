@@ -29,7 +29,8 @@ import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-import {RoleItem, RoleDS} from 'app/data-sources/role';
+import {RoleItem, RoleDS, Functions, Role_Functions} from 'app/data-sources/role';
+import { debounceTime, startWith, tap } from 'rxjs';
 export interface DialogData {
   action?: string;
   
@@ -94,6 +95,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   packageResidueItems?: PackageResidueItem[] = [];
   packageResidueDS?: PackageResidueDS;
   CodeValuesDS?: CodeValuesDS;
+  roleDS?: RoleDS;
 
   storageCalCvList: CodeValuesItem[] = [];
 
@@ -106,6 +108,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   lastCargoControl = new UntypedFormControl();
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
+  functionsList:Functions[]=[];
 
   translatedLangText: any = {};
   langText = {
@@ -210,6 +213,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   selectedItem: RoleItem;
   departmentCvList:CodeValuesItem[]=[];
   updatedFeatureList: any[] = [];
+  featureList:Functions[]=[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -226,12 +230,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.selectedItem = data.selectedItem;
     this.departmentCvList=data.departmentList;
     this.pcForm = this.createPackageResidue();
+    this.roleDS= new RoleDS(this.apollo);
     this.packageResidueDS = new PackageResidueDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+    this.initializeValueChanges();
   }
 
   createPackageResidue(): UntypedFormGroup {
@@ -240,7 +246,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       description: [''],
       department: [''],
       position: [''],
-     
+      feature:['']
 
     });
   }
@@ -248,29 +254,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   getPageTitle() {
     return this.translatedLangText.UPDATE + ' ' + this.translatedLangText.ROLE;
   }
-  // profileChanged()
-  // {
-  //   if(this.profileNameControl.value)
-  //   {
-  //     const selectedProfile:PackageResidueItem= this.profileNameControl.value;
-  //     this.pcForm.patchValue({
-  //       preinspection_cost_cust: selectedProfile.preinspection_cost,
-  //       preinspection_cost_standard:selectedProfile.preinspection_cost,
-  //       lolo_cost_cust:selectedProfile.lolo_cost,
-  //       lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
-  //       storage_cost_cust:selectedProfile.storage_cost,
-  //       storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
-  //       free_storage_days:selectedProfile.free_storage,
-  //       gate_in_cost:selectedProfile.gate_in_cost,
-  //       gate_out_cost:selectedProfile.gate_out_cost,
-  //       remarks:selectedProfile.remarks,
-  //       //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-  //     });
-  //     this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-
-
-  //   }
-  // }
+ 
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -298,6 +282,21 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
 
+   initializeValueChanges() {
+      var searchObj = this.pcForm;
+      searchObj?.get("feature")!.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        tap(value => {
+          this.roleDS?.searchFunctions({ code: { contains: value } }, { code: "ASC" }, 100).subscribe(data => {
+            this.functionsList = data;
+          });
+        })
+      ).subscribe();
+  
+     
+    }
+
   loadData() {
     
           if (this.selectedItem!=null) {
@@ -318,29 +317,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
               this.pcForm.get('department')?.setValue(codeValueItem);
             }
+
+           
           }
-    // this.queryDepotCost();
-
-    // const queries = [
-    //   { alias: 'storageCalCv', codeValType: 'STORAGE_CAL' },
-
-    // ];
-    // this.CodeValuesDS?.getCodeValuesByType(queries);
-    // this.CodeValuesDS?.connectAlias('storageCalCv').subscribe(data => {
-    //   this.storageCalCvList = data;
-
-
-    //   if (this.selectedItems.length == 1) {
-    //     var pckResidueItm = this.selectedItems[0];
-
-    //     this.pcForm.patchValue({
-    //       cost_cust: pckResidueItm.cost?.toFixed(2),
-    //       cost_standard: pckResidueItm.tariff_residue?.cost?.toFixed(2),
-    //       remarks: pckResidueItm.remarks,
-    //     });
-
-    //   }
-    // });
+   
 
 
 
@@ -394,70 +374,26 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   save() {
 
-    // if (!this.pcForm?.valid) return;
+    if(this.selectedItem)
+    {
 
-    // if (this.selectedItems.length == 1) {
-    //   var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
-    //   pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
-    //   pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
-    //   pckResidueItem.tariff_residue = undefined;
-    //   pckResidueItem.customer_company = undefined;
-    //   this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
-    //     if (result.data.updatePackageResidue > 0) {
-
-    //       console.log('valid');
-    //       this.dialogRef.close(result.data.updatePackageResidue);
-
-    //     }
-    //   });
-    // }
-    // else {
-    //   let pd_guids: string[] = this.selectedItems
-    //     .map(cc => cc.guid)
-    //     .filter((guid): guid is string => guid !== undefined);
-
-    //   var cost = -1;
-    //   if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
-
-    //   var remarks = this.pcForm!.value["remarks"] || "";
-    //   if (pd_guids.length == 1) {
-    //     if (!remarks) {
-    //       remarks = "--";
-    //     }
-    //   }
-    //   this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
-    //     if (result.data.updatePackageResidues > 0) {
-
-    //       console.log('valid');
-    //       this.dialogRef.close(result.data.updatePackageResidues);
-
-    //     }
-    //   });
-    // }
-
-    // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
-    // // tc.guid='';
-    // pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
-    // pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
-    // pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
-    // pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
-    // pdItem.remarks = this.pcForm.value['remarks'];
-    // var storageCalValue;
-    // if(this.storageCalControl.value)
-    // {
-    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-    //     storageCalValue = storage_calCv.code_val;
-    // }
-    // pdItem.storage_cal_cv = storageCalValue;
-    // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
-    //   if(result.data.updatePackageDepot>0)
-    //   {
-
-    //             console.log('valid');
-    //             this.dialogRef.close(result.data.updatePackageDepot);
-
-    //   }
-    // });
+      var roleInput = new RoleItem(this.selectedItem);
+      roleInput.role_functions=[];
+      var role_functions = this.selectedItem?.role_functions?.filter(
+  (d: Role_Functions) => d.functions?.opt != null
+);
+       roleInput.role_functions = new Array<Role_Functions>();
+      role_functions?.forEach((d: any) => {
+        var role_functions:any=new Role_Functions();
+        role_functions.functions_guid=d.guid;
+        role_functions.role_guid=roleInput.guid;
+        role_functions.action = d.opt=="x"?"CANCEL":"NEW";
+        roleInput.role_functions!.push(role_functions);
+      })
+      this.roleDS?.updateRole(roleInput).subscribe((result: any) => {
+         this.dialogRef.close(result.data.updateRole);
+      })
+    }
 
 
   }
@@ -477,6 +413,57 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
 cancelFeatureItem($event: MouseEvent,index: number) {
+  $event.stopPropagation();
+  $event.preventDefault();
+   // 1. Get the specific item from the array using its index
+  var item = this.selectedItem?.role_functions?.[index]; 
+  
+  // 2. Check if the item exists (to prevent errors if index is out of bounds)
+  if (item) {
+    // 3. Mark the item by setting its 'opt' property to "X"
+    item.functions!.opt = "X"; 
+  }
 
+  }
+displayFunctionFn(item: any) {
+  return item ? item.code : undefined;
 }
+
+isSelected(item: Functions) {
+  var bRetval:boolean=false;
+   if(this.selectedItem?.role_functions){     
+    var fnc = this.selectedItem?.role_functions?.find((d: Role_Functions) => d.functions_guid === item.guid);
+    if(fnc)
+    {
+      if(fnc.functions?.opt!="X")
+      {
+        bRetval=true;
+      }
+    }
+   }
+  return bRetval;
+}
+
+AddFunctions(){
+
+  var item:Functions = this.pcForm.get('feature')?.value;
+
+  var selItem = this.selectedItem?.role_functions?.find((d: Role_Functions) => d.functions_guid === item.guid);
+  if(selItem)
+  {
+    selItem.functions!.opt="";
+  }
+  else
+  {
+    var role_functions:Role_Functions=new Role_Functions();
+    role_functions.functions_guid=item.guid;
+    role_functions.functions=new Functions(item);
+    role_functions.functions.opt="+";
+    this.selectedItem?.role_functions?.unshift(role_functions);
+  }
+  this.pcForm.get('feature')?.setValue(null);
+  this.pcForm.get('feature')?.markAsUntouched();
+}
+
+
 }

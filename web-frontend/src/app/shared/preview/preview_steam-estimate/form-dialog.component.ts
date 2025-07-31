@@ -31,22 +31,23 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
-import {InGateSurveyItem} from 'app/data-sources/in-gate-survey';
-import {BusinessLogicUtil} from 'app/utilities/businesslogic-util';
-import { CodeValuesDS,CodeValuesItem } from 'app/data-sources/code-values';
+import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { MatCardModule } from '@angular/material/card';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { SteamPartItem } from 'app/data-sources/steam-part';
+import { ModulePackageService } from 'app/services/module-package.service';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
   langText?: any;
   selectedItem: SteamItem;
-  nextTestDesc?:string;
-  lastTestDesc?:string;
-  
+  nextTestDesc?: string;
+  lastTestDesc?: string;
+
 }
 
 
@@ -92,55 +93,53 @@ export class SteamEstimateFormDialogComponent_View {
     'hour',
     'cost',
     'approve_part',
-     'actions'
+    'actions'
   ];
 
   action: string;
   index?: number;
   dialogTitle?: string;
-  deList?: any[]=[];
+  deList?: any[] = [];
 
   plDS: PackageLabourDS;
-  
-  sotDS:StoringOrderTankDS;
+
+  sotDS: StoringOrderTankDS;
   igDS: InGateDS;
-  ccDS:CustomerCompanyDS;
+  ccDS: CustomerCompanyDS;
   cvDS: CodeValuesDS;
-  steamDS:SteamDS;
+  steamDS: SteamDS;
   sotItem?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
-   unit_type_control = new UntypedFormControl();
+  unit_type_control = new UntypedFormControl();
 
   selectedItem: SteamItem;
   startDate = new Date();
   isSteamRepair?: boolean = true;
-  
+
   lastCargoControl = new UntypedFormControl();
-  lastTestDesc :string='';
-  nextTestDesc :string='';
-   groupNameCvList: CodeValuesItem[] = []
-    subgroupNameCvList: CodeValuesItem[] = []
-    yesnoCvList: CodeValuesItem[] = []
-    soTankStatusCvList: CodeValuesItem[] = []
-    purposeOptionCvList: CodeValuesItem[] = []
-    testTypeCvList: CodeValuesItem[] = []
-    testClassCvList: CodeValuesItem[] = []
-    partLocationCvList: CodeValuesItem[] = []
-    damageCodeCvList: CodeValuesItem[] = []
-    repairCodeCvList: CodeValuesItem[] = []
-    unitTypeCvList: CodeValuesItem[] = []
-    processStatusCvList: CodeValuesItem[] = []
-    clean_statusList: CodeValuesItem[] = [];
-    isOwner = false;
-    labourHour: number = 1;
-    packageLabourItem?: PackageLabourItem;
-    autosteamCost: string = '';
-  //custCompClnCatDS :CustomerCompanyCleaningCategoryDS;
-  //catDS :CleaningCategoryDS;
+  lastTestDesc: string = '';
+  nextTestDesc: string = '';
+  groupNameCvList: CodeValuesItem[] = []
+  subgroupNameCvList: CodeValuesItem[] = []
+  yesnoCvList: CodeValuesItem[] = []
+  soTankStatusCvList: CodeValuesItem[] = []
+  purposeOptionCvList: CodeValuesItem[] = []
+  testTypeCvList: CodeValuesItem[] = []
+  testClassCvList: CodeValuesItem[] = []
+  partLocationCvList: CodeValuesItem[] = []
+  damageCodeCvList: CodeValuesItem[] = []
+  repairCodeCvList: CodeValuesItem[] = []
+  unitTypeCvList: CodeValuesItem[] = []
+  processStatusCvList: CodeValuesItem[] = []
+  clean_statusList: CodeValuesItem[] = [];
+  isOwner = false;
+  labourHour: number = 1;
+  packageLabourItem?: PackageLabourItem;
+  autosteamCost: string = '';
   translatedLangText: any = {};
   langText = {
-     NEW: 'COMMON-FORM.NEW',
+    NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
     HEADER: 'COMMON-FORM.HEADER',
     CUSTOMER: 'COMMON-FORM.CUSTOMER',
@@ -243,14 +242,12 @@ export class SteamEstimateFormDialogComponent_View {
     ABORT: 'COMMON-FORM.ABORT',
     DETAILS: 'COMMON-FORM.DETAILS',
     TYPE: 'COMMON-FORM.TYPE',
-    RESIDUE_ESTIMATE_DETAILS: 'COMMON-FORM.RESIDUE-ESTIMATE-DETAILS',
+    STEAMING_ESTIMATE_DETAILS: 'COMMON-FORM.STEAMING-ESTIMATE-DETAILS',
     HOUR_RATE: 'COMMON-FORM.HOUR-RATE',
     FLAT: 'COMMON-FORM.FLAT',
-    HOURLY:'COMMON-FORM.HOURLY',
-    BY_HOUR:'COMMON-FORM.BY-HOUR',
-    
+    HOURLY: 'COMMON-FORM.HOURLY',
+    BY_HOUR: 'COMMON-FORM.BY-HOUR',
   };
- 
 
   constructor(
     public dialogRef: MatDialogRef<SteamEstimateFormDialogComponent_View>,
@@ -259,24 +256,24 @@ export class SteamEstimateFormDialogComponent_View {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private modulePackageService: ModulePackageService,
   ) {
     // Set the defaults
     this.plDS = new PackageLabourDS(this.apollo);
-    this.steamDS=new SteamDS(this.apollo);
-    this.sotDS=new StoringOrderTankDS(this.apollo);
-    this.cvDS=new CodeValuesDS(this.apollo);
-    this.igDS= new InGateDS(this.apollo);
-    this.ccDS= new CustomerCompanyDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
+    this.sotDS = new StoringOrderTankDS(this.apollo);
+    this.cvDS = new CodeValuesDS(this.apollo);
+    this.igDS = new InGateDS(this.apollo);
+    this.ccDS = new CustomerCompanyDS(this.apollo);
     this.plDS = new PackageLabourDS(this.apollo);
-    
     this.translateLangText();
     this.selectedItem = data.selectedItem;
-    this.sotItem=this.selectedItem.storing_order_tank;
-    this.deList=this.selectedItem.steaming_part;
-    this.lastTestDesc= data.lastTestDesc||'';
-    this.nextTestDesc=data.nextTestDesc||'';
+    this.sotItem = this.selectedItem.storing_order_tank;
+    this.deList = this.selectedItem.steaming_part;
+    this.lastTestDesc = data.lastTestDesc || '';
+    this.nextTestDesc = data.nextTestDesc || '';
     this.action = data.action!;
-    this.isSteamRepair=this.steamDS.IsSteamRepair(this.selectedItem);
+    this.isSteamRepair = this.steamDS.IsSteamRepair(this.selectedItem);
     this.labourHour = this.selectedItem?.est_hour || 1;
     if (BusinessLogicUtil.isEstimateApproved(this.selectedItem!)) {
       this.labourHour = this.selectedItem?.total_hour || 1;
@@ -284,8 +281,7 @@ export class SteamEstimateFormDialogComponent_View {
     this.loadData();
   }
 
-
- public loadData() {
+  public loadData() {
     const queries = [
       { alias: 'groupNameCv', codeValType: 'GROUP_NAME' },
       { alias: 'yesnoCv', codeValType: 'YES_NO' },
@@ -301,7 +297,7 @@ export class SteamEstimateFormDialogComponent_View {
     ];
     this.cvDS.getCodeValuesByType(queries);
 
-   
+
     this.cvDS.connectAlias('yesnoCv').subscribe(data => {
       this.yesnoCvList = data;
     });
@@ -333,16 +329,12 @@ export class SteamEstimateFormDialogComponent_View {
       this.processStatusCvList = data;
     });
 
-
-      var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
-      this.getCustomerLabourPackage(ccGuid!);
-    
+    var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
+    this.getCustomerLabourPackage(ccGuid!);
   }
 
- 
-
   GetTitle() {
-    return this.translatedLangText.RESIDUE_ESTIMATE_DETAILS;
+    return this.translatedLangText.STEAMING_ESTIMATE_DETAILS;
   }
 
   translateLangText() {
@@ -351,25 +343,12 @@ export class SteamEstimateFormDialogComponent_View {
     });
   }
 
-
- 
-
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
 
       console.log('valid');
       this.dialogRef.close(count);
     }
-  }
-
-  save() {
-    // if (!this.pcForm?.valid) return;
-    // const where: any = {};
-    // if (this.pcForm!.value['name']) {
-    //   where.name = { contains: this.pcForm!.value['name'] };
-    // }
-
-   
   }
 
   displayLastUpdated(r: TariffDepotItem) {
@@ -383,10 +362,7 @@ export class SteamEstimateFormDialogComponent_View {
     const year = date.getFullYear();
 
     // Replace the '/' with '-' to get the required format
-
-
     return `${day}/${month}/${year}`;
-
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
@@ -407,15 +383,14 @@ export class SteamEstimateFormDialogComponent_View {
     return ''; // 'light-blue';
   }
 
-   IsApproved() {
+  IsApproved() {
     const validStatus = ['APPROVED', 'COMPLETED', 'QC_COMPLETED']
     return validStatus.includes(this.selectedItem?.status_cv!);
-    
   }
 
   parse2Decimal(figure: number | string) {
-      return Utility.formatNumberDisplay(figure)
-    }
+    return Utility.formatNumberDisplay(figure, this.isAllowViewCost())
+  }
 
   calculateResidueItemCost(residuePart: ResiduePartItem): number {
     let calResCost: number = 0;
@@ -428,106 +403,91 @@ export class SteamEstimateFormDialogComponent_View {
     }
 
     return calResCost;
-
   }
 
-  //  getTotalCost(): number {
-  //   return this.deList?.reduce((acc, row) => {
-  //     if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
-  //       if (this.IsApproved()) {
-  //         return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
-  //       }
-  //       else {
-  //         return acc + ((row.quantity || 0) * (row.cost || 0));
-  //       }
-  //     }
-  //     return acc; // If row is approved, keep the current accumulator value
-  //   }, 0);
-  // }
+  IsApprovePart(rep: ResiduePartItem) {
+    return rep.approve_part;
+  }
 
-   IsApprovePart(rep: ResiduePartItem) {
-      return rep.approve_part;
+  getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs) {
+      const test_type = igs.last_test_cv;
+      const test_class = igs.test_class_cv;
+      const testDt = igs.test_dt as number;
+      return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
     }
+    return "";
+  }
 
-    getLastTest(igs: InGateSurveyItem | undefined): string | undefined {
-        if (igs) {
-          const test_type = igs.last_test_cv;
-          const test_class = igs.test_class_cv;
-          const testDt = igs.test_dt as number;
-          return this.getTestTypeDescription(test_type) + " - " + Utility.convertEpochToDateStr(testDt, 'MM/YYYY') + " - " + this.getTestClassDescription(test_class);
-        }
-        return "";
-      }
-    
-      getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
-        if (igs && igs.next_test_cv && igs.test_dt) {
-          const test_type = igs.last_test_cv;
-          const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
-          const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
-          return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
-        }
-        return "";
-      }
+  getNextTest(igs: InGateSurveyItem | undefined): string | undefined {
+    if (igs && igs.next_test_cv && igs.test_dt) {
+      const test_type = igs.last_test_cv;
+      const yearCount = BusinessLogicUtil.getNextTestYear(test_type);
+      const resultDt = Utility.addYearsToEpoch(igs.test_dt as number, yearCount);
+      return this.getTestTypeDescription(igs.next_test_cv) + " - " + Utility.convertEpochToDateStr(resultDt, 'MM/YYYY');
+    }
+    return "";
+  }
 
-      getTestTypeDescription(codeVal: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
-      }
+  getTestTypeDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testTypeCvList);
+  }
 
-      getTestClassDescription(codeVal: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
-      }
+  getTestClassDescription(codeVal: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeVal, this.testClassCvList);
+  }
 
-     displayDate(input: number | undefined): string | undefined {
-        return Utility.convertEpochToDateStr(input);
-      }
-      displayTankPurpose(sot: StoringOrderTankItem) {
-         return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
-      }
+  displayDate(input: number | undefined): string | undefined {
+    return Utility.convertEpochToDateStr(input);
+  }
+  displayTankPurpose(sot: StoringOrderTankItem) {
+    return this.sotDS.displayTankPurpose(sot, this.getPurposeOptionDescription.bind(this));
+  }
 
-       getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
-        return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
-      }
+  getPurposeOptionDescription(codeValType: string | undefined): string | undefined {
+    return this.cvDS.getCodeDescription(codeValType, this.purposeOptionCvList);
+  }
 
-      getQtyTable_Text(): string {
-        var retval = `${this.translatedLangText.QTY}`;
-        
-        return retval;
-      }
+  getQtyTable_Text(): string {
+    var retval = `${this.translatedLangText.QTY}`;
 
-      getResultTable_HourText(): string {
-        var retval = `${this.translatedLangText.HOUR_RATE}`;
-        if (this.isSteamRepair) {
-          retval = `${this.translatedLangText.HOUR}`;
-        }
-        return retval;
-      }
+    return retval;
+  }
 
-    getTotalLabourHours(): string {
-      let ret = 0;
-      if (this.isSteamRepair) {
-        if ((this.deList?.length||0) > 0) {
-          this.deList?.map(d => {
+  getResultTable_HourText(): string {
+    var retval = `${this.translatedLangText.HOUR_RATE}`;
+    if (this.isSteamRepair) {
+      retval = `${this.translatedLangText.HOUR}`;
+    }
+    return retval;
+  }
 
-            if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
-              && (d.approve_part == null || d.approve_part == true)) {
-              if (this.IsApproved()) {
-                ret += d.approve_labour;
-              }
-              else {
-                ret += d.labour;
-              }
+  getTotalLabourHours(): string {
+    let ret = 0;
+    if (this.isSteamRepair) {
+      if ((this.deList?.length || 0) > 0) {
+        this.deList?.map(d => {
+
+          if ((d.delete_dt === undefined || d.delete_dt === null) && (d.steaming_part || d.steaming_part == null)
+            && (d.approve_part == null || d.approve_part == true)) {
+            if (this.IsApproved()) {
+              ret += d.approve_labour;
             }
-
-            // ret+=d.labour
+            else {
+              ret += d.labour;
+            }
           }
-          );
+
+          // ret+=d.labour
         }
-        return String(ret);
+        );
       }
-      else {
-        return '';
-      }
+      return String(ret);
     }
+    else {
+      return '';
+    }
+  }
   getLabourCost(): number {
     if (this.isSteamRepair) {
       return this.packageLabourItem?.cost || 0;
@@ -550,12 +510,12 @@ export class SteamEstimateFormDialogComponent_View {
     });
   }
 
-   getRateType(): string {
-    var flat_rate = this.selectedItem!.flat_rate??true;
+  getRateType(): string {
+    var flat_rate = this.selectedItem!.flat_rate ?? true;
     return flat_rate ? this.translatedLangText.FLAT : this.translatedLangText.HOURLY;
   }
 
-   calculateSteamItemCost(steamPart: SteamPartItem): number {
+  calculateSteamItemCost(steamPart: SteamPartItem): number {
     let calResCost: number = 0;
 
     if (this.isSteamRepair) {
@@ -566,15 +526,14 @@ export class SteamEstimateFormDialogComponent_View {
         calResCost = steamPart.cost! * steamPart.quantity!;
       }
     }
-   
+
     return calResCost;
   }
 
-  getAutoSteamTotalCost():String
-  {
+  getAutoSteamTotalCost(): String {
     var cost = this.getRate();
     var totalCost = this.parse2Decimal(cost);
-    if (!this.selectedItem!.flat_rate??true) {
+    if (!this.selectedItem!.flat_rate ?? true) {
       cost *= this.labourHour;
       totalCost = this.translatedLangText.BY_HOUR;
     }
@@ -589,13 +548,13 @@ export class SteamEstimateFormDialogComponent_View {
     else {
       if (this.deList!.length == 0) return 0;
 
-      if ((this.selectedItem!.flat_rate??false)) return this.IsApproved() ? (this.deList![0]!.approve_cost || 0) : (this.deList![0]!.cost || 0);
+      if ((this.selectedItem!.flat_rate ?? false)) return this.IsApproved() ? (this.deList![0]!.approve_cost || 0) : (this.deList![0]!.cost || 0);
       else return this.IsApproved() ? (this.deList![0]!.approve_labour || 0) : (this.deList![0]!.labour || 0);
     }
   }
 
 
-   getTotalLabourCost(): string {
+  getTotalLabourCost(): string {
     let ret = 0;
     if (this.deList!.length > 0 && this.isSteamRepair) {
       this.deList!.map(d => {
@@ -610,17 +569,17 @@ export class SteamEstimateFormDialogComponent_View {
         }
       }
       );
-      return (ret||0).toFixed(2);
+      return (ret || 0).toFixed(2);
     }
     else {
       return '-';
     }
 
 
-    
+
   }
 
-   getTotalCost(): number {
+  getTotalCost(): number {
     if (this.isSteamRepair) {
 
       var retval = this.deList!.reduce((acc, row) => {
@@ -639,5 +598,9 @@ export class SteamEstimateFormDialogComponent_View {
     else {
       return this.calculateSteamItemCost(this.deList![0]!);
     }
+  }
+
+  isAllowViewCost() {
+    return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
   }
 }

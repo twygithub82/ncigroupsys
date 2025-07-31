@@ -400,6 +400,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     this.calculateTotalCost();
 
     //where.status_cv={in:['COMPLETED','APPROVED']};
+    where.storing_order_tank = {};
     where.guid = { neq: null };
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
@@ -412,8 +413,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       ];
     }
 
-    where.storing_order_tank = {};
-        where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
+    where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
 
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -969,6 +969,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     newBilling.invoice_dt = Number(Utility.convertDate(today));
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    newBilling.invoice_type = "Storage";
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     var billingStorageDetailReqs: StorageDetailRequest[] = [];

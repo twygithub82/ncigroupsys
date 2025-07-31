@@ -816,6 +816,8 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     let fontSize = 7;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
+    let bufferTabletWidth=8;
+    let tableWidth = pageWidth - leftMargin - rightMargin-bufferTabletWidth;
     
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -871,7 +873,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const repGeneratedDate = `${this.translatedLangText.DATE}:${this.GeneratedDate()}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin +(bufferTabletWidth/2), startY - 2 , 9);
 
     const yard_no_tank: { key: string; value: number }[] = [];
     var total_tank_no = 0;
@@ -932,6 +934,7 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
         minCellHeight: minHeightHeaderCol
 
       },
+      tableWidth: tableWidth, // Set the table width
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {

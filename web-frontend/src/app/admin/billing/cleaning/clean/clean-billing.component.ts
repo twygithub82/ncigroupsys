@@ -840,6 +840,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     newBilling.invoice_dt = Number(Utility.convertDate(invoiceDate));
     newBilling.invoice_due = Number(Utility.convertDate(invoiceDue));
     newBilling.invoice_no = `${this.invoiceNoControl.value}`;
+    newBilling.invoice_type = 'Cleaning';
     newBilling.status_cv = 'PENDING';
     var billingEstimateRequests: BillingEstimateRequest[] = [];
     this.selection.selected.map(c => {

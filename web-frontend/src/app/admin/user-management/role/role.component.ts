@@ -397,10 +397,10 @@ addCall(event: Event) {
     }
     // if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '60vw',
+      width: '40vw',
       maxHeight: '75vh',
       data: {
-        action: 'new',
+        action: 'edit',
         langText: this.translatedLangText ,
         selectedItem: row,
         departmentList:this.departmentCvList
@@ -772,7 +772,7 @@ addCall(event: Event) {
             before
           });
           console.log(this.searchStateService.getPagination(this.pageStateType))
-          this.subs.sink = this.roleDS.searchRoles(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+          this.subs.sink = this.roleDS.searchRolesWithFunctions(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
             .subscribe(data => {
               this.roleList = data;
               this.endCursor = this.roleDS.pageInfo?.endCursor;

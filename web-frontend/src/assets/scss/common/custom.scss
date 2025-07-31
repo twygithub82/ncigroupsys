@@ -1319,7 +1319,8 @@ $breakpoints: (
   font-size: 1rem;
 }
 
-.mat-icon {
+.mat-icon,
+.material-symbols-outlined {
   font-size: 24px;
 }
 
@@ -2370,6 +2371,16 @@ mat-card-content.tank-card-content {
     justify-content: center;
   }
 
+  .material-symbols-outlined {
+    flex: 0 0 36px;
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   mat-label {
     flex: 1 1 auto;
     word-break: break-word;
@@ -2633,6 +2644,14 @@ button[mat-flat-button].center-icon {
   justify-content: center;
 
   mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-left: auto;
+  }
+
+  .material-symbols-outlined {
     display: flex;
     align-items: center;
     justify-content: center;

@@ -35,6 +35,8 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { PreviewImageDialogComponent } from '@shared/components/preview-image-dialog/preview-image-dialog.component';
 import { PreviewRepairEstFormDialog } from '@shared/preview/preview_repair_estimate/preview-repair-estimate.component';
+import { ResidueEstimateFormDialogComponent_View } from '@shared/preview/preview_residue-estimate/form-dialog.component';
+import { SteamEstimateFormDialogComponent_View } from '@shared/preview/preview_steam-estimate/form-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { BillingDS, BillingSOTGo } from 'app/data-sources/billing';
 import { BookingDS, BookingItem } from 'app/data-sources/booking';
@@ -55,6 +57,7 @@ import { ResidueDS, ResidueItem } from 'app/data-sources/residue';
 import { ResidueEstPartGO } from 'app/data-sources/residue-part';
 import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { SchedulingDS, SchedulingItem } from 'app/data-sources/scheduling';
+import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
 import { SteamDS, SteamItem } from 'app/data-sources/steam';
 import { SteamPartGO } from 'app/data-sources/steam-part';
 import { StoringOrderGO, StoringOrderItem } from 'app/data-sources/storing-order';
@@ -68,6 +71,7 @@ import { TransferDS, TransferItem } from 'app/data-sources/transfer';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { EirFormComponent } from 'app/document-template/pdf/eir-form/eir-form.component';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
+import { ResidueDisposalPdfComponent } from 'app/document-template/pdf/residue-disposal-pdf/residue-disposal-pdf.component';
 import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heating-pdf/steam-heating-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
@@ -77,7 +81,6 @@ import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ResidueEstimateFormDialogComponent_View } from '@shared/preview/preview_residue-estimate/form-dialog.component';
 import { AddPurposeFormDialogComponent } from './add-purpose-form-dialog/add-purpose-form-dialog.component';
 import { ConfirmationRemarksFormDialogComponent } from './confirmation-remarks-form-dialog/confirmation-remarks-form-dialog.component';
 import { EditGateDetailsFormDialogComponent } from './edit-gate-details-form-dialog/edit-gate-details-form-dialog.component';
@@ -96,8 +99,7 @@ import { RenumberTankFormDialogComponent } from './renumber-tank-form-dialog/ren
 import { ReownerTankFormDialogComponent } from './reowner-tank-form-dialog/reowner-tank-form-dialog.component';
 import { SteamTempFormDialogComponent } from './steam-temp-form-dialog/steam-temp-form-dialog.component';
 import { TankNoteFormDialogComponent } from './tank-note-form-dialog/tank-note-form-dialog.component';
-import { SchedulingSotDS, SchedulingSotItem } from 'app/data-sources/scheduling-sot';
-import { SteamEstimateFormDialogComponent_View } from '@shared/preview/preview_steam-estimate/form-dialog.component';
+import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 
 
 @Component({
@@ -508,7 +510,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     EXISTED: 'COMMON-FORM.EXISTED',
     REOWNERSHIP: 'COMMON-FORM.REOWNERSHIP',
     AMOUNT_$: "COMMON-FORM.AMOUNT-$",
-    DEPOT_COST: "MENUITEMS.TARIFF.LIST.TARIFF-DEPOT"
+    DEPOT_COST: "MENUITEMS.TARIFF.LIST.TARIFF-DEPOT",
+    DOWNLOAD: "COMMON-FORM.DOWNLOAD",
   }
 
   sot_guid: string | null | undefined;
@@ -1163,7 +1166,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   parse2Decimal(input: number | string | undefined) {
-    return Utility.formatNumberDisplay(input);
+    return Utility.formatNumberDisplay(input, this.isAllowViewCost());
   }
 
   updatePurposeDialog(event: Event, type: string, action: string) {
@@ -1438,6 +1441,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sot.job_no = result.job_no;
         this.sot.release_job_no = result.release_job_no;
         this.sot.job_no_remarks = result.job_no_remarks;
+        this.loadSotDepotCost();
 
         console.log(newSot)
         this.sotDS.updateJobNo(newSot).subscribe(result => {
@@ -2636,15 +2640,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canOverwriteJobNo() {
-    return true;
+    return this.isAllowDepotJobOverwrite();
   }
 
   canOverwriteDepotCost() {
-    return true;
-  }
-
-  canOverwriteTankDetail() {
-
+    return this.isAllowDepotCostOverwrite();
   }
 
   allowPerformAction() {
@@ -2783,12 +2783,17 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canOverwriteResidueApproval(row: ResidueItem) {
     const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED'];
-    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
+    return this.isAllowResidueOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
   canOverwriteRepairApproval(row: RepairItem) {
     const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
-    return allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
+    return this.isAllowRepairOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
+  }
+
+  canOverwriteRepairQC(row: RepairItem) {
+    const allowOverwriteStatus = ['APPROVED', 'ASSIGNED', 'PARTIAL_ASSIGNED', 'JOB_IN_PROGRESS', 'COMPLETED', 'QC_COMPLETED'];
+    return this.isAllowRepairOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid && !row?.owner_billing_guid;
   }
 
   onRollbackSteamingJobs(event: Event, row: SteamItem) {
@@ -2839,7 +2844,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackResidueCompleted(row: ResidueItem) {
-    return this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && (this.cleaningItem?.[0]?.status_cv === 'APPROVED' || this.cleaningItem?.[0]?.status_cv === 'JOB_IN_PROGRESS');
+    return this.isAllowResidueReinstate() && this.sot?.tank_status_cv === "CLEANING" && row.status_cv === 'COMPLETED' && (this.cleaningItem?.[0]?.status_cv === 'APPROVED' || this.cleaningItem?.[0]?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   onRollbackResidueJobs(event: Event, row: ResidueItem) {
@@ -2996,7 +3001,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackRepairQC(row: RepairItem) {
-    return (this.sot?.tank_status_cv === "REPAIR" || this.sot?.tank_status_cv === "STORAGE") && this.repairDS.canRollbackQC(row);
+    return this.isAllowRepairReinstate() && (this.sot?.tank_status_cv === "REPAIR" || this.sot?.tank_status_cv === "STORAGE") && this.repairDS.canRollbackQC(row);
   }
 
   onRollbackRepairQC(event: Event, row: RepairItem) {
@@ -3330,7 +3335,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         },
         {
           "description": this.translatedLangText.STORAGE,
-          "job_no": this.sot?.release_job_no,
+          "job_no": '-',
           "billing_guid": this.sot?.billing_sot?.storage_billing_guid,
           "invoice_no": this.sot?.billing_sot?.storage_billing?.storage_detail?.length,
           "cost": BusinessLogicUtil.sumOfStorageDetails(this.sot?.billing_sot?.storage_billing?.storage_detail)
@@ -3369,31 +3374,54 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     });
   }
 
-  exportResidueEst(event: Event, residueItem: ResidueItem) {
+  exportSteamingEst(event: Event, row: any) {
     let tempDirection: Direction = this.getViewDirection();
 
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
+    const dialogRef = this.dialog.open(SteamEstimatePdfComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        steam_guid: row?.guid,
+        packageLabourCost: row?.rate || this.packageLabourItem?.cost
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
 
-    // const dialogRef = this.dialog.open(ResidueEstimateFormComponent, {
-    //   position: { top: '-9999px', left: '-9999px' },
-    //   width: '794px',
-    //   height: '80vh',
-    //   data: {
-    //     residueItem,
-    //     residueDS: this.residueDS,
-    //     cvDS: this.cvDS
-    //   },
-    //   direction: tempDirection
-    // });
-    // this.fileManagerService.actionLoadingSubject.next(true);
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   this.fileManagerService.actionLoadingSubject.next(false);
-    // });
+  exportResidueEst(event: Event, residue_guid: string) {
+    let tempDirection: Direction = this.getViewDirection();
 
+    const dialogRef = this.dialog.open(ResidueDisposalPdfComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        residue_guid: residue_guid,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
+  }
+
+  exportRepairEst(event: Event, repair_guid: string) {
+    let tempDirection: Direction = this.getViewDirection();
+
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      position: { top: '-9999px', left: '-9999px' },
+      width: '794px',
+      height: '80vh',
+      data: {
+        repair_guid: repair_guid,
+        customer_company_guid: this.sot?.storing_order?.customer_company?.guid,
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
 
   anyActiveRepair(includePending: boolean = false): boolean {
@@ -3408,6 +3436,18 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     } else {
       return false;
     }
+  }
+
+  canExportSteamingEst(row: any) {
+    return this.isAllowViewCost();
+  }
+
+  canExportResidueEst(row: any) {
+    return this.isAllowViewCost();
+  }
+
+  canExportRepairEst(row: any) {
+    return this.isAllowViewCost();
   }
 
   loadFullPage() {
@@ -3515,6 +3555,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   isAllowEditCompartmentType() {
+    // function in overwrite cleaning approval
+    // TODO: Have not check yet
     return this.modulePackageService.hasFunctions(['INVENTORY_TANK_MOVEMENT_COMPARTMENT_TYPE']);
   }
 

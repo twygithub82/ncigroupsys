@@ -370,7 +370,7 @@ export class PDFUtility {
    
     
 
-     const maxWidth = 77.5; // Your desired width
+      const maxWidth = 77.5; // Your desired width
       const maxHeight = 25; // Maximum height you want to allow
       const aspectRatio = height / width;
 
