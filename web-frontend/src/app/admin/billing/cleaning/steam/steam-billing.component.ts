@@ -390,7 +390,11 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.status_cv = { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB-IN_PROGRESS'] };
+    where.status_cv = { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] };
+
+   //For Steaming Temp
+   // where.status_cv = { in: ['COMPLETED'] }; 
+
     where.bill_to_guid = { neq: null };
 
 
