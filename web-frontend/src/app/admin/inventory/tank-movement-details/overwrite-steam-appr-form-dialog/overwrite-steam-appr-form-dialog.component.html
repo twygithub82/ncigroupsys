@@ -235,11 +235,11 @@
               <ng-container matColumnDef="hour">
                 <mat-header-cell mat-header-cell *matHeaderCellDef
                   [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{data.translatedLangText.HOUR}}
+                  {{getResultTable_HourText()}}
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row"
                   [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.HOUR}}:</span><tlx-form-field
+                  <span class="mobile-label">{{getResultTable_HourText()}}:</span><tlx-form-field
                     customClass="mat-table-form-txt-40px">
                     <mat-form-field>
                       @if(isApproved())
@@ -265,11 +265,11 @@
               <ng-container matColumnDef="unit_price">
                 <mat-header-cell mat-header-cell *matHeaderCellDef
                   [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{data.translatedLangText.UNIT_PRICE}}
+                  {{data.translatedLangText.PRICE}}
                 </mat-header-cell>
                 <mat-cell mat-cell *matCellDef="let row"
                   [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.UNIT_PRICE}}:</span><tlx-form-field
+                  <span class="mobile-label">{{data.translatedLangText.PRICE}}:</span><tlx-form-field
                     customClass="mat-table-form-txt-40px">
                     <mat-form-field>
                       @if(isApproved())
@@ -293,7 +293,53 @@
                   ($ {{parse2Decimal(this.packageLabourItem.cost)}}):</mat-footer-cell>
               </ng-container>
               <ng-container matColumnDef="approve_part">
+                @if(isSteamRepair)
+                {
                 <mat-header-cell *matHeaderCellDef
+                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <mat-icon>more_vert</mat-icon>
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row"
+                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <span class="mobile-label">{{data.translatedLangText.APPROVED}}:</span>
+                  @if (row.approve_part === null || row.approve_part === undefined ||
+                  isApprovePart(row)){
+                  <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
+                  }
+                  @else {
+                  <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
+                  }
+                </mat-cell>
+                }
+                @else{
+                <mat-header-cell *matHeaderCellDef
+                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                  {{data.translatedLangText.RATE}}
+                </mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let row"
+                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                  <span class="mobile-label">{{data.translatedLangText.RATE}}:</span>
+                  <!-- From Uiverse.io by Na3ar-17 -->
+                  <div class="container">
+                    <label class="switch">
+                      <input type="checkbox" [(ngModel)]="flat_rate" [disabled]="isDisabled()"
+                        (ngModelChange)="onFlatRateChanged($event)" />
+                      <span class="slider">
+                        <span class="title">{{getRateType()}}</span>
+                        <span class="ball">
+                          <span class="icon">
+                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" width="25" height="25"
+                              fill="none" viewBox="0 0 24 24">
+                              <circle cx="12" cy="12" r="6" fill="currentColor" />
+                            </svg>
+                          </span>
+                        </span>
+                      </span>
+                    </label>
+                  </div>
+                </mat-cell>
+                }
+                <!-- <mat-header-cell *matHeaderCellDef
                   [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                   <mat-icon>more_vert</mat-icon>
                 </mat-header-cell>
@@ -306,7 +352,7 @@
                   @else {
                   <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event,row)">close</mat-icon>
                   }
-                </mat-cell>
+                </mat-cell> -->
                 <mat-footer-cell *matFooterCellDef
                   class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm"></mat-footer-cell>
               </ng-container>
@@ -326,35 +372,65 @@
                   {{this.getTotalLabourCost()}}
                 </mat-footer-cell>
               </ng-container>
-              <!-- <ng-container matColumnDef="actions">
-                    <mat-header-cell class="pr-0"
-                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      *matHeaderCellDef>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row;"
-                      class="tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
-                      @if (steamDS.canAmend(this.steamItem!)) {
-                      @if (!row.delete_dt){
-                      <button mat-icon-button (click)="handleDelete($event, row, row.index)">
-                        <mat-icon>delete_forever</mat-icon>
-                      </button>
-                      }
-                      @if (row.delete_dt) {
-                      <button mat-icon-button (click)="undeleteItem($event, row, row.index)">
-                        <mat-icon>undo</mat-icon>
-                      </button>
-                      }
-                      }
-                    </mat-cell>
-                    <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
-                  </ng-container> -->
-              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-              <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
-                matRipple>
-              </mat-row>
-              <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+              <!-- Labour Cost Footer -->
+              <ng-container matColumnDef="labourSummaryUnitPrice">
+                <mat-footer-cell *matFooterCellDef
+                  class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">
+                  {{data.translatedLangText.LABOUR}}
+                  (${{parse2Decimal(getLabourCost())}}):
+                </mat-footer-cell>
+              </ng-container>
+              <ng-container matColumnDef="labourSummaryHrs">
+                <mat-footer-cell *matFooterCellDef
+                  class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
+                  {{getTotalLabourHours()}}
+                </mat-footer-cell>
+              </ng-container>
+              <ng-container matColumnDef="labourSummaryCost">
+                <mat-footer-cell *matFooterCellDef
+                  class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                  <span class="mobile-label footer-label">{{data.translatedLangText.LABOUR}}
+                    (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}}):</span>
+                  <span class="">{{getTotalLabourCost()}}</span>
+                </mat-footer-cell>
+              </ng-container>
+
+              <!-- Total Cost Footer -->
+              <ng-container matColumnDef="totalSummaryUnitPrice">
+                <mat-footer-cell *matFooterCellDef
+                  class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">
+                  {{data.translatedLangText.TOTAL_COST}}
+                </mat-footer-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalSummaryHrs">
+                <mat-footer-cell *matFooterCellDef
+                  class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
+                </mat-footer-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalSummaryCost">
+                <mat-footer-cell *matFooterCellDef
+                  class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                  <span class="mobile-label footer-label">{{data.translatedLangText.TOTAL_COST}}:</span>
+                  @if(this.isSteamRepair)
+                  {
+                  {{this.parse2Decimal(this.getTotalCost())}}
+                  }
+                  @else
+                  {
+                  {{autosteamTotalCost}}
+                  }
+                </mat-footer-cell>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
+                  matRipple>
+                </mat-row>
+                <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
+                <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>
+              </ng-container>
             </table>
-            <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
+            <!-- <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
               <div class="row">
                 <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-1"></div>
                 <div class="col-xl-1 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2 font-bold">
@@ -365,22 +441,8 @@
                   {{this.parse2Decimal(this.getTotalCost())}}
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
-          <!-- No result -->
-          <!-- @if (!(packRepDS.loading$ | async) && !deList.length) {
-              <mat-divider></mat-divider>
-              <div class="no-results m-l-20 pt-3" [style.display]="deList.length === 0 ? '' : 'none'">
-                <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
-              </div>
-              } -->
-          <!-- Loading spinner -->
-          <!-- @if (packRepDS.loading$ | async) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-              } -->
         </div>
         <div class="row m-1 mt-3">
           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
@@ -506,7 +568,8 @@
       </div>
     </div>
     <div mat-dialog-actions class="mb-3 mt-3 align-right">
-      <button mat-flat-button color="primary" class="me-1" (click)="submit()" [disabled]="(tcDS.actionLoading$ | async)">
+      <button mat-flat-button color="primary" class="me-1" (click)="submit()"
+        [disabled]="(tcDS.actionLoading$ | async)">
         <mat-icon>
           @if (!(tcDS.actionLoading$ | async)) {
           save

@@ -1551,7 +1551,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     else {
       return '-';
     }
-
   }
 
   getTotalApprovedLabourCost(): number {
@@ -1598,7 +1597,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   getTotalCost(): number {
     if (this.isSteamRepair) {
-
       var retval = this.deList.reduce((acc, row) => {
         if ((row.delete_dt === undefined || row.delete_dt === null) && (row.approve_part == null || row.approve_part == true)) {
           if (this.IsApproved()) {
@@ -1616,7 +1614,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       return this.calculateSteamItemCost(this.deList[0]);
     }
   }
-
 
   undeleteItem(event: Event, row: SteamItem, index: number) {
     let tempDirection: Direction;
@@ -1761,8 +1758,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     if (this.isDisabled()) return;
     stm.approve_part = stm.approve_part != null ? !stm.approve_part : false;
     stm.action = 'EDIT';
-
-
   }
 
   IsApprovePart(stm: SteamPartItem) {
@@ -1916,7 +1911,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
     this.autosteamCost = this.parse2Decimal(cost);
     this.autosteamTotalCost = totalCost;
-
   }
 
   //   onCostChange(row: any) {
