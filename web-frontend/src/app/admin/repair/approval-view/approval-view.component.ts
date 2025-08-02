@@ -207,7 +207,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     ABORT: 'COMMON-FORM.ABORT',
     APPROVAL: 'COMMON-FORM.APPROVAL',
     PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
-
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -218,7 +217,6 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   sotItem?: StoringOrderTankItem;
   repairItem?: RepairItem;
-  // packageLabourItem?: PackageLabourItem;
   repList: RepairPartItem[] = [];
   groupNameCvList: CodeValuesItem[] = []
   subgroupNameCvList: CodeValuesItem[] = []
