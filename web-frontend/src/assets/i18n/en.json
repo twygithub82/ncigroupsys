@@ -1374,7 +1374,9 @@
     "REPAIR-ESTIMATE-DETAILS": "Repair Estimate Details",
     "APPROVAL_DATE": "Approval Date",
     "CLEAN-DURATION": "Cleaning Duration",
-    "ESTIMATE-AMOUNT": "Estimate Amount"
+    "ESTIMATE-AMOUNT": "Estimate Amount",
+    "START-DATE": "Start Date",
+    "STORAGE-DAY": "Storage Days"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

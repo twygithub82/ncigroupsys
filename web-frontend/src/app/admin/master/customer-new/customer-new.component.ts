@@ -1051,6 +1051,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     cust.country = this.ccForm?.get("country")?.value;
     cust.currency = this.ccForm?.get("currency")?.value;
     cust.email = this.ccForm?.get("email")?.value;
+    // cust.country_code = this.ccForm?.get("country_code")?.value?.code;
     cust.remarks = this.ccForm?.get("remarks")?.value;
     cust.website = this.ccForm?.get("web")?.value;
 

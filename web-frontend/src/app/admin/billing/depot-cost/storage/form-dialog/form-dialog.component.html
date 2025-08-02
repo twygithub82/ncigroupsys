@@ -51,24 +51,34 @@
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="invoiceno">
                       <mat-header-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef>{{translatedLangText.INVOICE_NO}}</mat-header-cell>
                       <mat-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.INVOICE_NO
                           }}:</span>{{row.invoice_no}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="invoicedate">
                       <mat-header-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matHeaderCellDef>{{translatedLangText.INVOICE_DATE
                         }}</mat-header-cell>
                       <mat-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                         *matCellDef="let row">
                         <span class="mobile-label">{{translatedLangText.INVOICE_DATE
                           }}:</span>{{displayDate(row.invoice_dt)}}</mat-cell>
+                    </ng-container>
+                      <ng-container matColumnDef="startdate">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.START_DATE}}
+                      </mat-header-cell>
+                      <mat-cell
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                        *matCellDef="let row">
+                        <span class="mobile-label">{{translatedLangText.START_DATE
+                          }}:</span>{{displayDate(row.start_dt) }}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="cutoffdate">
                       <mat-header-cell *matHeaderCellDef
@@ -80,12 +90,21 @@
                         <span class="mobile-label">{{translatedLangText.CUTOFF_DATE
                           }}:</span>{{displayDate(row.cut_off_date) }}</mat-cell>
                     </ng-container>
+                    <ng-container matColumnDef="storageday">
+                      <mat-header-cell *matHeaderCellDef
+                        [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.STORAGE_DAY}}
+                      </mat-header-cell>
+                      <mat-cell
+                        [ngClass]="'pr-0 tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                        *matCellDef="let row">
+                        <span class="mobile-label">{{translatedLangText.STORAGE_DAY}}:</span>{{row.storage_days }}</mat-cell>
+                    </ng-container>
                     <ng-container matColumnDef="cost">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.TOTAL_COST
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.TOTAL_COST
                         }} </mat-header-cell>
                       <mat-cell
-                        [ngClass]="'pr-0 tbl-col-width-per-2_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
+                        [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'"
                         *matCellDef="let row">
                         <span
                           class="mobile-label">{{translatedLangText.TOTAL_COST}}:
