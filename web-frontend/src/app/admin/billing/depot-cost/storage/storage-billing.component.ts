@@ -467,7 +467,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       where.storing_order_tank.in_gate = {
         some: {
           and: [
-            { eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+            { eir_dt: { eq: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
             { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }
           ]
         }

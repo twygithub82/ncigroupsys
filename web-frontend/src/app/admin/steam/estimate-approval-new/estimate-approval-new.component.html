@@ -211,6 +211,7 @@
             @if (!(sotDS.loadingSubject | async)) {
             @if (steamDS.canAmend(this.steamItem!)) {
             <div class="row">
+              @if (!isMobile) {
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
@@ -222,11 +223,6 @@
                     </mat-option>
                     }
                   </mat-autocomplete>
-                  <!-- @if (newDesc.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  } -->
                   @if (newDesc.hasError('duplicated')) {
                   <mat-error>
                     {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
@@ -238,36 +234,21 @@
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
                   <input matInput [formControl]="newQty" type="text" [min]="0" appNumericText required>
-                  <!-- @if (newQty.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  } -->
                 </mat-form-field>
-
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.HOUR}}</mat-label>
                   <input matInput [formControl]="newHour" type="text" [min]="0" appNumericText required>
-                  <!-- @if (newHour.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.HOUR}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  } -->
                 </mat-form-field>
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.PRICE}}</mat-label>
                   <input matInput [formControl]="newUnitPrice" type="text" [min]="0" appNumericText required>
-                  <!-- @if (newUnitPrice.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  } -->
                 </mat-form-field>
               </div>
+              }
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1 mt-2 p-t-2">
                 <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                   (click)="addEstDetails($event)">
@@ -328,32 +309,43 @@
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{getQtyTable_Text()}}:</span><tlx-form-field
-                        customClass="mat-table-form-txt-40px">
+                      <span class="mobile-label">{{getQtyTable_Text()}}:</span>
+                      @if(!isMobile) {
+                      <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
-                          @if(isSteamRepair)
-                          {
-                          @if(IsApproved())
-                          {
+                          @if(isSteamRepair) {
+                          @if(IsApproved()) {
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty" appNumericText
                             (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
                             type="text" [min]="0">
                           }
-                          @else
-                          {
+                          @else {
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="row.quantity" appNumericText
                             (change)="updateAction(row);" [disabled]="isDisabled()" (focus)="selectText($event)"
                             type="text" [min]="0">
                           }
                           }
-                          @else
-                          {
+                          @else {
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="labourHour" appNumericText
                             (change)="updateAction(row);" [disabled]="true" (focus)="selectText($event)" type="text"
                             [min]="0">
                           }
                         </mat-form-field>
                       </tlx-form-field>
+                      }
+                      @else {
+                      @if(isSteamRepair) {
+                      @if(IsApproved()) {
+                      {{row.approve_qty}}
+                      }
+                      @else {
+                      {{row.quantity}}
+                      }
+                      }
+                      @else {
+                      {{labourHour}}
+                      }
+                      }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
@@ -367,6 +359,7 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{getResultTable_HourText()}}:</span>
+                      @if(!isMobile) {
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           @if(IsApproved())
@@ -383,6 +376,15 @@
                           }
                         </mat-form-field>
                       </tlx-form-field>
+                      }
+                      @else {
+                      @if(IsApproved()) {
+                      {{row.approve_labour}}
+                      }
+                      @else {
+                      {{row.labour}}
+                      }
+                      }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
@@ -397,6 +399,7 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
+                      @if(!isMobile) {
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           @if(IsApproved())
@@ -413,6 +416,15 @@
                           }
                         </mat-form-field>
                       </tlx-form-field>
+                      }
+                      @else {
+                      @if(IsApproved()) {
+                      {{row.approve_cost}}
+                      }
+                      @else {
+                      {{row.cost}}
+                      }
+                      }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">{{translatedLangText.LABOUR}}
@@ -438,15 +450,14 @@
                     </mat-cell>
                     }
                     @else{
-                    <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                       {{translatedLangText.RATE}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
                       <span class="mobile-label">{{translatedLangText.RATE}}:</span>
                       <!-- From Uiverse.io by Na3ar-17 -->
-                      <div class="container">
+                      <div [ngClass]="{'d-flex': true, 'w-75': isMobile, 'w-100 justify-content-center': !isMobile}"
+                        (click)="stopPropagation($event)">
                         <label class="switch">
                           <input type="checkbox" [(ngModel)]="flat_rate" [disabled]="isDisabled()"
                             (ngModelChange)="onFlatRateChanged($event)" />
@@ -569,7 +580,7 @@
 
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
-                    matRipple>
+                    (click)="editEstPartDetails($event, row, i)" matRipple>
                   </mat-row>
                   <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
                   <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>

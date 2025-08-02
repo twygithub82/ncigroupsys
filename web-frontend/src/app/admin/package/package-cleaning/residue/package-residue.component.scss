@@ -20,14 +20,9 @@
   }
 
   
-// .card .body {
-//   padding-left: 2px;
-//   padding-right: 2px;
-// }
-
 ::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary
  {
-    padding-left: 5px !important; 
+    padding-left: 0px !important; 
     /* padding-right: 12px; */
 }
 
@@ -76,17 +71,7 @@ mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
   flex-shrink: 0;
 }
 
-.horizontal-container {
-  display: flex;
-  align-items: flex-start;
-}
 
-/* Ensure text wraps properly */
-.option-text {
-  margin-top: 4px;
-  white-space: normal;    /* Allow text wrapping */
-  line-height: 1.5;       /* Improve readability */
-}
 
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
  display:none
@@ -96,12 +81,6 @@ mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
     padding: 0 12px;
 }
 
-.single-line-chip-grid {
-  white-space: nowrap; /* Ensures content stays on a single line */
-  overflow: hidden;    /* Hides content that overflows the container */
-  text-overflow: ellipsis; /* Displays an ellipsis (...) for clipped text */
-  display: block;      /* Ensures the ellipsis works correctly with block-level display */
-}
 
 /* You might need to adjust the width of the input field within the chip grid
    to allow space for the ellipsis if it's too wide by default. */

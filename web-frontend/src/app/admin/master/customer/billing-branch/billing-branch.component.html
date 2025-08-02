@@ -43,7 +43,7 @@
                       [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn"
                       (optionSelected)="AutoSearch()">
-                      @for (cc of customer_companyList; track cc) {
+                      @for (cc of all_customer_companyList; track cc) {
                       <mat-option [value]="cc">
                         {{ccDS.displayCodeDashName(cc)}}
                       </mat-option>

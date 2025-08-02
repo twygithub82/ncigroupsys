@@ -1,0 +1,136 @@
+.tlx-table-card {
+    .table-container {
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+
+    .table-header {
+        display: flex;
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+
+        &.first-row {
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+
+        &.last-row {
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            border-bottom: none;
+        }
+
+        &.single-row {
+            border-radius: 0.5rem;
+        }
+
+        .header-cell {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #495057;
+            border-right: 1px solid #dee2e6;
+
+            &:last-child {
+                border-right: none;
+            }
+        }
+    }
+
+    .table-row {
+        border-bottom: 1px solid #dee2e6;
+        background: white;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        &.last-row {
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+
+        &.single-row {
+            border-radius: 0.5rem;
+        }
+
+        .desktop-row {
+            display: flex;
+
+            .row-cell {
+                flex: 1;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                border-right: 1px solid #dee2e6;
+
+                &:last-child {
+                    border-right: none;
+                }
+            }
+        }
+
+        .mobile-row {
+            display: none;
+            padding: 1rem;
+
+            .row-label {
+                font-weight: 700;
+                font-size: 0.875rem;
+                color: #495057;
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .mobile-field {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.5rem;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                .field-label {
+                    font-weight: 600;
+                    color: #6c757d;
+                    margin-right: 1rem;
+                }
+
+                .field-value {
+                    text-align: right;
+                    word-break: break-word;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .table-header {
+            display: none;
+        }
+
+        .table-container {
+            border: none;
+        }
+
+        .table-row {
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem !important;
+            margin-bottom: 0.5rem;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            .desktop-row {
+                display: none;
+            }
+
+            .mobile-row {
+                display: block;
+            }
+        }
+    }
+}

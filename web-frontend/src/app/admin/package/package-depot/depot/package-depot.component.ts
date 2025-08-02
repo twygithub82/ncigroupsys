@@ -922,6 +922,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     if (Utility.IsAllowAutoSearch())
       this.search();
   }
+  
   onSortChange(event: Sort): void {
     const { active: field, direction } = event;
 

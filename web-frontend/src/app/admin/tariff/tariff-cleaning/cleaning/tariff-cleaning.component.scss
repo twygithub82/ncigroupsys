@@ -28,10 +28,10 @@
   flex-shrink: 0;
 }
 
-.horizontal-container {
-  display: flex;
-  align-items: flex-start;
-}
+// .horizontal-container {
+//   display: flex;
+//   align-items: flex-start;
+// }
 
 
 ::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary {
@@ -49,7 +49,7 @@
 
 ::ng-deep input.mat-mdc-chip-input {
   //flex: 1 0 150px;
-  margin-left: 0px !important;
+  margin-left: 8px !important;
 }
 
 mat-chip-row[color="primary"] {
@@ -65,14 +65,14 @@ mat-chip-row[color="primary"] {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Ensure text wraps properly */
-.option-text {
-  margin-top: 4px;
-  white-space: normal;
-  /* Allow text wrapping */
-  line-height: 1.5;
-  /* Improve readability */
-}
+// /* Ensure text wraps properly */
+// .option-text {
+//   margin-top: 4px;
+//   white-space: normal;
+//   /* Allow text wrapping */
+//   line-height: 1.5;
+//   /* Improve readability */
+// }
 
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
   display: none

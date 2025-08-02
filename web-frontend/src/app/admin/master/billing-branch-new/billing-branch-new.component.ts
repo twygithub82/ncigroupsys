@@ -363,7 +363,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
         Validators.pattern('^[A-Za-z]+$') // Only alphabets
       ]],
       branch_name: [''],
-      country_code: [DEFAULT_COUNTRY_CODE],
+      country_code: [''], //[DEFAULT_COUNTRY_CODE],
       phone: ['', [Validators.required, Validators.pattern(this.phone_regex)]], // Adjust regex for your format,
       email: ['', [Validators.required, Validators.email]],
       web: [''],
@@ -373,7 +373,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       address2: [''],
       postal_code: [''],
       city_name: [''],
-      country: ['Singapore'],
+      country: [''], //['Singapore'],
       remarks: [''],
       repList: ['']
     });

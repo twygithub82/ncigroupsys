@@ -44,6 +44,7 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 
 
 @Component({
@@ -83,15 +84,6 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
   ]
 })
 export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter implements OnInit {
-  // displayedColumns = [
-  //   'tank_no',
-  //   'customer',
-  //   'eir_no',
-  //   'eir_dt',
-  //   'last_cargo',
-  //   'tank_status_cv'
-  // ];
-
   displayedColumns = [
     'tank_no',
     'customer',
@@ -99,7 +91,8 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     'estimate_no',
     'estimate_date',
     'net_cost',
-    'status_cv'
+    'status_cv',
+    'actions'
   ];
 
   pageTitle = 'MENUITEMS.REPAIR.LIST.APPROVAL'
@@ -152,6 +145,7 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     AMEND: 'COMMON-FORM.AMEND',
     CHANGE_REQUEST: 'COMMON-FORM.CHANGE-REQUEST',
     SEARCH: 'COMMON-FORM.SEARCH',
+    DOWNLOAD: 'COMMON-FORM.DOWNLOAD',
   }
 
   availableProcessStatus: string[] = [
@@ -734,5 +728,32 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
 
   getMaxDate() {
     return new Date();
+  }
+
+  onExport(repairItem: RepairItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: repairItem?.storing_order_tank?.purpose_repair_cv,
+        repair_guid: repairItem?.guid,
+        customer_company_guid: repairItem?.storing_order_tank?.storing_order?.customer_company_guid,
+        estimate_no: repairItem?.estimate_no
+      },
+      direction: tempDirection
+    });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
 }
