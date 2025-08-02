@@ -36,23 +36,18 @@ import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/da
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ConfirmDialogComponent } from './confirm/confirm.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItems: TariffRepairItem[];
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 interface Condition {
   guid: { eq: string };
   tariff_depot_guid: { eq: null };
 }
-
-
 
 @Component({
   selector: 'app-tariff-repair-form-dialog',
@@ -81,7 +76,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
@@ -91,7 +87,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   dialogTitle?: string;
 
   minMaterialCost: number = -20;
-  maxMaterialCost: number = 20;
+  warningMaterialCost: number = 20;
+  maxMaterialCost: number = 100;
 
   cvDS: CodeValuesDS;
   groupNameCvList: CodeValuesItem[] = [];
@@ -398,6 +395,36 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
         }
       })
     ).subscribe();
+
+    this.pcForm.get('material_cost_percentage')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          const nValue = Utility.convertNumber(value)
+          if (nValue >= this.warningMaterialCost) {
+            this.pcForm.get('material_cost_percentage')?.setErrors({ 'mark-up-warning': true });
+          } else {
+            this.pcForm.get('material_cost_percentage')?.setErrors(null);
+          }
+        }
+      })
+    ).subscribe();
+
+    this.pcForm.get('labour_hour_percentage')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        if (value) {
+          const nValue = Utility.convertNumber(value)
+          if (nValue >= this.warningMaterialCost) {
+            this.pcForm.get('labour_hour_percentage')?.setErrors({ 'mark-up-warning': true });
+          } else {
+            this.pcForm.get('labour_hour_percentage')?.setErrors(null);
+          }
+        }
+      })
+    ).subscribe();
   }
 
   handleValueChange(value: any) {
@@ -454,11 +481,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   GetCodeValue(codeValue: String, codeValueItems: CodeValuesItem[]) {
-
     return codeValueItems.find(item => item.code_val === codeValue);
-
   }
-
 
   RetrieveCodeValue(CdValue: CodeValuesItem): String {
     let retCodeValue: String = '';
@@ -467,7 +491,6 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       retCodeValue = CdValue.code_val || '';
     }
     return retCodeValue;
-
   }
 
   EnableValidator(path: string) {
@@ -476,9 +499,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       Validators.max(this.maxMaterialCost),
       Validators.required  // If you have a required validator
     ]);
-
     this.pcForm.get(path)?.updateValueAndValidity();  // Revalidate the control
-
   }
 
   DisableValidator(path: string) {

@@ -100,13 +100,13 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                  <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost"
-                    [max]="maxMaterialCost" (focus)="selectAll($event)">
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text">
+                  <input matInput formControlName="material_cost_percentage" type="text" [min]="minMaterialCost"
+                    [allowNegative]="true" appNumericText [max]="maxMaterialCost" (focus)="selectAll($event)">
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')">
                     {{translatedLangText.MATERIAL_COST}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('max')" class="italic-text">
-                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('mark-up-warning')">
+                    {{translatedLangText.MATERIAL_COST}} {{translatedLangText.MARKED_UP_OVER}} {{warningMaterialCost}}%
                   </mat-error>
                 </mat-form-field>
               </div>
@@ -115,13 +115,13 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
-                  <input matInput formControlName="labour_hour_percentage" type="number" [min]="minMaterialCost"
-                    [max]="maxMaterialCost" (focus)="selectAll($event)">
-                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')" class="italic-text">
+                  <input matInput formControlName="labour_hour_percentage" type="text" [min]="minMaterialCost"
+                    [allowNegative]="true" appNumericText [max]="maxMaterialCost" (focus)="selectAll($event)">
+                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')">
                     {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
-                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('max')" class="italic-text">
-                    {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.MARKED_UP_OVER}} {{maxMaterialCost}}%
+                  <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('mark-up-warning')">
+                    {{translatedLangText.LABOUR_HOUR}} {{translatedLangText.MARKED_UP_OVER}} {{warningMaterialCost}}%
                   </mat-error>
                 </mat-form-field>
               </div>
