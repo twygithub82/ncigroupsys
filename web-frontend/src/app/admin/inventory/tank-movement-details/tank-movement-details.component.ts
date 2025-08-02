@@ -183,7 +183,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'scheduling_dt',
     'book_type_cv',
     'reference',
-    //'surveyor',
+    'status_cv',
   ];
 
   displayedColumnsSurveyDetail = [
