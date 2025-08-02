@@ -45,6 +45,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 
 @Component({
   selector: 'app-estimate',
@@ -154,6 +155,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     SEARCH: 'COMMON-FORM.SEARCH',
     COST: 'COMMON-FORM.COST',
     DELETE: 'COMMON-FORM.DELETE',
+    DOWNLOAD: 'COMMON-FORM.DOWNLOAD'
   }
 
   availableProcessStatus: string[] = [
@@ -397,6 +399,33 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
 
   clearCopiedRepair() {
     this.copiedRepair = undefined;
+  }
+
+  onExport(sotItem: any, repairItem: RepairItem) {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: sotItem?.purpose_repair_cv,
+        repair_guid: repairItem?.guid,
+        customer_company_guid: sotItem?.storing_order?.customer_company_guid,
+        estimate_no: repairItem?.estimate_no
+      },
+      direction: tempDirection
+    });
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    });
   }
 
   public loadData() {

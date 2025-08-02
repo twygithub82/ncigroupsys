@@ -1891,5 +1891,4 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     startY += 8;
     PDFUtility.addText(pdf, remarksValue, startY, leftMargin, fontSz);
   }
-
 }

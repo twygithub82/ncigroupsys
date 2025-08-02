@@ -484,11 +484,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     return codeValueItems.find(item => item.code_val === codeValue);
   }
 
-  RetrieveCodeValue(CdValue: CodeValuesItem): String {
-    let retCodeValue: String = '';
+  RetrieveCodeValue(CdValue: CodeValuesItem): string | null | undefined {
+    let retCodeValue: string | null = null;
 
     if (CdValue) {
-      retCodeValue = CdValue.code_val || '';
+      retCodeValue = CdValue.code_val || null;
     }
     return retCodeValue;
   }
@@ -539,11 +539,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   updateTariffRepair() {
-    var trfRepairItem = new TariffRepairItem();
+    var trfRepairItem: any = new TariffRepairItem();
     trfRepairItem.part_name = this.pcForm!.value['part_name'];
 
-    trfRepairItem.subgroup_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
-    trfRepairItem.group_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
+    trfRepairItem.subgroup_name_cv = this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']);
+    trfRepairItem.group_name_cv = this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']);
     trfRepairItem.material_cost = 1;
     if (this.pcForm!.value['material_cost_percentage']) {
       trfRepairItem.material_cost = (Number(this.pcForm!.value['material_cost_percentage']) / 100) + 1;
@@ -553,11 +553,13 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       trfRepairItem.labour_hour = (Number(this.pcForm!.value['labour_hour_percentage']) / 100) + 1;
     }
     trfRepairItem.dimension = String(this.pcForm!.value['dimension'] || '');
-    trfRepairItem.length = Number(this.pcForm!.value['length'] || -1);
+    trfRepairItem.length = this.pcForm!.value['length'] ? Number(this.pcForm!.value['length']) : null;
 
     if (this.checkCondition(trfRepairItem)) {
-      this.trfRepairDS.updateTariffRepairs_MaterialCost([trfRepairItem.group_name_cv], [trfRepairItem.subgroup_name_cv],
-        trfRepairItem.part_name, trfRepairItem.dimension, trfRepairItem.length, [], trfRepairItem.material_cost, trfRepairItem.labour_hour).subscribe(result => {
+      const group = trfRepairItem.group_name_cv ? [trfRepairItem.group_name_cv] : null;
+      const subgroup = trfRepairItem.subgroup_name_cv ? [trfRepairItem.subgroup_name_cv] : null;
+      this.trfRepairDS.updateTariffRepairs_MaterialCost(group, subgroup,
+        trfRepairItem.part_name, trfRepairItem.dimension, trfRepairItem.length, null, trfRepairItem.material_cost, trfRepairItem.labour_hour).subscribe(result => {
           this.handleSaveSuccess(result?.data?.updateTariffRepair_MaterialCost);
           this.EnableValidator('material_cost_percentage');
           this.EnableValidator('labour_hour_percentage');
