@@ -81,7 +81,7 @@
                   <mat-form-field class="example-full-width">
                     <mat-label><mat-icon>flag</mat-icon></mat-label>
                     <input matInput formControlName="country_code" [matAutocomplete]="countryCode" required>
-                    <mat-autocomplete #countryCode="matAutocomplete" [displayWith]="displayCountryCodeFn">
+                    <mat-autocomplete #countryCode="matAutocomplete" [displayWith]="displayCountryCodeFn"  [panelWidth]="'346px'">
                       @for (cc of countryCodesFiltered; track cc) {
                       <mat-option [value]="cc">
                         <img [src]="cc.flagUrl" width="24" height="18" style="margin-right: 6px;">

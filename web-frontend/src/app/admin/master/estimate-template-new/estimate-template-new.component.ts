@@ -45,7 +45,7 @@ import { TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { DisplayPartGroupSection } from 'app/shared/DisplayGroupSection';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { maxLengthDisplaySingleSelectedItem, Utility } from 'app/utilities/utility';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
@@ -1435,5 +1435,25 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_ADD']);
+  }
+
+  getSelectedCustomersDisplay(): string {
+    var retval: string = "";
+    if (this.selectedCustomers?.length > 1) {
+      retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+    }
+    else if (this.selectedCustomers?.length == 1) {
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value.length > maxLength
+        ? value.slice(0, maxLength) + '...'
+        : value}`;
+    }
+    return retval;
+  }
+
+  removeAllSelectedCustomers(): void {
+    this.selectedCustomers = [];
+    //this.AutoSearch();
   }
 }
