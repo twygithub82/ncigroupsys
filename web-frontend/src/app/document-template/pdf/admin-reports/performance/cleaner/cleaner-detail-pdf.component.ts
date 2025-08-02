@@ -670,7 +670,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
    
     
     const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
      var dtstr=await Utility.GetReportGeneratedDate(this.translate);
     await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
     startY +=2;

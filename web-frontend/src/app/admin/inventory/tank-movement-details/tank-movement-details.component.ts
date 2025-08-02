@@ -183,7 +183,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     'scheduling_dt',
     'book_type_cv',
     'reference',
-    'status_cv',
+    //'surveyor',
   ];
 
   displayedColumnsSurveyDetail = [
@@ -512,6 +512,9 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     AMOUNT_$: "COMMON-FORM.AMOUNT-$",
     DEPOT_COST: "MENUITEMS.TARIFF.LIST.TARIFF-DEPOT",
     DOWNLOAD: "COMMON-FORM.DOWNLOAD",
+    FLAT: "COMMON-FORM.FLAT",
+    HOURLY: "COMMON-FORM.HOURLY",
+    HOUR_RATE: "COMMON-FORM.HOUR-RATE",
   }
 
   sot_guid: string | null | undefined;
@@ -2100,6 +2103,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         igs: this.igs,
         tcDS: this.tcDS,
         ccDS: this.ccDS,
+        steamDS: this.steamDS,
         packageLabourItem: this.packageLabourItem,
         translatedLangText: this.translatedLangText,
         populateData: {
@@ -2121,6 +2125,10 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         newSteam.bill_to_guid = result.billing_to;
         newSteam.overwrite_remarks = result.overwrite_remarks;
         newSteam.total_cost = result.total_cost;
+        newSteam.est_hour = result.est_hour;
+        newSteam.est_cost = result.est_cost;
+        newSteam.rate = result.rate;
+        newSteam.flat_rate = result.flat_rate;
         newSteam.steaming_part = result.steaming_part?.map((x: any) => {
           const obj = new SteamPartGO({ ...x });
           obj['action'] = 'overwrite';

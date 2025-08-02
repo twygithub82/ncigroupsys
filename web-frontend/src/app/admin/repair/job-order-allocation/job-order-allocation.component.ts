@@ -1000,4 +1000,11 @@ export class JobOrderAllocationComponent extends UnsubscribeOnDestroyAdapter imp
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['REPAIR_JOB_ALLOCATION_DELETE']);
   }
+
+  isUseUpdateName(){
+    if(this.repairItem?.status_cv === 'ASSIGNED' || this.repairItem?.status_cv === "PARTIAL_ASSIGNED")
+      return true;
+    
+    return false;
+  }
 }

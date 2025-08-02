@@ -385,7 +385,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     this.selection.clear();
     this.calculateTotalCost();
 
-    where.status_cv = { in: ['COMPLETED', 'APPROVED', 'JOB-IN_PROGRESS'] };
+    where.status_cv = { in: ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] };
     where.bill_to_guid = { neq: null };
     if (!where.storing_order_tank) where.storing_order_tank = {};
      where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS};

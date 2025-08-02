@@ -225,17 +225,18 @@
                           <mat-cell *matCellDef="let row; let i=index;"
                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                             @if (canShowAction(row)) {
-                            @if (canStartJob(row)) {
-                            <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row.job_order)"
-                              [disabled]="anyResidueIncomplete(row)">
-                              <mat-icon [ngClass]="{'custom-timer-icon': true}">timer</mat-icon>
-                            </button>
-                            }
+                              <!-- @if (canStartJob(row)) {
+                              <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row.job_order)"
+                                [disabled]="anyResidueIncomplete(row)">
+                                <mat-icon [ngClass]="{'custom-timer-icon': true}">timer</mat-icon>
+                              </button>
+                              } -->
+                              
                             <!-- @if (canCompleteJob(row, isStarted(row))) {
-                        <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
-                          <mat-icon>check_box</mat-icon>
-                        </button>
-                        } -->
+                            <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
+                              <mat-icon>check_box</mat-icon>
+                            </button>
+                            } -->
                             }
                           </mat-cell>
                         </ng-container>
@@ -263,7 +264,8 @@
                       [pageSize]="pageSizeClean" [pageSizeOptions]="[25, 50, 75, 100]"
                       (page)="onPageEventClean($event)">
                     </mat-paginator>
-                    <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
+
+                    <!-- <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
                       <div class="legend-item d-flex align-items-center me-4 mb-2">
                         <mat-icon class="disabled-icon me-2">timer</mat-icon>
                         <span>{{translatedLangText.NOT_STARTED}}</span>
@@ -272,7 +274,7 @@
                         <mat-icon class="me-2">timer</mat-icon>
                         <span>{{translatedLangText.TO_COMPLETE}}</span>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </mat-tab>

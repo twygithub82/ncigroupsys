@@ -670,7 +670,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
-    let fontSize = 6;
+    let fontSize = 4.5;
 
     lastTableFinalY += 8;
     // pdf.setFontSize(8);

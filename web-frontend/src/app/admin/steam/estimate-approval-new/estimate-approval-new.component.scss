@@ -1,23 +1,22 @@
-// @use '@angular/material' as mat;
-
- @import "../../../../assets/scss/theme/theme-color-variables.scss";
+@import "../../../../assets/scss/theme/theme-color-variables.scss";
 
 ::ng-deep {
-    .multiline-tooltip {
-      white-space: pre-line;
-      
-  
-      .mdc-tooltip__surface {
-        max-width: unset;
-      }
+  .multiline-tooltip {
+    white-space: pre-line;
+
+
+    .mdc-tooltip__surface {
+      max-width: unset;
     }
   }
-  .selected-row {
-    background-color: #FF00FF; /* Change to your desired color */
-  }
+}
 
+.selected-row {
+  background-color: #FF00FF;
+  /* Change to your desired color */
+}
 
- /* From Uiverse.io by Na3ar-17 */ 
+/* From Uiverse.io by Na3ar-17 */
 .container {
   display: flex;
   justify-content: center;
@@ -29,30 +28,29 @@
   color: #fff;
 }
 
-
-.switch input:disabled + .slider {
+.switch input:disabled+.slider {
   background-color: #ccc;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.switch input:disabled + .slider .ball {
+.switch input:disabled+.slider .ball {
   background-color: #eee;
   cursor: not-allowed;
 }
 
-.switch input:disabled + .slider .title {
+.switch input:disabled+.slider .title {
   color: #000;
   cursor: not-allowed;
 }
 
-.switch input:disabled + .slider .ball .icon {
+.switch input:disabled+.slider .ball .icon {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #999;
-  
+
 }
 
 
@@ -71,16 +69,17 @@
   height: 0;
 }
 
-.switch input:checked + .slider .ball {
+.switch input:checked+.slider .ball {
   box-shadow: 10px 10px 100px #7f8996;
 }
 
-.switch input:checked + .slider .title {
-  
+.switch input:checked+.slider .title {
+
   color: white;
   position: absolute;
   top: 50%;
-  left: 20%;         /* move to the right side with some padding */
+  left: 20%;
+  /* move to the right side with some padding */
   transform: translateY(-50%);
   font-weight: 600;
   transition: all 0.4s;
@@ -88,20 +87,21 @@
   -ms-user-select: none;
   user-select: none;
   font-size: 12px;
-  text-align: left;   /* align text to the right */
-  width: auto; 
+  text-align: left;
+  /* align text to the right */
+  width: auto;
 }
 
-.switch input:checked + .slider  {
-  background-color:$theme-blue;
-  
+.switch input:checked+.slider {
+  background-color: $theme-blue;
+
 }
 
-.switch input:focus + .slider {
+.switch input:focus+.slider {
   box-shadow: 10px 10px 100px #7f8996;
 }
 
-.switch input:checked + .slider .ball {
+.switch input:checked+.slider .ball {
   left: 72%;
   transform: rotate(360deg);
   box-shadow: none;
@@ -122,9 +122,10 @@
 }
 
 .switch .slider .title {
-   position: absolute;
+  position: absolute;
   top: 50%;
-  left: 23px;         /* move to the right side with some padding */
+  left: 23px;
+  /* move to the right side with some padding */
   transform: translateY(-50%);
   font-weight: 600;
   transition: all 0.4s;
@@ -133,8 +134,9 @@
   user-select: none;
   color: white;
   font-size: 10px;
-  text-align: right;   /* align text to the right */
-  width: auto; 
+  text-align: right;
+  /* align text to the right */
+  width: auto;
 }
 
 .switch .slider .ball {
@@ -147,13 +149,13 @@
   transition: 0.4s;
 }
 
-.switch  input:checked + .slider .ball .icon {
+.switch input:checked+.slider .ball .icon {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color:  $theme-blue;
-  
+  color: $theme-blue;
+
 }
 
 .switch .slider .ball .icon {
@@ -161,13 +163,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color:$theme-blue-nav-anchor-opened;
-  
+  color: $theme-blue-nav-anchor-opened;
+
 }
 
-
-
-.font_15{
+.font_15 {
   font-size: 15px;
 }
-

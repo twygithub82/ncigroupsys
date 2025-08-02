@@ -725,6 +725,7 @@ export const GET_STEAM_FOR_MOVEMENT = gql`
           job_order_guid
           labour
           quantity
+          steaming_exclusive_guid
           steaming_guid
           tariff_steaming_guid
           update_by

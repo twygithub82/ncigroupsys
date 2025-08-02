@@ -534,7 +534,7 @@
                   <ng-container matColumnDef="labourSummaryCost">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
-                      <span class="mobile-label footer-label">{{translatedLangText.LABOUR}} 
+                      <span class="mobile-label footer-label">{{translatedLangText.LABOUR}}
                         (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}}):</span>
                       <span class="">{{getTotalLabourCost()}}</span>
                     </mat-footer-cell>
@@ -617,6 +617,10 @@
               {{translatedLangText.ADD_ATLEAST_ONE}}
             </mat-error>
             }
+            <!-- Test table start -->
+            <!-- <tlx-table-card [items]="tankData" [columns]="columns" rowLabel="Tank">
+            </tlx-table-card> -->
+            <!-- Test table end -->
           </div>
           <div class="row m-t-3">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">

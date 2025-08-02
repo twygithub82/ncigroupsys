@@ -1,48 +1,49 @@
 <div class="container">
-  <div class="modalHeader">
+  <!-- <div class="modalHeader">
     <h3 mat-dialog-title class="align-center">{{data.action === 'cancel' ? data.translatedLangText.ARE_YOU_SURE_CANCEL :
       data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h3>
-  </div>
+  </div> -->
+  <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0 align-center">{{data.action === 'cancel' ?
+    data.translatedLangText.ARE_YOU_SURE_CANCEL :
+    data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-0">
-    <mat-divider></mat-divider>
     <form class="register-form" [formGroup]="roSotListForm" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2 mb-0">
-          <mat-label>
+          <!-- <mat-label>
             {{data.translatedLangText.TANK_NO}}: {{sot?.tank_no}}
-          </mat-label>
+          </mat-label> -->
+          <p class="text-normal tank-title">
+            {{sot?.tank_no}}
+          </p>
         </div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2 mb-0">
           <mat-label>
-            {{data.translatedLangText.BOOKING_TYPE}}: {{getBookTypeDescription(schedulingSot?.scheduling?.book_type_cv)}}
+            {{data.translatedLangText.BOOKING_TYPE}}:
+            {{getBookTypeDescription(schedulingSot?.scheduling?.book_type_cv)}}
           </mat-label>
         </div>
-      </div>
+      </div> -->
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
             <input matInput formControlName="remarks">
-            <!-- @if (roSotListForm.get('remarks')?.hasError('required')) {
-            <mat-error>
-              {{data.translatedLangText.REMARKS}} {{data.translatedLangText.SO_REQUIRED}}
-            </mat-error>
-            } -->
           </mat-form-field>
         </div>
       </div>
     </form>
   </div>
-  <div row class="align-right pb-4">
-    <div mat-dialog-actions > 
-      <button mat-flat-button color="warn" (click)="confirm()">
-        {{data.translatedLangText.CONFIRM | translate}}
-      </button>
-      <button mat-flat-button (click)="onNoClick()" tabindex="-1">
-        {{data.translatedLangText.CLOSE | translate}}
-      </button>
+  <div row class="mb-4 align-center">
+    <div mat-dialog-actions>
+    <button mat-flat-button color="warn" class="me-2" (click)="confirm()">
+      {{data.translatedLangText.CONFIRM | translate}}
+    </button>
+    <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
+      {{data.translatedLangText.CLOSE | translate}}
+    </button>
     </div>
   </div>
 
