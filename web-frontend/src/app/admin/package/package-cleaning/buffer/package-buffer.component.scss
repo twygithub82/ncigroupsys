@@ -77,10 +77,11 @@
 
 
 .single-line-chip-grid {
-  white-space: nowrap; /* Ensures content stays on a single line */
-  overflow: hidden;    /* Hides content that overflows the container */
-  text-overflow: ellipsis; /* Displays an ellipsis (...) for clipped text */
-  display: block;      /* Ensures the ellipsis works correctly with block-level display */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  padding-left: 10px;
 }
 
 /* You might need to adjust the width of the input field within the chip grid

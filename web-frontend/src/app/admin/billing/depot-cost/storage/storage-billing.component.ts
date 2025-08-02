@@ -159,7 +159,9 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     BILLING: 'COMMON-FORM.BILLING',
     FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
     STORAGE: 'COMMON-FORM.STORAGE',
-    DAYS: 'COMMON-FORM.DAYS'
+    DAYS: 'COMMON-FORM.DAYS',
+    STORAGE_DAY:'COMMON-FORM.STORAGE-DAY',
+    START_DATE:'COMMON-FORM.START-DATE',
   }
 
   invForm?: UntypedFormGroup;
@@ -429,8 +431,24 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     }
 
     if (this.searchForm!.get('invoiced')?.value) {
-      where.storing_order_tank = { storage_detail: { any: true } };
+
+       
+
+      
+
+      
+      // where.storing_order_tank= {  storage_detail: {
+      //     some: { guid: { neq: null } }// this means "where there is at least one storage_detail"
+      //         } };
+
+       where.and = [
+         {storing_order_tank:{storage_detail: { any: true}}},
+         {storing_order_tank:{storage_detail: {some: { delete_dt: { eq: null } } } }}
+       ];
+     // storing_order_tank: { storage_detail: { any: true, some: { delete_dt: { eq: null } } } }
     }
+       
+    
 
     if (this.searchForm!.get('customer_code')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -1471,8 +1489,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '65vw',
-      maxWidth: '800px',
+      width: '75vw',
+      maxWidth: '1200px',
       //height: '80vh',
       data: {
         action: 'view',

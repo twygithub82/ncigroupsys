@@ -222,11 +222,13 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     this.loadData();
   }
 
-  initInvoiceForm() {
+   initInvoiceForm() {
     this.invForm = this.fb.group({
       inv_no: [''],
       inv_dt: ['']
     })
+    const today = new Date().toISOString().substring(0, 10);
+    this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 

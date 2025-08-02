@@ -78,8 +78,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     // 'img',
     'invoiceno',
     'invoicedate',
+    'startdate',
     //'email',
     'cutoffdate',
+    'storageday',
     // 'bDate',
     'cost',
     'storage',
@@ -204,6 +206,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     SMALLER_THAN: "COMMON-FORM.SMALLER-THAN",
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     BILLING: 'COMMON-FORM.BILLING',
+    STORAGE_DAY:'COMMON-FORM.STORAGE-DAY',
+    START_DATE:'COMMON-FORM.START-DATE',
   };
 
 
@@ -444,6 +448,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         billing_type: "STORAGE",
         invoice_no: storageDetail.billing?.invoice_no || '',
         invoice_dt: (storageDetail.billing?.invoice_dt) || 0,
+        start_dt: storageDetail.start_dt || 0,
+        storage_days:this.displayDayOFStorage(storageDetail.end_dt!,storageDetail.start_dt!)||0,
         cut_off_date: storageDetail.end_dt || 0,
         storage_cost: (storageDetail.total_cost!) || 0
       });
@@ -504,5 +510,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   DisplayBillingType(billing_type: string) {
     return this.CodeValuesDS?.getCodeDescription(billing_type, this.invoiceTypeCvList);
+  }
+
+  displayDayOFStorage(cut_off_date: number,start_date:number) {
+    const diffInMs = Math.abs(cut_off_date - start_date) ;
+
+// Convert milliseconds to days
+    const diffInDays = Math.floor(diffInMs / ( 60 * 60 * 24))+1;
+
+    return diffInDays;
   }
 }

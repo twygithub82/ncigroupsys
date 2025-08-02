@@ -1,74 +1,53 @@
-/* For Chrome, Safari, Edge, and Opera */
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* For Firefox */
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-
-
-::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary {
-  padding-left: 5px !important;
-  /* padding-right: 12px; */
-}
-
-::ng-deep .mdc-evolution-chip-set .mdc-evolution-chip {
-  margin: 0% !important;
-}
-
-::ng-deep .mat-mdc-form-field-infix {
-  --mat-form-field-filled-with-label-container-padding-bottom: 0px !important;
-}
-
-::ng-deep input.mat-mdc-chip-input {
-  //flex: 1 0 150px;
-  margin-left: 0px !important;
-}
+.custom-select {
+    width: 300px; /* Adjust the width as needed */
+  }
+  
+  ::ng-deep .cdk-overlay-pane .mat-select-panel {
+    max-height: 200px; /* Adjust the height as needed */
+  }
+  mat-form-field {
+    width:100%;
+    margin-top: 3px;
+    margin-left: 10px ;
+    
+  }
 
 
-mat-chip-row[color="primary"] {
-  background: transparent !important;
-  background-color: transparent !important;
-  border-radius: 6px;
-  padding: 2px 2px;
-  font-weight: 500;
-  color: #333;
-  transform: translateZ(0);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+  .auto-height {
+    height: auto;
+    max-height: none; /* Ensures there's no max-height limiting the container */
+    overflow: auto;   /* Ensures scrollbars appear if content exceeds container size */
+  }
 
-/* Optional: Ensure the remove button icon is also white */
-mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
-  color: red !important;
-}
+  mat-chip-row[color="primary"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    border-radius: 6px;
+    // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
+    //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
+    padding: 2px 5px;
+    font-weight: 500;
+    color: #333;
+    transform: translateZ(0);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  /* Optional: Ensure the remove button icon is also white */
+  mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
+    color: red !important;
+  }
 
-
+  
 .checkbox-option {
-  display: flex;
-  /* Enable flex layout */
-  align-items: center;
-  /* Vertically center items */
-  gap: 8px;
-  /* Space between checkbox and text */
-  width: 100%;
-  /* Full width */
+  display: flex;          /* Enable flex layout */
+  align-items: center;    /* Vertically center items */
+  gap: 8px;               /* Space between checkbox and text */
+  width: 100%;            /* Full width */
 }
 
 .checkbox-item {
-  // margin-top: 4px;
+ // margin-top: 4px;
   flex-shrink: 0;
-}
-
-/* Styles for the container of the checkbox and text */
-/* Apply to the mat-option or parent container */
-.mat-option {
-  width: 100%; /* Ensure parent has defined width */
-  max-width: 100%; /* Prevent overflow */
-  overflow: hidden; /* Just in case */
 }
 
 /* Container for checkbox and text */
@@ -88,38 +67,12 @@ mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
   min-width: 0; /* CRITICAL - allows text truncation */
 }
 
-/* If using Angular Material checkbox */
-.mat-checkbox {
-  flex-shrink: 0; /* Prevent checkbox from shrinking */
-  margin-right: 8px; /* Add some spacing */
-}
-
-
-
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
-  display: none
+ display:none
 }
 
-.multiSelected_autocomplete {
-  padding: 0 12px;
-}
-
-::ng-deep .mat-mdc-chip-action-label {
-  overflow: hidden !important;
-}
-
-::ng-deep .mdc-evolution-chip__text-label {
-  display: inline-block !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  max-width: 100% !important;
-}
-
-::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary,
-::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__cell--primary,
-::ng-deep .mat-mdc-standard-chip .mat-mdc-chip-action-label {
-  overflow: hidden !important;
+.multiSelected_autocomplete{
+    padding: 0 12px;
 }
 
 
@@ -128,6 +81,7 @@ mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
   overflow: hidden;    /* Hides content that overflows the container */
   text-overflow: ellipsis; /* Displays an ellipsis (...) for clipped text */
   display: block;      /* Ensures the ellipsis works correctly with block-level display */
+  padding-left: 10px;
 }
 
 /* You might need to adjust the width of the input field within the chip grid
