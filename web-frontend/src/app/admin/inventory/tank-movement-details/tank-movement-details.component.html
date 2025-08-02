@@ -1968,18 +1968,6 @@
                                   </ng-container>
 
                                   <!-- <ng-container matColumnDef="status_cv">
-                                    <mat-header-cell mat-header-cell *matHeaderCellDef
-                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                      {{translatedLangText.STATUS}}
-                                    </mat-header-cell>
-                                    <mat-cell mat-cell *matCellDef="let row"
-                                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                      <span
-                                        class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
-                                    </mat-cell>
-                                  </ng-container> -->
-
-                                  <ng-container matColumnDef="status_cv">
                                     <mat-header-cell mat-header-cell *matHeaderCellDef>
                                       {{translatedLangText.STATUS}}
                                     </mat-header-cell>
@@ -1987,9 +1975,9 @@
                                       <span
                                         class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getBookingStatusDescription(row?.status_cv)}}
                                     </mat-cell>
-                                  </ng-container>
+                                  </ng-container> -->
 
-                                  <ng-container matColumnDef="surveyor">
+                                  <!-- <ng-container matColumnDef="surveyor">
                                     <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                       {{translatedLangText.SURVEYOR}}
                                     </mat-header-cell>
@@ -1997,7 +1985,7 @@
                                       <span class="mobile-tab-label">{{translatedLangText.SURVEYOR}}:</span>
                                       <span>{{row.test_class_cv ?? "-"}}</span>
                                     </mat-cell>
-                                  </ng-container>
+                                  </ng-container> -->
 
                                   <mat-header-row *matHeaderRowDef="displayedColumnsScheduling"></mat-header-row>
                                   <mat-row *matRowDef="let row; columns: displayedColumnsScheduling;"
