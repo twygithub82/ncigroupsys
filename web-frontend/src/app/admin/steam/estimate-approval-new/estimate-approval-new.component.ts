@@ -57,6 +57,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
@@ -479,8 +480,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-
-
   populateRepairEst(repair_est: RepairItem[] | undefined, isDuplicate: boolean) {
 
   }
@@ -608,16 +607,80 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
   }
 
+  addEstPartDetails() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        steamItem: this.steamItem,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company?.guid,
+        translatedLangText: this.translatedLangText,
+        existedPart: this.deList,
+        index: -1
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        var newData = [...this.deList, result.item];
+        this.updateData(newData);
+      }
+    });
+  }
+
+  editEstPartDetails(event: Event, steamPart: SteamPartItem, index: number) {
+    this.preventDefault(event);  // Prevents the form submission
+
+    console.log('row click')
+    if (!this.isMobile) {
+      return;
+    }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        item: steamPart,
+        steamItem: this.steamItem,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company?.guid,
+        translatedLangText: this.translatedLangText,
+        existedPart: this.deList,
+        index: index,
+        action: 'edit'
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.index > -1) {
+        this.deList[result.index] = result.item;
+        this.updateData(this.deList);
+      }
+    });
+  }
+
   addEstDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
 
+    if (this.isMobile) {
+      this.addEstPartDetails();
+      return;
+    }
     var descObject: SteamPartItem;
 
     if (typeof this.newDesc?.value === "object") {
       var repItm: RepairPartItem = this.newDesc?.value!;
 
       descObject = new SteamPartItem();
-      descObject.description = repItm.tariff_repair?.alias;
+      descObject.description = repItm?.tariff_repair?.alias;
     }
     else {
       descObject = new SteamPartItem();
@@ -628,7 +691,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     descObject.labour = this.newHour?.value!;
     descObject.quantity = this.newQty?.value!;
 
-
     this.checkCompulsoryEst(["desc", "qty", "hour", "unit_price"]);
     var index: number = -1;
     if (this.updateSelectedItem) {
@@ -636,17 +698,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     }
     this.checkDuplicationEst(descObject, index);
     if (!this.newDesc?.valid || !this.newQty?.valid || !this.newUnitPrice?.valid || !this.newHour?.valid) return;
-    //if(!this.steamEstForm?.valid)return;
-
-
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-
-
     let steamPartItem = new SteamPartItem();
     if (index == -1) {
       steamPartItem.action = "NEW";
@@ -656,12 +707,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       steamPartItem.action = steamPartItem.guid ? "EDIT" : "NEW";
     }
 
-    steamPartItem.cost = Number(this.steamEstForm?.get("unit_price")?.value);
     steamPartItem.description = descObject.description;
     steamPartItem.quantity = descObject.quantity;
     steamPartItem.labour = descObject.labour;
     steamPartItem.cost = descObject.cost;
-    // residuePartItem.tariff_residue_guid=descObject.tariff_residue?.guid;
 
     if (index === -1) {
       var newData = [...this.deList, steamPartItem];
@@ -673,8 +722,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   CancelEditEstDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     this.resetSelectedItemForUpdating();
-    // this.updateSelectedItem=undefined;
-    // this.resetValue();
   }
 
   editEstDetails(event: Event, row: SteamPartItem, index: number) {
@@ -1288,45 +1335,25 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return !!this.steam_guid;
   }
 
-  // getLabourCost(): number | undefined {
-  //   return this.repairEstItem?.labour_cost || this.packageLabourItem?.cost;
-  // }
-
   getPackageSteamAlias(alias?: string) {
     let where: any = {};
     let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
     where.and = [];
     where.and.push({ customer_company_guid: { eq: custCompanyGuid } });
-    //where.customer_company_guid = {eq:custCompanyGuid};
     if (alias) where.and.push({ tariff_repair: { alias: { contains: alias } } });
-
     this.packRepDS.SearchPackageRepair(where, {}).subscribe(data => {
-
       this.displayPackSteamList = data;
-
     });
-
-    // this.packResidueDS.SearchPackageResidue(where,{}).subscribe(data=>{
-
-    //   this.packResidueList=data;
-    //   this.displayPackResidueList=data;
-    //   this.populateResiduePartList(this.residueItem!);
-    // });
-
   }
 
   getPackageSteam() {
     let where: any = {};
     let custCompanyGuid: string = this.sotItem?.storing_order?.customer_company?.guid!;
     where.customer_company_guid = { eq: custCompanyGuid };
-
     this.packRepDS.SearchPackageRepair(where, {}).subscribe(data => {
-
       this.packSteamList = data;
       this.displayPackSteamList = this.packSteamList;
-
       this.populateSteamPartList(this.steamItem!);
-
     });
   }
 
@@ -1379,6 +1406,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       }
       this.steam_guid = this.steamItem?.guid;
       this.isSteamRepair = this.steamDS.IsSteamRepair(this.steamItem!);
+      if (!this.isSteamRepair) {
+        this.displayedColumns = this.displayedColumns.filter(col => col !== 'actions');
+        this.labourCostDisplayedColumns = this.labourCostDisplayedColumns.filter(col => col !== 'actions');
+        this.totalCostDisplayedColumns = this.totalCostDisplayedColumns.filter(col => col !== 'actions');
+      }
       this.getPackageSteam();
       this.loadBillingBranch();
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
@@ -1422,8 +1454,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return cc && cc.tariff_repair ? cc.tariff_repair.alias : '';
   }
 
-
-
   resetValue() {
 
     this.newDesc = new FormControl(null, [Validators.required]);
@@ -1451,13 +1481,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     // Navigate to the route and pass the JSON object
     this.router.navigate(['/admin/steam/estimate-approval'], {
       state: this.historyState
-
     }
     );
   }
 
   populateSteamPartList(steam: SteamItem) {
-
     if (steam) {
       var dataList = steam.steaming_part?.map(data => {
         if (this.isDuplicate && data.description) {
@@ -1468,9 +1496,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
           //     data.cost = packSteam.cost;
           // }
         }
-
         return new SteamPartGO(data)
-
       });
       this.updateData(dataList);
     }
@@ -1736,15 +1762,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         calResCost = steamPart.cost! * steamPart.quantity!;
       }
     }
-    // else
-    // {
-    //   var rate = this.getRate();
-    //   if(!this.steamItem?.flat_rate)
-    //     calResCost = rate*this.labourHour;
-    //   else
-    //     calResCost=rate;
-    // }
-    //  this.cdr.detectChanges();
     return calResCost;
   }
 
@@ -1912,27 +1929,4 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     this.autosteamCost = this.parse2Decimal(cost);
     this.autosteamTotalCost = totalCost;
   }
-
-  //   onCostChange(row: any) {
-  //   const val = parseFloat(row.approve_cost);
-  //   if (!isNaN(val)) {
-  //     if(this.IsApproved()) row.approve_cost = parseFloat(val.toFixed(2));
-  //     else row.cost = parseFloat(val.toFixed(2));
-  //   }
-  // }
-  // getTotalCostDisplay():string
-  // {
-  //   if(this.isSteamRepair)
-  //   {
-  //     return this.parse2Decimal(this.getTotalCost());
-  //   }
-  //   else
-  //   {
-  //     if(!this.steamItem?.flat_rate)
-  //       return this.translatedLangText.BY_HOUR;
-  //     else
-  //       return this.autosteamCost;
-  //   }
-  // }
-
 }

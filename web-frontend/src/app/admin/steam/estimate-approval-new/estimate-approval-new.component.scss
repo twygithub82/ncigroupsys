@@ -17,17 +17,6 @@
 }
 
 /* From Uiverse.io by Na3ar-17 */
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #fff;
-}
-
 .switch input:disabled+.slider {
   background-color: #ccc;
   cursor: not-allowed;

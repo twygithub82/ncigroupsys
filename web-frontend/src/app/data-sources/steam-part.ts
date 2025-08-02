@@ -6,7 +6,6 @@ import { SteamItem } from './steam';
 import { TariffSteamingItem } from './tariff-steam';
 
 export class SteamPartGO {
-
   public guid?: string;
   public steaming_guid?: string;
   public tariff_steaming_guid?: string;
@@ -16,51 +15,37 @@ export class SteamPartGO {
   public quantity?: number;
   public labour?: number;
   public cost?: number;
-
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
   public update_by?: string;
   public delete_dt?: number;
   public complete_dt?: number;
-
-
   public approve_qty?: number;
   public approve_labour?: number;
   public approve_cost?: number;
   public approve_part?: boolean;
-
   public action?: string;
-
-
-
-
-  //public residue_guid?: string;
-
-  //public team_guid?:string;
-
-
 
   constructor(item: Partial<SteamPartGO> = {}) {
     this.guid = item.guid ? item.guid : '';
-
     this.steaming_guid = item.steaming_guid;
     this.tariff_steaming_guid = item.tariff_steaming_guid;
     this.steaming_exclusive_guid = item.steaming_exclusive_guid;
     this.job_order_guid = item.job_order_guid;
     this.description = item.description;
-    this.quantity = Number(item.quantity);
-    this.labour = Number(item.labour);
-    this.cost = Number(item.cost);
+    this.quantity = item.quantity || 0;
+    this.labour = item.labour || 0;
+    this.cost = item.cost || 0;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
     this.update_by = item.update_by;
     this.delete_dt = item.delete_dt;
     this.complete_dt = item.complete_dt;
-    this.approve_qty = (item.approve_qty ? Number(item.approve_qty) : item.approve_qty);
-    this.approve_labour = (item.approve_labour ? Number(item.approve_labour) : item.approve_labour);
-    this.approve_cost = (item.approve_cost ? Number(item.approve_cost) : item.approve_cost);
+    this.approve_qty = item.approve_qty || 0;
+    this.approve_labour = item.approve_labour || 0;
+    this.approve_cost = item.approve_cost || 0;
     this.approve_part = item.approve_part;
     this.action = item.action;
   }
@@ -78,7 +63,6 @@ export class SteamPartItem extends SteamPartGO {
     this.steaming_exclusive = item.steaming_exclusive;
     this.job_order = item.job_order;
     this.steaming = item.steaming;
-
   }
 }
 

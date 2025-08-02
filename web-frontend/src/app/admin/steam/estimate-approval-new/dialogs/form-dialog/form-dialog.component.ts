@@ -32,6 +32,8 @@ import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, Subject, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
+import { SteamPartItem } from 'app/data-sources/steam-part';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
 
 
 export interface DialogData {
@@ -78,23 +80,26 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dialogTitle: string;
   customer_company_guid: string;
 
-  repairPartForm: UntypedFormGroup;
-  repairPart: any;
-  partNameControl: UntypedFormControl;
+  steamPartForm: UntypedFormGroup;
+  steamItem: any;
+  steamPart: any;
   partNameList?: string[];
   partNameFilteredList?: string[];
   dimensionList?: string[];
   lengthList?: any[];
   valueChangesDisabled: boolean = false;
   subgroupNameCvList?: CodeValuesItem[];
-  existedPart?: RepairPartItem[];
+  displayPartSteamList: any[] = [];
+  existedPart?: any[];
+  convertedExistedPart?: any[];
+  newDescControl = new UntypedFormControl();
+  updateSelectedItem: any = undefined;
 
-  tcDS: TariffCleaningDS;
   sotDS: StoringOrderTankDS;
   cvDS: CodeValuesDS;
   trDS: TariffRepairDS;
-  repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
+  steamDS: SteamDS;
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -105,26 +110,26 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   ) {
     super();
     // Set the defaults
-    this.tcDS = new TariffCleaningDS(this.apollo);
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.trDS = new TariffRepairDS(this.apollo);
-    this.repDrDS = new RPDamageRepairDS(this.apollo);
     this.prDS = new PackageRepairDS(this.apollo);
+    this.steamDS = new SteamDS(this.apollo);
     this.action = data.action!;
     this.customer_company_guid = data.customer_company_guid!;
+    this.existedPart = data.existedPart;
+    this.convertExistedPart();
     if (this.action === 'edit') {
       this.dialogTitle = `${data.translatedLangText.EDIT} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     } else {
       this.dialogTitle = `${data.translatedLangText.NEW} ${data.translatedLangText.ESTIMATE_DETAILS}`;
     }
-    this.repairPart = data.item ? data.item : new RepairPartItem();
+    this.steamPart = data.item ? data.item : new SteamPartItem();
     this.index = data.index;
-    this.existedPart = data.existedPart;
-    this.partNameControl = new UntypedFormControl('', [Validators.required]);
-    this.repairPartForm = this.createForm();
+    this.newDescControl = new UntypedFormControl('', [Validators.required]);
+    this.steamPartForm = this.createForm();
     this.initializeValueChange();
-    this.patchForm();
+    // this.patchForm();
   }
 
   ngAfterViewInit() {
@@ -132,93 +137,64 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   createForm(): UntypedFormGroup {
-    return this.fb.group({
-      guid: [this.repairPart.guid],
-      tariff_repair_guid: [this.repairPart.tariff_repair_guid],
-      part_name: [this.repairPart.tariff_repair?.part_name],
-      repair_est_guid: [this.repairPart.repair_est_guid],
-      description: [{ value: this.repairPart.description, disabled: !this.canEdit() }],
-      location_cv: [{ value: this.repairPart.location_cv, disabled: !this.canEdit() }],
-      comment: [{ value: this.repairPart.comment, disabled: !this.canEdit() }],
-      remarks: [{ value: this.repairPart.remarks, disabled: !this.canEdit() }],
-      quantity: [{ value: this.repairPart.quantity, disabled: !this.canEdit() }],
-      hour: [{ value: this.repairPart.hour, disabled: !this.canEdit() }],
-      group_name_cv: [{ value: this.repairPart.tariff_repair?.group_name_cv, disabled: !this.canEdit() }],
-      subgroup_name_cv: [{ value: this.repairPart.tariff_repair?.subgroup_name_cv, disabled: !this.canEdit() }],
-      dimension: [{ value: this.repairPart.tariff_repair?.dimension, disabled: !this.canEdit() }],
-      length: [{ value: this.repairPart.tariff_repair?.length, disabled: !this.canEdit() }],
-      damage: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
-      repair: [{ value: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)), disabled: !this.canEdit() }],
-      material_cost: [{ value: this.repairPart.material_cost }]
+    this.steamPartForm = this.fb.group({
+      guid: [this.steamPart?.guid],
+      description: [{ value: this.steamPart?.description, disabled: !this.canEdit() }],
+      quantity: [{ value: this.steamPart?.quantity, disabled: !this.canEdit() }],
+      labour: [{ value: this.steamPart?.labour, disabled: !this.canEdit() }],
+      cost: [{ value: this.steamPart?.cost, disabled: !this.canEdit() }]
     });
+
+    if (this.index > -1) {
+      this.newDescControl.setValue(this.convertedExistedPart?.[this.index]);
+    }
+
+    return this.steamPartForm;
   }
 
-  patchForm() {
-    const selectedCodeValue = this.data.populateData.groupNameCvList.find(
-      (item: any) => item.code_val === this.repairPart.tariff_repair?.group_name_cv
-    );
-    this.repairPartForm.patchValue({
-      guid: this.repairPart.guid,
-      tariff_repair_guid: this.repairPart.tariff_repair_guid,
-      repair_est_guid: this.repairPart.repair_est_guid,
-      description: this.repairPart.description,
-      location_cv: this.repairPart.location_cv,
-      comment: this.repairPart.comment,
-      remarks: this.repairPart.remarks,
-      quantity: this.repairPart.quantity,
-      hour: this.repairPart.hour,
-      group_name_cv: selectedCodeValue,
-      subgroup_name_cv: this.repairPart.tariff_repair?.subgroup_name_cv,
-      part_name: this.repairPart.tariff_repair?.part_name,
-      dimension: this.repairPart.tariff_repair?.dimension,
-      length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0 && x.action !== 'cancel' && !x.delete_dt)),
-      repair: this.REPDamageRepairToCV(this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1 && x.action !== 'cancel' && !x.delete_dt)),
-      material_cost: this.repairPart.material_cost
-    });
-  }
+  // patchForm() {
+  //   this.steamPartForm.patchValue({
+  //     description: this.repairPart.description,
+  //     quantity: this.repairPart.quantity,
+  //     hour: this.repairPart.hour,
+  //     unit_price: this.repairPart.material_cost
+  //   });
+  // }
 
   resetForm() {
 
   }
 
   submit(addAnother: boolean) {
-    if (this.repairPartForm?.valid) {
-      if (this.action === 'new') {
-        this.repairPart.action = 'new';
+    if (this.steamPartForm?.valid) {
+      var descObject: SteamPartItem;
+      if (typeof this.newDescControl?.value === "object") {
+        var repItm: RepairPartItem = this.newDescControl?.value!;
+
+        descObject = new SteamPartItem();
+        descObject.description = repItm.tariff_repair?.alias;
       } else {
-        if (this.repairPart.action !== 'new') {
-          this.repairPart.action = 'edit';
-        }
+        descObject = new SteamPartItem();
+        descObject.description = this.newDescControl?.value;
+      }
+      descObject.quantity = Utility.convertNumber(this.steamPartForm?.get('quantity')?.value, 2);
+      descObject.labour = Utility.convertNumber(this.steamPartForm?.get('labour')?.value, 2);
+      descObject.cost = Utility.convertNumber(this.steamPartForm?.get('cost')?.value, 2);
+      this.checkDuplicationEst(descObject, this.index);
+      if (!this.newDescControl?.valid) return;
+
+      if (this.index == -1) {
+        this.steamPart.action = "NEW";
+      }
+      else {
+        this.steamPart.action = this.steamPart.guid ? "EDIT" : "NEW";
       }
 
-      var rep: any = {
-        ...this.repairPart,
-        location_cv: this.repairPartForm.get('location_cv')?.value,
-        comment: this.repairPartForm.get('comment')?.value?.trim(),
-        tariff_repair_guid: this.repairPart?.tariff_repair_guid,
-        tariff_repair: this.repairPart?.tariff_repair,
-        rp_damage_repair: [...this.REPDamage(this.repairPartForm.get('damage')?.value), ...this.REPRepair(this.repairPartForm.get('repair')?.value)],
-        quantity: this.repairPartForm.get('quantity')?.value,
-        hour: this.repairPartForm.get('hour')?.value,
-        material_cost: Utility.convertNumber(this.repairPartForm.get('material_cost')?.value, 2),
-        remarks: this.repairPartForm.get('remarks')?.value,
-        create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
-      }
-      const concludeLength = rep.tariff_repair?.length
-        ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
-        : '';
-
-      let prefix = (`${this.getLocationDescription(rep.location_cv)}` + ' ' + (rep.comment ? rep.comment : '')).trim();
-      prefix = prefix ? `${prefix} - ` : '';
-
-      rep.description = `${prefix}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
-      console.log(rep)
-      if (this.validateExistedPart(rep)) {
-        this.confirmationDialog(addAnother, rep);
-      } else {
-        this.returnAndCloseDialog(addAnother, rep);
-      }
+      this.steamPart.description = descObject.description;
+      this.steamPart.quantity = descObject.quantity;
+      this.steamPart.labour = descObject.labour;
+      this.steamPart.cost = descObject.cost;
+      this.returnAndCloseDialog(addAnother, this.steamPart);
     } else {
       this.findInvalidControls();
     }
@@ -254,8 +230,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (addAnother) {
       this.dataSubject.next(returnDialog);
       this.addedSuccessfully();
-      this.repairPart = new RepairPartItem();
-      this.repairPartForm = this.createForm();
+      this.steamPart = new SteamPartItem();
+      this.steamPartForm = this.createForm();
       this.initializeValueChange();
       this.initializePartNameValueChange();
     } else {
@@ -279,116 +255,50 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializeValueChange() {
-    this.repairPartForm?.get('group_name_cv')!.valueChanges.pipe(
+    this.newDescControl?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
-        console.log(value)
-        const subgroupName = this.repairPartForm?.get('subgroup_name_cv');
-        if (value) {
-          this.subgroupNameCvList = this.data.populateData.subgroupNameCvList.filter((sgcv: CodeValuesItem) => sgcv.code_val_type === value.child_code)
-          if (value.child_code) {
-            subgroupName?.enable();
-            if ((this.subgroupNameCvList?.length ?? 0) > 1) {
-              this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, 'All', '');
-            } else {
-              subgroupName?.disable();
-            }
-          } else {
-            subgroupName?.setValue('');
-            subgroupName?.disable();
-            const partName = this.repairPartForm?.get('part_name');
-            // this.trDS.searchDistinctPartName(value.code_val, '').subscribe(data => {
-            //   this.partNameList = data;
-            //   // if (this.partNameList.length) {
-            //   //   partName?.enable()
-            //   // } else {
-            //   //   partName?.disable()
-            //   // }
-            // });
-          }
+        var desc_value: any = this.newDescControl?.value;
+        if (typeof desc_value === 'object' && this.updateSelectedItem === undefined && desc_value) {
+          this.steamPartForm.get('quantity')?.setValue(desc_value?.quantity ? desc_value?.quantity : 1);
+          this.steamPartForm.get('labour')?.setValue(desc_value?.labour_hour?.toFixed(2) || '');
+          this.steamPartForm.get('cost')?.setValue(desc_value?.material_cost?.toFixed(2) || '');
+        } else if (desc_value) {
+          this.getPackageSteamAlias(desc_value);
         } else {
-          subgroupName?.disable();
-          // this.subgroupNameCvList = addDefaultSelectOption(this.subgroupNameCvList, '-', '')
-        }
-      })
-    ).subscribe();
-
-    this.repairPartForm?.get('subgroup_name_cv')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        const groupName = this.repairPartForm?.get('group_name_cv')?.value;
-        if (groupName) {
-          console.log(`${groupName.code_val}, ${value}`)
-          const partName = this.repairPartForm?.get('part_name');
-          this.trDS.searchDistinctPartName(groupName.code_val, value || '').subscribe(data => {
-            this.partNameList = data;
-            // if (this.partNameList.length) {
-            //   partName?.enable()
-            // } else {
-            //   partName?.disable()
-            // }
-          });
-        }
-      })
-    ).subscribe();
-
-    this.repairPartForm?.get('repair')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        console.log(`${value}`)
-        if (value.includes('4X')) {
-          this.SetRepair4X(false);
-        } else {
-          this.SetRepair4X(true);
-          this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2) ?? 0.00);
+          this.getPackageSteamAlias('');
         }
       })
     ).subscribe();
   }
 
   initializePartNameValueChange() {
-    this.repairPartForm?.get('part_name')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        if (value) {
-          this.searchPart();
-        }
-      })
-    ).subscribe();
+    // this.steamPartForm?.get('description')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     if (value) {
+    //       // this.searchPart();
+    //     }
+    //   })
+    // ).subscribe();
   }
 
-  // handleValueChange(value: any) {
-  //   this.valueChangesDisabled = true;
-  //   if (value) {
-  //     this.partNameFilteredList = this.partNameList?.filter(item =>
-  //       item.toLowerCase().includes(value.toLowerCase()) // case-insensitive filtering
-  //     );
-  //     const isValid = this.partNameList?.some(item => item === value);
-  //     if (isValid) {
-  //       // Only search if the value exists in the partNameList
-  //       this.trDS.searchDistinctDimension(value).subscribe(data => {
-  //         this.dimensionList = data;
-  //         if (!this.dimensionList.length) {
-  //           this.repairPartForm?.get('dimension')?.disable();
-  //           this.getCustomerCost(value, undefined, undefined);
-  //         } else {
-  //           this.repairPartForm?.get('dimension')?.enable();
-  //         }
-  //       });
-  //     }
-  //   } else {
-  //     // If no value is entered, reset the filtered list to the full list
-  //     this.partNameFilteredList = this.partNameList;
-  //   }
-  //   this.valueChangesDisabled = false;
-  // }
+  getPackageSteamAlias(alias?: string) {
+    let where: any = {};
+    let custCompanyGuid: string = this.customer_company_guid;
+    where.and = [];
+    where.and.push({ customer_company_guid: { eq: custCompanyGuid } });
+    if (alias) where.and.push({ tariff_repair: { alias: { contains: alias } } });
+    this.prDS.SearchPackageRepair(where, {}).subscribe(data => {
+      this.displayPartSteamList = data || [];
+      this.populatePartList(alias);
+    });
+  }
 
   findInvalidControls() {
-    const controls = this.repairPartForm.controls;
+    const controls = this.steamPartForm.controls;
     for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
@@ -396,107 +306,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-  // REPDamage(damages: any[]): RPDamageRepairItem[] {
-  //   const damage = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0);
-
-  //   damage.forEach((x: any) => {
-  //     if (damages.includes(x.code_cv)) {
-  //       x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit'
-  //     }
-  //   });
-
-  //   return damages.map(dmg => {
-  //     return this.repDrDS.createREPDamage(undefined, undefined, dmg)
-  //   });
-  // }
-
-  SetRepair4X(isEnable: boolean) {
-    const quantity = this.repairPartForm?.get('quantity');
-    const hour = this.repairPartForm?.get('hour');
-    const material_cost = this.repairPartForm?.get('material_cost');
-    if (!isEnable) {
-      quantity?.setValue(1);
-      quantity?.disable();
-      hour?.setValue(0);
-      hour?.disable();
-      material_cost?.setValue(0);
-      material_cost?.disable();
-    } else {
-      quantity?.enable();
-      hour?.enable();
-      material_cost?.enable();
-    }
-  }
-
-  REPDamage(damages: string[]): RPDamageRepairItem[] {
-    const existingDamage = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 0);
-
-    const finalDamages: RPDamageRepairItem[] = [];
-
-    existingDamage?.forEach((x: any) => {
-      if (damages.includes(x.code_cv)) {
-        x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
-      } else {
-        x.action = 'cancel';
-      }
-
-      finalDamages.push(x);
-    });
-
-    damages.forEach(dmg => {
-      const found = existingDamage?.some((x: any) => x.code_cv === dmg);
-      if (!found) {
-        const newDamage = this.repDrDS.createREPDamage(undefined, undefined, dmg);
-        finalDamages.push(newDamage);
-      }
-    });
-
-    return finalDamages;
-  }
-
-  REPRepair(repairs: any[]): RPDamageRepairItem[] {
-    const existingRepair = this.repairPart.rp_damage_repair?.filter((x: any) => x.code_type === 1);
-
-    const finalRepairs: RPDamageRepairItem[] = [];
-
-    existingRepair?.forEach((x: any) => {
-      if (repairs.includes(x.code_cv)) {
-        x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
-      } else {
-        x.action = 'cancel';
-      }
-
-      finalRepairs.push(x);
-    });
-
-    repairs.forEach(dmg => {
-      const found = existingRepair?.some((x: any) => x.code_cv === dmg);
-      if (!found) {
-        const newDamage = this.repDrDS.createREPRepair(undefined, undefined, dmg);
-        finalRepairs.push(newDamage);
-      }
-    });
-
-    return finalRepairs;
-  }
-
-  REPDamageRepairToCV(damagesRepair: any[] | undefined): RPDamageRepairItem[] {
-    return damagesRepair?.map(dmgRp => dmgRp.code_cv) || [];
-  }
-
-  displayPartNameFn(tr: string): string {
-    return tr;
-  }
-
   validateLength(): boolean {
     let isValid = true;
-    const length = this.repairPartForm.get('length')?.value;
-    const remarks = this.repairPartForm.get('remarks')?.value;
+    const length = this.steamPartForm.get('length')?.value;
+    const remarks = this.steamPartForm.get('remarks')?.value;
 
     // Validate that at least one of the purpose checkboxes is checked
     if (!length && !remarks) {
       isValid = false; // At least one purpose must be selected
-      this.repairPartForm.get('remarks')?.setErrors({ required: true });
+      this.steamPartForm.get('remarks')?.setErrors({ required: true });
     }
 
     return isValid;
@@ -510,56 +328,48 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.action === 'edit';
   }
 
-  getLocationDescription(codeValType: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeValType, this.data.populateData?.partLocationCvList);
-  }
-
-  getUnitTypeDescription(codeVal: string | undefined): string | undefined {
-    return this.cvDS.getCodeDescription(codeVal, this.data.populateData.unitTypeCvList);
-  }
-
-  searchPart() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(SearchFormDialogComponent, {
-      width: '1050px',
-      data: {
-        customer_company_guid: this.customer_company_guid,
-        group_name_cv: this.repairPartForm?.get('group_name_cv')!.value?.code_val,
-        subgroup_name_cv: this.repairPartForm?.get('subgroup_name_cv')!.value,
-        part_name: this.repairPartForm?.get('part_name')!.value,
-        translatedLangText: this.data.translatedLangText,
-        populateData: this.data.populateData,
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        console.log(result);
-        this.repairPart = result.selected_repair_est_part;
-        this.repairPartForm.get('material_cost')?.setValue(this.repairPart?.material_cost!.toFixed(2));
-      }
-    });
-  }
-
   addedSuccessfully() {
     ComponentUtil.showNotification('snackbar-success', this.data.translatedLangText.ADD_SUCCESS, 'top', 'center', this.snackBar);
   }
 
-  extractDescription(rep: RepairPartItem) {
-    const concludeLength = rep.tariff_repair?.length
-      ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
-      : '';
-    return `${this.getLocationDescription(rep.location_cv)} ${rep.tariff_repair?.part_name} ${concludeLength} ${rep.remarks ?? ''}`.trim();
+  displaySteamPart(cc: any): string {
+    return cc && cc.tariff_repair ? cc.tariff_repair.alias : '';
   }
 
-  validateExistedPart(toValidatePart: RepairPartItem): boolean | undefined {
-    return this.existedPart?.some((part: RepairPartItem) => {
-      return toValidatePart.guid !== part.guid && this.extractDescription(toValidatePart) === this.extractDescription(part);
-    }) || false;
+  checkDuplicationEst(item: any, index: number = -1) {
+    var existItems = this.existedPart?.filter(data => data.description === item?.description)
+    if (existItems?.length) {
+      if (index == -1 || index != existItems[0].index) {
+        this.newDescControl?.setErrors({ duplicated: true });
+      }
+    }
+  }
+
+  convertExistedPart() {
+    const existingDescriptions = this.displayPartSteamList.map(item => item.tariff_repair?.alias);
+    this.convertedExistedPart = this.existedPart?.filter(item => !existingDescriptions.includes(item.tariff_repair?.alias) && !!item.description)
+      .map(item => ({
+        labour_hour: item.labour,
+        material_cost: item.cost,
+        tariff_repair_guid: "",
+        tariff_repair: {
+          alias: item.description
+        }
+      })) || [];
+  }
+
+  populatePartList(alias?: string) {
+    if (this.convertedExistedPart?.length) {
+      const existingAliases = this.displayPartSteamList.map(item => item.tariff_repair?.alias);
+      let filteredItems = this.convertedExistedPart.filter(item => !existingAliases.includes(item.tariff_repair?.alias));
+
+      if (alias) {
+        filteredItems = filteredItems.filter(item =>
+          item.tariff_repair?.alias?.toLowerCase().includes(alias.toLowerCase())
+        );
+      }
+
+      this.displayPartSteamList = [...filteredItems, ...this.displayPartSteamList];
+    }
   }
 }

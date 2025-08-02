@@ -1,55 +1,39 @@
+
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import {
-    trigger,
-    state,
-    style,
-    transition,
-    animate
-} from '@angular/animations';
-import { MatRippleModule } from '@angular/material/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, ContentChild, TemplateRef } from '@angular/core';
+
+export interface TableColumn {
+    key: string;
+    header: string;
+}
 
 @Component({
     selector: 'tlx-table-card',
     standalone: true,
-    imports: [
-        CommonModule,
-        MatIconModule,
-        MatRippleModule,
-    ],
-    animations: [
-        trigger('expandCollapse', [
-            transition(':enter', [
-                style({ height: '0', opacity: 0, overflow: 'hidden' }),
-                animate('250ms ease-out', style({ height: '*', opacity: 1 }))
-            ]),
-            transition(':leave', [
-                style({ height: '*', opacity: 1, overflow: 'hidden' }),
-                animate('250ms ease-in', style({ height: '0', opacity: 0 }))
-            ])
-        ])
-    ],
+    imports: [CommonModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './tlx-table-card.component.html',
+    styleUrl: './tlx-table-card.component.scss'
 })
-export class TlxCardListComponent {
+export class TlxTableCardComponent implements OnChanges {
     @Input() items: any[] = [];
-    @Input() colClass: string = 'col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12';
-    @ContentChild('cardTemplate') cardTemplate!: TemplateRef<any>;
-    @ContentChild('expandedTemplate') expandedTemplate?: TemplateRef<any>;
+    @Input() columns: TableColumn[] = [];
+    @Input() colClass: string = 'col-12';
+    @Input() rowLabel: string = 'Record';
+    @ContentChild('rowTemplate') rowTemplate?: TemplateRef<any>;
+    @ContentChild('mobileRowTemplate') mobileRowTemplate?: TemplateRef<any>;
 
-    expandedItems: Set<number> = new Set();
+    processedItems: any[][] = [];
 
-    toggleExpanded(itemId: number) {
-        if (this.expandedItems.has(itemId)) {
-            this.expandedItems.delete(itemId);
-        } else {
-            this.expandedItems.add(itemId);
+    ngOnChanges() {
+        if (!this.rowTemplate && !this.mobileRowTemplate) {
+            this.processedItems = this.items.map(item =>
+                this.columns.map(col => this.getValue(item, col.key))
+            );
         }
     }
 
-    isExpanded(itemId: number): boolean {
-        return this.expandedItems.has(itemId);
+    private getValue(item: any, key: string): any {
+        return key.split('.').reduce((obj, prop) => obj?.[prop], item) || '';
     }
 }
