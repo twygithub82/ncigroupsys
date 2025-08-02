@@ -47,10 +47,11 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { debounceTime, startWith, tap } from 'rxjs';
+import { Observable, debounceTime, startWith, tap } from 'rxjs';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 
 @Component({
   selector: 'app-approval-view',
@@ -251,6 +252,7 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   isOwner = false;
   isMobile = false;
   canApproveFlag = false;
+  isExportingPDF: boolean = false;
 
   constructor(
     public httpClient: HttpClient,
@@ -566,6 +568,37 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     row.owner = !(row.owner || false);
     this.calculateCost();
     this.calculateCostEst();
+  }
+
+  onExport(event: Event) {
+    this.preventDefault(event);
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+
+    const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      width: '794px',
+      height: '80vh',
+      data: {
+        type: this.sotItem?.purpose_repair_cv,
+        repair_guid: this.repairItem?.guid,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company_guid,
+        estimate_no: this.repairItem?.estimate_no,
+      },
+      // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
+      direction: tempDirection
+    });
+    this.isExportingPDF = true;
+    dialogRef.updatePosition({
+      top: '-9999px',  // Move far above the screen
+      left: '-9999px'  // Move far to the left of the screen
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      this.isExportingPDF = false;
+    });
   }
 
   onCancel(event: Event) {
