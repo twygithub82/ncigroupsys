@@ -41,7 +41,7 @@ mat-form-field {
 
 ::ng-deep input.mat-mdc-chip-input {
   //flex: 1 0 150px;
-  margin-left: 0px !important;
+  margin-left: 8px !important;
 }
 
 mat-chip-row[color="primary"] {
@@ -75,10 +75,10 @@ mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
   flex-shrink: 0;
 }
 
-.horizontal-container {
-  display: flex;
-  align-items: flex-start;
-}
+// .horizontal-container {
+//   display: flex;
+//   align-items: flex-start;
+// }
 
 /* Ensure text wraps properly */
 .option-text {
