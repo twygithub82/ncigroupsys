@@ -200,7 +200,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   repList = new MatTableDataSource<ContactPersonItemAction>();
   sotSelection = new SelectionModel<RepairPartItem>(true, []);
-  customer_companyList?: CustomerCompanyItem[];
+  customer_companyList?: any[] = [];
   groupNameCvList: CodeValuesItem[] = [];
   allSubGroupNameCvList: CodeValuesItem[] = [];
   subgroupNameCvList: CodeValuesItem[] = [];
@@ -503,8 +503,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     }
   }
 
-  displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
-    return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
+  displayCustomerCompanyFn(cc: any): string {
+    // if(cc){
+    //   return this.ccDS.displayName(cc.customer_company);
+    // }
+    
+    //return this.ccDS.displayName(cc.customer_company);
+    return cc && cc.customer_company?.code ? `${cc.customer_company.code} - ${cc.customer_company.name}` : '';
   }
 
   displayCountryCodeFn(cc: any): string {
@@ -715,8 +720,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       var count = result.data.addCustomerCompany;
       if (count > 0) {
         if (this.ccForm?.get("billing_branches")?.value) {
-          var b = this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
-          this.updateCustomerBillingBranch(cust, b);
+          var b = this.ccForm?.get("billing_branches")?.value as any;
+          this.updateCustomerBillingBranch(cust, b.customer_company);
         }
         this.handleSaveSuccess(count);
       }
@@ -745,6 +750,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
             delete billing_branch.branchCustomer.delete_dt;
             delete billing_branch.branchCustomer.cc_contact_person;
             delete billing_branch.branchCustomer.currency;
+             delete billing_branch.branchCustomer.storing_order_tank;
+             delete billing_branch.branchCustomer.storing_orders;
             billingBranches.push(billing_branch);
 
             delete CusCmp.update_by;
@@ -834,9 +841,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       if (this.ccForm?.get("billing_branches")?.value) {
 
 
-        var b = this.ccForm?.get("billing_branches")?.value as CustomerCompanyItem;
-
-        billing_branch.branchCustomer = new BillingCustomerItem(b);
+        var b = this.ccForm?.get("billing_branches")?.value ;
+        var bb = b.customer_company as CustomerCompanyItem
+        billing_branch.branchCustomer = new BillingCustomerItem(bb);
 
         if (b.main_customer_guid !== this.selectedCustomerCmp.guid) {
           billing_branch.branchCustomer.action = b.guid == "" ? "NEW" : "EDIT";
@@ -853,10 +860,11 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         delete billing_branch.branchCustomer.delete_dt;
         delete billing_branch.branchCustomer.cc_contact_person;
         delete billing_branch.branchCustomer.currency;
-
+        delete billing_branch.branchCustomer.storing_order_tank;
+        delete billing_branch.branchCustomer.storing_orders;
         billingBranches.push(billing_branch);
         billing_branch.branchContactPerson = [];
-        b.cc_contact_person?.forEach(p => {
+        bb?.cc_contact_person?.forEach(p => {
 
           let person = new BillingContactPersonItem(p);
           person.action = p.guid == "" ? "NEW" : "";
@@ -885,6 +893,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
               delete exist_billing_branch.branchCustomer.delete_dt;
               delete exist_billing_branch.branchCustomer.cc_contact_person;
               delete exist_billing_branch.branchCustomer.currency;
+              delete exist_billing_branch.branchCustomer.storing_order_tank;
+              delete exist_billing_branch.branchCustomer.storing_orders;
 
               billingBranches.push(exist_billing_branch);
             }
@@ -1135,7 +1145,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   getBillingBranches(guid: string): CustomerCompanyItem | undefined {
     if (this.customer_companyList?.length) {
-      const custCmp = this.customer_companyList?.filter((x: any) => x.main_customer_guid === guid).map(item => {
+      const custCmp = this.customer_companyList?.filter((x: any) => x.customer_company.main_customer_guid === guid).map(item => {
         return item;
       });
       if (custCmp?.length! > 0)
@@ -1148,7 +1158,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
 
   getBillingBranchesCode(code: string): CustomerCompanyItem | undefined {
     if (this.customer_companyList?.length) {
-      const custCmp = this.customer_companyList?.filter((x: any) => x.code === code).map(item => {
+      const custCmp = this.customer_companyList?.filter((x: any) => x.customer_company.code === code).map(item => {
         return item;
       });
       if (custCmp?.length! > 0)
@@ -1175,9 +1185,11 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         cond.and = [];
         cond.and.push({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] });
         cond.and.push({ type_cv: { in: ["BRANCH"] } });
-        this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
+      //  this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
+       this.subs.sink=this.ccDS.searchCustomerCompanyWithCount(cond, { customer_company:{ code: 'ASC' }}).subscribe(data => {
           let currentCustCode = this.ccForm!.get('customer_code')!.value;
-          this.customer_companyList = data.filter(d => d.code != currentCustCode);
+          let result :any[] = data;
+          this.customer_companyList = result.filter(d => d.customer_company?.code != currentCustCode);
         });
       })
     ).subscribe();
@@ -1194,22 +1206,25 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       selGuid = this.selectedCustomerCmp.guid!;
     }
 
-    this.subs.sink = this.ccDS.loadItems({}, { code: 'ASC' }, 100).subscribe(data => {
+    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount({}, { customer_company:{ code: 'ASC' }}, 100).subscribe(data => {
       if (data.length) {
+        var result :any[]=data;
         if (this.selectedCustomerCmp) {
-          data = data.filter(item => item.guid !== this.selectedCustomerCmp?.guid);
+          result = result.filter(item => item.customer_company.guid !== this.selectedCustomerCmp?.guid);
         }
-        this.customer_companyList = data
+        this.customer_companyList = result
 
         if (selBillingCode) {
           this.ccForm?.patchValue({
             billing_branches: this.getBillingBranchesCode(selBillingCode),
-          })
+          });
+          this.currentBillingBranch=this.ccForm?.get('billing_branches')?.value;
         }
         else if (selGuid!) {
           this.ccForm?.patchValue({
             billing_branches: this.getBillingBranches(selGuid),
-          })
+          });
+          this.currentBillingBranch=this.ccForm?.get('billing_branches')?.value;
         }
       }
     });
@@ -1235,13 +1250,20 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     var retval = false;
 
     if (this.currentBillingBranch) {
-      retval = true;
+      
+      retval = (!this.AllowedToChangeBillingBranch(this.currentBillingBranch));
     }
     return retval;
   }
 
   canEdit(): boolean {
-    return ((!!this.customer_guid && this.isAllowEdit()) || (!this.customer_guid && this.isAllowAdd()));
+    var result =((!!this.customer_guid && this.isAllowEdit()) || (!this.customer_guid && this.isAllowAdd()) );
+    if(result)
+    {
+      this.currentBillingBranch=this.ccForm?.get('billing_branches')?.value;
+      result = this.AllowedToChangeBillingBranch(this.currentBillingBranch);
+    }
+    return result;
   }
 
   isAllowEdit() {
@@ -1251,4 +1273,18 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['MASTER_CUSTOMER_ADD']);
   }
+
+  displayCompanyName(item: any) {
+    if(item)
+    {
+        this.ccDS.displayName(item.customer_company);
+    }
+    return '';
+  }
+
+  AllowedToChangeBillingBranch(row:any)
+  {
+    return (!row.so_count && !row.sot_count && !row.tank_info_count);
+  }
+
 }
