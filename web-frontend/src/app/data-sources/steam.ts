@@ -1361,14 +1361,28 @@ export class SteamDS extends BaseDataSource<SteamItem> {
       return undefined;
     }
 
-    const earliestApproveDt = steam.reduce((earliest, item) => {
-      if (item.approve_dt !== null && item.approve_dt !== undefined) {
-        return earliest === undefined || item.approve_dt < earliest ? item.approve_dt : earliest;
-      }
-      return earliest;
-    }, undefined as number | undefined);
+    // const earliestApproveDt = steam.reduce((earliest, item) => {
+    //   if (item.approve_dt !== null && item.approve_dt !== undefined) {
+    //     return earliest === undefined || item.approve_dt < earliest ? item.approve_dt : earliest;
+    //   }
+    //   return earliest;
+    // }, undefined as number | undefined);
 
-    return earliestApproveDt;
+    // return earliestApproveDt;
+    const autoSteaming = steam.find(x => BusinessLogicUtil.isAutoApproveSteaming(x));
+    if (autoSteaming) {
+      const found = autoSteaming.steaming_part?.find(x => x.job_order?.steaming_temp?.length)
+      if (found) {
+        const earliestReportDt = found?.job_order?.steaming_temp?.reduce((earliest, item) => {
+          if (!!item?.report_dt) {
+            return earliest === undefined || item.report_dt < earliest ? item.report_dt : earliest;
+          }
+          return earliest;
+        }, undefined as number | undefined);
+        return earliestReportDt;
+      }
+    }
+    return undefined;
   }
 
   getSteamCompleteDate(steam: SteamItem[] | undefined) {
@@ -1376,19 +1390,33 @@ export class SteamDS extends BaseDataSource<SteamItem> {
       return undefined;
     }
 
-    const allCompleteDatesValid = steam.every(item => item.complete_dt !== null && item.complete_dt !== undefined);
-    if (!allCompleteDatesValid) {
-      return undefined;
-    }
+    // const allCompleteDatesValid = steam.every(item => item.complete_dt !== null && item.complete_dt !== undefined);
+    // if (!allCompleteDatesValid) {
+    //   return undefined;
+    // }
 
-    const earliestApproveDt = steam.reduce((latest, item) => {
-      if (item.complete_dt !== null && item.complete_dt !== undefined) {
-        return latest === undefined || item.complete_dt > latest ? item.complete_dt : latest;
+    // const earliestApproveDt = steam.reduce((latest, item) => {
+    //   if (item.complete_dt !== null && item.complete_dt !== undefined) {
+    //     return latest === undefined || item.complete_dt > latest ? item.complete_dt : latest;
+    //   }
+    //   return latest;
+    // }, undefined as number | undefined);
+
+    // return earliestApproveDt;
+    const autoSteaming = steam.find(x => BusinessLogicUtil.isAutoApproveSteaming(x));
+    if (autoSteaming && autoSteaming.complete_dt) {
+      const found = autoSteaming.steaming_part?.find(x => x.job_order?.steaming_temp?.length)
+      if (found) {
+        const latestReportDt = found?.job_order?.steaming_temp?.reduce((latest, item) => {
+          if (!!item?.report_dt) {
+            return latest === undefined || item.report_dt > latest ? item.report_dt : latest;
+          }
+          return latest;
+        }, undefined as number | undefined);
+        return latestReportDt;
       }
-      return latest;
-    }, undefined as number | undefined);
-
-    return earliestApproveDt;
+    }
+    return undefined;
   }
 
   getSteamProcessingDays(steam: SteamItem[] | undefined) {
