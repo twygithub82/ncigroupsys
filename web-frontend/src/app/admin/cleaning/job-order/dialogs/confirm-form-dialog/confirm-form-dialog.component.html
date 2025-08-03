@@ -1,7 +1,27 @@
-<form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
-<div class="container mt-3 mb-2">
-  <h4 mat-dialog-title>{{confirmStatement}}</h4>
-  <mat-card [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-grey': false}" matRipple>
+<div class="container">
+  <!-- <h4 mat-dialog-title>{{confirmStatement}}</h4> -->
+  <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0 align-center">{{confirmStatement}}</h4>
+  <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-0">
+    <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+      <div [formGroupName]="index">
+        <p class="text-normal tank-title">
+          {{sotItem.tank_no}}
+        </p>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width textarea-line-1">
+            <mat-label>{{data.langText.REMARKS}}</mat-label>
+            <input matInput formControlName="remarks">
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+
+<!-- 
+  <mat-card [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-grey': false}">
+
     <mat-card-content>
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -19,14 +39,13 @@
     </mat-card-content>
     <mat-card-actions [ngClass]="'empty-card-actions'">
     </mat-card-actions>
-  </mat-card>
-  <div mat-dialog-actions class="mb-3 align-right">
-      <button mat-flat-button color="warn" [mat-dialog-close]="1" (click)="confirmDelete()">
-          {{data.langText.CONFIRM}}
-      </button>
-      <button mat-flat-button (click)="onNoClick()" tabindex="-1">
-          {{data.langText.CLOSE}}
-      </button>
+  </mat-card> -->
+  <div mat-dialog-actions class="mb-4 align-center">
+    <button mat-flat-button color="warn" class="me-2" [mat-dialog-close]="1" (click)="confirmDelete()">
+      {{data.langText.CONFIRM}}
+    </button>
+    <button mat-stroked-button  (click)="onNoClick()" tabindex="-1">
+      {{data.langText.CLOSE}}
+    </button>
   </div>
 </div>
-</form>

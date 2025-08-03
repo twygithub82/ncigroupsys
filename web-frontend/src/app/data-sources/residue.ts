@@ -767,7 +767,7 @@ export const CANCEL_RESIDUE_EST = gql`
 `
 
 export const ROLLBACK_RESIDUE_EST = gql`
-  mutation RollbackResidue($residue: [ResidueRequestInput!]!) {
+  mutation RollbackResidue($residue: [RollbackResidueRequestInput!]!) {
     rollbackResidue(residue: $residue)
   }
 `

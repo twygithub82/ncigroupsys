@@ -1376,7 +1376,8 @@
     "CLEAN-DURATION": "Cleaning Duration",
     "ESTIMATE-AMOUNT": "Estimate Amount",
     "START-DATE": "Start Date",
-    "STORAGE-DAY": "Storage Days"
+    "STORAGE-DAY": "Storage Days",
+    "STEAM-LOG": "Steam Log"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

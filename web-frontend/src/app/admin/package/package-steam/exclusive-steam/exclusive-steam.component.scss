@@ -26,7 +26,7 @@ td div {
     border-radius: 6px;
     // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
     //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
-    padding: 2px 5px;
+    padding: 2px 2px;
     font-weight: 500;
     color: #333;
     transform: translateZ(0);
@@ -49,18 +49,6 @@ td div {
 .checkbox-item {
  // margin-top: 4px;
   flex-shrink: 0;
-}
-
-.horizontal-container {
-  display: flex;
-  align-items: flex-start;
-}
-
-/* Ensure text wraps properly */
-.option-text {
-  margin-top: 4px;
-  white-space: normal;    /* Allow text wrapping */
-  line-height: 1.5;       /* Improve readability */
 }
 
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {

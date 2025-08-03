@@ -1957,16 +1957,18 @@ export class RepairDS extends BaseDataSource<RepairItem> {
   }
 
   canAmend(re: RepairItem | undefined): boolean {
-    return !re?.status_cv || re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED';
+    //return !re?.status_cv || re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED';
+    //added below to allow job-in-progress to amend
+    return !re?.status_cv || re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS';
+  }
+
+  canApprove(re: RepairItem | undefined): boolean {
+    //return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
+    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   canApprovePart(re: RepairItem | undefined): boolean {
     return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
-  }
-
-  canApprove(re: RepairItem | undefined): boolean {
-    return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED');
-    // return (re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED' || re?.status_cv === 'JOB_IN_PROGRESS');
   }
 
   canApproveOverwrite(re: RepairItem | undefined): boolean {

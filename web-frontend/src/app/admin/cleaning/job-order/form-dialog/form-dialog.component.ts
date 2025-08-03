@@ -592,7 +592,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+      width: '380px',
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ABORT,
@@ -780,6 +780,29 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks ? this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks : "-";
   }
 
+
+  // getJobAllocationBy(): string {
+  //   if (this.isNullOrEmpty(this.selectedItem.job_order?.guid))
+  //     return this.isNullOrEmpty(this.selectedItem.job_order?.create_by) ? "-" : this.selectedItem.job_order?.create_by;
+  //   else
+  //     return this.isNullOrEmpty(this.selectedItem.job_order?.update_by) ? "-" : this.selectedItem.job_order?.update_by;
+  // }
+
+  // getJobAllocationDate(): any {
+  //   if (this.isNullOrEmpty(this.selectedItem.job_order?.guid))
+  //     return this.isNullOrZero(this.selectedItem.job_order?.create_dt) ? "-" : this.selectedItem.job_order?.create_dt;
+  //   else
+  //     return this.isNullOrZero(this.selectedItem.job_order?.update_dt) ? "-" : this.selectedItem.job_order?.update_dt;
+  // }
+
+  // isNullOrEmpty(str: string | null | undefined): boolean {
+  //   return str === null || str === undefined || str.trim() === '';
+  // }
+
+  // isNullOrZero(val: number | null | undefined): boolean {
+  //   return val === null || val === undefined || val === 0;
+  // }
+
   startCleaningJobOrder(clean_guid: string) {
     if (clean_guid) {
       const where: any = {
@@ -874,8 +897,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '30vw',
-      //height: '250px',
+      width: '380px',
       data: {
         action: "EDIT",
         item: this.selectedItems[0].storing_order_tank,

@@ -208,7 +208,7 @@
                 <div class="row">
                   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                         <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                       </div>
                     </div>
@@ -217,17 +217,17 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
                                   {{translatedLangText.APPROVAL}}
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
                                   {{translatedLangText.JOB_ALLOCATION}}
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
                                   {{translatedLangText.JOB_COMPLETION}}
                                 </div>
@@ -245,7 +245,7 @@
                   </div>
                   <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                         <span class="font-bold">{{translatedLangText.UPDATED_BY}}</span>
                       </div>
                     </div>
@@ -254,23 +254,40 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
                                   <span></span><span>{{this.pcForm.get('update_by')?.value?this.pcForm.get('update_by')?.value:'-'}}</span>
                                   <!-- <span></span><span>+</span> -->
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.create_by?this.selectedItem?.job_order?.create_by:"-"}}</span>
+                                  <span></span><span>
+                                    {{
+                                      this.selectedItem?.status_cv === 'APPROVED'
+                                        ? '-'
+                                        : this.selectedItem?.job_order?.update_by
+                                          ? this.displayDate(this.selectedItem.job_order.update_by)
+                                          : '-'
+                                    }}
+                                  </span>
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}}</span>
+                                  <span></span><span>
+                                   {{
+                                      this.selectedItem?.status_cv === 'APPROVED'
+                                        ? '-'
+                                        : this.selectedItem?.job_order?.complete_dt
+                                          ? this.displayDate(this.selectedItem.job_order.update_by)
+                                          : '-'
+                                    }}
+                                    <!-- {{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}} -->
+                                  </span>
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
                                   <span></span><span>-</span>
                                 </div>
@@ -283,7 +300,7 @@
                   </div>
                   <div class="col-xl col-lg col-md col-sm m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center div-bg-blue">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border text-center div-bg-blue">
                         <span class="font-bold">{{translatedLangText.UPDATED_ON}}</span>
                       </div>
                     </div>
@@ -292,22 +309,38 @@
                         <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                             <div class="row">
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
                                   <span></span><span>{{this.pcForm.get('update_on')?.value?this.pcForm.get('update_on')?.value:'-'}}</span>
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.create_dt?this.displayDate(this.selectedItem?.job_order?.create_dt):"-"}}</span>
+                                  <span></span><span>
+                                    {{
+                                      this.selectedItem?.status_cv === 'APPROVED'
+                                        ? '-'
+                                        : this.selectedItem?.job_order?.update_dt
+                                          ? this.displayDate(this.selectedItem.job_order.update_dt)
+                                          : '-'
+                                    }}
+                                  </span>
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.displayDate(this.selectedItem?.job_order?.complete_dt):"-"}}</span>
+                                  <span></span><span>
+                                      {{
+                                        this.selectedItem?.status_cv === 'APPROVED'
+                                          ? '-'
+                                          : this.selectedItem?.job_order?.complete_dt
+                                            ? this.displayDate(this.selectedItem.job_order.complete_dt)
+                                            : '-'
+                                      }}
+                                  </span>
                                 </div>
                               </div>
-                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
                                   <span></span><span>-</span>
                                 </div>

@@ -245,6 +245,7 @@ const SEARCH_IN_GATE_CLEANING_QUERY = gql`
         approve_by
         approve_dt
         bill_to_guid
+        customer_billing_guid
         buffer_cost
         cleaning_cost
         est_buffer_cost

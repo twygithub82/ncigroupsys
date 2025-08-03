@@ -39,7 +39,7 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                    <mat-chip-grid #chipGrid>
+                    <mat-chip-grid #chipGrid class="nowrap single-line-chip-grid">
                       @if (this.selectedCustomers.length > 0) {
                       <mat-chip-row color="primary" (click)="removeAllSelectedCustomers()">
                         <span> {{getSelectedCustomersDisplay()}}</span>
@@ -120,10 +120,10 @@
             </ng-container>
             <ng-container matColumnDef="profile">
               <mat-header-cell *matHeaderCellDef 
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.PROFILE_NAME
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.PROFILE_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
                   }}:</span>{{row.tariff_depot.profile_name}}</mat-cell>
             </ng-container>
@@ -135,37 +135,37 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="customer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="''">
+              <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 {{this.translatedLangText.CUSTOMER}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="''">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
                   <!-- </span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
                 </span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="preinspection_cost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.PREINSPECTION_COST
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.PREINSPECTION_COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.PREINSPECTION_COST }}:</span>
                 {{displayCurrency(row.preinspection_cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lolo_cost">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.LOLO_COST
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.LOLO_COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.LOLO_COST }}:</span>
                 {{displayCurrency(row.lolo_cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="gate_surcharge">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.IN_OUT_SURCHARGE_COST
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{this.translatedLangText.IN_OUT_SURCHARGE_COST
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.IN_OUT_SURCHARGE_COST }}:</span>
                 {{displayCurrency(row.gate_in_cost)}}</mat-cell>
             </ng-container>
@@ -189,7 +189,7 @@
             </ng-container>
             <ng-container matColumnDef="last_update">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">

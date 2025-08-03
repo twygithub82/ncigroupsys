@@ -9,7 +9,7 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                     <mat-label>{{langText.REMARKS | translate}}</mat-label>
-                    <textarea matInput formControlName="remarks" [required]="allowRemarksWithRequired"></textarea>
+                    <input matInput type="text" formControlName="remarks" [required]="allowRemarksWithRequired">
                 </mat-form-field>
             </div>
         </div>

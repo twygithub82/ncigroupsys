@@ -1,5 +1,5 @@
 ::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary {
-  padding-left: 5px !important;
+  padding-left: 0px !important;
   /* padding-right: 12px; */
 }
 
@@ -42,17 +42,17 @@ mat-chip-row[color="primary"] {
   flex-shrink: 0;
 }
 
-.horizontal-container {
-  display: flex;
-  align-items: flex-start;
-}
+// .horizontal-container {
+//   display: flex;
+//   align-items: flex-start;
+// }
 
-/* Ensure text wraps properly */
-.option-text {
-  margin-top: 4px;
-  white-space: normal;    /* Allow text wrapping */
-  line-height: 1.5;       /* Improve readability */
-}
+// /* Ensure text wraps properly */
+// .option-text {
+//   margin-top: 4px;
+//   white-space: normal;    /* Allow text wrapping */
+//   line-height: 1.5;       /* Improve readability */
+// }
 
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
  display:none
