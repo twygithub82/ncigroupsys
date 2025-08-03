@@ -262,12 +262,29 @@
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.update_by?this.selectedItem?.job_order?.update_by:"-"}}</span>
+                                  <span></span><span>
+                                    {{
+                                      this.selectedItem?.status_cv === 'APPROVED'
+                                        ? '-'
+                                        : this.selectedItem?.job_order?.update_by
+                                          ? this.displayDate(this.selectedItem.job_order.update_by)
+                                          : '-'
+                                    }}
+                                  </span>
                                 </div>
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}}</span>
+                                  <span></span><span>
+                                   {{
+                                      this.selectedItem?.status_cv === 'APPROVED'
+                                        ? '-'
+                                        : this.selectedItem?.job_order?.complete_dt
+                                          ? this.displayDate(this.selectedItem.job_order.update_by)
+                                          : '-'
+                                    }}
+                                    <!-- {{this.selectedItem?.job_order?.complete_dt?this.selectedItem?.job_order?.update_by:"-"}} -->
+                                  </span>
                                 </div>
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
@@ -299,12 +316,28 @@
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.update_dt?this.displayDate(this.selectedItem?.job_order?.update_dt):"-"}}</span>
+                                  <span></span><span>
+                                    {{
+                                      this.selectedItem?.status_cv === 'APPROVED'
+                                        ? '-'
+                                        : this.selectedItem?.job_order?.update_dt
+                                          ? this.displayDate(this.selectedItem.job_order.update_dt)
+                                          : '-'
+                                    }}
+                                  </span>
                                 </div>
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">
                                 <div class="table-label cost-label">
-                                  <span></span><span>{{this.selectedItem?.job_order?.complete_dt?this.displayDate(this.selectedItem?.job_order?.complete_dt):"-"}}</span>
+                                  <span></span><span>
+                                      {{
+                                        this.selectedItem?.status_cv === 'APPROVED'
+                                          ? '-'
+                                          : this.selectedItem?.job_order?.complete_dt
+                                            ? this.displayDate(this.selectedItem.job_order.complete_dt)
+                                            : '-'
+                                      }}
+                                  </span>
                                 </div>
                               </div>
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-end border">

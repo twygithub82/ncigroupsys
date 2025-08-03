@@ -423,10 +423,12 @@
                           <div class="table-label">{{repairItem?.approve_by}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">{{repairItem?.allocate_by}}</div>
+                          <div class="table-label">
+                              {{ repairItem?.status_cv === 'APPROVED' ? '-' : (repairItem?.allocate_by || '-') }}
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          <div class="table-label">{{joDS.getQCJobOrder(repairItem?.repair_part)?.qc_by}}</div>
+                          <div class="table-label">{{joDS.getQCJobOrder(repairItem?.repair_part)?.qc_by || "-"}}</div>
                         </div>
                       </div>
                     </div>
@@ -447,12 +449,12 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{displayDate(repairItem?.allocate_dt)}}
+                            {{ repairItem?.status_cv === 'APPROVED' ? '-' : (repairItem?.allocate_dt || '-') }}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{displayDate(joDS.getQCJobOrder(repairItem?.repair_part)?.qc_dt)}}
+                            {{displayDate(joDS.getQCJobOrder(repairItem?.repair_part)?.qc_dt) || "-"}}
                           </div>
                         </div>
                       </div>
@@ -528,12 +530,12 @@
                       }
                     </mat-icon>
                     @if (isUseUpdateName()){
-                      {{translatedLangText.UPDATE}}
+                    {{translatedLangText.UPDATE}}
                     }
                     @else{
-                      {{translatedLangText.SAVE}}
+                    {{translatedLangText.SAVE}}
                     }
-                    
+
                   </button>
                   }
                 </div>
