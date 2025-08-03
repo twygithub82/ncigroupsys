@@ -1247,11 +1247,11 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
           var steaming: any = undefined;
           if (!this.steamItem?.storing_order_tank?.tank?.flat_rate) {
             const minItem = this.deList.reduce((minItem, item) =>
-              item.create_dt < minItem.create_dt ? item : minItem
+              item.report_dt < minItem.report_dt ? item : minItem
             );
             steaming = new SteamGO(this.steamItem);
             steaming.action = "EDIT";
-            var startTime = minItem?.create_dt || 0;
+            var startTime = minItem?.report_dt || 0;
             var endTime = Math.floor(Date.now() / 1000);
             // Calculate time difference in seconds
             const timeDiffSeconds = endTime - startTime;

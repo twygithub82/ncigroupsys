@@ -39,7 +39,39 @@
                     }
                   </mat-form-field>
                 </div>
-                <div class="col-xl-4 col-lg-4 col-md-12 col-sm3 mb-12">
+                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                  <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+                    <mat-chip-grid #chipGrid class="nowrap single-line-chip-grid">
+                      @if(selectedCustomers.length>0){
+                      <mat-chip-row color="primary" (click)="name_removeAllSelected()">
+                        {{getSelectedCustomersDisplay()}}
+                        <button matChipRemove hidden>
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                      }
+                      <input #custInput formControlName="customer_code" [matAutocomplete]="customerCode"
+                        [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        (matChipInputTokenEnd)="name_add($event)">
+                      <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="name_select($event)">
+                        @for (cc of customer_companyList; track cc) {
+                        <mat-option [value]="cc"  [class.mdc-list-item--selected]="name_itemSelected(cc)">
+                          <div class="horizontal-container">
+                              <mat-checkbox color="primary" class="checkbox-item"
+                                    (click)="name_onCheckboxClicked(cc); $event.stopPropagation()"
+                                    [checked]="name_itemSelected(cc) || false">
+                                  </mat-checkbox>
+                            <!-- {{ccDS.displayName(cc)}} -->
+                            <div class="option-text">{{ccDS.displayCodeDashName(cc)}}</div>
+                          </div>
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </mat-chip-grid>
+                  </mat-form-field>
+                </div>
+                <!-- <div class="col-xl-4 col-lg-4 col-md-12 col-sm3 mb-12">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                     <mat-select formControlName="customer_code" multiple>
@@ -50,7 +82,7 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                </div>
+                </div> -->
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                   @if (canEdit() && soDS.canAdd(storingOrderItem)) {
                   <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10 mt-2'"

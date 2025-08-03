@@ -525,9 +525,9 @@ console.log(body);
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightHeaderCol = 3;
-    let minHeightBodyCell = 7;
-    let fontSz = 6.5;
+    let minHeightHeaderCol = 7;
+    let minHeightBodyCell = 10;
+    let fontSz = 6;
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -544,10 +544,10 @@ console.log(body);
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '20%' },
-      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '20%' },
-      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
-      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell, cellWidth: '30%' },
+      0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 50 },
+      1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 50 },
+      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 40 },
+      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth:50 },
     };
 
     // Define headStyles with valid fontStyle
@@ -604,6 +604,7 @@ console.log(body);
       styles: {
         fontSize: fontSz,
         minCellHeight: minHeightHeaderCol,
+       // overflow:'ellipsize',
         lineWidth: 0.45, // cell border thickness
         lineColor: [0, 0, 0], // black
         cellPadding: 2, // ← Add some padding
@@ -763,47 +764,49 @@ console.log(body);
     textContent = `${this.translatedLangText.EIR_HAULIER_DECLARATION}`;
     PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, false, 'helvetica', true, textWrapWidth);
 
-    bufferLabelY += 47;
+    var tempY = bufferLabelY;
+    bufferLabelY = pageHeight-bottomMargin-(6*2);
+
     var gapLabel = (textWrapWidth / 2);
 
     textContent = `${this.translatedLangText.SURVEY_BY}:`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX, 8);
 
     textContent = `${this.translatedLangText.REVIEW_BY}:`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX + (textWrapWidth / 2), 8);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX + (textWrapWidth / 2), 8);
 
 
     gapLabel = (textWrapWidth / 3);
 
     textContent = `${this.translatedLangText.HAULIER}:`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX, 8);
 
     textContent = `${this.translatedLangText.VEHICLE_NO}:`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel), 8);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel), 8);
 
     textContent = `${this.translatedLangText.DRIVER_NAME}:`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8);
 
     gapLabel = (textWrapWidth / 2);
     bufferLabelY += 4;
 
     textContent = `${this.eirDetails?.create_by}`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX, 8, true);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX, 8, true);
 
     textContent = `${this.publish_by}`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, leftRectBoxStartX + gapLabel, 8, true);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, leftRectBoxStartX + gapLabel, 8, true);
 
     gapLabel = (textWrapWidth / 3);
     textContent = `${this.getGate()?.tank?.storing_order?.haulier}`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX, 8, true);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX, 8, true);
 
     textContent = `${this.getGate()?.vehicle_no}`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel), 8, true);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel), 8, true);
 
     textContent = `${this.getGate()?.driver_name}`;
-    PDFUtility.addText(pdf, textContent, startRectY + bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8, true);
+    PDFUtility.addText(pdf, textContent,  bufferLabelY, rightRectBoxStartX + (gapLabel * 2), 8, true);
 
-    lastTableFinalY = startRectY + bufferLabelY;
+    //lastTableFinalY = startRectY + bufferLabelY;
     textContent = `${this.translatedLangText.COMPUTER_GENERATED_NOTE}`;
     // PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, 8);
     PDFUtility.AddTextAtRightCornerPage(pdf, textContent, pageWidth, leftMargin, rightMargin, pageHeight - (bottomMargin), 8);

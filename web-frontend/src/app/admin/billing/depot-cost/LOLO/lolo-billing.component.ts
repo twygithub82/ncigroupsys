@@ -424,6 +424,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     if (this.searchForm!.get('invoiced')?.value) {
       where.or = [{ loff_billing_guid: { neq: null } }, { lon_billing_guid: { neq: null } }];
 
+
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -444,7 +445,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       where.storing_order_tank.in_gate = {
         some: {
           and: [
-            { eir_dt: { eq: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
+            { eir_dt: { lte: Utility.convertDate(this.searchForm!.value['eir_dt'], true) } },
             { or: [{ delete_dt: { eq: 0 } }, { delete_dt: { eq: null } }] }
           ]
         }
