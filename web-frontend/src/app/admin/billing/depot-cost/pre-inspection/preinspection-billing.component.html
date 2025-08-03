@@ -248,18 +248,18 @@
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5'">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
                 {{translatedLangText.TANK_NO}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5'">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
                 <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
                 {{translatedLangText.CUSTOMER}}
               </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
                 <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
                   matTooltip={{row.storing_order_tank?.storing_order?.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
               </mat-cell>
