@@ -516,6 +516,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     FLAT: "COMMON-FORM.FLAT",
     HOURLY: "COMMON-FORM.HOURLY",
     HOUR_RATE: "COMMON-FORM.HOUR-RATE",
+    STEAM_LOG: "COMMON-FORM.STEAM-LOG"
   }
 
   sot_guid: string | null | undefined;
@@ -1289,7 +1290,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   steamHeatingLogDialog(event: Event, steam: SteamItem) {
     this.preventDefault(event);
-    return;
     let tempDirection: Direction = this.getViewDirection();
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -3127,6 +3127,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   isAutoApproveSteaming(row: any) {
+    return false;
     return BusinessLogicUtil.isAutoApproveSteaming(row);
   }
 

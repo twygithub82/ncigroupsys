@@ -943,15 +943,19 @@
                                                 <span>{{translatedLangText.DOWNLOAD}}</span>
                                               </button>
                                               }
+                                              @if (isAutoApproveSteaming(row)) {
+                                              <button mat-menu-item (click)="steamHeatingLogDialog($event, row)">
+                                                <mat-icon>visibility</mat-icon>
+                                                <span>{{translatedLangText.STEAM_LOG}}</span>
+                                              </button>
+                                              }
                                             </mat-menu>
                                             }
                                           </mat-cell>
                                         </ng-container>
                                         <mat-header-row *matHeaderRowDef="displayedColumnsSteaming"></mat-header-row>
                                         <mat-row *matRowDef="let row; columns: displayedColumnsSteaming;"
-                                          (click)="ViewSteamEstimateItem(row)"
-                                          (click)="steamHeatingLogDialog($event, row)" [style.cursor]="'pointer'"
-                                          matRipple>
+                                          (click)="ViewSteamEstimateItem(row)" [style.cursor]="'pointer'" matRipple>
                                         </mat-row>
                                       </table>
                                     </div>
