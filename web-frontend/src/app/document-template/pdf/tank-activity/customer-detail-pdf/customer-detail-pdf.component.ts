@@ -271,8 +271,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     RELEASED: 'COMMON-FORM.RELEASED',
     REPORT: 'COMMON-FORM.REPORT',
     S_N: 'COMMON-FORM.S_N',
-    APPROVAL_REF:'COMMON-FORM.APPROVAL-REF',
-    RELEASE_REF:'COMMON-FORM.RELEASE-REF',
+    APPROVAL_REF: 'COMMON-FORM.APPROVAL-REF',
+    RELEASE_REF: 'COMMON-FORM.RELEASE-REF',
   }
 
   type?: string | null;
@@ -467,8 +467,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     return this.cvDS.getCodeDescription(codeVal, this.subgroupNameCvList);
   }
 
-   displayTankPurpose_InShort(sot: any) {
-   
+  displayTankPurpose_InShort(sot: any) {
+
     return Utility.displayTankPurpose_InShort(sot);
   }
 
@@ -523,8 +523,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
-  
- async exportToPDF_r1(fileName: string = 'document.pdf') {
+
+  async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
     const leftMargin = 5;
@@ -549,102 +549,102 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
-    const vAlign="bottom";
+    const vAlign = "bottom";
     const reportTitle = this.GetReportTitle();
     const headers: RowInput[] = [
-  [
-    // { 
-    //   content: this.translatedLangText.S_N, 
-    //   rowSpan: 2, 
-    //   styles: { halign: 'center', valign: vAlign } 
-    // },
-    { 
-      content: this.translatedLangText.TANK_DETAILS,
-      colSpan: 7,
-      styles: { halign: 'center', valign: vAlign }
-    },
-    { 
-      content: this.translatedLangText.MAINTENANCE_DETAILS, 
-      colSpan: 8, 
-      styles: { halign: 'center', valign: vAlign }
-    },
-    { 
-      content: this.translatedLangText.RELEASE_DETAILS, // Changed from duplicate MAINTENANCE_DETAILS
-      colSpan: 8, 
-      styles: { halign: 'center', valign: vAlign }
-    },
-    // { 
-    //   content: this.translatedLangText.CURRENT_STATUS, 
-    //   rowSpan: 2, 
-    //   styles: { halign: 'center', valign: vAlign }
-    // },
-    // { 
-    //   content: this.translatedLangText.YARD, 
-    //   rowSpan: 2, 
-    //   styles: { halign: 'center', valign: vAlign }
-    // }
-  ],
-  [
-    // Tank Details (7 columns)
-    { content: this.translatedLangText.S_N, styles: { valign: vAlign } },
-    { content: this.translatedLangText.TANK_NO, styles: { valign: vAlign } },
-    { content: this.translatedLangText.IN_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.TAKE_IN_REFERENCE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.CAPACITY, styles: { valign: vAlign } },
-    { content: this.translatedLangText.TARE_WEIGHT, styles: { valign: vAlign } },
-    { content: this.translatedLangText.LAST_CARGO, styles: { valign: vAlign } },
-    
-    // Maintenance Details (8 columns)
-    { content: this.translatedLangText.CLEAN_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.OWNER, styles: { valign: vAlign } },
-    { content: this.translatedLangText.LAST_TEST, styles: { valign: vAlign } },
-    { content: this.translatedLangText.NEXT_TEST, styles: { valign: vAlign } },
-    { content: this.translatedLangText.ESTIMATE_NO, styles: { valign: vAlign } },
-    { content: this.translatedLangText.ESTIMATE_DATE, styles: { valign: vAlign } },
-    // { content: this.translatedLangText.APPROVAL_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.APPROVAL_REF, styles: { valign: vAlign } },
-    { content: this.translatedLangText.AV_DATE, styles: { valign: vAlign } },
-    
-    // Release Details (8 columns)
-    { content: this.translatedLangText.CLEAN_CERT_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.RELEASE_BOOKING, styles: { valign: vAlign } },
-    { content: this.translatedLangText.RELEASE_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.RELEASE_REF, styles: { valign: vAlign } },
-    { content: this.translatedLangText.CURRENT_STATUS, styles: { valign: vAlign } },
-    { content: this.translatedLangText.PURPOSE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.REMARKS, styles: { valign: vAlign } },
-    { content: this.translatedLangText.YARD, styles: { valign: vAlign } },
-  
-    // Empty cells for rowSpan columns
-    // '', // for CURRENT_STATUS
-    // ''  // for YARD
-  ]
-];
-    
+      [
+        // { 
+        //   content: this.translatedLangText.S_N, 
+        //   rowSpan: 2, 
+        //   styles: { halign: 'center', valign: vAlign } 
+        // },
+        {
+          content: this.translatedLangText.TANK_DETAILS,
+          colSpan: 7,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.MAINTENANCE_DETAILS,
+          colSpan: 8,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.RELEASE_DETAILS, // Changed from duplicate MAINTENANCE_DETAILS
+          colSpan: 8,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        // { 
+        //   content: this.translatedLangText.CURRENT_STATUS, 
+        //   rowSpan: 2, 
+        //   styles: { halign: 'center', valign: vAlign }
+        // },
+        // { 
+        //   content: this.translatedLangText.YARD, 
+        //   rowSpan: 2, 
+        //   styles: { halign: 'center', valign: vAlign }
+        // }
+      ],
+      [
+        // Tank Details (7 columns)
+        { content: this.translatedLangText.S_N, styles: { valign: vAlign } },
+        { content: this.translatedLangText.TANK_NO, styles: { valign: vAlign } },
+        { content: this.translatedLangText.IN_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.TAKE_IN_REFERENCE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.CAPACITY, styles: { valign: vAlign } },
+        { content: this.translatedLangText.TARE_WEIGHT, styles: { valign: vAlign } },
+        { content: this.translatedLangText.LAST_CARGO, styles: { valign: vAlign } },
+
+        // Maintenance Details (8 columns)
+        { content: this.translatedLangText.CLEAN_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.OWNER, styles: { valign: vAlign } },
+        { content: this.translatedLangText.LAST_TEST, styles: { valign: vAlign } },
+        { content: this.translatedLangText.NEXT_TEST, styles: { valign: vAlign } },
+        { content: this.translatedLangText.ESTIMATE_NO, styles: { valign: vAlign } },
+        { content: this.translatedLangText.ESTIMATE_DATE, styles: { valign: vAlign } },
+        // { content: this.translatedLangText.APPROVAL_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.APPROVAL_REF, styles: { valign: vAlign } },
+        { content: this.translatedLangText.AV_DATE, styles: { valign: vAlign } },
+
+        // Release Details (8 columns)
+        { content: this.translatedLangText.CLEAN_CERT_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.RELEASE_BOOKING, styles: { valign: vAlign } },
+        { content: this.translatedLangText.RELEASE_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.RELEASE_REF, styles: { valign: vAlign } },
+        { content: this.translatedLangText.CURRENT_STATUS, styles: { valign: vAlign } },
+        { content: this.translatedLangText.PURPOSE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.REMARKS, styles: { valign: vAlign } },
+        { content: this.translatedLangText.YARD, styles: { valign: vAlign } },
+
+        // Empty cells for rowSpan columns
+        // '', // for CURRENT_STATUS
+        // ''  // for YARD
+      ]
+    ];
+
     const comStyles: any = {
-      0: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      6: { halign: 'left', cellWidth: 26, minCellHeight: minHeightBodyCell,overflow:'ellipsize' },
-      7: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      11: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', cellWidth: 6, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      4: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell },
+      6: { halign: 'left', cellWidth: 26, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      7: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', cellWidth: 7, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell }, //next test
+      11: { halign: 'center', cellWidth: 18, minCellHeight: minHeightBodyCell },
       12: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      13: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
+      13: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //apprv ref
       14: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       15: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       16: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
       17: { halign: 'center', cellWidth: 12, minCellHeight: minHeightBodyCell },
-      18: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      19: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      20: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      21: { halign: 'center', cellWidth: 11, minCellHeight: minHeightBodyCell },
-      22: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell }
+      18: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' }, //release ref
+      19: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell },
+      20: { halign: 'center', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      21: { halign: 'center', cellWidth: 15, minCellHeight: minHeightBodyCell, overflow: 'ellipsize'  },
+      22: { halign: 'center', cellWidth: 8, minCellHeight: minHeightBodyCell }
     };
 
 
@@ -657,7 +657,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       valign: 'middle',
       lineColor: 201,
       lineWidth: 0.1,
-      cellPadding:1,
+      cellPadding: 1,
     };
 
     let currentY = topMargin;
@@ -689,7 +689,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       var subTitleHeight = 20; // Height required for customer name
       var tableHeight = ((cust.in_yard_storing_order_tank?.length || 0) * tableRowHeight + tableHeaderHeight); // Approximate table height
 
-    
+
 
       var repPage = pdf.getNumberOfPages();
       //if(repPage==1)lastTableFinalY=45;
@@ -714,31 +714,31 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         // lastTableFinalY += 5;
         // pdf.setFontSize(8);
         var subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.IN_YARD}`;
-        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin+1, lastTableFinalY, 8);
+        Utility.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin + 1, lastTableFinalY, 8);
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
         startY = lastTableFinalY; // Start table 20mm below the customer name
-        var fontSz=6;
+        var fontSz = 6;
         for (let b = 0; b < (cust.in_yard_storing_order_tank?.length || 0); b++) {
           var itm = cust.in_yard_storing_order_tank?.[b]!;
           data.push([
             //Tank details
-            (b + 1).toString(), 
+            (b + 1).toString(),
             itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
             this.DisplayCapacity(itm) || "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
-            
+
             //Maintenance details
-            this.DisplayCleanDate(itm) || "",this.DisplayTankOwner(itm)||"",this.DisplayLastTest(itm) || "",this.DisplayNextTest(itm) || "", 
+            this.DisplayCleanDate(itm) || "", this.DisplayTankOwner(itm) || "", this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "",
             this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
             // this.DisplayApprovalDate(itm) || "", 
-            this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", 
-         
+            this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "",
 
-          // Release details
+
+            // Release details
             this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
             this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus_InShort(itm) || "",
             // this.displayTankPurpose(itm) || "",
-             this.displayTankPurpose_InShort(itm) || "",this.DisplayRemarks(itm) || "", this.DisplayYard(itm) || ""
+            this.displayTankPurpose_InShort(itm) || "", this.DisplayRemarks(itm) || "", this.DisplayYard(itm) || ""
           ]);
 
           if (itm.repair) {
@@ -747,14 +747,14 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                 var rp = itm.repair?.[r]!;
                 data.push([
 
-                    //Tank details
-                  "", "", "", "", "", "", "", 
-                  
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
                   //Maintenance details
-                  "","","","", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "","",
-                  
+                  "", "", "", "", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "",
+
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "",this.DisplayYard(itm) || ""
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -777,7 +777,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         pdf.setDrawColor(0, 0, 0); // red line color
 
         pdf.setLineWidth(0.1);
-       pdf.setLineDashPattern([0.01, 0.01], 0.1);
+        pdf.setLineDashPattern([0.01, 0.01], 0.1);
         // Add table using autoTable plugin
         autoTable(pdf, {
           head: headers,
@@ -796,7 +796,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             fillColor: [255, 255, 255],
             halign: 'left', // Left-align content for body by default
             valign: 'middle', // Vertically align content
-            
+
           },
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();
@@ -848,24 +848,24 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         for (let b = 0; b < cust.released_storing_order_tank!.length; b++) {
           var itm = cust.released_storing_order_tank?.[b]!;
 
-            repData.push([
+          repData.push([
             //Tank details
-            (b + 1).toString(), 
+            (b + 1).toString(),
             itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
             this.DisplayCapacity(itm) || "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
-            
+
             //Maintenance details
-            this.DisplayCleanDate(itm) || "",this.DisplayTankOwner(itm)||"",this.DisplayLastTest(itm) || "",this.DisplayNextTest(itm) || "", 
+            this.DisplayCleanDate(itm) || "", this.DisplayTankOwner(itm) || "", this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "",
             this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
             // this.DisplayApprovalDate(itm) || "", 
-            this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", 
-         
+            this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "",
 
-          // Release details
+
+            // Release details
             this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
             this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus_InShort(itm) || "",
             // this.displayTankPurpose(itm) || "",
-             this.displayTankPurpose_InShort(itm) || "",this.DisplayRemarks(itm) || "", this.DisplayYard(itm) || ""
+            this.displayTankPurpose_InShort(itm) || "", this.DisplayRemarks(itm) || "", this.DisplayYard(itm) || ""
           ]);
 
           if (itm.repair) {
@@ -874,14 +874,14 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                 var rp = itm.repair?.[r]!;
                 repData.push([
 
-                    //Tank details
-                  "", "", "", "", "", "", "", 
-                  
+                  //Tank details
+                  "", "", "", "", "", "", "",
+
                   //Maintenance details
-                  "","","","", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "","",
-                  
+                  "", "", "", "", rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "",
+
                   // Release details
-                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "",this.DisplayYard(itm) || ""
+                  "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", "", "", this.DisplayYard(itm) || ""
                 ]);
               }
             }
@@ -904,7 +904,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
           // startY = lastTableFinalY; // Start table 20mm below the customer name
 
-        
+
           // if (itm.repair?.length || 0 > 1) {
           //   for (let r = 1; r < itm.repair!.length; r++) {
           //     var rp = itm.repair?.[r]!;
@@ -970,7 +970,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-     pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
@@ -993,7 +993,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.dialogRef.close();
   }
 
-  
+
 
   async exportToPDF_r1_old(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
@@ -1020,70 +1020,70 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
-    const vAlign="bottom";
+    const vAlign = "bottom";
     const reportTitle = this.GetReportTitle();
     const headers: RowInput[] = [
-  [
-    { 
-      content: this.translatedLangText.S_N, 
-      rowSpan: 2, 
-      styles: { halign: 'center', valign: vAlign } 
-    },
-    { 
-      content: this.translatedLangText.TANK_DETAILS,
-      colSpan: 6,
-      styles: { halign: 'center', valign: vAlign }
-    },
-    { 
-      content: this.translatedLangText.MAINTENANCE_DETAILS, 
-      colSpan: 6, 
-      styles: { halign: 'center', valign: vAlign }
-    },
-    { 
-      content: this.translatedLangText.RELEASE_DETAILS, // Changed from duplicate MAINTENANCE_DETAILS
-      colSpan: 4, 
-      styles: { halign: 'center', valign: vAlign }
-    },
-    { 
-      content: this.translatedLangText.CURRENT_STATUS, 
-      rowSpan: 2, 
-      styles: { halign: 'center', valign: vAlign }
-    },
-    { 
-      content: this.translatedLangText.YARD, 
-      rowSpan: 2, 
-      styles: { halign: 'center', valign: vAlign }
-    }
-  ],
-  [
-    // Tank Details (6 columns)
-    { content: this.translatedLangText.TANK_NO, styles: { valign: vAlign } },
-    { content: this.translatedLangText.IN_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.TAKE_IN_REFERENCE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.CAPACITY, styles: { valign: vAlign } },
-    { content: this.translatedLangText.TARE_WEIGHT, styles: { valign: vAlign } },
-    { content: this.translatedLangText.LAST_CARGO, styles: { valign: vAlign } },
-    
-    // Maintenance Details (6 columns)
-    { content: this.translatedLangText.CLEAN_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.ESTIMATE_NO, styles: { valign: vAlign } },
-    { content: this.translatedLangText.ESTIMATE_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.APPROVAL_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.APPROVAL_REF, styles: { valign: vAlign } },
-    { content: this.translatedLangText.AV_DATE, styles: { valign: vAlign } },
-    
-    // Release Details (4 columns)
-    { content: this.translatedLangText.CLEAN_CERT_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.RELEASE_BOOKING, styles: { valign: vAlign } },
-    { content: this.translatedLangText.RELEASE_DATE, styles: { valign: vAlign } },
-    { content: this.translatedLangText.RELEASE_REF, styles: { valign: vAlign } },
-    
-    // Empty cells for rowSpan columns
-    '', // for CURRENT_STATUS
-    ''  // for YARD
-  ]
-];
-    
+      [
+        {
+          content: this.translatedLangText.S_N,
+          rowSpan: 2,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.TANK_DETAILS,
+          colSpan: 6,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.MAINTENANCE_DETAILS,
+          colSpan: 6,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.RELEASE_DETAILS, // Changed from duplicate MAINTENANCE_DETAILS
+          colSpan: 4,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.CURRENT_STATUS,
+          rowSpan: 2,
+          styles: { halign: 'center', valign: vAlign }
+        },
+        {
+          content: this.translatedLangText.YARD,
+          rowSpan: 2,
+          styles: { halign: 'center', valign: vAlign }
+        }
+      ],
+      [
+        // Tank Details (6 columns)
+        { content: this.translatedLangText.TANK_NO, styles: { valign: vAlign } },
+        { content: this.translatedLangText.IN_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.TAKE_IN_REFERENCE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.CAPACITY, styles: { valign: vAlign } },
+        { content: this.translatedLangText.TARE_WEIGHT, styles: { valign: vAlign } },
+        { content: this.translatedLangText.LAST_CARGO, styles: { valign: vAlign } },
+
+        // Maintenance Details (6 columns)
+        { content: this.translatedLangText.CLEAN_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.ESTIMATE_NO, styles: { valign: vAlign } },
+        { content: this.translatedLangText.ESTIMATE_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.APPROVAL_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.APPROVAL_REF, styles: { valign: vAlign } },
+        { content: this.translatedLangText.AV_DATE, styles: { valign: vAlign } },
+
+        // Release Details (4 columns)
+        { content: this.translatedLangText.CLEAN_CERT_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.RELEASE_BOOKING, styles: { valign: vAlign } },
+        { content: this.translatedLangText.RELEASE_DATE, styles: { valign: vAlign } },
+        { content: this.translatedLangText.RELEASE_REF, styles: { valign: vAlign } },
+
+        // Empty cells for rowSpan columns
+        '', // for CURRENT_STATUS
+        ''  // for YARD
+      ]
+    ];
+
     const comStyles: any = {
       0: { halign: 'center', cellWidth: 9, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', cellWidth: 19, minCellHeight: minHeightBodyCell },
@@ -1120,7 +1120,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       valign: 'middle',
       lineColor: 201,
       lineWidth: 0.1,
-      cellPadding:1,
+      cellPadding: 1,
     };
 
     let currentY = topMargin;
@@ -1152,7 +1152,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       var subTitleHeight = 20; // Height required for customer name
       var tableHeight = ((cust.in_yard_storing_order_tank?.length || 0) * tableRowHeight + tableHeaderHeight); // Approximate table height
 
-    
+
 
       var repPage = pdf.getNumberOfPages();
       //if(repPage==1)lastTableFinalY=45;
@@ -1181,21 +1181,21 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         //pdf.text(subTitle, leftMargin, lastTableFinalY);
         lastTableFinalY += 2;
         startY = lastTableFinalY; // Start table 20mm below the customer name
-        var fontSz=6.5;
+        var fontSz = 6.5;
         for (let b = 0; b < (cust.in_yard_storing_order_tank?.length || 0); b++) {
           var itm = cust.in_yard_storing_order_tank?.[b]!;
           data.push([
-            (b + 1).toString(), 
+            (b + 1).toString(),
             itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
             this.DisplayCapacity(itm) || "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
 
             this.DisplayCleanDate(itm) || "", this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
-            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", 
+            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "",
             //this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "", 
             this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
             this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus(itm) || "",
             //this.DisplayRemarks(itm) || "", this.displayTankPurpose(itm) || "",
-             this.DisplayYard(itm) || ""
+            this.DisplayYard(itm) || ""
           ]);
 
           if (itm.repair) {
@@ -1204,9 +1204,9 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
                 var rp = itm.repair?.[r]!;
                 data.push([
                   "", "", "", "", "", "", "", "",
-                  rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "","", "", 
+                  rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "", "",
                   //"", "", 
-                  "", "", "", "", this.DisplayCurrentStatus(itm) || "", 
+                  "", "", "", "", this.DisplayCurrentStatus(itm) || "",
                   //"", "", 
                   this.DisplayYard(itm) || ""
                 ]);
@@ -1215,23 +1215,23 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           }
 
 
-          data.push([ 
-            { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-             { content: this.DisplayTankOwner(itm), colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-            { content: this.translatedLangText.LAST_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-             { content: this.DisplayLastTest(itm) || "", colSpan: 1, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-            { content: this.translatedLangText.NEXT_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-            { content: this.DisplayNextTest(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-            { content: this.translatedLangText.PURPOSE, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-            { content: this.displayTankPurpose(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-            { content: this.translatedLangText.REMARKS, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-            { content: this.DisplayRemarks(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
+          data.push([
+            { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+            { content: this.DisplayTankOwner(itm), colSpan: 2, styles: { halign: 'left', valign: 'middle', fontSize: fontSz } },
+            { content: this.translatedLangText.LAST_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+            { content: this.DisplayLastTest(itm) || "", colSpan: 1, styles: { halign: 'left', valign: 'middle', fontSize: fontSz } },
+            { content: this.translatedLangText.NEXT_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+            { content: this.DisplayNextTest(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle', fontSize: fontSz } },
+            { content: this.translatedLangText.PURPOSE, colSpan: 2, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+            { content: this.displayTankPurpose(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle', fontSize: fontSz } },
+            { content: this.translatedLangText.REMARKS, colSpan: 2, styles: { halign: 'left', valign: 'middle', fontStyle: 'bold', fontSize: fontSz } },
+            { content: this.DisplayRemarks(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle', fontSize: fontSz } }
           ]);
         }
         pdf.setDrawColor(0, 0, 0); // red line color
 
         pdf.setLineWidth(0.1);
-       pdf.setLineDashPattern([0.01, 0.01], 0.1);
+        pdf.setLineDashPattern([0.01, 0.01], 0.1);
         // Add table using autoTable plugin
         autoTable(pdf, {
           head: headers,
@@ -1250,7 +1250,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             fillColor: [255, 255, 255],
             halign: 'left', // Left-align content for body by default
             valign: 'middle', // Vertically align content
-            
+
           },
           didDrawPage: (data: any) => {
             const pageCount = pdf.getNumberOfPages();
@@ -1302,17 +1302,17 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         for (let b = 0; b < cust.released_storing_order_tank!.length; b++) {
           var itm = cust.released_storing_order_tank?.[b]!;
           repData.push([
-            (b + 1).toString(), 
+            (b + 1).toString(),
             itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
             this.DisplayCapacity(itm) || "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
 
             this.DisplayCleanDate(itm) || "", this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
-            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", 
+            this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "",
             //this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "", 
             this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
             this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus(itm) || "",
             //this.DisplayRemarks(itm) || "", this.displayTankPurpose(itm) || "",
-             this.DisplayYard(itm) || ""
+            this.DisplayYard(itm) || ""
           ]);
 
           startY = lastTableFinalY; // Start table 20mm below the customer name
@@ -1321,13 +1321,13 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             for (let r = 1; r < itm.repair!.length; r++) {
               var rp = itm.repair?.[r]!;
               repData.push([
-                  "", "", "", "", "", "", "", "",
-                  rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "","", "", 
-                  //"", "", 
-                  "", "", "", "", this.DisplayCurrentStatus(itm) || "", 
-                  //"", "", 
-                  this.DisplayYard(itm) || ""
-                ]);
+                "", "", "", "", "", "", "", "",
+                rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "", "", "",
+                //"", "", 
+                "", "", "", "", this.DisplayCurrentStatus(itm) || "",
+                //"", "", 
+                this.DisplayYard(itm) || ""
+              ]);
             }
 
           }
@@ -1382,7 +1382,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-     pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
@@ -1405,7 +1405,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     this.dialogRef.close();
   }
 
-  
+
 
   async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
 
@@ -1728,8 +1728,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     return Utility.convertEpochToDateStr(rp?.create_dt!) || '';
   }
 
-  DisplayCurrentStatus_InShort(sot:any)
-  {
+  DisplayCurrentStatus_InShort(sot: any) {
     return Utility.displayTankStatus_InShort(sot.tank_status_cv) || '';
   }
 }
