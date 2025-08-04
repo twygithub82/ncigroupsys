@@ -750,18 +750,17 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   undeleteItem(event: Event, row: ResiduePartItem, index: number) {
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(UndeleteDialogComponent, {
-      width: '1000px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      //width: '1000px',
       data: {
         item: row,
+        headerText: this.translatedLangText.ARE_YOU_SURE_UNO,
         langText: this.langText,
         index: index
       },
@@ -769,10 +768,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        if (result.item.guid) {
+        if (row.guid) {
           const data: any[] = [...this.deList];
           const updatedItem = {
-            ...result.item,
+            ...row,
             delete_dt: null,
             action: ''
           };

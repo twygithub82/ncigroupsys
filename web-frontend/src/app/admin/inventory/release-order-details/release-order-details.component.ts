@@ -479,6 +479,7 @@ export class ReleaseOrderDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const toCancel = row.map((tank) => new ReleaseOrderSotItem({ guid: tank.get('guid')?.value, remarks: tank.get('remarks')?.value, storing_order_tank: new StoringOrderTankItem({ tank_no: tank.get('tank_no')?.value }) }));
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       disableClose: true,
+      width: '380px',
       data: {
         action: "cancel",
         item: [...toCancel],

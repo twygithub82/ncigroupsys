@@ -155,6 +155,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     SEARCH: 'COMMON-FORM.SEARCH',
     COST: 'COMMON-FORM.COST',
     DELETE: 'COMMON-FORM.DELETE',
+    CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     DOWNLOAD: 'COMMON-FORM.DOWNLOAD'
   }
 
@@ -318,7 +319,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
       width: '380px',
       data: {
         action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
+        dialogTitle: this.translatedLangText.CONFIRM_DELETE,
         item: [...row],
         translatedLangText: this.translatedLangText
       },

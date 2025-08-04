@@ -4,7 +4,8 @@
   </div> -->
   <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0 align-center">{{data.action === 'cancel' ?
     data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
-  <div mat-dialog-content class="cancel-form ps-1 pe-1 pt-0 pb-0">
+
+  <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-0">
     <form class="register-form" [formGroup]="roSotListForm" #formDirective="ngForm">
       <div formArrayName="roSotList">
         @for (roSot of getRoSotListArray().controls; track roSot; let index = $index) {
@@ -26,10 +27,10 @@
         </div>
         }
       </div>
-      <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-2 mb-0">
+      <div class="row mt-3">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
-            <mat-label>{{data.translatedLangText.REMARK}}</mat-label>
+            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
             <input matInput formControlName="remarks">
           </mat-form-field>
         </div>
