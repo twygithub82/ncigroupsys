@@ -13,11 +13,11 @@
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row justify-content-center">
         <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
-          <div class="card">
+          <div class="">
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1" hidden>
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.NAME}}</mat-label>
                       <input matInput formControlName="name" type="text" required>
@@ -28,30 +28,17 @@
                       }
                     </mat-form-field>
                   </div>
-                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1" hidden>
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CONTACT_NO}}</mat-label>
                       <input matInput formControlName="contact" type="text">
 
                     </mat-form-field>
                   </div>
-                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.EMAIL}}</mat-label>
-                      <input matInput formControlName="email" type="text">
-
-                    </mat-form-field>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.USERNAME}}</mat-label>
-                      <input matInput formControlName="username" type="text" required>
+                      <input matInput formControlName="username" type="text" readonly>
                       @if (pcForm.get('username')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.USERNAME }} {{translatedLangText.CARGO_REQUIRED }}
@@ -59,13 +46,23 @@
                       }
                     </mat-form-field>
                    </div>
-                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.EMAIL}}</mat-label>
+                      <input matInput formControlName="email" type="text" readonly>
+
+                    </mat-form-field>
+                  </div>
+                
+             
+                    
+                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PASSWORD}}</mat-label>
                         <input matInput formControlName="pwd" type="text">
                       </mat-form-field>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CONFIRM_PASSWORD}}</mat-label>
                         <input matInput formControlName="confirm_pwd" type="text">
@@ -245,7 +242,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.UPDATE}}</button>
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>

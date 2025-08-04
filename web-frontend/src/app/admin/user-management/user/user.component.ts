@@ -422,59 +422,32 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
   editCall(row: CustomerCompanyItem) {
 
-    // this.router.navigate([`/admin/master/customer/new/${row.guid} `], {
-    //   state: {
-    //     id: row.guid,
-    //     type: 'customer-company',
-    //     selectedRow: row,
-    //     pagination: {
-    //       where: this.lastSearchCriteria,
-    //       pageSize: this.pageSize,
-    //       pageIndex: this.pageIndex,
-    //       hasPreviousPage: this.hasPreviousPage,
-    //       startCursor: this.startCursor,
-    //       endCursor: this.endCursor,
-    //       previous_endCursor: this.previous_endCursor,
+   
+    const dialogRef = this.dialog.open(FormDialogComponent,{
 
-    //       showResult: this.ccDS.totalCount > 0
+      width: '60vw',
+      height:'auto',
+      data: {
+        action: 'update',
+        langText: this.langText,
+        selectedItem:row
+      },
+      // position: {
+      //   top: '50px'  // Adjust this value to move the dialog down from the top of the screen
+      // }
 
-    //     }
-    //   }
-    // });
-    // // this.preventDefault(event);  // Prevents the form submission
-    // let tempDirection: Direction;
-    // if (localStorage.getItem('isRtl') === 'true') {
-    //   tempDirection = 'rtl';
-    // } else {
-    //   tempDirection = 'ltr';
-    // }
-    // var rows :PackageResidueItem[] =[] ;
-    // rows.push(row);
-    // const dialogRef = this.dialog.open(FormDialogComponent,{
+    });
 
-    //   width: '720px',
-    //   height:'auto',
-    //   data: {
-    //     action: 'update',
-    //     langText: this.langText,
-    //     selectedItems:rows
-    //   },
-    //   position: {
-    //     top: '50px'  // Adjust this value to move the dialog down from the top of the screen
-    //   }
-
-    // });
-
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //      //if (result) {
-    //       if(result>0)
-    //         {
-    //           this.handleSaveSuccess(result);
-    //           //this.search();
-    //           this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-    //         }
-    //   //}
-    //   });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+         //if (result) {
+          if(result>0)
+            {
+              this.handleSaveSuccess(result);
+              //this.search();
+              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+            }
+      //}
+      });
 
   }
 
