@@ -1564,7 +1564,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   getTotalCost(): number {
-    return this.deList.reduce((acc, row) => {
+    return this.roundUpCost(this.deList.reduce((acc, row) => {
       if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
@@ -1574,7 +1574,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         }
       }
       return acc; // If row is approved, keep the current accumulator value
-    }, 0);
+    }, 0));
   }
 
   getFooterBackgroundColor(): string {
@@ -1708,8 +1708,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       calResCost = residuePart.cost! * residuePart.quantity!;
     }
 
-    return calResCost;
-
+    return this.roundUpCost(calResCost);
   }
 
   checkApprovePart() {
@@ -1795,5 +1794,9 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   displayCustomerCompanyName(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
+  }
+
+  roundUpCost(cost: number) {
+    return BusinessLogicUtil.roundUpCost(cost);
   }
 }

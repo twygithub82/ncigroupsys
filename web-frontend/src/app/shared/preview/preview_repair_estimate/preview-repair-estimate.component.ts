@@ -804,13 +804,13 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     let net_cost = 0;
 
     const totalOwner = this.repairDS.getTotal(ownerList);
-    const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
+    const total_owner_hour = BusinessLogicUtil.roundUpHour(totalOwner.hour);
+    const total_owner_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost()));
+    const total_owner_mat_cost = BusinessLogicUtil.roundUpCost(totalOwner.total_mat_cost);
+    const total_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost));
+    const discount_labour_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost));
+    const discount_mat_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost));
+    const net_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost));
 
     this.repairForm?.get('total_owner_hour')?.setValue(this.parse2Decimal(total_owner_hour));
     this.repairForm?.get('total_owner_labour_cost')?.setValue(this.parse2Decimal(total_owner_labour_cost));
@@ -829,13 +829,13 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     net_cost += net_owner_cost;
 
     const totalLessee = this.repairDS.getTotal(lesseeList);
-    const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
+    const total_lessee_hour = BusinessLogicUtil.roundUpHour(totalLessee.hour);
+    const total_lessee_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost()));
+    const total_lessee_mat_cost = BusinessLogicUtil.roundUpCost(totalLessee.total_mat_cost);
+    const total_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost));
+    const discount_labour_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost));
+    const discount_mat_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost));
+    const net_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost));
 
     this.repairForm?.get('total_lessee_hour')?.setValue(this.parse2Decimal(total_lessee_hour));
     this.repairForm?.get('total_lessee_labour_cost')?.setValue(this.parse2Decimal(total_lessee_labour_cost));
@@ -877,13 +877,13 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     let net_cost = 0;
 
     const totalOwner = this.repairDS.getTotalEst(ownerList);
-    const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
+    const total_owner_hour = BusinessLogicUtil.roundUpHour(totalOwner.hour);
+    const total_owner_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost()));
+    const total_owner_mat_cost = BusinessLogicUtil.roundUpCost(totalOwner.total_mat_cost);
+    const total_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost));
+    const discount_labour_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(labourDiscount, total_owner_labour_cost));
+    const discount_mat_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(matDiscount, total_owner_mat_cost));
+    const net_owner_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost));
 
     this.repairForm?.get('total_owner_hour_est')?.setValue(this.parse2Decimal(total_owner_hour));
     this.repairForm?.get('total_owner_labour_cost_est')?.setValue(this.parse2Decimal(total_owner_labour_cost));
@@ -902,13 +902,13 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     net_cost += net_owner_cost;
 
     const totalLessee = this.repairDS.getTotalEst(lesseeList);
-    const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
+    const total_lessee_hour = BusinessLogicUtil.roundUpHour(totalLessee.hour);
+    const total_lessee_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost()));
+    const total_lessee_mat_cost = BusinessLogicUtil.roundUpCost(totalLessee.total_mat_cost);
+    const total_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost));
+    const discount_labour_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(labourDiscount, total_lessee_labour_cost));
+    const discount_mat_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getDiscountCost(matDiscount, total_lessee_mat_cost));
+    const net_lessee_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost));
 
     this.repairForm?.get('total_lessee_hour_est')?.setValue(this.parse2Decimal(total_lessee_hour));
     this.repairForm?.get('total_lessee_labour_cost_est')?.setValue(this.parse2Decimal(total_lessee_labour_cost));

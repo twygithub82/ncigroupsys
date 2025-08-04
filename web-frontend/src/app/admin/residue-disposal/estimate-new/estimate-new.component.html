@@ -333,8 +333,6 @@
                       <mat-cell mat-cell *matCellDef="let row"
                         [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         <span class="mobile-label">{{translatedLangText.APPROVED}}:</span>
-                      
-    
                         @if (row.approve_part === null || row.approve_part === undefined ||
                         IsApprovePart(row)){
                         <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event,row)">check</mat-icon>
@@ -342,7 +340,6 @@
                         @else {
                         <mat-icon class="col-red font-bold"  (click)="toggleApprovePart($event,row)">close</mat-icon>
                         }
-                        
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef [ngClass]="''" class="bg-{{getFooterBackgroundColor()}}"></mat-footer-cell>
                     </ng-container> 
@@ -351,10 +348,10 @@
                         {{translatedLangText.COST}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
-                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity*row.cost)}}
+                        <span class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(row.quantity * row.cost)}}
                       </mat-cell>
                       <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"  >
-                        <span class="mobile-label" > </span>{{this.parse2Decimal( getTotalCost()) }}
+                        <span class="mobile-label" > </span>{{this.parse2Decimal(getTotalCost()) }}
                       </mat-footer-cell>
                     </ng-container>
                  
