@@ -821,7 +821,7 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
     const discount_labour_cost = this.repairDS.getDiscountCost(labourDiscount, total_labour_cost);
     const discount_mat_cost = this.repairDS.getDiscountCost(matDiscount, total_mat_cost);
     const net_cost = this.repairDS.getNetCost(total_cost, discount_labour_cost, discount_mat_cost);
-    return this.parse2Decimal(net_cost);
+    return this.parse2Decimal(BusinessLogicUtil.roundUpCost(net_cost).toFixed(2));
   }
 
   parse2Decimal(input: number | string | undefined) {

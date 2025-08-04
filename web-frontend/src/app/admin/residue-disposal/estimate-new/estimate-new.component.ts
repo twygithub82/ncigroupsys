@@ -565,12 +565,6 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
-  selectOwner($event: Event, row: RepairPartItem) {
-    this.stopPropagation($event);
-    row.owner = !(row.owner || false);
-    this.calculateCost();
-  }
-
 
   checkCompulsoryEst(fields: string[]) {
     fields.forEach(name => {
@@ -693,14 +687,9 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
       qty: row.quantity,
       unit_price: row.cost
     });
-
-
-
   }
 
   undeleteItem(event: Event, row: ResiduePartItem, index: number) {
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1029,8 +1018,6 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
         ...row,
         index: index
       }));
-
-      //this.calculateCost();
     }
     else {
       this.deList = [];
@@ -1275,79 +1262,6 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     return Utility.formatNumberDisplay(input);
   }
 
-  calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt);
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt);
-    const labourDiscount = this.residueEstForm?.get('labour_cost_discount')?.value;
-    const matDiscount = this.residueEstForm?.get('material_cost_discount')?.value;
-
-    let total_hour = 0;
-    let total_labour_cost = 0;
-    let total_mat_cost = 0;
-    let total_cost = 0;
-    let discount_labour_cost = 0;
-    let discount_mat_cost = 0;
-    let net_cost = 0;
-
-    const totalOwner = this.repairEstDS.getTotal(ownerList);
-    const total_owner_hour = totalOwner.hour;
-    const total_owner_labour_cost = this.repairEstDS.getTotalLabourCost(total_owner_hour, this.getLabourCost());
-    const total_owner_mat_cost = totalOwner.total_mat_cost;
-    const total_owner_cost = this.repairEstDS.getTotalCost(total_owner_labour_cost, total_owner_mat_cost);
-    const discount_labour_owner_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_owner_labour_cost);
-    const discount_mat_owner_cost = this.repairEstDS.getDiscountCost(matDiscount, total_owner_mat_cost);
-    const net_owner_cost = this.repairEstDS.getNetCost(total_owner_cost, discount_labour_owner_cost, discount_mat_owner_cost);
-
-    this.residueEstForm?.get('total_owner_hour')?.setValue(total_owner_hour.toFixed(2));
-    this.residueEstForm?.get('total_owner_labour_cost')?.setValue(total_owner_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_owner_mat_cost')?.setValue(total_owner_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_owner_cost')?.setValue(total_owner_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_owner_cost')?.setValue(discount_labour_owner_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_owner_cost')?.setValue(discount_mat_owner_cost.toFixed(2));
-    this.residueEstForm?.get('net_owner_cost')?.setValue(net_owner_cost.toFixed(2));
-
-    total_hour += total_owner_hour;
-    total_labour_cost += total_owner_labour_cost;
-    total_mat_cost += total_owner_mat_cost;
-    total_cost += total_owner_cost;
-    discount_labour_cost += discount_labour_owner_cost;
-    discount_mat_cost += discount_mat_owner_cost;
-    net_cost += net_owner_cost;
-
-    const totalLessee = this.repairEstDS.getTotal(lesseeList);
-    const total_lessee_hour = totalLessee.hour;
-    const total_lessee_labour_cost = this.repairEstDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost());
-    const total_lessee_mat_cost = totalLessee.total_mat_cost;
-    const total_lessee_cost = this.repairEstDS.getTotalCost(total_lessee_labour_cost, total_lessee_mat_cost);
-    const discount_labour_lessee_cost = this.repairEstDS.getDiscountCost(labourDiscount, total_lessee_labour_cost);
-    const discount_mat_lessee_cost = this.repairEstDS.getDiscountCost(matDiscount, total_lessee_mat_cost);
-    const net_lessee_cost = this.repairEstDS.getNetCost(total_lessee_cost, discount_labour_lessee_cost, discount_mat_lessee_cost);
-
-    this.residueEstForm?.get('total_lessee_hour')?.setValue(total_lessee_hour.toFixed(2));
-    this.residueEstForm?.get('total_lessee_labour_cost')?.setValue(total_lessee_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_lessee_mat_cost')?.setValue(total_lessee_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_lessee_cost')?.setValue(total_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_lessee_cost')?.setValue(discount_labour_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_lessee_cost')?.setValue(discount_mat_lessee_cost.toFixed(2));
-    this.residueEstForm?.get('net_lessee_cost')?.setValue(net_lessee_cost.toFixed(2));
-
-    total_hour += total_lessee_hour;
-    total_labour_cost += total_lessee_labour_cost;
-    total_mat_cost += total_lessee_mat_cost;
-    total_cost += total_lessee_cost;
-    discount_labour_cost += discount_labour_lessee_cost;
-    discount_mat_cost += discount_mat_lessee_cost;
-    net_cost += net_lessee_cost;
-
-    this.residueEstForm?.get('total_hour')?.setValue(total_hour.toFixed(2));
-    this.residueEstForm?.get('total_labour_cost')?.setValue(total_labour_cost.toFixed(2));
-    this.residueEstForm?.get('total_mat_cost')?.setValue(total_mat_cost.toFixed(2));
-    this.residueEstForm?.get('total_cost')?.setValue(total_cost.toFixed(2));
-    this.residueEstForm?.get('discount_labour_cost')?.setValue(discount_labour_cost.toFixed(2));
-    this.residueEstForm?.get('discount_mat_cost')?.setValue(discount_mat_cost.toFixed(2));
-    this.residueEstForm?.get('net_cost')?.setValue(net_cost.toFixed(2));
-  }
-
   filterDeletedTemplate(resultList: MasterTemplateItem[] | undefined, customer_company_guid: string): any {
     return (resultList || [])
       .filter((row: MasterTemplateItem) =>
@@ -1510,13 +1424,17 @@ export class ResidueDisposalEstimateNewComponent extends UnsubscribeOnDestroyAda
     this.resetValue();
   }
 
+  roundUpCost(cost: number) {
+    return BusinessLogicUtil.roundUpCost(cost);
+  }
+
   getTotalCost(): number {
-    return this.deList.reduce((acc, row) => {
+    return BusinessLogicUtil.roundUpCost(this.deList.reduce((acc, row) => {
       if (row.delete_dt === null) {
         return acc + ((row.quantity || 0) * (row.cost || 0));
       }
       return acc; // If row is approved, keep the current accumulator value
-    }, 0);
+    }, 0));
   }
 
   getFooterBackgroundColor(): string {

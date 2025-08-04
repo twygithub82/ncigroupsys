@@ -2023,8 +2023,12 @@ export class RepairDS extends BaseDataSource<RepairItem> {
         hour: totals.hour + (part.approve_hour !== null && part.approve_hour !== undefined ? Utility.convertNumber(part.approve_hour) : Utility.convertNumber(part.hour) ?? 0),
         total_mat_cost: totals.total_mat_cost + (((part.approve_qty !== null && part.approve_qty !== undefined ? Utility.convertNumber(part.approve_qty) : Utility.convertNumber(part.quantity) ?? 0) * (part.approve_cost !== null && part.approve_cost !== undefined ? Utility.convertNumber(part.approve_cost, 2) : Utility.convertNumber(part.material_cost, 2) ?? 0)))
       };
-    }, { hour: 0, total_mat_cost: 0 }) || 0;
-    return totalSums;
+    }, { hour: 0, total_mat_cost: 0 }) || { hour: 0, total_mat_cost: 0 };
+
+    return {
+      hour: Math.ceil(totalSums.hour / 0.25) * 0.25,
+      total_mat_cost: Math.ceil(totalSums.total_mat_cost / 0.05) * 0.05
+    };
   }
 
   getTotalEst(repairPartList: any[] | undefined): any {

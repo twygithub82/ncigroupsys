@@ -410,7 +410,7 @@ export class ResidueEstimateFormDialogComponent_View {
   }
 
   getTotalCost(): number {
-    return this.deList?.reduce((acc, row) => {
+    return this.roundUpCost(this.deList?.reduce((acc, row) => {
       if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
@@ -420,7 +420,7 @@ export class ResidueEstimateFormDialogComponent_View {
         }
       }
       return acc; // If row is approved, keep the current accumulator value
-    }, 0);
+    }, 0));
   }
 
   IsApprovePart(rep: ResiduePartItem) {
@@ -468,5 +468,9 @@ export class ResidueEstimateFormDialogComponent_View {
 
   isAllowViewCost() {
     return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
+  }
+
+  roundUpCost(cost: any) {
+    return BusinessLogicUtil.roundUpCost(cost);
   }
 }

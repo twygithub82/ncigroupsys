@@ -241,6 +241,24 @@ export class BusinessLogicUtil {
         }
         return invoiceType.join(', ');
     }
+
+    static roundUpCost(net_cost: any) {
+        if (net_cost === undefined || net_cost === '' || net_cost === null || isNaN(net_cost)) {
+            return net_cost;
+        }
+        const remainder = net_cost % 0.05;
+        const result = remainder === 0 ? net_cost : Math.ceil(net_cost / 0.05) * 0.05;
+        return Math.round(result * 100) / 100;
+    }
+
+    static roundUpHour(hour: any) {
+        if (hour === undefined || hour === '' || hour === null || isNaN(hour)) {
+            return hour;
+        }
+        const remainder = hour % 0.25;
+        const result = remainder === 0 ? hour : Math.ceil(hour / 0.25) * 0.25;
+        return Math.round(result * 100) / 100;
+    }
 }
 
 export const invoice_type_mapping: any = {
