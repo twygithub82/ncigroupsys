@@ -5,6 +5,9 @@
         <h4>{{dialogTitle}}</h4>
       </div>
     </div>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button me-2" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
   <div mat-dialog-content class="content-block">
     <div class="card">
