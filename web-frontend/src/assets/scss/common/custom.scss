@@ -3533,14 +3533,10 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 
 @media (max-width: 575.98px) {
   .mobile-img {
-    display: flex;
+    display: block;
     flex-direction: column;
     text-align: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40vh;
+    // position: absolute;
     justify-content: center;
     z-index: 1000;
 
@@ -3559,5 +3555,9 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
       margin: 10px 0;
       width: 100%;
     }
+  }
+
+  .auth-wrapper {
+    margin-top: 25vh
   }
 }
