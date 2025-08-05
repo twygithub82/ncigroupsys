@@ -1136,10 +1136,10 @@ $breakpoints: (
   }
 }
 
-// .mobile-label.footer-label {
-//   width: auto;
-//   margin-right: 10px
-// }
+.mobile-label.footer-label {
+  width: auto;
+  margin-right: 10px
+}
 
 // .dark-header .mat-mdc-header-cell {
 //   background-color: lighten($theme-gold-purple-legal-bg, 0%) !important;
@@ -3536,7 +3536,7 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
     display: flex;
     flex-direction: column;
     text-align: center;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;

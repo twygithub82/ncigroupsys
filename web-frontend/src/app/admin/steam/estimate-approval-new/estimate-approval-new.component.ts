@@ -638,8 +638,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   editEstPartDetails(event: Event, steamPart: SteamPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
-    console.log('row click')
-    if (!this.isMobile) {
+    if (!this.isMobile || !this.isSteamRepair) {
       return;
     }
     let tempDirection: Direction;
