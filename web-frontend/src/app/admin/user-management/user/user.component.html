@@ -70,16 +70,16 @@
                 </ng-container> -->
                   <ng-container matColumnDef="role">
                   <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.ROLE }}</mat-header-cell>
+                    [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.ROLE }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'tbl-col-width-per-2'">
-                    <span class="mobile-label">{{this.translatedLangText.ROLE }}:</span> {{row.userrole?.role||'-'}}</mat-cell>
+                    [ngClass]="'tbl-col-width-per-3'">
+                    <span class="mobile-label">{{this.translatedLangText.ROLE }}:</span> {{showUserRole(row)}}</mat-cell>
                 </ng-container>
                  <ng-container matColumnDef="team">
                   <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.TEAM }}</mat-header-cell>
+                    [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.TEAM }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                    [ngClass]="'tbl-col-width-per-2'">
+                    [ngClass]="'tbl-col-width-per-3'">
                     <span class="mobile-label">{{this.translatedLangText.TEAM }}:</span>-</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="mobile">

@@ -31,6 +31,29 @@ export class TeamGO {
   }
 }
 
+export class TeamUserLinkage {
+  public guid?: string;
+  public team_guid?: string;
+  public userId?: string;
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
+  public team?: TeamItem;
+  constructor(item: Partial<TeamUserLinkage> = {}) {
+    this.guid = item.guid;
+    this.team_guid = item.team_guid;
+    this.userId = item.userId;
+    this.team=item.team;
+    this.create_dt = item.create_dt;
+    this.create_by = item.create_by;
+    this.update_dt = item.update_dt;
+    this.update_by = item.update_by;
+    this.delete_dt = item.delete_dt;
+  }
+
+}
 export class TeamItem extends TeamGO {
   constructor(item: Partial<TeamItem> = {}) {
     super(item);
