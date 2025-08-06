@@ -99,4 +99,8 @@ export class CancelFormDialogComponent {
   cancelItemArray(): UntypedFormArray {
     return this.cancelForm.get('cancelItemList') as UntypedFormArray;
   }
+
+  getCloseButtonContent(): string {
+    return `${this.data.translatedLangText.CLOSE}`;
+  }
 }

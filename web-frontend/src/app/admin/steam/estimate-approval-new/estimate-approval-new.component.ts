@@ -61,6 +61,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 import { SteamEstimatePdfComponent } from 'app/document-template/pdf/steam-estimate-pdf/steam-estimate-pdf.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 @Component({
   selector: 'app-estimate-new',
   standalone: true,
@@ -176,6 +177,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     CANCELED_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
     ARE_YOU_SURE_CANCEL: 'COMMON-FORM.ARE-YOU-SURE-CANCEL',
     ARE_YOU_SURE_ROLLBACK: 'COMMON-FORM.ARE-YOU-SURE-ROLLBACK',
+    ARE_YOU_SURE_UNO: 'COMMON-FORM.ARE-YOU-SURE-UNDO',
     CONFIRM: 'COMMON-FORM.CONFIRM',
     CONFIRM_DELETE: 'COMMON-FORM.CONFIRM-DELETE',
     UNDO: 'COMMON-FORM.UNDO',
@@ -636,8 +638,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   editEstPartDetails(event: Event, steamPart: SteamPartItem, index: number) {
     this.preventDefault(event);  // Prevents the form submission
 
-    console.log('row click')
-    if (!this.isMobile) {
+    if (!this.isMobile || !this.isSteamRepair) {
       return;
     }
     let tempDirection: Direction;
@@ -774,7 +775,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '1000px',
       data: {
         item: row,
@@ -785,10 +786,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        if (result.item.guid) {
+        if (row.guid) {
           const data: any[] = [...this.deList];
           const updatedItem = {
-            ...result.item,
+            ...row,
             delete_dt: Utility.getDeleteDtEpoch(),
             action: 'cancel'
           };
@@ -1550,7 +1551,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
         );
       }
-      return String(ret);
+      return String(BusinessLogicUtil.roundUpHour(ret));
     }
     else {
       return '';
@@ -1572,7 +1573,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       );
-      return (ret || 0).toFixed(2);
+      return (this.roundUpCost(ret) || 0).toFixed(2);
     }
     else {
       return '-';
@@ -1580,7 +1581,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   }
 
   getTotalApprovedLabourCost(): number {
-    return this.deList.reduce((acc, row) => {
+    return this.roundUpCost(this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + ((row.approve_labour || 0) * (this.packageLabourItem?.cost || 0));
@@ -1590,11 +1591,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       return acc; // If row is approved, keep the current accumulator value
-    }, 0);
+    }, 0));
   }
 
   getTotalMaterialCost(): number {
-    return this.deList.reduce((acc, row) => {
+    return this.roundUpCost(this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
@@ -1604,11 +1605,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
       }
       return acc; // If row is approved, keep the current accumulator value
-    }, 0);
+    }, 0));
   }
 
   getTotalLabourHour(): number {
-    return this.deList.reduce((acc, row) => {
+    return BusinessLogicUtil.roundUpHour(this.deList.reduce((acc, row) => {
       if (row.delete_dt === undefined || row.delete_dt === null && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + (row.approve_labour || 0);
@@ -1618,7 +1619,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
       }
       return acc; // If row is approved, keep the current accumulator value
-    }, 0);
+    }, 0));
   }
 
   getTotalCost(): number {
@@ -1634,7 +1635,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         }
         return acc; // If row is approved, keep the current accumulator value
       }, 0);
-      return retval;
+      return this.roundUpCost(retval);
     }
     else {
       return this.calculateSteamItemCost(this.deList[0]);
@@ -1648,10 +1649,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(UndeleteDialogComponent, {
-      width: '1000px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      //width: '1000px',
       data: {
         item: row,
+        headerText: this.translatedLangText.ARE_YOU_SURE_UNO,
         langText: this.langText,
         index: index
       },
@@ -1659,10 +1661,10 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        if (result.item.guid) {
+        if (row.guid) {
           const data: any[] = [...this.deList];
           const updatedItem = {
-            ...result.item,
+            ...row,
             delete_dt: null,
             action: ''
           };
@@ -1926,7 +1928,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       cost *= this.labourHour;
       totalCost = this.translatedLangText.BY_HOUR;
     }
-    this.autosteamCost = this.parse2Decimal(cost);
+    this.autosteamCost = this.parse2Decimal(this.roundUpCost(cost));
     this.autosteamTotalCost = totalCost;
+  }
+
+  roundUpCost(cost: number) {
+    return BusinessLogicUtil.roundUpCost(cost);
   }
 }

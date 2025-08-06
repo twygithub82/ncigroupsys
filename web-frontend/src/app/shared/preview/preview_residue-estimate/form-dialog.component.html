@@ -185,7 +185,6 @@
                 <mat-cell mat-cell *matCellDef="let row"
                   [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                   <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
-
                   @if(IsApproved())
                   {
                   {{parse2Decimal(row.approve_cost)}}
@@ -195,7 +194,6 @@
                   { {{parse2Decimal(row.cost)}}
 
                   }
-
                 </mat-cell>
                 <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold"
                   [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">

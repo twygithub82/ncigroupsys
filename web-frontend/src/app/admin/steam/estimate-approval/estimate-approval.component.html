@@ -176,7 +176,7 @@
                   <mat-card-actions class="empty-card-actions"></mat-card-actions>
                 </mat-card>
                 }
-                @for(item of sotList; track item)
+                <!-- @for(item of sotList; track item)
                 {
                 <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>
                   <mat-accordion>
@@ -208,7 +208,6 @@
                             </button>
                             }
                           </div>
-
                         </mat-panel-description>
                       </mat-expansion-panel-header>
                       <mat-card-content [ngClass]="'p-0'">
@@ -281,7 +280,6 @@
                                 </button>
                                 }
                                 } @else {
-                                <!-- Default mat-menu for tablet/desktop -->
                                 <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                                   <mat-icon>more_vert</mat-icon>
                                 </button>
@@ -320,10 +318,8 @@
                     </mat-expansion-panel>
                   </mat-accordion>
                 </mat-card>
-                }
+                } -->
 
-
-                <!-- Old Code here --- can remove once verify working
                 <tlx-card-list [items]="sotList">
                   <ng-template #cardTemplate let-item>
                     <div class="d-flex align-items-center ms-3">
@@ -341,7 +337,7 @@
                             <span class="font-bold">{{ translatedLangText.EIR_DATE }}:</span>
                             {{ displayDate(igDS.getInGateItem(item.in_gate)?.eir_dt) }}
                           </div>
-                          <div class="m-l-">
+                          <!-- <div class="m-l-">
                             @if (copiedSteamEst) {
                             <button mat-mini-fab color="accent" [matTooltip]="translatedLangText.SELECT_TANK"
                               (click)="pasteSteamEstimate($event, item, copiedSteamEst)">
@@ -354,7 +350,7 @@
                               <mat-icon class="col-white">add</mat-icon>
                             </button>
                             }
-                          </div>
+                          </div> -->
                         </div>
                       </div>
 
@@ -494,7 +490,7 @@
                       </div>
                     </div>
                   </ng-template>
-                </tlx-card-list> -->
+                </tlx-card-list>
 
                 <!-- @for(row of sotList; track row){
                   <mat-card [ngClass]="{'card-content p-0 m-b-10': true}" matRipple>

@@ -47,7 +47,7 @@
   </div>
   <div mat-dialog-actions class="mb-4 align-center">
     <button mat-flat-button color="warn" class="me-2" (click)="confirmCancel()">
-      {{data.translatedLangText.CONFIRM}}
+      {{data.translatedLangText.CONFIRM | translate}}
     </button>
     <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
       {{data.translatedLangText.CLOSE}}

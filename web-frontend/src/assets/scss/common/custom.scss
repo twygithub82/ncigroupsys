@@ -1136,10 +1136,10 @@ $breakpoints: (
   }
 }
 
-// .mobile-label.footer-label {
-//   width: auto;
-//   margin-right: 10px
-// }
+.mobile-label.footer-label {
+  width: auto;
+  margin-right: 10px
+}
 
 // .dark-header .mat-mdc-header-cell {
 //   background-color: lighten($theme-gold-purple-legal-bg, 0%) !important;
@@ -3533,14 +3533,10 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 
 @media (max-width: 575.98px) {
   .mobile-img {
-    display: flex;
+    display: block;
     flex-direction: column;
     text-align: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40vh;
+    // position: absolute;
     justify-content: center;
     z-index: 1000;
 
@@ -3559,5 +3555,9 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
       margin: 10px 0;
       width: 100%;
     }
+  }
+
+  .auth-wrapper {
+    margin-top: 25vh
   }
 }

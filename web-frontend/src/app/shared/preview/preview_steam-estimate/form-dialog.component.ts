@@ -527,11 +527,11 @@ export class SteamEstimateFormDialogComponent_View {
       }
     }
 
-    return calResCost;
+    return this.roundUpCost(calResCost);
   }
 
   getAutoSteamTotalCost(): String {
-    var cost = this.getRate();
+    var cost = this.roundUpCost(this.getRate());
     var totalCost = this.parse2Decimal(cost);
     if (!this.selectedItem!.flat_rate ?? true) {
       cost *= this.labourHour;
@@ -553,7 +553,6 @@ export class SteamEstimateFormDialogComponent_View {
     }
   }
 
-
   getTotalLabourCost(): string {
     let ret = 0;
     if (this.deList!.length > 0 && this.isSteamRepair) {
@@ -569,19 +568,15 @@ export class SteamEstimateFormDialogComponent_View {
         }
       }
       );
-      return (ret || 0).toFixed(2);
+      return (BusinessLogicUtil.roundUpHour(ret) || 0).toFixed(2);
     }
     else {
       return '-';
     }
-
-
-
   }
 
   getTotalCost(): number {
     if (this.isSteamRepair) {
-
       var retval = this.deList!.reduce((acc, row) => {
         if ((row.delete_dt === undefined || row.delete_dt === null) && (row.approve_part == null || row.approve_part == true)) {
           if (this.IsApproved()) {
@@ -593,7 +588,7 @@ export class SteamEstimateFormDialogComponent_View {
         }
         return acc; // If row is approved, keep the current accumulator value
       }, 0);
-      return retval;
+      return this.roundUpCost(retval);
     }
     else {
       return this.calculateSteamItemCost(this.deList![0]!);
@@ -602,5 +597,9 @@ export class SteamEstimateFormDialogComponent_View {
 
   isAllowViewCost() {
     return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
+  }
+
+  roundUpCost(cost: any) {
+    return BusinessLogicUtil.roundUpCost(cost);
   }
 }

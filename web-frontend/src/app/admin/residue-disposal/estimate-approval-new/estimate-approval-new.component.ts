@@ -750,18 +750,17 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   undeleteItem(event: Event, row: ResiduePartItem, index: number) {
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(UndeleteDialogComponent, {
-      width: '1000px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      //width: '1000px',
       data: {
         item: row,
+        headerText: this.translatedLangText.ARE_YOU_SURE_UNO,
         langText: this.langText,
         index: index
       },
@@ -769,10 +768,10 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        if (result.item.guid) {
+        if (row.guid) {
           const data: any[] = [...this.deList];
           const updatedItem = {
-            ...result.item,
+            ...row,
             delete_dt: null,
             action: ''
           };
@@ -1565,7 +1564,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   }
 
   getTotalCost(): number {
-    return this.deList.reduce((acc, row) => {
+    return this.roundUpCost(this.deList.reduce((acc, row) => {
       if ((row.delete_dt === null || row.delete_dt === undefined) && (row.approve_part == null || row.approve_part == true)) {
         if (this.IsApproved()) {
           return acc + ((row.approve_qty || 0) * (row.approve_cost || 0));
@@ -1575,7 +1574,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         }
       }
       return acc; // If row is approved, keep the current accumulator value
-    }, 0);
+    }, 0));
   }
 
   getFooterBackgroundColor(): string {
@@ -1709,8 +1708,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       calResCost = residuePart.cost! * residuePart.quantity!;
     }
 
-    return calResCost;
-
+    return this.roundUpCost(calResCost);
   }
 
   checkApprovePart() {
@@ -1796,5 +1794,9 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   displayCustomerCompanyName(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} (${cc.name}) - ${cc.type_cv === 'BRANCH' ? cc.type_cv : 'CUSTOMER'}` : '';
+  }
+
+  roundUpCost(cost: number) {
+    return BusinessLogicUtil.roundUpCost(cost);
   }
 }

@@ -283,7 +283,8 @@
                     <mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
-                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [class.justify-content-end]="isMobile">{{i+1}}</mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
@@ -348,7 +349,7 @@
                       }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
                   </ng-container>
                   <ng-container matColumnDef="hour">
@@ -393,11 +394,11 @@
                   </ng-container>
                   <ng-container matColumnDef="unit_price">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.PRICE}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                       @if(!isMobile) {
                       <tlx-form-field customClass="mat-table-form-txt-40px">
@@ -482,11 +483,11 @@
                   </ng-container>
                   <ng-container matColumnDef="cost">
                     <mat-header-cell mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       {{translatedLangText.COST}}
                     </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       @if(isSteamRepair)
                       {
                       <span
@@ -505,11 +506,11 @@
                   </ng-container>
                   <ng-container matColumnDef="actions">
                     <mat-header-cell class="pr-0"
-                      [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                       *matHeaderCellDef>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row;"
-                      class="tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-left">
+                      class="tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
                       @if (steamDS.canAmend(this.steamItem!)) {
                       @if (!row.delete_dt){
                       <button mat-icon-button (click)="handleDelete($event, row, row.index)">
@@ -524,7 +525,7 @@
                       }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
                   </ng-container>
 
@@ -546,7 +547,10 @@
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                       <span class="mobile-label footer-label">{{translatedLangText.LABOUR}}
-                        (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}}):</span>
+                        @if (isSteamRepair) {
+                        (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}})
+                        }
+                        :</span>
                       <span class="">{{getTotalLabourCost()}}</span>
                     </mat-footer-cell>
                   </ng-container>
