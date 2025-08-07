@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div >
-      <mat-accordion >
+    <div>
+      <mat-accordion>
         <mat-expansion-panel [expanded]="true" disabled>
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -19,10 +19,10 @@
               </div>
             </mat-panel-description>
           </mat-expansion-panel-header>
-         
-          <form class="ms-0 " [formGroup]="searchForm!" #formDirective="ngForm" (ngSubmit)="search()" >
-              <button type="submit" style="display: none;">Submit</button>
-            <div class="row" >
+
+          <form class="ms-0 " [formGroup]="searchForm!" #formDirective="ngForm" (ngSubmit)="search()">
+            <button type="submit" style="display: none;">Submit</button>
+            <div class="row">
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
@@ -66,7 +66,8 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date"  [max]="maxManuDOMDt" formControlName="eir_dt">
+                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date" [max]="maxManuDOMDt"
+                    formControlName="eir_dt">
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-datepicker #eir_picker></mat-datepicker>
                 </mat-form-field>
@@ -74,16 +75,17 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date"  [max]="maxManuDOMDt"  formControlName="cutoff_dt">
+                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" [max]="maxManuDOMDt"
+                    formControlName="cutoff_dt">
                   <mat-datepicker-toggle matSuffix [for]="cutoff_picker"></mat-datepicker-toggle>
                   <mat-datepicker #cutoff_picker></mat-datepicker>
                 </mat-form-field>
               </div>
-         
+
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="inv_picker"  [max]="maxManuDOMDt" >
+                  <mat-date-range-input [rangePicker]="inv_picker" [max]="maxManuDOMDt">
                     <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
                     <input matEndDate placeholder="End date" formControlName="inv_dt_end">
                   </mat-date-range-input>
@@ -112,14 +114,15 @@
               </div>
 
               <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 col-xs-12 d-flex align-items-center">
-                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced" (change)="onToggleInvoiced($event)"> 
+                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced"
+                  (change)="onToggleInvoiced($event)">
                   {{translatedLangText.INVOICED}}
                 </mat-slide-toggle>
               </div>
-             
+
             </div>
           </form>
-          
+
         </mat-expansion-panel>
       </mat-accordion>
       <div class="row body card-aligned">
@@ -347,7 +350,6 @@
         }
         
         @if (!(billDS.loading$ | async) && !billSotList.length) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
@@ -376,15 +378,15 @@
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                  [ngClass]="'tbl-checkbox'" [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'"
-                  [hidden]="CheckBoxDisable(row)">
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                  (change)="$event ? toggleRow(row) : null" [ngClass]="'tbl-checkbox'"
+                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
-            
+
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
@@ -396,7 +398,8 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
                 {{translatedLangText.CUSTOMER}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
@@ -409,8 +412,8 @@
                 {{translatedLangText.EIR_NO}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                
-                <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{DisplayEirNo(row)}} 
+
+                <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{DisplayEirNo(row)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="eir_dt">
@@ -418,8 +421,8 @@
                 {{translatedLangText.EIR_DATE}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                
-                <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{DisplayEirDate(row)}} 
+
+                <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{DisplayEirDate(row)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_status_cv">
@@ -436,7 +439,8 @@
                 {{translatedLangText.INVOICE_TYPE}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                  <span class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(row.billing_type)}}
+                <span
+                  class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(row.billing_type)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
@@ -452,14 +456,14 @@
                 {{translatedLangText.GATE_IN}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
-                <span class="mobile-label">{{translatedLangText.GATE_IN}}: </span> 
+                <span class="mobile-label">{{translatedLangText.GATE_IN}}: </span>
 
                 @if(isGateInInvoice(row)){
-                <mat-icon class="col-green" >check</mat-icon>
+                <mat-icon class="col-green">check</mat-icon>
                 }
                 @else {
                 <!-- <mat-icon class="col-black" >remove</mat-icon> -->
-                <span class="font">-</span> 
+                <span class="font">-</span>
                 }
               </mat-cell>
             </ng-container>
@@ -468,15 +472,15 @@
                 {{translatedLangText.GATE_OUT}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
-                <span class="mobile-label">{{translatedLangText.GATE_OUT}}: </span>  
+                <span class="mobile-label">{{translatedLangText.GATE_OUT}}: </span>
                 @if(isGateOutInvoice(row)){
-                <mat-icon class="col-green" >check</mat-icon>
+                <mat-icon class="col-green">check</mat-icon>
                 }
                 @else {
                 <!-- <mat-icon class="col-black">remove</mat-icon> -->
-                 <span class="">-</span> 
+                <span class="">-</span>
                 }
-                
+
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoiced">
@@ -506,31 +510,26 @@
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"  class="custom-body-row" (click)="viewCall(row)"
+            <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row" (click)="viewCall(row)"
               [style.cursor]="'pointer'" matRipple>
             </mat-row>
           </table>
+          @if (!(billDS.loading$ | async) && !billSotList.length) {
+          <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
+            <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+          </div>
+          }
 
-         
-       
-        
-        @if (!(billDS.loading$ | async) && !billSotList.length) {
-        <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+          @if (billDS.loading$ | async) {
+          <div class="tbl-spinner">
+            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+            </mat-progress-spinner>
+          </div>
+          }
+          <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+            [pageSizeOptions]="[6, 10, 26, 100]" (page)="onPageEvent($event)">
+          </mat-paginator>
         </div>
-        }
-
-        @if (billDS.loading$ | async) {
-        <div class="tbl-spinner">
-          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-          </mat-progress-spinner>
-        </div>
-        }
-        <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-          [pageSizeOptions]="[6, 10, 26, 100]" (page)="onPageEvent($event)">
-        </mat-paginator>
-      </div> 
+      </div>
     </div>
   </div>
-</div>

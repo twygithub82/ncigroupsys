@@ -320,7 +320,6 @@
                     </table>
                   </div>
                   @if (!sotList.data.length) {
-                  <mat-divider></mat-divider>
                   <div class="no-results m-l-20 pt-3" [style.display]="sotList.data.length === 0 ? '' : 'none'">
                     <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                   </div>
@@ -334,7 +333,6 @@
                 </div>
               </div>
               }
-              <mat-divider></mat-divider>
               @if (soForm?.get('sotList')?.hasError('required')) {
               <mat-error class="ps-3">
                 {{translatedLangText.ADD_ATLEAST_ONE}}

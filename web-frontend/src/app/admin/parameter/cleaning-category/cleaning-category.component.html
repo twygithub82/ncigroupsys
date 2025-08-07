@@ -191,7 +191,6 @@
                 </div>
                 <!-- No result -->
                 @if (!(catDS.loading$ | async) && !catList.length) {
-                <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="catList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
                 </div>

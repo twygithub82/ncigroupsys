@@ -1,10 +1,10 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div >
+    <div>
       <mat-accordion>
         <mat-expansion-panel [expanded]="true" disabled>
           <mat-expansion-panel-header>
-            <mat-panel-title> 
+            <mat-panel-title>
             </mat-panel-title>
             <mat-panel-description>
               <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
@@ -65,7 +65,8 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date"  [max]="maxManuDOMDt"  formControlName="eir_dt">
+                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date" [max]="maxManuDOMDt"
+                    formControlName="eir_dt">
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-datepicker #eir_picker></mat-datepicker>
                 </mat-form-field>
@@ -73,7 +74,8 @@
               <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date"  [max]="maxManuDOMDt"  formControlName="cutoff_dt">
+                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" [max]="maxManuDOMDt"
+                    formControlName="cutoff_dt">
                   <mat-datepicker-toggle matSuffix [for]="cutoff_picker"></mat-datepicker-toggle>
                   <mat-datepicker #cutoff_picker></mat-datepicker>
                 </mat-form-field>
@@ -111,7 +113,8 @@
                 </mat-form-field>
               </div>
               <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 col-xs-12 d-flex align-items-center">
-                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced" (change)="onToggleInvoiced($event)"> 
+                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced"
+                  (change)="onToggleInvoiced($event)">
                   {{translatedLangText.INVOICED}}
                 </mat-slide-toggle>
               </div>
@@ -200,7 +203,7 @@
                       value="LIFT_OFF"><label for="option-two">{{translatedLangText.LIFT_OFF}}</label>
                   </div>
                 </div>
-            </div>
+              </div>
               <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <div class="radio-group" (change)="onInvoiceTypeChange($event)">
                   <input type="radio" id="option-one" name="invoice_type" [formControl]="invoiceTypeControl"
@@ -217,11 +220,11 @@
       </div>
       <div class="body overflow-auto">
         <div class="responsive_table">
-         
+
           <table mat-table [dataSource]="billSotList" matSort
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
 
-             
+
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
                 <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
@@ -231,15 +234,15 @@
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
-                  [ngClass]="'tbl-checkbox'" [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'"
-                  [hidden]="CheckBoxDisable(row)">
+                <mat-checkbox color="primary" (click)="$event.stopPropagation()"
+                  (change)="$event ? toggleRow(row) : null" [ngClass]="'tbl-checkbox'"
+                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
                 </mat-checkbox>
               </mat-cell>
             </ng-container>
-            
+
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
@@ -251,7 +254,8 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
                 {{translatedLangText.CUSTOMER}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
@@ -264,8 +268,8 @@
                 {{translatedLangText.EIR_NO}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                
-                <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{DisplayEirNo(row)}} 
+
+                <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{DisplayEirNo(row)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="eir_dt">
@@ -273,8 +277,8 @@
                 {{translatedLangText.EIR_DATE}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                
-                <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{DisplayEirDate(row)}} 
+
+                <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{DisplayEirDate(row)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_status_cv">
@@ -291,7 +295,8 @@
                 {{translatedLangText.INVOICE_TYPE}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="">
-                  <span class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(row.billing_type)}}
+                <span
+                  class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(row.billing_type)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="cost">
@@ -307,14 +312,14 @@
                 {{translatedLangText.LIFT_ON}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
-                <span class="mobile-label">{{translatedLangText.LIFT_ON}}: </span> 
+                <span class="mobile-label">{{translatedLangText.LIFT_ON}}: </span>
 
                 @if(isLiftOnInvoice(row)){
-                <mat-icon class="col-green" >check</mat-icon>
+                <mat-icon class="col-green">check</mat-icon>
                 }
                 @else {
                 <!-- <mat-icon class="col-black" >remove</mat-icon> -->
-                 <span class="">-</span> 
+                <span class="">-</span>
                 }
               </mat-cell>
             </ng-container>
@@ -323,15 +328,15 @@
                 {{translatedLangText.LIFT_OFF}}
               </mat-header-cell>
               <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
-                <span class="mobile-label">{{translatedLangText.LIFT_OFF}}: </span>  
+                <span class="mobile-label">{{translatedLangText.LIFT_OFF}}: </span>
                 @if(isLiftOffInvoice(row)){
-                <mat-icon class="col-green font-bold" >check</mat-icon>
+                <mat-icon class="col-green font-bold">check</mat-icon>
                 }
                 @else {
                 <!-- <mat-icon class="col-black" >remove</mat-icon> -->
-                <span class="">-</span> 
+                <span class="">-</span>
                 }
-                
+
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="invoiced">
@@ -361,31 +366,26 @@
               </mat-cell>
             </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"  class="custom-body-row" (click)="viewCall(row)"
+            <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row" (click)="viewCall(row)"
               [style.cursor]="'pointer'" matRipple>
             </mat-row>
           </table>
+          @if (!(billDS.loading$ | async) && !billSotList.length) {
+          <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
+            <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+          </div>
+          }
 
-         
-       
-        
-        @if (!(billDS.loading$ | async) && !billSotList.length) {
-        <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+          @if (billDS.loading$ | async) {
+          <div class="tbl-spinner">
+            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+            </mat-progress-spinner>
+          </div>
+          }
+          <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+            [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
+          </mat-paginator>
         </div>
-        }
-
-        @if (billDS.loading$ | async) {
-        <div class="tbl-spinner">
-          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-          </mat-progress-spinner>
-        </div>
-        }
-        <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-          [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
-        </mat-paginator>
-      </div> 
+      </div>
     </div>
   </div>
-</div>

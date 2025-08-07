@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div >
+    <div>
       <mat-accordion>
         <mat-expansion-panel expanded="true">
           <mat-expansion-panel-header>
@@ -48,7 +48,7 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CARGO}}</mat-label>
                   <input matInput formControlName="cargo" [matAutocomplete]="cargoCode">
@@ -73,7 +73,7 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-             
+
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.STEAM_DATE}}</mat-label>
@@ -193,7 +193,7 @@
             </ng-container>
             <!-- ID Column -->
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
@@ -242,7 +242,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_cargo">
-              <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-2'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
                 {{translatedLangText.LAST_CARGO}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -319,13 +319,11 @@
         </div>
         <!-- No result -->
         @if (!(isGeneratingReport) && (repData.length==0)) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
         @if (!(isGeneratingReport) && this.noCond) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
         </div>
@@ -337,8 +335,9 @@
           </mat-progress-spinner>
         </div>
         }
-        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSizeInfo.defaultSize"
-          [pageSizeOptions]="pageSizeInfo.pageSize" (page)="onPageEvent($event)" hidden>
+        <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex"
+          [pageSize]="pageSizeInfo.defaultSize" [pageSizeOptions]="pageSizeInfo.pageSize" (page)="onPageEvent($event)"
+          hidden>
         </mat-paginator>
       </div>
     </div>
