@@ -113,7 +113,6 @@
     </div>
     <!-- Loading spinner -->
     @if (!(tfDepotDS.loading$ | async) && !tariffDepotItems.length) {
-    <mat-divider></mat-divider>
     <div class="no-results m-l-20 pt-3" [style.display]="tariffDepotItems.length === 0 ? '' : 'none'">
       <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
     </div>

@@ -188,7 +188,6 @@
         </div>
         <!-- Loading spinner -->
         @if (!(packLabourDS.loading$ | async) && !pack_labourList?.length) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="pack_labourList?.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
         </div>

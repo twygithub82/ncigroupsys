@@ -239,7 +239,6 @@
                 </div>
                 <!-- No result -->
                 @if (!(igCleanDS.loading$ | async) && !inGateList.length) {
-                <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="inGateList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>

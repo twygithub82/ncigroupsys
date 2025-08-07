@@ -122,31 +122,20 @@
           </div>
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-              <!-- <mat-form-field class="example-full-width"> -->
-              <mat-label>{{langText.UNIT_TYPE | translate}}</mat-label>
-              <mat-select formControlName="unit_types" multiple required>
-                <mat-option *ngFor="let t of tnkItems" [value]="t">
-                  {{ t.unit_type }}
-                </mat-option>
-              </mat-select>
-              <!-- @if (pcForm.get('unit_types')?.hasError('required')  && (pcForm.get('unit_types')?.touched || formSubmitted) ) {
-                  <mat-error>
-                    {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED}}
-                  </mat-error>
-                  } -->
-              @if (pcForm.get('unit_types')?.hasError('assigned')) {
-              <mat-error>
-                {{langText.UNIT_TYPE | translate}} {{langText.ASSIGNED | translate}}
-              </mat-error>
-              }
+              <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>{{langText.UNIT_TYPE | translate}}</mat-label>
+                <mat-select formControlName="unit_types" multiple required>
+                  <mat-option *ngFor="let t of tnkItems" [value]="t">
+                    {{ t.unit_type }}
+                  </mat-option>
+                </mat-select>
+                @if (pcForm.get('unit_types')?.hasError('assigned')) {
+                <mat-error>
+                  {{langText.UNIT_TYPE | translate}} {{langText.ASSIGNED | translate}}
+                </mat-error>
+                }
+              </mat-form-field>
             </div>
-            <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.LAST_UPDATED_DT }}</mat-label>
-                    <input matInput formControlName="last_updated" type="text"  [readonly]="action === 'view'"
-                    [value]="action === 'view' ? displayLastUpdated(this.selectedItem) : displayLastUpdated(pcForm.get('last_updated')?.value)">
-                  </mat-form-field> 
-                </div> -->
           </div>
         </div>
 

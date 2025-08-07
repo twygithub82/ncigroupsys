@@ -251,7 +251,6 @@
               <mat-card-content>
                 <div class="row">
                 </div>
-                <mat-divider></mat-divider>
 
                 @if ((sotRow.storing_order_tank?.storage_detail?.length||0)>0) {
                 <div class="responsive_table">
@@ -353,7 +352,6 @@
         }
         
         @if (!(billDS.loading$ | async) && !billSotList.length) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
@@ -521,7 +519,6 @@
         </div>
 
         @if (!(billDS.loading$ | async) && !billSotList.length) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>

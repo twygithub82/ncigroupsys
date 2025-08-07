@@ -113,17 +113,19 @@
           </div>
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
-              <mat-label>{{langText.UNIT_TYPE | translate}}</mat-label>
-              <mat-select formControlName="unit_types" multiple>
-                <mat-option *ngFor="let t of tnkItems" [value]="t">
-                  {{ t.unit_type }}
-                </mat-option>
-              </mat-select>
-              @if (pcForm.get('unit_types')?.hasError('assigned')) {
-              <mat-error>
-                {{translatedLangText.UNIT_TYPE }} {{translatedLangText.ASSIGNED }}
-              </mat-error>
-              }
+              <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>{{langText.UNIT_TYPE | translate}}</mat-label>
+                <mat-select formControlName="unit_types" multiple>
+                  <mat-option *ngFor="let t of tnkItems" [value]="t">
+                    {{ t.unit_type }}
+                  </mat-option>
+                </mat-select>
+                @if (pcForm.get('unit_types')?.hasError('assigned')) {
+                <mat-error>
+                  {{translatedLangText.UNIT_TYPE }} {{translatedLangText.ASSIGNED }}
+                </mat-error>
+                }
+              </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">

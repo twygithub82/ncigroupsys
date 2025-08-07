@@ -117,13 +117,11 @@
       <div class="body overflow-auto">
         <!-- No result -->
         @if (!(repDS.loading$ | async) && !surveyList.length) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="surveyList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
         @if (!(repDS.loading$ | async) && this.noCond) {
-        <mat-divider></mat-divider>
         <div class="m-l-20 pt-3" color="warm" [style.display]="surveyList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15 col-red"><i>{{translatedLangText.ONE_CONDITION_NEEDED}}</i></h5>
         </div>

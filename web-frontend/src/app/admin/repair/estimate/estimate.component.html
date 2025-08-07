@@ -336,8 +336,6 @@
                         </div>
                         }
                         @else {
-                        <!-- {{translatedLangText.NO_RESULT}} -->
-                        <!-- <mat-divider></mat-divider> -->
                         <div class="no-results m-l-20 pt-3">
                           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                         </div>
@@ -349,7 +347,6 @@
                 }
                 <!-- No result -->
                 @if (!(sotDS.loading$ | async) && !sotList.length) {
-                <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>
