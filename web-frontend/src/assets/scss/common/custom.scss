@@ -3577,3 +3577,7 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
     margin-top: 25vh
   }
 }
+
+.mat-mdc-select-panel[aria-labelledby*="mat-paginator-page-size-label"] .mdc-list-item__primary-text {
+  font-size: 0.75rem !important;
+}
