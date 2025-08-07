@@ -49,6 +49,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { TableColumn, TableFooter, TableGroup, TlxTableCardComponent } from '@shared/components/tlx-table-card/tlx-table-card.component';
 
 @Component({
   selector: 'app-estimate',
@@ -80,7 +81,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
     MatAutocompleteModule,
     MatDividerModule,
     MatCardModule,
-    TlxCardListComponent
+    TlxCardListComponent,
+    TlxTableCardComponent
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -275,6 +277,21 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     this.initializeFilterCustomerCompany();
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
+
+    this.groupedRepairs = [
+      {
+        groupKey: 'cleaning',
+        groupLabel: 'Cleaning',
+        items: this.repairData.filter(item => item.group === 'Cleaning'),
+        isExpanded: true
+      },
+      {
+        groupKey: 'mainway',
+        groupLabel: 'Mainway',
+        items: this.repairData.filter(item => item.group === 'Mainway'),
+        isExpanded: true
+      }
+    ];
   }
 
   private updateView(width: number): void {
@@ -1038,5 +1055,94 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     if (current > 0) {
       this.goToPage(item, current - 1);
     }
+  }
+
+
+
+  columns: TableColumn[] = [
+    { key: 'index', header: 'No.', width: '5%' },
+    { key: 'group', header: 'Sub Group', width: '12%' },
+    { key: 'damage_code', header: 'Damage', width: '8%' },
+    { key: 'repair_code', header: 'Repair', width: '8%' },
+    { key: 'description', header: 'Description', width: '37%' },
+    { key: 'quantity', header: 'Qty', width: '6%' },
+    { key: 'hour', header: 'Hour', width: '8%' },
+    { key: 'material_cost', header: 'Material $', width: '8%' },
+    { key: 'price', header: 'Price $', width: '8%' }
+  ];
+
+  simpleColumns: TableColumn[] = [
+    { key: 'id', header: 'ID', width: '10%' },
+    { key: 'name', header: 'Name', width: '30%' },
+    { key: 'email', header: 'Email', width: '40%' },
+    { key: 'status', header: 'Status', width: '20%' }
+  ];
+
+  repairData: any[] = [
+    {
+      group: 'Cleaning',
+      damage_code: 'B/18',
+      repair_code: '4X',
+      description: 'Front Exterior wash-cool water (Cleaning dirt & glue stain)',
+      quantity: 0,
+      hour: 0,
+      material_cost: 79.95,
+      price: 0.00
+    },
+    {
+      group: 'Cleaning',
+      damage_code: '3',
+      repair_code: '32',
+      description: 'Exterior wash-Chemical (WD5)',
+      quantity: 1,
+      hour: 4,
+      material_cost: 230.84,
+      price: 230.84
+    },
+    {
+      group: 'Mainway',
+      damage_code: '4/5',
+      repair_code: '31/32',
+      description: 'Front yes - Swingbolt assembly glue screw Top',
+      quantity: 1,
+      hour: 1,
+      material_cost: 7.55,
+      price: 7.55
+    }
+  ];
+
+  simpleData = [
+    { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Inactive' },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'Active' }
+  ];
+
+  groupedRepairs: TableGroup[] = [];
+
+  footers: TableFooter[] = [
+    { content: 'Total Material Cost: $318.34', colspan: 7, class: 'text-end' },
+    { content: 'Total Price: $238.39', colspan: 7, class: 'text-end fw-bold' }
+  ];
+
+  onRepairClick(event: { item: any, index: number, group?: TableGroup }): void {
+    console.log('Repair clicked:', event.item);
+    console.log('Index:', event.index);
+    console.log('Group:', event.group?.groupLabel);
+  }
+
+  onUserClick(event: { item: any, index: number }): void {
+    console.log('User clicked:', event.item.name);
+  }
+
+  onGroupToggle(group: TableGroup): void {
+    console.log(`Group "${group.groupLabel}" ${group.isExpanded ? 'expanded' : 'collapsed'}`);
+  }
+
+  onPageChange(page: number): void {
+    console.log('Page changed to:', page + 1);
+  }
+
+  getFooterWidth(footer: TableFooter): string {
+    return footer.colspan ? (footer.colspan * 11.11) + '%' : '100%';
   }
 }
