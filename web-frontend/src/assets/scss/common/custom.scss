@@ -2660,6 +2660,14 @@ button[mat-flat-button].center-icon {
   }
 }
 
+.mat-mdc-form-field-error-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0px 0px !important;
+}
+
 .rotate-180 {
   transform: rotate(180deg);
 }
@@ -2699,23 +2707,31 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 .horizontal-container {
   display: flex;
   align-items: center;
-  width: 100%; /* Take full width of parent */
-  min-width: 0; /* CRITICAL for nested flex items */
+  width: 100%;
+  /* Take full width of parent */
+  min-width: 0;
+  /* CRITICAL for nested flex items */
 }
 
 .option-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1; /* shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
-  min-width: 0; /* CRITICAL - allows text truncation */
+  flex: 1;
+  /* shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
+  min-width: 0;
+  /* CRITICAL - allows text truncation */
 }
 
 .single-line-chip-grid {
-  white-space: nowrap; /* Ensures content stays on a single line */
-  overflow: hidden;    /* Hides content that overflows the container */
-  text-overflow: ellipsis; /* Displays an ellipsis (...) for clipped text */
-  display: block;      /* Ensures the ellipsis works correctly with block-level display */
+  white-space: nowrap;
+  /* Ensures content stays on a single line */
+  overflow: hidden;
+  /* Hides content that overflows the container */
+  text-overflow: ellipsis;
+  /* Displays an ellipsis (...) for clipped text */
+  display: block;
+  /* Ensures the ellipsis works correctly with block-level display */
   padding-left: 8px;
 }
 
