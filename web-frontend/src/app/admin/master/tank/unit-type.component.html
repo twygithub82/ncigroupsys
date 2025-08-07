@@ -177,9 +177,9 @@
                     </ng-container>
                     <ng-container matColumnDef="lastUpdate">
                       <mat-header-cell *matHeaderCellDef mat-sort-header
-                        [ngClass]="'d-flex justify-content-center'">{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
+                        [ngClass]="'d-flex justify-content-start'">{{this.translatedLangText.LAST_UPDATED_DT}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                        [ngClass]="'d-flex justify-content-center'">
+                        [ngClass]="'d-flex justify-content-start'">
                         <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED_DT}}:</span>
                         {{this.displayLastUpdated(row)}}</mat-cell>
                     </ng-container>

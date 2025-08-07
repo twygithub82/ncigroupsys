@@ -1,19 +1,23 @@
 .custom-select {
-    width: 300px; /* Adjust the width as needed */
-  }
-  
-  ::ng-deep .cdk-overlay-pane .mat-select-panel {
-    max-height: 200px; /* Adjust the height as needed */
-  }
-  mat-form-field {
-    width:100%;
-    margin-top: 3px;
-    margin-left: 10px ;
-    
-  }
+  width: 300px;
+  /* Adjust the width as needed */
+}
 
-  .auto-height {
-    height: auto;
-    max-height: none; /* Ensures there's no max-height limiting the container */
-    overflow: auto;   /* Ensures scrollbars appear if content exceeds container size */
-  }
+::ng-deep .cdk-overlay-pane .mat-select-panel {
+  max-height: 200px;
+  /* Adjust the height as needed */
+}
+
+mat-form-field {
+  width: 100%;
+  margin-top: 3px;
+  margin-left: 10px;
+}
+
+.auto-height {
+  height: auto;
+  max-height: none;
+  /* Ensures there's no max-height limiting the container */
+  overflow: auto;
+  /* Ensures scrollbars appear if content exceeds container size */
+}
