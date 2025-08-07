@@ -2,3 +2,7 @@ wide-error {
     width: 100%; /* You can adjust this value as needed */
     white-space: nowrap; /* Prevents the text from wrapping */
   }
+ .mat-mini-fab {
+  background-color: lightgray !important;  /* e.g., green */
+  color: rgb(83, 83, 83) !important;
+}

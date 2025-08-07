@@ -508,7 +508,7 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
             trfRepairItem.subgroup_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['sub_group_name_cv']));
             trfRepairItem.group_name_cv = String(this.RetrieveCodeValue(this.pcForm!.value['group_name_cv']));
-            trfRepairItem.labour_hour = this.pcForm!.value['labour_hour'];
+            trfRepairItem.labour_hour = Number(this.pcForm!.value['labour_hour']||0);
             trfRepairItem.material_cost = Number(this.pcForm!.value['material_cost']);
             trfRepairItem.length = this.pcForm!.value['length'];
             trfRepairItem.length_unit_cv = String(this.RetrieveCodeValue(this.pcForm!.value['length_unit_cv']));
