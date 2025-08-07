@@ -250,8 +250,9 @@
                     <div class="row">
                       <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
                         <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
-                        <button mat-mini-fab  (click)="fileInput.click()" type="button"
-                          class="m-l-5 mat-mini-fab" [disabled]="!isFileSelectable">
+                        <button mat-mini-fab  (click)="isFileSelectable ? fileInput.click() : null" type="button"
+                          class="m-l-5" >
+                          <!-- [disabled]="!isFileSelectable"> -->
                           <i class="material-icons  ">attach_file</i>
                         </button>
                         <input type="file" #fileInput class="defaultd-none" (change)="onFileSelected($event)"
