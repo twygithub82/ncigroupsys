@@ -1,41 +1,165 @@
-<div class="tlx-table-card">
-    <div class="table-container">
-        <div class="table-header" [class.first-row]="true" [class.last-row]="processedItems.length === 0"
-            [class.single-row]="processedItems.length === 0">
-            @for(column of columns; track column.key) {
-            <div class="header-cell">{{ column.header }}</div>
+<div class="tlx-table-card" (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd($event)" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseEnd($event)" (mouseleave)="onMouseEnd($event)">
+
+    <!-- Desktop View -->
+    <div class="desktop-view">
+        <div class="table-container">
+            <!-- Pagination Controls for Desktop -->
+            @if(enablePagination && totalPages > 1) {
+            <div class="pagination-controls desktop-pagination">
+                <button (click)="previousPage()" [disabled]="currentPage === 0" class="page-btn">
+                    ‹ Previous
+                </button>
+                <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+                <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
+                    Next ›
+                </button>
+            </div>
             }
-        </div>
 
-        @for(item of items; track $index; let i = $index; let isFirst = $first; let isLast = $last) {
-        <div class="table-row" [class.first-row]="isFirst && items.length > 0" [class.last-row]="isLast"
-            [class.single-row]="items.length === 1">
-
-            <div class="desktop-row">
-                @if(rowTemplate) {
-                <ng-container *ngTemplateOutlet="rowTemplate; context: { $implicit: item, index: i }"></ng-container>
-                } @else {
-                @for(cellData of processedItems[i]; track $index) {
-                <div class="row-cell">{{ cellData }}</div>
-                }
+            <div class="table-header" [class.first-row]="true" [class.last-row]="!hasData"
+                [class.single-row]="!hasData">
+                @for(column of columns; track column) {
+                <div class="header-cell" [style.width]="column.width" [style.flex]="!column.width ? '1' : 'none'"
+                    [ngClass]="column.headerClass">
+                    {{ column.header }}
+                </div>
                 }
             </div>
 
-            <div class="mobile-row">
-                <div class="row-label">{{ rowLabel }} {{ i + 1 }}</div>
+            @if(groupedData.length > 0) {
+            @for(group of getCurrentPageGroups(); track group; let gi = $index) {
+            <div class="group-header" (click)="toggleGroup(group)">
+                <div class="group-label">
+                    <span class="expand-icon" [class.expanded]="group.isExpanded">▶</span>
+                    {{ group.groupLabel }}
+                </div>
+            </div>
+
+            @if(group.isExpanded !== false) {
+            @for(item of group.items; track item; let i = $index; let isFirst = $first; let isLast = $last) {
+            <div class="table-row" [class.first-row]="isFirst && gi === 0"
+                [class.last-row]="isLast && gi === getCurrentPageGroups().length - 1"
+                [class.single-row]="group.items.length === 1" (click)="onRowClick(item, i, group)">
+
+                <div class="desktop-row">
+                    @if(rowTemplate) {
+                    <ng-container
+                        *ngTemplateOutlet="rowTemplate; context: { $implicit: item, index: i, group: group }"></ng-container>
+                    } @else {
+                    @for(column of columns; track column; let j = $index) {
+                    <div class="row-cell" [style.width]="column.width" [style.flex]="!column.width ? '1' : 'none'"
+                        [ngClass]="column.cellClass">
+                        {{ getValue(item, column.key) }}
+                    </div>
+                    }
+                    }
+                </div>
+            </div>
+            }
+            }
+            }
+            } @else {
+            @for(item of getCurrentPageItems(); track item; let i = $index; let isFirst = $first; let isLast = $last) {
+            <div class="table-row" [class.first-row]="isFirst" [class.last-row]="isLast && footers.length === 0"
+                [class.single-row]="getCurrentPageItems().length === 1" (click)="onRowClick(item, i)">
+
+                <div class="desktop-row">
+                    @if(rowTemplate) {
+                    <ng-container
+                        *ngTemplateOutlet="rowTemplate; context: { $implicit: item, index: i }"></ng-container>
+                    } @else {
+                    @for(column of columns; track column; let j = $index) {
+                    <div class="row-cell" [style.width]="column.width" [style.flex]="!column.width ? '1' : 'none'"
+                        [ngClass]="column.cellClass">
+                        {{ getValue(item, column.key) }}
+                    </div>
+                    }
+                    }
+                </div>
+            </div>
+            }
+            }
+
+            @if(footers.length > 0) {
+            @for(footer of footers; track footer; let fi = $index; let isLast = $last) {
+            <div class="table-footer" [class.last-row]="isLast" [ngClass]="footer.class">
+                @if(footerTemplate) {
+                <ng-container
+                    *ngTemplateOutlet="footerTemplate; context: { $implicit: footer, index: fi }"></ng-container>
+                } @else {
+                <div class="footer-content"
+                    [style.width]="footer.colspan ? (footer.colspan * (100/columns.length)) + '%' : '100%'">
+                    {{ footer.content }}
+                </div>
+                }
+            </div>
+            }
+            }
+        </div>
+    </div>
+
+    <!-- Mobile View -->
+    <div class="mobile-view">
+        @if(enablePagination && totalPages > 1) {
+        <div class="pagination-controls mobile-pagination">
+            <button (click)="previousPage()" [disabled]="currentPage === 0" class="page-btn">
+                ‹
+            </button>
+            <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+            <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1" class="page-btn">
+                ›
+            </button>
+            <div class="swipe-hint">Swipe to navigate</div>
+        </div>
+        }
+
+        <div class="mobile-container" [@swipeAnimation]="animationState">
+            @if(groupedData.length > 0) {
+            @for(group of getCurrentPageGroups(); track group; let gi = $index) {
+            <div class="mobile-group-header" (click)="toggleGroup(group)">
+                <span class="expand-icon" [class.expanded]="group.isExpanded">▶</span>
+                {{ group.groupLabel }}
+            </div>
+
+            @if(group.isExpanded !== false) {
+            @for(item of group.items; track item; let i = $index) {
+            <div class="mobile-card" (click)="onRowClick(item, i, group)">
+                <div class="card-header">{{ rowLabel }} {{ i + 1 }}</div>
                 @if(mobileRowTemplate) {
                 <ng-container
-                    *ngTemplateOutlet="mobileRowTemplate; context: { $implicit: item, index: i }"></ng-container>
+                    *ngTemplateOutlet="mobileRowTemplate; context: { $implicit: item, index: i, group: group }"></ng-container>
                 } @else {
-                @for(cellData of processedItems[i]; track $index; let j = $index) {
+                @for(column of columns; track column; let j = $index) {
                 <div class="mobile-field">
-                    <span class="field-label">{{ columns[j].header }}</span>
-                    <span class="field-value">{{ cellData }}</span>
+                    <span class="field-label">{{ column.header }}</span>
+                    <span class="field-value">{{ getValue(item, column.key) }}</span>
                 </div>
                 }
                 }
             </div>
+            }
+            }
+            }
+            } @else {
+            @for(item of getCurrentPageItems(); track item; let i = $index) {
+            <div class="mobile-card" (click)="onRowClick(item, i)">
+                <div class="card-header">{{ rowLabel }} {{ i + 1 }}</div>
+                @if(mobileRowTemplate) {
+                <ng-container
+                    *ngTemplateOutlet="mobileRowTemplate; context: { $implicit: item, index: i }"></ng-container>
+                } @else {
+                @for(column of columns; track column; let j = $index) {
+                <div class="mobile-field">
+                    <span class="field-label">{{ column.header }}</span>
+                    <span class="field-value">{{ getValue(item, column.key) }}</span>
+                </div>
+                }
+                }
+            </div>
+            }
+            }
         </div>
-        }
     </div>
 </div>

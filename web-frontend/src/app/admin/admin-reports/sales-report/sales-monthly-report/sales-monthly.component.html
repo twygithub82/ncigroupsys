@@ -317,19 +317,16 @@
         </div>
         <!-- No result -->
         @if ((!(reportDS.loading$ | async )) && (!repData)) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
         <!-- @if ((!(reportDS.loading$ | async) && this.noCond)||(!(sotDS.loading$ | async) && this.noCond)) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
         </div>
         } -->
         <!-- @if (!(sotDS.loading$ | async) && this.noCond) {
-          <mat-divider></mat-divider>
           <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
             <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
           </div>

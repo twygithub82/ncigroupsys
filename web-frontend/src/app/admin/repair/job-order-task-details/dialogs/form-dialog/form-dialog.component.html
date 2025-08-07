@@ -12,7 +12,7 @@
       <table mat-table [dataSource]="timeTableList" matSort
         class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
         <ng-container matColumnDef="id">
-          <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="start_time">
@@ -22,7 +22,8 @@
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            <span class="mobile-tab-label">{{data.translatedLangText.START_TIME}}:</span>{{displayDateTime(row.start_time)}}
+            <span
+              class="mobile-tab-label">{{data.translatedLangText.START_TIME}}:</span>{{displayDateTime(row.start_time)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="stop_time">
@@ -32,7 +33,8 @@
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            <span class="mobile-tab-label">{{data.translatedLangText.END_TIME}}:</span>{{displayDateTime(row.stop_time)}}
+            <span
+              class="mobile-tab-label">{{data.translatedLangText.END_TIME}}:</span>{{displayDateTime(row.stop_time)}}
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="duration">
@@ -42,7 +44,8 @@
           </mat-header-cell>
           <mat-cell mat-cell *matCellDef="let row"
             [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-4-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            <span class="mobile-tab-label">{{data.translatedLangText.DURATION}}:</span>{{displayTimeTaken(row.stop_time, row.start_time)}}
+            <span class="mobile-tab-label">{{data.translatedLangText.DURATION}}:</span>{{displayTimeTaken(row.stop_time,
+            row.start_time)}}
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -53,12 +56,11 @@
     }
     <!-- No result -->
     @if (!timeTableList.length) {
-      <div class="no-results">
-        <mat-divider></mat-divider>
-        <div class="no-results m-l-20 pt-3" [style.display]="timeTableList.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
-        </div>
+    <div class="no-results">
+      <div class="no-results m-l-20 pt-3" [style.display]="timeTableList.length === 0 ? '' : 'none'">
+        <h5 class="m-b-15">{{data.translatedLangText.NO_RESULT}}</h5>
       </div>
+    </div>
     }
   </div>
 </div>

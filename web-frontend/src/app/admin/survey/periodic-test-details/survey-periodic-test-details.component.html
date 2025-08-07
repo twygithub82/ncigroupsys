@@ -259,7 +259,6 @@
                   </div>
                   <!-- No result -->
                   @if (!(surveyDS.loading$ | async) && !surveyDetailItem.length) {
-                  <mat-divider></mat-divider>
                   <div class="no-results m-l-20 pt-3" [style.display]="surveyDetailItem.length === 0 ? '' : 'none'">
                     <h5 class="m-b-15">{{langText.NO_RESULT | translate}}</h5>
                   </div>

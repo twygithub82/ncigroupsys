@@ -248,7 +248,6 @@
               </h2>
             </div>
             <div class="body">
-              <mat-divider></mat-divider>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="responsive_table">
@@ -412,7 +411,6 @@
                     </table>
                   </div>
                   @if (!repList.data.length) {
-                  <mat-divider></mat-divider>
                   <div class="no-results m-l-20 pt-3" [style.display]="repList.data.length === 0 ? '' : 'none'">
                     <h5 class="m-b-15">{{translatedLangText.NO_CONTACT_PERSON}}</h5>
                   </div>
@@ -425,9 +423,6 @@
                   } -->
                 </div>
               </div>
-              
-              <mat-divider></mat-divider>
-            
               <mat-error *ngIf="ccForm?.get('repList')?.hasError('required')">
                 {{ translatedLangText.ADD_ATLEAST_ONE }}
               </mat-error>

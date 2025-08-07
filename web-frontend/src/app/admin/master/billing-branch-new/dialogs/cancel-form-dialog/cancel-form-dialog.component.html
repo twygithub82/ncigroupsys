@@ -4,7 +4,6 @@
       data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h3>
   </div>
   <div mat-dialog-content class="cancel-form ps-1 pe-1 pt-0 pb-0">
-    <mat-divider></mat-divider>
     <form class="register-form" [formGroup]="storingOrderTankForm" #formDirective="ngForm">
       <div formArrayName="storingOrderTank">
         @for (sot of getStoringOrderTanksArray().controls; track sot; let index = $index) {

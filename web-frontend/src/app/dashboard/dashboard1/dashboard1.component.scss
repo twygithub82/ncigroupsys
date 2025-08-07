@@ -6,3 +6,8 @@
   cursor: pointer;
 }
 
+.card.info-card.pointer {
+   height: 130px; /* adjust as needed */
+  // overflow: hidden; /* hides overflow if child content is too tall */
+}
+

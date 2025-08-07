@@ -1,7 +1,6 @@
-
-      <div class="row">
+<div class="row">
   <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div >
+    <div>
       <mat-accordion>
         <mat-expansion-panel expanded="true">
           <mat-expansion-panel-header>
@@ -224,7 +223,7 @@
             </ng-container>
             <!-- ID Column -->
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
@@ -273,7 +272,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_cargo">
-              <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-2'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
                 {{translatedLangText.LAST_CARGO}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -350,13 +349,11 @@
         </div>
         <!-- No result -->
         @if (!(sotDS.loading$ | async) && !sotList.length) {
-        <mat-divider></mat-divider>
         <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
         </div>
         }
         @if (!(sotDS.loading$ | async) && this.noCond) {
-        <mat-divider></mat-divider>
         <div class="m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
           <h5 class="m-b-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
         </div>
@@ -372,7 +369,6 @@
           [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>
-      </div>
+    </div>
   </div>
 </div>
-   

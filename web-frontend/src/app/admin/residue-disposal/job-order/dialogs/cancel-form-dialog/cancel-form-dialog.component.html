@@ -3,7 +3,6 @@
     <h3 mat-dialog-title>{{dialogTitle}}</h3>
   </div>
  <div mat-dialog-content class="ps-1 pe-1 pt-0 pb-0">
-    <mat-divider></mat-divider>
     <form class="register-form" [formGroup]="cancelForm" #formDirective="ngForm">
       <div formArrayName="cancelItemList">
         @for (re of cancelItemArray().controls; track re; let index = $index) {

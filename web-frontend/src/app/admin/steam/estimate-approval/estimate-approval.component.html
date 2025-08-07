@@ -526,7 +526,6 @@
                           </mat-panel-description>
                         </mat-expansion-panel-header>
                         <mat-card-content [ngClass]="'p-0'">
-                          <mat-divider></mat-divider>
                           @if ((filterDeleted(row.steaming || [])?.length ?? 0) > 0) {
                           <div class="responsive_table">
                             <table mat-table [dataSource]="filterDeleted(row.steaming || [])" matSort
@@ -616,9 +615,128 @@
                   } -->
                 <!-- </div> -->
 
+                <!-- testing group header -->
+                <!-- <tlx-table-card [items]="repairData" [columns]="columns" [footers]="footers" [groups]="groupedRepairs"
+                  [enablePagination]="true" [pageSize]="5" [enableSwipe]="true" rowLabel="Repair"
+                  (rowClick)="onRepairClick($event)" (groupToggle)="onGroupToggle($event)"
+                  (pageChange)="onPageChange($event)">
+
+                  <ng-template #rowTemplate let-repair let-i="index" let-group="group">
+                    <div class="row-cell" [style.width]="'5%'">{{ i + 1 }}</div>
+                    <div class="row-cell" [style.width]="'12%'">{{ group?.groupLabel }}</div>
+                    <div class="row-cell" [style.width]="'8%'">{{ repair.damage_code }}</div>
+                    <div class="row-cell" [style.width]="'8%'">{{ repair.repair_code }}</div>
+                    <div class="row-cell" [style.width]="'37%'">{{ repair.description }}</div>
+                    <div class="row-cell" [style.width]="'6%'">{{ repair.quantity }}</div>
+                    <div class="row-cell" [style.width]="'8%'">{{ repair.hour }}</div>
+                    <div class="row-cell" [style.width]="'8%'">\${{ repair.material_cost }}</div>
+                    <div class="row-cell" [style.width]="'8%'">\${{ repair.price }}</div>
+                  </ng-template>
+
+                  <ng-template #mobileRowTemplate let-repair let-i="index" let-group="group">
+                    <div class="mobile-field">
+                      <span class="field-label">Group:</span>
+                      <span class="field-value">{{ group?.groupLabel }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Damage:</span>
+                      <span class="field-value">{{ repair.damage_code }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Repair:</span>
+                      <span class="field-value">{{ repair.repair_code }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Description:</span>
+                      <span class="field-value">{{ repair.description }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Qty:</span>
+                      <span class="field-value">{{ repair.quantity }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Hour:</span>
+                      <span class="field-value">{{ repair.hour }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Material Cost:</span>
+                      <span class="field-value">\${{ repair.material_cost }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Price:</span>
+                      <span class="field-value">\${{ repair.price }}</span>
+                    </div>
+                  </ng-template>
+
+                  <ng-template #footerTemplate let-footer let-i="index">
+                    <div class="footer-content" [style.flex]="footer.colspan">
+                      <strong>{{ footer.content }}</strong>
+                    </div>
+                  </ng-template>
+                </tlx-table-card> -->
+
+                <!-- testing normal table -->
+                <!-- <tlx-table-card [items]="repairData" [columns]="columns" [footers]="footers" [groups]="groupedRepairs"
+                  [enablePagination]="true" [pageSize]="5" [enableSwipe]="true" rowLabel="Repair"
+                  (rowClick)="onRepairClick($event)" (groupToggle)="onGroupToggle($event)"
+                  (pageChange)="onPageChange($event)">
+
+                  <ng-template #rowTemplate let-repair let-i="index" let-group="group">
+                    <div class="row-cell" [style.width]="'5%'">{{ i + 1 }}</div>
+                    <div class="row-cell" [style.width]="'12%'">{{ group?.groupLabel }}</div>
+                    <div class="row-cell" [style.width]="'8%'">{{ repair.damage_code }}</div>
+                    <div class="row-cell" [style.width]="'8%'">{{ repair.repair_code }}</div>
+                    <div class="row-cell" [style.width]="'37%'">{{ repair.description }}</div>
+                    <div class="row-cell" [style.width]="'6%'">{{ repair.quantity }}</div>
+                    <div class="row-cell" [style.width]="'8%'">{{ repair.hour }}</div>
+                    <div class="row-cell" [style.width]="'8%'">\${{ repair.material_cost }}</div>
+                    <div class="row-cell" [style.width]="'8%'">\${{ repair.price }}</div>
+                  </ng-template>
+
+                  <ng-template #mobileRowTemplate let-repair let-i="index" let-group="group">
+                    <div class="mobile-field">
+                      <span class="field-label">Group:</span>
+                      <span class="field-value">{{ group?.groupLabel }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Damage:</span>
+                      <span class="field-value">{{ repair.damage_code }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Repair:</span>
+                      <span class="field-value">{{ repair.repair_code }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Description:</span>
+                      <span class="field-value">{{ repair.description }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Qty:</span>
+                      <span class="field-value">{{ repair.quantity }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Hour:</span>
+                      <span class="field-value">{{ repair.hour }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Material Cost:</span>
+                      <span class="field-value">\${{ repair.material_cost }}</span>
+                    </div>
+                    <div class="mobile-field">
+                      <span class="field-label">Price:</span>
+                      <span class="field-value">\${{ repair.price }}</span>
+                    </div>
+                  </ng-template>
+
+                  <ng-template #footerTemplate let-footer let-i="index">
+                    <div class="footer-content" [style.flex]="footer.colspan">
+                      <strong>{{ footer.content }}</strong>
+                    </div>
+                  </ng-template>
+                </tlx-table-card> -->
+
                 <!-- No result -->
                 @if (!(sotDS.loading$ | async) && !sotList.length) {
-                <mat-divider></mat-divider>
                 <div class="no-results m-l-20 pt-3" [style.display]="sotList.length === 0 ? '' : 'none'">
                   <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                 </div>

@@ -41,7 +41,7 @@
                 <mat-label>{{ translatedLangText.CATEGORY }}</mat-label>
                 <mat-select formControlName="category" required>
                   <mat-option *ngFor="let category of cleanCategoryList" [value]="category">
-                    {{ category.description }}
+                    {{ category.name }}
                   </mat-option>
                 </mat-select>
                 <!-- @if (pcForm.get('category')?.hasError('required')) {
