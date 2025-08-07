@@ -18,20 +18,29 @@
   height: 150px; /* Adjust as needed */
 }
 
-  .card-box {
-    flex: 1;
-    background: transparent;
-    border:0px;
-    border-radius: 12px;
-    padding: 10px;
-    text-align: center;
-    min-width:100px;
-  }
+.card-box {
+  flex: 1 1 200px; /* allows shrinking and growing */
+  min-width: 0; /* prevents overflow */
+  box-sizing: border-box;
+  border-radius: 12px;
+  text-align: center;
+}
+
+  // .card-box {
+  //   flex: 1;
+  //   background: transparent;
+  //   border:0px;
+  //   border-radius: 12px;
+  //   padding: 10px;
+  //   text-align: center;
+  //   min-width:100px;
+  // }
 
   .card-icon {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     margin: auto;
+    
     margin-bottom: 10px;
     border-radius: 40%;
     display: flex;
