@@ -683,7 +683,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   onFileSelected(event: Event): void {
-    if (this.tcForm!.value["guid"]) {
+    if (this.tcForm!.value["guid"]|| (!this.tcForm!.value["guid"] && this.canEdit())) {
       const input = event.target as HTMLInputElement;
       if (input.files && input.files.length > 0) {
         this.selectedFile = input.files[0];

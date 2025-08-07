@@ -256,7 +256,8 @@
                         </button>
                         <input type="file" #fileInput class="defaultd-none" (change)="onFileSelected($event)"
                           style="display: none;"
-                          accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                           accept=".pdf,.doc,.docx,application/pdf,application/msword">
+                          <!-- accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"> -->
                       </div>
                       @if (tcForm?.get('file_size')?.hasError('required')) {
                       <mat-error>
