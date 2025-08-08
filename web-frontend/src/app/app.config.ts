@@ -26,15 +26,12 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { GraphQLModule } from './apollo.config';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 
-
-
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
 export const appConfig: ApplicationConfig = {
   providers: [
-   
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(APP_ROUTE),
     provideAnimations(),
