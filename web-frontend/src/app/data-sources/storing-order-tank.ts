@@ -4497,6 +4497,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       .query<any>({
         query: RELOAD_STORING_ORDER_TANKS,
         variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
