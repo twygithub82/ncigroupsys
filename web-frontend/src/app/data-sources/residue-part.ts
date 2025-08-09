@@ -60,18 +60,13 @@ export class ResidueEstPartGO {
     this.residue_guid = item.residue_guid;
     this.description = item.description;
     this.tariff_residue_guid = item.tariff_residue_guid;
-    // this.comment = item.comment;
-    // this.remarks = item.remarks;
     this.quantity = item.quantity;
-    // this.hour = item.hour;
-    // this.owner = item.owner || false;
     this.cost = item.cost;
     this.approve_qty = item.approve_qty;
-    this.qty_unit_type_cv=item.qty_unit_type_cv;
+    this.qty_unit_type_cv = item.qty_unit_type_cv;
 
     this.approve_cost = item.approve_cost;
     this.approve_part = item.approve_part;
-    // this.complete_dt = item.complete_dt;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

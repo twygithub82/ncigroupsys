@@ -1417,7 +1417,10 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
             guid
             quantity
             tariff_residue_guid
-           
+            tariff_residue {
+              description
+              guid
+            }
           }
         }
       }

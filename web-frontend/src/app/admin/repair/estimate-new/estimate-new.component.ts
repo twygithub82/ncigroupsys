@@ -692,7 +692,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   getSurveyorList() {
-    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
+    const where = { user_role: { some: { role: { position: { eq: "SURVEYOR" } } } } }
     this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
       if (data?.length > 0) {
         this.surveyorList = data;
