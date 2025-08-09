@@ -318,7 +318,6 @@
             }
             @if (!(sotDS.loadingSubject | async)) {
             @if (residueDS.canAmend(this.residueItem!)) {
-            <!-- <form class="ms-0" [formGroup]="residueEstForm!"  #formDirective="ngForm"> -->
             <div class="row">
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
@@ -332,11 +331,6 @@
                     </mat-option>
                     }
                   </mat-autocomplete>
-                  <!-- @if (newDesc.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  } -->
                   @if (newDesc.hasError('duplicated')) {
                   <mat-error>
                     {{this.translatedLangText.DESCRIPTION}} {{this.translatedLangText.EXISTED}}
@@ -349,7 +343,6 @@
                   <mat-label>{{translatedLangText.QUANTITY}}</mat-label>
                   <input matInput [formControl]="newQty" type="number" min="0" required="true">
                   <mat-error *ngIf="newQty.hasError('required')">
-                    <!-- {{this.translatedLangText.QUANTITY}} {{this.translatedLangText.SO_REQUIRED}} -->
                   </mat-error>
                 </mat-form-field>
               </div>
@@ -363,25 +356,14 @@
                     </mat-option>
                     }
                   </mat-select>
-                  <!-- @if (newQtyType.hasError('required')) {
-                  <mat-error>
-                    {{translatedLangText.UNIT_TYPE}} {{translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  } -->
                 </mat-form-field>
               </div>
               <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.PRICE}}</mat-label>
                   <input matInput [formControl]="newUnitPrice" type="number" min="0" required="true">
-                  <!-- @if (newUnitPrice.hasError('required')) {
-                  <mat-error>
-                    {{this.translatedLangText.UNIT_PRICE}} {{this.translatedLangText.SO_REQUIRED}}
-                  </mat-error>
-                  } -->
                 </mat-form-field>
               </div>
-
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1 mt-2 p-t-2">
                 <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                   (click)="addEstDetails($event)">
@@ -406,7 +388,6 @@
                 }
               </div>
             </div>
-            <!-- </form> -->
             }
             <div class="row">
               <div class="responsive_table">
@@ -440,6 +421,7 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.QTY}}:</span>
+                      @if(!isMobile) {
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           @if(IsApproved())
@@ -456,6 +438,15 @@
                           }
                         </mat-form-field>
                       </tlx-form-field>
+                      }
+                      @else {
+                      @if(IsApproved()) {
+                      {{row.approve_qty}}
+                      }
+                      @else {
+                      {{row.quantity}}
+                      }
+                      }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
@@ -468,6 +459,7 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.TYPE}}:</span>
+                      @if(!isMobile) {
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           <input class="text-end" tlxFormInput matInput [(ngModel)]="row.qty_unit_type_cv"
@@ -483,6 +475,10 @@
                           </mat-autocomplete>
                         </mat-form-field>
                       </tlx-form-field>
+                      }
+                      @else {
+                      {{row.qty_unit_type_cv?.description}}
+                      }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
@@ -495,6 +491,7 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
+                      @if(!isMobile) {
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
                           @if(IsApproved())
@@ -511,6 +508,15 @@
                           }
                         </mat-form-field>
                       </tlx-form-field>
+                      }
+                      @else {
+                      @if(IsApproved()) {
+                      {{parse2Decimal(row.approve_cost)}}
+                      }
+                      @else {
+                      {{parse2Decimal(row.cost)}}
+                      }
+                      }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}} font-bold"
                       [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
@@ -587,14 +593,14 @@
                   <ng-container matColumnDef="totalCost">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-xl-center">
-                      <span class="">{{parse2Decimal(getTotalCost())}}</span>
+                      <span class="">${{parse2Decimal(getTotalCost())}}</span>
                     </mat-footer-cell>
                   </ng-container>
 
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
                     [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
-                    [style.cursor]="'pointer'" matRipple>
+                    [style.cursor]="'pointer'" (click)="editEstPartDetails($event, row, i)" matRipple>
                   </mat-row>
                   <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>
                 </table>

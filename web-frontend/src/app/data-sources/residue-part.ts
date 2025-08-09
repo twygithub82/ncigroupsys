@@ -1,36 +1,11 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
-import { RepairItem } from './repair';
-//import { REPDamageRepairItem } from './rep-damage-repair';
-import { TariffResidueItem } from './tariff-residue';
 import { JobOrderItem } from './job-order';
 import { ResidueItem } from './residue';
+import { TariffResidueItem } from './tariff-residue';
 
 export class ResidueEstPartGO {
-
-
-
-
-
-  // public location_cv?: string;
-  // public comment?: string;
-  // public remarks?: string;
-
-  // public hour?: number;
-  // public owner?: boolean;
-  // public material_cost?: number;
-  // public approve_qty?: number;
-  // public approve_hour?: number;
-  // public approve_cost?: number;
-
-  //public complete_dt?: number;
-
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;

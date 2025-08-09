@@ -55,7 +55,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
-import { UndeleteDialogComponent } from './dialogs/undelete/undelete.component';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-estimate-new',
@@ -644,8 +644,78 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     }
   }
 
+  addEstPartDetails() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        residueItem: this.residueItem,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company?.guid,
+        translatedLangText: this.translatedLangText,
+        existedPart: this.deList,
+        populateData: {
+          unitTypeCvList: this.unitTypeCvList
+        },
+        index: -1
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        var newData = [...this.deList, result.item];
+        this.updateData(newData);
+      }
+    });
+  }
+
+  editEstPartDetails(event: Event, residuePart: ResiduePartItem, index: number) {
+    this.preventDefault(event);  // Prevents the form submission
+
+    if (!this.isMobile) {
+      return;
+    }
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(FormDialogComponent, {
+      width: '700px',
+      data: {
+        item: residuePart,
+        residueItem: this.residueItem,
+        customer_company_guid: this.sotItem?.storing_order?.customer_company?.guid,
+        translatedLangText: this.translatedLangText,
+        existedPart: this.deList,
+        populateData: {
+          unitTypeCvList: this.unitTypeCvList
+        },
+        index: index,
+        action: 'edit'
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.index > -1) {
+        this.deList[result.index] = result.item;
+        this.updateData(this.deList);
+      }
+    });
+  }
+
   addEstDetails(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
+
+    if (this.isMobile) {
+      this.addEstPartDetails();
+      return;
+    }
 
     const isValid = this.checkCompulsoryEst(["desc", "qty", "unit_price"]);
     if (!isValid) return;
@@ -1062,9 +1132,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
           residuePart.qty_unit_type_cv = data.qty_unit_type_cv?.code_val;
         }
         residuePart.approve_part = ((data.approve_part == null || data.approve_part == 1) ? true : false);
-        //  delete residuePart.qty_unit_type_cv;
+        delete residuePart.tariff_residue;
         newResidueItem.residue_part?.push(residuePart);
-
       });
       newResidueItem.est_cost = this.getTotalCost();
       delete newResidueItem.customer_company;
@@ -1091,7 +1160,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         }
 
         residuePart.approve_part = ((data.approve_part == null || data.approve_part == 1) ? true : false);
-        // delete residuePart.qty_unit_type_cv;
+        delete residuePart.tariff_residue;
         updResidueItem.residue_part?.push(residuePart);
 
       });
@@ -1339,8 +1408,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     Utility.selectText(event)
   }
 
-  parse2Decimal(figure: number | string) {
-    return Utility.formatNumberDisplay(figure)
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
   }
 
   calculateCost() {
@@ -1377,7 +1446,6 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     where.customer_company_guid = { eq: custCompanyGuid };
 
     this.packResidueDS.SearchPackageResidue(where, {}).subscribe(data => {
-
       this.packResidueList = data;
       this.displayPackResidueList = data;
       this.populateResiduePartList(this.residueItem!);
@@ -1422,14 +1490,11 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   loadHistoryState() {
     this.historyState = history.state;
-
     if (this.historyState.selectedRow != null) {
-
       this.isDuplicate = this.historyState.action === 'DUPLICATE';
       this.residue_guid = this.historyState.selectedResidue?.guid;
       this.sotItem = this.historyState.selectedRow;
       this.residueItem = this.historyState.selectedResidue;
-
       this.getPackageResidue();
       this.loadBillingBranch();
     }
@@ -1463,14 +1528,11 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     ccItem.code = code;
     ccItem.name = name;
     return ccItem
-
   }
 
   displayResiduePart(cc: any): string {
     return cc && cc.tariff_residue ? cc.tariff_residue.description : '';
   }
-
-
 
   resetValue() {
 
@@ -1528,9 +1590,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
     );
   }
 
-
   populateResiduePartList(residue: ResidueItem) {
-
     if (residue) {
       var dataList = residue.residue_part?.map(data => {
         if (this.isDuplicate && data.description) {
@@ -1547,8 +1607,7 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
             d.qty_unit_type_cv = this.cvDS.getCodeObject(data.qty_unit_type_cv, this.unitTypeCvList);
           }
         }
-        return new ResidueEstPartGO(d)
-
+        return new ResiduePartItem(d)
       });
       this.updateData(dataList);
     }
