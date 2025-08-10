@@ -15,9 +15,9 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         public string? cleaner_name { get; set; }
     }
 
+    [NotMapped]
     public class SteamPerformanceRequest : PerformanceBase
     {
-        [NotMapped]
         public string? last_cargo { get; set; }
         [NotMapped]
         public List<string>? steaming_point { get; set; }
