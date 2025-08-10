@@ -56,6 +56,12 @@ namespace IDMS.Billing.GqlTypes
         public const string UN_WISE = "UN";
     }
 
+    public class ResultType
+    {
+        public const string appvResutlType = "appv";
+        public const string completeResultType = "compl";
+    }
+
     public class StatusCondition
     {
         public static List<string> BeforeEstimateApprove = new List<string> { "PENDING", "CANCELED", "NO_ACTION", "KIV" };
@@ -63,5 +69,11 @@ namespace IDMS.Billing.GqlTypes
         public static List<string> BeforeTankIn = new List<string> { "SO_GENERATED", "IN_GATE" }; //"IN_SURVEY" };
         public static List<string> NotInYard = new List<string> { "RELEASED" }; //"OUT_GATE", "OUT_SURVEY" };
         public static List<string> InYard = new List<string> { "IN_SURVEY", "STEAM", "RESIDUE", "CLEANING", "REPAIR", "STORAGE", "RO_GENERATED" };
+        public static List<string> CompletedStatus = new List<string> { "COMPLETED", "QC_COMPLETED" };
+    }
+
+    public class AvailableYard
+    {
+        public static List<string> YardList = new List<string> { "YARD_1", "YARD_2" };
     }
 }
