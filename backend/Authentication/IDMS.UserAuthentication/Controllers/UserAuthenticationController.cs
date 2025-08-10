@@ -307,7 +307,7 @@ namespace IDMS.UserAuthentication.Controllers
 
                     //var message = new Message(new string[] { user.Email! }, "Reset Password Link", resetPasswordLink);
 
-                    var messageBody = ResetLinkBody.MessageBody1;
+                    var messageBody = ResetLinkBody.MessageBody2;
                     // Replace placeholders
                     messageBody = messageBody.Replace("{{UserName}}", WebUtility.HtmlEncode(user.NormalizedUserName));
                     messageBody = messageBody.Replace("{{ResetLink}}", WebUtility.HtmlEncode(resetPasswordLink));
