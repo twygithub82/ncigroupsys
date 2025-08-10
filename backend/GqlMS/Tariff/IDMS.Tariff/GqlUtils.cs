@@ -282,10 +282,10 @@ namespace IDMS.Models.Tariff.GqlTypes
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
-            }
+                throw new Exception("Unauthorized - " + ex.Message);
+            }   
             return uid;
         }
     }
