@@ -20,6 +20,7 @@ namespace IDMS.Models.Billing
         public string invoice_no { get; set; }
         public long invoice_dt { get; set; }
         public long? invoice_due { get; set; }
+        public string? invoice_type { get; set; }
         public string status_cv { get; set; }
         public string? remarks { get; set; }
         public currency? currency { get; set; }
