@@ -78,6 +78,7 @@ namespace IDMS.Billing.GqlTypes
                     updateBill.invoice_no = updateBilling.invoice_no;
                     updateBill.invoice_dt = updateBilling.invoice_dt;
                     updateBill.invoice_due = updateBilling.invoice_due;
+                    updateBill.invoice_type = updateBilling.invoice_type;   
                     updateBill.status_cv = updateBilling.status_cv;
                     updateBill.remarks = updateBilling.remarks;
                     updateBill.currency_guid = updateBilling.currency_guid;
