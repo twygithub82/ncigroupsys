@@ -21,8 +21,15 @@ namespace IDMS.Models.Shared
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         
+        //[UseFiltering]
+        //public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
+
         [UseFiltering]
-        public IEnumerable<aspnetuserroles?>? aspnetuserroles { get; set; }
+        public IEnumerable<user_role?>? user_role { get; set; }
+
+        [UseFiltering]
+        public IEnumerable<team_user?>? team_user { get; set; }
+
     }
 
     public class aspnetroles
