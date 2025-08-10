@@ -352,6 +352,11 @@
           [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>
+      @if (!(sotDS.loading$ | async) && this.noCond) {
+        <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+          <h5 class="m-b-15 m-l-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
+        </div>
+        }
     </div>
   </div>
 </div>

@@ -123,6 +123,11 @@
               </div> -->
             </div>
           </form>
+           @if (!(sotDS.loading$ | async) && this.noCond) {
+      <div class="m-l-20 pt-3 " color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+        <h5 class="m-b-15 m-l-15 col-red">{{translatedLangText.ADD_ATLEAST_ONE}}</h5>
+      </div>
+      }
         </mat-expansion-panel>
       </mat-accordion>
 
@@ -353,7 +358,9 @@
         <mat-paginator #paginator [length]="sotDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
           [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
+        
       </div>
+     
     </div>
   </div>
 </div>

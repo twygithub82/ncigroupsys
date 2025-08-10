@@ -838,10 +838,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         //   if (n>0) lastTableFinalY+=8;
         // }
 
-        lastTableFinalY += 5;
+        lastTableFinalY += 7;
         pdf.setFontSize(8);
         subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.RELEASED}`;
-        pdf.text(subTitle, leftMargin, lastTableFinalY);
+       Utility.AddTextAtRightCornerPage(pdf,subTitle,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
         const repData: any[][] = [];
         lastTableFinalY += 3;

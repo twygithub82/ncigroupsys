@@ -466,7 +466,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
       var cust = this.searchForm!.get('customer_code')?.value;
-      where.storing_order = { customer_company: { code: { eq: cust.code } } };
+      where.customer_company =  { code: { eq: cust.code }  };
       cond_counter++;
 
       customerNm = cust?.name;
@@ -636,7 +636,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, customerNm?: string) {
     // this.selection.clear();
-    var filterSpecificTankStatus = true;
+    var filterSpecificTankStatus = false;
     this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
 

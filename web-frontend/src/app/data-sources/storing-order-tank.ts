@@ -3375,6 +3375,7 @@ const GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL = gql`
          complete_dt
          estimate_no
          job_no
+         status_cv
          create_dt
          delete_dt
         }
@@ -3461,6 +3462,11 @@ const GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL = gql`
             take_in_reference
             test_class_cv
           }
+        }
+        tank_info {
+          capacity
+          cladding_cv
+          yard_cv
         }
       }
       pageInfo {
@@ -3591,6 +3597,7 @@ const GET_STORING_ORDER_FOR_INVENTORY = gql`
             take_in_reference
           }
         }
+      
       }
       pageInfo {
         endCursor

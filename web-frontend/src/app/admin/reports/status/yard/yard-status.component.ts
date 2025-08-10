@@ -158,7 +158,8 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
     YARD_STATUS: 'COMMON-FORM.YARD-STATUS',
     YARD: 'COMMON-FORM.YARD',
-    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS'
+    LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
+     ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
 
   }
 
@@ -416,6 +417,9 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.searchForm?.get('yard')?.value) {
       var yards: string[] = this.searchForm!.get('yard')?.value?.map((y: any) => y.code_val) || [];
+      // if(where.or==undefined)where.or=[];
+      // where.or.push({ tank_info: {  yard_cv: { in: yards }  } });
+      // where.or.push({ in_gate: {  some: { yard_cv: { in: yards }  } }});
       where.tank_info = {
         and: [
           { yard_cv: { in: yards } }
@@ -847,10 +851,10 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   ProcessReportStatus(report_type: number) {
-    if (this.sotList.length === 0) {
-      this.isGeneratingReport = false;
-      return;
-    }
+    // if (this.sotList.length === 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
     var repStatus: report_status[] = [];
 
@@ -1020,10 +1024,11 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   ProcessReportLocationStatus() {
-    if (this.sotList.length === 0) {
-      this.isGeneratingReport = false;
-      return;
-    }
+    // if (this.sotList.length === 0) 
+    //   {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
     var repStatus: report_status[] = [];
 

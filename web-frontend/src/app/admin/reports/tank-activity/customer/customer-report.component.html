@@ -422,11 +422,7 @@
         </div>
         }
 
-        @if (!(sotDS.loading$ | async) && this.noCond) {
-        <div class="m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15 col-red">{{translatedLangText.ADD_ATLEAST_ONE}}</h5>
-        </div>
-        }
+       
         <!-- Loading spinner -->
         @if ((sotDS.loading$ | async)||isGeneratingReport) {
         <div class="tbl-spinner">
@@ -438,6 +434,11 @@
           [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>
+       @if (!(sotDS.loading$ | async) && this.noCond) {
+        <div class="m-l-20 pt-3 " color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+          <h5 class="m-b-15 m-l-15 col-red">{{translatedLangText.ADD_ATLEAST_ONE}}</h5>
+        </div>
+        }
     </div>
   </div>
 </div>

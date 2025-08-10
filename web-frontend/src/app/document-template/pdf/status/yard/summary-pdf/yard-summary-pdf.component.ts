@@ -963,17 +963,18 @@ export class YardStatusDetailSummaryPdfComponent extends UnsubscribeOnDestroyAda
       },
       didParseCell: (data: any) => {
         let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        let totalColSpan=3;
         if (data.row.index === lastRowIndex) {
           data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
           data.cell.styles.fontStyle = 'bold';
           if (data.column.index === 0) {
-            data.cell.colSpan = 4;  // Merge 4 columns into one
+            data.cell.colSpan = totalColSpan;  // Merge 4 columns into one
             data.cell.styles.halign = 'right'; // Center text horizontally
             data.cell.styles.valign = 'top'; // Center text vertically
 
           }
         }
-        if (data.row.index === idx && data.column.index > 0 && data.column.index <= 3) {
+        if (data.row.index === idx && data.column.index > 0 && data.column.index <= (totalColSpan-1)) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
