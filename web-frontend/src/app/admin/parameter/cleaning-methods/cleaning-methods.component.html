@@ -6,7 +6,6 @@
     </div>
     <div class="card">
       <div class="body">
-
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0">
             <div class="card p-0">
@@ -54,7 +53,6 @@
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.PROCESS_NAME}}</mat-label>
                           <mat-chip-grid #name_chipGrid class="nowrap single-line-chip-grid">
-
                             @if(this.selectedNames.length>0){
                             <mat-chip-row color="primary" (click)="name_removeAllSelected()">
                               <span> {{name_getSelectedDisplay()}}</span>
