@@ -491,7 +491,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     //var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
     if (this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value) {
       var start_dt = new Date(this.searchForm!.value['eir_dt_start']);
-      var end_dt = new Date(this.searchForm!.value['eir_dt_start']);
+      var end_dt = new Date(this.searchForm!.value['eir_dt_end']);
       var cond: any = { some: { eir_dt: { gte: Utility.convertDate(start_dt), lte: Utility.convertDate(end_dt, true) } } };
       //  date = `${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_start')?.value))} - ${Utility.convertDateToStr(new Date(this.searchForm!.get('eir_dt_end')?.value))}`;
 
