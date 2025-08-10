@@ -66,9 +66,9 @@ namespace IDMS.Master.Application
                 }
 
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw new Exception("Unauthorized - " + ex.Message);
             }
             return uid;
         }

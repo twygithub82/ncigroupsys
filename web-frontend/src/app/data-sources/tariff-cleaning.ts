@@ -437,7 +437,8 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     return this.apollo
       .query<any>({
         query: GET_TARIFF_CLEANING_QUERY_WTIH_CATEGORY_METHOD,
-        variables: { where, order }
+        variables: { where, order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
@@ -517,7 +518,8 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     return this.apollo
       .query<any>({
         query: GET_TARIFF_CLEANING_QUERY,
-        variables: { where, order }
+        variables: { where, order },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),
@@ -540,7 +542,8 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
     return this.apollo
       .query<any>({
         query: GET_ALL_TARIFF_CLEANING,
-        variables: { where, first }
+        variables: { where, first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),

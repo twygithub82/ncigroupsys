@@ -13,7 +13,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using IDMS.Models.Shared;
 using System.Configuration;
-using System.Data.Entity;
 
 namespace IDMS.Service.GqlTypes
 {
@@ -420,7 +419,7 @@ namespace IDMS.Service.GqlTypes
                 foreach (var j_guid in jobOrderGuid)
                 {
                     var totalTime = await context.time_table
-                        .Where(t => t.stop_time != null && t.start_time != null && t.job_order_guid == j_guid)
+                        .Where(t => t.stop_time != null && t.start_time != null && t.job_order_guid == j_guid && t.delete_dt == null)
                         .SumAsync(t => (t.stop_time - t.start_time));
 
                     var jobOrdr = new job_order() { guid = j_guid };
@@ -465,6 +464,23 @@ namespace IDMS.Service.GqlTypes
                     newRole.create_dt = currentDateTime;
 
                     await context.role.AddAsync(newRole);
+
+                    if (item.role_functions != null)
+                    {
+                        foreach (var rf in item.role_functions)
+                        {
+                            var newRF = new role_functions();
+                            newRF.guid = Util.GenerateGUID();
+                            newRF.functions_guid = rf.functions_guid;
+                            newRF.role_guid = rf.role_guid;
+                            newRF.create_by = user;
+                            newRF.create_dt = currentDateTime;
+                            newRF.update_by = user; ;
+                            newRF.update_dt = currentDateTime;
+
+                            await context.Set<role_functions>().AddAsync(newRF);
+                        }
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -499,6 +515,35 @@ namespace IDMS.Service.GqlTypes
 
                     updateRole.update_by = user;
                     updateRole.update_dt = currentDateTime;
+
+                    if (item.role_functions != null)
+                    {
+                        foreach (var rf in item.role_functions)
+                        {
+                            if (ObjectAction.NEW.EqualsIgnore(rf.action))
+                            {
+                                var newRF = new role_functions();
+                                newRF.guid = Util.GenerateGUID();
+                                newRF.create_by = user;
+                                newRF.create_dt = currentDateTime;
+                                newRF.update_by = user;
+                                newRF.update_dt = currentDateTime;
+                                newRF.role_guid = rf.role_guid;
+                                newRF.functions_guid = rf.functions_guid;
+
+                                await context.Set<role_functions>().AddAsync(newRF);
+                            }
+
+                            if ((ObjectAction.CANCEL).EqualsIgnore(rf.action))
+                            {
+                                var deleteRF = new role_functions() { guid = rf.guid };
+                                context.Set<role_functions>().Attach(deleteRF);
+                                deleteRF.update_by = user;
+                                deleteRF.update_dt = currentDateTime;
+                                deleteRF.delete_dt = currentDateTime;
+                            }
+                        }
+                    }
                 }
 
                 var res = await context.SaveChangesAsync();
@@ -570,7 +615,8 @@ namespace IDMS.Service.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                //throw;
+                throw new GraphQLException(new Error($"{ex.Message + ex.InnerException}--{ex.StackTrace}", "ERROR"));
             }
         }
 
@@ -636,7 +682,7 @@ namespace IDMS.Service.GqlTypes
         }
 
         public async Task<int> UpdateUser(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, aspnetusers userRequest, List<role?> rolesRequest, List<team?> teamsRequest)
+            [Service] IConfiguration config, aspnetusers userRequest, List<role?> rolesRequest, List<team?> teamsRequest, List<FunctionsRequest?> functionsRequest)
         {
             try
             {
@@ -657,6 +703,9 @@ namespace IDMS.Service.GqlTypes
                 {
                     if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
                     {
+                        if (string.IsNullOrEmpty(item?.guid))
+                            throw new GraphQLException(new Error($"Role guid cannot be null or empty", "ERROR"));
+
                         var newUserRole = new user_role();
                         newUserRole.guid = Util.GenerateGUID();
                         newUserRole.user_guid = userRequest.Id;
@@ -670,15 +719,21 @@ namespace IDMS.Service.GqlTypes
 
                     if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
                     {
-                        var delUserRole = new user_role() { guid = item.guid };
-                        delUserRole.update_by = user;
-                        delUserRole.update_dt = currentDateTime;
-                        delUserRole.delete_dt = currentDateTime;
+                        var delUserRole = await context.Set<user_role>().Where(t => t.user_guid == userRequest.Id && t.role_guid == item.guid).FirstOrDefaultAsync();
+                        if (delUserRole != null)
+                        {
+                            delUserRole.update_by = user;
+                            delUserRole.update_dt = currentDateTime;
+                            delUserRole.delete_dt = currentDateTime;
+                        }
                     }
                 }
 
                 foreach (var item in teamsRequest)
                 {
+                    if (string.IsNullOrEmpty(item?.guid))
+                        throw new GraphQLException(new Error($"Team guid cannot be null or empty", "ERROR"));
+
                     if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
                     {
                         var newUserTeam = new team_user();
@@ -694,10 +749,47 @@ namespace IDMS.Service.GqlTypes
 
                     if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
                     {
-                        var delUserRole = new team_user() { guid = item.guid };
-                        delUserRole.update_by = user;
-                        delUserRole.update_dt = currentDateTime;
-                        delUserRole.delete_dt = currentDateTime;
+                        var delUserTeam = await context.Set<team_user>().Where(t => t.userId == userRequest.Id && t.team_guid == item.guid).FirstOrDefaultAsync();
+                        if (delUserTeam != null)
+                        {
+                            delUserTeam.update_by = user;
+                            delUserTeam.update_dt = currentDateTime;
+                            delUserTeam.delete_dt = currentDateTime;
+                        }
+                    }
+                }
+
+                foreach (var item in functionsRequest)
+                {
+                    if (string.IsNullOrEmpty(item?.guid))
+                        throw new GraphQLException(new Error($"Function guid cannot be null or empty", "ERROR"));
+
+                    if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
+                    {
+                        var newUserFunctions = new user_functions();
+                        newUserFunctions.guid = Util.GenerateGUID();
+                        newUserFunctions.user_guid = userRequest.Id;
+                        newUserFunctions.functions_guid = item.guid;
+                        newUserFunctions.adhoc = true;
+                        newUserFunctions.remarks = item.remarks;
+                        newUserFunctions.create_by = user;
+                        newUserFunctions.update_by = user;
+                        newUserFunctions.create_dt = currentDateTime;
+                        newUserFunctions.update_dt = currentDateTime;
+                        await context.Set<user_functions>().AddAsync(newUserFunctions);
+                    }
+
+                    if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
+                    {
+                        var delUserFunctions = await context.Set<user_functions>().Where(f=>f.user_guid == userRequest.Id && f.functions_guid == item.guid).FirstOrDefaultAsync(); 
+                        if(delUserFunctions != null)
+                        {
+                            delUserFunctions.adhoc = false;
+                            delUserFunctions.remarks = item.remarks;
+                            delUserFunctions.update_by = user;
+                            delUserFunctions.update_dt = currentDateTime;
+                            delUserFunctions.delete_dt = currentDateTime;
+                        }
                     }
                 }
 

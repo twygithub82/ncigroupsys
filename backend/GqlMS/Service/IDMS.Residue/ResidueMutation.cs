@@ -267,7 +267,7 @@ namespace IDMS.Residue.GqlTypes
         }
 
         public async Task<int> RollbackResidue(ApplicationServiceDBContext context, [Service] IHttpContextAccessor httpContextAccessor,
-            [Service] IConfiguration config, List<ResidueRequest> residue)
+            [Service] IConfiguration config, List<RollbackResidueRequest> residue)
         {
             try
             {

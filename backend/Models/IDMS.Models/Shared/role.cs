@@ -20,6 +20,8 @@ namespace IDMS.Models.Shared
 
         [NotMapped]
         public string? action { get; set; }
+
+        public virtual IEnumerable<role_functions>? role_functions { get; set; }
     }
 
 
@@ -27,10 +29,15 @@ namespace IDMS.Models.Shared
     {
         [Key]
         public string guid { get; set; }
+
+        [ForeignKey("aspnetusers")]
         public string user_guid { get; set; }
 
         [ForeignKey("role")]
         public string role_guid { get; set; }
+
+        public virtual role? role { get; set;}
+        public virtual aspnetusers? aspnetusers { get; set; }
 
     }
 

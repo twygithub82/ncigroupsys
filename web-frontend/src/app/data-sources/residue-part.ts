@@ -1,36 +1,11 @@
 import { Apollo } from 'apollo-angular';
-import { BehaviorSubject, Observable, merge, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
-import { StoringOrderTankItem } from './storing-order-tank';
-import { SchedulingItem } from './scheduling';
-import { TariffRepairItem } from './tariff-repair';
-import { RepairItem } from './repair';
-//import { REPDamageRepairItem } from './rep-damage-repair';
-import { TariffResidueItem } from './tariff-residue';
 import { JobOrderItem } from './job-order';
 import { ResidueItem } from './residue';
+import { TariffResidueItem } from './tariff-residue';
 
 export class ResidueEstPartGO {
-
-
-
-
-
-  // public location_cv?: string;
-  // public comment?: string;
-  // public remarks?: string;
-
-  // public hour?: number;
-  // public owner?: boolean;
-  // public material_cost?: number;
-  // public approve_qty?: number;
-  // public approve_hour?: number;
-  // public approve_cost?: number;
-
-  //public complete_dt?: number;
-
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;
@@ -60,18 +35,13 @@ export class ResidueEstPartGO {
     this.residue_guid = item.residue_guid;
     this.description = item.description;
     this.tariff_residue_guid = item.tariff_residue_guid;
-    // this.comment = item.comment;
-    // this.remarks = item.remarks;
     this.quantity = item.quantity;
-    // this.hour = item.hour;
-    // this.owner = item.owner || false;
     this.cost = item.cost;
     this.approve_qty = item.approve_qty;
-    this.qty_unit_type_cv=item.qty_unit_type_cv;
+    this.qty_unit_type_cv = item.qty_unit_type_cv;
 
     this.approve_cost = item.approve_cost;
     this.approve_part = item.approve_part;
-    // this.complete_dt = item.complete_dt;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;

@@ -1,5 +1,12 @@
 .mat-mdc-dialog-content.mdc-dialog__content {
     overflow-x: hidden;
-    padding-left: 7px !important;
-    padding-right: 7px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+@media (max-width: 575.98px) {
+    .mat-mdc-dialog-content.mdc-dialog__content .row>[class*="col-"] {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
 }

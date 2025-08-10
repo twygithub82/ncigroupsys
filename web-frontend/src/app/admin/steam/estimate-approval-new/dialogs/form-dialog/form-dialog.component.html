@@ -11,14 +11,7 @@
   </div>
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="steamPartForm" #formDirective="ngForm">
-      @if (sotDS.loadingSubject | async) {
-      <div class="tbl-spinner">
-        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-        </mat-progress-spinner>
-      </div>
-      }
       @if (!(sotDS.loadingSubject | async)) {
-      @if (steamDS.canAmend(this.steamItem!)) {
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <mat-form-field class="example-full-width">
@@ -71,11 +64,9 @@
         </div> -->
       </div>
       }
-      }
       <div mat-dialog-actions class="mb-1 align-center">
         @if(!isEdit()) {
-        <button mat-flat-button color="accent"
-          (click)="submit(true)">{{data.translatedLangText.ADD_ANOTHER}}</button>
+        <button mat-flat-button color="accent" (click)="submit(true)">{{data.translatedLangText.ADD_ANOTHER}}</button>
         }
         @if (canEdit()) {
         <button mat-flat-button color="primary" class="m-l-5"

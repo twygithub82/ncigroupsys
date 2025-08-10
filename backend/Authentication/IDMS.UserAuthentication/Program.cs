@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration.GetConnectionString("default");
 builder.Services.AddDbContext<ApplicationDbContext>(o =>
 
-    //options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
+    //o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
     o.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
                     mySqlOptions => mySqlOptions.EnableRetryOnFailure(
                     maxRetryCount: 5,

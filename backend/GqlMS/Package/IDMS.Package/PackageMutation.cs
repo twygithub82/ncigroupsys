@@ -836,7 +836,8 @@ namespace IDMS.Models.Package.GqlTypes
                           .SetProperty(e => e.update_dt, currentDateTime)
                           .SetProperty(e => e.update_by, uid)
                           //.SetProperty(e => e.material_cost, e => (Math.Round(Convert.ToDouble(e.material_cost * material_cost_percentage), 2)))
-                          .SetProperty(e => e.material_cost, e => CalculateMaterialCostRoundedUp(e.material_cost * material_cost_percentage))
+                          //.SetProperty(e => e.material_cost, e => CalculateMaterialCostRoundedUp(e.material_cost * material_cost_percentage))
+                          .SetProperty(e => e.material_cost, e => (Math.Ceiling(Convert.ToDouble((e.material_cost * material_cost_percentage) * 20)) / 20.0))
                           .SetProperty(e => e.labour_hour, e => (Math.Ceiling(Convert.ToDouble((e.labour_hour ?? 0) * labour_hour_percentage) * 4) / 4))
                            );
                     }

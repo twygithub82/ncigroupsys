@@ -1417,7 +1417,10 @@ const GET_STORING_ORDER_TANKS_RESIDUE_ESTIMATE = gql`
             guid
             quantity
             tariff_residue_guid
-           
+            tariff_residue {
+              description
+              guid
+            }
           }
         }
       }
@@ -4504,6 +4507,7 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       .query<any>({
         query: RELOAD_STORING_ORDER_TANKS,
         variables: { where },
+        fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
         map((result) => result.data),

@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IDMS.Billing.GqlTypes.BillingResult
 {
+    [NotMapped]
     public class CleanerPerformance
     {
-        [NotMapped]
         public string? customer_code { get; set; }
         [NotMapped]
         public string? tank_no { get; set; }
@@ -25,5 +25,6 @@ namespace IDMS.Billing.GqlTypes.BillingResult
         public string? bay { get; set; }
         [NotMapped]
         public string? cleaner_name { get; set; }
+        public double? duration { get; set; } 
     }
 }

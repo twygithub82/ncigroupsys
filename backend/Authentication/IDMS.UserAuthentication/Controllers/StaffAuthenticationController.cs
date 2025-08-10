@@ -119,8 +119,8 @@ namespace IDMS.User.Authentication.API.Controllers
                 if (!string.IsNullOrEmpty(userClaimModel.UserId))
                 {
                     //To be replace
-                    JArray functionNamesArray = utils.GetFunctionsByUser(_dbContext, userClaimModel.UserId);
-                    JArray roleNameArray = utils.GetRolesByUser(_dbContext, userClaimModel.UserId);
+                    JArray functionNamesArray = await utils.GetFunctionsByUser(_dbContext, userClaimModel.UserId);
+                    JArray roleNameArray = await utils.GetRolesByUser(_dbContext, userClaimModel.UserId);
 
                     JObject userClaims = new JObject();
                     userClaims["roles"] = roleNameArray;
@@ -153,17 +153,31 @@ namespace IDMS.User.Authentication.API.Controllers
                 if (!await _userManager.CheckPasswordAsync(staff, staffModel.Password))
                     return Unauthorized(new { message = "Invalid username/password" });
 
-
+                if (string.IsNullOrEmpty(staff.Id))
+                    staff = await _userManager.FindByNameAsync(staffModel.Username);
+             
                 //Continue to get actual user claims
                 var staffRoles = await _userManager.GetRolesAsync(staff);
                 staff.CurrentSessionId = Guid.NewGuid();
                 //generate the token with the claims
                 //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
-                var jwtToken = _jwtTokenService.GetToken(UserType.Staff, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}"); //Utilities.utils.GetToken(_configuration,authClaims);
+
+                bool tokenNeverExpired = false;
+                if(staff.CorporateID == 5)
+                    tokenNeverExpired = true;
+
+                UserType curUserType = UserType.Staff;
+                if (!staff.isStaff)
+                    curUserType = UserType.User;
+
+
+                var jwtToken = _jwtTokenService.GetToken(curUserType, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}", tokenNeverExpired); //Utilities.utils.GetToken(_configuration,authClaims);
                 var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
                 _refreshTokenStore.AddToken(refreshToken);
-                _dbContext.SaveChangesAsync();
+                await _userManager.UpdateAsync(staff);
+
+                //await _dbContext.SaveChangesAsync();
                 //returning the token
                 return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
 
@@ -193,51 +207,72 @@ namespace IDMS.User.Authentication.API.Controllers
         //        if (!await _userManager.CheckPasswordAsync(staff, staffModel.Password))
         //            return Unauthorized(new { message = "Invalid username/password" });
 
+        //        UserType curUserType = UserType.Staff;
+        //        if (!staff.isStaff)
+        //            curUserType = UserType.User;
 
-        //        //validate user license
-        //        //var userLic = await _dbContext.user_license.Where(u => u.user_email == staff.Email).FirstOrDefaultAsync();
-        //        if (string.IsNullOrEmpty(staff.LicenseToken))
-        //            return Unauthorized(new { message = "User license token not found" });
+        //        if(curUserType == UserType.Staff)
+        //        {   
+        //            //If login user is valid depor staff/user
+        //            //validate user license
+        //            //var userLic = await _dbContext.user_license.Where(u => u.user_email == staff.Email).FirstOrDefaultAsync();
+        //            if (string.IsNullOrEmpty(staff.LicenseToken))
+        //                return Unauthorized(new { message = "User license token not found" });
 
-        //        //Get User license validity
-        //        (var statusCode, var message) = await utils.GetLicenseValidity(_dbContext, staff.LicenseToken, _configuration);
-        //        if (statusCode != System.Net.HttpStatusCode.OK)
-        //            return Unauthorized(message);
+        //            //Get User license validity
+        //            (var statusCode, var message) = await utils.GetLicenseValidity(_dbContext, staff.LicenseToken, _configuration);
+        //            if (statusCode != System.Net.HttpStatusCode.OK)
+        //                return Unauthorized(message);
 
-        //        //check JWT token authenticity
-        //        JObject JWT = JObject.Parse(message);
-        //        var claims = _jwtTokenService.GetPrincipalFromToken(JWT["token"].ToString());
-        //        if (claims != null)
-        //        {
-        //            var licStatusCode = claims.FindFirst("StatusCode")?.Value?.ToString() ?? "";
-        //            var statusMessage = claims.FindFirst("StatusMessage")?.Value?.ToString() ?? "";
-        //            var statusDesc = claims.FindFirst("StatusDescription")?.Value?.ToString() ?? "";
-
-        //            if (licStatusCode == LicenseStatusEnum.Valid.ToString())
+        //            //check JWT token authenticity
+        //            JObject JWT = JObject.Parse(message);
+        //            var claims = _jwtTokenService.GetPrincipalFromToken(JWT["token"].ToString());
+        //            if (claims != null)
         //            {
-        //                //Continue to get actual user claims
-        //                var staffRoles = await _userManager.GetRolesAsync(staff);
-        //                staff.CurrentSessionId = Guid.NewGuid();
-        //                //generate the token with the claims
-        //                //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
-        //                var jwtToken = _jwtTokenService.GetToken(UserType.Staff, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}"); //Utilities.utils.GetToken(_configuration,authClaims);
-        //                var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
+        //                var licStatusCode = claims.FindFirst("StatusCode")?.Value?.ToString() ?? "";
+        //                var statusMessage = claims.FindFirst("StatusMessage")?.Value?.ToString() ?? "";
+        //                var statusDesc = claims.FindFirst("StatusDescription")?.Value?.ToString() ?? "";
 
-        //                _refreshTokenStore.AddToken(refreshToken);
-        //                //returning the token
-        //                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
-        //            }
-        //            else
-        //            {
-        //                var licenseObject = new LicenseStatus();
-        //                licenseObject.StatusCode = int.Parse(licStatusCode);
-        //                licenseObject.StatusMessage = statusMessage;
-        //                licenseObject.StatusDescription = statusDesc;
+        //                if (licStatusCode == LicenseStatusEnum.Valid.ToString())
+        //                {
+        //                    //Continue to get actual user claims
+        //                    var staffRoles = await _userManager.GetRolesAsync(staff);
+        //                    staff.CurrentSessionId = Guid.NewGuid();
+        //                    //generate the token with the claims
+        //                    //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
+        //                    var jwtToken = _jwtTokenService.GetToken(curUserType, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}"); //Utilities.utils.GetToken(_configuration,authClaims);
+        //                    var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
 
-        //                return Unauthorized(licenseObject);
+        //                    _refreshTokenStore.AddToken(refreshToken);
+        //                    //returning the token
+        //                    return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
+        //                }
+        //                else
+        //                {
+        //                    var licenseObject = new LicenseStatus();
+        //                    licenseObject.StatusCode = int.Parse(licStatusCode);
+        //                    licenseObject.StatusMessage = statusMessage;
+        //                    licenseObject.StatusDescription = statusDesc;
+
+        //                    return Unauthorized(licenseObject);
+        //                }
         //            }
+        //            return Unauthorized(new { message = "Invalid user claim" });
         //        }
-        //        return Unauthorized(new { message = "Invalid user claim" });
+        //        else
+        //        {
+        //            //if login user is kiosk machine user
+        //            var staffRoles = await _userManager.GetRolesAsync(staff);
+        //            staff.CurrentSessionId = Guid.NewGuid();
+        //            //generate the token with the claims
+        //            //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
+        //            var jwtToken = _jwtTokenService.GetToken(curUserType, staff.UserName, staff.Email, staffRoles, staff.Id, $"{staff.CurrentSessionId}"); //Utilities.utils.GetToken(_configuration,authClaims);
+        //            var refreshToken = new RefreshToken() { ExpiryDate = jwtToken.ValidTo, UserId = staff.UserName, Token = _jwtTokenService.GenerateRefreshToken() };
+
+        //            _refreshTokenStore.AddToken(refreshToken);
+        //            //returning the token
+        //            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtToken), expiration = jwtToken.ValidTo, refreshToken = refreshToken.Token });
+        //        }
         //    }
         //    catch (SecurityTokenException se)
         //    {
@@ -490,7 +525,7 @@ namespace IDMS.User.Authentication.API.Controllers
                     //var roles = await _userManager.GetRolesAsync(usr);
                     //s.Roles = roles?.ToList();
 
-                    var roles = utils.GetRolesByUser(_dbContext, usr.Id);
+                    var roles = await utils.GetRolesByUser(_dbContext, usr.Id);
                     s.Roles = roles.ToObject<List<string>>();
 
                     var teamDetails = utils.GetTeamsByUser(_dbContext, usr.Id);
@@ -797,6 +832,7 @@ namespace IDMS.User.Authentication.API.Controllers
             //return retval;
         }
 
+        [AllowAnonymous]
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
         {

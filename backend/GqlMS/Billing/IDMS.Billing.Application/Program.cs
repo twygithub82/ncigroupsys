@@ -78,6 +78,8 @@ namespace IDMS.Billing.Applicaton
                 };
             });
 
+            Console.WriteLine(TimeZoneInfo.Local.DisplayName);
+
             var app = builder.Build();
             app.UseHttpsRedirection();
             app.UseAuthentication();

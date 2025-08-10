@@ -10,10 +10,16 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     [NotMapped]
     public class MonthlyInventoryResult
     {
+        public List<MonthlyResiueInventory>? residue_inventory { get; set; }
         public List<MonthlyCleaningInventory>? cleaning_inventory { get; set; }
         public List<MonthlySteamingInventory>? steaming_inventory { get; set; }
         public List<MonthlyRepairInventory>? repair_inventory { get; set; }
         public MonthlyGateInOutInventory? gate_in_out_inventory { get; set; }
+    }
+
+    [NotMapped]
+    public class MonthlyResiueInventory : InventoryPerDay
+    {
     }
 
     [NotMapped]
@@ -83,6 +89,7 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     [NotMapped]
     public class YearlyInventoryResult
     {
+        public YearlyInventory? residue_yearly_inventory { get; set; }
         public YearlyInventory? cleaning_yearly_inventory { get; set; }
         public YearlyInventory? steaming_yearly_inventory { get; set; }
         public YearlyInventory? repair_yearly_inventory { get; set; }

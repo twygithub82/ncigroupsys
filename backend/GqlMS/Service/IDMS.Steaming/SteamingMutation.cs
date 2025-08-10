@@ -192,6 +192,7 @@ namespace IDMS.Steaming.GqlTypes
                 if (steaming.action != null && steaming.action.EqualsIgnore(ObjectAction.OVERWRITE))
                 {
                     updateSteaming.overwrite_remarks = steaming.overwrite_remarks;
+                    updateSteaming.flat_rate = steaming.flat_rate;
                     updateSteaming.total_cost = GqlUtils.CalculateMaterialCostRoundedUp(steaming.total_cost);
                 }
                 else

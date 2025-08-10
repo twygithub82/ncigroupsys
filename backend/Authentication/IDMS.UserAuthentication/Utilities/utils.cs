@@ -6,12 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.Data;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace IDMS.User.Authentication.API.Utilities
 {
@@ -32,7 +34,7 @@ namespace IDMS.User.Authentication.API.Utilities
             return now.ToUnixTimeSeconds();
         }
 
-        public static JArray GetFunctionsByUser(ApplicationDbContext _dbContext, string userId)
+        public static async Task<JArray> GetFunctionsByUser(ApplicationDbContext _dbContext, string userId)
         {
             try
             {
@@ -45,6 +47,12 @@ namespace IDMS.User.Authentication.API.Utilities
                                      select r.role_guid).Contains(rf.role_guid)
                                     select f.code;
 
+                var result = await functionNames.ToListAsync();
+                JArray functionNamesArray = new JArray();
+                    
+                if(result != null)
+                    functionNamesArray = JArray.FromObject(result);
+
                 var addHocfunctionNames = from f in _dbContext.functions
                                           join uf in _dbContext.user_functions
                                           on f.guid equals uf.functions_guid
@@ -52,10 +60,10 @@ namespace IDMS.User.Authentication.API.Utilities
                                           uf.user_guid == userId && uf.adhoc == true
                                           select f.code;
 
-                JArray functionNamesArray = JArray.FromObject(functionNames);
                 if (addHocfunctionNames != null)
                 {
-                    foreach (var item in JArray.FromObject(addHocfunctionNames))
+                    var resultNames = await addHocfunctionNames.ToArrayAsync();
+                    foreach (var item in JArray.FromObject(resultNames))
                     {
                         functionNamesArray.Add(item);
                     }
@@ -65,11 +73,13 @@ namespace IDMS.User.Authentication.API.Utilities
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.StackTrace);
                 throw ex;
             }
         }
 
-        public static JArray GetRolesByUser(ApplicationDbContext _dbContext, string userId)
+        public static async Task<JArray> GetRolesByUser(ApplicationDbContext _dbContext, string userId)
         {
             try
             {
@@ -79,7 +89,11 @@ namespace IDMS.User.Authentication.API.Utilities
                                 where ur.user_guid == userId && r.delete_dt == null && ur.delete_dt == null
                                 select r.code;
 
-                JArray roleNamesArray = JArray.FromObject(roleNames);
+                var result = await roleNames.ToListAsync();
+                JArray roleNamesArray = new JArray();  
+                if (result != null)
+                    roleNamesArray = JArray.FromObject(result);
+
                 return roleNamesArray;
 
             }

@@ -898,9 +898,7 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
           startCursor: this.startCursor,
           endCursor: this.endCursor,
           previous_endCursor: this.previous_endCursor,
-
           showResult: this.sotDS.totalCount > 0
-
         }
       }
     });

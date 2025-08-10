@@ -60,7 +60,7 @@ namespace IDMS.User.Authentication.API.Utilities
             return principal;
         }
 
-        public JwtSecurityToken GetToken(UserType userType, string loginId, string email, IList<string> roles, string userId, string currentSessionId)
+        public JwtSecurityToken GetToken(UserType userType, string loginId, string email, IList<string> roles, string userId, string currentSessionId, bool tokenNeverExpired = false)
         {
             //var functionNames = from f in _dbContext.functions
             //                    join rf in _dbContext.role_function
@@ -85,9 +85,11 @@ namespace IDMS.User.Authentication.API.Utilities
             JArray functionNamesArray = new JArray(); //JArray.FromObject(functionNamesNew);
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
-            //var exp = DateTime.Now.AddHours(_duration);
-            //var exp = DateTime.Now.AddYears(1);
+
             var exp = DateTime.Now.AddMinutes(_duration);
+            if (tokenNeverExpired)
+                exp = DateTime.Now.AddYears(1);
+
             List<Claim> authClaims = GetClaims(userType, userId, loginId, email, roles, functionNamesArray, teamsArray, currentSessionId);
             var token = new JwtSecurityToken(
                   issuer: _issuer,
@@ -99,7 +101,7 @@ namespace IDMS.User.Authentication.API.Utilities
             return token;
         }
 
-        List<Claim> GetClaims(UserType userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight, JArray teams, string currentSessionId)
+        private List<Claim> GetClaims(UserType userType, string userId, string loginId, string email, IList<string> roles, JArray functionsRight, JArray teams, string currentSessionId)
         {
             var authClaims = new List<Claim>();
 

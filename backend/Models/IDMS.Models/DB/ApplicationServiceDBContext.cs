@@ -23,10 +23,10 @@ namespace IDMS.Models.Service.GqlTypes.DB
             modelBuilder.Entity<aspnetuserroles>()
             .HasKey(sc => new { sc.userID, sc.roleID });
 
-            modelBuilder.Entity<aspnetuserroles>()
-                .HasOne(sc => sc.aspnetusers)
-                .WithMany(s => s.aspnetuserroles)
-                .HasForeignKey(sc => sc.userID);
+            //modelBuilder.Entity<aspnetuserroles>()
+            //    .HasOne(sc => sc.aspnetusers)
+            //    .WithMany(s => s.aspnetuserroles)
+            //    .HasForeignKey(sc => sc.userID);
 
             modelBuilder.Entity<aspnetuserroles>()
                 .HasOne(sc => sc.aspnetroles)

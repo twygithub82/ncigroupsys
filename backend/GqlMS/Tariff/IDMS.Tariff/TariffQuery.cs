@@ -255,8 +255,8 @@ namespace IDMS.Models.Tariff.GqlTypes
                                      .Select(tr => new TariffResidueResult
                                      {
                                          tariff_residue = tr,
-                                         tank_count = tr.residue_part.Count(rp => 
-                                                                            rp.residue != null && rp.residue.delete_dt == null 
+                                         tank_count = tr.residue_part.Count(rp =>
+                                                                            rp.residue != null && rp.residue.delete_dt == null
                                                                             && !invalidStatus.Contains(rp.residue.status_cv)
                                                                             && rp.delete_dt == null)
                                      })
@@ -289,8 +289,8 @@ namespace IDMS.Models.Tariff.GqlTypes
                                      .Select(tr => new TariffSteamingResult
                                      {
                                          tariff_steaming = tr,
-                                         tank_count = tr.steaming_part.Count(rp => 
-                                                                             rp.steaming != null && rp.steaming.delete_dt == null 
+                                         tank_count = tr.steaming_part.Count(rp =>
+                                                                             rp.steaming != null && rp.steaming.delete_dt == null
                                                                              && !invalidStatus.Contains(rp.steaming.status_cv)
                                                                              && rp.delete_dt == null)
                                      })
@@ -348,7 +348,7 @@ namespace IDMS.Models.Tariff.GqlTypes
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var result = context.tariff_depot.Where(td=>td.delete_dt == null || td.delete_dt == 0)
+                var result = context.tariff_depot.Where(td => td.delete_dt == null || td.delete_dt == 0)
                                     .Select(td => new TariffDepotResult
                                     {
                                         tariff_depot = td,
@@ -464,9 +464,9 @@ namespace IDMS.Models.Tariff.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                var query = context.tariff_repair.AsQueryable();
+                var query = context.tariff_repair.Where(tr => tr.delete_dt == null).AsQueryable();
 
-                if(isPartNameOnly ?? false)
+                if (isPartNameOnly ?? false)
                 {
                     if (!string.IsNullOrEmpty(part_name))
                     {

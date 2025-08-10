@@ -59,7 +59,8 @@ namespace IDMS.Billing.GqlTypes
                                  cost = r.cleaning_cost,
                                  cleaner_name = r.complete_by,
                                  method = cm.name,
-                                 bay = t.description
+                                 bay = t.description,
+                                 duration = jo.working_hour ?? 0.0
                              })
                              //.AsSplitQuery()
                              .AsQueryable();
@@ -1344,6 +1345,7 @@ namespace IDMS.Billing.GqlTypes
         #endregion
 
         #region DailyTeamRepairReport
+
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]
         [UseFiltering]
@@ -1452,15 +1454,15 @@ namespace IDMS.Billing.GqlTypes
                 List<DailyTeamApproval> result = new List<DailyTeamApproval>();
 
                 var query = (from r in context.repair
-                             join rp in context.repair_part on r.guid equals rp.repair_guid
-                             join jo in context.job_order on rp.job_order_guid equals jo.guid
-                             join t in context.team on jo.team_guid equals t.guid
-                             join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
+                             //join rp in context.repair_part on r.guid equals rp.repair_guid
+                             //join jo in context.job_order on rp.job_order_guid equals jo.guid
+                             //join t in context.team on jo.team_guid equals t.guid
+                             join sot in context.storing_order_tank on r.sot_guid equals sot.guid
                              join so in context.storing_order on sot.so_guid equals so.guid into soGroup
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
-                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                             //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
                              where r.delete_dt == null && !StatusCondition.BeforeEstimateApprove.Contains(r.status_cv) && r.approve_dt != null
                              && !string.IsNullOrEmpty(sot.purpose_repair_cv)
                              select new DailyTeamApproval
@@ -1470,11 +1472,11 @@ namespace IDMS.Billing.GqlTypes
                                  code = cc.code,
                                  estimate_date = r.create_dt,
                                  approved_date = r.approve_dt,
-                                 allocation_date = r.allocate_dt,
-                                 qc_date = jo.qc_dt,
-                                 eir_no = ig.eir_no,
+                                 //allocation_date = r.allocate_dt,
+                                 //qc_date = jo.qc_dt,
+                                 //eir_no = ig.eir_no,
                                  repair_cost = r.total_cost,
-                                 team = t.description,
+                                 //team = t.description,
                                  status = r.status_cv,
                                  repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv,
 
@@ -1554,15 +1556,19 @@ namespace IDMS.Billing.GqlTypes
                 //          )
 
                 var query = (from r in context.repair
-                             join rp in context.repair_part on r.guid equals rp.repair_guid
+                             let rp = context.repair_part
+                                    .Where(x => x.repair_guid == r.guid)
+                                    .OrderBy(x => x.guid) // Or any other logic to pick "first"
+                                    .FirstOrDefault()
+                             //join rp in context.repair_part on r.guid equals rp.repair_guid 
                              join jo in context.job_order on rp.job_order_guid equals jo.guid
-                             join t in context.team on jo.team_guid equals t.guid
+                             //join t in context.team on jo.team_guid equals t.guid
                              join sot in context.storing_order_tank on jo.sot_guid equals sot.guid
                              join so in context.storing_order on sot.so_guid equals so.guid into soGroup
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
-                             join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                             //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
                              where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
                              select new DailyQCDetail
                              {
@@ -1573,14 +1579,16 @@ namespace IDMS.Billing.GqlTypes
                                  approved_date = r.approve_dt,
                                  allocation_date = r.allocate_dt,
                                  qc_date = jo.qc_dt,
-                                 eir_no = ig.eir_no,
+                                 qc_by = jo.qc_by,
+                                 //eir_no = ig.eir_no,
                                  repair_cost = r.total_cost,
                                  //team = t.description,
                                  appv_hour = r.total_hour, // need to change 
                                  appv_material_cost = r.total_material_cost - r.material_cost_discount, //need to change
                                  repair_type = sot.purpose_repair_cv //== "REPAIR" ? "IN-SERVICE" : sot.purpose_repair_cv
 
-                             }).AsQueryable();
+                             })
+                             .AsQueryable();
 
                 if (dailyQCDetailRequest.qc_start_date != null && dailyQCDetailRequest.qc_end_date != null)
                 {
@@ -1621,6 +1629,15 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = query.Where(tr => tr.allocation_date >= dailyQCDetailRequest.allocation_start_date && tr.allocation_date <= dailyQCDetailRequest.allocation_end_date);
                 }
+
+                //var result = await query
+                //        .GroupBy(x => x.estimate_no)
+                //        .Select(g => g.FirstOrDefault())  // optional: .OrderByDescending(...), etc.
+                //        .OrderBy(tr => tr.code)
+                //        .ThenBy(tr => tr.qc_date)
+                //        .ToListAsync();
+
+                //return result;
 
                 return await query.OrderBy(tr => tr.code).ThenBy(tr => tr.qc_date).ToListAsync();
             }
@@ -1664,7 +1681,6 @@ namespace IDMS.Billing.GqlTypes
         }
 
         #endregion
-
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
         [UseProjection]

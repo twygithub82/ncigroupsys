@@ -31,11 +31,15 @@ namespace IDMS.Models.Shared
     {
         [Key]
         public string? guid { get; set; }
+
+        [ForeignKey("aspnetusers")]
         public string? userId { get; set; }
 
         [ForeignKey("team")]
         public string? team_guid { get; set; }
 
         public virtual team? team { get; set; }
+
+        public virtual aspnetusers? aspnetusers { get; set; } 
     }
 }

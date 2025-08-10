@@ -102,9 +102,9 @@ namespace IDMS.Service.GqlTypes
                 }
 
             }
-            catch
+            catch(Exception ex) 
             {
-                throw;
+                throw new Exception("Unauthorized - " + ex.Message);
             }
             return uid;
         }

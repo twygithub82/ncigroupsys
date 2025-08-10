@@ -281,9 +281,9 @@ namespace IDMS.Models.Package.GqlTypes
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new Exception("Unauthorized - " + ex.Message);
             }
             return uid;
         }

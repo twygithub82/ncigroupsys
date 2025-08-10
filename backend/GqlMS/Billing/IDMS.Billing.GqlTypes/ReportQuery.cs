@@ -505,7 +505,6 @@ namespace IDMS.Billing.GqlTypes
             {
 
                 List<OpeningBalance> resultList = new List<OpeningBalance>();
-
                 List<OpeningBalance> inList = new List<OpeningBalance>();
                 List<OpeningBalance> outList = new List<OpeningBalance>();
 
@@ -558,9 +557,9 @@ namespace IDMS.Billing.GqlTypes
                 //if (openingBalances.Any())
                 //    resultList = openingBalances;
                 if (inList.Any())
-                    resultList = inList;
+                    resultList = EnsureAllYardsExist(inList);
                 else if (outList.Any())
-                    resultList = outList;
+                    resultList = EnsureAllYardsExist(outList);
 
                 if (resultList.Any())
                 {
@@ -575,48 +574,6 @@ namespace IDMS.Billing.GqlTypes
                 }
 
                 return resultList;
-
-                //if (openingBalances.Count > 0)
-                //{
-                //    foreach (var item in openingBalances)
-                //    {
-                //        if (inList.Count() != 0)
-                //            item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
-
-                //        if (outList.Count != 0)
-                //            item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
-                //    }
-
-                //    return openingBalances.OrderBy(i => i.yard).ToList();
-                //}
-                //else if (inList.Count > 0)
-                //{
-                //    foreach (var item in inList)
-                //    {
-                //        if (inList.Count() != 0)
-                //            item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
-
-                //        if (outList.Count != 0)
-                //            item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
-                //    }
-
-                //    return inList.OrderBy(i => i.yard).ToList();
-                //}
-                //else if (outList.Count > 0)
-                //{
-                //    foreach (var item in outList)
-                //    {
-                //        if (inList.Count() != 0)
-                //            item.in_count = inList.Where(i => i.yard == item.yard).Select(i => i.in_count).FirstOrDefault();
-
-                //        if (outList.Count != 0)
-                //            item.out_count = outList.Where(i => i.yard == item.yard).Select(i => i.out_count).FirstOrDefault();
-                //    }
-
-                //    return outList.OrderBy(i => i.yard).ToList();
-
-                //}
-
             }
             catch (Exception ex)
             {
@@ -624,5 +581,25 @@ namespace IDMS.Billing.GqlTypes
             }
         }
 
+        private List<OpeningBalance> EnsureAllYardsExist(List<OpeningBalance> balances)
+        {
+           
+            foreach (var yard in AvailableYard.YardList)
+            {
+                // Check if the yard exists in the balances list
+                if (!balances.Any(b => b.yard?.Equals(yard, StringComparison.OrdinalIgnoreCase) == true))
+                {
+                    // If not, add a default entry
+                    balances.Add(new OpeningBalance
+                    {
+                        yard = yard,
+                        open_balance = 0,
+                        in_count = 0,
+                        out_count = 0
+                    });
+                }
+            }
+            return balances;
+        }
     }
 }

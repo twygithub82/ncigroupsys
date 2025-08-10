@@ -19,21 +19,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { SteamDS } from 'app/data-sources/steam';
+import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-import { debounceTime, startWith, Subject, tap } from 'rxjs';
-import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
-import { SteamPartItem } from 'app/data-sources/steam-part';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { Subject, debounceTime, startWith, tap } from 'rxjs';
 
 
 export interface DialogData {
@@ -70,7 +68,8 @@ export interface DialogData {
     MatAutocompleteModule,
     CommonModule,
     MatProgressSpinnerModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -129,7 +128,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.newDescControl = new UntypedFormControl('', [Validators.required]);
     this.steamPartForm = this.createForm();
     this.initializeValueChange();
-    // this.patchForm();
   }
 
   ngAfterViewInit() {
@@ -151,15 +149,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     return this.steamPartForm;
   }
-
-  // patchForm() {
-  //   this.steamPartForm.patchValue({
-  //     description: this.repairPart.description,
-  //     quantity: this.repairPart.quantity,
-  //     hour: this.repairPart.hour,
-  //     unit_price: this.repairPart.material_cost
-  //   });
-  // }
 
   resetForm() {
 
@@ -261,7 +250,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tap(value => {
         var desc_value: any = this.newDescControl?.value;
         if (typeof desc_value === 'object' && this.updateSelectedItem === undefined && desc_value) {
-          this.steamPartForm.get('quantity')?.setValue(desc_value?.quantity ? desc_value?.quantity : 1);
+          this.steamPartForm.get('quantity')?.setValue(this.steamPart?.quantity ? this.steamPart?.quantity : (desc_value?.quantity || 1));
           this.steamPartForm.get('labour')?.setValue(desc_value?.labour_hour?.toFixed(2) || '');
           this.steamPartForm.get('cost')?.setValue(desc_value?.material_cost?.toFixed(2) || '');
         } else if (desc_value) {
@@ -274,15 +263,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   initializePartNameValueChange() {
-    // this.steamPartForm?.get('description')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     if (value) {
-    //       // this.searchPart();
-    //     }
-    //   })
-    // ).subscribe();
   }
 
   getPackageSteamAlias(alias?: string) {

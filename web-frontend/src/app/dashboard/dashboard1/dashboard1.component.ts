@@ -1,5 +1,4 @@
-import { CdkDrag, CdkDragHandle, CdkDragPlaceholder, CdkDropList } from '@angular/cdk/drag-drop';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -11,39 +10,31 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { Utility,pageSizeInfo } from 'app/utilities/utility';
+import { ModulePackageService } from 'app/services/module-package.service';
+import { SearchStateService } from 'app/services/search-criteria.service';
+import { Utility, pageSizeInfo } from 'app/utilities/utility';
 import { ApexAxisChartSeries, ApexChart, ApexDataLabels, ApexFill, ApexGrid, ApexLegend, ApexMarkers, ApexPlotOptions, ApexResponsive, ApexStroke, ApexTitleSubtitle, ApexTooltip, ApexXAxis, ApexYAxis, NgApexchartsModule } from 'ng-apexcharts';
-import { NgScrollbar } from 'ngx-scrollbar';
 import { Subscription } from 'rxjs';
 import { GraphqlNotificationService } from '../../services/global-notification.service';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
-import { FeatherIconsComponent } from '../../shared/components/feather-icons/feather-icons.component';
-import { ModulePackageService } from 'app/services/module-package.service';
-import { AuthService } from '@core/service/auth.service';
-import { debounceTime, take } from 'rxjs/operators';
-import { TestComponent } from '../components/test/test.component';
-import { Test1Component } from '../components/test1/test1.component';
-import { GateInWaitingComponent } from '../components/sot/waiting/gate-in/gatein_waiting.component';
-import { InGateSurveyWaitingComponent } from '../components/sot/notsurvey/in_gate/in_gate_survey_waiting.component';
-import { CleaningWaitingComponent } from '../components/sot/waiting/cleaning/cleaning_waiting.component';
-import { ResidueWaitingComponent } from '../components/sot/waiting/residue/residue_waiting.component';
-import { RepairEstimateWaitingComponent } from '../components/sot/waiting/repair/estimate/estimate_waiting.component';
-import { RepairCustomerApprovalWaitingComponent } from '../components/sot/waiting/repair/customer_approval/customer_approval_waiting.component';
-import { ConsolidatedWaitingComponent } from '../components/sot/waiting/consolidated/consolidated_waiting.component';
-import { RepairQCWaitingComponent } from '../components/sot/waiting/repair/qc_incomplete/qc_waiting.component';
 import { DashboardGateIOComponent } from '../components/gate/io/gateio.component';
-import { TankInYardComponent } from '../components/sot/in-yard/tank-in-yard.component';
-import { TankInSteamingComponent } from '../components/sot/steaming/tank-in-steaming.component';
-import { OutGateSurveyWaitingComponent } from '../components/sot/notsurvey/out_gate/out_gate_survey_waiting.component';
-import { SteamingWaitingComponent } from '../components/sot/waiting/steaming/steaming-waiting.component';
-import { TankTestDueComponent } from '../components/sot/due/test/tank-test-due.component';
 import { CleaningKIVComponent } from '../components/sot/KIV/cleaning/cleaning_kiv.component';
-import { ReleaseWaitingComponent } from '../components/sot/waiting/release/release-waiting.component';
-import { GateOutPublishWaitingComponent } from '../components/sot/waiting/publish/gate-out/gateout_publish_waiting.component';
+import { TankTestDueComponent } from '../components/sot/due/test/tank-test-due.component';
+import { TankInYardComponent } from '../components/sot/in-yard/tank-in-yard.component';
+import { InGateSurveyWaitingComponent } from '../components/sot/notsurvey/in_gate/in_gate_survey_waiting.component';
+import { OutGateSurveyWaitingComponent } from '../components/sot/notsurvey/out_gate/out_gate_survey_waiting.component';
+import { TankInSteamingComponent } from '../components/sot/steaming/tank-in-steaming.component';
+import { CleaningWaitingComponent } from '../components/sot/waiting/cleaning/cleaning_waiting.component';
+import { ConsolidatedWaitingComponent } from '../components/sot/waiting/consolidated/consolidated_waiting.component';
+import { GateInWaitingComponent } from '../components/sot/waiting/gate-in/gatein_waiting.component';
 import { GateInPublishWaitingComponent } from '../components/sot/waiting/publish/gate-in/gatein_publish_waiting.component';
-import { SearchStateService } from 'app/services/search-criteria.service';
+import { GateOutPublishWaitingComponent } from '../components/sot/waiting/publish/gate-out/gateout_publish_waiting.component';
+import { ReleaseWaitingComponent } from '../components/sot/waiting/release/release-waiting.component';
+import { RepairCustomerApprovalWaitingComponent } from '../components/sot/waiting/repair/customer_approval/customer_approval_waiting.component';
+import { RepairEstimateWaitingComponent } from '../components/sot/waiting/repair/estimate/estimate_waiting.component';
+import { RepairQCWaitingComponent } from '../components/sot/waiting/repair/qc_incomplete/qc_waiting.component';
+import { ResidueWaitingComponent } from '../components/sot/waiting/residue/residue_waiting.component';
+import { SteamingWaitingComponent } from '../components/sot/waiting/steaming/steaming-waiting.component';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -74,22 +65,13 @@ export type ChartOptions = {
     MatButtonModule,
     MatMenuModule,
     MatIconModule,
-    FeatherIconsComponent,
     NgApexchartsModule,
-    NgScrollbar,
     RouterLink,
     MatProgressBarModule,
-    CdkDropList,
-    CdkDrag,
-    CdkDragHandle,
     MatCheckboxModule,
-    CdkDragPlaceholder,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    NgClass,
     CommonModule,
-    TestComponent,
-    Test1Component,
     InGateSurveyWaitingComponent,
     OutGateSurveyWaitingComponent,
     GateInWaitingComponent,
@@ -557,119 +539,117 @@ export class Dashboard1Component implements OnInit {
     event.stopPropagation(); // Prevent event bubbling
 
     console.log(`Icon clicked - Type: ${transactionType}`);
-    var urlLink="";
-    var actionId="pending";
-    var module={};
-    var criteria :any={};
-    var pageStateType='';
-    switch(transactionType)
-    {
-      case this.translatedLangText.IN_GATE_SURVEY_PENDING: 
-        module={ queryParams: { tabIndex: 'app-in-gate-survey' } };
+    var urlLink = "";
+    var actionId = "pending";
+    var module = {};
+    var criteria: any = {};
+    var pageStateType = '';
+    switch (transactionType) {
+      case this.translatedLangText.IN_GATE_SURVEY_PENDING:
+        module = { queryParams: { tabIndex: 'app-in-gate-survey' } };
         pageStateType = 'InGateSurvey';
-        criteria.eir_status_cv=[ 'YET_TO_SURVEY'];
-        urlLink="admin/inventory/in-gate-main";
-      break;
-      case this.translatedLangText.OUT_GATE_SURVEY_PENDING: 
-        module={ queryParams: { tabIndex: 'out-gate-survey' } };
+        criteria.eir_status_cv = ['YET_TO_SURVEY'];
+        urlLink = "admin/inventory/in-gate-main";
+        break;
+      case this.translatedLangText.OUT_GATE_SURVEY_PENDING:
+        module = { queryParams: { tabIndex: 'out-gate-survey' } };
         pageStateType = 'OutGateSurvey';
-        criteria.eir_status_cv=[ 'YET_TO_SURVEY'];
-        urlLink="admin/inventory/out-gate-main";
-      break;
-      case this.translatedLangText.GATE_IN_PENDING: 
-        module={ queryParams: { tabIndex: 'app-in-gate' } };
+        criteria.eir_status_cv = ['YET_TO_SURVEY'];
+        urlLink = "admin/inventory/out-gate-main";
+        break;
+      case this.translatedLangText.GATE_IN_PENDING:
+        module = { queryParams: { tabIndex: 'app-in-gate' } };
         pageStateType = 'InGate';
         //criteria.status_cv=[ 'YET_TO_SURVEY']
-        urlLink="admin/inventory/in-gate-main";
-      break;
-      case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING: 
+        urlLink = "admin/inventory/in-gate-main";
+        break;
+      case this.translatedLangText.ESTIMATE_CUSTOMER_APPROVAL_PENDING:
         pageStateType = 'RepairApproval';
-        criteria.est_status_cv=['PENDING'];
-        criteria.repair_option_cv=["OFFHIRE","REPAIR"];
-        urlLink="admin/repair/approval";
-      break;
+        criteria.est_status_cv = ['PENDING'];
+        criteria.repair_option_cv = ["OFFHIRE", "REPAIR"];
+        urlLink = "admin/repair/approval";
+        break;
       case this.translatedLangText.REPAIR_ESTIMATE_PENDING:
         pageStateType = 'RepairEstimate';
-        criteria.est_pending=true;
-        urlLink="admin/repair/estimate";
-      break;
-      case this.translatedLangText.REPAIR_QC_PENDING: 
-        module={ queryParams: { tabIndex: 'app-job-qc' } };
+        criteria.est_pending = true;
+        urlLink = "admin/repair/estimate";
+        break;
+      case this.translatedLangText.REPAIR_QC_PENDING:
+        module = { queryParams: { tabIndex: 'app-job-qc' } };
         pageStateType = 'RepairQC';
-         criteria.jobStatusCv=['COMPLETED'];
-        urlLink="admin/repair/job-order";
-      break;
-      case this.translatedLangText.CLEANING_PENDING: 
-        criteria.approval_status=["APPROVED"];
+        criteria.jobStatusCv = ['COMPLETED'];
+        urlLink = "admin/repair/job-order";
+        break;
+      case this.translatedLangText.CLEANING_PENDING:
+        criteria.approval_status = ["APPROVED"];
         pageStateType = 'CleaningApproval';
-       urlLink="admin/cleaning/approval";
-      break;
-      case this.translatedLangText.RESIDUE_PENDING: 
+        urlLink = "admin/cleaning/approval";
+        break;
+      case this.translatedLangText.RESIDUE_PENDING:
         pageStateType = 'ResidueDisposalEstimateApproval'
-        criteria.est_status_cv=["PENDING","APPROVED"];
-        urlLink="admin/residue-disposal/estimate-approval/"
-      break;
+        criteria.est_status_cv = ["PENDING", "APPROVED"];
+        urlLink = "admin/residue-disposal/estimate-approval/"
+        break;
       case this.translatedLangText.STEAMING_PENDING:
         pageStateType = 'SteamEstimateApproval'
-        criteria.est_status_cv=["PENDING","APPROVED"];
-        urlLink="admin/steam/estimate-approval/";
+        criteria.est_status_cv = ["PENDING", "APPROVED"];
+        urlLink = "admin/steam/estimate-approval/";
         break;
       case this.translatedLangText.TANK_PERIODIC_TEST_DUE:
         const today = new Date();
         const pastLimit = new Date(today);
         pastLimit.setFullYear(today.getFullYear() - 2);
         pastLimit.setMonth(pastLimit.getMonth() - 6); // 0.5 year = 6 months
-        var dueDt=Utility.convertDate(pastLimit,true,true);
-        criteria.test_dt=dueDt;
+        var dueDt = Utility.convertDate(pastLimit, true, true);
+        criteria.test_dt = dueDt;
         pageStateType = 'PeriodicTest'
-        actionId="due";
-        urlLink="admin/survey/periodic-test/";
-      break;
+        actionId = "due";
+        urlLink = "admin/survey/periodic-test/";
+        break;
       case this.translatedLangText.CLEANING_KIV:
-         pageStateType = 'CleaningApproval';
-         criteria.approval_status=["KIV"];
-         actionId="kiv";
-         urlLink="admin/cleaning/approval";
-      break;
+        pageStateType = 'CleaningApproval';
+        criteria.approval_status = ["KIV"];
+        actionId = "kiv";
+        urlLink = "admin/cleaning/approval";
+        break;
       case this.translatedLangText.RELEASE_PENDING:
         const tdy = new Date();
         const limit = new Date(tdy);
         limit.setDate(limit.getDate() + 3); // 0.5 year = 6 months
-        var dueDt=Utility.convertDate(limit,true,true);
+        var dueDt = Utility.convertDate(limit, true, true);
         pageStateType = 'ReleaseOrder'
-        criteria.due_dt=dueDt;
-        urlLink="admin/inventory/release-order";
-      break;
+        criteria.due_dt = dueDt;
+        urlLink = "admin/inventory/release-order";
+        break;
       case this.translatedLangText.GATE_OUT_PUBLISH_PENDING:
-        actionId="publish";
-        module={ queryParams: { tabIndex: 'out-gate-survey' } };
+        actionId = "publish";
+        module = { queryParams: { tabIndex: 'out-gate-survey' } };
         pageStateType = 'OutGateSurvey';
-        criteria.eir_status_cv=[ 'PENDING'];
-        urlLink="admin/inventory/out-gate-main";
-      break;
+        criteria.eir_status_cv = ['PENDING'];
+        urlLink = "admin/inventory/out-gate-main";
+        break;
       case this.translatedLangText.GATE_IN_PUBLISH_PENDING:
-        actionId="publish";
-        module={ queryParams: { tabIndex: 'app-in-gate-survey' } };
+        actionId = "publish";
+        module = { queryParams: { tabIndex: 'app-in-gate-survey' } };
         pageStateType = 'InGateSurvey';
-        criteria.eir_status_cv=[ 'PENDING'];
-        urlLink="admin/inventory/in-gate-main";
-      break;
+        criteria.eir_status_cv = ['PENDING'];
+        urlLink = "admin/inventory/in-gate-main";
+        break;
       // case this.translatedLangText.GATEIO_PENDING: 
 
       // break;
     }
-    if(urlLink)
-    {
-      var pageSize = pageSizeInfo.defaultSize ;
-      var pageIndex =0; var first = pageSize; var after = undefined;
-      var last = undefined;var before = undefined;
+    if (urlLink) {
+      var pageSize = pageSizeInfo.defaultSize;
+      var pageIndex = 0; var first = pageSize; var after = undefined;
+      var last = undefined; var before = undefined;
 
-      this.searchStateService.setPagination(pageStateType, 
-      {pageSize, pageIndex, first, after,  last, before});
+      this.searchStateService.setPagination(pageStateType,
+        { pageSize, pageIndex, first, after, last, before });
 
       this.searchStateService.setCriteria(pageStateType, criteria);
-      this.router.navigate([`${urlLink}`],module);
-     }
+      this.router.navigate([`${urlLink}`], module);
+    }
     // // Add your custom logic here
     // this.showTransactionDetails(transactionType, amount);
 
@@ -733,7 +713,4 @@ export class Dashboard1Component implements OnInit {
     }
     return retval;
   }
-
-
-
 }

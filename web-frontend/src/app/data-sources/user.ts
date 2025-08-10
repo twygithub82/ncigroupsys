@@ -74,9 +74,18 @@ const GET_USERS = gql`
         id
         userName
         email
-        aspnetuserroles {
-          aspnetroles {
-            Role
+        user_role {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          role_guid
+          update_by
+          update_dt
+          user_guid
+          role {
+            code
+            position
           }
         }
       }

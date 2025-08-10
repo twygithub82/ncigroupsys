@@ -18,8 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Data.Entity;
+//using System.Data.Entity;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
@@ -229,9 +228,9 @@ namespace IDMS.Inventory.GqlTypes
                     throw new GraphQLException(new Error("Unauthorized", "401"));
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw new Exception("Unauthorized - " + ex.Message);
             }
             return uid;
         }

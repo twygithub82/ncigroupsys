@@ -284,7 +284,7 @@
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      [class.justify-content-end]="isMobile">{{i+1}}</mat-cell>
+                      [class.justify-content-center]="isMobile">{{i+1}}</mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
@@ -340,11 +340,11 @@
                       {{row.approve_qty}}
                       }
                       @else {
-                      {{row.quantity}}
+                      {{parse2Decimal(row.quantity)}}
                       }
                       }
                       @else {
-                      {{labourHour}}
+                      {{parse2Decimal(labourHour)}}
                       }
                       }
                     </mat-cell>
@@ -420,10 +420,10 @@
                       }
                       @else {
                       @if(IsApproved()) {
-                      {{row.approve_cost}}
+                      {{parse2Decimal(row.approve_cost)}}
                       }
                       @else {
-                      {{row.cost}}
+                      {{parse2Decimal(row.cost)}}
                       }
                       }
                     </mat-cell>
@@ -491,11 +491,11 @@
                       @if(isSteamRepair)
                       {
                       <span
-                        class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateSteamItemCost(row))}}<br />
+                        class="mobile-label">{{translatedLangText.COST}}:</span>{{this.parse2Decimal(calculateSteamItemCost(row))}}
                       }
                       @else
                       {
-                      <span class="mobile-label">{{translatedLangText.COST}}:</span>{{autosteamCost}}<br />
+                      <span class="mobile-label">{{translatedLangText.COST}}:</span>{{autosteamCost}}
                       }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
@@ -551,7 +551,7 @@
                         (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}})
                         }
                         :</span>
-                      <span class="">{{getTotalLabourCost()}}</span>
+                      <span class="">${{getTotalLabourCost()}}</span>
                     </mat-footer-cell>
                   </ng-container>
 
@@ -581,7 +581,6 @@
                       }
                     </mat-footer-cell>
                   </ng-container>
-
                   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
                     (click)="editEstPartDetails($event, row, i)" matRipple>
