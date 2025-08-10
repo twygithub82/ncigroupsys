@@ -392,7 +392,13 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     var cond_counter = 0;
     let queryType = 1;
     var dailytankSurveyReq: any = {};
-
+    
+    if(this.searchForm?.invalid)
+    {
+       this.searchForm.markAllAsTouched();
+        this.isGeneratingReport = false;
+        return;
+    } 
 
     // where.tank_status_cv = { neq: "RELEASED" };
     // if (this.searchForm?.get('customer_code')?.value) {

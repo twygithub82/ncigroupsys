@@ -680,7 +680,12 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
     var buffer = 30;
     var CurrentPage = 1;
     for (let n = 0; n < this.report_customer_tank_activity.length; n++) {
-      if (n > 0) lastTableFinalY += 8;
+     // if (n > 0) lastTableFinalY += 8;
+
+    
+
+
+
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.report_customer_tank_activity[n];
@@ -691,16 +696,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
 
 
-      var repPage = pdf.getNumberOfPages();
-      //if(repPage==1)lastTableFinalY=45;
-
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
-        pdf.addPage();
-        lastTableFinalY = 5 + topMargin;
-      }
-      else {
-        CurrentPage = repPage;
-      }
+     
 
 
       if (this.customerName === '') {
@@ -711,6 +707,22 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
       }
       let startY = 0;
       if ((cust.in_yard_storing_order_tank?.length || 0) > 0) {
+          
+          if (n > 0) lastTableFinalY += 6; // 2nd table
+          else lastTableFinalY = 49; // First table of the page
+
+           var repPage = pdf.getNumberOfPages();
+      //if(repPage==1)lastTableFinalY=45;
+
+          if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+            pdf.addPage();
+            // lastTableFinalY = 5 + topMargin;
+            lastTableFinalY =45 + topMargin;// buffer for 2nd page onward first table's Method
+          }
+          else {
+            CurrentPage = repPage;
+          }
+
         // lastTableFinalY += 5;
         // pdf.setFontSize(8);
         var subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.IN_YARD}`;
@@ -760,19 +772,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             }
           }
 
-
-          // data.push([ 
-          //   { content: this.translatedLangText.OWNER, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz} },
-          //    { content: this.DisplayTankOwner(itm), colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-          //   { content: this.translatedLangText.LAST_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-          //    { content: this.DisplayLastTest(itm) || "", colSpan: 1, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-          //   { content: this.translatedLangText.NEXT_TEST, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-          //   { content: this.DisplayNextTest(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-          //   { content: this.translatedLangText.PURPOSE, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-          //   { content: this.displayTankPurpose(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} },
-          //   { content: this.translatedLangText.REMARKS, colSpan: 2, styles: { halign: 'left', valign: 'middle',fontStyle: 'bold',fontSize: fontSz } },
-          //   { content: this.DisplayRemarks(itm) || "", colSpan: 2, styles: { halign: 'left', valign: 'middle',fontSize: fontSz} }
-          // ]);
+      
         }
         pdf.setDrawColor(0, 0, 0); // red line color
 
@@ -782,8 +782,8 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         autoTable(pdf, {
           head: headers,
           body: data,
-          startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin },
+        //  startY: startY, // Start table at the current startY value
+          margin: { left: leftMargin , top:topMargin+46},
           theme: 'grid',
           styles: {
             fontSize: fontSize,
@@ -807,7 +807,7 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
               }
             }
           },
@@ -823,28 +823,21 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
         //if((repPage==CurrentPage) && (pageHeight-bottomMargin-topMargin)<(lastTableFinalY+buffer+topMargin))
         if ((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
           pdf.addPage();
-          lastTableFinalY = 5 + topMargin;
+          lastTableFinalY = 45 + topMargin;
         }
         else {
           CurrentPage = repPage;
         }
 
-        // tableHeight = ((cust.released_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); 
-        // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-        //   // Add a new page if there isn't enough space
-        //   pdf.addPage();
-        //   pageNumber++;
-        //   lastTableFinalY = topMargin; // Reset Y position for the new page
-        //   if (n>0) lastTableFinalY+=8;
-        // }
+     
 
-        lastTableFinalY += 7;
-        pdf.setFontSize(8);
+         lastTableFinalY += 6;
+        //pdf.setFontSize(8);
         subTitle = `${this.translatedLangText.TANK_STATUS} : ${this.translatedLangText.RELEASED}`;
        Utility.AddTextAtRightCornerPage(pdf,subTitle,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
         const repData: any[][] = [];
-        lastTableFinalY += 3;
+       // lastTableFinalY += 3;
         for (let b = 0; b < cust.released_storing_order_tank!.length; b++) {
           var itm = cust.released_storing_order_tank?.[b]!;
 
@@ -888,47 +881,14 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
           }
           startY = lastTableFinalY; // Start table 20mm below the customer name
 
-          // repData.push([
-          //   (b + 1).toString(), 
-          //   itm.tank_no || "", this.DisplayInDate(itm) || "", this.DisplayTakeInRef(itm) || "",
-          //   this.DisplayCapacity(itm) || "", this.DisplayTareWeight(itm) || "", itm.tariff_cleaning?.cargo || "",
-
-          //   this.DisplayCleanDate(itm) || "", this.DisplayEstimateNo(itm) || "", this.DisplayEstimateDate(itm) || "",
-          //   this.DisplayApprovalDate(itm) || "", this.DisplayApprovalRef(itm), this.DisplayAVDate(itm) || "", 
-          //   //this.DisplayLastTest(itm) || "", this.DisplayNextTest(itm) || "", 
-          //   this.DisplayCleanCertDate(itm) || "", this.DisplayReleaseBooking(itm) || "",
-          //   this.DisplayReleaseDate(itm) || "", this.DisplayReleaseRef(itm) || "", this.DisplayCurrentStatus_InShort(itm) || "",
-          //   //this.DisplayRemarks(itm) || "", this.displayTankPurpose(itm) || "",
-          //    this.DisplayYard(itm) || ""
-          // ]);
-
-          // startY = lastTableFinalY; // Start table 20mm below the customer name
-
-
-          // if (itm.repair?.length || 0 > 1) {
-          //   for (let r = 1; r < itm.repair!.length; r++) {
-          //     var rp = itm.repair?.[r]!;
-          //     repData.push([
-          //         "", "", "", "", "", "", "", "",
-          //         rp.estimate_no || "", this.displayDate(rp.create_dt) || "", "","", "", 
-          //         //"", "", 
-          //         "", "", "", "", this.DisplayCurrentStatus_InShort(itm) || "", 
-          //         //"", "", 
-          //         this.DisplayYard(itm) || ""
-          //       ]);
-          //   }
-
-          // }
-
-
-
+     
         }
         autoTable(pdf, {
           head: headers,
           body: repData,
-          startY: startY, // Start table at the current startY value
+         // startY: startY, // Start table at the current startY value
           theme: 'grid',
-          margin: { left: leftMargin },
+          margin: { left: leftMargin , top:topMargin+46},
           styles: {
             fontSize: fontSize,
             minCellHeight: minHeightHeaderCol
@@ -950,16 +910,10 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
               }
             }
-            // const pageCount = pdf.getNumberOfPages();
-
-            // if(pageCount>1) Utility.addReportTitle(pdf,reportTitle,pageWidth,leftMargin,rightMargin,topMargin);
-            // // Capture the final Y position of the table
-            // lastTableFinalY = data.cursor.y;
-            // var pg = pagePositions.find(p=>p.page==pageCount);
-            // if(!pg) pagePositions.push({page:pageCount,x:pdf.internal.pageSize.width - 20,y: pdf.internal.pageSize.height - 10});
+         
           },
         });
       }
@@ -967,16 +921,32 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     const totalPages = pdf.getNumberOfPages();
 
-    pagePositions.forEach(({ page, x, y }) => {
+     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 6, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 6, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);

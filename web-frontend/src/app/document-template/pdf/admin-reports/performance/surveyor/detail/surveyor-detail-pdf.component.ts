@@ -608,7 +608,9 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     var CurrentPage = 1;
     var buffer = 20;
     for (let n = 0; n < this.repData.length; n++) {
-      if (n > 0) lastTableFinalY += 8;
+      //if (n > 0) lastTableFinalY += 8;
+        if (n > 0) lastTableFinalY += 4; // 2nd table
+          else lastTableFinalY = 49; // First table of the page
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let sur = this.repData[n];
@@ -669,9 +671,9 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
         autoTable(pdf, {
           head: headers,
           body: data,
-          startY: startY, // Start table at the current startY value
+        //  startY: startY, // Start table at the current startY value
           theme: 'grid',
-          margin: { left: leftMargin },
+          margin: { left: leftMargin , top:topMargin+47},
           tableWidth: pageWidth - leftMargin - rightMargin,
           styles: {
             fontSize: fontSize,
@@ -715,7 +717,8 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+                 Utility.AddTextAtRightCornerPage(pdf,invDate,pageWidth,leftMargin,rightMargin,48,8);
               }
             }
           },
@@ -728,17 +731,34 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
 
     const totalPages = pdf.getNumberOfPages();
 
-
-    pagePositions.forEach(({ page, x, y }) => {
+      for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
