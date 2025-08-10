@@ -51,7 +51,7 @@ namespace IDMS.Service.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.StackTrace}", "ERROR"));
             }
         }
 
@@ -79,7 +79,7 @@ namespace IDMS.Service.GqlTypes
             }
             catch (Exception ex)
             {
-                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.StackTrace}", "ERROR"));
             }
         }
 
@@ -92,7 +92,7 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var user = context.aspnetusers.Include(a => a.aspnetuserroles);
+                var user = context.aspnetusers.AsQueryable(); //.Include(a => a.aspnetuserroles);
                 return user;
             }
             catch (Exception ex)
@@ -112,6 +112,24 @@ namespace IDMS.Service.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
                 var roles = context.role.Where(d => d.delete_dt == null || d.delete_dt == 0);
                 return roles;
+            }
+            catch (Exception ex)
+            {
+                throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
+            }
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<functions> QueryFunctions(ApplicationServiceDBContext context, [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            try
+            {
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var functions = context.Set<functions>().Where(d => d.delete_dt == null || d.delete_dt == 0);
+                return functions;
             }
             catch (Exception ex)
             {

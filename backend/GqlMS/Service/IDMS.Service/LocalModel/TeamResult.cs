@@ -15,4 +15,13 @@ namespace IDMS.Service.GqlTypes.LocalModel
         public team team { get; set; }
         public int assign_count { get; set; }
     }
+
+    [NotMapped]
+    public class FunctionsRequest
+    {
+        public string? guid { get; set; }
+        public bool? addhoc { get; set; }
+        public string? remarks { get; set; }
+        public string? action { get; set; }
+    }
 }
