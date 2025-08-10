@@ -60,6 +60,11 @@ export class OverwriteJobNoFormDialogComponent {
   sot: StoringOrderTankItem;
   dialogTitle: string;
   overwriteForm: UntypedFormGroup;
+  isPreinspBilled = false;
+  isLonBilled = false;
+  isLoffBilled = false;
+  isGinBilled = false;
+  isGoutBilled = false;
   constructor(
     public dialogRef: MatDialogRef<OverwriteJobNoFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -73,13 +78,19 @@ export class OverwriteJobNoFormDialogComponent {
   }
 
   createForm(): UntypedFormGroup {
+    this.isPreinspBilled = !!this.sot?.billing_sot?.preinsp_billing_guid;
+    this.isLonBilled = !!this.sot?.billing_sot?.lon_billing_guid;
+    this.isLoffBilled = !!this.sot?.billing_sot?.loff_billing_guid;
+    this.isGinBilled = !!this.sot?.billing_sot?.gin_billing_guid;
+    this.isGoutBilled = !!this.sot?.billing_sot?.gout_billing_guid;
+
     const formGroup = this.fb.group({
-      preinspect_job_no: [this.sot?.preinspect_job_no],
-      liftoff_job_no: [this.sot?.liftoff_job_no],
-      lifton_job_no: [this.sot?.lifton_job_no],
-      job_no: [this.sot?.job_no],
-      release_job_no: [this.sot?.release_job_no],
-      job_no_remarks: [this.sot?.job_no_remarks],
+      preinspect_job_no: [{ value: this.sot?.preinspect_job_no, disabled: this.isPreinspBilled }],
+      liftoff_job_no: [{ value: this.sot?.liftoff_job_no, disabled: this.isLonBilled }],
+      lifton_job_no: [{ value: this.sot?.lifton_job_no, disabled: this.isLoffBilled }],
+      job_no: [{ value: this.sot?.job_no, disabled: this.isGinBilled }],
+      release_job_no: [{ value: this.sot?.release_job_no, disabled: this.isGoutBilled }],
+      job_no_remarks: [{ value: '', disabled: !this.canEdit() }],
     });
     return formGroup;
   }
@@ -94,7 +105,7 @@ export class OverwriteJobNoFormDialogComponent {
         release_job_no: this.overwriteForm.get('release_job_no')?.value,
         job_no_remarks: this.overwriteForm.get('job_no_remarks')?.value
       }
-      
+
       this.dialogRef.close(returnDialog);
     } else {
       console.log('invalid');
@@ -108,7 +119,7 @@ export class OverwriteJobNoFormDialogComponent {
 
   findInvalidControls() {
     const controls = this.overwriteForm.controls;
-    for (const name in controls) {  
+    for (const name in controls) {
       if (controls[name].invalid) {
         console.log(name);
       }
@@ -116,6 +127,6 @@ export class OverwriteJobNoFormDialogComponent {
   }
 
   canEdit(): boolean {
-    return true;
+    return (!this.isPreinspBilled || !this.isLonBilled || !this.isLoffBilled || !this.isGinBilled || !this.isGoutBilled);
   }
 }
