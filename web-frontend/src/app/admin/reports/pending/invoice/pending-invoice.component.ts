@@ -341,29 +341,28 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     itm.or.push({ and: [{ residue: { any: true } }, { residue: { some: { customer_billing_guid: { eq: null } } } }] });
     itm.or.push({ and: [{ steaming: { any: true } }, { steaming: { some: { customer_billing_guid: { eq: null } } } }] });
     itm.or.push({
-      and: [{ billing_sot: { any: true } }, {
-        or: [{ billing_sot: { some: { gateio_billing_guid: { eq: null } } } },
-        { billing_sot: { some: { and: [{ preinsp_billing_guid: { eq: null } }, { preinspection: { eq: true } }] } } },
-        { billing_sot: { some: { and: [{ lolo_billing_guid: { eq: null } }, { or: [{ lift_on: { eq: true } }, { lift_off: { eq: true } }] }] } } },
-        { billing_sot: { some: { storage_billing_guid: { eq: null } } } }
+      and: [{
+        or: [
+          { billing_sot: { and: [{ gin_billing_guid: { eq: null } }, { gout_billing_guid: { eq: null } }] } },
+          { billing_sot: { and: [{ preinsp_billing_guid: { eq: null } }, { preinspection: { eq: true } }] } },
+          { billing_sot: { and: [{ lon_billing_guid: { eq: null } }, { loff_billing_guid: { eq: null } }] } },
+          { billing_sot: { storage_billing_guid: { eq: null } } }
         ]
       }]
     });
-    // where.and.push(itm);
+    where.and.push(itm);
 
     if (this.searchForm!.get('cutoff_dt')?.value) {
       const approveSearch: any = {};
       approveSearch.and = [];
       approveSearch.and.push({ approve_dt: { lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) } });
       approveSearch.and.push({ approve_dt: { gt: 1600000000 } });
-      //approveSearch.approve_dt={lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'],true) };
       const itm: any = { or: [] };
       itm.or.push({ cleaning: { some: approveSearch } });
       itm.or.push({ repair: { some: approveSearch } });
       itm.or.push({ residue: { some: approveSearch } });
       itm.or.push({ steaming: { some: approveSearch } });
       where.and.push(itm);
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
@@ -381,7 +380,6 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, reportType: number = 1) {
     this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetails(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       .subscribe(data => {
-
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;
         this.startCursor = this.sotDS.pageInfo?.startCursor;
@@ -1104,7 +1102,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     this.resetForm();
   }
 
-   getMaxDate(){
+  getMaxDate() {
     return new Date();
   }
 
