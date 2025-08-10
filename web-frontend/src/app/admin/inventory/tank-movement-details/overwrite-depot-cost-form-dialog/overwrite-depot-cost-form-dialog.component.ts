@@ -19,7 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { BillingSOTItem } from 'app/data-sources/billing';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
-import { BOOLEAN_YES_NO, Utility } from 'app/utilities/utility';
+import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
 
@@ -64,6 +64,12 @@ export class OverwriteDepotCostFormDialogComponent {
   billingSot: BillingSOTItem;
   dialogTitle: string;
   overwriteForm: UntypedFormGroup;
+  isPreinspBilled = false;
+  isLonBilled = false;
+  isLoffBilled = false;
+  isGinBilled = false;
+  isGoutBilled = false;
+  isStorageBilled = false;
   constructor(
     public dialogRef: MatDialogRef<OverwriteDepotCostFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -77,22 +83,29 @@ export class OverwriteDepotCostFormDialogComponent {
   }
 
   createForm(): UntypedFormGroup {
+    this.isPreinspBilled = !!this.billingSot?.preinsp_billing_guid;
+    this.isLonBilled = !!this.billingSot?.lon_billing_guid;
+    this.isLoffBilled = !!this.billingSot?.loff_billing_guid;
+    this.isGinBilled = !!this.billingSot?.gin_billing_guid;
+    this.isGoutBilled = !!this.billingSot?.gout_billing_guid;
+    this.isStorageBilled = !!this.billingSot?.storage_billing?.storage_detail?.length;
+
     const formGroup = this.fb.group({
-      tariff_depot_guid: [this.billingSot?.tariff_depot_guid],
-      preinspection: [this.convertBooleanToYesNo(this.billingSot?.preinspection)],
-      preinspection_cost: [this.billingSot?.preinspection_cost],
-      lift_on: [this.convertBooleanToYesNo(this.billingSot?.lift_on)],
-      lift_on_cost: [this.billingSot?.lift_on_cost],
-      lift_off: [this.convertBooleanToYesNo(this.billingSot?.lift_off)],
-      lift_off_cost: [this.billingSot?.lift_off_cost],
-      gate_in: [this.convertBooleanToYesNo(this.billingSot?.gate_in)],
-      gate_in_cost: [this.billingSot?.gate_in_cost],
-      gate_out: [this.convertBooleanToYesNo(this.billingSot?.gate_out)],
-      gate_out_cost: [this.billingSot?.gate_out_cost],
-      storage_cal_cv: [this.billingSot?.storage_cal_cv],
-      storage_cost: [this.billingSot?.storage_cost],
-      free_storage: [this.billingSot?.free_storage],
-      depot_cost_remarks: [this.billingSot?.depot_cost_remarks],
+      tariff_depot_guid: [{ value: this.billingSot?.tariff_depot_guid, disabled: (this.isPreinspBilled || this.isLonBilled || this.isLoffBilled || this.isGinBilled || this.isGoutBilled || this.isStorageBilled) }],
+      preinspection: [{ value: this.convertBooleanToYesNo(this.billingSot?.preinspection), disabled: this.isPreinspBilled }],
+      preinspection_cost: [{ value: this.billingSot?.preinspection_cost, disabled: this.isPreinspBilled }],
+      lift_on: [{ value: this.convertBooleanToYesNo(this.billingSot?.lift_on), disabled: this.isLonBilled }],
+      lift_on_cost: [{ value: this.billingSot?.lift_on_cost, disabled: this.isLonBilled }],
+      lift_off: [{ value: this.convertBooleanToYesNo(this.billingSot?.lift_off), disabled: this.isLoffBilled }],
+      lift_off_cost: [{ value: this.billingSot?.lift_off_cost, disabled: this.isLoffBilled }],
+      gate_in: [{ value: this.convertBooleanToYesNo(this.billingSot?.gate_in), disabled: this.isGinBilled }],
+      gate_in_cost: [{ value: this.billingSot?.gate_in_cost, disabled: this.isGinBilled }],
+      gate_out: [{ value: this.convertBooleanToYesNo(this.billingSot?.gate_out), disabled: this.isGoutBilled }],
+      gate_out_cost: [{ value: this.billingSot?.gate_out_cost, disabled: this.isGoutBilled }],
+      storage_cal_cv: [{ value: this.billingSot?.storage_cal_cv, disabled: this.isStorageBilled }],
+      storage_cost: [{ value: this.billingSot?.storage_cost, disabled: this.isStorageBilled }],
+      free_storage: [{ value: this.billingSot?.free_storage, disabled: this.isStorageBilled }],
+      depot_cost_remarks: [{ value: '', disabled: !this.canEdit() }],
     });
     return formGroup;
   }
@@ -116,7 +129,7 @@ export class OverwriteDepotCostFormDialogComponent {
         free_storage: Utility.convertNumber(this.overwriteForm.get('free_storage')?.value),
         depot_cost_remarks: this.overwriteForm.get('depot_cost_remarks')?.value
       }
-      
+
       this.dialogRef.close(returnDialog);
     } else {
       console.log('invalid');
@@ -138,7 +151,7 @@ export class OverwriteDepotCostFormDialogComponent {
   }
 
   canEdit(): boolean {
-    return true;
+    return (!this.isPreinspBilled || !this.isLonBilled || !this.isLoffBilled || !this.isGinBilled || !this.isGoutBilled || !this.isStorageBilled);
   }
 
   convertBooleanToYesNo(value: any): string {
