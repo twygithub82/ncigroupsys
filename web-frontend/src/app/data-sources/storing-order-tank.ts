@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client/errors';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { BillingSOTItem, BillingStorageDetail, StorageDetailRequest } from './billing';
 import { BookingItem } from './booking';
@@ -3711,8 +3711,8 @@ const GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING = gql`
 `;
 
 const GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER = gql`
-  query queryStoringOrderTank($where: storing_order_tankFilterInput) {
-    sotList: queryStoringOrderTank(where: $where) {
+  query queryStoringOrderTank($where: storing_order_tankFilterInput, $order: [storing_order_tankSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    sotList: queryStoringOrderTank(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       nodes {
         job_no
         preinspect_job_no
@@ -4140,13 +4140,13 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
     super();
   }
 
-  searchStoringOrderTanksYardTransferReport(where: any): Observable<StoringOrderTankItem[]> {
+  searchStoringOrderTanksYardTransferReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
         query: GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER,
-        variables: { where },
+        variables: { where, order, first, after, last, before  },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })
       .pipe(
@@ -4162,6 +4162,42 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
           this.totalCount = sotList.totalCount;
           this.pageInfo = sotList.pageInfo;
           return sotList.nodes;
+        })
+      );
+  }
+
+   searchStoringOrderTanksYardTransferReport_r1(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
+    let allNodes: StoringOrderTankItem[] = [];
+
+      const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+        return this.apollo.query<any>({
+          query: GET_STORING_ORDER_TANKS_FOR_YARD_TRANSFER,
+          variables: { where, order, first: first, after: afterCursor },
+          fetchPolicy: 'no-cache'
+        }).pipe(
+          map(result => result.data.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
+          switchMap(sotList => {
+            allNodes = [...allNodes, ...sotList.nodes];
+
+            if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+              return fetchPage(sotList.pageInfo.endCursor); // recursively get next page
+            } else {
+              return of(allNodes); // done
+            }
+          })
+        );
+      };
+
+      this.loadingSubject.next(true);
+      return fetchPage().pipe(
+        finalize(() => this.loadingSubject.next(false)),
+        tap(finalList => {
+          this.dataSubject.next(finalList);
+          this.totalCount = finalList.length;
+        }),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([]);
         })
       );
   }
@@ -4296,6 +4332,45 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
         })
       );
   }
+
+  searchStoringOrderTanksEstimateDetailsAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
+  let allNodes: StoringOrderTankItem[] = [];
+
+    const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+      return this.apollo.query<any>({
+        query: GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS,
+        variables: { where, order, first: pageSize, after: afterCursor },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map(result => result.data?.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
+        switchMap(sotList => {
+          allNodes = [...allNodes, ...sotList.nodes];
+
+          if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+            // fetch next page
+            return fetchPage(sotList.pageInfo.endCursor);
+          } else {
+            // finished fetching
+            return of(allNodes);
+          }
+        })
+      );
+    };
+
+    this.loadingSubject.next(true);
+    return fetchPage().pipe(
+      finalize(() => this.loadingSubject.next(false)),
+      tap(finalList => {
+        this.dataSubject.next(finalList);
+        this.totalCount = finalList.length;
+      }),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of([]);
+      })
+    );
+  }
+
 
   searchStoringOrderTanksRepairBiling(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);

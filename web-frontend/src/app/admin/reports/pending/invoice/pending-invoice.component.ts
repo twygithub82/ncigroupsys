@@ -378,7 +378,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, reportType: number = 1) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetails(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+   // this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetails(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+   this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetailsAll(this.lastSearchCriteria, this.lastOrderBy)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.sotDS.pageInfo?.endCursor;

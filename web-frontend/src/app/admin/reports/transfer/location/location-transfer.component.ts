@@ -446,7 +446,8 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   performSearch(date: string) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
+    //this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport(this.lastSearchCriteria)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksYardTransferReport_r1(this.lastSearchCriteria)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
