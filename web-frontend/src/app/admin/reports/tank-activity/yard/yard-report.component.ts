@@ -17,7 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -155,7 +155,8 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     INVENTORY_TYPE: 'COMMON-FORM.INVENTORY-TYPE',
     SUMMARY_REPORT: 'COMMON-FORM.SUMMARY-REPORT',
     DETAIL_REPORT: 'COMMON-FORM.DETAIL-REPORT',
-    ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED'
+    ONE_CONDITION_NEEDED: 'COMMON-FORM.ONE-CONDITION-NEEDED',
+    ADD_ATLEAST_ONE: 'COMMON-FORM.ADD-ATLEAST-ONE',
   }
 
   invForm?: UntypedFormGroup;
@@ -218,7 +219,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   ) {
     super();
     this.translateLangText();
-    this.initSearchForm();
+     this.initSearchForm();
     this.initInvoiceForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
@@ -233,7 +234,8 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
-  @ViewChild(MatMenuTrigger)
+  // @ViewChild(MatMenuTrigger);
+  @ViewChild('invTypeSelect') invTypeSelect!: MatSelect;
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
@@ -257,7 +259,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       tank_no: [''],
       eir_dt_start: [''],
       eir_dt_end: [''],
-      inv_type: ['MASTER_IN']
+      inv_type: ['']
 
     });
   }
@@ -320,6 +322,14 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     this.cvDS.getCodeValuesByType(queries);
     this.cvDS.connectAlias('inventoryTypeCv').subscribe(data => {
       this.inventoryTypeCvList = data;
+      this.searchForm?.patchValue({
+         inv_type:'MASTER_IN'
+      });
+      // if(this.inventoryTypeCvList.length > 0) 
+      // {
+      //   this.setSelectedIndex(0);
+      // }
+      
     });
     // this.cvDS.connectAlias('eirStatusCv').subscribe(data => {
     //   this.eirStatusCvList = addDefaultSelectOption(data, 'All');;
@@ -375,7 +385,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
   search(report_type: number) {
     this.isGeneratingReport = true;
-    var cond_counter = 0;
+    var cond_counter = 1;
     let queryType = 1;
     const where: any = {};
     this.selectedEstimateItem = undefined;
@@ -388,6 +398,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
     // where.tank_status_cv = { in: TANK_STATUS_IN_YARD };
     if (this.searchForm!.get('inv_type')?.value == "MASTER_OUT") {
       queryType = 2;
+      cond_counter++;
       //  where.tank_status_cv = { eq: 'RELEASED' };
     }
 
@@ -574,7 +585,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
       tank_no: '',
       eir_dt_start: '',
       eir_dt_end: '',
-      inv_type: ['MASTER_IN']
+      inv_type: 'MASTER_IN'
     });
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
@@ -713,6 +724,16 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
   onTabFocused() {
     this.resetForm();
   }
+
+ setSelectedIndex(index: number) {
+  const options = this.inventoryTypeCvList.filter(
+    cv => this.availableReportTypes.includes(cv.code_val ?? '')
+  );
+  const selectedValue = options[index]?.code_val;
+  if (selectedValue !== undefined) {
+    this.searchForm?.get('inv_type')?.setValue(selectedValue);
+  }
+}
 
 
 }

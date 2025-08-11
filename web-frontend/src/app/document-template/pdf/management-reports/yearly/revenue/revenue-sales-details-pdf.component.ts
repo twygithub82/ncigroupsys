@@ -1096,7 +1096,8 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48, 9);
           }
         }
 
@@ -1300,9 +1301,9 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
   let chartContentWidth = pageWidth - leftMargin - rightMargin;
  if (this.chartCanvas?.nativeElement) {
     pdf.addPage();
-    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-     startY=topMargin+20;
+     startY=topMargin+46;
     const canvas = this.chartCanvas.nativeElement;
     const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
     await Utility.DrawBase64ImageAtCenterPage(pdf,base64Image,pageWidth,leftMargin,rightMargin,startY,chartContentWidth);
@@ -1310,9 +1311,9 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
 
   if(this.chartPie.nativeElement){
     pdf.addPage();
-    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-    startY=topMargin+20;
+    startY=topMargin+46;
     await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
     // const canvas = this.chartPie.nativeElement;
     // const base64Image =await Utility.ConvertApexChartSvgToImage64String_r1(canvas);
@@ -1342,17 +1343,33 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
 
     const totalPages = pdf.getNumberOfPages();
 
-
-    pagePositions.forEach(({ page, x, y }) => {
+       
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
   //  this.generatingPdfProgress = 100;
     //pdf.save(fileName);

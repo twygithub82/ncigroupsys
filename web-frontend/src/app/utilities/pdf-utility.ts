@@ -872,9 +872,25 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
    var companyInfo = `${customerInfo.companyName}`;
    var companyAdd = `${customerInfo.companyAddress}`
    var PhoneGST = `${translatedLangText.PHONE}: ${customerInfo.companyPhone} | ${translatedLangText.GST_REG}: ${customerInfo.companyGST}`;
-   this.addText(pdf, companyInfo, posY, leftMargin, fontSz,false,'helvetica',true,55,false,textColor);
-   posY+=(fontSz/2);
-   this.addText(pdf, companyAdd, posY, leftMargin, fontSz,false,'helvetica',true,55,false,textColor);
+
+   const totalPages = pdf.getNumberOfPages();
+    for (let page = 1; page <= totalPages; page++) {
+    pdf.setPage(page);
+
+    // Y position from bottom
+    let posY =topMargin;
+
+    // Add text lines
+    this.addText(pdf, companyInfo, posY, leftMargin, fontSz, false, 'helvetica', true, 55, false, textColor);
+    posY+=(fontSz/2);
+    this.addText(pdf, companyAdd, posY , leftMargin, fontSz, false, 'helvetica', true, 55, false, textColor);
+   // this.addText(pdf, phoneGST, posY, leftMargin, fontSz, false, 'helvetica', true, 55, false, textColor);
+  }
+
+
+  //  this.addText(pdf, companyInfo, posY, leftMargin, fontSz,false,'helvetica',true,55,false,textColor);
+  //  posY+=(fontSz/2);
+  //  this.addText(pdf, companyAdd, posY, leftMargin, fontSz,false,'helvetica',true,55,false,textColor);
   
   }
 

@@ -723,7 +723,10 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
     // Utility.AddTextAtCenterPage(pdf,invDate,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
 
     for (let n = 0; n < this.report_yard_detail.length; n++) {
-      lastTableFinalY += 8;
+      // lastTableFinalY += 8;
+      if (n > 0) lastTableFinalY += 5; // 2nd table
+      else lastTableFinalY = 49; // First table of the page
+
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.report_yard_detail[n];
@@ -739,13 +742,13 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
       if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + 20 + topMargin)) {
         pdf.addPage();
-        lastTableFinalY = 5 + topMargin;
+        lastTableFinalY = 49;
       }
       else {
         CurrentPage = repPage;
       }
 
-      lastTableFinalY += 8;
+     // lastTableFinalY += 8;
       pdf.setFontSize(10);
       pdf.setTextColor(0, 0, 0); // Black text
       pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
@@ -783,8 +786,8 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
         autoTable(pdf, {
           head: headers,
           body: data,
-          startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin },
+          // startY: startY, // Start table at the current startY value
+          margin: { left: leftMargin, top:topMargin+45 },
           theme: 'grid',
           styles: {
             fontSize: fontSize,
@@ -807,7 +810,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
               }
             }
           },
@@ -817,17 +820,32 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
     const totalPages = pdf.getNumberOfPages();
 
-
-    pagePositions.forEach(({ page, x, y }) => {
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);

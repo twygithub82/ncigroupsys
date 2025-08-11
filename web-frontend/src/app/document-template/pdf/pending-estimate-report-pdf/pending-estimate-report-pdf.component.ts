@@ -854,7 +854,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
     if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
       pdf.addPage();
-      lastTableFinalY = 5 + topMargin;
+      lastTableFinalY = 45 + topMargin;
     }
     else {
       CurrentPage = repPage;
@@ -877,8 +877,8 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin },
+      // startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin ,top:topMargin+45},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -898,7 +898,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
           }
         }
 
@@ -910,17 +910,32 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
     const totalPages = pdf.getNumberOfPages();
 
-
-    pagePositions.forEach(({ page, x, y }) => {
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 16, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 6), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 16, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin + 4, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 6), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -1739,11 +1754,13 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
   }
 
   DisplayDays(sot: StoringOrderTankItem) {
-    if (!sot.repair?.[0]?.allocate_dt) return '';
+    //if (!sot.repair?.[0]?.allocate_dt) return '';
+    var dtValue = sot.update_dt||sot.create_dt;
+
     let today = new Date();
     today.setHours(23, 59, 59, 59);
 
-    var accDt = (sot.repair?.[0]?.allocate_dt || 0) * 1000;
+    var accDt = (dtValue || 0) * 1000;
 
     // Convert allocate_dt to a Date object
     let allocateDt = new Date(accDt);

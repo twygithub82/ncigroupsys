@@ -849,9 +849,9 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
 
     autoTable(pdf, {
       body: data,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { left: leftMargin, top:topMargin+45 },
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -880,7 +880,7 @@ export class ResidueDisposalPdfComponent extends UnsubscribeOnDestroyAdapter imp
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
           }
         }
       },

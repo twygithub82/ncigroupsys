@@ -543,7 +543,7 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReport(this.lastSearchCriteria, {}, first)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksRepairOutstandingReportAll(this.lastSearchCriteria, {}, first)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;

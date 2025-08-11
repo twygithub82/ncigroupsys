@@ -4228,6 +4228,48 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
+  searchStoringOrderTanksRepairOutstandingReportAll(
+    where: any,
+    order?: any,
+    pageSize: number = 50
+  ): Observable<StoringOrderTankItem[]> {
+    let allNodes: StoringOrderTankItem[] = [];
+
+    const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+      return this.apollo.query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_REPAIR_OUTSTANDING,
+        variables: { where, order, first: pageSize, after: afterCursor },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map(result => result.data?.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
+        switchMap(sotList => {
+          allNodes = [...allNodes, ...sotList.nodes];
+
+          if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+            // Keep fetching next page
+            return fetchPage(sotList.pageInfo.endCursor);
+          } else {
+            // All data fetched
+            return of(allNodes);
+          }
+        })
+      );
+    };
+
+    this.loadingSubject.next(true);
+    return fetchPage().pipe(
+      finalize(() => this.loadingSubject.next(false)),
+      tap(finalList => {
+        this.dataSubject.next(finalList);
+        this.totalCount = finalList.length;
+      }),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of([]);
+      })
+    );
+  }
+
   searchStoringOrderTanksInventoryReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
 
