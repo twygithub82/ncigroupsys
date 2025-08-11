@@ -368,9 +368,17 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.searchForm!.get('customer_code')?.value) {
       const soSearch: any = {};
       if (this.searchForm!.get('customer_code')?.value) {
-        soSearch.customer_company = { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } };
+          where.and.push(
+            {or:[
+              {storing_order:{ customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } }},
+              {
+                owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid }
+              }
+            ]}
+          )
+            //  soSearch.customer_company = { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } };
       }
-      where.storing_order = soSearch;
+      // where.storing_order = soSearch;
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
