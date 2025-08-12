@@ -410,8 +410,8 @@ addCall(event: Event) {
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        if (result.selectedValue > 0) {
-          this.handleSaveSuccess(result.selectedValue);
+        if (result > 0) {
+          this.handleSaveSuccess(result);
           this.search();
         }
       }

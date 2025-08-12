@@ -1378,7 +1378,8 @@
     "ESTIMATE-AMOUNT": "Estimate Amount",
     "START-DATE": "Start Date",
     "STORAGE-DAY": "Storage Days",
-    "STEAM-LOG": "Steam Log"
+    "STEAM-LOG": "Steam Log",
+    "DISABLE":"Disable"
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",

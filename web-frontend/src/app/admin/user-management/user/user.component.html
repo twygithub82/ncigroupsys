@@ -128,13 +128,13 @@
               </table>
             </div>
             <!-- Loading spinner -->
-            @if (!(ccDS.loading$ | async) && !customer_companyList.length) {
+            @if (!(usrDS.loading$ | async) && !userList.length) {
             <div class="no-results m-l-20 pt-3" [style.display]="customer_companyList.length === 0 ? '' : 'none'">
               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
             </div>
             }
             <!-- Loading spinner -->
-            @if (ccDS.loading$ | async) {
+            @if (usrDS.loading$ | async) {
             <div class="tbl-spinner">
               <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
               </mat-progress-spinner>

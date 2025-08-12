@@ -61,9 +61,52 @@ td div img:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect */
     transition: box-shadow 0.3s ease; /* Smooth transition for hover effect */
   }
+
+   ::ng-deep .card .body {
+  height: 200px;
+  overflow-y: auto;        /* scroll if too much content */
+  }
   
   /* Optional: Add a hover effect */
   .card:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow on hover */
   }
 
+//   ::ng-deep .steps-list-features {
+//   display: grid;
+//   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* adjust width */
+//   // gap: 4px;              /* space between items */
+//   max-height: 300px;     /* still allows scroll if needed */
+//   // overflow-y: auto;
+//   // padding: 4px;
+// }
+
+// ::ng-deep .step-box-features {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   // background: #f9f9f9;   /* optional */
+//   padding: 6px;
+//   border-radius: 6px;
+// }
+::ng-deep .steps-list-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* exactly 3 columns */
+  // grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* bigger cell width */
+  gap: 6px; /* bigger gap between each item */
+  max-height: 300px;
+  // overflow-y: auto;
+}
+
+::ng-deep .step-box-features {
+  display: flex;
+  justify-content: space-between; /* pushes text and button apart horizontally */
+  align-items: center;             /* vertically aligns them */
+   padding: 4px 6px;                /* smaller padding to bring button closer */
+  border-radius: 6px;
+}
+
+::ng-deep .step-box-features span {
+   margin-right: 2px; /* bring text closer to button */
+  flex: 1;           /* so text takes available space */
+}
