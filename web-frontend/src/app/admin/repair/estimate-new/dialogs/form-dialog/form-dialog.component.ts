@@ -233,6 +233,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
       rep.description = `${prefix}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
+
+      // they agreed to allow add same part
       // if (this.validateExistedPart(rep)) {
       //   this.confirmationDialog(addAnother, rep);
       // } else {
