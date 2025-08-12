@@ -571,6 +571,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         item: row ? row : cntPerson,
         action: 'new',
@@ -609,6 +610,7 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         item: row,
         action: 'edit',
