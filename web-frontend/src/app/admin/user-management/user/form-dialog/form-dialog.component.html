@@ -77,16 +77,12 @@
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.ROLE}}</mat-label>
-                      <input matInput formControlName="role" type="text" required>
-                      @if (pcForm.get('username')?.hasError('required')) {
-                      <mat-error>
-                        {{translatedLangText.USERNAME }} {{translatedLangText.CARGO_REQUIRED }}
-                      </mat-error>
-                      }
+                      <input matInput formControlName="role" type="text">
+                     
                     </mat-form-field>
                    </div>
                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
+                    <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.TEAM}}</mat-label>
                         <input matInput formControlName="team" type="text">
                       </mat-form-field>
@@ -111,15 +107,15 @@
                         <div class="body">
                           @if (updatedRoleList.length) {
                           <div cdkDropList class="steps-list" >
-                            @for (movie of updatedRoleList; let i = $index; track movie) {
-                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                            @for (r of updatedRoleList; let i = $index; track r) {
+                            <div class="step-box cursor-pointer rounded" >
                               <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
-                                mins</span>
+                              <span class="">{{r.role.description}}
+                                </span>
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
                                 [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                                <mat-icon>close</mat-icon>
+                                <mat-icon>cancel</mat-icon>
                               </button>
                               }
                             </div>
@@ -142,15 +138,15 @@
                         <div class="body">
                           @if (updatedTeamList.length) {
                           <div cdkDropList class="steps-list" >
-                            @for (movie of updatedTeamList; let i = $index; track movie) {
+                            @for (t of updatedTeamList; let i = $index; track t) {
                             <div class="step-box cursor-pointer p-2 mb-2 rounded" >
                               <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
+                              <span class="">{{t.team?.description}}
                                 mins</span>
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
                                 [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                                <mat-icon>close</mat-icon>
+                                <mat-icon>cancel</mat-icon>
                               </button>
                               }
                             </div>
@@ -181,7 +177,7 @@
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
                                 [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                                <mat-icon>close</mat-icon>
+                                <mat-icon>cancel</mat-icon>
                               </button>
                               }
                             </div>
@@ -199,7 +195,6 @@
                 </div>
               </div>
             </div>
-
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">
@@ -210,18 +205,21 @@
                         </div>
                         <div class="body">
                           @if (updatedRoleList.length) {
-                          <div cdkDropList class="steps-list" >
-                            @for (movie of updatedRoleList; let i = $index; track movie) {
-                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                          <div cdkDropList class="steps-list-features" >
+                            @for (f of updatedRoleFeaturesList; let i = $index; track f) {
+                            <div class="step-box-features cursor-pointer rounded" >
                               <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
-                                mins</span>
+                              
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                                <mat-icon>close</mat-icon>
+                                [matTooltip]="translatedLangText.DISABLE" class="text-custom-danger m-b-10">
+                                <span class="material-symbols-outlined ">
+                                  no_accounts
+                                  </span>
                               </button>
                               }
+                              <span class="">{{f.functions?.code}}
+                               </span>
                             </div>
                             }
                           </div>

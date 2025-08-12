@@ -19,20 +19,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
 import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
 import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
-import { TariffRepairDS,TariffRepairItem} from 'app/data-sources/tariff-repair';
+import { TariffRepairDS, TariffRepairItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-import { debounceTime, startWith, Subject, tap } from 'rxjs';
+import { Subject, debounceTime, startWith, tap } from 'rxjs';
 import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
-
 
 export interface DialogData {
   action?: string;
@@ -97,7 +96,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   repDrDS: RPDamageRepairDS;
   prDS: PackageRepairDS;
   repairDS: RepairDS;
-  clnRepairPart:RepairPartItem =new RepairPartItem();
+  clnRepairPart: RepairPartItem = new RepairPartItem();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -123,10 +122,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     }
     this.repair = data.repair;
     this.repairPart = data.item ? this.cloneRepairPart(data.item) : new RepairPartItem();
-    if(data.item)
-    {
-      this.clnRepairPart= this.cloneRepairPart(data.item);
-      
+    if (data.item) {
+      this.clnRepairPart = this.cloneRepairPart(data.item);
     }
     this.index = data.index;
     this.existedPart = data.existedPart;
@@ -188,16 +185,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.onRepairSelectionChange({ value: this.repairPartForm.get('repair')?.value || [] });
   }
 
-  cloneRepairPart(repairPart:RepairPartItem):RepairPartItem
-  {
-    var retval:RepairPartItem = new RepairPartItem(repairPart);
-    retval.tariff_repair=new TariffRepairItem(repairPart.tariff_repair);
-    retval.rp_damage_repair =[];
-   repairPart.rp_damage_repair?.forEach(r => {
-    retval.rp_damage_repair?.push(new RPDamageRepairItem(r));
-  });
+  cloneRepairPart(repairPart: RepairPartItem): RepairPartItem {
+    var retval: RepairPartItem = new RepairPartItem(repairPart);
+    retval.tariff_repair = new TariffRepairItem(repairPart.tariff_repair);
+    retval.rp_damage_repair = [];
+    repairPart.rp_damage_repair?.forEach(r => {
+      retval.rp_damage_repair?.push(new RPDamageRepairItem(r));
+    });
 
-     return retval;
+    return retval;
   }
 
 
@@ -380,7 +376,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     const material_cost = this.repairPartForm?.get('material_cost');
     const quantity = this.repairPartForm?.get('quantity');
     const hour = this.repairPartForm?.get('hour');
-    var  currentMaterialCost = this.parse2Decimal(this.repairPart?.material_cost) ;
+    var currentMaterialCost = this.parse2Decimal(this.repairPart?.material_cost);
     if (!isResetDisable) {
       quantity?.setValue(1);
       quantity?.disable();
@@ -623,7 +619,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_EDIT']);
   }
 
-   parse2Decimal(input: number | string | undefined) {
-      return Utility.formatNumberDisplay(input);
-    }
+  parse2Decimal(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
 }

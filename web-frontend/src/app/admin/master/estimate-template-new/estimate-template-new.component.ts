@@ -90,7 +90,7 @@ import { debounceTime, startWith, tap } from 'rxjs';
     MatChipsModule
   ]
 })
-export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit,AfterViewInit{
+export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter implements OnInit, AfterViewInit {
   displayedColumns = [
     'seq',
     // 'group_name_cv',
@@ -262,7 +262,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
   showHeader: boolean = false;
   selectedCustomers: any[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
-   @ViewChild('custInput', { static: false })  custInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('custInput', { static: false }) custInput?: ElementRef<HTMLInputElement>;
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -286,7 +286,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.igDS = new InGateDS(this.apollo);
     this.trLabourDS = new TariffLabourDS(this.apollo);
     this.estTempDS = new MasterEstimateTemplateDS(this.apollo);
-     this.initializeValueChange();
+    this.initializeValueChange();
   }
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
@@ -299,11 +299,11 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     this.initializeFilter();
     this.loadData();
     this.SetCostDecimal();
-   console.log('custInput in ngOnInit', this.custInput); // Works only if static: true
+    console.log('custInput in ngOnInit', this.custInput); // Works only if static: true
   }
-ngAfterViewInit() {
-  console.log('custInput in ngAfterViewInit', this.custInput); // Works only if static: false
-}
+  ngAfterViewInit() {
+    console.log('custInput in ngAfterViewInit', this.custInput); // Works only if static: false
+  }
   SetCostDecimal() {
     this.tempForm?.get('material_discount_amount')?.valueChanges.subscribe(value => {
       if (value !== null && value !== '') {
@@ -411,20 +411,19 @@ ngAfterViewInit() {
       });
     });
 
-    
-        this.tempForm?.get("customer_code")!.valueChanges.pipe(
-          startWith(''),
-          debounceTime(300),
-          tap(value => {
-             var searchCriteria = '';
-              if (typeof value === 'string') {
-                searchCriteria = value;
-              } else {
-                searchCriteria = value.code;
-              }
-              this.searchCustomerCompanyList(searchCriteria);
-          })
-        ).subscribe();
+    this.tempForm?.get("customer_code")!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'object') {
+          searchCriteria = value?.code || '';
+        } else {
+          searchCriteria = value || '';
+        }
+        this.searchCustomerCompanyList(searchCriteria);
+      })
+    ).subscribe();
   }
 
   searchCustomerCompanyList(searchCriteria: string) {
@@ -479,7 +478,7 @@ ngAfterViewInit() {
         const selectedCustomers = data.filter(customer =>
           selectedCustomerGuids?.includes(customer.guid)
         );
-        this.selectedCustomers=selectedCustomers;
+        this.selectedCustomers = selectedCustomers;
         this.tempForm?.patchValue({
           customer_code: selectedCustomers
         });
@@ -932,9 +931,8 @@ ngAfterViewInit() {
             temp.remarks = this.tempForm?.get("remarks")?.value;
             delete temp.totalMaterialCost;
             temp.type_cv = "GENERAL";
-           // if (this.tempForm?.get("customer_code")?.value?.length > 0) 
-           if(this.selectedCustomers.length > 0)
-              {
+            // if (this.tempForm?.get("customer_code")?.value?.length > 0) 
+            if (this.selectedCustomers.length > 0) {
 
               temp.type_cv = "EXCLUSIVE";
               //var customerCodes: CustomerCompanyItem[] = this.tempForm?.get("customer_code")?.value;
@@ -1027,8 +1025,7 @@ ngAfterViewInit() {
     existdata_cust?.forEach(value => { value.action = "CANCEL"; value.customer_company = undefined; });
     this.selectedTempEst!.type_cv = "GENERAL";
     //if (this.tempForm?.get("customer_code")?.value?.length > 0) 
-    if(this.selectedCustomers.length > 0)
-      {
+    if (this.selectedCustomers.length > 0) {
       //var newdata_cust = this.tempForm?.get('customer_code')?.value;
       var newdata_cust = this.selectedCustomers;
       this.selectedTempEst!.type_cv = "EXCLUSIVE";
@@ -1501,107 +1498,107 @@ ngAfterViewInit() {
 
   // @ViewChild('custInput', { static: true })
   //   custInput?: ElementRef<HTMLInputElement>;
-    // selectedNames: any[] = [];
-    name_itemSelected(row: any): boolean {
-      var itm = this.selectedCustomers;
-      var retval: boolean = false;
-      const index = itm.findIndex(c => c.code === row.code);
-      retval = (index >= 0);
-      return retval;
+  // selectedNames: any[] = [];
+  name_itemSelected(row: any): boolean {
+    var itm = this.selectedCustomers;
+    var retval: boolean = false;
+    const index = itm.findIndex(c => c.code === row.code);
+    retval = (index >= 0);
+    return retval;
+  }
+
+
+  name_getSelectedDisplay(): string {
+    var itm = this.selectedCustomers;
+    var retval: string = "";
+    if (itm?.length > 1) {
+      retval = `${itm.length} ${this.translatedLangText.CATEGORY_NAME_SELECTED}`;
     }
-  
-  
-    name_getSelectedDisplay(): string {
-      var itm = this.selectedCustomers;
-      var retval: string = "";
-      if (itm?.length > 1) {
-        retval = `${itm.length} ${this.translatedLangText.CATEGORY_NAME_SELECTED}`;
-      }
-      else if (itm?.length == 1) {
-        const maxLength = maxLengthDisplaySingleSelectedItem;
-              const value=`${itm[0]}`;
-              retval = `${value.length > maxLength 
-                ? value.slice(0, maxLength) + '...' 
-                : value}`;
-        
-      }
-      return retval;
+    else if (itm?.length == 1) {
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value = `${itm[0]}`;
+      retval = `${value.length > maxLength
+        ? value.slice(0, maxLength) + '...'
+        : value}`;
+
     }
-  
-  
-  
-    name_removeAllSelected(): void {
-      this.removeAllSelectedCustomers();
-    
+    return retval;
+  }
+
+
+
+  name_removeAllSelected(): void {
+    this.removeAllSelectedCustomers();
+
+  }
+
+  name_selected(event: MatAutocompleteSelectedEvent): void {
+    var itm = this.selectedCustomers;
+    var cnt = this.tempForm?.get('customer_code');
+    var elmInput = this.custInput;
+    const val = event.option.value;
+    const index = itm.findIndex(c => c.code === val.code);
+    if (!(index >= 0)) {
+      itm.push(val);
+      // this.search();
     }
-  
-    name_selected(event: MatAutocompleteSelectedEvent): void {
-      var itm = this.selectedCustomers;
-      var cnt = this.tempForm?.get('customer_code');
-      var elmInput = this.custInput;
-      const val = event.option.value;
-      const index = itm.findIndex(c => c.code === val.code);
-      if (!(index >= 0)) {
-        itm.push(val);
-        // this.search();
-      }
-      else {
-        itm.splice(index, 1);
-       
-      }
-  
-      if (elmInput) {
-  
-        elmInput.nativeElement.value = '';
-        cnt?.setValue('');
-  
-      }
-     
-      // this.updateFormControl();
-      //this.customerCodeControl.setValue(null);
-      //this.pcForm?.patchValue({ customer_code: null });
+    else {
+      itm.splice(index, 1);
+
     }
 
-    name_add(event: MatChipInputEvent): void {
-        var cnt = this.tempForm?.get('customer_code');
-        debugger
-        const input = event.input;
-        const value = event.value;
-        // Add our fruit
-        if ((value || '').trim()) {
-          //this.fruits.push(value.trim());
-        }
-        // Reset the input value
-        if (input) {
-          input.value = '';
-        }
-        cnt?.setValue(null);
-      }
+    if (elmInput) {
+
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+
+    }
+
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+
+  name_add(event: MatChipInputEvent): void {
+    var cnt = this.tempForm?.get('customer_code');
+    debugger
+    const input = event.input;
+    const value = event.value;
+    // Add our fruit
+    if ((value || '').trim()) {
+      //this.fruits.push(value.trim());
+    }
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
+    cnt?.setValue(null);
+  }
   name_onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.name_selected(fakeEvent);
-  } 
-  
-   name_select(event: MatAutocompleteSelectedEvent): void {
+  }
+
+  name_select(event: MatAutocompleteSelectedEvent): void {
     const customer = event.option.value;
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      
+
     }
     else {
       this.selectedCustomers.splice(index, 1);
-    
-    }
-     var cnt = this.tempForm?.get('customer_code');
-   var elmInput = this.custInput;
-    if (elmInput) {
-  
-        elmInput.nativeElement.value = '';
-       cnt?.setValue('');
-  
-      }
 
-    
+    }
+    var cnt = this.tempForm?.get('customer_code');
+    var elmInput = this.custInput;
+    if (elmInput) {
+
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+
+    }
+
+
   }
 }

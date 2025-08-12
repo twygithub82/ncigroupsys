@@ -1,36 +1,54 @@
-import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Direction } from '@angular/cdk/bidi';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { CommonModule, NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule } from '@angular/material/sort';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
+import { CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
+import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { UserDS, UserItem } from 'app/data-sources/user';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { UserItem } from 'app/data-sources/user';
-
+import { debounceTime, startWith, Subscription, tap } from 'rxjs';
+// import { FormDialogComponent } from './form-dialog/form-dialog.component';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
@@ -70,7 +88,15 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatAutocompleteModule,
+    MatDividerModule,
+    MatSlideToggleModule,
+    MatChipsModule,
+    MatIconModule,
+    MatFormFieldModule,
+     
+    
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
@@ -94,7 +120,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   packageResidueItems?: PackageResidueItem[] = [];
   packageResidueDS?: PackageResidueDS;
   CodeValuesDS?: CodeValuesDS;
-
+  userDs?: UserDS;
   storageCalCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
@@ -107,10 +133,14 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   profileNameControl = new UntypedFormControl();
   custCompClnCatDS: CustomerCompanyCleaningCategoryDS;
 
+  teamNameControl = new UntypedFormControl();
+  teamNameList: any[] = [];
   updatedRoleList: any[] = [];
   updatedTeamList:any[] =[];
   updatedAdhocList: any[] = [];
+  updatedRoleFeaturesList: any[] = [];
   translatedLangText: any = {};
+   separatorKeysCodes: number[] = [ENTER, COMMA];
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -204,10 +234,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     SELECTED_ROLES:'COMMON-FORM.SELECTED-ROLES',
     SELECTED_TEAMS:'COMMON-FORM.SELECTED-TEAMS',
     SELECTED_ADHOC:'COMMON-FORM.SELECTED-ADHOC',
-    SELECTED_FEATURES:'COMMON-FORM.SELECTED-FEATURES'
+    SELECTED_FEATURES:'COMMON-FORM.SELECTED-FEATURES',
+    DISABLE:'COMMON-FORM.DISABLE',
   };
 
-
+ 
   selectedItem: UserItem;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
@@ -227,6 +258,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.packageResidueDS = new PackageResidueDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
+    this.userDs=new UserDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -242,7 +274,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       pwd: [''],
       confirm_pwd: [''],
       role: [''],
-      team: [''],
+      team: this.teamNameControl,
       adhoc: [''],
     });
   }
@@ -250,29 +282,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   getPageTitle() {
     return this.translatedLangText.UPDATE + ' ' + this.translatedLangText.USER;
   }
-  // profileChanged()
-  // {
-  //   if(this.profileNameControl.value)
-  //   {
-  //     const selectedProfile:PackageResidueItem= this.profileNameControl.value;
-  //     this.pcForm.patchValue({
-  //       preinspection_cost_cust: selectedProfile.preinspection_cost,
-  //       preinspection_cost_standard:selectedProfile.preinspection_cost,
-  //       lolo_cost_cust:selectedProfile.lolo_cost,
-  //       lolo_cost_standard: selectedProfile.tariff_depot?.lolo_cost,
-  //       storage_cost_cust:selectedProfile.storage_cost,
-  //       storage_cost_standard:selectedProfile.tariff_depot?.storage_cost,
-  //       free_storage_days:selectedProfile.free_storage,
-  //       gate_in_cost:selectedProfile.gate_in_cost,
-  //       gate_out_cost:selectedProfile.gate_out_cost,
-  //       remarks:selectedProfile.remarks,
-  //       //storage_cal_cv:this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv)
-  //     });
-  //     this.storageCalControl.setValue(this.selectStorageCalculateCV_Description(selectedProfile.storage_cal_cv));
-
-
-  //   }
-  // }
+ 
   displayName(cc?: CustomerCompanyItem): string {
     return cc?.code ? `${cc.code} (${cc.name})` : '';
   }
@@ -314,11 +324,26 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
       if (this.selectedItem) {
         
+        var where:any ={};
+        where.userName={eq: this.selectedItem.userName};
+        this.userDs?.searchUserWithDetails(where).subscribe((data)=>{
+          
+          if(data.length>0){
+            var usr= data[0];
+            this.pcForm.patchValue({
+             username: usr.userName,
+             email: usr.email
+            });
+            this.updatedRoleList=usr.user_role!;
+            this.updatedTeamList=usr.team_user!;
+            this.updatedRoleList.forEach(r=>{
+              this.updatedRoleFeaturesList.push(...r.role.role_functions!);
+            });
+          }
 
-        this.pcForm.patchValue({
-          username: this.selectedItem.userName,
-          email: this.selectedItem.email
-        });
+        })
+
+      
 
       }
     });
@@ -461,5 +486,93 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   cancelRoleItem($event: MouseEvent,index: number) {
    // throw new Error('Method not implemented.');
     }
+
+      @ViewChild('nameInput', { static: true })
+      nameInput?: ElementRef<HTMLInputElement>;
+      selectedNames: any[] = [];
+      name_itemSelected(row: any): boolean {
+        var itm = this.selectedNames;
+        var retval: boolean = false;
+        const index = itm.findIndex(c => c === row);
+        retval = (index >= 0);
+        return retval;
+      }
+    
+      name_getSelectedDisplay(): string {
+        var itm = this.selectedNames;
+        var retval: string = "";
+        if (itm?.length > 1) {
+          retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
+        }
+        else if (itm?.length == 1) {
+          const maxLength = maxLengthDisplaySingleSelectedItem;
+          const value=`${itm[0]}`;
+          retval = `${value.length > maxLength 
+            ? value.slice(0, maxLength) + '...' 
+            : value}`;
+        }
+        return retval;
+      }
+    
+      name_removeAllSelected(): void {
+        this.selectedNames = [];
+      //  this.AutoSearch();
+      }
+    
+      teamname_selected(event: MatAutocompleteSelectedEvent): void {
+        var itm = this.selectedNames;
+        var cnt = this.teamNameControl;
+        var elmInput = this.nameInput;
+        const val = event.option.value;
+        const index = itm.findIndex(c => c === val);
+        if (!(index >= 0)) {
+          itm.push(val);
+          
+        }
+        else {
+          itm.splice(index, 1);
+         
+        }
+    
+        if (elmInput) {
+    
+          elmInput.nativeElement.value = '';
+          cnt?.setValue('');
+        }
+    
+      //  this.AutoSearch();
+        
+      // if (Utility.IsAllowAutoSearch())
+      //  {
+      //   var interval=2*1000;
+      //    setTimeout(() => {
+      //      this.search();
+      //    },interval)
+      //  }
+        // this.updateFormControl();
+        //this.customerCodeControl.setValue(null);
+        //this.pcForm?.patchValue({ customer_code: null });
+      }
+    
+      name_onCheckboxClicked(row: any) {
+        const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+        this.teamname_selected(fakeEvent);
+    
+      }
+    
+      name_add(event: MatChipInputEvent): void {
+        var cnt = this.teamNameControl;
+        const input = event.input;
+        const value = event.value;
+        // Add our fruit
+        if ((value || '').trim()) {
+          //this.fruits.push(value.trim());
+        }
+        // Reset the input value
+        if (input) {
+          input.value = '';
+        }
+        cnt?.setValue(null);
+      }
 
 }

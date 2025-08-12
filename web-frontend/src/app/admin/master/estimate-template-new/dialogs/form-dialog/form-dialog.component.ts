@@ -185,7 +185,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       material_cost: this.repairPart.tariff_repair?.material_cost,
       comment: this.repairPart.comment
     });
-
+    this.onRepairSelectionChange({ value: this.repairPartForm.get('repair')?.value || [] });
   }
 
 
