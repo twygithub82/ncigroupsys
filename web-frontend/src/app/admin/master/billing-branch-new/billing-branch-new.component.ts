@@ -435,11 +435,10 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
 
     if (this.historyState.customerCompany) {
       this.isFromBranch = false;
-    } else if (this.historyState) {
+    } else if (this.historyState.selectedRow) {
       this.isAllowedToChangedMainCustomer = false;
       this.selectedBillingBranch = this.historyState.selectedRow;
       this.patchData(this.selectedBillingBranch);
-
     }
 
     this.curDS.search({}, { sequence: 'ASC' }, 100).subscribe(data => {
@@ -921,6 +920,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       delete mainCustomer.delete_dt;
       delete mainCustomer.cc_contact_person;
       delete mainCustomer.currency;
+      delete mainCustomer.storing_orders;
+      delete mainCustomer.storing_order_tank;
       var cust: CustomerCompanyItem = new CustomerCompanyItem();
       if (this.selectedBillingBranch) {
         cust = new CustomerCompanyItem(this.selectedBillingBranch);
@@ -1025,6 +1026,8 @@ export class BillingBranchNewComponent extends UnsubscribeOnDestroyAdapter imple
       delete new_billing_branch.branchCustomer.delete_dt;
       delete new_billing_branch.branchCustomer.cc_contact_person;
       delete new_billing_branch.branchCustomer.currency;
+      delete new_billing_branch.branchCustomer.storing_order_tank;
+      delete new_billing_branch.branchCustomer.storing_orders;
 
       billingBranches.push(new_billing_branch);
       this.ccDS.UpdateCustomerCompany(mainCustomer, undefined, billingBranches).subscribe(result => {

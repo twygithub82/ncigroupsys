@@ -369,6 +369,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.customer_guid = cust.guid;
       this.updateData(existContact!);
       this.refreshBillingBranches();
+
+      console.log(this.getBillingBranches(cust.guid!))
     }
   }
 
@@ -437,6 +439,10 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       this.ccForm?.get('country')?.disable();
       this.ccForm?.get('remarks')?.disable();
       this.ccForm?.get('repList')?.disable();
+    }
+
+    if (!this.canEditBillingBranch()) {
+      this.ccForm?.get('billing_branches')?.disable();
     }
   }
 
@@ -507,7 +513,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     // if(cc){
     //   return this.ccDS.displayName(cc.customer_company);
     // }
-    
+
     //return this.ccDS.displayName(cc.customer_company);
     return cc && cc.customer_company?.code ? `${cc.customer_company.code} - ${cc.customer_company.name}` : '';
   }
@@ -659,6 +665,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
         var customerCode = this.ccForm?.get("customer_code")?.value?.toUpperCase();
         const where: any = {};
         where.code = { eq: customerCode };
+        where.delete_dt = { eq: null };
         this.ccDS.search(where).subscribe(result => {
           if (result.length == 0 && this.customer_guid == undefined) {
             this.insertNewCustomer();
@@ -750,8 +757,8 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
             delete billing_branch.branchCustomer.delete_dt;
             delete billing_branch.branchCustomer.cc_contact_person;
             delete billing_branch.branchCustomer.currency;
-             delete billing_branch.branchCustomer.storing_order_tank;
-             delete billing_branch.branchCustomer.storing_orders;
+            delete billing_branch.branchCustomer.storing_order_tank;
+            delete billing_branch.branchCustomer.storing_orders;
             billingBranches.push(billing_branch);
 
             delete CusCmp.update_by;
@@ -841,7 +848,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       if (this.ccForm?.get("billing_branches")?.value) {
 
 
-        var b = this.ccForm?.get("billing_branches")?.value ;
+        var b = this.ccForm?.get("billing_branches")?.value;
         var bb = b.customer_company as CustomerCompanyItem
         billing_branch.branchCustomer = new BillingCustomerItem(bb);
 
@@ -1176,19 +1183,19 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       tap(value => {
         var searchCriteria = '';
         if (value === undefined) return;
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (typeof value === 'object') {
+          searchCriteria = value.customer_company.code;
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value || '';
         }
         var cond: any = {};
         cond.and = [];
-        cond.and.push({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] });
-        cond.and.push({ type_cv: { in: ["BRANCH"] } });
-      //  this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
-       this.subs.sink=this.ccDS.searchCustomerCompanyWithCount(cond, { customer_company:{ code: 'ASC' }}).subscribe(data => {
+        cond.and.push({ or: [{ customer_company: { name: { contains: searchCriteria } } }, { customer_company: { code: { contains: searchCriteria } } }] });
+        cond.and.push({ customer_company: { type_cv: { in: ["BRANCH"] } } });
+        //  this.subs.sink = this.ccDS.search(cond, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.ccDS.searchCustomerCompanyWithCount(cond, { customer_company: { code: 'ASC' } }).subscribe(data => {
           let currentCustCode = this.ccForm!.get('customer_code')!.value;
-          let result :any[] = data;
+          let result: any[] = data;
           this.customer_companyList = result.filter(d => d.customer_company?.code != currentCustCode);
         });
       })
@@ -1206,9 +1213,9 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
       selGuid = this.selectedCustomerCmp.guid!;
     }
 
-    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount({}, { customer_company:{ code: 'ASC' }}, 100).subscribe(data => {
+    this.subs.sink = this.ccDS.searchCustomerCompanyWithCount({}, { customer_company: { code: 'ASC' } }, 100).subscribe(data => {
       if (data.length) {
-        var result :any[]=data;
+        var result: any[] = data;
         if (this.selectedCustomerCmp) {
           result = result.filter(item => item.customer_company.guid !== this.selectedCustomerCmp?.guid);
         }
@@ -1218,13 +1225,13 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
           this.ccForm?.patchValue({
             billing_branches: this.getBillingBranchesCode(selBillingCode),
           });
-          this.currentBillingBranch=this.ccForm?.get('billing_branches')?.value;
+          this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
         }
         else if (selGuid!) {
           this.ccForm?.patchValue({
             billing_branches: this.getBillingBranches(selGuid),
           });
-          this.currentBillingBranch=this.ccForm?.get('billing_branches')?.value;
+          this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
         }
       }
     });
@@ -1250,19 +1257,20 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
     var retval = false;
 
     if (this.currentBillingBranch) {
-      
+
       retval = (!this.AllowedToChangeBillingBranch(this.currentBillingBranch));
     }
     return retval;
   }
 
   canEdit(): boolean {
-    var result =((!!this.customer_guid && this.isAllowEdit()) || (!this.customer_guid && this.isAllowAdd()) );
-    if(result)
-    {
-      this.currentBillingBranch=this.ccForm?.get('billing_branches')?.value;
-      result = this.AllowedToChangeBillingBranch(this.currentBillingBranch);
-    }
+    var result = ((!!this.customer_guid && this.isAllowEdit()) || (!this.customer_guid && this.isAllowAdd()));
+    return result;
+  }
+
+  canEditBillingBranch() {
+    this.currentBillingBranch = this.ccForm?.get('billing_branches')?.value;
+    const result = this.AllowedToChangeBillingBranch(this.currentBillingBranch);
     return result;
   }
 
@@ -1275,16 +1283,16 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   displayCompanyName(item: any) {
-    if(item)
-    {
-        this.ccDS.displayName(item.customer_company);
-    }
-    return '';
+    // if (item) {
+    //   this.ccDS.displayName(item.customer_company);
+    // }
+    // return '';
+    return item && item?.customer_company?.code ? `${item?.customer_company?.code} - ${item?.customer_company?.name}` : '';
   }
 
-  AllowedToChangeBillingBranch(row:any)
-  {
-    return (!row.so_count && !row.sot_count && !row.tank_info_count);
+  AllowedToChangeBillingBranch(row: any) {
+    if (!row) return true;
+    return (!row?.so_count && !row?.sot_count && !row?.tank_info_count);
   }
 
 }

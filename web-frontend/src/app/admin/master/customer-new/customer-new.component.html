@@ -208,8 +208,7 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BILLING_BRANCH }}</mat-label>
-                    <input matInput formControlName="billing_branches" [matAutocomplete]="customerCode"
-                      [readonly]="BillingBranchReadOnly()">
+                    <input matInput formControlName="billing_branches" [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
                       @for (cc of customer_companyList; track cc) {
                       <mat-option [value]="cc">
@@ -219,7 +218,7 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-                @if (canEdit()) {
+                @if (canEdit() && canEditBillingBranch()) {
                 <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 mb-0">
                   <button mat-flat-button color="primary" type="button" [ngClass]="'m-r-10'"
                     (click)="addBillingBranch($event)">

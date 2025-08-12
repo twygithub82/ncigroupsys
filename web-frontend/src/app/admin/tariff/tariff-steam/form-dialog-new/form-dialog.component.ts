@@ -31,6 +31,7 @@ import { TariffSteamingDS, TariffSteamingItem } from 'app/data-sources/tariff-st
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { tempRangeValidator } from '../validators/temp-range.validator';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;
@@ -75,7 +76,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {

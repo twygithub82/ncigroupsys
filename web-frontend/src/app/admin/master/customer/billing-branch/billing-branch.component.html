@@ -38,7 +38,7 @@
               <div class="row">
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>{{translatedLangText.MAIN_CUSTOMER}}</mat-label>
+                    <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
                       [matAutocomplete]="customerCode">
                     <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn"
@@ -65,7 +65,7 @@
                 </div> -->
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.BRANCH_CODE}}</mat-label>
+                    <mat-label>{{translatedLangText.BRANCH}}</mat-label>
                     <input matInput formControlName="branch_code" type="text">
                   </mat-form-field>
                 </div>
@@ -113,27 +113,27 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.MAIN_CUSTOMER
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
+                [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg justify-content-center'">
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER
                   }}:</span>{{this.getMainCustomerCode(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
               <mat-header-cell *matHeaderCellDef mat-sort-header
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-center'">{{this.translatedLangText.BRANCH_CODE
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-start'">{{this.translatedLangText.BRANCH
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.BRANCH_CODE
+                [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-start'">
+                <span class="mobile-label">{{this.translatedLangText.BRANCH
                   }}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="lName">
               <mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-4-xl'">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
+                [ngClass]="'tbl-col-width-per-3_5-xl'">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-4-xl'"
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_5-xl'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company?.name}}</mat-cell>
@@ -155,10 +155,10 @@
             </ng-container> -->
 
             <ng-container matColumnDef="category">
-              <mat-header-cell [ngClass]="'tbl-col-width-per-2_75-xl'"
+              <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
                 }}</mat-header-cell>
-              <mat-cell [ngClass]="'tbl-col-width-per-2_75-xl'" *matCellDef="let row"
+              <mat-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'" *matCellDef="let row"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.customer_company?.tank?.unit_type}}</mat-cell>
@@ -168,7 +168,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-2-xl'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2-xl'"
+              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
                 (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
                 {{this.displayLastUpdated(row.customer_company)}}</mat-cell>
