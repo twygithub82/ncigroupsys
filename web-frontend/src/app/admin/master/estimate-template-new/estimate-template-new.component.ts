@@ -670,6 +670,7 @@ ngAfterViewInit() {
     r.tariff_repair = new TariffRepairItem();
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         item: r,
         action: 'new',
@@ -735,6 +736,7 @@ ngAfterViewInit() {
 
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         item: r,
         action: 'edit',
