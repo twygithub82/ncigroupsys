@@ -233,11 +233,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
       rep.description = `${prefix}${rep.tariff_repair?.alias} ${concludeLength} ${rep.remarks ?? ''}`.trim();
       console.log(rep)
-      if (this.validateExistedPart(rep)) {
-        this.confirmationDialog(addAnother, rep);
-      } else {
-        this.returnAndCloseDialog(addAnother, rep);
-      }
+      // if (this.validateExistedPart(rep)) {
+      //   this.confirmationDialog(addAnother, rep);
+      // } else {
+      //   this.returnAndCloseDialog(addAnother, rep);
+      // }
+      this.returnAndCloseDialog(addAnother, rep);
     } else {
       this.findInvalidControls();
     }

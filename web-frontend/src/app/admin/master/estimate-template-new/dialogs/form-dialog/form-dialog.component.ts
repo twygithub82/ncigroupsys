@@ -180,8 +180,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       part_name: this.repairPart.tariff_repair?.part_name,
       dimension: this.repairPart.tariff_repair?.dimension,
       length: this.repairPart.tariff_repair?.length,
-      damage: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 0)),
-      repair: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 1)),
+      damage: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 0 && ((x.action !== 'cancel' && !x.delete_dt) || (x.action === 'rollback' && !!x.delete_dt)))),
+      repair: this.REPDamageRepairToCV(this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 1 && ((x.action !== 'cancel' && !x.delete_dt) || (x.action === 'rollback' && !!x.delete_dt)))),
       material_cost: this.repairPart.tariff_repair?.material_cost,
       comment: this.repairPart.comment
     });
@@ -217,7 +217,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         hour: this.repairPartForm.get('hour')?.value,
         material_cost: this.repairPartForm.get('material_cost')?.value,
         remarks: this.repairPartForm.get('remarks')?.value,
-
         actions
       }
       let delimiter = '';
@@ -448,11 +447,66 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   REPDamage(damages: any[]): RPDamageRepairItem[] {
-    return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
+    // return damages.map(dmg => this.repDrDS.createREPDamage(undefined, undefined, dmg));
+    const existingDamage = this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 0);
+
+    const finalDamages: RPDamageRepairItem[] = [];
+
+    existingDamage?.forEach((x: any) => {
+      if (damages.includes(x.code_cv)) {
+        x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
+        if (x.action === 'edit' && x.delete_dt) {
+          x.action = 'rollback'
+        }
+      } else {
+        x.action = 'cancel';
+      }
+
+      if (x.guid || !x.guid && x.action !== 'cancel') {
+        finalDamages.push(x);
+      }
+    });
+
+    damages.forEach(dmg => {
+      const found = existingDamage?.some((x: any) => x.code_cv === dmg);
+      if (!found) {
+        const newDamage = this.repDrDS.createREPDamage(undefined, undefined, dmg);
+        finalDamages.push(newDamage);
+      }
+    });
+
+    return finalDamages;
   }
 
   REPRepair(repairs: any[]): RPDamageRepairItem[] {
-    return repairs.map(rp => this.repDrDS.createREPRepair(undefined, undefined, rp));
+    const existingRepair = this.repairPart.tep_damage_repair?.filter((x: any) => x.code_type === 1);
+
+    const finalRepairs: RPDamageRepairItem[] = [];
+
+    existingRepair?.forEach((x: any) => {
+      if ((!x.guid && repairs.includes(x.code_cv)) || (x.guid && repairs.includes(x.code_cv))) {
+        x.action = (x.action === '' || x.action === 'new') ? 'new' : 'edit';
+        if (x.action === 'edit' && x.delete_dt) {
+          x.action = 'rollback'
+        }
+      } else {
+        x.action = 'cancel';
+      }
+
+      if (x.guid || !x.guid && x.action !== 'cancel') {
+        finalRepairs.push(x);
+      }
+    });
+
+    repairs.forEach(dmg => {
+      const found = existingRepair?.some((x: any) => x.code_cv === dmg);
+      if (!found) {
+        const newDamage = this.repDrDS.createREPRepair(undefined, undefined, dmg);
+        finalRepairs.push(newDamage);
+      }
+    });
+
+    return finalRepairs;
   }
 
   REPDamageRepairToCV(damagesRepair: any[] | undefined): RPDamageRepairItem[] {
