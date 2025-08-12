@@ -976,9 +976,9 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     autoTable(pdf, {
       body: data,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { left: leftMargin , top:topMargin+45},
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -1009,7 +1009,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
           }
         }
       },
@@ -1140,7 +1140,8 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
     autoTable(pdf, {
       head: headers,
       body: repData,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin , top:50},
       tableWidth: tableWidth,
       styles: {
         cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
@@ -1148,7 +1149,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
         lineWidth: 0 // remove all borders initially
       },
       theme: 'grid',
-      margin: { left: leftMargin },
+      // margin: { left: leftMargin },
       headStyles: {
         fillColor: 255,
         textColor: 0,

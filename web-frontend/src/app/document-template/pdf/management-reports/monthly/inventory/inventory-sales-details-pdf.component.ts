@@ -890,10 +890,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     var residueAppCount=0,residueCmpCount=0;
 
     for (const date in grpData) {
-      // var total:number =(monthData.gate?.cost||0)+(monthData.lolo?.cost||0)+(monthData.storage?.cost||0)+(monthData.gate?.cost||0)
-      // +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
-      // total_all_cost+=total;
-      // average_counter++;
+    
       const entry = grpData[date];
       data.push([
         (++idx).toString(),date,entry.day,
@@ -1046,8 +1043,8 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin },
+      // startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin, right: rightMargin,top:topMargin +45 },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1168,7 +1165,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
           }
         }
 
@@ -1312,9 +1309,9 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
  if (this.chartLine?.nativeElement) {
     pdf.addPage();
-    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+    Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
      pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-     startY=topMargin+20;
+     startY=topMargin+42;
     const canvas = this.chartLine.nativeElement;
     const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
     const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
@@ -1342,17 +1339,32 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
 
     const totalPages = pdf.getNumberOfPages();
 
-
-    pagePositions.forEach(({ page, x, y }) => {
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
    this.generatingPdfLoadingSubject.next(false);
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();

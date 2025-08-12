@@ -927,13 +927,16 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       
 
    pdf.addPage();
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
-    lastTableFinalY=topMargin+5;
+    //await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+    lastTableFinalY=topMargin+45;
     const cutoffDate = `${this.translatedLangText.CUTOFF_DATE}: ${this.cut_off_dt}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,lastTableFinalY+10,8)
+    Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
     for (let n = 0; n < this.repBillingCustomers.length; n++) {
+       if (n > 0) lastTableFinalY += 5; // 2nd table
+      else lastTableFinalY = 49; // First table of the page
+
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.repBillingCustomers[n];
@@ -948,7 +951,7 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
 
         if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
           pdf.addPage();
-          lastTableFinalY = 5 + topMargin;
+          lastTableFinalY = 45 + topMargin;
         }
         else {
           CurrentPage = repPage;
@@ -1006,9 +1009,9 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
       autoTable(pdf, {
         head: headers,
         body: data,
-        startY: startY, // Start table at the current startY value
+        // startY: startY, // Start table at the current startY value
         theme: 'grid',
-        margin: { left: leftMargin },
+        margin: { left: leftMargin ,top:topMargin+45},
         styles: {
           fontSize: fontSize,
           minCellHeight: minHeightHeaderCol
@@ -1043,11 +1046,19 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
         didDrawPage: (data: any) => {
           const pageCount = pdf.getNumberOfPages();
 
-          if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 2);
+          
           // Capture the final Y position of the table
           lastTableFinalY = data.cursor.y;
           var pg = pagePositions.find(p => p.page == pageCount);
-          if (!pg) pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (!pg)
+          { 
+              pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+              if (pageCount > 1) {
+               
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+                Utility.AddTextAtRightCornerPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+4,48,8)
+              }
+           }
         },
       });
 
@@ -1057,16 +1068,31 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
    
     const totalPages = pdf.getNumberOfPages();
 
-    pagePositions.forEach(({ page, x, y }) => {
+     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 15, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 15, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin - 4), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -1458,57 +1484,6 @@ export class PendingInvoiceCostDetailPdfComponent extends UnsubscribeOnDestroyAd
     return retval;
   }
 
-  //  displayTotalCleanCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.clean_cost === "0.00" || item.clean_cost === undefined ? '' : `${item.clean_cost}`)
-  //   return retval;
-  // }
-  // displayTotalStorageCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.storage_cost === "0.00" || item.storage_cost === undefined ? '' : `${item.storage_cost}`)
-  //   return retval;
-  // }
-  // displayTotalSteamCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.steam_cost === "0.00" || item.steam_cost === undefined ? '' : `${item.steam_cost}`)
-  //   return retval;
-  // }
-  // displayTotalRepairCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.repair_cost === "0.00" || item.repair_cost === undefined ? '' : `${item.repair_cost}`)
-  //   return retval;
-  // }
-
-  // displayTotalResidueCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.residue_cost === "0.00" || item.residue_cost === undefined ? '' : `${item.residue_cost}`)
-  //   return retval;
-  // }
-
-  // displayTotalLOLOCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.lolo_cost === "0.00" || item.lolo_cost === undefined ? '' : `${item.lolo_cost}`)
-  //   return retval;
-  // }
-
-  // displayTotalPreinsCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.preins_cost === "0.00" || item.preins_cost === undefined ? '' : `${item.preins_cost}`)
-  //   return retval;
-  // }
-
-  // displayTotalGateIOCost(item: report_billing_item): string {
-  //   let retval: string = '';
-
-  //   retval = (item.gateio_cost === "0.00" || item.gateio_cost === undefined ? '' : `${item.gateio_cost}`)
-  //   return retval;
-  // }
+ 
 
 }

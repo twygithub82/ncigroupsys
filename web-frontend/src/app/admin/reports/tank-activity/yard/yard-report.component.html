@@ -88,7 +88,7 @@
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.INVENTORY_TYPE}}</mat-label>
-                  <mat-select formControlName="inv_type">
+                  <mat-select #invTypeSelect formControlName="inv_type">
                     @for (codeValue of inventoryTypeCvList; track codeValue) {
                     @if (availableReportTypes.includes(codeValue.code_val ?? '')) {
                     <mat-option [value]="codeValue.code_val">
@@ -352,9 +352,9 @@
           [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)" hidden>
         </mat-paginator>
       </div>
-      @if (!(sotDS.loading$ | async) && this.noCond) {
-        <div class="no-results m-l-20 pt-3" color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
-          <h5 class="m-b-15 m-l-15 col-red">{{translatedLangText.ONE_CONDITION_NEEDED}}</h5>
+       @if (!(sotDS.loading$ | async) && this.noCond) {
+        <div class="m-l-20 pt-3 " color="warm" [style.display]="sotList.length === 0 ? '' : 'none'">
+          <h5 class="m-b-15 m-l-15 col-red">{{translatedLangText.ADD_ATLEAST_ONE}}</h5>
         </div>
         }
     </div>

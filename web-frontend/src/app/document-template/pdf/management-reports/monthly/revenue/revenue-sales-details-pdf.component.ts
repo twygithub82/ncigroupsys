@@ -775,7 +775,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
@@ -998,8 +998,8 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin },
+     // startY: startY, // Start table at the current startY value
+      margin: { left: leftMargin, right: rightMargin ,top:topMargin+45},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1103,7 +1103,8 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+             Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48 , 11);
           }
         }
 
@@ -1160,9 +1161,9 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
   for (var i = 0; i < cardElements.length; i++) {
     {
       pdf.addPage();
-      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+      Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45 );
       pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      startY=topMargin+20;
+      startY=topMargin+50;
     }
     const card1 = cardElements[i];
     await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
@@ -1173,17 +1174,33 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
 
     const totalPages = pdf.getNumberOfPages();
 
-
-    pagePositions.forEach(({ page, x, y }) => {
+    
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
   //  this.generatingPdfProgress = 100;
     //pdf.save(fileName);

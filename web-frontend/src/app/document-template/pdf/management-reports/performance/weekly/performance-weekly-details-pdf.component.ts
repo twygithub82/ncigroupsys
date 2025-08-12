@@ -729,7 +729,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
    // const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
 
     if(this.customer)
     {
@@ -785,7 +785,8 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     autoTable(pdf, {
       head: hdr,
       body: data,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
+       margin: { left: leftMargin, right: rightMargin ,top:topMargin+45},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -895,7 +896,8 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 50, 9);
           }
         }
 
@@ -976,16 +978,32 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     const totalPages = pdf.getNumberOfPages();
 
 
-    pagePositions.forEach(({ page, x, y }) => {
+     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
   //  this.generatingPdfProgress = 100;
     //pdf.save(fileName);

@@ -1014,9 +1014,9 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
 
     autoTable(pdf, {
       body: data,
-      startY: startY, // Start table at the current startY value
+      //startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { left: leftMargin , top:topMargin+45 },
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -1047,7 +1047,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
           }
         }
       },
@@ -1133,14 +1133,14 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
     autoTable(pdf, {
       head: headers,
       body: repData,
-      startY: startY, // Start table at the current startY value
+       startY: startY, // Start table at the current startY value
       styles: {
         cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
         lineWidth: 0, // remove all borders initially
         fontSize: fontSz
       },
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { left: leftMargin},
       headStyles: {
         fillColor: 220,
         textColor: 0,

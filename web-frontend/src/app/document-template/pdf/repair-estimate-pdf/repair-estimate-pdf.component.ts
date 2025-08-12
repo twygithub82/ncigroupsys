@@ -1517,9 +1517,9 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
 
     autoTable(pdf, {
       body: data,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { left: leftMargin ,top:topMargin+45},
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -1549,7 +1549,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
           }
         }
       },
@@ -1644,14 +1644,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         const rRow = toColumns(repairCodes)[i] || ['', '', ''];
         return [...dRow, ...rRow];
       }),
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
       styles: {
         cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
         fontSize: 7,
         lineWidth: 0 // remove all borders initially
       },
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { left: leftMargin,top:50 },
       headStyles: {
         fillColor: [240, 240, 240],
         textColor: 0,
@@ -1827,14 +1827,14 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     autoTable(pdf, {
       head: headers,
       body: repData,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
       styles: {
         cellPadding: { left: 2, right: 2, top: 1, bottom: 1 }, // Reduce padding
         fontSize: 7,
         lineWidth: lineWidth // remove all borders initially
       },
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { left: leftMargin ,top:50},
       headStyles: {
         fillColor: lineColor,
         textColor: 0,

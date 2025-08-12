@@ -967,7 +967,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      //startY: startY, // Start table at the current startY value
+       margin: { left: leftMargin, right: rightMargin,top:topMargin +45 },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1075,7 +1076,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48, 9);
           }
         }
 
@@ -1241,9 +1243,9 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
       if (this.chartLine?.nativeElement) {
         pdf.addPage();
-        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-        startY = topMargin + 20;
+        startY = topMargin + 50;
         const canvas = this.chartLine.nativeElement;
         const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
         const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
@@ -1256,61 +1258,43 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
       if (this.chartPie?.nativeElement) {
         pdf.addPage();
-        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-        startY = topMargin + 20;
+        startY = topMargin + 50;
         await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
       }
-      // for (var i = 0; i < cardElements.length; i++) {
-      //   if (i > 0) {
-      //     pdf.addPage();
-      //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-      //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-      //     startY=topMargin+20;
-      //   }
-      //   const card1 = cardElements[i];
-      //   card1.style.boxShadow = 'none';
-      //   card1.style.transition = 'none';
-      //   // const canvas1 = await html2canvas(card1, { useCORS: true, allowTaint:false,scale: scale });
-      //   //const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-      //   // Calculate aspect ratio
-      //   //const aspectRatio = canvas1.width / canvas1.height;
-
-
-      //   const imgData1 = await Utility.convertToImage(card1,"jpeg");
-      //   const imgInfo = await Utility.getImageSizeFromBase64(imgData1);
-      //   const aspectRatio = imgInfo.width / imgInfo.height;
-
-      //   // Calculate scaled height based on available width
-      //   let imgHeight1 = chartContentWidth / aspectRatio;
-
-      //   // Check if the scaled height exceeds the available page height
-      //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-      //   if (imgHeight1 > maxPageHeight) {
-      //     // Adjust height to fit within the page
-      //     imgHeight1 = maxPageHeight;
-      //     // Recalculate width to maintain aspect ratio
-      //     chartContentWidth = imgHeight1 * aspectRatio;
-      //   }
-
-      //   // Add the image to the PDF
-      //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-      // }
+      
 
       const totalPages = pdf.getNumberOfPages();
 
 
-      pagePositions.forEach(({ page, x, y }) => {
-        pdf.setDrawColor(0, 0, 0); // black line color
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0.01, 0.01], 0.1);
-        pdf.setFontSize(8);
-        pdf.setPage(page);
-        var lineBuffer = 13;
-        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-      });
+      
+    for (const { page, x, y } of pagePositions) {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+      // pagePositions.forEach(({ page, x, y }) => {
+      //   pdf.setDrawColor(0, 0, 0); // black line color
+      //   pdf.setLineWidth(0.1);
+      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      //   pdf.setFontSize(8);
+      //   pdf.setPage(page);
+      //   var lineBuffer = 13;
+      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      // });
 
       //  this.generatingPdfProgress = 100;
       //pdf.save(fileName);
