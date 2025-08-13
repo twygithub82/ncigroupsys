@@ -691,4 +691,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_ADD']);
   }
+
+  getPartLength(rep: any) {
+    const concludeLength = rep?.tariff_repair?.length
+      ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep?.tariff_repair.length_unit_cv)} `
+      : '';
+    return concludeLength;
+  }
 }

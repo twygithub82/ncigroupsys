@@ -224,9 +224,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         remarks: this.repairPartForm.get('remarks')?.value,
         create_dt: this.repairPart.create_dt ? this.repairPart.create_dt : Utility.convertDate(new Date())
       }
-      const concludeLength = rep.tariff_repair?.length
-        ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep.tariff_repair.length_unit_cv)} `
-        : '';
+      const concludeLength = this.getPartLength(rep);
 
       let prefix = (`${rep.location_cv ? this.getLocationDescription(rep.location_cv) : ''}` + ' ' + (rep.comment ? rep.comment : '')).trim();
       prefix = prefix ? `${prefix} - ` : '';
@@ -624,5 +622,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   parse2Decimal(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
+  }
+
+  getPartLength(rep: any) {
+    const concludeLength = rep?.tariff_repair?.length
+      ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep?.tariff_repair.length_unit_cv)} `
+      : '';
+    return concludeLength;
   }
 }
