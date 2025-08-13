@@ -39,11 +39,13 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
+import { RoleDS } from 'app/data-sources/role';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS } from 'app/data-sources/teams';
 import { UserDS, UserItem } from 'app/data-sources/user';
+import { UserRoleLinkage } from 'app/data-sources/userrole';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
@@ -123,6 +125,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   CodeValuesDS?: CodeValuesDS;
   userDs?: UserDS;
   teamDs?: TeamDS;
+  roleDs?: RoleDS;
   storageCalCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
@@ -137,6 +140,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   teamNameControl = new UntypedFormControl();
   teamNameList: any[] = [];
+  roleNameList:any[]=[];
+  adhocFuntionList:any[]=[];
   updatedRoleList: any[] = [];
   updatedTeamList:any[] =[];
   updatedAdhocList: any[] = [];
@@ -262,6 +267,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.userDs=new UserDS(this.apollo);
     this.teamDs = new TeamDS(this.apollo);
+    this.roleDs=new RoleDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
@@ -315,6 +321,56 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               t =>
                 t.description === desc.description &&
                 t.department_cv === desc.department_cv
+            )
+          );
+        });
+      })
+    ).subscribe();
+
+    searchObj?.get("role")!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+     tap(value => {
+       this.roleDs?.searchRolesWithFunctions(
+          {
+            or: [
+              { description: { contains: value } },
+              { department: { contains: value } }
+            ]
+          },
+          { description: "ASC" },
+          100
+        ).subscribe(data => {
+          this.roleNameList = data.filter(desc =>
+            !this.updatedRoleList.some(
+              t =>
+                t.description === desc.description &&
+                t.department === desc.department
+            )
+          );
+        });
+      })
+    ).subscribe();
+
+      searchObj?.get("adhoc")!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+     tap(value => {
+       this.roleDs?.searchFunctions(
+          {
+           code: { contains: value } 
+          },
+          { code: "ASC" },
+          100
+        ).subscribe(data => {
+          this.adhocFuntionList = data.filter(f =>
+            !this.updatedRoleFeaturesList.some(
+              t =>
+                t.functions?.code === f.code 
+            )&&
+            !this.updatedAdhocList.some(
+              t =>
+                t.code === f.code 
             )
           );
         });
@@ -379,9 +435,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             });
             this.updatedRoleList=usr.user_role!;
             this.updatedTeamList=usr.team_user!;
-            this.updatedRoleList.forEach(r=>{
-              this.updatedRoleFeaturesList.push(...r.role.role_functions!);
-            });
+            this.updateRoleFeatureList();
+            // this.updatedRoleList.forEach(r=>{
+            //   this.updatedRoleFeaturesList.push(...r.role.role_functions!);
+            // });
           }
 
         })
@@ -395,6 +452,23 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   }
 
+  updateRoleFeatureList(){
+      this.updatedRoleFeaturesList=[];
+      this.updatedRoleList.forEach(r=>{
+              if(!r.is_deleted)
+              {
+                  this.updatedRoleFeaturesList.push(...r.role.role_functions!);
+              }
+      });
+      this.updatedRoleFeaturesList.forEach(f=>{
+        
+        var found=this.updatedAdhocList.find(a=>a.functions_guid===f.functions.guid);
+        if(!found)
+        {
+          found.array.forEach((element:any) => { element.is_disabled=true; });           
+        }
+      })
+  }
   queryDepotCost() {
     // const where:any={ customer_company: { guid: { eq: this.selectedItem.guid } } };
 
@@ -445,68 +519,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (!this.pcForm?.valid) return;
 
-    // if (this.selectedItems.length == 1) {
-    //   var pckResidueItem = new PackageResidueItem(this.selectedItems[0]);
-    //   pckResidueItem.remarks = this.pcForm!.value["remarks"] || "";
-    //   pckResidueItem.cost = Number(this.pcForm!.value["cost_cust"]);
-    //   pckResidueItem.tariff_residue = undefined;
-    //   pckResidueItem.customer_company = undefined;
-    //   this.packageResidueDS?.updatePackageResidue(pckResidueItem).subscribe(result => {
-    //     if (result.data.updatePackageResidue > 0) {
-
-    //       console.log('valid');
-    //       this.dialogRef.close(result.data.updatePackageResidue);
-
-    //     }
-    //   });
-    // }
-    // else {
-    //   let pd_guids: string[] = this.selectedItems
-    //     .map(cc => cc.guid)
-    //     .filter((guid): guid is string => guid !== undefined);
-
-    //   var cost = -1;
-    //   if (this.pcForm!.value["cost_cust"]) cost = Number(this.pcForm!.value["cost_cust"]);
-
-    //   var remarks = this.pcForm!.value["remarks"] || "";
-    //   if (pd_guids.length == 1) {
-    //     if (!remarks) {
-    //       remarks = "--";
-    //     }
-    //   }
-    //   this.packageResidueDS?.updatePackageResidues(pd_guids, cost, remarks).subscribe(result => {
-    //     if (result.data.updatePackageResidues > 0) {
-
-    //       console.log('valid');
-    //       this.dialogRef.close(result.data.updatePackageResidues);
-
-    //     }
-    //   });
-    // }
-
-    // let pdItem: PackageDepotGO = new PackageDepotGO(this.profileNameControl.value);
-    // // tc.guid='';
-    // pdItem.lolo_cost =Number(this.pcForm.value['lolo_cost_cust']);
-    // pdItem.preinspection_cost =Number( this.pcForm.value['preinspection_cost_cust']);
-    // pdItem.free_storage =Number( this.pcForm.value['free_storage_days']);
-    // pdItem.storage_cost =Number( this.pcForm.value['storage_cost_cust']);
-    // pdItem.remarks = this.pcForm.value['remarks'];
-    // var storageCalValue;
-    // if(this.storageCalControl.value)
-    // {
-    //     const storage_calCv:CodeValuesItem =  this.storageCalControl.value;
-    //     storageCalValue = storage_calCv.code_val;
-    // }
-    // pdItem.storage_cal_cv = storageCalValue;
-    // this.packageDepotDS?.updatePackageDepot(pdItem).subscribe(result=>{
-    //   if(result.data.updatePackageDepot>0)
-    //   {
-
-    //             console.log('valid');
-    //             this.dialogRef.close(result.data.updatePackageDepot);
-
-    //   }
-    // });
+    
 
 
   }
@@ -526,86 +539,186 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
 
-  cancelRoleItem($event: MouseEvent,index: number) {
-   // throw new Error('Method not implemented.');
-    }
+ 
 
-      @ViewChild('nameInput', { static: true })
-      nameInput?: ElementRef<HTMLInputElement>;
+      @ViewChild('teamInput', { static: true })
+      teamInput?: ElementRef<HTMLInputElement>;
+      @ViewChild('roleInput', { static: true })
+      roleInput?: ElementRef<HTMLInputElement>;
+       @ViewChild('adhocInput', { static: true })
+      adhocInput?: ElementRef<HTMLInputElement>;
       selectedNames: any[] = [];
-      name_itemSelected(row: any): boolean {
-        var itm = this.selectedNames;
-        var retval: boolean = false;
-        const index = itm.findIndex(c => c === row);
-        retval = (index >= 0);
-        return retval;
-      }
+      // name_itemSelected(row: any): boolean {
+      //   var itm = this.selectedNames;
+      //   var retval: boolean = false;
+      //   const index = itm.findIndex(c => c === row);
+      //   retval = (index >= 0);
+      //   return retval;
+      // }
     
-      name_getSelectedDisplay(): string {
-        var itm = this.selectedNames;
-        var retval: string = "";
-        if (itm?.length > 1) {
-          retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
-        }
-        else if (itm?.length == 1) {
-          const maxLength = maxLengthDisplaySingleSelectedItem;
-          const value=`${itm[0]}`;
-          retval = `${value.length > maxLength 
-            ? value.slice(0, maxLength) + '...' 
-            : value}`;
-        }
-        return retval;
-      }
+      // name_getSelectedDisplay(): string {
+      //   var itm = this.selectedNames;
+      //   var retval: string = "";
+      //   if (itm?.length > 1) {
+      //     retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
+      //   }
+      //   else if (itm?.length == 1) {
+      //     const maxLength = maxLengthDisplaySingleSelectedItem;
+      //     const value=`${itm[0]}`;
+      //     retval = `${value.length > maxLength 
+      //       ? value.slice(0, maxLength) + '...' 
+      //       : value}`;
+      //   }
+      //   return retval;
+      // }
     
-      name_removeAllSelected(): void {
-        this.selectedNames = [];
-      //  this.AutoSearch();
-      }
+      // name_removeAllSelected(): void {
+      //   this.selectedNames = [];
+      // //  this.AutoSearch();
+      // }
     
       onTeamSelected(event: MatAutocompleteSelectedEvent): void {
         var itm = this.selectedNames;
-        var cnt = this.teamNameControl;
-        this.updatedTeamList.push(cnt.value);
-        // var elmInput = this.nameInput;
-        // const val = event.option.value;
-        // const index = itm.findIndex(c => c === val);
-        // if (!(index >= 0)) {
-        //   itm.push(val);
-          
+        var cnt = this.teamNameControl.value;
+         const newItem = {
+          ...cnt,
+          action: "NEW"
+        };
+        // cnt.value.action="NEW";
+        this.updatedTeamList.push(newItem);
+        if (this.teamInput && this.teamInput.nativeElement) {
+            this.teamInput.nativeElement.value = '';
+          }
+        //   if (event.chipInput && event.chipInput.inputElement) {
+        //   event.chipInput.inputElement.value = '';
         // }
-        // else {
-        //   itm.splice(index, 1);
-         
-        // }
-    
-        // if (elmInput) {
-    
-        //   elmInput.nativeElement.value = '';
-        //   cnt?.setValue('');
-        // }
-    
+         const cntValue = this.teamNameControl.value;
+
+  // Make sure cntValue is an object before adding action
+ 
+
+  
+        cnt?.setValue(null);
      
       }
-    
-      // name_onCheckboxClicked(row: any) {
-      //   const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-      //   this.teamname_selected(fakeEvent);
-    
+      // name_add(event: MatChipInputEvent): void {
+      //   var cnt = this.teamNameControl;
+      //   const input = event.input;
+      //   const value = event.value;
+      //   // Add our fruit
+      //   if ((value || '').trim()) {
+      //     //this.fruits.push(value.trim());
+      //   }
+      //   // Reset the input value
+      //   // 
+      //  if (event.chipInput && event.chipInput.inputElement) {
+      //     event.chipInput.inputElement.value = '';
+      //   }
+      //   cnt?.setValue(null);
       // }
-    
-      name_add(event: MatChipInputEvent): void {
-        var cnt = this.teamNameControl;
-        const input = event.input;
-        const value = event.value;
-        // Add our fruit
-        if ((value || '').trim()) {
-          //this.fruits.push(value.trim());
+      cancelTeamtem(item:any)
+      {
+        item.is_deleted=true;
+        if(item.action==="NEW")
+        {
+          const index = this.updatedTeamList.indexOf(item);
+            if (index > -1) {
+              this.updatedTeamList.splice(index, 1); // removes the element
+            }
         }
-        // Reset the input value
-        if (input) {
-          input.value = '';
+        else
+        {
+           item.action="CANCEL";
         }
-        cnt?.setValue(null);
       }
 
+
+      onRoleSelected(event: MatAutocompleteSelectedEvent): void {
+        var itm = this.selectedNames;
+        var cnt = this.pcForm?.get('role')?.value;
+        var roleLink = new UserRoleLinkage();
+        roleLink.role_guid = cnt.guid;
+        roleLink.role = cnt;
+         const newItem = {
+          ...roleLink,
+          action: "NEW"
+        };
+
+          const index = this.updatedTeamList.indexOf(newItem);
+            if (index > -1) {
+              this.updatedRoleList.splice(index, 1); // removes the element
+            }
+        // cnt.value.action="NEW";
+        this.updatedRoleList.push(newItem);
+        if (this.roleInput && this.roleInput.nativeElement) {
+            this.roleInput.nativeElement.value = '';
+          }
+       
+
+  
+     this.pcForm?.get('role')?.setValue(null);
+     this.updateRoleFeatureList();
+      }
+
+      cancelRoleItem(item:any)
+      {
+        item.is_deleted=true;
+        if(item.action==="NEW")
+        {
+          const index = this.updatedTeamList.indexOf(item);
+            if (index > -1) {
+              this.updatedRoleList.splice(index, 1); // removes the element
+            }
+        }
+        else
+        {
+           item.action="CANCEL";
+        }
+        this.updateRoleFeatureList();
+      }
+
+      toggleFunction(f:any)
+      {
+        f.is_disabled=f.is_disabled?false:true;
+        
+      }
+      
+        onAdhocSelected(event: MatAutocompleteSelectedEvent): void {
+        var itm = this.selectedNames;
+        var cnt = this.pcForm?.get('adhoc')?.value;
+      
+         const newItem = {
+          ...cnt,
+          action: "NEW"
+        };
+
+         
+        // cnt.value.action="NEW";
+        this.updatedAdhocList.push(newItem);
+        if (this.adhocInput && this.adhocInput.nativeElement) {
+            this.adhocInput.nativeElement.value = '';
+          }
+       
+
+  
+        this.pcForm?.get('adhoc')?.setValue(null);
+    //  this.updateRoleFeatureList();
+      }
+
+      cancelAdhocItem(item:any)
+      {
+        item.is_deleted=true;
+        if(item.action==="NEW")
+        {
+          const index = this.updatedTeamList.indexOf(item);
+            if (index > -1) {
+              this.updatedRoleList.splice(index, 1); // removes the element
+            }
+        }
+        else
+        {
+           item.action="CANCEL";
+        }
+       
+      }
 }

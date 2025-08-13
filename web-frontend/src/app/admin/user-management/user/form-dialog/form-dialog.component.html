@@ -77,30 +77,48 @@
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.ROLE}}</mat-label>
-                      <input matInput formControlName="role" type="text">
-                     
+                      <!-- <input matInput formControlName="role" type="text"> -->
+                     <mat-chip-grid #role_chipGrid class="nowrap single-line-chip-grid">
+                          
+                              <input #roleInput [matAutocomplete]="role" formControlName="role"
+                                [matChipInputFor]="role_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                >
+                              <mat-autocomplete #role="matAutocomplete" (optionSelected)="onRoleSelected($event)">
+                    
+                                @for (r of roleNameList; track r) {
+                                 
+                                    <mat-option [value]="r" class="checkbox-option">
+                                      <div class="horizontal-container">
+                                        <div class="option-text" > {{ r.description }}
+                                        </div>
+                                      </div>
+                                    </mat-option>
+                                }
+                              </mat-autocomplete>
+                            </mat-chip-grid>
                     </mat-form-field>
                    </div>
                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
-                        <!-- <mat-label>{{translatedLangText.TEAM}}</mat-label>
-                        <input matInput formControlName="team" type="text"> -->
+                      
                         <mat-label>{{translatedLangText.TEAM}}</mat-label>
                             <mat-chip-grid #team_chipGrid class="nowrap single-line-chip-grid">
                           
-                              <input #descInput [matAutocomplete]="team" formControlName="team"
+                             <input #teamInput [matAutocomplete]="team" formControlName="team"
                                 [matChipInputFor]="team_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                (matChipInputTokenEnd)="name_add($event)">
+                                > 
                               <mat-autocomplete #team="matAutocomplete" (optionSelected)="onTeamSelected($event)">
                     
                                 @for (pn of teamNameList; track pn) {
-                                <mat-option [value]="pn" class="checkbox-option"
-                                  >
-                                  <div class="horizontal-container">
-                                    <div class="option-text" >{{ pn.department_cv }} - {{ pn.description }}
-                                    </div>
-                                  </div>
-                                </mat-option>
+                                 
+                                    <mat-option [value]="pn" class="checkbox-option">
+                                      <div class="horizontal-container">
+                                        <div class="option-text" >{{ pn.department_cv }} - {{ pn.description }}
+                                        </div>
+                                      </div>
+                                    </mat-option>
+                                  
+                                
                                 }
                               </mat-autocomplete>
                             </mat-chip-grid>
@@ -109,7 +127,27 @@
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.ADHOC}}</mat-label>
-                        <input matInput formControlName="adhoc" type="text">
+                        <!-- <input matInput formControlName="adhoc" type="text"> -->
+                        <mat-chip-grid #adhoc_chipGrid class="nowrap single-line-chip-grid">
+                          
+                             <input #adhocInput [matAutocomplete]="adhoc" formControlName="adhoc"
+                                [matChipInputFor]="adhoc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                > 
+                              <mat-autocomplete #adhoc="matAutocomplete" (optionSelected)="onAdhocSelected($event)">
+                    
+                                @for (f of adhocFuntionList; track f) {
+                                
+                                    <mat-option [value]="f" class="checkbox-option">
+                                      <div class="horizontal-container">
+                                        <div class="option-text" >{{ f.code }}  
+                                        </div>
+                                      </div>
+                                    </mat-option>
+                                 
+                                
+                                }
+                              </mat-autocomplete>
+                            </mat-chip-grid>
                       </mat-form-field>
                     </div>
                 </div>
@@ -127,17 +165,20 @@
                           @if (updatedRoleList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (r of updatedRoleList; let i = $index; track r) {
-                            <div class="step-box cursor-pointer rounded role-content" >
-                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              
-                              @if (canEdit()) {
-                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
-                                <mat-icon>cancel</mat-icon>
-                              </button>
+                              @if(!r.is_deleted)
+                              {
+                                <div class="step-box cursor-pointer rounded role-content" >
+                                  <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                                  
+                                  @if (canEdit()) {
+                                  <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem(r)"
+                                    [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                  }
+                                  <span class="">{{r.role.description}}</span>
+                                </div>
                               }
-                              <span class="">{{r.role.description}}</span>
-                            </div>
                             }
                           </div>
                           }
@@ -158,25 +199,24 @@
                           @if (updatedTeamList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (t of updatedTeamList; let i = $index; track t) {
-                            <div class="step-box cursor-pointer rounded  role-content" >
-                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              
-                              @if (canEdit()) {
-                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
-                                <mat-icon>cancel</mat-icon>
-                              </button>
+                               @if(!t.is_deleted)
+                                  {
+                                  <div class="step-box cursor-pointer rounded  role-content" >
+                                    <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                                    
+                                    @if (canEdit()) {
+                                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelTeamtem(t)"
+                                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
+                                      <mat-icon>cancel</mat-icon>
+                                    </button>
+                                    }
+                                    <span class="">{{ t.department_cv }} - {{ t.description }}</span>
+                                  </div>
                               }
-                              <span class="">{{ t.department_cv }} - {{ t.description }}</span>
-                            </div>
                             }
                           </div>
                           }
-                          @else {
-                          <!-- <div class="text-center">
-                            <h5>{{translatedLangText.NO_RESULT}}</h5>
-                          </div> -->
-                          }
+                         
                         </div>
                       </div>
                    </div>
@@ -188,18 +228,20 @@
                         <div class="body">
                           @if (updatedAdhocList.length) {
                           <div cdkDropList class="steps-list" >
-                            @for (movie of updatedAdhocList; let i = $index; track movie) {
-                            <div class="step-box cursor-pointer p-2 mb-2 rounded  role-content" >
-                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
-                                mins</span>
-                              @if (canEdit()) {
-                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
-                                <mat-icon>cancel</mat-icon>
-                              </button>
+                            @for (f of updatedAdhocList; let i = $index; track f) {
+                              @if(!f.is_deleted)
+                              {
+                                <div class="step-box-features cursor-pointer rounded  role-content" >
+                                  <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                                  <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelAdhocItem(f)"
+                                    [matTooltip]="translatedLangText.DELETE"  class="tbl-action-btn text-custom-danger lower-btn">
+                                   <mat-icon>cancel</mat-icon>
+                                  </button>
+                                  
+                                  <span  >{{f.code}}
+                                  </span>
+                                </div>
                               }
-                            </div>
                             }
                           </div>
                           }
@@ -226,28 +268,33 @@
                           @if (updatedRoleList.length) {
                           <div cdkDropList class="steps-list-features" >
                             @for (f of updatedRoleFeaturesList; let i = $index; track f) {
-                            <div class="step-box-features cursor-pointer rounded  role-content" >
-                              <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              
-                              @if (canEdit()) {
-                              <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DISABLE" class="text-custom-danger  lower-btn">
-                                <span class="material-symbols-outlined ">
-                                  no_accounts
+                              @if(f.functions?.code)
+                              {
+                                <div class="step-box-features cursor-pointer rounded  role-content" >
+                                  <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                                  
+                                 
+                                  <button mat-icon-button (click)="$event.stopPropagation()" (click)="toggleFunction(f)"
+                                    [matTooltip]="translatedLangText.DISABLE"  [ngClass]="f.is_disabled ? 'text-custom-danger lower-btn' : 'text-custom-success lower-btn'">
+                                    <span class="material-symbols-outlined ">
+                                       @if (!f.is_disabled) {
+                                          person_check
+                                       }
+                                       @else
+                                       {
+                                          person_cancel
+                                       }
+                                      </span>
+                                  </button>
+                                  
+                                  <span [class.strike-text]="f.is_disabled" (click)="toggleFunction(f)" >{{f.functions?.code}}
                                   </span>
-                              </button>
+                                </div>
                               }
-                              <span class="">{{f.functions?.code}}
-                               </span>
-                            </div>
                             }
                           </div>
                           }
-                          @else {
-                          <!-- <div class="text-center">
-                            <h5>{{translatedLangText.NO_RESULT}}</h5>
-                          </div> -->
-                          }
+                         
                         </div>
                       </div>
                    </div>
