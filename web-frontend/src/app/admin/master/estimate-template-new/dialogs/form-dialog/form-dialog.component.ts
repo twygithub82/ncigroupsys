@@ -188,10 +188,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.onRepairSelectionChange({ value: this.repairPartForm.get('repair')?.value || [] });
   }
 
-
   CheckPartExistInTheList(rep: any): boolean {
-    let existPart = this.currentParts.filter((data, index) => { return data.description === rep.description && index != this.data.index });
-    return existPart.length > 0;
+    // they agreed to allow add same part
+    return false;
+
+    // let existPart = this.currentParts.filter((data, index) => { return data.description === rep.description && index != this.data.index });
+    // return existPart.length > 0;
   }
   submit(addAnother: boolean) {
     if (this.repairPartForm?.valid) {
@@ -688,5 +690,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['MASTER_ESTIMATE_TEMPLATE_ADD']);
+  }
+
+  getPartLength(rep: any) {
+    const concludeLength = rep?.tariff_repair?.length
+      ? `${rep.tariff_repair.length}${this.getUnitTypeDescription(rep?.tariff_repair.length_unit_cv)} `
+      : '';
+    return concludeLength;
   }
 }
