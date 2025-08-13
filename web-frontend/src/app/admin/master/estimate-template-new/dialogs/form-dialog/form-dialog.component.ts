@@ -188,10 +188,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.onRepairSelectionChange({ value: this.repairPartForm.get('repair')?.value || [] });
   }
 
-
   CheckPartExistInTheList(rep: any): boolean {
-    let existPart = this.currentParts.filter((data, index) => { return data.description === rep.description && index != this.data.index });
-    return existPart.length > 0;
+    // they agreed to allow add same part
+    return false;
+
+    // let existPart = this.currentParts.filter((data, index) => { return data.description === rep.description && index != this.data.index });
+    // return existPart.length > 0;
   }
   submit(addAnother: boolean) {
     if (this.repairPartForm?.valid) {
