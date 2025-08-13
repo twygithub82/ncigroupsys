@@ -110,3 +110,13 @@ td div img:hover {
    margin-right: 2px; /* bring text closer to button */
   flex: 1;           /* so text takes available space */
 }
+
+::ng-deep .lower-btn {
+  margin-top: -10px; /* push it to the bottom */
+}
+
+::ng-deep  .role-content {
+  display: flex;
+  // flex-direction: column; /* stack vertically */
+  align-items: flex-start; /* align left */
+}

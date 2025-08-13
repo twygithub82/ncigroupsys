@@ -83,8 +83,27 @@
                    </div>
                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
+                        <!-- <mat-label>{{translatedLangText.TEAM}}</mat-label>
+                        <input matInput formControlName="team" type="text"> -->
                         <mat-label>{{translatedLangText.TEAM}}</mat-label>
-                        <input matInput formControlName="team" type="text">
+                            <mat-chip-grid #team_chipGrid class="nowrap single-line-chip-grid">
+                          
+                              <input #descInput [matAutocomplete]="team" formControlName="team"
+                                [matChipInputFor]="team_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                (matChipInputTokenEnd)="name_add($event)">
+                              <mat-autocomplete #team="matAutocomplete" (optionSelected)="onTeamSelected($event)">
+                    
+                                @for (pn of teamNameList; track pn) {
+                                <mat-option [value]="pn" class="checkbox-option"
+                                  >
+                                  <div class="horizontal-container">
+                                    <div class="option-text" >{{ pn.department_cv }} - {{ pn.description }}
+                                    </div>
+                                  </div>
+                                </mat-option>
+                                }
+                              </mat-autocomplete>
+                            </mat-chip-grid>
                       </mat-form-field>
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
@@ -108,16 +127,16 @@
                           @if (updatedRoleList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (r of updatedRoleList; let i = $index; track r) {
-                            <div class="step-box cursor-pointer rounded" >
+                            <div class="step-box cursor-pointer rounded role-content" >
                               <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              <span class="">{{r.role.description}}
-                                </span>
+                              
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                               }
+                              <span class="">{{r.role.description}}</span>
                             </div>
                             }
                           </div>
@@ -139,16 +158,16 @@
                           @if (updatedTeamList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (t of updatedTeamList; let i = $index; track t) {
-                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                            <div class="step-box cursor-pointer rounded  role-content" >
                               <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                              <span class="">{{t.team?.description}}
-                                mins</span>
+                              
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                               }
+                              <span class="">{{ t.department_cv }} - {{ t.description }}</span>
                             </div>
                             }
                           </div>
@@ -170,13 +189,13 @@
                           @if (updatedAdhocList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (movie of updatedAdhocList; let i = $index; track movie) {
-                            <div class="step-box cursor-pointer p-2 mb-2 rounded" >
+                            <div class="step-box cursor-pointer p-2 mb-2 rounded  role-content" >
                               <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
                               <span class="">{{movie.cleaning_formula?.description}} - {{movie.cleaning_formula?.duration}}
                                 mins</span>
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                                [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
                                 <mat-icon>cancel</mat-icon>
                               </button>
                               }
@@ -207,12 +226,12 @@
                           @if (updatedRoleList.length) {
                           <div cdkDropList class="steps-list-features" >
                             @for (f of updatedRoleFeaturesList; let i = $index; track f) {
-                            <div class="step-box-features cursor-pointer rounded" >
+                            <div class="step-box-features cursor-pointer rounded  role-content" >
                               <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
                               
                               @if (canEdit()) {
                               <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem($event, i)"
-                                [matTooltip]="translatedLangText.DISABLE" class="text-custom-danger m-b-10">
+                                [matTooltip]="translatedLangText.DISABLE" class="text-custom-danger  lower-btn">
                                 <span class="material-symbols-outlined ">
                                   no_accounts
                                   </span>

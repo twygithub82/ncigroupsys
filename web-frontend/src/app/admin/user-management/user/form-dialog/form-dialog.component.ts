@@ -42,6 +42,7 @@ import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-r
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { TeamDS } from 'app/data-sources/teams';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -121,6 +122,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   packageResidueDS?: PackageResidueDS;
   CodeValuesDS?: CodeValuesDS;
   userDs?: UserDS;
+  teamDs?: TeamDS;
   storageCalCvList: CodeValuesItem[] = [];
 
   storingOrderTank?: StoringOrderTankItem;
@@ -259,9 +261,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.custCompClnCatDS = new CustomerCompanyCleaningCategoryDS(this.apollo);
     this.userDs=new UserDS(this.apollo);
+    this.teamDs = new TeamDS(this.apollo);
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+    this.initializeValueChanges();
   }
 
   createUserProfile(): UntypedFormGroup {
@@ -277,6 +281,45 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       team: this.teamNameControl,
       adhoc: [''],
     });
+  }
+
+
+  initializeValueChanges() {
+    var searchObj = this.pcForm;
+    // searchObj?.get("name")!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     this.fmlDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
+    //       this.nameList = data.map(i => i.name || '');
+    //     });
+    //   })
+    // ).subscribe();
+
+    searchObj?.get("team")!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+     tap(value => {
+       this.teamDs?.loadItems(
+          {
+            or: [
+              { description: { contains: value } },
+              { department_cv: { contains: value } }
+            ]
+          },
+          { description: "ASC" },
+          100
+        ).subscribe(data => {
+          this.teamNameList = data.filter(desc =>
+            !this.updatedTeamList.some(
+              t =>
+                t.description === desc.description &&
+                t.department_cv === desc.department_cv
+            )
+          );
+        });
+      })
+    ).subscribe();
   }
 
   getPageTitle() {
@@ -519,46 +562,36 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       //  this.AutoSearch();
       }
     
-      teamname_selected(event: MatAutocompleteSelectedEvent): void {
+      onTeamSelected(event: MatAutocompleteSelectedEvent): void {
         var itm = this.selectedNames;
         var cnt = this.teamNameControl;
-        var elmInput = this.nameInput;
-        const val = event.option.value;
-        const index = itm.findIndex(c => c === val);
-        if (!(index >= 0)) {
-          itm.push(val);
+        this.updatedTeamList.push(cnt.value);
+        // var elmInput = this.nameInput;
+        // const val = event.option.value;
+        // const index = itm.findIndex(c => c === val);
+        // if (!(index >= 0)) {
+        //   itm.push(val);
           
-        }
-        else {
-          itm.splice(index, 1);
+        // }
+        // else {
+        //   itm.splice(index, 1);
          
-        }
+        // }
     
-        if (elmInput) {
+        // if (elmInput) {
     
-          elmInput.nativeElement.value = '';
-          cnt?.setValue('');
-        }
+        //   elmInput.nativeElement.value = '';
+        //   cnt?.setValue('');
+        // }
     
-      //  this.AutoSearch();
-        
-      // if (Utility.IsAllowAutoSearch())
-      //  {
-      //   var interval=2*1000;
-      //    setTimeout(() => {
-      //      this.search();
-      //    },interval)
-      //  }
-        // this.updateFormControl();
-        //this.customerCodeControl.setValue(null);
-        //this.pcForm?.patchValue({ customer_code: null });
+     
       }
     
-      name_onCheckboxClicked(row: any) {
-        const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
-        this.teamname_selected(fakeEvent);
+      // name_onCheckboxClicked(row: any) {
+      //   const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+      //   this.teamname_selected(fakeEvent);
     
-      }
+      // }
     
       name_add(event: MatChipInputEvent): void {
         var cnt = this.teamNameControl;
