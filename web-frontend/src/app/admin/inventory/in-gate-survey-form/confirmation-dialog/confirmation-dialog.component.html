@@ -1,4 +1,4 @@
-<div class="container confirmation-dialog p-4">
+<div class="container confirmation-dialog p-2">
   <h4 mat-dialog-title [ngClass]="{'pt-3': true, 'ps-0': description?.length, 'align-center': !description?.length}">{{dialogTitle}}
   </h4>
   <div mat-dialog-content>
@@ -10,7 +10,7 @@
       </div>
     </div>
     <div mat-dialog-actions
-      [ngClass]="{'pt-2': true, 'justify-content-end': description?.length, 'd-flex justify-content-center': !description?.length}">
+      [ngClass]="{'pt-2 mb-1': true, 'justify-content-end': description?.length, 'd-flex justify-content-center': !description?.length}">
       @if (canEdit()) {
       <button mat-flat-button color="primary" class="me-2" (click)="submit()">{{data.translatedLangText.CONFIRM}}</button>
       }

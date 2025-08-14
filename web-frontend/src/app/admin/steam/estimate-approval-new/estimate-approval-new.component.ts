@@ -1010,6 +1010,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.steaming_part = [];
       this.deList.forEach(data => {
         var steamPart: SteamPartItem = new SteamPartItem(data);
+        steamPart.quantity = Utility.convertNumber(steamPart.quantity, 0);
+        steamPart.cost = Utility.convertNumber(steamPart.cost, 2);
+        steamPart.labour = Utility.convertNumber(steamPart.labour, 2);
+        steamPart.approve_qty = Utility.convertNumber(steamPart.approve_qty, 0);
+        steamPart.approve_cost = Utility.convertNumber(steamPart.approve_cost, 2);
+        steamPart.approve_labour = Utility.convertNumber(steamPart.approve_labour, 2);
         newSteamItem.steaming_part?.push(steamPart);
 
       });

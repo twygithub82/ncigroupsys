@@ -749,11 +749,11 @@ console.log(body);
     var rightRectBoxStartX = leftMargin + (chartContentWidth / 2) + 2;
     var leftRectBoxStartX = leftMargin + 2;
     var bufferLabelY = 9;
-    textContent = `${this.translatedLangText.FOR} ${customerInfo.companyName}`;
+    textContent = `${customerInfo.companyName}`;
     PDFUtility.addText(pdf, textContent, startRectY + 5, leftRectBoxStartX, 8, true);
 
 
-    textContent = `${this.translatedLangText.FOR} ${this.getGate()?.tank?.storing_order?.customer_company?.name}`;
+    textContent = `${this.getGate()?.tank?.storing_order?.customer_company?.name}`;
     PDFUtility.addText(pdf, textContent, startRectY + 5, rightRectBoxStartX, 8, true);
 
 

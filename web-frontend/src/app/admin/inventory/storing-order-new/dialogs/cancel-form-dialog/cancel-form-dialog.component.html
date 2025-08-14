@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container confirmation-dialog p-2">
   <!-- <div class="modalHeader ps-0">
     <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0">{{data.action === 'cancel' ?
       data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
   </div> -->
-  <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0 align-center">{{data.action === 'cancel' ?
+  <h4 mat-dialog-title class="ps-1 pt-4 pb-3 mb-0 align-center">{{data.action === 'cancel' ?
     data.translatedLangText.ARE_YOU_SURE_CANCEL : data.translatedLangText.ARE_YOU_SURE_ROLLBACK}}</h4>
   <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-0">
     <form class="register-form" [formGroup]="storingOrderTankForm" #formDirective="ngForm">
