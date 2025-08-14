@@ -347,6 +347,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.langText,
@@ -379,6 +380,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     selectedItems.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.langText,

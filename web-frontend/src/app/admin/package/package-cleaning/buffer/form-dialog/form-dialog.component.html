@@ -42,10 +42,10 @@
                   <table mat-table [dataSource]="selectedItems" matSort
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="fName">
-                      <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-1_75'">{{translatedLangText.CUSTOMER_CODE
+                      <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">{{translatedLangText.CUSTOMER
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75'">
-                        <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE 
+                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
+                        <span class="mobile-label">{{translatedLangText.CUSTOMER 
                           }}:</span>{{row.customer_company.code}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="lName">

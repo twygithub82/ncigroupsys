@@ -38,35 +38,37 @@
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="fName">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CUSTOMER_CODE
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">{{translatedLangText.CUSTOMER
                       }}</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                      <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
+                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      <span class="mobile-label">{{translatedLangText.CUSTOMER
                         }}:</span>{{row.customer_company.code}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="lName">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CUSTOMER_COMPANY_NAME
+                      [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.CUSTOMER_COMPANY_NAME
                       }}</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                      [ngClass]="'tbl-col-width-per-4-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.CUSTOMER_COMPANY_NAME
                         }}:</span>{{row.customer_company.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="description">
-                    <mat-header-cell *matHeaderCellDef>{{translatedLangText.RESIDUE_TYPE
+                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
+                     >{{translatedLangText.RESIDUE_TYPE
                       }}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
+                    <mat-cell *matCellDef="let row"
+                      [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-label">{{translatedLangText.RESIDUE_TYPE
                         }}:</span>{{row.tariff_residue?.description}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="customerCost">
                     <mat-header-cell *matHeaderCellDef
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       {{translatedLangText.CUSTOMER_COST}}</mat-header-cell>
                     <mat-cell *matCellDef="let row"
-                      [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+                      [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
                       <span class="mobile-label">{{translatedLangText.COST
                         }}:</span>{{displayCurrency(row.cost)}}</mat-cell>
                   </ng-container>

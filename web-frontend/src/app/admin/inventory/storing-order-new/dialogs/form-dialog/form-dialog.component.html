@@ -41,12 +41,12 @@
                 } -->
                 @if (storingOrderTankForm.get('tank_no')?.hasError('invalidCheckDigit')) {
                 <mat-error>
-                  {{data.translatedLangText.TANK_NO}}: {{data.translatedLangText.INVALID}}
+                  {{data.translatedLangText.TANK_NO}} {{data.translatedLangText.INVALID}}
                 </mat-error>
                 }
                 @if (storingOrderTankForm.get('tank_no')?.hasError('existed')) {
                 <mat-error>
-                  {{data.translatedLangText.TANK_NO}}: {{data.translatedLangText.EXISTED}}
+                  {{data.translatedLangText.TANK_NO}} {{data.translatedLangText.EXISTED}}
                 </mat-error>
                 }
               </mat-form-field>

@@ -361,6 +361,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.langText,
@@ -394,6 +395,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       //width: '600px',
       width: '55vw',
       height: 'auto',
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.langText,

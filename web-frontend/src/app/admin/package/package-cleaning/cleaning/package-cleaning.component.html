@@ -153,8 +153,8 @@
                 {{displayCurrency(row.adjusted_price)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tariff_cost">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'justify-content-center'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3 justify-content-center'">{{translatedLangText.TARIFF_COST}} $</mat-header-cell>
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-3 justify-content-center'">
                 <span class="mobile-label">{{this.translatedLangText.TARIFF_COST}}$ :</span>
                 {{displayCurrency(row.cleaning_category.cost)}}</mat-cell>
             </ng-container>

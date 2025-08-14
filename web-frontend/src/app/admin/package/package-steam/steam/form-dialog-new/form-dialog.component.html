@@ -66,9 +66,9 @@
             <table mat-table [dataSource]="selectedItems" matSort
               class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
               <ng-container matColumnDef="fName">
-                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">{{translatedLangText.CUSTOMER_CODE
+                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2 justify-content-center extra-left-padding'">{{translatedLangText.CUSTOMER_CODE
                   }}</mat-header-cell>
-                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2'">
+                <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-2 justify-content-center extra-left-padding'">
                   <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE
                     }}:</span>{{row.customer_company.code}}</mat-cell>
               </ng-container>
@@ -92,14 +92,14 @@
                     }}:</span>{{row.tariff_steaming?.temp_max}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="cost">
-                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">{{translatedLangText.COST }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">{{translatedLangText.FLAT_RATE }}</mat-header-cell>
                 <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">
-                  <span class="mobile-label">{{translatedLangText.COST }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
+                  <span class="mobile-label">{{translatedLangText.FLAT_RATE }}:</span>{{row.cost.toFixed(2)}}</mat-cell>
               </ng-container>
               <ng-container matColumnDef="labour">
-                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">{{translatedLangText.LABOUR }}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">{{translatedLangText. HOURLY_RATE }}</mat-header-cell>
                 <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">
-                  <span class="mobile-label">{{translatedLangText.LABOUR }}:</span>{{row.labour.toFixed(2)}}</mat-cell>
+                  <span class="mobile-label">{{translatedLangText. HOURLY_RATE }}:</span>{{row.labour.toFixed(2)}}</mat-cell>
               </ng-container>
               <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
               <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'" matRipple>

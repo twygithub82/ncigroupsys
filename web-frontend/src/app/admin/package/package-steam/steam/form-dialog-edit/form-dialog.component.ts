@@ -191,6 +191,8 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     LAST_UPDATED: "COMMON-FORM.LAST-UPDATED",
     BUFFER_TYPE: "COMMON-FORM.BUFFER-TYPE",
     TARIFF_RESIDUE: 'MENUITEMS.TARIFF.LIST.TARIFF-RESIDUE',
+    FLAT_RATE: 'COMMON-FORM.FLAT-RATE',
+    HOURLY_RATE: 'COMMON-FORM.HOURLY-RATE',
   };
   unit_type_control = new UntypedFormControl();
 
