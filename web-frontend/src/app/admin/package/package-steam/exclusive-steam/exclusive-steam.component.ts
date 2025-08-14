@@ -395,6 +395,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       //width: '600px',
       width: '55vw',
       height: 'auto',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',

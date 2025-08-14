@@ -380,6 +380,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     selectedItems.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
