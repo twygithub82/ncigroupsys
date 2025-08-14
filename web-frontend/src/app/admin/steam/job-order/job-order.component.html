@@ -197,11 +197,11 @@
                       (page)="onPageEventSteam($event)">
                     </mat-paginator>
                     <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
-                      <div class="legend-item d-flex align-items-center me-4 mb-2">
+                      <div class="legend-item d-flex align-items-center me-4 mb-0">
                         <mat-icon class="me-2">build</mat-icon>
                         <span>{{translatedLangText.REPAIR}}</span>
                       </div>
-                      <div class="legend-item d-flex align-items-center me-4 mb-2">
+                      <div class="legend-item d-flex align-items-center me-4 mb-0">
                         <mat-icon class="me-2 ">whatshot</mat-icon>
                         <span>{{translatedLangText.STEAM_HEAT_TYPE}}</span>
                       </div>
@@ -210,7 +210,6 @@
                 </div>
               </mat-tab>
               <mat-tab [label]="translatedLangText.JOB_ORDER_TAB_TITLE">
-
                 <app-job-order-task #steamJobOrderTask></app-job-order-task>
               </mat-tab>
               <mat-tab [label]="translatedLangText.BAY_OVERVIEW">

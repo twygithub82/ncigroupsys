@@ -172,7 +172,7 @@
       [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEventJobOrder($event)">
     </mat-paginator>
     <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
-      <div class="legend-item d-flex align-items-center me-4 mb-2">
+      <div class="legend-item d-flex align-items-center me-4 mb-0">
         <mat-icon class="me-2 red-timer-icon">timer</mat-icon>
         <span>{{translatedLangText.NOT_STARTED}}</span>
       </div>
@@ -180,7 +180,7 @@
         <mat-icon class="me-2 yellow-timer-icon">timer</mat-icon>
         <span>{{translatedLangText.STARTED}}</span>
       </div> -->
-      <div class="legend-item d-flex align-items-center me-4 mb-2">
+      <div class="legend-item d-flex align-items-center me-4 mb-0">
         <mat-icon class="me-2 green-timer-icon">check_box</mat-icon>
         <span>{{translatedLangText.TO_COMPLETE}}</span>
       </div>
