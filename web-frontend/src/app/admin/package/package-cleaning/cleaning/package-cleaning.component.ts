@@ -408,6 +408,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
+      autoFocus: false,
       data: {
         action: 'update',
         langText: this.langText,

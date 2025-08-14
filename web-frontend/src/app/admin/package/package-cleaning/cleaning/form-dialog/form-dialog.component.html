@@ -17,7 +17,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{getCostLabel()}}</mat-label>
-                <input matInput formControlName="adjusted_cost" type="number" min="0" required>
+                <input matInput #adjustCost formControlName="adjusted_cost" appNumericText type="text" min="0" (focus)="adjustCost.select()" required>
                 <!-- @if (pcForm.get('adjusted_cost')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.CUSTOMER_COST}} {{translatedLangText.SO_REQUIRED}}

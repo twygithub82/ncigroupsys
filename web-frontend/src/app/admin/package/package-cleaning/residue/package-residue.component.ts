@@ -426,6 +426,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
+      autoFocus: false,
       //height: '80vh',
       data: {
         action: 'update',
