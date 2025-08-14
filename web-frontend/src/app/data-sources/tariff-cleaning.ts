@@ -22,8 +22,8 @@ export class TariffCleaningGO {
   public nature_cv?: string;
   public open_on_gate_cv?: string;
   public in_gate_alert?: string;
-  public depot_note?: number;
-  public remarks?: number;
+  public depot_note?: string;
+  public remarks?: string;
   public create_dt?: number;
   public create_by?: string;
   public update_dt?: number;

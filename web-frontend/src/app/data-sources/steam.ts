@@ -438,6 +438,7 @@ export const GET_STEAM_EST = gql`
             guid
             open_on_gate_cv
             cargo
+            remarks
           }
           storing_order {
             customer_company {

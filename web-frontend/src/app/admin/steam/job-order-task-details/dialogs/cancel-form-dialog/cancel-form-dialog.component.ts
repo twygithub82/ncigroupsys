@@ -86,7 +86,7 @@ export class CancelFormDialogComponent {
       guid: [re.guid],
       estimate_no: [re.estimate_no],
       sot_guid: [re.sot_guid],
-      remarks: ['', Validators.required]
+      remarks: ['']
     });
   }
   createTankGroup(tank: any): UntypedFormGroup {
@@ -98,6 +98,7 @@ export class CancelFormDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
   confirmCancel(): void {
     if (this.cancelForm.valid) {
       let cancelItemList = this.cancelForm.value['cancelItemList']
