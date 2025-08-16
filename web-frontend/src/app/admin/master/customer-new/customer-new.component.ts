@@ -1117,8 +1117,7 @@ export class CustomerNewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   resetDialog(event: Event) {
-    event.preventDefault(); // Prevents the form submission
-    event.stopPropagation();
+    this.preventDefault(event);
     this.resetForm();
   }
 

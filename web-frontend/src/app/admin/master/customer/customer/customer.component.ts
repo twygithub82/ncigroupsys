@@ -443,13 +443,11 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
     if (this.pcForm!.get("default_profile")?.value?.guid) {
       const tankSearch: any = {};
       tankSearch.guid = { eq: this.pcForm!.get("default_profile")?.value?.guid };
-      // where.tank = tankSearch;
       const customer_company: any = { tank: { guid: { eq: this.pcForm!.get("default_profile")?.value?.guid } } }
       where.and.push({ customer_company: customer_company })
     }
 
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
-      // where.country = { eq: this.pcForm!.value["country"] };
       const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
       where.and.push({ customer_company: customer_company })
     }
