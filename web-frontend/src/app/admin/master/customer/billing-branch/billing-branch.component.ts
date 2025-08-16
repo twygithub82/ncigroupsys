@@ -199,6 +199,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   storageCalCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
+  countryCodes: any = [];
+  countryCodesFiltered: any = [];
   CodeValuesDS?: CodeValuesDS;
   tankDS: TankDS;
 
@@ -261,6 +263,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   contextMenu?: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
   ngOnInit() {
+    this.countryCodes = Utility.getCountryCodes("country", true);
     this.searchStateService.clearOtherPages(this.pageStateType);
     this.loadData();
     this.translateLangText();
@@ -276,7 +279,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       phone: [''],
       fax_no: [''],
       email: [''],
-      country: [''],
+      country: ['All'],
       contact_person: [''],
       mobile_no: [''],
       description: this.descriptionControl,
@@ -396,10 +399,16 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       where.customer_company.tank = tankSearch;
     }
 
-    if (this.pcForm!.value["country"]) {
-      if (where.customer_company == null) where.customer_company = {};
-      where.customer_company.country = { contains: this.pcForm!.value["country"] };
+    if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
+      // where.country = { eq: this.pcForm!.value["country"] };
+      const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
+      where.and.push({ customer_company: customer_company })
     }
+
+    // if (this.pcForm!.value["country"]) {
+    //   if (where.customer_company == null) where.customer_company = {};
+    //   where.customer_company.country = { contains: this.pcForm!.value["country"] };
+    // }
 
     if (this.pcForm!.value["contact_person"]) {
       if (where.customer_company == null) where.customer_company = {};

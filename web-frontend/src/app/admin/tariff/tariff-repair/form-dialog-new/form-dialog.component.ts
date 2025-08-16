@@ -133,6 +133,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     REMARKS: 'COMMON-FORM.REMARKS',
     ETR_DATE: 'COMMON-FORM.ETR-DATE',
     ST: 'COMMON-FORM.ST',
+    PART: 'COMMON-FORM.PART',
     O2_LEVEL: 'COMMON-FORM.O2-LEVEL',
     OPEN_ON_GATE: 'COMMON-FORM.OPEN-ON-GATE',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
@@ -250,7 +251,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         width_diameter_unit_cv: this.widthDiameterUnitControl,
         thickness: this.selectedItem.width_diameter,
         thickness_unit_cv: this.thicknessUnitControl,
-        length: '',
+        length: this.selectedItem.length,
         labour_hour: '',
         material_cost: '',
       });

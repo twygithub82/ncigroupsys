@@ -37,7 +37,7 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 ">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
-                <input matInput #maxInput formControlName="max_temp" type="number" step="1" inputmode="numeric"
+                <input matInput #maxInput formControlName="max_temp" type="text" step="1" appNumericText
                   [allowDecimal]="false" (focus)="maxInput.select()" required>
               </mat-form-field>
             </div>
