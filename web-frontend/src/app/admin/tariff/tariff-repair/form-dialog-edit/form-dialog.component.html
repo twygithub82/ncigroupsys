@@ -143,11 +143,11 @@
             <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
             <input matInput formControlName="thickness" type="number" min="0" (focus)="selectAll($event)"
               [required]="isRequired('thickness_unit_cv')">
-            <!-- @if (pcForm.get('thickness')?.hasError('required')) {
+            @if (pcForm.get('length')?.hasError('existed')) {
                 <mat-error>
-                  {{translatedLangText.THICKNESS }} {{translatedLangText.CARGO_REQUIRED }}
+                  {{translatedLangText.PART }} {{translatedLangText.EXISTED }}
                 </mat-error>
-                } -->
+                }
           </mat-form-field>
         </div>
         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1" [hidden]="isMultiSelect()">
@@ -171,11 +171,11 @@
             <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')"
               (focus)="selectAll($event)">
           </mat-form-field>
-          @if (pcForm.get('length')?.hasError('existed')) {
+          <!-- @if (pcForm.get('length')?.hasError('existed')) {
           <mat-error>
             {{translatedLangText.LENGTH }} {{translatedLangText.EXISTED }}
           </mat-error>
-          }
+          } -->
           <!-- @if (pcForm.get('length')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.LENGTH }} {{translatedLangText.CARGO_REQUIRED }}

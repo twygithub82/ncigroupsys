@@ -214,7 +214,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     COST_TYPE: "COMMON-FORM.COST-TYPE",
     REBATE_TYPE: "COMMON-FORM.REBATE-TYPE",
     JOB_TYPE: "COMMON-FORM.JOB-TYPE",
-    ALIAS_NAME: "COMMON-FORM.ALIAS-NAME"
+    ALIAS_NAME: "COMMON-FORM.ALIAS-NAME",
+    PART: "COMMON-FORM.PART",
   };
   unit_type_control = new UntypedFormControl();
   unitTypeChangedEventUnsub: boolean = false;
@@ -400,7 +401,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         });
       }
       else {
-        this.pcForm?.get('length')?.setErrors({ existed: true });
+        this.pcForm?.get('part_name')?.setErrors({ existed: true });
+        // this.pcForm?.get('length')?.setErrors({ existed: true });
       }
 
 

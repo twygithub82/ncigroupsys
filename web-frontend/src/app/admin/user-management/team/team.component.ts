@@ -71,7 +71,7 @@ import {TeamDS,TeamItem,TeamItemWithCount} from 'app/data-sources/teams';
     ReactiveFormsModule,
     FormsModule,
     MatAutocompleteModule,
-    MatDividerModule,
+    MatDividerModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

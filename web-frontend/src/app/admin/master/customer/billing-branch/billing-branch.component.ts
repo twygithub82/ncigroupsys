@@ -386,7 +386,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.pcForm!.value["branch_code"]) {
-      where.and = [{ customer_company: { code: { contains: this.pcForm!.value["branch_code"] } } }, { customer_company: { type_cv: { eq: 'BRANCH' } } }];
+      var branch = this.pcForm!.value["branch_code"];
+      where.and = [{ customer_company: { code: { contains: branch.code } } }];
     }
 
     if (this.pcForm!.get("default_profile")?.value?.guid) {
@@ -537,28 +538,29 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeFilterCustomerCompany() {
-    this.pcForm!.get('customer_code')!.valueChanges.pipe(
-      startWith(''),
-      debounceTime(300),
-      tap(value => {
-        var searchCriteria = '';
-        if (value && typeof value === 'object') {
-          searchCriteria = value.code;
-        } else {
-          searchCriteria = value || '';
-        }
-        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
-        });
-      })
-    ).subscribe();
+    // this.pcForm!.get('customer_code')!.valueChanges.pipe(
+    //   startWith(''),
+    //   debounceTime(300),
+    //   tap(value => {
+    //     var searchCriteria = '';
+    //     if (value && typeof value === 'object') {
+    //       searchCriteria = value.code;
+    //     } else {
+    //       searchCriteria = value || '';
+    //     }
+    //     this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+    //       this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
+    //     });
+    //   })
+    // ).subscribe();
   }
 
   public loadData() {
     var cond: any = {};
     cond.type_cv = { in: ["OWNER", "BRANCH", "LEESSEE"] }
-    this.subs.sink = this.custCompDS.search(cond, { code: 'ASC' }, 100).subscribe(data => {
+    this.subs.sink = this.custCompDS.searchAll(cond, { code: 'ASC' }).subscribe(data => {
       this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
+      this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
     });
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.unit_typeList = [{ guid: '', unit_type: 'All' }, ...data]

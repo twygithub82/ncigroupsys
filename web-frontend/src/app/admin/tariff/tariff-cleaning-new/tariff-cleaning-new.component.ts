@@ -304,7 +304,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       ban_type: this.banTypeControl,
       open_gate: this.openGateControl,
       flash_point: [''],
-      un_no: ['', [Validators.required, this.onlyNumbersDashValidator]],
+      un_no: ['', [ this.onlyNumbersDashValidator]],
       nature: this.natureCvList,
       in_gate_alert: [''],
       depot_note: [''],
@@ -312,6 +312,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       file_size: [0, [Validators.required, this.onlyFileSizeValidator]],
       remarks: ['']
     });
+    // this.classNoControl.setValue("NA");
   }
 
   ngOnInit() {
@@ -672,7 +673,7 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   get isFileSelectable(): boolean {
-    return !!this.tcForm!.value["un_no"]; // File can be selected if un_no is not empty
+    return true; // File can be selected if un_no is not empty
   }
 
   onUnNoBlur(): void {

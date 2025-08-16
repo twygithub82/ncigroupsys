@@ -1,9 +1,13 @@
 <div class="addContainer">
   <div class="card">
-    <div class="header">
-      <h2>
-        {{this.data.langText.CARGO_CLASS_SELECT | translate}}
+   <div class="header flex justify-between items-center">
+      <h2 class="m-0">
+        {{ this.data.langText.CARGO_CLASS_SELECT | translate }}
       </h2>
+
+      <button mat-mini-fab type="button" color="primary" (click)="SelectNA('NA')" >
+        <i class="material-symbols-outlined m-t-5">no_meeting_room</i>
+      </button>
     </div>
     <div class="body">
       <div class="row">
@@ -23,9 +27,11 @@
                     </td>
                   </tr>
                 </table>
+              
               </div>
             </mat-tab>
           </mat-tab-group>
+          
         </div>
         <!-- <mat-tab-group  >
          

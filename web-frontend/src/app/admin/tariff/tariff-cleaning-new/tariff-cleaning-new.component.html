@@ -196,7 +196,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{langText.CARGO_UN_NO | translate}}</mat-label>
-                          <input matInput formControlName="un_no" required [maxLength]="6" (blur)="onUnNoBlur()"
+                          <input matInput formControlName="un_no"  [maxLength]="6" (blur)="onUnNoBlur()"
                             (input)="onUNNumericOnly($event, 'un_no')"
                             [ngStyle]="{ 'color': this.newUNNo ? '#048efb' : 'black' }">
                           <!-- @if (tcForm?.get('un_no')?.hasError('required')) {
@@ -262,7 +262,7 @@
                       </div>
                       @if (tcForm?.get('file_size')?.hasError('required')) {
                       <mat-error>
-                        {{translatedLangText.SDS_FILE }} {{translatedLangText.CARGO_REQUIRED }}
+                        {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
                       }
                       @if (tcForm?.get('file_size')?.hasError('error')) {
@@ -275,8 +275,16 @@
                         <!-- <p>{{ tcForm!.get('cargo_name')?.value??'' }}
                           <span *ngIf="selectedFileChanged">*</span>
                         </p> -->
-                        <button class="mt-2" mat-raised-button color="primary" (click)="previewFile()"
-                          type="button">Preview</button>
+                        <button mat-mini-fab  (click)="previewFile()" type="button"
+                          class="m-l-5" color="primary">
+                          <!-- [disabled]="!isFileSelectable"> -->
+                          <i class="material-symbols-outlined m-t-5">preview</i>
+                        </button>
+                        <!-- <button class="m-l-5 " mat-mini-fab color="primary" (click)="previewFile()"
+                          type="button"><span class="material-symbols-outlined">
+                              preview
+                              </span>
+                            </button> -->
                       </div>
                       <!-- @if (this.selectedFileLoading | async) { -->
                       <div class="tbl-spinner" *ngIf="sdsFileLoading">

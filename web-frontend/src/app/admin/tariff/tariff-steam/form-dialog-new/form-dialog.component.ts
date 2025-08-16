@@ -307,8 +307,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     let where: any = { or: [] };
 
-    let maxTemp = this.pcForm?.value['max_temp'];
-    let minTemp = this.pcForm?.value['min_temp']
+    let maxTemp = Number(this.pcForm?.value['max_temp']);
+    let minTemp = Number(this.pcForm?.value['min_temp'])
     if (!maxTemp) maxTemp = 9999;
     where.or.push({ and: [{ temp_min: { lte: minTemp } }, { temp_max: { gte: minTemp } }] })
     where.or.push({ and: [{ temp_min: { lte: maxTemp } }, { temp_max: { gte: maxTemp } }] })
@@ -340,8 +340,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     let where: any = { or: [] };
 
-    let maxTemp = this.pcForm?.value['max_temp'];
-    let minTemp = this.pcForm?.value['min_temp']
+    let maxTemp = Number(this.pcForm?.value['max_temp']);
+    let minTemp = Number(this.pcForm?.value['min_temp']);
     if (!maxTemp) maxTemp = 9999;
     where.or.push({ and: [{ temp_min: { lte: minTemp } }, { temp_max: { gte: minTemp } }] })
     where.or.push({ and: [{ temp_min: { lte: maxTemp } }, { temp_max: { gte: maxTemp } }] })

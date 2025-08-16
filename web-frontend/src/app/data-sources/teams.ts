@@ -145,7 +145,6 @@ mutation updateTeam($teamRequest:[teamInput!]!) {
 `;
 
 export const DELETE_TEAM = gql`
-
 mutation deleteTeam($teamsGuid:[String!]!) {
   deleteTeam(teamsGuid: $teamsGuid)
 }

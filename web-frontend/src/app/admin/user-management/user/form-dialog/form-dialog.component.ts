@@ -1,9 +1,9 @@
 import { Direction } from '@angular/cdk/bidi';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { COMMA, ENTER, M } from '@angular/cdk/keycodes';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -44,13 +44,15 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS } from 'app/data-sources/teams';
-import { UserDS, UserItem } from 'app/data-sources/user';
+import { UserDS, UserGO, UserItem } from 'app/data-sources/user';
 import { UserRoleLinkage } from 'app/data-sources/userrole';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
+import { AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { strongPasswordValidator } from 'app/utilities/validator';
 // import { FormDialogComponent } from './form-dialog/form-dialog.component';
 export interface DialogData {
   action?: string;
@@ -243,6 +245,11 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     SELECTED_ADHOC:'COMMON-FORM.SELECTED-ADHOC',
     SELECTED_FEATURES:'COMMON-FORM.SELECTED-FEATURES',
     DISABLE:'COMMON-FORM.DISABLE',
+    MIN_8_CHARS: "COMMON-FORM.MIN-8-CHARS",
+    MUST_ONE_UPPERCASE: "COMMON-FORM.MUST-ONE-UPPERCASE",
+    MUST_ONE_LOWERCASE: "COMMON-FORM.MUST-ONE-LOWERCASE",
+    MUST_ONE_NUMBER: "COMMON-FORM.MUST-ONE-NUMBER",
+    MUST_ONE_SPECIAL: "COMMON-FORM.MUST-ONE-SPECIAL"
   };
 
  
@@ -281,8 +288,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       contact: [''],
       email: [''],
       username: [''],
-      pwd: [''],
-      confirm_pwd: [''],
+      pwd: ['', [Validators.required, strongPasswordValidator()]],
+      confirm_pwd: ['', Validators.required],
       role: [''],
       team: this.teamNameControl,
       adhoc: [''],
@@ -306,11 +313,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
      tap(value => {
+
+       var searchCriteria = '';
+        if (value && typeof value === 'object') {
+          searchCriteria = value.department_cv;
+        } else {
+          searchCriteria = value || '';
+        }
+
        this.teamDs?.loadItems(
           {
             or: [
-              { description: { contains: value } },
-              { department_cv: { contains: value } }
+              { description: { contains: searchCriteria } },
+              { department_cv: { contains: searchCriteria } }
             ]
           },
           { description: "ASC" },
@@ -331,11 +346,20 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
      tap(value => {
+
+       var searchCriteria = '';
+        if (value && typeof value === 'object') {
+          searchCriteria = value.department;
+        } else {
+          searchCriteria = value || '';
+        }
+
+
        this.roleDs?.searchRolesWithFunctions(
           {
             or: [
-              { description: { contains: value } },
-              { department: { contains: value } }
+              { description: { contains: searchCriteria } },
+              { department: { contains: searchCriteria } }
             ]
           },
           { description: "ASC" },
@@ -356,9 +380,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       startWith(''),
       debounceTime(300),
      tap(value => {
+
+       var searchCriteria = '';
+        if (value && typeof value === 'object') {
+          searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
+        }
+
+
        this.roleDs?.searchFunctions(
           {
-           code: { contains: value } 
+           code: { contains: searchCriteria } 
           },
           { code: "ASC" },
           100
@@ -427,7 +460,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         where.userName={eq: this.selectedItem.userName};
         this.userDs?.searchUserWithDetails(where).subscribe((data)=>{
           
-          if(data.length>0){
+          if(data?.length>0){
             var usr= data[0];
             this.pcForm.patchValue({
              username: usr.userName,
@@ -463,7 +496,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       this.updatedRoleFeaturesList.forEach(f=>{
         
         var found=this.updatedAdhocList.find(a=>a.functions_guid===f.functions.guid);
-        if(!found)
+        if(found===false)
         {
           found.array.forEach((element:any) => { element.is_disabled=true; });           
         }
@@ -504,23 +537,94 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     return true;
   }
 
-  handleSaveSuccess(count: any) {
-    if ((count ?? 0) > 0) {
-      let successMsg = this.langText.SAVE_SUCCESS;
-      this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
-        successMsg = res;
-        ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
+  // handleSaveSuccess(count: any) {
+  //   if ((count ?? 0) > 0) {
+  //     let successMsg = this.langText.SAVE_SUCCESS;
+  //     this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
+  //       successMsg = res;
+  //       ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
 
-      });
-    }
-  }
+  //     });
+  //     this.closeDialog();
+  //   }
+  // }
 
   save() {
 
-    if (!this.pcForm?.valid) return;
+  //  if (!this.pcForm?.valid) return;
 
+    var user:any = new UserItem(this.selectedItem);
+    var teamList:any[]=[];
+    this.updatedTeamList.forEach(t=>{
+      if(t.action)
+      {
+        const newItem={
+          ...t.team,
+          action: t.action,}  
+        delete newItem.team;
+        delete newItem.userId ; 
+        delete newItem.team_guid;
+        delete newItem.is_deleted;
+        delete newItem.__typename;
+        
+        teamList.push(newItem);
+      }
+    });
+
+    var roleList:any[]=[];
+    this.updatedRoleList.forEach(r=>{
+      if(r.action)
+      {
+        delete r.role.__typename;
+        delete r.role.role_functions;
+        r.role.action=r.action;
+        roleList.push(r.role);
+      }
+    });
     
+    var adhocList:any[]=[];
+    this.updatedAdhocList.forEach(a=>{
+      if(a.action)
+      {
+        
+         const newItem = {
+          action: a.action,
+          addhoc:true,
+          guid: a.guid,
+          remarks:''
+        };
 
+        adhocList.push(newItem);
+      }
+    });
+
+    this.updatedRoleFeaturesList.forEach(f=>{
+      if(f.action)
+      {
+        
+        const newItem = {
+          action: "NEW",
+          addhoc: f.is_disabled?false:true,
+          guid: f.functions.guid,
+          remarks:''
+        };
+
+        var item= adhocList.find(d=>d.guid===newItem.guid);
+        if(item)
+        {
+          item.addhoc=f.is_disabled?false:true;
+        }
+        else
+        {
+          adhocList.push(newItem);
+        }
+      }
+    });
+    
+     this.userDs?.updateUser(user,roleList,teamList,adhocList).subscribe((result)=>{
+
+        this.dialogRef.close(result.data.updateUser);
+     })
 
   }
 
@@ -535,7 +639,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     });
   }
   onNoClick(): void {
-    this.dialogRef.close();
+     this.dialogRef.close();
   }
 
 
@@ -582,6 +686,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         var cnt = this.teamNameControl.value;
          const newItem = {
           ...cnt,
+          team:cnt,
           action: "NEW"
         };
         // cnt.value.action="NEW";
@@ -598,7 +703,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
  
 
   
-        cnt?.setValue(null);
+        // cnt?.setValue(null);
      
       }
       // name_add(event: MatChipInputEvent): void {
@@ -680,6 +785,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       toggleFunction(f:any)
       {
         f.is_disabled=f.is_disabled?false:true;
+        f.action="EDIT";
         
       }
       
@@ -720,5 +826,19 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
            item.action="CANCEL";
         }
        
+      }
+
+      allowChangePassword():boolean
+      {
+        var retval:boolean=false;
+        var pwd = this.pcForm?.get('pwd')?.value;
+        var cfmpwd = this.pcForm?.get('confirm_pwd')?.value;
+        retval=pwd && cfmpwd && pwd===cfmpwd;
+        return retval;
+      }
+
+      changePassword()
+      {
+
       }
 }

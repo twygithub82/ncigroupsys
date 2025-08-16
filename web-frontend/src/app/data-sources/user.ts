@@ -6,6 +6,7 @@ import { BaseDataSource } from './base-ds';
 import { StoringOrderTankItem } from './storing-order-tank';
 import { UserRoleItem, UserRoleLinkage } from './userrole';
 import { TeamUserLinkage } from './teams';
+import { ApolloError } from '@apollo/client/core';
 
 
 export class UserGO {
@@ -109,7 +110,7 @@ const GET_USERS_TEAMS_ROLES = gql`
         id
         phoneNumber
         userName
-        team_user {
+        team_user(where: { delete_dt: { eq: null } }) {
           create_by
           create_dt
           delete_dt
@@ -118,8 +119,18 @@ const GET_USERS_TEAMS_ROLES = gql`
           update_by
           update_dt
           userId
+          team {
+            create_by
+            create_dt
+            delete_dt
+            department_cv
+            description
+            guid
+            update_by
+            update_dt
+          }
         }
-        user_role {
+        user_role(where: { delete_dt: { eq: null } }) {
           create_by
           create_dt
           delete_dt
@@ -168,27 +179,9 @@ const GET_USERS_TEAMS_ROLES = gql`
 
 
 const UPDATE_USER = gql`
-  query queryUsers($where: aspnetusersFilterInput, $order: [aspnetusersSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    resultList: queryUsers(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-      totalCount
-      nodes {
-        id
-        userName
-        email
-        aspnetuserroles {
-          aspnetroles {
-            Role
-          }
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-    }
-  }
+mutation updateUser($userRequest: aspnetusersInput!, $rolesRequest: [roleInput]!,$teamsRequest: [teamInput]!, $functionsRequest: [FunctionsRequestInput]!) {
+  updateUser(userRequest: $userRequest, rolesRequest: $rolesRequest, teamsRequest: $teamsRequest, functionsRequest: $functionsRequest)
+}
 `;
 
 
@@ -242,4 +235,23 @@ export class UserDS extends BaseDataSource<UserItem> {
         })
       );
   }
+
+
+   updateUser(userRequest:any,rolesRequest:any,teamsRequest: any,functionsRequest: any): Observable<any> {
+        return this.apollo.mutate({
+          mutation: UPDATE_USER,
+          variables: {
+            userRequest,
+            teamsRequest,
+            rolesRequest,
+            functionsRequest
+          }
+        }).pipe(
+          catchError((error: ApolloError) => {
+            console.error('GraphQL Error:', error);
+            return of(0); // Return an empty array on error
+          }),
+        );
+      }
+
 }

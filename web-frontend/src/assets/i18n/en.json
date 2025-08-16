@@ -845,7 +845,7 @@
     "TRANSACTION-DATE": "Transaction Date",
     "UPDATE-STATUS": "Update Status",
     "TEMP-RANGE-ERROR": "Max temperature must exceed min",
-    "TEMP-RANGE-OVERLAPS-ERROR": "New steam temperature must not match or exceed existing",
+    "TEMP-RANGE-OVERLAPS-ERROR": "New steam temperature must not match or exceed the existing one",
     "STORAGE-BEGIN-DATE": "Storage Begin Date",
     "STORAGE-DAYS": "Storage Days",
     "AV-DATE": "AV Date",
@@ -1380,7 +1380,14 @@
     "START-DATE": "Start Date",
     "STORAGE-DAY": "Storage Days",
     "STEAM-LOG": "Steam Log",
-    "DISABLE":"Disable"
+    "DISABLE":"Disable",
+    "MIN-8-CHARS": "Minimum 8 characters",
+    "MUST-ONE-UPPERCASE": "Must have at least one uppercase letter",
+    "MUST-ONE-LOWERCASE": "Must have at least one lowercase letter",
+    "MUST-ONE-NUMBER": "Must have at least one number",
+    "MUST-ONE-SPECIAL": "Must have at least one special character"
+    
+    
   },
   "CLEAN-PROCEDURES": {
     "TEXT": "Cleaning Procedures",
