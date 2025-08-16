@@ -44,11 +44,11 @@
                   {{data.translatedLangText.TANK_NO}} {{data.translatedLangText.INVALID}}
                 </mat-error>
                 }
-                @if (storingOrderTankForm.get('tank_no')?.hasError('existed')) {
+                <!-- @if (storingOrderTankForm.get('tank_no')?.hasError('existed')) {
                 <mat-error>
                   {{data.translatedLangText.TANK_NO}} {{data.translatedLangText.EXISTED}}
                 </mat-error>
-                }
+                } -->
               </mat-form-field>
             </div>
           </div>
@@ -158,7 +158,7 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.ETA_DATE}}</mat-label>
                 <input matInput formControlName="eta_dt" [matDatepicker]="eta_picker"
-                  [max]="storingOrderTankForm.get('etr_dt')?.value">
+                  [max]="storingOrderTankForm.get('etr_dt')?.value" [min]="today">
                 <mat-datepicker-toggle matSuffix [for]="eta_picker"></mat-datepicker-toggle>
                 <mat-datepicker #eta_picker [startAt]="startDateETA"></mat-datepicker>
               </mat-form-field>
@@ -167,7 +167,7 @@
               <mat-form-field class="example-full-width">
                 <mat-label>{{data.translatedLangText.ETR_DATE}}</mat-label>
                 <input matInput formControlName="etr_dt" [matDatepicker]="etr_picker"
-                  [min]="storingOrderTankForm.get('eta_dt')?.value">
+                  [min]="storingOrderTankForm.get('eta_dt')?.value||today">
                 <mat-datepicker-toggle matSuffix [for]="etr_picker"></mat-datepicker-toggle>
                 <mat-datepicker #etr_picker [startAt]="startDateETR"></mat-datepicker>
               </mat-form-field>

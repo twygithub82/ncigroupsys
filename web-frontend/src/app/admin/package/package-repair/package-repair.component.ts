@@ -416,6 +416,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
       width: '80vw',
+      autoFocus: false,
       // height: '80vh',
       data: {
         action: 'update',
@@ -446,6 +447,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '65vw',
+      autoFocus: false,
       //height: '80vh',
       data: {
         action: 'update',

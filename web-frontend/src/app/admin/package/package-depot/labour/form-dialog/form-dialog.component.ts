@@ -333,4 +333,8 @@ export class FormDialogComponent {
     this.dialogRef.close();
   }
 
+   displayNumber(value: number) {
+    return Utility.formatNumberDisplay(value);
+  }
+
 }

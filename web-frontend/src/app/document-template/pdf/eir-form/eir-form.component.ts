@@ -591,8 +591,9 @@ console.log(body);
       [`${this.translatedLangText.OPERATOR}: ${this.getGate()?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.getGate()?.tank?.customer_company?.name}`,
       `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.getGate()?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
       [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
-      `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
-      [`${this.translatedLangText.CAPACITY}: ${this.eirDetails?.capacity} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.eirDetails?.tare_weight} KG`,
+        { content: `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, colSpan: 2}],
+      // `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
+      [`${this.translatedLangText.CAPACITY}: ${this.displayNumber(this.eirDetails?.capacity)} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.displayNumber(this.eirDetails?.tare_weight)} KG`,
       `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`, `${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
     ];
 
@@ -2055,7 +2056,7 @@ console.log(body);
 
   getReportTitle(): string {
     var title: string = '';
-    title = `EIR-${this.getGate()?.eir_no}.pdf`
+    title = `EIR-${this.getGate()?.eir_no}-${this.getGate()?.tank?.tank_no}.pdf`
     return `${title}`
   }
 
@@ -2235,5 +2236,10 @@ console.log(body);
     }
   }
 }
+
+  displayNumber(value: number) {
+    return Utility.formatNumberDisplay(value);
+  }
+
 
 }

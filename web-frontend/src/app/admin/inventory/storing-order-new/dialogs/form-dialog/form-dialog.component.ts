@@ -82,6 +82,7 @@ export class FormDialogComponent {
   sotDS: StoringOrderTankDS;
   soDS: StoringOrderDS;
   lastCargoControl: UntypedFormControl;
+  today:Date=new Date();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,

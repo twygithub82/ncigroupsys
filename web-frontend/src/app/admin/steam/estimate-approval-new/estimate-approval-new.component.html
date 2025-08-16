@@ -149,9 +149,9 @@
               @if (!(sotDS.loading$ | async)) {
               <mat-card-content>
                 <div class="row">
-                  <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5 align-right">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 align-right">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
                           <mat-select formControlName="bill_to" required>
@@ -165,9 +165,9 @@
                     <div class="row">
                     </div>
                   </div>
-                  <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                  <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
                           <input matInput formControlName="job_no" [readonly]="!(steamDS.canAmend(this.steamItem!))">
@@ -175,9 +175,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                  <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                           <input matInput formControlName="remarks" [readonly]="!(steamDS.canAmend(this.steamItem!))">

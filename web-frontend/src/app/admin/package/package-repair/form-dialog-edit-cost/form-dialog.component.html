@@ -70,7 +70,7 @@
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{this.translatedLangText.DIMENSION}}</mat-label>
-                  <mat-select formControlName="dimension">
+                  <mat-select formControlName="dimension" [disabled]="(dimensionList?.length === 0||!dimensionList)">
                     @for (dim of dimensionList; track dim) {
                     <mat-option [value]="dim">{{dim}}</mat-option>
                     }
@@ -80,7 +80,7 @@
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{this.translatedLangText.LENGTH}}</mat-label>
-                  <mat-select formControlName="length">
+                  <mat-select formControlName="length" [disabled]="(lengthList?.length === 0||!lengthList)">
                     @for (length of lengthList; track length) {
                     <mat-option [value]="length.length">{{length.ToString()}}</mat-option>
                     }
@@ -112,7 +112,7 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                  <input matInput formControlName="material_cost_percentage" type="number" [min]="minMaterialCost"
+                  <input matInput formControlName="material_cost_percentage" type="text" appnumerictext [min]="minMaterialCost" #material_cost_percentage (focus)="material_cost_percentage.select()"
                     [max]="maxMaterialCost">
                   <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text" >
                     {{translatedLangText.MATERIAL_COST}}
@@ -129,7 +129,7 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
-                  <input matInput formControlName="labour_hour_percentage" type="number" [min]="minMaterialCost"
+                  <input matInput formControlName="labour_hour_percentage" type="text" appnumerictext [min]="minMaterialCost" #labour_hour_percentage (focus)="labour_hour_percentage.select()"
                     [max]="maxMaterialCost">
                   <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')" class="italic-text">
                     {{translatedLangText.LABOUR_HOUR}}

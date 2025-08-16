@@ -229,6 +229,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData();
+    this.EnableValidator('material_cost_percentage');
+    this.EnableValidator('labour_hour_percentage');
   }
 
   createPackageRepair(): UntypedFormGroup {
@@ -489,8 +491,8 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   }
 
   update() {
-    this.DisableValidator('material_cost_percentage');
-    this.DisableValidator('labour_hour_percentage');
+    // this.DisableValidator('material_cost_percentage');
+    // this.DisableValidator('labour_hour_percentage');
 
     if (!this.pcForm?.valid) return;
 
@@ -607,4 +609,11 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       AutocompleteSelectionValidator(validOptions)
     ]);
   }
+
+  updateLabourHourPercentage()
+  {
+    // var labour_hour_percentage = this.pcForm!.value['labour_hour_percentage'];
+    // if(labour_hour_percentage>this.maxMaterialC)
+  }
+
 }

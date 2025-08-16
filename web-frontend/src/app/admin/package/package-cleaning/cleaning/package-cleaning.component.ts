@@ -666,8 +666,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       this.customer_companyList1 = data
     });
 
-    this.clnCatDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }, 100).subscribe(data => {
+    this.clnCatDS.loadItems({ name: { neq: null } }, { name: 'ASC' }, 100).subscribe(data => {
       if (this.clnCatDS.totalCount > 0) {
+
         this.cleaning_categoryList = data;
       }
     });

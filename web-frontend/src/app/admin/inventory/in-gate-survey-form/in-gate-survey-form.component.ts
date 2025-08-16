@@ -252,6 +252,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     EXISTED: 'COMMON-FORM.EXISTED',
     SAVE_AND_PUBLISH: 'COMMON-FORM.SAVE-AND-PUBLISH',
     DEGREE_CELSIUS_SYMBOL: 'COMMON-FORM.DEGREE-CELSIUS-SYMBOL',
+    CONFIRM_RESET:'COMMON-FORM.RESET',
   }
   private destroy$ = new Subject<void>();
 
@@ -1994,6 +1995,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
 
   editRemarks(event: Event, remarksTitle: string, remarksValue: any) {
     this.preventDefault(event);  // Prevents the form submission
+    return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -2169,7 +2171,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
+        headerText: `${this.translatedLangText.CONFIRM_RESET}?`,
         action: 'new',
       },
       direction: tempDirection

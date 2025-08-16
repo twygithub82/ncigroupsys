@@ -120,6 +120,9 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {}
 
+  selectedPackEst?: PackageSteamingItem = undefined;
+  allowSelectedAll: boolean = false;
+
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -416,8 +419,11 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packageSteamItems.length;
-    return numSelected === numRows;
+    // const numRows = this.packageSteamItems.length;
+    // return numSelected === numRows;
+     const numRows = this.packageSteamItems.filter(r => this.selectedPackEst?.tariff_steaming?.guid === r.tariff_steaming?.guid).length;
+    return (numSelected === numRows && numSelected > 0);
+    
   }
 
   isSelected(option: any): boolean {
@@ -433,7 +439,67 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
+  masterToggle_r1() {
+    this.isAllSelected()
+      ? this.resetSelection()
+      : this.packageSteamItems.forEach((row) => {
+        if (this.selectedPackEst?.tariff_steaming?.guid === row.tariff_steaming?.guid) {
+          this.selection.select(row)
+        }
+        else if (this.allowSelectedAll) {
+          if (!this.selectedPackEst) this.selectedPackEst = row;
+          this.selection.select(row);
+        }
+      }
+      );
+  }
+
+  resetSelection() {
+    this.selection.clear();
+    this.selectedPackEst = undefined;
+    //this.allowSelectedAll=false;
+  }
+
+   toggleEstimate(row: PackageSteamingItem) {
+
+    this.selection.toggle(row);
+    if (this.selection.selected.length == 1) {
+      this.selectedPackEst = row;
+    }
+    else if (this.selection.selected.length == 0) {
+      this.selectedPackEst = undefined;
+    }
+  }
+
+  HideCheckBox(row: PackageSteamingItem): boolean {
+    var retval: boolean = false;
+
+    if (this.selectedPackEst) {
+      retval = !(this.selectedPackEst.tariff_steaming?.guid === row.tariff_steaming?.guid);
+    }
+    return retval;
+
+  }
+
+   HideSelectAllCheckBox() {
+    var retval: boolean = true;
+
+    retval = !(this.selectedPackEst);
+    if (retval) {
+      var first = this.packageSteamItems[0];
+      if (first) {
+        var total = this.packageSteamItems.length;
+        retval = !(this.packageSteamItems.filter(r => r.tariff_steaming?.guid === first.tariff_steaming?.guid).length === total)
+        this.allowSelectedAll = !retval;
+      }
+    }
+    return retval
+  }
+
   search() {
+    this.selectedPackEst = undefined;
+    this.allowSelectedAll = false;
+
     const where: any = {
       and: [
         {

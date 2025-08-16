@@ -1006,13 +1006,13 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.est_cost = Utility.convertNumber(this.getTotalCost(), 2);
       newSteamItem.est_hour = Utility.convertNumber(this.getTotalLabourHour(), 2);
       newSteamItem.rate = Utility.convertNumber(this.getRate(), 2); //this.packageLabourItem?.cost;
-      newSteamItem.flat_rate = this.flat_rate;//this.sotItem?.tank?.flat_rate;
+      newSteamItem.flat_rate =Boolean( this.flat_rate);//this.sotItem?.tank?.flat_rate;
       newSteamItem.steaming_part = [];
       this.deList.forEach(data => {
         var steamPart: SteamPartItem = new SteamPartItem(data);
         steamPart.quantity = Utility.convertNumber(steamPart.quantity, 0);
         steamPart.cost = Utility.convertNumber(steamPart.cost, 2);
-        steamPart.labour = Utility.convertNumber(steamPart.labour, 2);
+        steamPart.labour = Number(steamPart.labour);
         steamPart.approve_qty = Utility.convertNumber(steamPart.approve_qty, 0);
         steamPart.approve_cost = Utility.convertNumber(steamPart.approve_cost, 2);
         steamPart.approve_labour = Utility.convertNumber(steamPart.approve_labour, 2);
@@ -1038,10 +1038,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.est_cost = Utility.convertNumber(this.getTotalCost(), 2);
       updSteamItem.est_hour = Utility.convertNumber((this.isSteamRepair) ? this.getTotalLabourHour() : 1, 2);
       updSteamItem.rate = Utility.convertNumber(this.getRate(), 2);//this.flat_rate?this.deList[0].approve_cost:this.deList[0].hour;
-      updSteamItem.flat_rate = this.flat_rate;
+      updSteamItem.flat_rate = Boolean(this.flat_rate);
       updSteamItem.total_material_cost = this.getTotalMaterialCost();
       updSteamItem.total_labour_cost = this.getTotalApprovedLabourCost();
       this.deList.forEach(data => {
+        data.labour=Number(data.labour);
         var steamPart: SteamPartItem = new SteamPartItem(data);
         steamPart.action = !data.action ? '' : data.action;
 
@@ -1724,6 +1725,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       re.status_cv = this.steamItem?.status_cv;
       re.action = "APPROVE";
       re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
+        rep.labour=Number(rep.labour);
+        rep.quantity=Number(rep.quantity);
+        rep.cost=Number(rep.cost);
         return new SteamPartItem({
           ...rep,
           action: (this.steamItem?.status_cv === 'PENDING' ? ((rep.action === undefined || rep.action === null) ? 'EDIT' : rep.action) : (rep.action === undefined ? '' : rep.action)),
@@ -1741,8 +1745,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       re.total_material_cost = this.getTotalMaterialCost();
       re.total_hour = this.getTotalLabourHour();
       re.total_cost = this.getTotalCost();
-      re.rate = this.packageLabourItem?.cost;
-      re.flat_rate = this.sotItem?.tank?.flat_rate;
+      re.rate = Number(this.packageLabourItem?.cost);
+      re.flat_rate = Boolean(this.sotItem?.tank?.flat_rate);
       console.log(re)
       this.steamDS.approveSteaming(re).subscribe(result => {
         console.log(result)
