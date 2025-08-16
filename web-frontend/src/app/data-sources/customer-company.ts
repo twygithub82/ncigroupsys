@@ -506,6 +506,49 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
       );
   }
 
+  searchAll(where?: any, order?: any): Observable<CustomerCompanyItem[]> {
+  this.loadingSubject.next(true);
+  let allNodes: CustomerCompanyItem[] = [];
+  let afterCursor: string | null = null;
+
+  return new Observable<CustomerCompanyItem[]>((observer) => {
+    const fetchPage = () => {
+      this.apollo.query<any>({
+        query: SEARCH_COMPANY_QUERY,
+        variables: { where, order, first: 100, after: afterCursor }, // batch size 100
+        fetchPolicy: 'no-cache'
+      }).subscribe({
+        next: (result) => {
+          const list = result.data.companyList || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 };
+          allNodes = [...allNodes, ...list.nodes];
+          this.pageInfo = list.pageInfo;
+          this.totalCount = list.totalCount;
+
+          if (list.pageInfo.hasNextPage) {
+            afterCursor = list.pageInfo.endCursor;
+            fetchPage(); // keep going
+          } else {
+            this.dataSubject.next(allNodes);
+            observer.next(allNodes);
+            observer.complete();
+            this.loadingSubject.next(false);
+          }
+        },
+        error: (err) => {
+          console.error('GraphQL Error:', err);
+          observer.next([] as CustomerCompanyItem[]);
+          observer.complete();
+          this.loadingSubject.next(false);
+        }
+      });
+    };
+
+    fetchPage();
+  });
+}
+
+
+
   searchWithSOT(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
     if (!last)

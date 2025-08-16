@@ -14,6 +14,35 @@
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1 ">
           <div class="row">
+            <!-- <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
+                    <input matInput #minInput formControlName="min_temp" type="text" step="1" appNumericText [allowDecimal]="false" (focus)="minInput.select()" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
+                    <input matInput #maxInput formControlName="max_temp" type="text" appNumericText step="1" inputmode="numeric" (focus)="maxInput.select()" required>
+                    </mat-form-field>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                  @if (pcForm.hasError('tempRangeInvalid') && (pcForm.get('min_temp')?.touched || pcForm.get('max_temp')?.touched)) {
+                  <mat-error>
+                    {{translatedLangText.TEMP_RANGE_ERROR}}
+                  </mat-error>
+                  }
+                  @if (pcForm.hasError('overlaps') && (pcForm.get('min_temp')?.touched || pcForm.get('max_temp')?.touched)) {
+                  <mat-error class="multi-line-error">
+                    {{translatedLangText.TEMP_RANGE_OVERLAPS_ERROR}}
+                  </mat-error>
+                  }
+                </div>
+              </div> -->
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 ">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MIN_TEMP }}</mat-label>
@@ -37,8 +66,8 @@
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 ">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.MAX_TEMP }}</mat-label>
-                <input matInput #maxInput formControlName="max_temp" type="text" step="1" appNumericText
-                  [allowDecimal]="false" (focus)="maxInput.select()" required>
+                <input matInput #maxInput formControlName="max_temp" type="text" appNumericText step="1" inputmode="numeric"
+                   (focus)="maxInput.select()" required>
               </mat-form-field>
             </div>
           </div>
@@ -46,7 +75,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.FLAT_RATE }}</mat-label>
-                <input matInput #flatInput formControlName="cost" type="number" min="0" (focus)="flatInput.select()"
+                <input matInput #flatInput formControlName="cost" type="text" appNumericText min="0" (focus)="flatInput.select()"
                   required>
                 <!-- @if (pcForm.get('cost')?.hasError('required')) {
                 <mat-error>

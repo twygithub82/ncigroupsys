@@ -96,7 +96,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { tariff_depot: { profile_name: "ASC" } };
+  lastOrderBy: any = { tariff_depot: { update_dt: "DESC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;

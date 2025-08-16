@@ -20,7 +20,7 @@
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1" hidden>
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.NAME}}</mat-label>
-                      <input matInput formControlName="name" type="text" required>
+                      <input matInput formControlName="name" type="text" >
                       @if (pcForm.get('name')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.NAME }} {{translatedLangText.CARGO_REQUIRED }}
@@ -56,18 +56,40 @@
                 
              
                     
-                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                   <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.PASSWORD}}</mat-label>
-                        <input matInput formControlName="pwd" type="text">
+                        <input matInput formControlName="pwd" type="password">
                       </mat-form-field>
+                       <div *ngIf="pcForm.get('pwd')?.errors?.['strongPassword']">
+                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].minLength">
+                           {{ translatedLangText.MIN_8_CHARS }}
+                        </mat-error>
+                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasUpperCase">
+                         {{ translatedLangText.MUST_ONE_UPPERCASE }}
+                        </mat-error>
+                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasLowerCase">
+                          {{ translatedLangText.MUST_ONE_LOWERCASE }}
+                        </mat-error>
+                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasNumeric">
+                         {{ translatedLangText.MUST_ONE_NUMBER }}
+                        </mat-error>
+                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasSpecial">
+                          {{ translatedLangText.MUST_ONE_SPECIAL }}
+                        </mat-error>
+                      </div>
                     </div>
                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CONFIRM_PASSWORD}}</mat-label>
-                        <input matInput formControlName="confirm_pwd" type="text">
+                        <input matInput formControlName="confirm_pwd" type="password">
                       </mat-form-field>
                     </div>
+                    <div  class="col-xl-1 col-lg-1 col-md-6 col-sm-6 mb-1">
+        
+                        <button mat-flat-button color="primary" class="me-1" (click)="changePassword()" [disabled]="!allowChangePassword()">{{translatedLangText.UPDATE}}</button>
+                    </div>
+        
                 </div>
               </div>
             </div>
@@ -210,7 +232,7 @@
                                       <mat-icon>cancel</mat-icon>
                                     </button>
                                     }
-                                    <span class="">{{ t.department_cv }} - {{ t.description }}</span>
+                                    <span class="">{{ t.team.department_cv }} - {{ t.team.description }}</span>
                                   </div>
                               }
                             }

@@ -70,7 +70,7 @@ import {RoleDS, RoleItem} from 'app/data-sources/role';
     ReactiveFormsModule,
     FormsModule,
     MatAutocompleteModule,
-    MatDividerModule,
+    MatDividerModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }

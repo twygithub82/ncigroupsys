@@ -240,6 +240,15 @@ export class FormDialogComponent {
     this.dialogRef.close(returnDialog);
   }
 
+  SelectNA(value:string)
+  {
+    const returnDialog: DialogData = {
+      selectedValue:value
+    }
+   
+    console.log('valid');
+    this.dialogRef.close(returnDialog);
+  }
  
   markFormGroupTouched(formGroup: UntypedFormGroup): void {
     Object.keys(formGroup.controls).forEach((key) => {

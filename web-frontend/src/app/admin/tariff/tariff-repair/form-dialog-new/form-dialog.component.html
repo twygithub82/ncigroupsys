@@ -137,43 +137,44 @@
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 } -->
-          </mat-form-field>
+            </mat-form-field>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
-            <input matInput formControlName="thickness" type="number" min="0"
-              [required]="isRequired('thickness_unit_cv')">
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
-            <mat-select formControlName="thickness_unit_cv" [required]="isRequired('thickness')">
-              <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
-                {{ t.description }}
-              </mat-option>
-            </mat-select>
-            <!-- @if (pcForm.get('thickness_unit_cv')?.hasError('required')) {
+        <div class="row">
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{translatedLangText.THICKNESS}}</mat-label>
+              <input matInput formControlName="thickness" type="number" min="0"
+                [required]="isRequired('thickness_unit_cv')">
+              @if (pcForm.get('length')?.hasError('existed')) {
+              <mat-error>
+                {{translatedLangText.PART }} {{translatedLangText.EXISTED }}
+              </mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{translatedLangText.UNIT_TYPE}}</mat-label>
+              <mat-select formControlName="thickness_unit_cv" [required]="isRequired('thickness')">
+                <mat-option *ngFor="let t of unitTypeCvList" [value]="t">
+                  {{ t.description }}
+                </mat-option>
+              </mat-select>
+              <!-- @if (pcForm.get('thickness_unit_cv')?.hasError('required')) {
                 <mat-error>
                   {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
                 </mat-error>
                 } -->
-          </mat-form-field>
-        </div>
-        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
-          <mat-form-field class="example-full-width">
-            <mat-label>{{translatedLangText.LENGTH}}</mat-label>
-            <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')">
-            @if (pcForm.get('length')?.hasError('existed')) {
-            <mat-error>
-              {{translatedLangText.PART }} {{translatedLangText.EXISTED }}
-            </mat-error>
-            }
-          </mat-form-field>
-          <!-- @if (pcForm.get('length')?.hasError('required')) {
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 mb-1">
+            <mat-form-field class="example-full-width">
+              <mat-label>{{translatedLangText.LENGTH}}</mat-label>
+              <input matInput formControlName="length" type="number" min="0" [required]="isRequired('length_unit_cv')">
+             
+            </mat-form-field>
+            <!-- @if (pcForm.get('length')?.hasError('required')) {
               <mat-error>
                 {{translatedLangText.UNIT_TYPE }} {{translatedLangText.CARGO_REQUIRED }}
               </mat-error>

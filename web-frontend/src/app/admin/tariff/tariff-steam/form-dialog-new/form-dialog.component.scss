@@ -59,3 +59,9 @@
 //     right: 0;
 //     padding: 0 0px;
 // }
+
+mat-form-field .mat-mdc-form-field-error {
+  white-space: nowrap;
+  overflow: visible;   /* let text escape */
+  position: absolute;  /* break out of container */
+}
