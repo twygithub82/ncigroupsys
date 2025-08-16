@@ -87,10 +87,8 @@
                 </div> -->
                 <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
-                    <!-- <input matInput formControlName="country" type="text"> -->
+                    <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
                     <mat-select formControlName="country" (selectionChange)="AutoSearch()">
-                      <!-- <mat-option [value]="">{{'--Select--'}}</mat-option> -->
                       @for (country of countryCodes; track country) {
                       <mat-option [value]="country.country">{{country.country}}</mat-option>
                       }

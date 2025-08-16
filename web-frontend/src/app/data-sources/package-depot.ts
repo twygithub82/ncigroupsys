@@ -355,7 +355,6 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
       return new Date();
     }
     return new Date();
-
   }
 
   getStorageDays(sotItem: StoringOrderTankItem, pdItem: PackageDepotItem, free_storage: number = 0, cut_off_date: number = 0): number | undefined {
@@ -372,7 +371,9 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
       currentDateOut = new Date(createDtOutSeconds * 1000);
     }
 
-    const createDate = this.getStorageStartDate(sotItem, pdItem?.storage_cal_cv);
+    const storage_cal_cv = sotItem.billing_sot?.storage_cal_cv || pdItem?.storage_cal_cv;
+
+    const createDate = this.getStorageStartDate(sotItem, storage_cal_cv);
     const differenceInMs = currentDateOut.getTime() - createDate.getTime();
     const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
 

@@ -199,15 +199,10 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   storageCalCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
-  countryCodes: any = [];
-  countryCodesFiltered: any = [];
   CodeValuesDS?: CodeValuesDS;
   tankDS: TankDS;
 
   ccDS: CustomerCompanyDS;
-  // tariffResidueDS:TariffResidueDS;
-  // packResidueDS:PackageResidueDS;
-  // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
 
   packResidueItems: PackageResidueItem[] = [];
@@ -223,7 +218,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  //lastOrderBy: any = { code: "ASC" };
   lastOrderBy: any = { customer_company: { code: "ASC" } };
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
@@ -236,6 +230,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   id?: number;
   pcForm?: UntypedFormGroup;
+  countryCodes: any = [];
+  countryCodesFiltered: any = [];
 
   constructor(
     private router: Router,
@@ -401,15 +397,9 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
-      // where.country = { eq: this.pcForm!.value["country"] };
-      const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
-      where.and.push({ customer_company: customer_company })
+      if (where.customer_company == null) where.customer_company = {};
+      where.customer_company.country = { contains: this.pcForm!.value["country"] };
     }
-
-    // if (this.pcForm!.value["country"]) {
-    //   if (where.customer_company == null) where.customer_company = {};
-    //   where.customer_company.country = { contains: this.pcForm!.value["country"] };
-    // }
 
     if (this.pcForm!.value["contact_person"]) {
       if (where.customer_company == null) where.customer_company = {};
@@ -443,8 +433,9 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       where.tank = tankSearch;
     }
 
-    if (this.pcForm!.value["country"]) {
-      where.country = { contains: this.pcForm!.value["country"] };
+    if (this.pcForm!.value["country"] && this.pcForm!.value["country"] !== 'All') {
+      const customer_company: any = { country: { eq: this.pcForm!.value["country"] } }
+      where.and.push({ customer_company: customer_company })
     }
 
     if (this.pcForm!.value["contact_person"]) {
