@@ -216,7 +216,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     REBATE_TYPE: "COMMON-FORM.REBATE-TYPE",
     JOB_TYPE: "COMMON-FORM.JOB-TYPE",
     ALIAS_NAME: "COMMON-FORM.ALIAS-NAME",
-    PART: "COMMON-FORM.PART",
   };
   unit_type_control = new UntypedFormControl();
   unitTypeChangedEventUnsub: boolean = false;
