@@ -138,8 +138,8 @@ export const TARIFF_CLEANING_FRAGMENT = gql`
 `;
 
 export const GET_TARIFF_CLEANING_QUERY = gql`
-  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
-    lastCargo: queryTariffCleaning(where: $where) {
+  query queryTariffCleaning($where: tariff_cleaningFilterInput, $order: [tariff_cleaningSortInput!]) {
+    lastCargo: queryTariffCleaning(where: $where, order: $order) {
       nodes {
         alias
         ban_type_cv
