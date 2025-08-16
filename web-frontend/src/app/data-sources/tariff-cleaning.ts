@@ -513,8 +513,9 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-  loadItems(where?: any, order?: any): Observable<TariffCleaningItem[]> {
+  loadItems(where?: any, inputOrder?: any): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
+    const order = inputOrder || [{ cargo: "ASC" }];
     return this.apollo
       .query<any>({
         query: GET_TARIFF_CLEANING_QUERY,
