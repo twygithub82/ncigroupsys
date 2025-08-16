@@ -138,8 +138,8 @@ export const TARIFF_CLEANING_FRAGMENT = gql`
 `;
 
 export const GET_TARIFF_CLEANING_QUERY = gql`
-  query queryTariffCleaning($where: tariff_cleaningFilterInput) {
-    lastCargo: queryTariffCleaning(where: $where) {
+  query queryTariffCleaning($where: tariff_cleaningFilterInput, $order: [tariff_cleaningSortInput!]) {
+    lastCargo: queryTariffCleaning(where: $where, order: $order) {
       nodes {
         alias
         ban_type_cv
@@ -513,8 +513,9 @@ export class TariffCleaningDS extends BaseDataSource<TariffCleaningItem> {
       );
   }
 
-  loadItems(where?: any, order?: any): Observable<TariffCleaningItem[]> {
+  loadItems(where?: any, inputOrder?: any): Observable<TariffCleaningItem[]> {
     this.loadingSubject.next(true);
+    const order = inputOrder || [{ cargo: "ASC" }];
     return this.apollo
       .query<any>({
         query: GET_TARIFF_CLEANING_QUERY,

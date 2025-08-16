@@ -36,7 +36,7 @@
             <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
               <button type="submit" style="display: none" (click)="AutoSearch()"></button>
               <div class="row">
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                     <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -85,10 +85,14 @@
                     <input matInput formControlName="branch_code" type="text">
                   </mat-form-field>
                 </div> -->
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.COUNTRY}}</mat-label>
-                    <input matInput formControlName="country" type="text">
+                    <mat-label>{{translatedLangText.COUNTRY }}</mat-label>
+                    <mat-select formControlName="country" (selectionChange)="AutoSearch()">
+                      @for (country of countryCodes; track country) {
+                      <mat-option [value]="country.country">{{country.country}}</mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
                 </div>
                 <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
