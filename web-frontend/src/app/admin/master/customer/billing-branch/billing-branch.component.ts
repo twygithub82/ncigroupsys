@@ -199,8 +199,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   storageCalCvList: CodeValuesItem[] = [];
   handledItemCvList: CodeValuesItem[] = [];
-  countryCodes: any = [];
-  countryCodesFiltered: any = [];
   CodeValuesDS?: CodeValuesDS;
   tankDS: TankDS;
 
