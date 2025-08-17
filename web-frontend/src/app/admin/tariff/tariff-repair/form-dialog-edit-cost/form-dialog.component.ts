@@ -37,6 +37,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ConfirmDialogComponent } from './confirm/confirm.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 export interface DialogData {
   action?: string;
@@ -515,18 +516,19 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         message: msg,
-        langText: this.langText
-
+        headerText: this.translatedLangText.NO_VALUE_CHNAGE,
+        action: "confirm_only"
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action == "confirmed") {
-        this.updateTariffRepair();
-      }
+      // this should be just close the dialog and do nothing. (For warning purpose)
+      // if (result.action == "confirmed") {
+      //   this.updateTariffRepair();
+      // }
     });
   }
 
