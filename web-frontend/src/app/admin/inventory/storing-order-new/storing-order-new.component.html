@@ -101,7 +101,7 @@
                           <span class="mobile-label">
                             {{translatedLangText.TANK_NO}}:
                           </span>
-                          <div [ngClass]="'' + getBadgeClass(getLastAction(row.actions))">
+                          <div [ngClass]="'ps-0 pe-0 ' + getBadgeClass(getLastAction(row.actions))">
                             {{row.tank_no}}
                           </div>
                           <!-- <div [ngClass]="'badge ' + getBadgeClass(getLastAction(row.actions)) + ' ms-1'">{{

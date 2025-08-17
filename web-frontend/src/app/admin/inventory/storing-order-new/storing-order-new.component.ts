@@ -44,6 +44,7 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-storing-order-new',
@@ -479,6 +480,43 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
+  // deleteItem(row: StoringOrderTankItem, index: number) {
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+  //     data: {
+  //       item: row,
+  //       langText: this.langText,
+  //       index: index
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result?.action === 'confirmed') {
+  //       if (result.item.guid) {
+  //         const data = [...this.sotList.data];
+  //         const updatedItem = {
+  //           ...result.item,
+  //           delete_dt: Utility.getDeleteDtEpoch(),
+  //           actions: Array.isArray(data[index].actions!)
+  //             ? [...new Set([...data[index].actions!, 'delete'])]
+  //             : ['delete']
+  //         };
+  //         data[result.index] = updatedItem;
+  //         this.updateData(data); // Refresh the data source
+  //       } else {
+  //         const data = [...this.sotList.data];
+  //         data.splice(index, 1);
+  //         this.updateData(data); // Refresh the data source
+  //       }
+  //     }
+  //   });
+  // }
+
   deleteItem(row: StoringOrderTankItem, index: number) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -486,26 +524,23 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        item: row,
-        langText: this.langText,
-        index: index
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        if (result.item.guid) {
+        if (row.guid) {
           const data = [...this.sotList.data];
           const updatedItem = {
-            ...result.item,
+            ...row,
             delete_dt: Utility.getDeleteDtEpoch(),
             actions: Array.isArray(data[index].actions!)
               ? [...new Set([...data[index].actions!, 'delete'])]
               : ['delete']
           };
-          data[result.index] = updatedItem;
+          data[index] = updatedItem;
           this.updateData(data); // Refresh the data source
         } else {
           const data = [...this.sotList.data];
@@ -515,6 +550,47 @@ export class StoringOrderNewComponent extends UnsubscribeOnDestroyAdapter implem
       }
     });
   }
+
+  // cancelSelectedRows(row: StoringOrderTankItem[]) {
+  //   //this.preventDefault(event);  // Prevents the form submission
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+  //     disableClose: true,
+  //     width: '380px',
+  //     data: {
+  //       action: "cancel",
+  //       item: [...row],
+  //       translatedLangText: this.translatedLangText
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result?.action === 'confirmed') {
+  //       const data = [...this.sotList.data];
+  //       result.item.forEach((newItem: StoringOrderTankItem) => {
+  //         // Find the index of the item in data with the same id
+  //         const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
+
+  //         // If the item is found, update the properties
+  //         if (index !== -1) {
+  //           data[index] = {
+  //             ...data[index],
+  //             ...newItem,
+  //             actions: Array.isArray(data[index].actions!)
+  //               ? [...new Set([...data[index].actions!, 'cancel'])]
+  //               : ['cancel']
+  //           };
+  //         }
+  //       });
+  //       this.updateData(data);
+  //     }
+  //   });
+  // }
 
   cancelSelectedRows(row: StoringOrderTankItem[]) {
     //this.preventDefault(event);  // Prevents the form submission
