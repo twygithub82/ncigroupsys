@@ -647,6 +647,8 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '15vw',
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
         act: "warn"

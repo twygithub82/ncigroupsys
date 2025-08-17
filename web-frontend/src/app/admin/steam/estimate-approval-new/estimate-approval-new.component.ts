@@ -1420,6 +1420,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
       this.getCustomerLabourPackage(ccGuid!);
 
+      
+
     }
   }
 
@@ -1941,4 +1943,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
   roundUpCost(cost: number) {
     return BusinessLogicUtil.roundUpCost(cost);
   }
+
+
 }

@@ -1,3 +1,15 @@
 .mat-mdc-dialog-content.mdc-dialog__content {
     overflow-x: hidden;
 }
+
+.modalHeader {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 10px 0px 10px;
+    margin: 0px; 
+}
+.header {
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+}

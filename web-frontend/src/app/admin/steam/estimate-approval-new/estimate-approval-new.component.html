@@ -529,20 +529,20 @@
                   </ng-container>
 
                   <!-- Labour Cost Footer -->
-                  <ng-container matColumnDef="labourSummaryUnitPrice">
+                  <ng-container matColumnDef="labourSummaryUnitPrice" >
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">
                       {{translatedLangText.LABOUR}}
                       (${{parse2Decimal(getLabourCost())}}):
                     </mat-footer-cell>
                   </ng-container>
-                  <ng-container matColumnDef="labourSummaryHrs">
+                  <ng-container matColumnDef="labourSummaryHrs" >
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
                       {{getTotalLabourHours()}}
                     </mat-footer-cell>
                   </ng-container>
-                  <ng-container matColumnDef="labourSummaryCost">
+                  <ng-container matColumnDef="labourSummaryCost" >
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                       <span class="mobile-label footer-label">{{translatedLangText.LABOUR}}
@@ -584,7 +584,9 @@
                   <mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [style.cursor]="'pointer'"
                     (click)="editEstPartDetails($event, row, i)" matRipple>
                   </mat-row>
-                  <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
+                  <ng-container *ngIf="isSteamRepair">
+                    <mat-footer-row *matFooterRowDef="labourCostDisplayedColumns"></mat-footer-row>
+                  </ng-container>
                   <mat-footer-row *matFooterRowDef="totalCostDisplayedColumns"></mat-footer-row>
                 </table>
                 <!-- <div class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">

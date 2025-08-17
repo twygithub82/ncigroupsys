@@ -350,7 +350,8 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       maxHeight: '80vh',
-      autoFocus: false,
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -383,7 +384,8 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       maxHeight: '80vh',
-      autoFocus: false,
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,

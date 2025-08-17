@@ -379,6 +379,8 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -409,6 +411,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'update',
         langText: this.langText,

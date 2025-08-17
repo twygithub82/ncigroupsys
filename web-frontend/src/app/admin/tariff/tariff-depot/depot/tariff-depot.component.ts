@@ -294,6 +294,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_View, {
       width: '600px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -533,6 +535,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
+       autoFocus: false,
       disableClose: true,
       width: '600px',
       height: 'auto',
@@ -590,6 +593,8 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '400px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
         act: "warn"

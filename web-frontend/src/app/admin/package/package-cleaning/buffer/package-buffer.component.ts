@@ -363,6 +363,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
+      disableClose: true,
       //height: '80vh',
       data: {
         action: 'update',
@@ -392,6 +393,7 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
       autoFocus: false,
+      disableClose: true,
       //maxHeight: '80vh',
       data: {
         action: 'update',

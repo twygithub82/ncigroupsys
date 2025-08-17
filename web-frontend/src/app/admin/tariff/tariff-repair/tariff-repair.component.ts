@@ -363,6 +363,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '65vw',
+       autoFocus: false,
+      disableClose: true,
       //height: '90vh',
       data: {
         action: 'duplicate',
@@ -393,6 +395,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '65vw',
+       autoFocus: false,
+      disableClose: true,
       //height: '90vh',
       data: {
         action: 'new',
@@ -544,6 +548,8 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '500px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
         act: "warn"

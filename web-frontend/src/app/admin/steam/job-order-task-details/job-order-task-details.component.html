@@ -140,8 +140,8 @@
               </div>
               }
               @if (!(joDS.loadingSubject | async)) {
-              <div class="row">
-                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 m-b-10 ms-xl-2 ps-xl-0">
+              <div class="row p-l-5">
+                <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 m-b-10 ms-xl-2 ps-xl-0 ">
                   {{translatedLangText.JOB_ORDER_NO}}:
                   <span class="font-bold">{{jobOrderItem?.job_order_no}}</span>
                 </div>
@@ -150,8 +150,8 @@
                   <span class="font-bold">{{getJobStatusDescription(jobOrderItem?.status_cv)}}</span>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 p-l-7">
+              <div class="row p-l-5">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ">
                   <button mat-flat-button color="primary" (click)="viewTimeTableDetails($event)"
                     [ngClass]="'m-r-10 job-order-task-button'">
                     <mat-icon>view_list</mat-icon>
@@ -343,7 +343,7 @@
               </div>
               }
               @if (!(joDS.loadingSubject | async)) {
-              <div class="row">
+              <div class="row p-l-5">
                 <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 m-b-10 ps-xl-2">
                   {{translatedLangText.ESTIMATE_NO}}: <span class="font-bold">{{steamItem?.estimate_no}}</span>
                 </div>

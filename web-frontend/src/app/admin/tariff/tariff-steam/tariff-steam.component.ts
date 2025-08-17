@@ -273,6 +273,8 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -308,6 +310,8 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '500px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.ARE_U_SURE_DELETE,
         act: "warn"
@@ -358,6 +362,8 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.langText,
@@ -661,6 +667,8 @@ export class TariffSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_RESET,
         action: 'new',

@@ -637,6 +637,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -868,6 +870,8 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
     const dialogRef = this.dialog.open(MessageDialogComponent, {
       width: '400px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.WARNING,
         messageText: [this.translatedLangText.DUPLICATE_CARGO_FOUND],

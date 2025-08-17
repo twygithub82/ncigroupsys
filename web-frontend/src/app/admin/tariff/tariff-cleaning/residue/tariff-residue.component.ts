@@ -286,6 +286,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '600px',
       height: 'auto',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -331,6 +333,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       width: '600px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -359,6 +363,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_Edit, {
       width: '600px',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.langText,
@@ -676,6 +682,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_RESET,
         action: 'new',
@@ -702,6 +710,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
         act: "warn"

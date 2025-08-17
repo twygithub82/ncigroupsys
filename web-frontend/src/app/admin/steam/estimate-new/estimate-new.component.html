@@ -400,7 +400,7 @@
                     <mat-footer-row *matFooterRowDef="footerColumns1"></mat-footer-row>
 
                   </table>
-                  <div
+                  <div [hidden]="isAutoRaiseSteam()"
                     class="bg-{{getFooterBackgroundColor()}} col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-2">
                     <div class="row">
                       <div class="col-xl-5 col-lg-5 col-md-5 col-sm-4 col-xs-4 m-b-1"></div>

@@ -1520,19 +1520,6 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   undeleteItem(event: Event, row: SteamItem, index: number) {
-    //  if(row.guid){
-
-    //   const data: any[] = [...this.deList];
-    //   const updatedItem = {
-    //     ...row,
-    //     delete_dt: null,
-    //     action: ''
-    //   };
-
-    //   data[index] = updatedItem;
-    //   this.updateData(data); // Refresh the data source
-    //  }
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -1575,5 +1562,8 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
   isAllowToSaveSubmit() {
     var NoDel = this.deList.filter(d => d.action != 'cancel');
     return (NoDel.length);
+  }
+  isAutoRaiseSteam() {
+    return !this.steamDS.IsSteamRepair(this.steamItem!);
   }
 }

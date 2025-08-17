@@ -388,6 +388,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       maxHeight: '80vh',
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'update',
         langText: this.langText,
@@ -416,7 +418,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       //height: '80vh',
-      autoFocus: false,
+       autoFocus: false,
+      disableClose: true,
       data: {
         action: 'update',
         langText: this.langText,

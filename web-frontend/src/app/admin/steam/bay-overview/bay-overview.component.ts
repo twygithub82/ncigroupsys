@@ -142,7 +142,9 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     ARE_SURE_COMPLETE: 'COMMON-FORM.ARE-YOU-SURE-COMPLETE',
     REQUIRED_TEMP: 'COMMON-FORM.REQUIRED-TEMP',
     DETAILS: 'COMMON-FORM.DETAILS',
-    STEAM: 'MENUITEMS.STEAM.TEXT'
+    STEAM: 'MENUITEMS.STEAM.TEXT',
+    YARD:'COMMON-FORM.YARD',
+    CLEAN_STATUS:'COMMON-FORM.CLEAN-STATUS',
   }
 
   availableProcessStatus: string[] = [
@@ -808,7 +810,8 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(TankInfoFormDialogComponent, {
-      width: '1000px',
+      width: '85vw',
+      disableClose: true,
       data: {
         selectedItem: team.jobOrderItem?.storing_order_tank!,
         action: 'new',

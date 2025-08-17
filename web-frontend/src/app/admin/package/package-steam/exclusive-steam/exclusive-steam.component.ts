@@ -304,6 +304,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
+       autoFocus: false,
+      disableClose: true,
       //height: 'auto',
       data: {
         action: 'new',
@@ -361,6 +363,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
+       autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
@@ -427,6 +430,8 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+       autoFocus: false,
+      disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
         messageText: "",//[msgText, msgText1],
