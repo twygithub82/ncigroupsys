@@ -1,0 +1,56 @@
+<div class="container confirmation-dialog p-2">
+  <!-- <div class="modalHeader ps-0">
+    <h4 mat-dialog-title class="ps-1 pt-3 pb-3 mb-0">{{data.translatedLangText.CONFIRM_CANCEL}}</h4>
+  </div> -->
+  <h4 mat-dialog-title class="ps-1 pt-4 pb-3 mb-0 align-center">{{data.translatedLangText.CONFIRM_DELETE}}</h4>
+  <div mat-dialog-content class="ps-3 pe-3 pt-0 pb-0">
+    <form class="register-form" [formGroup]="storingOrderForm" #formDirective="ngForm">
+      <div formArrayName="storingOrder">
+        <p class="text-normal tank-title">
+          {{displayTargetedSo(storingOrderArray())}}
+        </p>
+        <!-- @for (so of storingOrderArray().controls; track so; let index = $index) {
+        <div [formGroupName]="index" [ngClass]="{'p-0 m-b-10': true, 'bg-light-grey': false}" matRipple>
+          <span class="tank-title font-bold text-decoration-underline text-normal">{{so.get('so_no')?.value}}</span>
+          <div> -->
+        <!-- @for (sot of getStoringOrderTanksArray(so).controls; track sot) {
+            @if (sot.get('status_cv')?.value === 'WAITING' || sot.get('status_cv')?.value === 'PREORDER') {
+            <span>{{sot.get('tank_no')?.value}}</span>
+            }
+            } -->
+        <!-- <p class="text-normal tank-no-value">
+              {{displayTargetedSot(getStoringOrderTanksArray(so))}}
+            </p> -->
+        <!-- <div class="row mt-3">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                  <input matInput formControlName="remarks">
+                </mat-form-field>
+              </div>
+            </div> -->
+        <!-- </div> -->
+        <!-- <mat-card-actions [ngClass]="'empty-card-actions'">
+          </mat-card-actions> -->
+        <!-- </div>
+        } -->
+      </div>
+      <div class="row mt-3">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <mat-form-field class="example-full-width">
+            <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+            <input matInput formControlName="remarks">
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div mat-dialog-actions class="mb-4 align-center">
+    <button mat-flat-button color="warn" class="me-2" (click)="confirmCancel()">
+      {{data.translatedLangText.CONFIRM | translate}}
+    </button>
+    <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
+      {{data.translatedLangText.CLOSE}}
+    </button>
+  </div>
+</div>

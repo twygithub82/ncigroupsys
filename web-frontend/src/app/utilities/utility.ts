@@ -1784,7 +1784,15 @@ static displayTankStatus_InShort(status_codevalue: string): string {
   return sRetval;
 }
 
+static toPascalCase(value: string): string {
+  if (!value) return '';
 
+  return value
+    .toLowerCase()
+    .replace(/(^\w|[^a-zA-Z0-9]+(\w))/g, (_match, chr: string) =>
+      chr.toUpperCase()
+    );
+}
 //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
 //   {
 //     var imgRetval:string ='';

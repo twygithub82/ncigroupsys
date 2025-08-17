@@ -841,8 +841,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '800px',
-      height: '250px',
+     width: '380px',
+      disableClose: true,
+      // height: '250px',
       data: {
         action: "EDIT",
         item: this.selectedItems[0].steaming_part[0].job_order,
@@ -887,5 +888,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
-
+   ConvertSystemToPascalCase(str?: string):string {
+    
+    var retval =str||'-';
+    if(retval.toUpperCase()==="SYSTEM")
+    {
+      retval =  Utility.toPascalCase(retval);
+    }
+    return retval;  
+  }
 }

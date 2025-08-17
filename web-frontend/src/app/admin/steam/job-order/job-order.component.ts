@@ -673,6 +673,7 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
     const dialogRef = this.dialog.open(FormDialogComponent, {
 
       width: '1000px',
+      autoFocus: false,
       data: {
         action: action,
         langText: this.langText,

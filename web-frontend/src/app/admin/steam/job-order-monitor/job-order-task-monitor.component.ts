@@ -471,15 +471,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
                 this.sotItem = this.steamItem?.storing_order_tank;
                 this.reqTemp = (!this.sotItem?.required_temp) ? this.reqTemp : this.sotItem?.required_temp;
                 this.QuerySteamTemp();
-                //this.populateSteam(this.steamItem);
-                // this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp=>{
-                //   if(temp?.length)
-                //   {
-                //     console.log(temp);
-                //     this.updateData(temp);
-                //   }
-                // });
-                //this.steamDS.getSteamTemp()
+             
 
               }
             });
@@ -1057,6 +1049,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '700px',
+      disableClose: true,
       data: {
         action: 'cancel',
         index: row.index,
@@ -1226,7 +1220,8 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         tempDirection = 'ltr';
       }
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-        width: '1000px',
+        width: '550px',
+        disableClose: true,
         data: {
           action: 'confirm',
           item: this.steamItem,

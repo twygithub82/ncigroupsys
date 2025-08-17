@@ -19,13 +19,14 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS } from 'app/data-sources/code-values';
 import { JobOrderItem } from 'app/data-sources/job-order';
+import { TimeTableItem } from 'app/data-sources/time-table';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 
 
 export interface DialogData {
   action?: string;
-  item?: JobOrderItem[];
+  item?: TimeTableItem[];
   translatedLangText?: any;
   populateData?: any;
   index: number;
@@ -75,7 +76,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   dimensionList?: string[];
   lengthList?: any[];
   valueChangesDisabled: boolean = false;
-  timeTableList: JobOrderItem[] = [];
+  timeTableList: TimeTableItem[] = [];
 
   cvDS: CodeValuesDS;
   constructor(
@@ -97,6 +98,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.initializeValueChange();
     this.patchForm();
     this.initializePartNameValueChange();
+
+    this.timeTableList = this.timeTableList.sort((a, b) => b.start_time! - a.start_time!);
   }
 
   patchForm() { }

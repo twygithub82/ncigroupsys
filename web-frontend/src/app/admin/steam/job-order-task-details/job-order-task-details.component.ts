@@ -48,7 +48,8 @@ import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
+import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+//import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog_old/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
@@ -948,6 +949,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '700px',
+        disableClose: true,
       data: {
         item: this.jobOrderItem?.time_table,
         action: 'new',
@@ -1115,6 +1117,17 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     //(this.jobOrderItem?.status_cv=='COMPLETED'|| this.joDS.canRollbackJob(this.jobOrderItem)) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
   }
 
+  ConvertSystemToPascalCase(str?: string):string {
+    
+    var retval =str||'-';
+    if(retval.toUpperCase()==="SYSTEM")
+    {
+      retval =  Utility.toPascalCase(retval);
+    }
+    return retval;  
+  }
+
+
   rollbackJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -1125,6 +1138,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }
     const dialogRef = this.dialog.open(CancelFormDialogComponent, {
       width: '380px',
+      disableClose: true,
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,

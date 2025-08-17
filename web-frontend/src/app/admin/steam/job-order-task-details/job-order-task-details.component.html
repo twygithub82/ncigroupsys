@@ -381,22 +381,22 @@
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{steamItem?.update_by}}
+                            {{ConvertSystemToPascalCase(steamItem?.update_by)}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{steamItem?.approve_by}}
+                            {{ConvertSystemToPascalCase(steamItem?.approve_by)}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{steamItem?.allocate_by}}
+                            {{ConvertSystemToPascalCase(steamItem?.allocate_by)}}
                           </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
                           <div class="table-label">
-                            {{joDS.getQCJobOrder(steamItem?.steaming_part)?.qc_by || "-"}}
+                            {{ConvertSystemToPascalCase(joDS.getQCJobOrder(steamItem?.steaming_part)?.qc_by) || "-"}}
                           </div>
                         </div>
                       </div>
