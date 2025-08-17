@@ -2741,12 +2741,9 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
   padding-left: 8px;
 }
 
-
 .mat-mdc-standard-chip .mdc-evolution-chip__text-label {
-  font-family: 'Calibri' , sans-serif !important;
+  font-family: 'Calibri', sans-serif !important;
 }
-
-
 
 .button-toggle-overflow {
   display: block;
@@ -3592,4 +3589,43 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 
 .mat-mdc-select-panel[aria-labelledby*="mat-paginator-page-size-label"] .mdc-list-item__primary-text {
   font-size: 0.75rem !important;
+}
+
+.tlx-button-group.mat-button-toggle-standalone.mat-button-toggle-appearance-standard,
+.tlx-button-group.mat-button-toggle-group-appearance-standard {
+  border: none !important;
+  border-radius: 0px !important;
+
+  mat-button-toggle {
+    border: solid 1px #e0e0e0 !important;
+
+    &:first-child {
+      border-top-left-radius: 4px !important;
+      border-bottom-left-radius: 4px !important;
+    }
+
+    &:last-child {
+      border-top-right-radius: 4px !important;
+      border-bottom-right-radius: 4px !important;
+    }
+
+    &.mat-button-toggle-checked {
+      border-color: #5579f5 !important;
+    }
+  }
+}
+
+mat-form-field.no-label-short-input {
+  label mat-label{
+    display: none !important;
+  }
+
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-form-field-infix {
+    min-height: auto !important;
+    padding-top: 3px !important;
+  }
+  
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+  }
 }
