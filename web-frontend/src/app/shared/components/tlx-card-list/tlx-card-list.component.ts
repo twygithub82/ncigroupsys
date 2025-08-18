@@ -32,6 +32,7 @@ import { MatRippleModule } from '@angular/material/core';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './tlx-card-list.component.html',
+    styleUrls: ['./tlx-card-list.component.scss'],
 })
 export class TlxCardListComponent {
     @Input() items: any[] = [];
