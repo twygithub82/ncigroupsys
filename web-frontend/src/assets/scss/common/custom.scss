@@ -1889,7 +1889,8 @@ textarea,
 .mat-stepper-horizontal,
 .mat-mdc-card-title,
 .mat-mdc-dialog-container .mdc-dialog__content,
-.mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface {
+.mat-mdc-snack-bar-container.snackbar-success .mdc-snackbar__surface,
+.mat-expansion-panel-header {
   font-family: "Calibri", "Arial", sans-serif !important;
 }
 
@@ -2189,71 +2190,89 @@ $grid-breakpoints: (
 .tlx-container {
   padding-left: 2px;
   padding-right: 2px;
+
+  .tlx-row {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 0px;
+    margin-bottom: 10px !important;
+
+    .header-label, .value-label {
+      color: rgba(0, 0, 0, 0.54)
+    }
+
+    .header-label {
+      margin-right: 5px;
+    }
+  }
 }
 
 tlx-card-list .alternate-panel {
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  /* Curved borders */
+  box-shadow: unset;
+  border-radius: 8px;
   transition: all 0.2s ease;
   overflow: hidden;
-  /* Ensures child elements respect the border radius */
 
   &:hover {
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 6px;
-    /* Slightly more curved on hover */
+    box-shadow: unset;
+    border-radius: 8px;
   }
 
   .tank-header {
     background-color: lighten(#b3cbff, 10%);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 
     &:hover,
     &:focus {
       background-color: lighten(#b3cbff, 5%) !important;
       box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-      border-top-left-radius: 6px;
-      border-top-right-radius: 6px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+
+    .header-content {
+      @media (min-width: 481px) {
+        padding-left: 1.5%;
+      }
     }
   }
 
   &.bg-light-white {
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 
     &:hover {
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
     }
 
     .tank-header {
       background-color: white !important;
       box-shadow: none;
-      border-top-left-radius: 6px;
-      border-top-right-radius: 6px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
 
       &:hover,
       &:focus {
         background-color: white !important;
-        border-top-left-radius: 6px;
-        border-top-right-radius: 6px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
       }
     }
   }
 
   &.is-expanded {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
 
     .tank-header {
       background-color: initial !important;
       box-shadow: none;
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
 
       &:hover,
       &:focus {
@@ -3616,7 +3635,7 @@ mat-chip-grid.nowrap .mdc-evolution-chip-set__chips {
 }
 
 mat-form-field.no-label-short-input {
-  label mat-label{
+  label mat-label {
     display: none !important;
   }
 
@@ -3624,8 +3643,12 @@ mat-form-field.no-label-short-input {
     min-height: auto !important;
     padding-top: 3px !important;
   }
-  
+
   .mat-mdc-form-field-subscript-wrapper {
     display: none !important;
   }
+}
+
+.copied-content {
+  padding-left: 3% !important;
 }

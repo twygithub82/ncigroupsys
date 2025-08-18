@@ -1,8 +1,7 @@
 <div
     [ngClass]="{'container confirmation-dialog': true, 'p-2': !allowRemarks && !allowRemarksWithRequired, 'pl-4 pr-4 pb': allowRemarks || allowRemarksWithRequired}">
     <!-- [ngClass]="{'container confirmation-dialog': true, 'p-2': !allowRemarks && !allowRemarksWithRequired, 'pl-4 pr-4 pb': allowRemarks || allowRemarksWithRequired}"> -->
-    <h4 mat-dialog-title
-        [ngClass]="{'pb-3': true, 'align-center': true}">
+    <h4 mat-dialog-title [ngClass]="{'pb-3': true, 'align-center': true}">
         <!-- [ngClass]="{'pb-3': true, 'ps-0': allowRemarks || allowRemarksWithRequired, 'align-center': !allowRemarks && !allowRemarksWithRequired}"> -->
         {{headerText | translate}}
     </h4>
@@ -14,17 +13,20 @@
                     <mat-label>{{langText.REMARKS | translate}}</mat-label>
                     <input matInput type="text" formControlName="remarks" [required]="allowRemarksWithRequired">
                 </mat-form-field>
-            </div>  
+            </div>
         </div>
     </form>
     }
-    <div mat-dialog-actions [ngClass]="{'pt-2 mb-1': !allowRemarks && !allowRemarksWithRequired, 'pt-0 mb-3' : allowRemarks || allowRemarksWithRequired, 'd-flex justify-content-center': true}">
+    <div mat-dialog-actions
+        [ngClass]="{'pt-2 mb-1': !allowRemarks && !allowRemarksWithRequired, 'pt-0 mb-3' : allowRemarks || allowRemarksWithRequired, 'd-flex justify-content-center': true}">
         <!-- [ngClass]="{'pt-2 mb-1': true, 'justify-content-end': allowRemarks || allowRemarksWithRequired, 'd-flex justify-content-center': !allowRemarks && !allowRemarksWithRequired}"> -->
         <button mat-flat-button color="warn" (click)="confirm()">
             {{langText.CONFIRM | translate}}
         </button>
-        <button mat-stroked-button (click)="onNoClick()" tabindex="-1" [hidden]="hideCancel()">
+        @if (!hideCancel()) {
+        <button mat-stroked-button (click)="onNoClick()" tabindex="-1">
             {{getCloseButtonContent()}}
         </button>
+        }
     </div>
 </div>
