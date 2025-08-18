@@ -348,6 +348,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '720px',
       height: 'auto',
+      disableClose: true,
       data: {
         action: 'update',
         langText: this.langText,
@@ -382,6 +383,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     // if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '75vw',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -427,6 +429,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
       width: '70vw',
       height:'auto',
+      disableClose:true,
       data: {
         action: 'update',
         langText: this.langText,
@@ -695,6 +698,18 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
       // this.subs.sink = this.usrDS.searchUser(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
       this.subs.sink = this.usrDS.searchUserWithDetails(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
         .subscribe(data => {
+
+          data.forEach(user=>{
+           user.team_user= user.team_user?.filter(
+              (obj, index, self) =>
+                index === self.findIndex(t => t.team_guid === obj.team_guid)
+            );
+           user.user_functions= user.user_functions?.filter(
+               (obj, index, self) =>
+                index === self.findIndex(t => t.functions_guid === obj.functions_guid)
+           )
+          });
+         
           this.userList = data;
           this.endCursor = this.usrDS.pageInfo?.endCursor;
           this.startCursor = this.usrDS.pageInfo?.startCursor;
@@ -782,6 +797,16 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
          sRetval = user?.user_role
                   ?.map(ur => ur?.role?.description)
+                  ?.filter(desc => !!desc) // remove undefined/null entries
+                  ?.join(', ') ?? '';
+        return sRetval;
+      }
+
+       showUserTeam(user:UserItemWithDetails):string{
+        var sRetval:string="";
+
+         sRetval = user?.team_user
+                  ?.map(ur => `${ur?.team?.department_cv}-${ur?.team?.description}`)
                   ?.filter(desc => !!desc) // remove undefined/null entries
                   ?.join(', ') ?? '';
         return sRetval;

@@ -275,9 +275,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.userDs=new UserDS(this.apollo);
     this.teamDs = new TeamDS(this.apollo);
     this.roleDs=new RoleDS(this.apollo);
+    this.loadData();
     this.action = data.action!;
     this.translateLangText();
-    this.loadData();
+    
     this.initializeValueChanges();
   }
 
@@ -330,15 +331,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           },
           { description: "ASC" },
           100
-        ).subscribe(data => {
-          this.teamNameList = data.filter(desc =>
-            !this.updatedTeamList.some(
-              t =>
-                t.description === desc.description &&
-                t.department_cv === desc.department_cv
-            )
-          );
-        });
+        ).subscribe(data => {this.teamNameList = data.filter(desc =>!this.updatedTeamList.some(t => t.team_guid == desc.guid));});
       })
     ).subscribe();
 
@@ -364,16 +357,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           },
           { description: "ASC" },
           100
-        ).subscribe(data => {
-          this.roleNameList = data.filter(desc =>
-            !this.updatedRoleList.some(
-              t =>
-                t.description === desc.description &&
-                t.department === desc.department
-            )
-          );
-        });
-      })
+        ).subscribe(data => {this.roleNameList = data.filter(desc =>!this.updatedRoleList.some(t =>t.role?.guid == desc.guid));});})
     ).subscribe();
 
       searchObj?.get("adhoc")!.valueChanges.pipe(
@@ -396,16 +380,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           { code: "ASC" },
           100
         ).subscribe(data => {
-          this.adhocFuntionList = data.filter(f =>
-            !this.updatedRoleFeaturesList.some(
-              t =>
-                t.functions?.code === f.code 
-            )&&
-            !this.updatedAdhocList.some(
-              t =>
-                t.code === f.code 
-            )
-          );
+          this.adhocFuntionList = data.filter(f =>!this.updatedRoleFeaturesList.some(t =>t.functions?.guid == f.guid)&&!this.updatedAdhocList.some(t =>t.code === f.code));
         });
       })
     ).subscribe();
@@ -461,14 +436,29 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         this.userDs?.searchUserWithDetails(where).subscribe((data)=>{
           
           if(data?.length>0){
+           data.forEach(user=>{
+           user.team_user= user.team_user?.filter(
+              (obj, index, self) =>
+                index === self.findIndex(t => t.team_guid === obj.team_guid)
+            );
+           user.user_functions= user.user_functions?.filter(
+               (obj, index, self) =>
+                index === self.findIndex(t => t.functions_guid === obj.functions_guid)
+           )
+          });
             var usr= data[0];
             this.pcForm.patchValue({
              username: usr.userName,
              email: usr.email
             });
             this.updatedRoleList=usr.user_role!;
+            this.roleNameList = this.roleNameList.filter(desc =>!this.updatedRoleList.some(t =>t.role?.guid == desc.guid));
             this.updatedTeamList=usr.team_user!;
+            this.teamNameList = this.teamNameList.filter(desc =>!this.updatedTeamList.some(t => t.team_guid == desc.guid));
+            this.updatedAdhocList=usr.user_functions!;
             this.updateRoleFeatureList();
+            this.adhocFuntionList = this.adhocFuntionList.filter(f =>!this.updatedRoleFeaturesList.some(t =>t.functions?.guid == f.guid)&&!this.updatedAdhocList.some(t =>t.code === f.code));
+            
             // this.updatedRoleList.forEach(r=>{
             //   this.updatedRoleFeaturesList.push(...r.role.role_functions!);
             // });
@@ -494,6 +484,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
               }
       });
       this.updatedRoleFeaturesList.forEach(f=>{
+        if(!f.functions)return;
         
         var found=this.updatedAdhocList.find(a=>a.functions_guid===f.functions.guid);
         if(found===false)
@@ -652,34 +643,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
        @ViewChild('adhocInput', { static: true })
       adhocInput?: ElementRef<HTMLInputElement>;
       selectedNames: any[] = [];
-      // name_itemSelected(row: any): boolean {
-      //   var itm = this.selectedNames;
-      //   var retval: boolean = false;
-      //   const index = itm.findIndex(c => c === row);
-      //   retval = (index >= 0);
-      //   return retval;
-      // }
-    
-      // name_getSelectedDisplay(): string {
-      //   var itm = this.selectedNames;
-      //   var retval: string = "";
-      //   if (itm?.length > 1) {
-      //     retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
-      //   }
-      //   else if (itm?.length == 1) {
-      //     const maxLength = maxLengthDisplaySingleSelectedItem;
-      //     const value=`${itm[0]}`;
-      //     retval = `${value.length > maxLength 
-      //       ? value.slice(0, maxLength) + '...' 
-      //       : value}`;
-      //   }
-      //   return retval;
-      // }
-    
-      // name_removeAllSelected(): void {
-      //   this.selectedNames = [];
-      // //  this.AutoSearch();
-      // }
+      
     
       onTeamSelected(event: MatAutocompleteSelectedEvent): void {
         var itm = this.selectedNames;

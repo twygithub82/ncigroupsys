@@ -7,6 +7,7 @@ import { StoringOrderTankItem } from './storing-order-tank';
 import { UserRoleItem, UserRoleLinkage } from './userrole';
 import { TeamUserLinkage } from './teams';
 import { ApolloError } from '@apollo/client/core';
+import { Functions } from './role';
 
 
 export class UserGO {
@@ -48,10 +49,13 @@ export class UserItem extends UserGO {
 export class UserItemWithDetails extends UserItem {
   public team_user?: TeamUserLinkage[];
   public user_role?: UserRoleLinkage[];
+  public user_functions?: UserFunctionLinkage[];
   constructor(item: Partial<UserItemWithDetails> = {}) {
     super(item)
     this.team_user=item.team_user || undefined;
     this.user_role=item.user_role || undefined;
+    this.user_functions=item.user_functions || undefined;
+
   }
 }
 export class AspnetUserRolesItem {
@@ -65,6 +69,35 @@ export class AspRolesItem{
   public role: string;
   constructor(item: Partial<AspRolesItem> = {}) {
     this.role = item.role || '';
+  }
+}
+
+export class UserFunctionLinkage{
+  public adhoc?: boolean;
+  public guid?: string;
+  public user_guid?: string;
+  public functions_guid?: string;
+  public remarks?:string;
+  public create_dt?: number;
+  public create_by?: string;
+  public update_dt?: number;
+  public update_by?: string;
+  public delete_dt?: number;
+  public functions?:Functions;
+
+  constructor(item: Partial<UserFunctionLinkage> = {}) {
+          this.adhoc = item.adhoc;
+          this.guid = item.guid;
+          this.user_guid = item.user_guid;
+          this.functions_guid = item.functions_guid;
+          this.remarks = item.remarks;
+          this.create_dt = item.create_dt;
+          this.create_by = item.create_by;
+          this.update_dt = item.update_dt;
+          this.update_by = item.update_by;
+          this.delete_dt = item.delete_dt;
+          this.functions=item.functions || undefined;
+          
   }
 }
 const GET_USERS = gql`
@@ -110,6 +143,31 @@ const GET_USERS_TEAMS_ROLES = gql`
         id
         phoneNumber
         userName
+        user_functions {
+          action
+          adhoc
+          create_by
+          create_dt
+          delete_dt
+          functions_guid
+          guid
+          remarks
+          update_by
+          update_dt
+          user_guid
+          functions {
+            action
+            code
+            create_by
+            create_dt
+            delete_dt
+            guid
+            module
+            submodule
+            update_by
+            update_dt
+          }
+        }
         team_user(where: { delete_dt: { eq: null } }) {
           create_by
           create_dt
