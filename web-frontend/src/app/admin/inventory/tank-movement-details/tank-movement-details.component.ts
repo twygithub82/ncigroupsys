@@ -2779,11 +2779,11 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
   canOverwriteSteamingApproval(row: SteamItem) {
     const allowOverwriteStatus = ['APPROVED', 'JOB_IN_PROGRESS', 'COMPLETED'];
-    return this.isAllowSteamReinstate() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
+    return this.isAllowSteamOverwrite() && allowOverwriteStatus.includes(row.status_cv || '') && !row?.customer_billing_guid;
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
-    return this.isAllowSteamOverwrite() && (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
+    return this.isAllowSteamReinstate() && (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
   }
 
   canOverwriteCleaningApproval() {
