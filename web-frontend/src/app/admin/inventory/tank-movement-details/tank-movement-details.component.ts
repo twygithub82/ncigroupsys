@@ -3128,7 +3128,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   isAutoApproveSteaming(row: any) {
-    return false;
     return BusinessLogicUtil.isAutoApproveSteaming(row);
   }
 
