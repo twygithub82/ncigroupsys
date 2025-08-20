@@ -771,6 +771,7 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const cancelSchedulingSotReq = new SchedulingSotGO(schedulingSot);
+        cancelSchedulingSotReq.remarks = result.remarks;
         this.schedulingSotDS.deleteScheduleSOT([cancelSchedulingSotReq.guid!]).subscribe(cancelResult => {
           console.log(cancelResult)
           this.handleDeleteSuccess(cancelResult?.data?.deleteSchedulingSOT);

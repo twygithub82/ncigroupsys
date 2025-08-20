@@ -798,6 +798,7 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
         const cancelBookingReq = new BookingGO(booking);
+        cancelBookingReq.remarks = result.remarks;
         this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
           this.handleDeleteSuccess(cancelResult?.data?.deleteBooking);
           this.performSearch(this.pageSize, 0, this.pageSize);

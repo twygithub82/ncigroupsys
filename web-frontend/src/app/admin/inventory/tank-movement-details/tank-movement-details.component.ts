@@ -2825,7 +2825,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const dialogRef = this.dialog.open(ConfirmationRemarksFormDialogComponent, {
       disableClose: true,
-      width: '500px',
       data: {
         action: 'rollback',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
