@@ -5,12 +5,12 @@
         <h4>{{dialogTitle}}</h4>
       </div>
     </div>
-    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
+    <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
       <mat-icon>close</mat-icon>
-    </button>
+    </button> -->
   </div>
   <div mat-dialog-content>
-    <form class="register-form mt-3" [formGroup]="surveyForm" #formDirective="ngForm">
+    <form class="register-form" [formGroup]="surveyForm" #formDirective="ngForm">
       <!-- <h5>{{data.translatedLangText.SURVEY_DETAILS}}</h5> -->
       <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
