@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader">
+  <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h4 mat-dialog-title>{{dialogTitle}}</h4>
@@ -9,7 +9,7 @@
       <mat-icon>close</mat-icon>
     </button>
   </div>
-  <div mat-dialog-content>
+  <div mat-dialog-content class="p-4">
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-0">
         <div class="responsive_table ">
@@ -17,7 +17,7 @@
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- ID Column -->
             <ng-container matColumnDef="seq">
-              <mat-header-cell *matHeaderCellDef 
+              <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
               <mat-cell *matCellDef="let row; let i = index"
                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
