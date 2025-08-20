@@ -2783,7 +2783,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackSteamingCompleted(row: SteamItem) {
-    return this.isAllowSteamReinstate() && (this.sot?.tank_status_cv === 'STEAMING' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
+    return this.isAllowSteamReinstate() && (this.sot?.tank_status_cv === 'STEAM' || this.sot?.tank_status_cv === 'STORAGE') && row.status_cv === 'COMPLETED';
   }
 
   canOverwriteCleaningApproval() {
