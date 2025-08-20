@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared/UnsubscribeOnDestroyAdapter';
 import { Apollo } from 'apollo-angular';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyDS } from 'app/data-sources/in-gate-survey';
 import { Utility } from 'app/utilities/utility';
@@ -546,8 +546,8 @@ console.log(body);
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 50 },
       1: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 50 },
-      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 40 },
-      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth:50 },
+      2: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth: 45 },
+      3: { halign: 'left', valign: 'middle', minCellHeight: minHeightBodyCell,maxContentHeight: minHeightBodyCell, cellWidth:45 },
     };
 
     // Define headStyles with valid fontStyle
@@ -591,8 +591,8 @@ console.log(body);
       [`${this.translatedLangText.OPERATOR}: ${this.getGate()?.tank?.storing_order?.customer_company?.name}`, `${this.translatedLangText.OWNER}: ${this.getGate()?.tank?.customer_company?.name}`,
       `${this.translatedLangText.LAST_RELEASE_DATE}: ${this.displayDate(this.getGate()?.tank?.last_release_dt) || '-'}`, `${this.translatedLangText.LAST_TEST}: ${this.last_test_desc}`],
       [`${this.translatedLangText.UNIT_TYPE}: ${this.getGate()?.tank?.tank?.unit_type}`, `${this.translatedLangText.CLADDING}: ${this.getCladdingDescription(this.eirDetails?.cladding_cv)}`,
-        { content: `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, colSpan: 2}],
-      // `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
+      //  { content: `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}`, colSpan: 2}],
+       `${this.translatedLangText.MANUFACTURER_DOM}: ${this.getManufactureDescription(this.eirDetails?.manufacturer_cv)}  ${this.displayDate(this.eirDetails?.dom_dt)}`, `${this.translatedLangText.TAKE_IN_STATUS}: ${this.getCleanStatusDescription(this.getGate()?.tank?.clean_status_cv)}`],
       [`${this.translatedLangText.CAPACITY}: ${this.displayNumber(this.eirDetails?.capacity)} L`, `${this.translatedLangText.TARE_WEIGHT}: ${this.displayNumber(this.eirDetails?.tare_weight)} KG`,
       `${this.translatedLangText.MAX_GROSS_WEIGHT}: ${this.getMaxGrossWeightDescription(this.eirDetails?.max_weight_cv)}`, `${this.translatedLangText.TANK_HEIGHT}: ${this.getTankHeightDescription(this.eirDetails?.height_cv)}`],
     ];
@@ -1854,7 +1854,7 @@ console.log(body);
         this.purposeOptionCvList = data || [];
       }),
       firstValueFrom(this.cvDS.connectAlias('cleanStatusCv')).then(data => {
-        this.cleanStatusCvList = data || [];
+        this.cleanStatusCvList = addDefaultSelectOption(data, "Unknown");
       }),
       firstValueFrom(this.cvDS.connectAlias('testTypeCv')).then(data => {
         this.testTypeCvList = data || [];
@@ -1927,6 +1927,8 @@ console.log(body);
     // Wait for all promises to resolve
     await Promise.all(promises);
   }
+
+ 
 
   populateHighlightedCells(toUpdateCells: boolean[], coordinates: { x: number; y: number }[]): boolean[] {
     if (!Array.isArray(coordinates)) {
