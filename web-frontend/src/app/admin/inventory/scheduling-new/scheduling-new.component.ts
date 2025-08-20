@@ -48,6 +48,7 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
 import { GlobalMaxCharDirective } from 'app/directive/global-max-char.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-scheduling-new',
@@ -713,6 +714,43 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
     });
   }
 
+  // cancelItem(sot: StoringOrderTankItem, schedulingSot: SchedulingSotItem, event: Event) {
+  //   this.stopPropagation(event);
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   console.log(schedulingSot);
+  //   const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+  //     disableClose: true,
+  //     width: '380px',
+  //     data: {
+  //       action: "cancel",
+  //       sot: sot,
+  //       schedulingSot: schedulingSot,
+  //       translatedLangText: this.translatedLangText,
+  //       populateData: {
+  //         bookingTypeCvList: this.bookingTypeCvListNewBooking,
+  //         yardCvList: this.yardCvList,
+  //         tankStatusCvList: this.tankStatusCvList
+  //       }
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result?.action === 'confirmed') {
+  //       const cancelSchedulingSotReq = new SchedulingSotGO(schedulingSot);
+  //       this.schedulingSotDS.deleteScheduleSOT([cancelSchedulingSotReq.guid!]).subscribe(cancelResult => {
+  //         console.log(cancelResult)
+  //         this.handleDeleteSuccess(cancelResult?.data?.deleteSchedulingSOT);
+  //         this.performSearch(this.pageSize, 0, this.pageSize);
+  //       });
+  //     }
+  //   });
+  // }
+
   cancelItem(sot: StoringOrderTankItem, schedulingSot: SchedulingSotItem, event: Event) {
     this.stopPropagation(event);
     let tempDirection: Direction;
@@ -722,25 +760,17 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       tempDirection = 'ltr';
     }
     console.log(schedulingSot);
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
-      width: '380px',
       data: {
-        action: "cancel",
-        sot: sot,
-        schedulingSot: schedulingSot,
+        allowRemarksWithRequired: true,
         translatedLangText: this.translatedLangText,
-        populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking,
-          yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
-        }
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const cancelSchedulingSotReq = new SchedulingSotGO(result.schedulingSot);
+        const cancelSchedulingSotReq = new SchedulingSotGO(schedulingSot);
         this.schedulingSotDS.deleteScheduleSOT([cancelSchedulingSotReq.guid!]).subscribe(cancelResult => {
           console.log(cancelResult)
           this.handleDeleteSuccess(cancelResult?.data?.deleteSchedulingSOT);

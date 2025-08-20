@@ -48,6 +48,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-booking-new',
@@ -743,6 +744,41 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     });
   }
 
+  // cancelItem(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
+  //   this.stopPropagation(event);
+  //   let tempDirection: Direction;
+  //   if (localStorage.getItem('isRtl') === 'true') {
+  //     tempDirection = 'rtl';
+  //   } else {
+  //     tempDirection = 'ltr';
+  //   }
+  //   const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+  //     disableClose: true,
+  //     width: '380px',
+  //     data: {
+  //       action: "cancel",
+  //       sot: sot,
+  //       booking: booking,
+  //       translatedLangText: this.translatedLangText,
+  //       populateData: {
+  //         bookingTypeCvList: this.bookingTypeCvListNewBooking,
+  //         yardCvList: this.yardCvList,
+  //         tankStatusCvList: this.tankStatusCvList
+  //       }
+  //     },
+  //     direction: tempDirection
+  //   });
+  //   this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+  //     if (result?.action === 'confirmed') {
+  //       const cancelBookingReq = new BookingGO(result.booking);
+  //       this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
+  //         this.handleDeleteSuccess(cancelResult?.data?.deleteBooking);
+  //         this.performSearch(this.pageSize, 0, this.pageSize);
+  //       });
+  //     }
+  //   });
+  // }
+
   cancelItem(sot: StoringOrderTankItem, booking: BookingItem, event: Event) {
     this.stopPropagation(event);
     let tempDirection: Direction;
@@ -751,25 +787,17 @@ export class BookingNewComponent extends UnsubscribeOnDestroyAdapter implements 
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
-      width: '380px',
       data: {
-        action: "cancel",
-        sot: sot,
-        booking: booking,
+        allowRemarksWithRequired: true,
         translatedLangText: this.translatedLangText,
-        populateData: {
-          bookingTypeCvList: this.bookingTypeCvListNewBooking,
-          yardCvList: this.yardCvList,
-          tankStatusCvList: this.tankStatusCvList
-        }
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const cancelBookingReq = new BookingGO(result.booking);
+        const cancelBookingReq = new BookingGO(booking);
         this.bookingDS.deleteBooking([cancelBookingReq.guid]).subscribe(cancelResult => {
           this.handleDeleteSuccess(cancelResult?.data?.deleteBooking);
           this.performSearch(this.pageSize, 0, this.pageSize);
