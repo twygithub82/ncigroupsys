@@ -2607,6 +2607,7 @@ const GET_STORING_ORDER_TANKS_FOR_MOVEMENT_BY_ID = gql`
         tank {
           unit_type
           tariff_depot_guid
+          iso_format
         }
         repair {
           guid
