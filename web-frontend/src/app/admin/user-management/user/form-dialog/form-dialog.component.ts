@@ -44,7 +44,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TeamDS } from 'app/data-sources/teams';
-import { UserDS, UserGO, UserItem } from 'app/data-sources/user';
+import { UserDS, UserFunctionLinkage, UserGO, UserItem } from 'app/data-sources/user';
 import { UserRoleLinkage } from 'app/data-sources/userrole';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -756,15 +756,18 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         onAdhocSelected(event: MatAutocompleteSelectedEvent): void {
         var itm = this.selectedNames;
         var cnt = this.pcForm?.get('adhoc')?.value;
-      
+       var itmLink = new UserFunctionLinkage();
+          itmLink.adhoc = true;
+          itmLink.functions = cnt;
+          itmLink.functions_guid = cnt.guid;
          const newItem = {
-          ...cnt,
+          ...itmLink,
           action: "NEW"
         };
 
          
         // cnt.value.action="NEW";
-        this.updatedAdhocList.push(newItem);
+        this.updatedAdhocList.unshift(newItem);
         if (this.adhocInput && this.adhocInput.nativeElement) {
             this.adhocInput.nativeElement.value = '';
           }

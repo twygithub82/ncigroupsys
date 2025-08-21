@@ -223,7 +223,7 @@
                             @for (t of updatedTeamList; let i = $index; track t) {
                                @if(!t.is_deleted)
                                   {
-                                  <div class="step-box cursor-pointer rounded  role-content" >
+                                  <div class="step-box cursor-pointer rounded role-content" >
                                     <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
                                     
                                     @if (canEdit()) {
@@ -260,7 +260,7 @@
                                    <mat-icon>cancel</mat-icon>
                                   </button>
                                   
-                                  <span  >{{f.functions.code}}
+                                  <span  >{{f.functions.code||f.code}}
                                   </span>
                                 </div>
                               }

@@ -766,7 +766,8 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      //startY: startY, // Start table at the current startY value
+       margin:{top:startY,left: leftMargin, right: rightMargin},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
