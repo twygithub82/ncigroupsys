@@ -159,13 +159,14 @@
                     
                                 @for (f of adhocFuntionList; track f) {
                                 
+                                  
                                     <mat-option [value]="f" class="checkbox-option">
                                       <div class="horizontal-container">
                                         <div class="option-text" >{{ f.code }}  
                                         </div>
                                       </div>
                                     </mat-option>
-                                 
+                                  
                                 
                                 }
                               </mat-autocomplete>
@@ -251,7 +252,7 @@
                           @if (updatedAdhocList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (f of updatedAdhocList; let i = $index; track f) {
-                              @if(!f.is_deleted)
+                              @if(f.adhoc && !f.is_deleted && f.delete_dt===null)
                               {
                                 <div class="step-box-features cursor-pointer rounded  role-content" >
                                   <div class="example-custom-placeholder" *cdkDragPlaceholder></div>

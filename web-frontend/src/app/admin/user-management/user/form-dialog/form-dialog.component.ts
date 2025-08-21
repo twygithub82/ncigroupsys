@@ -380,7 +380,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           { code: "ASC" },
           100
         ).subscribe(data => {
-          this.adhocFuntionList = data.filter(f =>!this.updatedRoleFeaturesList.some(t =>t.functions?.guid == f.guid)&&!this.updatedAdhocList.some(t =>t.code === f.code));
+          this.adhocFuntionList = data.filter(f =>!this.updatedRoleFeaturesList.some(t =>t.functions?.guid == f.guid))
+          this.adhocFuntionList = this.adhocFuntionList.filter(f =>!this.updatedAdhocList.some(t =>t.functions?.guid == f.guid));
         });
       })
     ).subscribe();
@@ -455,11 +456,23 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             this.roleNameList = this.roleNameList.filter(desc =>!this.updatedRoleList.some(t =>t.role?.guid == desc.guid));
             this.updatedTeamList=usr.team_user!;
             this.teamNameList = this.teamNameList.filter(desc =>!this.updatedTeamList.some(t => t.team_guid == desc.guid));
+           // usr.user_functions=usr.user_functions?.filter(f=>f.delete_dt===null);
             this.updatedAdhocList=usr.user_functions!;
+            var remItems = usr.user_functions?.filter(f =>!f.adhoc && f.delete_dt===null);
             this.updateRoleFeatureList();
-            this.adhocFuntionList = this.adhocFuntionList.filter(f =>!this.updatedRoleFeaturesList.some(t =>t.functions?.guid == f.guid)&&!this.updatedAdhocList.some(t =>t.code === f.code));
-            
-            // this.updatedRoleList.forEach(r=>{
+            this.adhocFuntionList = this.adhocFuntionList.filter(f =>!this.updatedRoleFeaturesList.some(t =>t.functions?.guid == f.guid));
+            this.adhocFuntionList = this.adhocFuntionList.filter(f =>!this.updatedAdhocList.some(t =>t.functions?.guid == f.guid));
+            for (const f of this.updatedRoleFeaturesList ?? []) {
+                if (!f?.functions) continue; // skip if functions is null/undefined
+
+                f.is_disabled = (remItems ?? []).some(
+                  r => r.functions_guid === f.functions_guid
+                );
+              }
+          //  this.updatedRoleFeaturesList.forEach(f => {
+          //   f.functions.is_disabled = (remItems ?? []).find(r => r.functions_guid === f.functions_guid)!==null;
+          // });
+                // this.updatedRoleList.forEach(r=>{
             //   this.updatedRoleFeaturesList.push(...r.role.role_functions!);
             // });
           }
@@ -581,10 +594,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
          const newItem = {
           action: a.action,
           addhoc:true,
-          guid: a.guid,
+          guid:  a.action=="NEW"? a.functions.guid:a.guid,
           remarks:''
         };
-
+       
         adhocList.push(newItem);
       }
     });
@@ -592,24 +605,43 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.updatedRoleFeaturesList.forEach(f=>{
       if(f.action)
       {
-        
-        const newItem = {
-          action: "NEW",
-          addhoc: f.is_disabled?false:true,
-          guid: f.functions.guid,
-          remarks:''
-        };
+        var newItem :  any;
+        if(f.is_disabled)
+        {
+          newItem = {
+            action: "NEW",
+            addhoc: false,
+            guid: f.functions.guid,
+            remarks:''
+          };
+          var selItm =this.updatedAdhocList.find(f=>f.functions_guid===f.functions_guid);
+           if(selItm)
+          {
+            newItem.action="EDIT";
+            newItem.guid=selItm.guid;
+          }
+           adhocList.push(newItem);
+        }
+        else{
+           newItem = {
+            action: "CANCEL",
+            addhoc: true,
+            guid: f.functions.guid,
+            remarks:''
+          };
+          var itm=this.updatedAdhocList.find(f=>f.functions_guid===f.functions_guid);
+          if(itm)
+          {
+            newItem.guid=itm.guid;
+            adhocList.push(newItem);
+          }
+        }
 
-        var item= adhocList.find(d=>d.guid===newItem.guid);
-        if(item)
-        {
-          item.addhoc=f.is_disabled?false:true;
-        }
-        else
-        {
-          adhocList.push(newItem);
-        }
-      }
+        
+     
+         
+        
+       }
     });
     
      this.userDs?.updateUser(user,roleList,teamList,adhocList).subscribe((result)=>{
@@ -775,6 +807,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
   
         this.pcForm?.get('adhoc')?.setValue(null);
+        // this.adhocFuntionList = this.adhocFuntionList.filter(item => item.guid !== cnt.guid);
     //  this.updateRoleFeatureList();
       }
 
@@ -791,6 +824,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
         else
         {
            item.action="CANCEL";
+           item.adhoc=false;
         }
        
       }
