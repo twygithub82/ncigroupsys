@@ -614,12 +614,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             guid: f.functions.guid,
             remarks:''
           };
-          var selItm =this.updatedAdhocList.find(f=>f.functions_guid===f.functions_guid);
-           if(selItm)
-          {
-            newItem.action="EDIT";
-            newItem.guid=selItm.guid;
-          }
+          // var selItm =this.updatedAdhocList.find(a=>a.functions_guid===f.functions_guid);
+          //  if(selItm)
+          // {
+          //   newItem.action="EDIT";
+          //   newItem.guid=selItm.guid;
+          // }
            adhocList.push(newItem);
         }
         else{
@@ -629,7 +629,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
             guid: f.functions.guid,
             remarks:''
           };
-          var itm=this.updatedAdhocList.find(f=>f.functions_guid===f.functions_guid);
+          var itm=this.updatedAdhocList.find(a=>a.functions_guid===f.functions_guid);
           if(itm)
           {
             newItem.guid=itm.guid;
