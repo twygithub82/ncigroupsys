@@ -924,7 +924,7 @@
                 </div>
                 <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 align-right mb-0">
                   <button mat-flat-button [disabled]="(repairDS.loading$ | async) || (isExportingPDF)"
-                    class="m-r-5 orange-button" (click)="onExport($event)">
+                    class="orange-button" (click)="onExport($event)">
                     @if (!(repairDS.loading$ | async) && !(isExportingPDF)) {
                     <i class="fas fa-file-export"></i>
                     } @else if ((repairDS.loading$ | async) || (isExportingPDF)) {
@@ -935,7 +935,7 @@
                     {{translatedLangText.EXPORT}}
                   </button>
                   @if (isAllowEdit() && repairDS.canRollbackStatus(repairItem, repList)) {
-                  <button mat-flat-button color="accent" [disabled]="(repairDS.actionLoading$ | async)"
+                  <button mat-flat-button color="accent" [disabled]="(repairDS.actionLoading$ | async)" class="m-l-5"
                     (click)="onRollback($event)">
                     <mat-icon>
                       @if (!(repairDS.actionLoading$ | async)) {
@@ -974,7 +974,7 @@
                   </button>
                   }
                   @if (isAllowEdit() && repairDS.canAbort(repairItem, repList)) {
-                  <button mat-flat-button [disabled]="(repairDS.loading$ | async)" class="m-r-5 red-button"
+                  <button mat-flat-button [disabled]="(repairDS.loading$ | async)" class="m-l-5 red-button"
                     (click)="onAbort($event)">
                     <mat-icon>
                       @if (!(repairDS.loading$ | async)) {

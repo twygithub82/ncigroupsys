@@ -52,6 +52,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-approval-view',
@@ -611,20 +612,16 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
-
         const repReqList = this.repList?.map((rep: RepairPartItem) => {
           return {
             guid: rep?.guid,
@@ -633,10 +630,10 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
         });
 
         var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
-          guid: reList[0].guid,
+          guid: this.repairItem?.guid,
           sot_guid: this.sotItem!.guid,
           action: "NA",
-          remarks: reList[0].remarks,
+          remarks: this.repairItem?.remarks,
           repairPartRequests: repReqList
         });
         console.log(repairStatusReq);
@@ -658,20 +655,17 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [this.repairItem],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      debugger
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: any) => {
+        const reList = [this.repairItem].map((item: any) => {
           const RepairRequestInput = new RepairRequest({
             customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
             estimate_no: item.estimate_no,

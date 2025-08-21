@@ -45,7 +45,7 @@ import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
 import { ResidueGO, ResidueItem } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
-import { SteamDS, SteamItem, SteamPartRequest, SteamStatusRequest } from 'app/data-sources/steam';
+import { SteamDS, SteamItem, SteamGO, SteamPartRequest, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartGO, SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffResidueItem } from 'app/data-sources/tariff-residue';
@@ -245,7 +245,8 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     HOURLY: 'COMMON-FORM.HOURLY',
     BY_HOUR: 'COMMON-FORM.BY-HOUR',
     NO_ACTION: 'COMMON-FORM.NO-ACTION',
-    APPROVED: 'COMMON-FORM.APPROVED'
+    APPROVED: 'COMMON-FORM.APPROVED',
+    ARE_YOU_SURE_NO_ACTION: 'COMMON-FORM.ARE-YOU-SURE-NO-ACTION',
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -802,46 +803,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  cancelSelectedRows(row: RepairPartItem[]) {
-    //this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
-      data: {
-        action: "cancel",
-        item: [...row],
-        translatedLangText: this.translatedLangText
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result?.action === 'confirmed') {
-        const data: any[] = [...this.repList];
-        result.item.forEach((newItem: RepairPartItem) => {
-          // Find the index of the item in data with the same id
-          const index = data.findIndex(existingItem => existingItem.guid === newItem.guid);
-
-          // If the item is found, update the properties
-          if (index !== -1) {
-            data[index] = {
-              ...data[index],
-              ...newItem,
-              actions: Array.isArray(data[index].actions!)
-                ? [...new Set([...data[index].actions!, 'cancel'])]
-                : ['cancel']
-            };
-          }
-        });
-        this.updateData(data);
-      }
-    });
-  }
-
   onCancel(event: Event) {
     this.preventDefault(event);
     console.log(this.sotItem)
@@ -864,14 +825,11 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: SteamItem) => new SteamItem(item));
-        console.log(reList);
-
         let steamStatus: SteamStatusRequest = new SteamStatusRequest();
         steamStatus.action = "CANCEL";
         steamStatus.guid = this.steamItem?.guid;
         steamStatus.sot_guid = this.steamItem?.sot_guid;
-        steamStatus.remarks = reList[0].remarks;
+        steamStatus.remarks = this.steamItem?.remarks;
         this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
           this.handleCancelSuccess(result?.data?.updateSteamingStatus);
           if (result?.data?.updateSteamingStatus > 0) {
@@ -900,25 +858,22 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '1000px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [...row],
-        translatedLangText: this.translatedLangText
-
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarksWithRequired: true
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: any) => {
+        const reList = row.map((item: any) => {
           const SteamEstimateRequestInput = {
-            customer_guid: item.customer_company_guid,
+            customer_guid: this.sotItem?.storing_order?.customer_company?.guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
-            remarks: item.remarks,
+            remarks: result?.remarks,
             sot_guid: item.sot_guid,
             is_approved: item?.status_cv == "APPROVED"
           }
@@ -1006,7 +961,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       newSteamItem.est_cost = Utility.convertNumber(this.getTotalCost(), 2);
       newSteamItem.est_hour = Utility.convertNumber(this.getTotalLabourHour(), 2);
       newSteamItem.rate = Utility.convertNumber(this.getRate(), 2); //this.packageLabourItem?.cost;
-      newSteamItem.flat_rate =Boolean( this.flat_rate);//this.sotItem?.tank?.flat_rate;
+      newSteamItem.flat_rate = Boolean(this.flat_rate);//this.sotItem?.tank?.flat_rate;
       newSteamItem.steaming_part = [];
       this.deList.forEach(data => {
         var steamPart: SteamPartItem = new SteamPartItem(data);
@@ -1042,7 +997,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       updSteamItem.total_material_cost = this.getTotalMaterialCost();
       updSteamItem.total_labour_cost = this.getTotalApprovedLabourCost();
       this.deList.forEach(data => {
-        data.labour=Number(data.labour);
+        data.labour = Number(data.labour);
         var steamPart: SteamPartItem = new SteamPartItem(data);
         steamPart.action = !data.action ? '' : data.action;
 
@@ -1420,7 +1375,7 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       var ccGuid = this.sotItem?.storing_order?.customer_company?.guid;
       this.getCustomerLabourPackage(ccGuid!);
 
-      
+
 
     }
   }
@@ -1727,9 +1682,9 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
       re.status_cv = this.steamItem?.status_cv;
       re.action = "APPROVE";
       re.steaming_part = this.deList?.map((rep: SteamPartItem) => {
-        rep.labour=Number(rep.labour);
-        rep.quantity=Number(rep.quantity);
-        rep.cost=Number(rep.cost);
+        rep.labour = Number(rep.labour);
+        rep.quantity = Number(rep.quantity);
+        rep.cost = Number(rep.cost);
         return new SteamPartItem({
           ...rep,
           action: (this.steamItem?.status_cv === 'PENDING' ? ((rep.action === undefined || rep.action === null) ? 'EDIT' : rep.action) : (rep.action === undefined ? '' : rep.action)),
@@ -1809,26 +1764,21 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'cancel',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [this.steamItem],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_NO_ACTION,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: ResidueItem) => new ResidueGO(item));
-        console.log(reList);
-
         let steamStatus: SteamStatusRequest = new SteamStatusRequest();
         steamStatus.action = "NA";
         steamStatus.guid = this.steamItem?.guid;
         steamStatus.sot_guid = this.steamItem?.sot_guid;
-        steamStatus.remarks = reList[0].remarks;
+        steamStatus.remarks = result?.remarks;
         steamStatus.steamingPartRequests = [];
         this.deList.forEach(d => {
           var stmPart: SteamPartRequest = new SteamPartRequest();

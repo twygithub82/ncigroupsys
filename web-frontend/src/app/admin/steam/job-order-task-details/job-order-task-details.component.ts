@@ -47,12 +47,12 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
-import { Observable, Subscription } from 'rxjs';
-import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
+import { Subscription } from 'rxjs';
 //import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog_old/cancel-form-dialog.component';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 
 @Component({
   selector: 'job-order-task-details',
@@ -949,7 +949,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '700px',
-        disableClose: true,
+      disableClose: true,
       data: {
         item: this.jobOrderItem?.time_table,
         action: 'new',
@@ -1117,16 +1117,14 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     //(this.jobOrderItem?.status_cv=='COMPLETED'|| this.joDS.canRollbackJob(this.jobOrderItem)) && this.steamDS.canRollbackJobInProgress(this.steamItem) && !this.isStarted();
   }
 
-  ConvertSystemToPascalCase(str?: string):string {
-    
-    var retval =str||'-';
-    if(retval.toUpperCase()==="SYSTEM")
-    {
-      retval =  Utility.toPascalCase(retval);
-    }
-    return retval;  
-  }
+  ConvertSystemToPascalCase(str?: string): string {
 
+    var retval = str || '-';
+    if (retval.toUpperCase() === "SYSTEM") {
+      retval = Utility.toPascalCase(retval);
+    }
+    return retval;
+  }
 
   rollbackJob(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
@@ -1136,14 +1134,12 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true,
       data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [this.steamItem],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
@@ -1154,7 +1150,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
           sot_guid: this.steamItem?.sot_guid,
           job_order: [new JobOrderGO({ ...this.jobOrderItem, remarks: result.remarks })],
           sot_status: this.sotItem?.tank_status_cv,
-          remarks: result.item[0].remarks
+          remarks: result.remarks
         });
 
         console.log(stmJobOrder)
