@@ -12,269 +12,289 @@
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                  <div class="card">
-                    <div class="header">
-                      <h2>
-                        {{translatedLangText.TANK_DETAILS}}
-                      </h2>
-                    </div>
-                    <div class="body">
-                      @if (sotDS.loading$ | async) {
-                      <div class="tbl-spinner">
-                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                        </mat-progress-spinner>
-                      </div>
-                      }
-                      @if (!(sotDS.loading$ | async)) {
-                      <mat-card-content>
-                        <div class="row justify-content-center">
-                          <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
-                            <div class="row right-align-display">
-                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
-                              </div>
-                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
-                                <div class="value-display-info">{{storingOrderTankItem?.tank_no}}</div>
+                  <div class="card p-0 tlx-card">
+                    <mat-accordion>
+                      <mat-expansion-panel [expanded]="true" [disabled]="true" hideToggle>
+                        <mat-expansion-panel-header class="ps-0">
+                          <mat-panel-title>
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                              <div class="header">
+                                <h2>
+                                  {{translatedLangText.TANK_DETAILS}}
+                                </h2>
                               </div>
                             </div>
-                            <div class="row right-align-display">
-                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
-                              </div>
-                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
-                                <div class="value-display-info">
-                                  {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
-                              </div>
-                            </div>
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="body p-l-0 p-r-0">
+                          @if (sotDS.loading$ | async) {
+                          <div class="tbl-spinner">
+                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                            </mat-progress-spinner>
                           </div>
-                          <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
-                            <div class="row right-align-display">
-                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
+                          }
+                          @if (!(sotDS.loading$ | async)) {
+                          <mat-card-content>
+                            <div class="row justify-content-center">
+                              <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                                <div class="row right-align-display">
+                                  <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
+                                  </div>
+                                  <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                    <div class="value-display-info">{{storingOrderTankItem?.tank_no}}</div>
+                                  </div>
+                                </div>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
+                                  </div>
+                                  <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                    <div class="value-display-info">
+                                      {{ccDS.displayName(storingOrderTankItem?.storing_order?.customer_company)}}</div>
+                                  </div>
+                                </div>
                               </div>
-                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
-                                <span
-                                  [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
+                              <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                                <div class="row right-align-display">
+                                  <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
+                                  </div>
+                                  <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                    <span
+                                      [class]="'font-bold'">{{igDS.getInGateItem(storingOrderTankItem?.in_gate)?.eir_no}}</span>
+                                  </div>
+                                </div>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
+                                  </div>
+                                  <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                    <div class="value-display-info">
+                                      {{storingOrderTankItem?.tariff_cleaning?.cargo}}</div>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                            <div class="row right-align-display">
-                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
-                              </div>
-                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
-                                <div class="value-display-info">
-                                  {{storingOrderTankItem?.tariff_cleaning?.cargo}}</div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
-                            <div class="row right-align-display">
-                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
-                              </div>
-                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
-                                <div class="value-display-info">{{displayTankPurpose(storingOrderTankItem!)}}
+                              <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
+                                <div class="row right-align-display">
+                                  <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
+                                  </div>
+                                  <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                    <div class="value-display-info">{{displayTankPurpose(storingOrderTankItem!)}}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="row right-align-display">
+                                  <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                                    <span class="label-display-info">{{translatedLangText.CURRENT_LOCATION}}:</span>
+                                  </div>
+                                  <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                                    <div class="value-display-info">
+                                      <span
+                                        [class]="'font-bold'">{{getYardDescription((transferDS.getLastLocation(transferList))
+                                        || (igDS.getInGateItem(storingOrderTankItem?.in_gate)?.yard_cv))}}</span>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                            <div class="row right-align-display">
-                              <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
-                                <span class="label-display-info">{{translatedLangText.CURRENT_LOCATION}}:</span>
-                              </div>
-                              <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
-                                <div class="value-display-info">
-                                  <span
-                                    [class]="'font-bold'">{{getYardDescription((transferDS.getLastLocation(transferList))
-                                    || (igDS.getInGateItem(storingOrderTankItem?.in_gate)?.yard_cv))}}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          </mat-card-content>
+                          }
                         </div>
-                      </mat-card-content>
-                      }
-                    </div>
+                      </mat-expansion-panel>
+                    </mat-accordion>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                  <div class="card">
-                    <div class="header">
-                      <h2>
-                        {{translatedLangText.TRANSFER_DETAILS}}
-                      </h2>
-                    </div>
-                    <div class="body">
-                      @if (sotDS.loading$ | async) {
-                      <div class="tbl-spinner">
-                        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                        </mat-progress-spinner>
-                      </div>
-                      }
-                      @if (!(sotDS.loading$ | async)) {
-                      <mat-card-content>
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
-                              [disabled]="transferDS.isAnyTransferNotDone(transferList)"
-                              (click)="addTransferDetails($event)">
-                              <mat-icon class="col-white">add</mat-icon>{{translatedLangText.DETAILS}}
-                            </button>
-                          </div>
-                        </div>
-                        <div class="row mt-3">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-                            <div class="responsive_table">
-                              <table mat-table [dataSource]="transferList" matSort
-                                class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
-                                <ng-container matColumnDef="id">
-                                  <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                                  <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="transfer_out_dt">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.TRANSFER_SINCE}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span
-                                      class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDateTime(row.transfer_out_dt)}}
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="transfer_in_dt">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.TRANSFER_UNTIL}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
-                                    <span>{{displayDateTime(row.transfer_in_dt) ?? "-"}}</span>
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="days">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.DAYS}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
-                                    <span>{{transferDS.getDays(row) || "-"}}</span>
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="location_from_cv">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.FROM_YARD}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span
-                                      class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="location_to_cv">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.TO_YARD}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span
-                                      class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="update_by">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.UPDATE_BY}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span
-                                      class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by
-                                    || row?.create_by}}
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="update_dt">
-                                  <mat-header-cell mat-header-cell *matHeaderCellDef
-                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    {{translatedLangText.UPDATE_DATE}}
-                                  </mat-header-cell>
-                                  <mat-cell mat-cell *matCellDef="let row"
-                                    [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                                    <span
-                                      class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDate(row?.update_dt
-                                    || row?.create_dt)}}
-                                  </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="actions">
-                                  <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef>
-                                  </mat-header-cell>
-                                  <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
-                                    @if (hasMenuItems(row)) {
-                                    <button mat-icon-button [matMenuTriggerFor]="menu"
-                                      (click)="stopEventTrigger($event)">
-                                      <mat-icon>more_vert</mat-icon>
-                                    </button>
-                                    <mat-menu #menu="matMenu">
-                                      @if (transferDS.canCompleteTransfer(row)) {
-                                      <button mat-menu-item (click)="completeTransfer($event, row)">
-                                        <mat-icon [ngClass]="">checked</mat-icon>
-                                        <span>{{translatedLangText.TRANSFER_IN}}</span>
-                                      </button>
-                                      }
-                                      @if (transferDS.canCancel(row)) {
-                                      <button mat-menu-item (click)="cancelDialog($event, row)">
-                                        <mat-icon>cancel</mat-icon>
-                                        <span>{{translatedLangText.CANCEL}}</span>
-                                      </button>
-                                      }
-                                      @if (transferDS.canRollback(row, transferList)) {
-                                      <button mat-menu-item (click)="rollbackDialog($event, row)">
-                                        <mat-icon>undo</mat-icon>
-                                        <span>{{translatedLangText.ROLLBACK}}</span>
-                                      </button>
-                                      }
-                                    </mat-menu>
-                                    }
-                                  </mat-cell>
-                                </ng-container>
-                                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                                <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'"
-                                  (click)="addTransferDetails($event, row)" matRipple>
-                                </mat-row>
-                              </table>
+                  <div class="card p-0 tlx-card">
+                    <mat-accordion>
+                      <mat-expansion-panel [expanded]="true" [disabled]="true" hideToggle>
+                        <mat-expansion-panel-header class="ps-0">
+                          <mat-panel-title>
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                              <div class="header">
+                                <h2>
+                                  {{translatedLangText.TRANSFER_DETAILS}}
+                                </h2>
+                              </div>
                             </div>
-                            <!-- No result -->
-                            @if (!(sotDS.loading$ | async) && !transferList.length) {
-                            <!-- <div class="no-results m-l-20 pt-3">
+                          </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="body p-l-0 p-r-0">
+                          @if (sotDS.loading$ | async) {
+                          <div class="tbl-spinner">
+                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                            </mat-progress-spinner>
+                          </div>
+                          }
+                          @if (!(sotDS.loading$ | async)) {
+                          <mat-card-content>
+                            <div class="row">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
+                                  [disabled]="transferDS.isAnyTransferNotDone(transferList)"
+                                  (click)="addTransferDetails($event)">
+                                  <mat-icon class="col-white">add</mat-icon>{{translatedLangText.DETAILS}}
+                                </button>
+                              </div>
+                            </div>
+                            <div class="row mt-3">
+                              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                                <div class="responsive_table">
+                                  <table mat-table [dataSource]="transferList" matSort
+                                    class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+                                    <ng-container matColumnDef="id">
+                                      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                      <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="transfer_out_dt">
+                                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        {{translatedLangText.TRANSFER_SINCE}}
+                                      </mat-header-cell>
+                                      <mat-cell mat-cell *matCellDef="let row"
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        <span
+                                          class="mobile-tab-label">{{translatedLangText.TRANSFER_SINCE}}:</span>{{displayDateTime(row.transfer_out_dt)}}
+                                      </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="transfer_in_dt">
+                                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        {{translatedLangText.TRANSFER_UNTIL}}
+                                      </mat-header-cell>
+                                      <mat-cell mat-cell *matCellDef="let row"
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        <span class="mobile-tab-label">{{translatedLangText.TRANSFER_UNTIL}}:</span>
+                                        <span>{{displayDateTime(row.transfer_in_dt) ?? "-"}}</span>
+                                      </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="days">
+                                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        {{translatedLangText.DAYS}}
+                                      </mat-header-cell>
+                                      <mat-cell mat-cell *matCellDef="let row"
+                                        [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        <span class="mobile-tab-label">{{translatedLangText.DAYS}}:</span>
+                                        <span>{{transferDS.getDays(row) || "-"}}</span>
+                                      </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="location_from_cv">
+                                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        {{translatedLangText.FROM_YARD}}
+                                      </mat-header-cell>
+                                      <mat-cell mat-cell *matCellDef="let row"
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        <span
+                                          class="mobile-tab-label">{{translatedLangText.FROM_YARD}}:</span>{{getYardDescription(row?.location_from_cv)}}
+                                      </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="location_to_cv">
+                                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        {{translatedLangText.TO_YARD}}
+                                      </mat-header-cell>
+                                      <mat-cell mat-cell *matCellDef="let row"
+                                        [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        <span
+                                          class="mobile-tab-label">{{translatedLangText.TO_YARD}}:</span>{{getYardDescription(row?.location_to_cv)}}
+                                      </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="update_by">
+                                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        {{translatedLangText.UPDATE_BY}}
+                                      </mat-header-cell>
+                                      <mat-cell mat-cell *matCellDef="let row"
+                                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        <span
+                                          class="mobile-tab-label">{{translatedLangText.UPDATE_BY}}:</span>{{row?.update_by
+                                        || row?.create_by}}
+                                      </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="update_dt">
+                                      <mat-header-cell mat-header-cell *matHeaderCellDef
+                                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        {{translatedLangText.UPDATE_DATE}}
+                                      </mat-header-cell>
+                                      <mat-cell mat-cell *matCellDef="let row"
+                                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                        <span
+                                          class="mobile-tab-label">{{translatedLangText.UPDATE_DATE}}:</span>{{displayDate(row?.update_dt
+                                        || row?.create_dt)}}
+                                      </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="actions">
+                                      <mat-header-cell [ngClass]="'pr-0'" *matHeaderCellDef>
+                                      </mat-header-cell>
+                                      <mat-cell *matCellDef="let row; let i=index;" class="justify-content-end">
+                                        @if (hasMenuItems(row)) {
+                                        <button mat-icon-button [matMenuTriggerFor]="menu"
+                                          (click)="stopEventTrigger($event)">
+                                          <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #menu="matMenu">
+                                          @if (transferDS.canCompleteTransfer(row)) {
+                                          <button mat-menu-item (click)="completeTransfer($event, row)">
+                                            <mat-icon [ngClass]="">checked</mat-icon>
+                                            <span>{{translatedLangText.TRANSFER_IN}}</span>
+                                          </button>
+                                          }
+                                          @if (transferDS.canCancel(row)) {
+                                          <button mat-menu-item (click)="cancelDialog($event, row)">
+                                            <mat-icon>cancel</mat-icon>
+                                            <span>{{translatedLangText.CANCEL}}</span>
+                                          </button>
+                                          }
+                                          @if (transferDS.canRollback(row, transferList)) {
+                                          <button mat-menu-item (click)="rollbackDialog($event, row)">
+                                            <mat-icon>undo</mat-icon>
+                                            <span>{{translatedLangText.ROLLBACK}}</span>
+                                          </button>
+                                          }
+                                        </mat-menu>
+                                        }
+                                      </mat-cell>
+                                    </ng-container>
+                                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                                    <mat-row *matRowDef="let row; columns: displayedColumns;" [style.cursor]="'pointer'"
+                                      (click)="addTransferDetails($event, row)" matRipple>
+                                    </mat-row>
+                                  </table>
+                                </div>
+                                <!-- No result -->
+                                @if (!(sotDS.loading$ | async) && !transferList.length) {
+                                <!-- <div class="no-results m-l-20 pt-3">
                               <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
                             </div> -->
-                            }
-                            <!-- Loading spinner -->
-                            @if (sotDS.loading$ | async) {
-                            <div class="tbl-spinner">
-                              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                              </mat-progress-spinner>
+                                }
+                                <!-- Loading spinner -->
+                                @if (sotDS.loading$ | async) {
+                                <div class="tbl-spinner">
+                                  <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                                  </mat-progress-spinner>
+                                </div>
+                                }
+                              </div>
                             </div>
-                            }
-                          </div>
+                            <div class="row m-t-10">
+                              <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 mb-0">
+                                <button mat-flat-button aria-label="Back to previous page"
+                                  (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/transfer/']">
+                                  <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                                </button>
+                              </div>
+                            </div>
+                          </mat-card-content>
+                          }
                         </div>
-                        <div class="row m-t-10">
-                          <div class="col-xl-6 col-lg-4 col-md-12 col-sm-12 mb-0">
-                            <button mat-flat-button aria-label="Back to previous page"
-                              (click)="$event.preventDefault();" [routerLink]="['/admin/inventory/transfer/']">
-                              <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
-                            </button>
-                          </div>
-                        </div>
-                      </mat-card-content>
-                      }
-                    </div>
+                      </mat-expansion-panel>
+                    </mat-accordion>
                   </div>
                 </div>
               </div>

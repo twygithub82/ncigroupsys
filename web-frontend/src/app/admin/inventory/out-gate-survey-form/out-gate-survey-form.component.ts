@@ -1920,6 +1920,7 @@ export class OutGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter impl
 
   editRemarks(event: Event, remarksTitle: string, remarksValue: any) {
     this.preventDefault(event);  // Prevents the form submission
+    return;
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

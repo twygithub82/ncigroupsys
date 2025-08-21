@@ -624,7 +624,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.LEFT_REMARKS, surveyForm?.get('frame_type.leftRemarks'))"
-                                class="link-button font-bold"
+                                class="font-bold"
                                 [matTooltip]="surveyForm?.get('frame_type.leftRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.leftRemarks')?.value) {
                                 *
@@ -659,7 +659,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.REAR_REMARKS, surveyForm?.get('frame_type.rearRemarks'))"
-                                class="link-button font-bold"
+                                class="font-bold"
                                 [matTooltip]="surveyForm?.get('frame_type.rearRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rearRemarks')?.value) {
                                 *
@@ -694,7 +694,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.RIGHT_REMARKS, surveyForm?.get('frame_type.rightRemarks'))"
-                                class="link-button font-bold"
+                                class="font-bold"
                                 [matTooltip]="surveyForm?.get('frame_type.rightRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.rightRemarks')?.value) {
                                 *
@@ -729,7 +729,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.TOP_REMARKS, surveyForm?.get('frame_type.topRemarks'))"
-                                class="link-button font-bold"
+                                class="font-bold"
                                 [matTooltip]="surveyForm?.get('frame_type.topRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.topRemarks')?.value) {
                                 *
@@ -833,7 +833,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.FRONT_REMARKS, surveyForm?.get('frame_type.frontRemarks'))"
-                                class="link-button font-bold"
+                                class="font-bold"
                                 [matTooltip]="surveyForm?.get('frame_type.frontRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.frontRemarks')?.value) {
                                 *
@@ -868,7 +868,7 @@
                             <div>
                               <span
                                 (click)="editRemarks($event, translatedLangText.BOTTOM_REMARKS, surveyForm?.get('frame_type.bottomRemarks'))"
-                                class="link-button font-bold"
+                                class="font-bold"
                                 [matTooltip]="surveyForm?.get('frame_type.bottomRemarks')?.value">
                                 @if (surveyForm?.get('frame_type.bottomRemarks')?.value) {
                                 *
@@ -1231,345 +1231,6 @@
                       </div>
                     </form>
                   </mat-step>
-                  <!-- <mat-step [stepControl]="getPhotosFormGroup()" [completed]="this.in_gate?.in_gate_survey?.guid">
-                    <form [formGroup]="getPhotosFormGroup()">
-                      <ng-template matStepLabel>
-                        <div class="mat-step-text-label">
-                          {{translatedLangText.PHOTOS}}
-                        </div>
-                      </ng-template>
-                      <div class="body">
-                        @if (igDS.loading$ | async) {
-                        <div class="tbl-spinner">
-                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                          </mat-progress-spinner>
-                        </div>
-                        }
-                        @if (!(igDS.loading$ | async)) {
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <div class="header">
-                              <h2>
-                                {{translatedLangText.TANK_PHOTOS}}
-                              </h2>
-                            </div>
-                            <div class="body">
-                              @if (igDS.loading$ | async) {
-                              <div class="tbl-spinner">
-                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                </mat-progress-spinner>
-                              </div>
-                              }
-                              @if (!(igDS.loading$ | async)) {
-                              <div class="row">
-                              </div>
-                              <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
-                                  <div class="image-previews-tank">
-                                    <div>
-                                      <div class="row">
-                                        <div
-                                          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
-                                          {{translatedLangText.LEFT_SIDE}}
-                                        </div>
-                                      </div>
-                                      <div class="image-preview"
-                                        (click)="!surveyForm?.get('photos.leftImage')?.get('preview')?.value && fileInputLeft.click()">
-                                        <input type="file" #fileInputLeft class="default d-none" accept="image/*"
-                                          (change)="onFileSelectedTankSide($event, surveyForm?.get('photos.leftImage'))">
-                                        @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('photos.leftImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
-                                        }
-                                        @else {
-                                        <div class="tbl-spinner">
-                                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                          </mat-progress-spinner>
-                                        </div>
-                                        }
-                                        @if (surveyForm?.get('photos.leftImage')?.get('preview')?.value) {
-                                        <button [matMenuTriggerFor]="menu" class="link-button menu-button"
-                                          (click)="$event.stopPropagation()">
-                                          <mat-icon>more_vert</mat-icon>
-                                        </button>
-                                        <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 0)">
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
-                                          <button mat-menu-item
-                                            (click)="deleteDialog(surveyForm?.get('photos.leftImage'), $event)">
-                                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
-                                          </button>
-                                        </mat-menu>
-                                        }
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div class="row">
-                                        <div
-                                          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
-                                          {{translatedLangText.REAR_SIDE}}
-                                        </div>
-                                      </div>
-                                      <div class="image-preview"
-                                        (click)="!surveyForm?.get('photos.rearImage')?.get('preview')?.value && fileInputRear.click()">
-                                        <input type="file" #fileInputRear class="default d-none" accept="image/*"
-                                          (change)="onFileSelectedTankSide($event, surveyForm?.get('photos.rearImage'))">
-                                        @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('photos.rearImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
-                                        }
-                                        @else {
-                                        <div class="tbl-spinner">
-                                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                          </mat-progress-spinner>
-                                        </div>
-                                        }
-                                        @if (surveyForm?.get('photos.rearImage')?.get('preview')?.value) {
-                                        <button [matMenuTriggerFor]="menu" class="link-button menu-button"
-                                          (click)="$event.stopPropagation()">
-                                          <mat-icon>more_vert</mat-icon>
-                                        </button>
-                                        <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 1)">
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
-                                          <button mat-menu-item
-                                            (click)="deleteDialog(surveyForm?.get('photos.rearImage'), $event)">
-                                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
-                                          </button>
-                                        </mat-menu>
-                                        }
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div class="row">
-                                        <div
-                                          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
-                                          {{translatedLangText.RIGHT_SIDE}}
-                                        </div>
-                                      </div>
-                                      <div class="image-preview"
-                                        (click)="!surveyForm?.get('photos.rightImage')?.get('preview')?.value && fileInputRight.click()">
-                                        <input type="file" #fileInputRight class="default d-none" accept="image/*"
-                                          (change)="onFileSelectedTankSide($event, surveyForm?.get('photos.rightImage'))">
-                                        @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('photos.rightImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
-                                        }
-                                        @else {
-                                        <div class="tbl-spinner">
-                                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                          </mat-progress-spinner>
-                                        </div>
-                                        }
-                                        @if (surveyForm?.get('photos.rightImage')?.get('preview')?.value) {
-                                        <button [matMenuTriggerFor]="menu" class="link-button menu-button"
-                                          (click)="$event.stopPropagation()">
-                                          <mat-icon>more_vert</mat-icon>
-                                        </button>
-                                        <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 2)">
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
-                                          <button mat-menu-item
-                                            (click)="deleteDialog(surveyForm?.get('photos.rightImage'), $event)">
-                                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
-                                          </button>
-                                        </mat-menu>
-                                        }
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div class="row">
-                                        <div
-                                          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
-                                          {{translatedLangText.TOP_SIDE}}
-                                        </div>
-                                      </div>
-                                      <div class="image-preview"
-                                        (click)="!surveyForm?.get('photos.topImage')?.get('preview')?.value && fileInputTop.click()">
-                                        <input type="file" #fileInputTop class="default d-none" accept="image/*"
-                                          (change)="onFileSelectedTankSide($event, surveyForm?.get('photos.topImage'))">
-                                        @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('photos.topImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
-                                        }
-                                        @else {
-                                        <div class="tbl-spinner">
-                                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                          </mat-progress-spinner>
-                                        </div>
-                                        }
-                                        @if (surveyForm?.get('photos.topImage')?.get('preview')?.value) {
-                                        <button [matMenuTriggerFor]="menu" class="link-button menu-button"
-                                          (click)="$event.stopPropagation()">
-                                          <mat-icon>more_vert</mat-icon>
-                                        </button>
-                                        <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 3)">
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
-                                          <button mat-menu-item
-                                            (click)="deleteDialog(surveyForm?.get('photos.topImage'), $event)">
-                                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
-                                          </button>
-                                        </mat-menu>
-                                        }
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div class="row">
-                                        <div
-                                          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
-                                          {{translatedLangText.FRONT_SIDE}}
-                                        </div>
-                                      </div>
-                                      <div class="image-preview"
-                                        (click)="!surveyForm?.get('photos.frontImage')?.get('preview')?.value && fileInputFront.click()">
-                                        <input type="file" #fileInputFront class="default d-none" accept="image/*"
-                                          (change)="onFileSelectedTankSide($event, surveyForm?.get('photos.frontImage'))">
-                                        @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('photos.frontImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
-                                        }
-                                        @else {
-                                        <div class="tbl-spinner">
-                                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                          </mat-progress-spinner>
-                                        </div>
-                                        }
-                                        @if (surveyForm?.get('photos.frontImage')?.get('preview')?.value) {
-                                        <button [matMenuTriggerFor]="menu" class="link-button menu-button"
-                                          (click)="$event.stopPropagation()">
-                                          <mat-icon>more_vert</mat-icon>
-                                        </button>
-                                        <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 4)">
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
-                                          <button mat-menu-item
-                                            (click)="deleteDialog(surveyForm?.get('photos.frontImage'), $event)">
-                                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
-                                          </button>
-                                        </mat-menu>
-                                        }
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div class="row">
-                                        <div
-                                          class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-0 align-center">
-                                          {{translatedLangText.BOTTOM_SIDE}}
-                                        </div>
-                                      </div>
-                                      <div class="image-preview"
-                                        (click)="!surveyForm?.get('photos.bottomImage')?.get('preview')?.value && fileInputBottom.click()">
-                                        <input type="file" #fileInputBottom class="default d-none" accept="image/*"
-                                          (change)="onFileSelectedTankSide($event, surveyForm?.get('photos.bottomImage'))">
-                                        @if (!(isImageLoading$ | async)) {
-                                        <img [src]="surveyForm?.get('photos.bottomImage')?.get('preview')?.value || defaultImg"
-                                          alt="Image Preview" class="preview-img border-0">
-                                        }
-                                        @else {
-                                        <div class="tbl-spinner">
-                                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                          </mat-progress-spinner>
-                                        </div>
-                                        }
-                                        @if (surveyForm?.get('photos.bottomImage')?.get('preview')?.value) {
-                                        <button [matMenuTriggerFor]="menu" class="link-button menu-button"
-                                          (click)="$event.stopPropagation()">
-                                          <mat-icon>more_vert</mat-icon>
-                                        </button>
-                                        <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, 5)">
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
-                                          <button mat-menu-item
-                                            (click)="deleteDialog(surveyForm?.get('photos.bottomImage'), $event)">
-                                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
-                                          </button>
-                                        </mat-menu>
-                                        }
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              }
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <div class="header">
-                              <h2 class="d-flex">
-                                {{translatedLangText.DAMAGE_PHOTOS}}
-                                <div class="m-l-10">
-                                  <button mat-mini-fab class="bg-purple msr-2" (click)="fileInput.click()">
-                                    <i class="material-icons">attach_file</i>
-                                  </button>
-                                  <input type="file" #fileInput class="default d-none" multiple accept="image/*"
-                                    (change)="onFileSelected($event)">
-                                </div>
-                              </h2>
-                            </div>
-                            <div class="body">
-                              @if (isImageLoading$ | async) {
-                              <div class="tbl-spinner">
-                                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                                </mat-progress-spinner>
-                              </div>
-                              }
-                              @else {
-                              <div class="row">
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
-                                  <div class="image-previews" formArrayName="dmgImages">
-                                    @for (img of dmgImages().controls; track img; let index = $index) {
-                                    <div [formGroupName]="index">
-                                      <div class="image-preview">
-                                        <img [src]="img.get('preview')?.value" alt="Image Preview" class="preview-img">
-                                        @if (img.get('preview')?.value) {
-                                        <button [matMenuTriggerFor]="menu" class="link-button menu-button"
-                                          (click)="$event.stopPropagation()">
-                                          <mat-icon>more_vert</mat-icon>
-                                        </button>
-                                        <mat-menu #menu="matMenu">
-                                          <button mat-menu-item (click)="previewImagesDialog($event, index + 6)">
-                                            <mat-icon>remove_red_eye</mat-icon>{{translatedLangText.PREVIEW}}
-                                          </button>
-                                          <button mat-menu-item (click)="deleteDialogDmgImg(img, index, $event)">
-                                            <mat-icon>cancel</mat-icon>{{translatedLangText.DELETE}}
-                                          </button>
-                                        </mat-menu>
-                                        }
-                                      </div>
-                                    </div>
-                                    }
-                                  </div>
-                                </div>
-                              </div>
-                              }
-                            </div>
-                          </div>
-                        </div>
-                        }
-                      </div>
-                      <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                          <button mat-raised-button matStepperPrevious type="button" color="" class="msr-2">
-                            <mat-icon>chevron_left</mat-icon>
-                          </button>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">
-                          <button mat-raised-button matStepperNext type="button" color="primary" class="msr-2">
-                            <mat-icon>chevron_right</mat-icon>
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </mat-step> -->
                   <mat-step [stepControl]="getCompartmentTypeFormGroup()"
                     [completed]="this.out_gate?.out_gate_survey?.guid ? true : getCompartmentTypeFormGroup().valid">
                     <form [formGroup]="getCompartmentTypeFormGroup()">
