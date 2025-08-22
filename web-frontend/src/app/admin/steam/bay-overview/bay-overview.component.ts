@@ -145,6 +145,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
     STEAM: 'MENUITEMS.STEAM.TEXT',
     YARD:'COMMON-FORM.YARD',
     CLEAN_STATUS:'COMMON-FORM.CLEAN-STATUS',
+    BAY_ALLOCATION: 'COMMON-FORM.BAY-ALLOCATION'
   }
 
   availableProcessStatus: string[] = [

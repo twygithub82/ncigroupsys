@@ -1,96 +1,72 @@
 <form class="ms-0" [formGroup]="filterJobOrderForm!" (ngSubmit)="onFilterJobOrder()" #formDirective="ngForm">
   <div class="card">
-    <div class="header">
+    <!-- <div class="header">
       <h2>
         {{translatedLangText.BAY_ALLOCATION}}
       </h2>
-    </div>
+    </div> -->
     <div class="body">
-      <div class="">
-        <div class="team-buttons">
-          @for (team of teamList; track team) {
-          <mat-card
-            [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-green': team.isOccupied, 'bg-lightest-blue': !team.isOccupied}"
-            matRipple>
-            <!-- <div class="gauge-container">
+      <div class="team-buttons">
+        @for (team of teamList; track team) {
+        <mat-card
+          [ngClass]="{'card-content p-0 m-b-10': true, 'bg-light-green': team.isOccupied, 'bg-lightest-blue': !team.isOccupied}"
+          matRipple>
+          <!-- <div class="gauge-container">
               <ngx-gauge [size]="80" type="arch" [thick]="4" [value]="68.2" cap="butt" label="" append="%"
                 [markers]="markerConfig" class="">
               </ngx-gauge>
             </div> -->
-            <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
-              <mat-card-title [ngClass]="{'pt-1': true}">
-                {{team.description}}
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <span class="font-bold">{{translatedLangText.TANK_NO}}:</span>
-                  <mat-label>
-                    @if(team.isOccupied)
-                    {
-                    {{team.jobOrderItem?.storing_order_tank?.tank_no}}
-                    }
-                    @else{
-                    {{"-"}}
-                    }
-                  </mat-label>
-                </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                  <span class="font-bold">{{translatedLangText.REQUIRED_TEMP}}:</span>
-                  <mat-label>
-                    @if(team.isOccupied)
-                    {
-                    {{team.jobOrderItem?.storing_order_tank?.required_temp}} &deg;C
-                    }
-                    @else{
-                    {{"-"}}
-                    }
-                  </mat-label>
-                </div>
+          <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
+            <mat-card-title [ngClass]="{'pt-1': true}">
+              {{team.description}}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <span class="font-bold">{{translatedLangText.TANK_NO}}:</span>
+                <mat-label>
+                  @if(team.isOccupied)
+                  {
+                  {{team.jobOrderItem?.storing_order_tank?.tank_no}}
+                  }
+                  @else{
+                  {{"-"}}
+                  }
+                </mat-label>
               </div>
-            </mat-card-content>
-            <mat-card-actions class="d-flex justify-content-center align-items-center">
-              <button mat-mini-fab type="button" class="secondary" [disabled]="!team.isOccupied" matTooltip={{translatedLangText.ROLLBACK}}
-                (click)="rollBackSteamingJob($event,team)">
-                <mat-icon class="col-white">undo</mat-icon>
-              </button>
-              <button mat-mini-fab color="accent" type="button" class="ms-3 me-3" [disabled]="!team.isOccupied" matTooltip={{translatedLangText.DETAILS}}
-                (click)="showTankInfo($event,team)">
-                <mat-icon class="col-white">info_outline</mat-icon>
-              </button>
-              <button mat-mini-fab color="primary" type="button" [disabled]="!team.isOccupied" matTooltip={{translatedLangText.STEAM}}
-                (click)="steamJob($event,team)">
-                <mat-icon class="col-white">whatshot</mat-icon>
-              </button>
-            </mat-card-actions>
-          </mat-card>
-          }
-        </div>
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <span class="font-bold">{{translatedLangText.REQUIRED_TEMP}}:</span>
+                <mat-label>
+                  @if(team.isOccupied)
+                  {
+                  {{team.jobOrderItem?.storing_order_tank?.required_temp}} &deg;C
+                  }
+                  @else{
+                  {{"-"}}
+                  }
+                </mat-label>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions class="d-flex justify-content-center align-items-center">
+            <button mat-mini-fab type="button" class="secondary" [disabled]="!team.isOccupied"
+              matTooltip={{translatedLangText.ROLLBACK}} (click)="rollBackSteamingJob($event,team)">
+              <mat-icon class="col-white">undo</mat-icon>
+            </button>
+            <button mat-mini-fab color="accent" type="button" class="ms-3 me-3" [disabled]="!team.isOccupied"
+              matTooltip={{translatedLangText.DETAILS}} (click)="showTankInfo($event,team)">
+              <mat-icon class="col-white">info_outline</mat-icon>
+            </button>
+            <button mat-mini-fab color="primary" type="button" [disabled]="!team.isOccupied"
+              matTooltip={{translatedLangText.STEAM}} (click)="steamJob($event,team)">
+              <mat-icon class="col-white">whatshot</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        }
       </div>
-      <div class="spacer"></div>
       <div mat-dialog-actions class="align-right">
-
-        <!-- @if(canAbort())
-        {
-          
-          <button mat-flat-button color="warn"  (click)="onAbort($event)" class="m-r-5">{{translatedLangText.ABORT}}</button>
-        }
-
-        @if (canEdit() && !buttonViewOnly()) {
-          <button mat-flat-button color="primary"  (click)="save()" [disabled]="!canSave()" class="m-r-5">{{translatedLangText.SAVE_AND_SUBMIT}}</button>
-        }
-
-       
-        <button mat-flat-button (click)="onNoClick()" tabindex="-1" class="m-r-5">
-          @if(canEdit()){
-          {{translatedLangText.CANCEL}}
-          }
-          @if(!canEdit()){
-            {{translatedLangText.CLOSE}}
-          } -->
-
-        <!-- </button> -->
       </div>
     </div>
     @if (joDS.loading$ | async) {

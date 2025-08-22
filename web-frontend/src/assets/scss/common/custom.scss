@@ -2197,7 +2197,8 @@ $grid-breakpoints: (
     margin-top: 0px;
     margin-bottom: 10px !important;
 
-    .header-label, .value-label {
+    .header-label,
+    .value-label {
       color: rgba(0, 0, 0, 0.54)
     }
 
@@ -3651,4 +3652,14 @@ mat-form-field.no-label-short-input {
 
 .copied-content {
   padding-left: 3% !important;
+}
+
+.card.modal-card {
+  >.body {
+    padding-bottom: 0px;
+
+    .mat-mdc-card-content {
+      padding: 0px;
+    }
+  }
 }
