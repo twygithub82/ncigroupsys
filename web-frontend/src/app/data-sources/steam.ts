@@ -529,94 +529,94 @@ export const GET_STEAM_EST_JOB_ORDER = gql`
   query querySteaming($where: steamingFilterInput,$steam_part_where:steaming_partFilterInput) {
     resultList: querySteaming(where: $where) {
       nodes {
-       allocate_by
-      allocate_dt
-      approve_by
-      approve_dt
-      bill_to_guid
-      complete_by
-      complete_dt
-      create_by
-      create_dt
-      delete_dt
-      estimate_no
-      na_dt
-      guid
-      job_no
-      remarks
-      sot_guid
-      status_cv
-      est_cost
-      total_cost
-      update_by
-      update_dt
-      storing_order_tank {
-        customer_company {
-          code
-          name
-          currency {
-            currency_code
-          }
-        }
-        certificate_cv
-        clean_status_cv
+        allocate_by
+        allocate_dt
+        approve_by
+        approve_dt
+        bill_to_guid
+        complete_by
+        complete_dt
         create_by
         create_dt
         delete_dt
-        estimate_cv
-        eta_dt
-        etr_dt
+        estimate_no
+        na_dt
         guid
         job_no
-        last_cargo_guid
-        last_test_guid
-        liftoff_job_no
-        lifton_job_no
-        owner_guid
-        preinspect_job_no
-        purpose_cleaning
-        purpose_repair_cv
-        purpose_steam
-        purpose_storage
-        release_job_no
         remarks
-        required_temp
-        so_guid
+        sot_guid
         status_cv
-        tank_no
-        tank_status_cv
-        unit_type_guid
+        est_cost
+        total_cost
         update_by
         update_dt
-        tariff_cleaning {
-          guid
-          open_on_gate_cv
-          cargo
-          flash_point
-        }
-        storing_order {
+        storing_order_tank {
           customer_company {
-            guid
             code
             name
+            currency {
+              currency_code
+            }
           }
-        }
-        in_gate {
-          eir_no
-          eir_dt
+          certificate_cv
+          clean_status_cv
+          create_by
+          create_dt
           delete_dt
-          in_gate_survey {
-            next_test_cv
-            last_test_cv
-            test_class_cv
-            test_dt
-            update_by
-            update_dt
+          estimate_cv
+          eta_dt
+          etr_dt
+          guid
+          job_no
+          last_cargo_guid
+          last_test_guid
+          liftoff_job_no
+          lifton_job_no
+          owner_guid
+          preinspect_job_no
+          purpose_cleaning
+          purpose_repair_cv
+          purpose_steam
+          purpose_storage
+          release_job_no
+          remarks
+          required_temp
+          so_guid
+          status_cv
+          tank_no
+          tank_status_cv
+          unit_type_guid
+          update_by
+          update_dt
+          tariff_cleaning {
+            guid
+            open_on_gate_cv
+            cargo
+            flash_point
+          }
+          storing_order {
+            customer_company {
+              guid
+              code
+              name
+            }
+          }
+          in_gate {
+            eir_no
+            eir_dt
             delete_dt
+            in_gate_survey {
+              next_test_cv
+              last_test_cv
+              test_class_cv
+              test_dt
+              update_by
+              update_dt
+              delete_dt
+            }
           }
         }
-      }
-      steaming_part(where:$steam_part_where) {
+        steaming_part(where:$steam_part_where) {
           approve_part
           cost
           labour

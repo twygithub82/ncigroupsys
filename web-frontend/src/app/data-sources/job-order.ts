@@ -577,7 +577,7 @@ const GET_JOB_ORDER_BY_ID = gql`
             subgroup_name_cv
           }
         }
-        time_table {
+        time_table(where: { delete_dt: { eq: null } }) {
           create_by
           create_dt
           delete_dt
