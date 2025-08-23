@@ -1,14 +1,13 @@
 <section class="content">
   <div class="content-block">
     <div class="block-header">
-      <!-- breadcrumb -->
       <app-breadcrumb [title]="steam_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
         [active_item]="steam_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
+        <div class="card modal-card">
+          <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
             </h2>
@@ -127,28 +126,29 @@
         </div>
       </div>
     </div>
-    <form class="ms-0" [formGroup]="steamEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
-      <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
-            <div class="header">
-              <h2>
-                {{translatedLangText.BILLING_DETAILS}}
-              </h2>
+
+    <div class="row">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card modal-card">
+          <div class="header header-custom-padding">
+            <h2>
+              {{translatedLangText.BILLING_DETAILS}}
+            </h2>
+          </div>
+          <div class="body">
+            @if (sotDS.loading$ | async) {
+            <div class="tbl-spinner">
+              <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+              </mat-progress-spinner>
             </div>
-            <div class="body">
-              @if (sotDS.loading$ | async) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-              }
-              @if (!(sotDS.loading$ | async)) {
+            }
+            @if (!(sotDS.loading$ | async)) {
+            <form [formGroup]="steamEstForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
               <mat-card-content>
                 <div class="row">
                   <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0 align-right">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
                           <mat-select formControlName="bill_to" required>
@@ -158,8 +158,6 @@
                           </mat-select>
                         </mat-form-field>
                       </div>
-                    </div>
-                    <div class="row">
                     </div>
                   </div>
                   <div class="col-xl-3-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
@@ -184,16 +182,16 @@
                   </div>
                 </div>
               </mat-card-content>
-              }
-            </div>
+            </form>
+            }
           </div>
         </div>
       </div>
-    </form>
+    </div>
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
+        <div class="card modal-card">
+          <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.ESTIMATE_DETAILS}}
             </h2>
@@ -487,11 +485,13 @@
                       [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       @if(isSteamRepair)
                       {
-                      <span class="mobile-label">{{translatedLangText.COST}}:</span><span class="">{{this.parse2Decimal(calculateSteamItemCost(row))}}</span>
+                      <span class="mobile-label">{{translatedLangText.COST}}:</span><span
+                        class="">{{this.parse2Decimal(calculateSteamItemCost(row))}}</span>
                       }
                       @else
                       {
-                      <span class="mobile-label">{{translatedLangText.COST}}:</span><span class="">{{autosteamCost}}</span>
+                      <span class="mobile-label">{{translatedLangText.COST}}:</span><span
+                        class="">{{autosteamCost}}</span>
                       }
                     </mat-cell>
                     <mat-footer-cell *matFooterCellDef
@@ -526,20 +526,20 @@
                   </ng-container>
 
                   <!-- Labour Cost Footer -->
-                  <ng-container matColumnDef="labourSummaryUnitPrice" >
+                  <ng-container matColumnDef="labourSummaryUnitPrice">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} font-bold tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end p-0">
                       {{translatedLangText.LABOUR}}
                       (${{parse2Decimal(getLabourCost())}}):
                     </mat-footer-cell>
                   </ng-container>
-                  <ng-container matColumnDef="labourSummaryHrs" >
+                  <ng-container matColumnDef="labourSummaryHrs">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
                       {{getTotalLabourHours()}}
                     </mat-footer-cell>
                   </ng-container>
-                  <ng-container matColumnDef="labourSummaryCost" >
+                  <ng-container matColumnDef="labourSummaryCost">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                       <span class="mobile-label footer-label">{{translatedLangText.LABOUR}}

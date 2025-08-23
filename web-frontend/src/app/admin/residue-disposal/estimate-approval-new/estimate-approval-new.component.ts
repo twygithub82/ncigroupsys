@@ -983,36 +983,32 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       // this.toggleRow(row);
       selectedList.push(this.residueItem!);
     }
-    this.rollbackSelectedRows(event, selectedList)
+    this.rollbackSelectedRows(event)
   }
 
-  rollbackSelectedRows(event: Event, row: ResidueItem[]) {
+  rollbackSelectedRows(event: Event) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [...row],
-        translatedLangText: this.translatedLangText
-
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarksWithRequired: true
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-
-        const reList = result.item.map((item: any) => {
+        const reList = [this.residueItem].map((item: any) => {
           const ResidueEstimateRequestInput = {
-            customer_guid: item.customer_company_guid,
+            customer_guid: this.residueItem?.storing_order_tank?.storing_order?.customer_company_guid,
             estimate_no: item.estimate_no,
             guid: item.guid,
-            remarks: item.remarks,
+            remarks: result.remarks,
             sot_guid: item.sot_guid,
             is_approved: item?.status_cv == "APPROVED"
           }
@@ -1450,11 +1446,9 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
       this.displayPackResidueList = data;
       this.populateResiduePartList(this.residueItem!);
     });
-
   }
 
   loadBillingBranch() {
-    let where: any = {};
     this.ccDS.getCustomerAndBranch(this.sotItem?.storing_order?.customer_company?.guid!).subscribe(cc => {
       if (cc?.length) {
         const bill_to = this.residueEstForm?.get('bill_to');

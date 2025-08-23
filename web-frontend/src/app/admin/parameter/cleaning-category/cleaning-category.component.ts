@@ -636,7 +636,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   name_add(event: MatChipInputEvent): void {
     var cnt = this.searchForm?.get('name');
-    debugger
     const input = event.input;
     const value = event.value;
     // Add our fruit

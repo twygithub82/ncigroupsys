@@ -1,14 +1,13 @@
 <section class="content">
   <div class="content-block">
     <div class="block-header">
-      <!-- breadcrumb -->
       <app-breadcrumb [title]="residue_guid ? pageTitleEdit : pageTitleNew" [items]="breadcrumsMiddleList"
         [active_item]="residue_guid ? langText.EDIT : langText.NEW"></app-breadcrumb>
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
+        <div class="card modal-card">
+          <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
             </h2>
@@ -121,99 +120,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <div class="row">
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.TANK_NO}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">{{sotItem?.tank_no}}</div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.CUSTOMER}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_CARGO}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{sotItem?.tariff_cleaning?.cargo}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5 align-right">
-                      <span>{{translatedLangText.OWNER}}:</span>
-                    </div>
-                    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 d-flex">
-                      <div class="contact-detail-info font-bold">
-                        {{ccDS.displayName(sotItem?.storing_order?.customer_company)}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_NO}}:</span>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{igDS.getInGateItem(sotItem?.in_gate)?.eir_no}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.EIR_DATE}}:</span>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{displayDateTime(igDS.getInGateItem(sotItem?.in_gate)?.eir_dt)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.PURPOSE}}:</span>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">{{displayTankPurpose(sotItem!)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.LAST_TEST}}:</span>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{getLastTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-5 align-right">
-                      <span>{{translatedLangText.NEXT_TEST}}:</span>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                      <div class="contact-detail-info font-bold">
-                        {{getNextTest(igDS.getInGateItem(sotItem?.in_gate)?.in_gate_survey)}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
             </mat-card-content>
             }
           </div>
@@ -223,8 +129,8 @@
 
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
+        <div class="card modal-card">
+          <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.BILLING_DETAILS}}
             </h2>
@@ -237,12 +143,12 @@
             </div>
             }
             @if (!(sotDS.loading$ | async)) {
-            <form class="ms-0" [formGroup]="residueEstForm!" #formDirective="ngForm">
+            <form [formGroup]="residueEstForm!" #formDirective="ngForm">
               <mat-card-content>
                 <div class="row">
-                  <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width">
                           <mat-label>{{translatedLangText.BILL_TO}}</mat-label>
                           <mat-select formControlName="bill_to" required>
@@ -254,9 +160,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                  <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.JOB_REFERENCE}}</mat-label>
                           <input matInput formControlName="job_no"
@@ -265,25 +171,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                    <!-- <div class="row">
-                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                        <div class="contact-detail-info font-bold">
-                          <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
-                            <mat-select formControlName="billing_branch">
-                              @for (item of billingBranchList; track item) {
-                              <mat-option [value]="item">
-                                {{ this.ccDS.displayName(item)}}
-                              </mat-option>
-                              }
-                            </mat-select>
-                          </mat-form-field>
-                        </div>
-                      </div>
-                    </div> -->
+                  <div class="col-xl-3-5 col-lg-3-5 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.REMARKS}}</mat-label>
                           <input matInput formControlName="remarks"
@@ -303,8 +193,8 @@
 
     <div class="row clearfix">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
+        <div class="card modal-card">
+          <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.ESTIMATE_DETAILS}}
             </h2>
@@ -593,7 +483,7 @@
                   <ng-container matColumnDef="totalCost">
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-xl-center">
-                      <span class="">${{parse2Decimal(getTotalCost())}}</span>
+                      <span class="">{{parse2Decimal(getTotalCost())}}</span>
                     </mat-footer-cell>
                   </ng-container>
 
@@ -702,7 +592,7 @@
                 {{translatedLangText.DELETE}}
               </button>
               } -->
-              @if (residueDS.canNoAction(residueItem!)) {
+              <!-- @if (residueDS.canNoAction(residueItem!)) {
               <button mat-flat-button [disabled]="(residueDS.loading$ | async)||(isExportingPDF)"
                 class="m-r-5 red-button" (click)="onNoAction($event,residueItem!)">
                 <mat-icon>
@@ -714,7 +604,7 @@
                 </mat-icon>
                 {{translatedLangText.ABORT}}
               </button>
-              }
+              } -->
             </div>
           </div>
         </div>

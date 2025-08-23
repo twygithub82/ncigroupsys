@@ -1552,7 +1552,6 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
 
   name_add(event: MatChipInputEvent): void {
     var cnt = this.tempForm?.get('customer_code');
-    debugger
     const input = event.input;
     const value = event.value;
     // Add our fruit

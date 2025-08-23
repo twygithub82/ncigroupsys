@@ -7,7 +7,7 @@
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
+        <div class="card modal-card">
           <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
@@ -130,7 +130,7 @@
     <form class="ms-0" [formGroup]="repairForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
+          <div class="card modal-card">
             <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.JOB_DETAILS}}
@@ -186,7 +186,7 @@
       </div>
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
+          <div class="card modal-card">
             <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.ESTIMATE_DETAILS}}
@@ -433,14 +433,14 @@
                 </div>
               </div>
               }
-              <div class="row m-t-5">
-                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                  <button mat-flat-button type="button" aria-label="Back to previous page"
-                    (click)="$event.preventDefault();" [routerLink]="['/admin/residue-disposal/job-order']"
-                    [queryParams]="{ tabIndex: tabIndex }">
-                    <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
-                  </button>
-                </div>
+            </div>
+            <div class="row m-t-5">
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-0">
+                <button mat-flat-button type="button" aria-label="Back to previous page"
+                  (click)="$event.preventDefault();" [routerLink]="['/admin/residue-disposal/job-order']"
+                  [queryParams]="{ tabIndex: tabIndex }">
+                  <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                </button>
               </div>
             </div>
           </div>
