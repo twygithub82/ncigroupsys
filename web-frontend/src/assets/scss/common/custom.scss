@@ -3657,9 +3657,31 @@ mat-form-field.no-label-short-input {
 .card.modal-card {
   >.body {
     padding-bottom: 0px;
+    padding-top: 20px;
 
     .mat-mdc-card-content {
       padding: 0px;
+    }
+  }
+}
+
+mat-checkbox.compact-checkbox {
+  .mdc-form-field.mat-internal-form-field {
+    .mdc-checkbox {
+      padding-top: 0px !important;
+      padding-bottom: 0px !important;
+
+      .mat-mdc-checkbox-touch-target {
+        height: 28px !important;
+      }
+
+      input.mdc-checkbox__native-control {
+        height: 20px !important;
+      }
+
+      .mdc-checkbox__background {
+        top: 0 !important;
+      }
     }
   }
 }

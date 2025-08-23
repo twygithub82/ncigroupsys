@@ -3694,7 +3694,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     let tempDirection: Direction = this.getViewDirection();
     const dialogRef = this.dialog.open(ResidueEstimateFormDialogComponent_View, {
       width: '65vw',
-      maxWidth: '1000px',
       data: {
         action: 'view',
         langText: this.langText,
@@ -3730,7 +3729,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
     const dialogRef = this.dialog.open(SteamEstimateFormDialogComponent_View, {
       width: '75vw',
-      maxWidth: '1000px',
       data: {
         action: 'view',
         langText: this.langText,

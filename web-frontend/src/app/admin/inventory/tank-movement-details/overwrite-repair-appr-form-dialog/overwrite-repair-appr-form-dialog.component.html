@@ -17,7 +17,7 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.TANK_NO}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{sot.tank_no}}
                     </span>
@@ -27,7 +27,7 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.CUSTOMER}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{ccDS.displayName(sot.storing_order?.customer_company)}}
                     </span>
@@ -37,24 +37,24 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.LAST_CARGO}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{sot.tariff_cleaning?.cargo}}
                     </span>
                   </div>
                 </div>
                 <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 pt-2 pb-2 m-b-5">
+                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.OWNER}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <div class="d-flex align-items-center">
                       <span class="value-display-info">
                         {{ccDS.displayName(sot.customer_company)}}
                       </span>
                       @if (shouldDisplay()) {
-                      <mat-checkbox class="m-r-5" color="primary" [(ngModel)]="isOwner" [disabled]="!canToggleOwner()"
-                        (change)="onOwnerToggle($event)">
+                      <mat-checkbox class="compact-checkbox m-r-5" color="primary" [(ngModel)]="isOwner"
+                        [disabled]="!canToggleOwner()" (change)="onOwnerToggle($event)">
                       </mat-checkbox>
                       }
                     </div>
@@ -66,7 +66,7 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.EIR_NO}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{igItem.eir_no}}
                     </span>
@@ -76,7 +76,7 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.EIR_DATE}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{displayDate(igItem.eir_dt)}}
                     </span>
@@ -86,7 +86,7 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.PURPOSE}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{data.populateData.sot_purpose}}
                     </span>
@@ -96,7 +96,7 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.LAST_TEST}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{data.populateData.last_test_desc || '-'}}
                     </span>
@@ -106,7 +106,7 @@
                   <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
                     <span class="label-display-info">{{data.translatedLangText.NEXT_TEST}}:</span>
                   </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5 ">
+                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                     <span class="value-display-info">
                       {{data.populateData.next_test_desc || '-'}}
                     </span>

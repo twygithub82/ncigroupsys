@@ -3,13 +3,16 @@ import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,28 +21,22 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
+import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CustomerCompanyDS } from 'app/data-sources/customer-company';
+import { InGateDS } from 'app/data-sources/in-gate';
+import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
+import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { SteamDS, SteamItem } from 'app/data-sources/steam';
+import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
-import { Utility } from 'app/utilities/utility';
-import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
-import { ResidueItem } from 'app/data-sources/residue';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDividerModule } from '@angular/material/divider';
-import { InGateDS } from 'app/data-sources/in-gate';
-import { CustomerCompanyDS } from 'app/data-sources/customer-company';
-import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
-import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { MatCardModule } from '@angular/material/card';
-import { SteamDS, SteamItem } from 'app/data-sources/steam';
-import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
-import { PackageRepairDS } from 'app/data-sources/package-repair';
-import { SteamPartItem } from 'app/data-sources/steam-part';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { Utility } from 'app/utilities/utility';
+import { provideNgxMask } from 'ngx-mask';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
@@ -93,7 +90,24 @@ export class SteamEstimateFormDialogComponent_View {
     'hour',
     'cost',
     'approve_part',
-    'actions'
+  ];
+  labourCostDisplayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'labourSummaryUnitPrice',
+    'labourSummaryHrs',
+    'labourSummaryCost',
+    'approve_part',
+  ];
+  totalCostDisplayedColumns = [
+    'seq',
+    'desc',
+    'qty',
+    'totalSummaryUnitPrice',
+    'totalSummaryHrs',
+    'totalSummaryCost',
+    'approve_part',
   ];
 
   action: string;

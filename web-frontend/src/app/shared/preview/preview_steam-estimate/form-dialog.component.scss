@@ -1,11 +1,14 @@
 .auto-height {
   height: auto;
-  max-height: none; /* Ensures there's no max-height limiting the container */
-  overflow: auto;   /* Ensures scrollbars appear if content exceeds container size */
+  max-height: none;
+  /* Ensures there's no max-height limiting the container */
+  overflow: auto;
+  /* Ensures scrollbars appear if content exceeds container size */
 }
 
 .table-container {
-  max-height: 400px; /* Adjust height as needed */
+  max-height: 400px;
+  /* Adjust height as needed */
   overflow: auto;
 }
 
@@ -14,55 +17,56 @@ table.mat-table {
   border-collapse: collapse;
 }
 
-.mat-cell, .mat-header-cell {
+.mat-cell,
+.mat-header-cell {
   padding: 8px;
 }
 
-   mat-tab-group {
-     width:50vh;
-     //height: 70vh;
-    // transition: transform 0.2s;
-   }
-  
+mat-tab-group {
+  width: 50vh;
+  //height: 70vh;
+  // transition: transform 0.2s;
+}
+
 td div img:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
+  transform: scale(1.1);
+  cursor: pointer;
+}
 
+td div {
+  //display: flex;
+  flex-wrap: nowrap;
+  /* Prevent wrapping */
+  justify-content: center;
+  align-items: center;
+  height: 95%;
+  //overflow: hidden;
+}
 
-  
-  td div {
-    //display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
-    justify-content: center;
-    align-items: center;
-    height: 95%;
-    //overflow: hidden;
-  }
-  
-  td div img {
-    max-width: 50vh;
-    height: 10vh;
-   
-    transition: transform 0.2s;
-    padding-right: 10px;
-  }
+td div img {
+  max-width: 50vh;
+  height: 10vh;
 
-  .mat-tab-group {
-    margin-bottom: 48px;
-  }
-  .mat-tab-labels{ 
-    flex-wrap: wrap;
-   }
+  transition: transform 0.2s;
+  padding-right: 10px;
+}
 
-   .addContainer{
-    overflow: hidden;
-   }
+.mat-tab-group {
+  margin-bottom: 48px;
+}
 
-   .card{
-    padding: 0px !important;
-   }
+.mat-tab-labels {
+  flex-wrap: wrap;
+}
 
-   .card .body{
-    padding: 0px !important;
-   }
+// .addContainer {
+//   overflow: hidden;
+// }
+
+// .card {
+//   padding: 0px !important;
+// }
+
+// .card .body {
+//   padding: 0px !important;
+// }
