@@ -1,5 +1,5 @@
 <div class="addContainer">
-  <div class="modalHeader div-padding">
+  <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
         <h4>{{this.getAction()}} </h4>
@@ -27,20 +27,6 @@
                     }
                   </mat-form-field>
                 </div>
-                <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowApprovedDate()">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.APPROVED_DATE}}</mat-label>
-                    <input matInput [matDatepicker]="clean_dt_picker" placeholder="Select date"
-                      formControlName="approved_dt" [required]="this.ShowApprovedDate()">
-                    <mat-datepicker-toggle matSuffix [for]="clean_dt_picker"></mat-datepicker-toggle>
-                    <mat-datepicker #clean_dt_picker></mat-datepicker>
-                    @if (pcForm.get('approved_dt')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.APPROVED_DATE }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    }
-                  </mat-form-field>
-                </div> -->
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="!this.ShowNoActionDate()">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.DATE}}</mat-label>
@@ -374,7 +360,7 @@
           </div>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right m-r-30">
+      <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
         <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.UPDATE}}</button>
         }
