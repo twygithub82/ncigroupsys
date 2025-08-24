@@ -90,7 +90,34 @@
             </div>
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>{{translatedLangText.CUSTOMER_CODE}}</mat-label>
+                    <mat-chip-grid #chipGrid class="nowrap single-line-chip-grid">
+                      @if (this.selectedCustomers.length > 0) {
+                      <mat-chip-row color="primary" (click)="removeAllSelectedCustomers()" >
+                        <span> {{getSelectedCustomersDisplay()}}</span>
+                        <button matChipRemove hidden>
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                      }
+                      <input #custInput formControlName="customer_code" [matAutocomplete]="customerCode" 
+                        [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        (matChipInputTokenEnd)="add($event)" >
+                      <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
+                        @for (cc of customer_companyList; track cc) {
+                        <mat-option [value]="cc" [class.mdc-list-item--selected]="itemSelected(cc)">
+                          <div class="horizontal-container">
+                            <mat-checkbox color="primary" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
+                              [checked]="itemSelected(cc) || false"></mat-checkbox>
+                            <div class="option-text">{{ccDS.displayCodeDashName(cc)}}</div>
+                          </div>
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </mat-chip-grid>
+                  </mat-form-field>
+                <!-- <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.CUSTOMER_CODE }}</mat-label>
                   <mat-select [formControl]="customerCompanyControl" multiple>
                     <mat-option *ngFor="let cc of ccDS.connect() | async" [value]="cc">
@@ -99,7 +126,7 @@
                       </ng-container>
                     </mat-option>
                   </mat-select>
-                </mat-form-field>
+                </mat-form-field> -->
               </div>
             </div>
           </div>
@@ -112,10 +139,9 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                  <input matInput formControlName="material_cost_percentage" type="text" appNumericText
-                    [allowNegative]="true" [min]="minMaterialCost" #material_cost_percentage
-                    (focus)="material_cost_percentage.select()" [max]="maxMaterialCost">
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text">
+                  <input matInput formControlName="material_cost_percentage" type="text" appnumerictext [min]="minMaterialCost" #material_cost_percentage (focus)="material_cost_percentage.select()"
+                    [max]="maxMaterialCost">
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text" >
                     {{translatedLangText.MATERIAL_COST}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
@@ -130,9 +156,8 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
-                  <input matInput formControlName="labour_hour_percentage" type="text" appNumericText
-                    [allowNegative]="true" [min]="minMaterialCost" #labour_hour_percentage
-                    (focus)="labour_hour_percentage.select()" [max]="maxMaterialCost">
+                  <input matInput formControlName="labour_hour_percentage" type="text" appnumerictext (change)="updateLabourHourPercentage()"  (blur)="updateLabourHourPercentage()" #labour_hour_percentage (focus)="labour_hour_percentage.select()"
+                    [max]="maxMaterialCost">
                   <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')" class="italic-text">
                     {{translatedLangText.LABOUR_HOUR}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
@@ -162,8 +187,7 @@
             </ng-template>
           </button>
           }
-          <button mat-stroked-button class="me-1" (click)="onNoClick()" tabindex="-1">{{
-            translatedLangText.CLOSE}}</button>
+          <button mat-stroked-button class="me-1" (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
         </div>
       </div>
     </form>

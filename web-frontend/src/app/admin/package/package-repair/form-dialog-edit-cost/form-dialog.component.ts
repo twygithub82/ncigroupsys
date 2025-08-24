@@ -1,8 +1,8 @@
 import { Direction } from '@angular/cdk/bidi';
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
@@ -36,6 +36,8 @@ import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { ConfirmDialogComponent } from './confirm/confirm.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 
 export interface DialogData {
   action?: string;
@@ -76,7 +78,8 @@ interface Condition {
     MatTableModule,
     MatSortModule,
     PreventNonNumericDirective,
-    NumericTextDirective
+    NumericTextDirective,
+     MatChipsModule
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
@@ -107,7 +110,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
 
   pckRepairDS: PackageRepairDS;
   tnkItems?: TankItem[] = [];
-
+customer_companyList: CustomerCompanyItem[] = [];
   storingOrderTank?: StoringOrderTankItem;
   sotExistedList?: StoringOrderTankItem[];
   last_cargoList?: TariffCleaningItem[];
@@ -125,7 +128,7 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
   customerCompanyControl = new UntypedFormControl();
 
   selectedTariffRepair?: TariffRepairItem;
-
+ separatorKeysCodes: number[] = [ENTER, COMMA];
   translatedLangText: any = {};
   langText = {
     NEW: 'COMMON-FORM.NEW',
@@ -204,13 +207,15 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     ONE_CONDITION: "COMMON-FORM.ENTER-ATLEAST-ONE-CONDITION",
     NO_VALUE_CHNAGE: "COMMON-FORM.NO-VALUE-CHNAGE",
     CARGO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
-    MARKED_UP_OVER: 'COMMON-FORM.MARKED-UP-OVER'
+    MARKED_UP_OVER: 'COMMON-FORM.MARKED-UP-OVER',
+    CUSTOMERS_SELECTED: 'COMMON-FORM.SELECTED',
   };
   unit_type_control = new UntypedFormControl();
 
   selectedItems: PackageRepairItem[];
   UpdateInProgress: boolean = false;
-
+ selectedCustomers: any[] = [];
+  selectedProfiles: any[] = [];
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent_Edit_Cost>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -233,6 +238,32 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     this.loadData();
     this.EnableValidator('material_cost_percentage');
     this.EnableValidator('labour_hour_percentage');
+    this.initializeFilterCustomerCompany();
+  }
+
+   initializeFilterCustomerCompany() {
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (typeof value === 'string') {
+          searchCriteria = value;
+        } else {
+          searchCriteria = value.code;
+        }
+        this.searchCustomerCompanyList(searchCriteria);
+      })
+    ).subscribe();
+  }
+
+   searchCustomerCompanyList(searchCriteria: string) {
+    searchCriteria = searchCriteria || '';
+    this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+      if (this.custInput?.nativeElement.value === searchCriteria) {
+        this.customer_companyList = data;
+      }
+    });
   }
 
   createPackageRepair(): UntypedFormGroup {
@@ -518,12 +549,13 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     if (this.selectedTariffRepair) trfRepairItem.guid = this.selectedTariffRepair?.guid;
 
     var guids: string[] = [];
-    if (this.customerCompanyControl.value) {
-      if (this.customerCompanyControl.value.length > 0) {
-        const customerCodes: CustomerCompanyItem[] = this.customerCompanyControl.value;
-        guids.push(...customerCodes.map(cc => cc.guid!));  // Corrected push syntax
-      }
-    }
+    if(this.selectedCustomers?.length>0) guids.push(...this.selectedCustomers.map(cc => cc.guid!));
+    // if (this.customerCompanyControl.value) {
+    //   if (this.customerCompanyControl.value.length > 0) {
+    //     const customerCodes: CustomerCompanyItem[] = this.customerCompanyControl.value;
+    //     guids.push(...customerCodes.map(cc => cc.guid!));  // Corrected push syntax
+    //   }
+    // }
 
     //var material_cost_percentage=(Number(this.pcForm!.value['material_cost_percentage'])/100)+1;
 
@@ -618,4 +650,88 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     // if(labour_hour_percentage>this.maxMaterialC)
   }
 
+   @ViewChild('custInput', { static: true })
+    custInput?: ElementRef<HTMLInputElement>;
+    
+  
+    add(event: MatChipInputEvent): void {
+      const input = event.input;
+      const value = event.value;
+      // Add our fruit
+      if ((value || '').trim()) {
+        //this.fruits.push(value.trim());
+      }
+      // Reset the input value
+      if (input) {
+        input.value = '';
+      }
+      this.customerCompanyControl.setValue(null);
+    }
+  
+    remove(cust: any): void {
+      const index = this.selectedCustomers.findIndex(c => c.code === cust.code);
+      if (index >= 0) {
+        this.selectedCustomers.splice(index, 1);
+  
+      }
+    }
+  
+  
+  
+    // displayCustomerCompanyFn(customer: any): string {
+    //   if (!customer) return '';
+    //   return this.selectedCustomers.map(c => ccDS.displayName(c)).join(', ');
+    // }
+  
+    private updateFormControl(): void {
+      // this.pcForm?.get('customer_code')?.setValue(this.selectedCustomers);
+    }
+
+   removeAllSelectedCustomers(): void {
+    this.selectedCustomers = [];
+   
+  }
+
+  getSelectedCustomersDisplay(): string {
+    var retval: string = "";
+    if (this.selectedCustomers?.length > 1) {
+      retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
+    }
+    else if (this.selectedCustomers?.length == 1) {
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value}`;
+    }
+    return retval;
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const customer = event.option.value;
+    const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
+    if (!(index >= 0)) {
+      this.selectedCustomers.push(customer);
+    } else {
+      this.selectedCustomers.splice(index, 1);
+    }
+
+    if (this.custInput) {
+      this.searchCustomerCompanyList('');
+      this.custInput.nativeElement.value = '';
+    }
+    // this.AutoSearch();
+    // this.updateFormControl();
+    //this.customerCodeControl.setValue(null);
+    //this.pcForm?.patchValue({ customer_code: null });
+  }
+  itemSelected(row: CustomerCompanyItem): boolean {
+    var retval: boolean = false;
+    const index = this.selectedCustomers.findIndex(c => c.code === row.code);
+    retval = (index >= 0);
+    return retval;
+  }
+
+  onCheckboxClicked(row: CustomerCompanyItem) {
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
+    this.selected(fakeEvent);
+
+  }
 }

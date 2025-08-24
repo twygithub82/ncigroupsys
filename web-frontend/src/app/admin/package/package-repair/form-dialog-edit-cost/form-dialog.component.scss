@@ -20,3 +20,82 @@
     right: 0;
     padding: 0px !important
 }
+
+
+::ng-deep .cdk-overlay-pane .mat-select-panel {
+  max-height: 200px;
+  /* Adjust the height as needed */
+}
+
+// mat-form-field {
+//   width: 100%;
+//   margin-top: 3px;
+//   margin-left: 10px;
+// }
+
+
+.auto-height {
+  height: auto;
+  max-height: none;
+  /* Ensures there's no max-height limiting the container */
+  overflow: auto;
+  /* Ensures scrollbars appear if content exceeds container size */
+}
+
+// ::ng-deep .mat-mdc-standard-chip .mdc-evolution-chip__action--primary {
+//   padding-left: 0px !important;
+//   /* padding-right: 12px; */
+// }
+
+mat-chip-row[color="primary"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: 6px;
+  // box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2),
+  //             -2px -2px 5px rgba(255, 255, 255, 0.7); /* strong 3D shadow */
+  padding: 2px 2px;
+  font-weight: 500;
+  color: #333;
+  transform: translateZ(0);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Optional: Ensure the remove button icon is also white */
+mat-chip-row[color="primary"] button[matChipRemove] mat-icon {
+  color: red !important;
+}
+
+
+.checkbox-option {
+  display: flex;
+  /* Enable flex layout */
+  align-items: center;
+  /* Vertically center items */
+  gap: 8px;
+  /* Space between checkbox and text */
+  width: 100%;
+  /* Full width */
+}
+
+.checkbox-item {
+  // margin-top: 4px;
+  flex-shrink: 0;
+}
+
+
+::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+  display: none
+}
+
+.multiSelected_autocomplete {
+  padding: 0 12px;
+}
+
+/* You might need to adjust the width of the input field within the chip grid
+   to allow space for the ellipsis if it's too wide by default. */
+.single-line-chip-grid input {
+  width: 100%;
+  /* Or set a specific max-width */
+  box-sizing: border-box;
+  /* Include padding and border in the element's total width */
+}
