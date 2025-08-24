@@ -53,6 +53,8 @@ import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, Subscription, tap } from 'rxjs';
 import { AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { strongPasswordValidator } from 'app/utilities/validator';
+import { AuthService } from '@core';
+import { MessageDialogComponent } from '@shared/components/message-dialog/message-dialog.component';
 // import { FormDialogComponent } from './form-dialog/form-dialog.component';
 export interface DialogData {
   action?: string;
@@ -100,7 +102,7 @@ export interface DialogData {
     MatChipsModule,
     MatIconModule,
     MatFormFieldModule,
-     
+    MatProgressSpinnerModule,
     
   ],
 })
@@ -249,11 +251,15 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     MUST_ONE_UPPERCASE: "COMMON-FORM.MUST-ONE-UPPERCASE",
     MUST_ONE_LOWERCASE: "COMMON-FORM.MUST-ONE-LOWERCASE",
     MUST_ONE_NUMBER: "COMMON-FORM.MUST-ONE-NUMBER",
-    MUST_ONE_SPECIAL: "COMMON-FORM.MUST-ONE-SPECIAL"
+    MUST_ONE_SPECIAL: "COMMON-FORM.MUST-ONE-SPECIAL",
+    CHANGE_PASSWORD: "COMMON-FORM.CHANGE-PASSWORD",
+    PASSSWORD_CHANGED_SUCCEED: "COMMON-FORM.PASSSWORD-CHANGED-SUCCEED",
   };
 
  
   selectedItem: UserItem;
+  authSrv? :AuthService;
+  loading:boolean=false;
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -264,6 +270,8 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     private apollo: Apollo,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    private authService: AuthService,
+    public dialog: MatDialog,
   ) {
     // Set the defaults
     super();
@@ -275,6 +283,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     this.userDs=new UserDS(this.apollo);
     this.teamDs = new TeamDS(this.apollo);
     this.roleDs=new RoleDS(this.apollo);
+    this.authSrv = this.authService;
     this.loadData();
     this.action = data.action!;
     this.translateLangText();
@@ -438,14 +447,17 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           
           if(data?.length>0){
            data.forEach(user=>{
-           user.team_user= user.team_user?.filter(
-              (obj, index, self) =>
-                index === self.findIndex(t => t.team_guid === obj.team_guid)
-            );
-           user.user_functions= user.user_functions?.filter(
-               (obj, index, self) =>
-                index === self.findIndex(t => t.functions_guid === obj.functions_guid)
-           )
+          user.team_user = user.team_user
+           ?.sort((a, b) => (b.update_dt||0) - (a.update_dt||0)) // ascending by epoch
+          .filter((obj, index, self) =>
+            index === self.findIndex(t => t.team_guid === obj.team_guid)
+          );
+
+        user.user_functions = user.user_functions
+          ?.sort((a, b) => (b.update_dt||0) - (a.update_dt||0)) // ascending by epoch
+          .filter((obj, index, self) =>
+            index === self.findIndex(t => t.functions_guid === obj.functions_guid)
+          );
           });
             var usr= data[0];
             this.pcForm.patchValue({
@@ -841,5 +853,60 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       changePassword()
       {
 
+        // this.submitted = true;
+        this.loading = true;
+        // this.error = '';
+        // if (this.authForm.invalid) {
+        //   this.error = 'Username and Password not valid !';
+        //   return;
+        // } else 
+          {
+         this.authSrv?.resetStaffPassword(String(this.pcForm.value['pwd']), String(this.pcForm.value['username']))
+            .subscribe({
+              next: (res) => {
+                 this.loading = false;
+                 let tempDirection: Direction;
+                    if (localStorage.getItem('isRtl') === 'true') {
+                      tempDirection = 'rtl';
+                    } else {
+                      tempDirection = 'ltr';
+                    }
+                    const dialogRef = this.dialog.open(MessageDialogComponent, {
+                      width: '400px',
+                       autoFocus: false,
+                      disableClose: true,
+                      data: {
+                        headerText: this.translatedLangText.CHANGE_PASSWORD,
+                        messageText: [this.translatedLangText.PASSSWORD_CHANGED_SUCCEED],
+                        act: "warn"
+                      },
+                      direction: tempDirection
+                    });
+                    dialogRef.afterClosed().subscribe(result => {
+                      this.pcForm.patchValue(
+                        {
+                          pwd: null,
+                          confirm_pwd: null
+                        }
+                      );
+                       this.pcForm.get('pwd')?.setErrors(null);
+                        this.pcForm.get('pwd')?.markAsUntouched();
+
+                        this.pcForm.get('confirm_pwd')?.setErrors(null);
+                        this.pcForm.get('confirm_pwd')?.markAsUntouched();
+
+                    });
+              },
+              error: (error) => {
+                // this.error = 'Error login';
+                const username = error?.error?.username;
+                console.log(username)
+              // this.errorDialog();
+                // ComponentUtil.showNotification('snackbar-success', this.translatedLangText.FAILED_TO_LOGIN, 'center', 'center', this.snackBar);
+                // this.submitted = false;
+                this.loading = false;
+              },
+            });
+        }
       }
 }

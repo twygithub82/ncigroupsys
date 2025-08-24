@@ -696,7 +696,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
       });
       console.log(this.searchStateService.getPagination(this.pageStateType))
       // this.subs.sink = this.usrDS.searchUser(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-      this.subs.sink = this.usrDS.searchUserWithDetails(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      this.subs.sink = this.usrDS.searchUserWithRolesNTeams(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
         .subscribe(data => {
 
           data.forEach(user=>{

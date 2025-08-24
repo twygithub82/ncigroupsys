@@ -132,8 +132,84 @@ const GET_USERS = gql`
     }
   }
 `;
-
 const GET_USERS_TEAMS_ROLES = gql`
+  query queryUsers($where: aspnetusersFilterInput, $order: [aspnetusersSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
+    resultList: queryUsers(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      nodes {
+        corporateID
+        email
+        id
+        phoneNumber
+        userName
+        team_user(where: { delete_dt: { eq: null } }) {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          team_guid
+          update_by
+          update_dt
+          userId
+          team {
+            create_by
+            create_dt
+            delete_dt
+            department_cv
+            description
+            guid
+            update_by
+            update_dt
+          }
+        }
+        user_role(where: { delete_dt: { eq: null } }) {
+          create_by
+          create_dt
+          delete_dt
+          guid
+          role_guid
+          update_by
+          update_dt
+          user_guid
+          role {
+            code
+            create_by
+            create_dt
+            delete_dt
+            department
+            description
+            guid
+            position
+            update_by
+            update_dt
+            role_functions {
+              create_by
+              create_dt
+              delete_dt
+              functions_guid
+              guid
+              role_guid
+              update_by
+              update_dt
+              functions {
+                code
+                guid
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+`;
+
+const GET_USERS_TEAMS_ROLES_FUNCTIONS = gql`
   query queryUsers($where: aspnetusersFilterInput, $order: [aspnetusersSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
     resultList: queryUsers(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
       totalCount
@@ -271,12 +347,36 @@ export class UserDS extends BaseDataSource<UserItem> {
       );
   }
 
-  searchUserWithDetails(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<UserItemWithDetails[]> {
+   searchUserWithRolesNTeams(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<UserItemWithDetails[]> {
     this.loadingSubject.next(true);
 
     return this.apollo
       .query<any>({
         query: GET_USERS_TEAMS_ROLES,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError(() => of({ items: [], totalCount: 0 })),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
+
+  searchUserWithDetails(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<UserItemWithDetails[]> {
+    this.loadingSubject.next(true);
+
+    return this.apollo
+      .query<any>({
+        query: GET_USERS_TEAMS_ROLES_FUNCTIONS,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

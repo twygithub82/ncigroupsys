@@ -17,6 +17,7 @@ export const api_endpoints = {
   user_forgot_password: '/api/UserAuthentication/forgot-password',
   user_post_reset_password: '/api/UserAuthentication/reset-password',
   user_get_reset_password: '/api/UserAuthentication/reset-password',
+  staff_post_reset_password: '/api/StaffAuthentication/ResetStaffPassword',
 }
 
 export const uploadEndpoints = {

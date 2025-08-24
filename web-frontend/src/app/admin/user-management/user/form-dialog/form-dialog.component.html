@@ -79,15 +79,20 @@
                         </mat-error>
                       </div>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.CONFIRM_PASSWORD}}</mat-label>
                         <input matInput formControlName="confirm_pwd" type="password">
                       </mat-form-field>
                     </div>
-                    <div  class="col-xl-1 col-lg-1 col-md-6 col-sm-6 mb-1">
+                    <div  class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1 text-end">
         
-                        <button mat-flat-button color="primary" class="me-1" (click)="changePassword()" [disabled]="!allowChangePassword()">{{translatedLangText.UPDATE}}</button>
+                        <button mat-flat-button color="primary" class="mt-2 mr-4" [class.auth-spinner]="loading" (click)="changePassword()" [disabled]="!allowChangePassword()">
+                          @if (!loading) {
+                          {{translatedLangText.UPDATE}}  
+                          }
+                          
+                        </button>
                     </div>
         
                 </div>
@@ -170,7 +175,7 @@
                                 
                                 }
                               </mat-autocomplete>
-                            </mat-chip-grid>
+                        </mat-chip-grid>
                       </mat-form-field>
                     </div>
                 </div>
@@ -185,7 +190,13 @@
                           <h2>{{translatedLangText.SELECTED_ROLES}} </h2>
                         </div>
                         <div class="body">
-                          @if (updatedRoleList.length) {
+                         
+                          @if (userDs?.loading$| async) {
+                          <div class="tbl-spinner">
+                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                            </mat-progress-spinner>
+                          </div>
+                          }@else if (updatedRoleList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (r of updatedRoleList; let i = $index; track r) {
                               @if(!r.is_deleted)
@@ -205,11 +216,6 @@
                             }
                           </div>
                           }
-                          @else {
-                          <!-- <div class="text-center">
-                            <h5>{{translatedLangText.NO_RESULT}}</h5>
-                          </div> -->
-                          }
                         </div>
                       </div>
                    </div>
@@ -219,7 +225,12 @@
                           <h2>{{translatedLangText.SELECTED_TEAMS}} </h2>
                         </div>
                         <div class="body">
-                          @if (updatedTeamList.length) {
+                          @if (userDs?.loading$| async) {
+                          <div class="tbl-spinner">
+                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                            </mat-progress-spinner>
+                          </div>
+                          }@else if (updatedTeamList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (t of updatedTeamList; let i = $index; track t) {
                                @if(!t.is_deleted)
@@ -249,12 +260,17 @@
                           <h2>{{translatedLangText.SELECTED_ADHOC}} </h2>
                         </div>
                         <div class="body">
-                          @if (updatedAdhocList.length) {
+                         @if (userDs?.loading$| async) {
+                          <div class="tbl-spinner">
+                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                            </mat-progress-spinner>
+                          </div>
+                          }@else if (updatedAdhocList.length) {
                           <div cdkDropList class="steps-list" >
                             @for (f of updatedAdhocList; let i = $index; track f) {
                               @if(f.adhoc && !f.is_deleted && f.delete_dt===null)
                               {
-                                <div class="step-box-features cursor-pointer rounded  role-content" >
+                                 <div class="step-box-features cursor-pointer rounded  role-content" >
                                   <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
                                   <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelAdhocItem(f)"
                                     [matTooltip]="translatedLangText.DELETE"  class="tbl-action-btn text-custom-danger lower-btn">
@@ -288,7 +304,12 @@
                           <h2>{{translatedLangText.SELECTED_FEATURES}} </h2>
                         </div>
                         <div class="body">
-                          @if (updatedRoleList.length) {
+                          @if (userDs?.loading$| async) {
+                          <div class="tbl-spinner">
+                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                            </mat-progress-spinner>
+                          </div>
+                          }@else if (updatedRoleList.length) {
                           <div cdkDropList class="steps-list-features" >
                             @for (f of updatedRoleFeaturesList; let i = $index; track f) {
                               @if(f.functions?.code)
@@ -329,7 +350,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right m-r-50">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" class="me-1" (click)="save()" [disabled]="userDs?.loading$|async">{{translatedLangText.UPDATE}}</button>
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>

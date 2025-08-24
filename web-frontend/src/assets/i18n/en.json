@@ -1385,8 +1385,8 @@
     "MUST-ONE-UPPERCASE": "Must have at least one uppercase letter",
     "MUST-ONE-LOWERCASE": "Must have at least one lowercase letter",
     "MUST-ONE-NUMBER": "Must have at least one number",
-    "MUST-ONE-SPECIAL": "Must have at least one special character"
-    
+    "MUST-ONE-SPECIAL": "Must have at least one special character",
+    "PASSSWORD-CHANGED-SUCCEED": "Password changed successfully"
     
   },
   "CLEAN-PROCEDURES": {
