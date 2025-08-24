@@ -1,6 +1,7 @@
-<div class="container confirmation-dialog p-4 item-align-center">
-    <h4 mat-dialog-title class="text-center pb-3">{{ headerText | translate }}</h4>
-    <p class="text-center">{{ messageText }}</p>
+<div class="container confirmation-dialog p-2">
+    <!-- <h4 mat-dialog-title class="text-center pb-3">{{ headerText | translate }}</h4> -->
+    <h4 mat-dialog-title class="align-center pb-3">{{ messageText }}</h4>
+    <!-- <p class="text-center">{{ messageText }}</p> -->
 
     <div mat-dialog-actions class="pt-2 mb-1 d-flex justify-content-center">
         <button mat-flat-button color="warn" (click)="confirm()">

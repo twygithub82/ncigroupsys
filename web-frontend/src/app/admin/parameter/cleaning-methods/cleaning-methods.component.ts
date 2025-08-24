@@ -391,6 +391,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '600px',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -420,6 +421,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '600px',
       maxHeight: '90vh',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,

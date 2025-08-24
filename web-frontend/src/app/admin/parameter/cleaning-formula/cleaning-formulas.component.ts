@@ -413,6 +413,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50vw',
       //maxWidth: '600px',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -439,6 +440,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50vw',
       //maxWidth: '600px',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,

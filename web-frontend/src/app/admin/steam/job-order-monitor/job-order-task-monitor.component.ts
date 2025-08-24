@@ -26,14 +26,14 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
+import { OwlDateTimeModule, OwlNativeDateTimeModule, DateTimeAdapter } from '@danielmoncada/angular-datetime-picker';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
+import { CodeValuesDS, CodeValuesItem, addDefaultSelectOption } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
@@ -47,13 +47,13 @@ import { SteamPartItem } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { TimeTableDS, TimeTableItem } from 'app/data-sources/time-table';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable, Subscription } from 'rxjs';
 import { ConfirmDialogComponent } from './dialogs/confirm/confirm.component';
-import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 @Component({
   selector: 'job-order-task-monitor',
   standalone: true,
@@ -89,7 +89,8 @@ import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component
     MatNativeDateModule,
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -238,7 +239,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     COMPLETE_STEAM: 'COMMON-FORM.COMPLETE-STEAM',
     OVER_REQUIRED_TEMP: 'COMMON-FORM.OVER-REQUIRED-TEMP',
     LOWER_REQUIRED_TEMP: 'COMMON-FORM.LOWER-REQUIRED-TEMP'
-
   }
 
   clean_statusList: CodeValuesItem[] = [];
@@ -318,9 +318,11 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private dateTimeAdapter: DateTimeAdapter<any>
   ) {
     super();
+    this.dateTimeAdapter.setLocale('en-GB');
     this.translateLangText();
     this.initForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -471,7 +473,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
                 this.sotItem = this.steamItem?.storing_order_tank;
                 this.reqTemp = (!this.sotItem?.required_temp) ? this.reqTemp : this.sotItem?.required_temp;
                 this.QuerySteamTemp();
-             
+
 
               }
             });
@@ -885,28 +887,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     });
   }
 
-  viewTimeTableDetails(event: Event) {
-    this.preventDefault(event);  // Prevents the form submission
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    const dialogRef = this.dialog.open(FormDialogComponent, {
-      width: '700px',
-      data: {
-        item: this.jobOrderItem?.time_table,
-        action: 'new',
-        translatedLangText: this.translatedLangText,
-        populateData: {},
-        index: -1
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => { });
-  }
-
   private subscribeToJobOrderEvent(
     subscribeFn: (guid: string) => Observable<any>,
     job_order_guid: string
@@ -1049,7 +1029,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '700px',
       disableClose: true,
       data: {
         action: 'cancel',
@@ -1128,9 +1107,9 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     var steamTmp: SteamTemp = new SteamTemp();
     //var action:string = (guid===null || guid==="")?"NEW":"UPDATE";
     steamTmp.report_dt = Number(Utility.convertDate(this.steamForm?.get("time")?.value, false, true));
-    steamTmp.bottom_temp = this.steamForm?.get("bottom")?.value;
-    steamTmp.top_temp = this.steamForm?.get("top")?.value;
-    steamTmp.meter_temp = this.steamForm?.get("thermometer")?.value;
+    steamTmp.bottom_temp = Utility.convertNumber(this.steamForm?.get("bottom")?.value);
+    steamTmp.top_temp = Utility.convertNumber(this.steamForm?.get("top")?.value);
+    steamTmp.meter_temp = Utility.convertNumber(this.steamForm?.get("thermometer")?.value);
     steamTmp.remarks = this.steamForm?.get("remarks")?.value;;
     steamTmp.job_order_guid = this.job_order_guid!;
     steamTmp.guid = guid;
@@ -1232,8 +1211,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       });
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result?.action === 'confirmed') {
-
-
           let jobOrder = this.steamItem?.steaming_part?.[0]?.job_order;
           var updJobOrderReq: UpdateJobOrderRequest = new UpdateJobOrderRequest(jobOrder);
           updJobOrderReq.complete_dt = Math.floor(Date.now() / 1000);
@@ -1286,30 +1263,29 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   }
 
   DisplayEpochToDate(epochTimeInSeconds: number): string {
-
-    let tm: Date = new Date;
-
-    if (epochTimeInSeconds) {
-      const convertedVal = Utility.convertDate(epochTimeInSeconds);
-      if (convertedVal instanceof Date) {
-        tm = convertedVal; // Assign only if it's a Date
-      }
-    }
-    return tm.toLocaleString(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return Utility.convertEpochToDateTimeStr(epochTimeInSeconds) || '-';
+    // let tm: Date = new Date;
+    // if (epochTimeInSeconds) {
+    //   const convertedVal = Utility.convertDate(epochTimeInSeconds);
+    //   if (convertedVal instanceof Date) {
+    //     tm = convertedVal; // Assign only if it's a Date
+    //   }
+    // }
+    // return tm.toLocaleString(undefined, {
+    //   year: 'numeric',
+    //   month: '2-digit',
+    //   day: '2-digit',
+    //   hour: '2-digit',
+    //   minute: '2-digit',
+    // });
   }
 
   CheckAndGetTempStatus(steamTemp?: SteamTemp): number {
     const reqTemp = this.reqTemp!;
-    const deTemps =this.deList.flatMap(a => [a.meter_temp, a.top_temp, a.bottom_temp]); // this.deList.map(a => a.meter_temp);
+    const deTemps = this.deList.flatMap(a => [a.meter_temp, a.top_temp, a.bottom_temp]); // this.deList.map(a => a.meter_temp);
     let steamTempVal = null;
 
-    if(steamTemp){
+    if (steamTemp) {
       steamTempVal = [steamTemp.meter_temp, steamTemp.top_temp, steamTemp.bottom_temp];
     }
 

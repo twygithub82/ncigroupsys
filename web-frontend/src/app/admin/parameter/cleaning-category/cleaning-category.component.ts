@@ -414,6 +414,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50vw',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -444,6 +445,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '50vw',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
