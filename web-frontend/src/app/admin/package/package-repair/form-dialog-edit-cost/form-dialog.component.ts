@@ -38,6 +38,7 @@ import { ConfirmDialogComponent } from './confirm/confirm.component';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 export interface DialogData {
   action?: string;
@@ -503,11 +504,12 @@ customer_companyList: CustomerCompanyItem[] = [];
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
       data: {
-        message: msg,
-        langText: this.langText
-
+        // message: msg,
+        // langText: this.langText
+        messageText: msg,
+        action: 'error',
       },
       direction: tempDirection
     });

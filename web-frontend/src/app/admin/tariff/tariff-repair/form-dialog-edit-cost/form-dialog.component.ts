@@ -21,6 +21,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -514,11 +515,13 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
       data: {
-        message: msg,
-        headerText: this.translatedLangText.NO_VALUE_CHNAGE,
-        action: "confirm_only"
+        // message: msg,
+        // headerText: this.translatedLangText.NO_VALUE_CHNAGE,
+        // action: "confirm_only"
+        messageText: msg,
+        action: 'error',
       },
       direction: tempDirection
     });
