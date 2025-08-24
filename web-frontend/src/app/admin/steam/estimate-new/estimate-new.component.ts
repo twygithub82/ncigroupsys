@@ -415,9 +415,6 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
       this.unitTypeCvList = data;
     });
 
-
-    //this.getSurveyorList();
-
     this.sot_guid = this.route.snapshot.paramMap.get('id');
     this.steam_guid = this.route.snapshot.paramMap.get('steam_est_id');
 
@@ -557,15 +554,6 @@ export class SteamEstimateNewComponent extends UnsubscribeOnDestroyAdapter imple
     };
 
     return this.prDS.getCustomerPackageCost(where);
-  }
-
-  getSurveyorList() {
-    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
-    this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
-      if (data?.length > 0) {
-        this.surveyorList = data;
-      }
-    });
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
