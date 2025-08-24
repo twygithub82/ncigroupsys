@@ -1,201 +1,199 @@
 <div class="card tab-card-container p-0">
-  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <form class="ms-0" [formGroup]="filterJobOrderForm!" #formDirective="ngForm">
-      <mat-accordion>
-        <mat-expansion-panel [expanded]="true">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-            </mat-panel-title>
-            <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" (click)="$event.stopPropagation()">
-                  <mat-icon>search</mat-icon>
-                </button>
-              </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
-                  <mat-icon>clear_all</mat-icon>
-                </button>
-              </div>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <div class="row">
-            <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <!-- <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span> -->
-                <mat-label>
-                  {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
-                </mat-label>
-                <input matInput formControlName="filterJobOrder">
-              </mat-form-field>
+  <form class="ms-0" [formGroup]="filterJobOrderForm!" #formDirective="ngForm">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+              <button mat-mini-fab color="primary" (click)="onFilterJobOrder()" (click)="$event.stopPropagation()">
+                <mat-icon>search</mat-icon>
+              </button>
             </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                <input matInput formControlName="customer" [formControl]="customerCodeControl"
-                  [matAutocomplete]="customerCode">
-                <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                  @for (cc of customer_companyList; track cc) {
-                  <mat-option [value]="cc">
-                    {{ccDS.displayCodeDashName(cc)}}
-                  </mat-option>
-                  }
-                </mat-autocomplete>
-              </mat-form-field>
+            <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                <mat-icon>clear_all</mat-icon>
+              </button>
             </div>
-            <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
-              <mat-form-field class="example-full-width" appearance="fill">
-                <mat-label>{{translatedLangText.STATUS}}</mat-label>
-                <mat-select multiple formControlName="jobStatusCv">
-                  @for (codeValue of jobStatusCvList; track codeValue) {
-                  @if (availableJobStatus.includes(codeValue.code_val ?? '')){
-                  <mat-option [value]="codeValue.code_val">
-                    {{codeValue.description}}
-                  </mat-option>
-                  }
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="row">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <!-- <span matPrefix class="m-l-10"><i class="fas fa-search"></i></span> -->
+              <mat-label>
+                {{translatedLangText.TANK_NO}}/{{translatedLangText.ESTIMATE_NO}}
+              </mat-label>
+              <input matInput formControlName="filterJobOrder">
+            </mat-form-field>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
-    </form>
-    <div class="body overflow-auto">
-      <div class="responsive_table">
-        <table mat-table [dataSource]="jobOrderList" matSort
-          class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
-          <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef></mat-header-cell>
-            <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="tank_no">
-            <mat-header-cell mat-header-cell *matHeaderCellDef
-              [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              {{translatedLangText.TANK_NO}}
-            </mat-header-cell>
-            <mat-cell mat-cell *matCellDef="let row"
-              [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              <span class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="customer">
-            <mat-header-cell mat-header-cell *matHeaderCellDef
-              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              {{translatedLangText.CUSTOMER}}
-            </mat-header-cell>
-            <mat-cell mat-cell *matCellDef="let row"
-              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              <span class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>
-              <span
-                class="mobile-tab-label-value truncate-2-line">{{row.storing_order_tank?.storing_order?.customer_company.name}}</span>
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="estimate_no">
-            <mat-header-cell mat-header-cell *matHeaderCellDef
-              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              {{translatedLangText.ESTIMATE_NO}}
-            </mat-header-cell>
-            <mat-cell mat-cell *matCellDef="let row"
-              [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              <span
-                class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.steaming_part?.[0]?.steaming?.estimate_no}}
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="allocate_dt">
-            <mat-header-cell mat-header-cell *matHeaderCellDef
-              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              {{translatedLangText.ALLOCATE_DATE}}
-            </mat-header-cell>
-            <mat-cell mat-cell *matCellDef="let row"
-              [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              <span class="mobile-tab-label">{{translatedLangText.ALLOCATE_DATE}}:</span>
-              <span>{{displayDate(row.create_dt)}}</span>
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="status_cv">
-            <mat-header-cell mat-header-cell *matHeaderCellDef
-              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              {{translatedLangText.STATUS}}
-            </mat-header-cell>
-            <mat-cell mat-cell *matCellDef="let row"
-              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-              <span
-                class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getJobStatusDescription(row?.status_cv)}}
-            </mat-cell>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <mat-header-cell mat-header-cell *matHeaderCellDef
-              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row; let i=index;"
-              [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-              @if(canToggleJob(row))
-              {
-              @if (canStartJob(row) && !isStarted(row)) {
-              <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
-                <mat-icon
-                  [ngClass]="{'yellow-timer-icon': row.time_table?.length, 'red-timer-icon': !row.time_table?.length}">
-                  timer
-                </mat-icon>
-              </button>
-              }
-              @if (canCompleteJob(row)) {
-              <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
-                <mat-icon class="green-timer-icon">check_box</mat-icon>
-              </button>
-              }
-              }
-              @else
-              {
-              <button mat-icon-button (click)="stopEventTrigger($event)" (click)="startJobTask($event,row)">
-                <i class="material-icons card1-icon fas fa-fire"></i>
-              </button>
-              }
-            </mat-cell>
-          </ng-container>
-          <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;" (click)="startJobTask($event,row)"
-            [style.cursor]="'pointer'" matRipple>
-            <!-- [routerLink]="['/admin/steam/job-order/task', row.guid, row.steaming_part?.[0]?.steaming_guid]" 
-          [style.cursor]="'pointer'" matRipple>-->
-          </mat-row>
-        </table>
-      </div>
-      <!-- No result -->
-      @if (!(joDS.loading$ | async) && !jobOrderList.length) {
-      <div class="no-results m-l-20 pt-3" [style.display]="jobOrderList.length === 0 ? '' : 'none'">
-        <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-      </div>
-      }
-      <!-- Loading spinner -->
-      @if (joDS.loading$ | async) {
-      <div class="tbl-spinner">
-        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-        </mat-progress-spinner>
-      </div>
-      }
-      <mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
-        [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEventJobOrder($event)">
-      </mat-paginator>
-      <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
-        <div class="legend-item d-flex align-items-center me-4 mb-0">
-          <mat-icon class="me-2 red-timer-icon">timer</mat-icon>
-          <span>{{translatedLangText.NOT_STARTED}}</span>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+              <input matInput formControlName="customer" [formControl]="customerCodeControl"
+                [matAutocomplete]="customerCode">
+              <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                @for (cc of customer_companyList; track cc) {
+                <mat-option [value]="cc">
+                  {{ccDS.displayCodeDashName(cc)}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.STATUS}}</mat-label>
+              <mat-select multiple formControlName="jobStatusCv">
+                @for (codeValue of jobStatusCvList; track codeValue) {
+                @if (availableJobStatus.includes(codeValue.code_val ?? '')){
+                <mat-option [value]="codeValue.code_val">
+                  {{codeValue.description}}
+                </mat-option>
+                }
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
         </div>
-        <!-- <div class="legend-item d-flex align-items-center me-4 mb-2">
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
+  <div class="body overflow-auto">
+    <div class="responsive_table">
+      <table mat-table [dataSource]="jobOrderList" matSort
+        class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="tank_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.TANK_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="customer">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.CUSTOMER}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{translatedLangText.CUSTOMER}}:</span>
+            <span
+              class="mobile-tab-label-value truncate-2-line">{{row.storing_order_tank?.storing_order?.customer_company.name}}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="estimate_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.ESTIMATE_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span
+              class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>{{row.steaming_part?.[0]?.steaming?.estimate_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="allocate_dt">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.ALLOCATE_DATE}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span class="mobile-tab-label">{{translatedLangText.ALLOCATE_DATE}}:</span>
+            <span>{{displayDate(row.create_dt)}}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="status_cv">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            {{translatedLangText.STATUS}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row"
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+            <span
+              class="mobile-tab-label">{{translatedLangText.STATUS}}:</span>{{getJobStatusDescription(row?.status_cv)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row; let i=index;"
+            [ngClass]="'tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
+            @if(canToggleJob(row))
+            {
+            @if (canStartJob(row) && !isStarted(row)) {
+            <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row)">
+              <mat-icon
+                [ngClass]="{'yellow-timer-icon': row.time_table?.length, 'red-timer-icon': !row.time_table?.length}">
+                timer
+              </mat-icon>
+            </button>
+            }
+            @if (canCompleteJob(row)) {
+            <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
+              <mat-icon class="green-timer-icon">check_box</mat-icon>
+            </button>
+            }
+            }
+            @else
+            {
+            <button mat-icon-button (click)="stopEventTrigger($event)" (click)="startJobTask($event,row)">
+              <i class="material-icons card1-icon fas fa-fire"></i>
+            </button>
+            }
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumnsJobOrder"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumnsJobOrder;" (click)="startJobTask($event,row)"
+          [style.cursor]="'pointer'" matRipple>
+          <!-- [routerLink]="['/admin/steam/job-order/task', row.guid, row.steaming_part?.[0]?.steaming_guid]" 
+          [style.cursor]="'pointer'" matRipple>-->
+        </mat-row>
+      </table>
+    </div>
+    <!-- No result -->
+    @if (!(joDS.loading$ | async) && !jobOrderList.length) {
+    <div class="no-results m-l-20 pt-3" [style.display]="jobOrderList.length === 0 ? '' : 'none'">
+      <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
+    </div>
+    }
+    <!-- Loading spinner -->
+    @if (joDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
+    <mat-paginator #paginator [length]="joDS.totalCount" [pageIndex]="pageIndexJobOrder" [pageSize]="pageSizeJobOrder"
+      [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEventJobOrder($event)">
+    </mat-paginator>
+    <div class="legend-container d-flex flex-wrap align-items-center border p-3 rounded">
+      <div class="legend-item d-flex align-items-center me-4 mb-0">
+        <mat-icon class="me-2 red-timer-icon">timer</mat-icon>
+        <span>{{translatedLangText.NOT_STARTED}}</span>
+      </div>
+      <!-- <div class="legend-item d-flex align-items-center me-4 mb-2">
           <mat-icon class="me-2 yellow-timer-icon">timer</mat-icon>
           <span>{{translatedLangText.STARTED}}</span>
         </div> -->
-        <div class="legend-item d-flex align-items-center me-4 mb-0">
-          <mat-icon class="me-2 green-timer-icon">check_box</mat-icon>
-          <span>{{translatedLangText.TO_COMPLETE}}</span>
-        </div>
-        <!-- <div class="legend-item d-flex align-items-center me-4 mb-2">
+      <div class="legend-item d-flex align-items-center me-4 mb-0">
+        <mat-icon class="me-2 green-timer-icon">check_box</mat-icon>
+        <span>{{translatedLangText.TO_COMPLETE}}</span>
+      </div>
+      <!-- <div class="legend-item d-flex align-items-center me-4 mb-2">
           <mat-icon class="me-2">whatshot</mat-icon>
           <span>{{translatedLangText.STEAM_HEAT_TYPE}}</span>
         </div> -->
-      </div>
     </div>
   </div>
 </div>

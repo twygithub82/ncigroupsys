@@ -929,7 +929,7 @@
     "OVERWRITE-QC": "Overwrite QC",
     "PERIODIC-TEST-SURVEY": "Periodic Test Survey",
     "PHOTOS": "Photos",
-    "OVER-REQUIRED-TEMP": "The current temperature is higher than the required temperature",
+    "OVER-REQUIRED-TEMP": "The current temperature exceeds the required temperature",
     "LOWER-REQUIRED-TEMP": "The current temperature is lower than the required temperature",
     "PUBLISH": "Publish",
     "INVOICE-DATE": "Invoice Date",
