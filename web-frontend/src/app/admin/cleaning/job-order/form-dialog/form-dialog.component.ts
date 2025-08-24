@@ -777,7 +777,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   getTariffCleaningRemarks() {
-    return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks ? this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks : "-";
+    return this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks ? this.selectedItem.storing_order_tank?.tariff_cleaning?.remarks : "";
   }
 
 
