@@ -471,7 +471,6 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       where.customer_company_guid = { in: custGuids };
     }
 
-
     if (this.pcForm?.get("customer_cost")?.value !== null && this.pcForm?.get("customer_cost")?.value !== "") {
       const selectedCost: number = Number(this.pcForm?.get("customer_cost")?.value);
       where.cost = { eq: selectedCost }
