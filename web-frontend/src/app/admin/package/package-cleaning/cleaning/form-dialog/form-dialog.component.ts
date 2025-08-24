@@ -21,6 +21,7 @@ import { Apollo } from 'apollo-angular';
 import { CustomerCompanyCleaningCategoryDS, CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -59,7 +60,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent {
@@ -171,7 +173,7 @@ export class FormDialogComponent {
     CUSTOMER_COST: "COMMON-FORM.CUSTOMER-COST",
     STANDARD_COST: "COMMON-FORM.STANDARD-COST",
     TARIFF_COST: 'COMMON-FORM.TARIFF-COST',
-    COST:'COMMON-FORM.COST',
+    COST: 'COMMON-FORM.COST',
   };
 
 
@@ -318,9 +320,9 @@ export class FormDialogComponent {
     this.dialogRef.close();
   }
 
-    getCostLabel():string{
-    var retval =this.translatedLangText.COST;
-    if(this.selectedItems.length>1){
+  getCostLabel(): string {
+    var retval = this.translatedLangText.COST;
+    if (this.selectedItems.length > 1) {
       // retval = retval.replace("$","%");
     }
     return retval;

@@ -25,6 +25,7 @@ import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-com
 import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
@@ -64,7 +65,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {

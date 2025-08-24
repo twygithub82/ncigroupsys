@@ -35,6 +35,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { provideNgxMask } from 'ngx-mask';
 import { debounceTime, startWith, tap } from 'rxjs';
 import { ConfirmDialogComponent } from './confirm/confirm.component';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;
@@ -74,7 +75,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {

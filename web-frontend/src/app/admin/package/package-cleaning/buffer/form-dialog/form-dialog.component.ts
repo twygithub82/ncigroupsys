@@ -23,6 +23,7 @@ import { PackageBufferDS, PackageBufferItem } from 'app/data-sources/package-buf
 import { PackageLabourItem } from 'app/data-sources/package-labour';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
@@ -66,7 +67,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent {

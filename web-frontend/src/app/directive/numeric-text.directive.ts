@@ -29,7 +29,7 @@ export class NumericTextDirective {
 
     const selectionStart = input.selectionStart ?? value.length;
     const selectionEnd = input.selectionEnd ?? selectionStart;
-
+    
     if (isMinus) {
       if (!this.allowNegative || selectionStart !== 0 || value.includes('-')) {
         event.preventDefault();

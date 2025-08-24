@@ -29,6 +29,7 @@ import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { tempRangeValidator } from '../validators/temp-range.validator';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;
@@ -73,7 +74,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
@@ -448,7 +450,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   selectAll(event: FocusEvent) {
-  const input = event.target as HTMLInputElement;
-  input.select();  // Selects all text in the input
+    const input = event.target as HTMLInputElement;
+    input.select();  // Selects all text in the input
   }
 }

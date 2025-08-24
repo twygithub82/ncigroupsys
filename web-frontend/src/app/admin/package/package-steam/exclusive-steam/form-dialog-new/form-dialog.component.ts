@@ -32,6 +32,7 @@ import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { tempRangeValidator } from '../validators/temp-range.validator';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 export interface DialogData {
   action?: string;
@@ -76,7 +77,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
@@ -251,7 +253,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       min_temp: row.temp_min,
       max_temp: row.temp_max === 9999 ? "" : row.temp_max,
       labour: this.displayNumber(row.package_steaming?.labour),
-     last_cargo: this.last_cargoList?.find(lc =>lc.guid === row.tariff_cleaning?.guid),
+      last_cargo: this.last_cargoList?.find(lc => lc.guid === row.tariff_cleaning?.guid),
       customer_code: row.package_steaming?.customer_company,
       // qty:[''],
       cost: this.displayNumber(row.package_steaming?.cost),
@@ -297,7 +299,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       if (this.action === "edit") {
         //const found = this.last_cargoList?.filter(x => x.guid === this.data.selectedItem?.tariff_cleaning?.guid);
         //this.pcForm?.get('last_cargo')?.setValue(found);
-         this.patchExclusiveSteam(this.data.selectedItem);
+        this.patchExclusiveSteam(this.data.selectedItem);
       }
     });
   }
@@ -326,8 +328,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
   }
 
-  isNew():Boolean
-  {
+  isNew(): Boolean {
     var retval: boolean = false;
     if (this.action === "new") retval = true;
     return retval;
@@ -481,7 +482,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       }
       else {
         this.pcForm?.setErrors({ overlaps: true });
-         this.pcForm?.get('min_temp')?.setErrors({ overlaps: true });
+        this.pcForm?.get('min_temp')?.setErrors({ overlaps: true });
       }
 
 
@@ -584,12 +585,12 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get('min_temp')?.setValue(Number(inputElement.value));
   }
 
-   displayNumber(input: number | string | undefined) {
-      return Utility.formatNumberDisplay(input);
-    }
+  displayNumber(input: number | string | undefined) {
+    return Utility.formatNumberDisplay(input);
+  }
 
- selectAll(event: FocusEvent) {
-  const input = event.target as HTMLInputElement;
-  input.select();  // Selects all text in the input
- }
+  selectAll(event: FocusEvent) {
+    const input = event.target as HTMLInputElement;
+    input.select();  // Selects all text in the input
+  }
 }

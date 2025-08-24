@@ -112,9 +112,10 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.MATERIAL_COST}} (%)</mat-label>
-                  <input matInput formControlName="material_cost_percentage" type="text" appnumerictext [min]="minMaterialCost" #material_cost_percentage (focus)="material_cost_percentage.select()"
-                    [max]="maxMaterialCost">
-                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text" >
+                  <input matInput formControlName="material_cost_percentage" type="text" appNumericText
+                    [allowNegative]="true" [min]="minMaterialCost" #material_cost_percentage
+                    (focus)="material_cost_percentage.select()" [max]="maxMaterialCost">
+                  <mat-error *ngIf="pcForm.get('material_cost_percentage')?.hasError('min')" class="italic-text">
                     {{translatedLangText.MATERIAL_COST}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
                   </mat-error>
@@ -129,8 +130,9 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.UPDATE}} {{translatedLangText.LABOUR_HOUR}} (%)</mat-label>
-                  <input matInput formControlName="labour_hour_percentage" type="text" appnumerictext [min]="minMaterialCost" #labour_hour_percentage (focus)="labour_hour_percentage.select()"
-                    [max]="maxMaterialCost">
+                  <input matInput formControlName="labour_hour_percentage" type="text" appNumericText
+                    [allowNegative]="true" [min]="minMaterialCost" #labour_hour_percentage
+                    (focus)="labour_hour_percentage.select()" [max]="maxMaterialCost">
                   <mat-error *ngIf="pcForm.get('labour_hour_percentage')?.hasError('min')" class="italic-text">
                     {{translatedLangText.LABOUR_HOUR}}
                     {{translatedLangText.CANNOT_SMALLER}} {{minMaterialCost}}%
@@ -160,7 +162,8 @@
             </ng-template>
           </button>
           }
-          <button mat-stroked-button class="me-1" (click)="onNoClick()" tabindex="-1">{{ translatedLangText.CLOSE}}</button>
+          <button mat-stroked-button class="me-1" (click)="onNoClick()" tabindex="-1">{{
+            translatedLangText.CLOSE}}</button>
         </div>
       </div>
     </form>
