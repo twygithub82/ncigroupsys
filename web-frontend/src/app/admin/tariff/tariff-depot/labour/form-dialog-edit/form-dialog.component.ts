@@ -20,27 +20,21 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Apollo } from 'apollo-angular';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { TariffLabourDS, TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: TariffDepotItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 interface Condition {
   guid: { eq: string };
   tariff_depot_guid: { eq: null };
 }
-
-
 
 @Component({
   selector: 'app-tariff-labour-form-dialog',
@@ -68,7 +62,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
@@ -222,8 +217,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
     this.pcForm.get('last_updated')?.setValue(this.displayLastUpdated(this.selectedItem));
     this.action = data.action!;
     this.translateLangText();
-
-
   }
 
   createTariffLabour(): UntypedFormGroup {
@@ -274,7 +267,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
   }
 
   update() {
-
     if (!this.pcForm?.valid) return;
 
     let where: any = {};
@@ -291,21 +283,15 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
           update = false;
           this.pcForm?.get('description')?.setErrors({ existed: true });
         }
-
       }
       if (update) {
-
         var updatedTD = new TariffLabourItem(this.selectedItem);
-        updatedTD.cost = this.pcForm!.value['cost'];
+        updatedTD.cost = Utility.convertNumber(this.pcForm!.value['cost'], 2);
         updatedTD.description = this.pcForm!.value['description'];
         updatedTD.remarks = this.pcForm!.value['remarks'];
         this.trfLabourDS.updateTariffLabour(updatedTD).subscribe(result => {
           this.handleSaveSuccess(result?.data?.updateTariffLabour);
-
         });
-
-
-
       }
 
 

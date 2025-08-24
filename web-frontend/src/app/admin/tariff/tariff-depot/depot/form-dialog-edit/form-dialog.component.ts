@@ -23,6 +23,7 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TankDS, TankItem } from 'app/data-sources/tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { TariffDepotDS, TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
@@ -61,7 +62,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implements OnInit {
@@ -308,12 +310,12 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
               var updatedTD = new TariffDepotItem(this.selectedItem);
               updatedTD.profile_name = this.pcForm!.value['name'];
               updatedTD.description = this.pcForm!.value['description'];
-              updatedTD.free_storage = this.pcForm!.value['free_storage'];
-              updatedTD.lolo_cost = this.pcForm!.value['lolo_cost'];
-              updatedTD.preinspection_cost = this.pcForm!.value['preinspection_cost'];
-              updatedTD.storage_cost = this.pcForm!.value['storage_cost'];
-              updatedTD.gate_in_cost = this.pcForm!.value['gate_in_cost'];
-              updatedTD.gate_out_cost = this.pcForm!.value['gate_out_cost'];
+              updatedTD.free_storage = Utility.convertNumber(this.pcForm!.value['free_storage']);
+              updatedTD.lolo_cost = Utility.convertNumber(this.pcForm!.value['lolo_cost'], 2);
+              updatedTD.preinspection_cost = Utility.convertNumber(this.pcForm!.value['preinspection_cost'], 2);
+              updatedTD.storage_cost = Utility.convertNumber(this.pcForm!.value['storage_cost'], 2);
+              updatedTD.gate_in_cost = Utility.convertNumber(this.pcForm!.value['gate_in_cost'], 2);
+              updatedTD.gate_out_cost = Utility.convertNumber(this.pcForm!.value['gate_out_cost'], 2);
               updatedTD.tanks = unit_types;
               this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result => {
                 this.handleSaveSuccess(result?.data?.updateTariffDepot);

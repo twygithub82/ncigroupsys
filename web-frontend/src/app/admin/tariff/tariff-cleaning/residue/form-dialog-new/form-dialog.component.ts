@@ -29,6 +29,7 @@ import { TariffResidueDS, TariffResidueItem } from 'app/data-sources/tariff-resi
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { setThrowInvalidWriteToSignalError } from '@angular/core/primitives/signals';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 
 export interface DialogData {
@@ -70,7 +71,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {

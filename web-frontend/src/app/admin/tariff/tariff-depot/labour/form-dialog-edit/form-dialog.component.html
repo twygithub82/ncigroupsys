@@ -2,7 +2,7 @@
   <div class="modalHeader_left_align">
     <div class="editRowModal">
       <div class="modalHeader clearfix">
-         <h4>{{GetTitle()}}</h4> 
+        <h4>{{GetTitle()}}</h4>
       </div>
     </div>
     <!-- <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button" aria-label="Close dialog">
@@ -15,42 +15,42 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.DESCRIPTION }}</mat-label>
-                    <input matInput formControlName="description" type="text" required >
-                    <!-- @if (pcForm.get('description')?.hasError('required')) {
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.DESCRIPTION }}</mat-label>
+                <input matInput formControlName="description" type="text" required>
+                <!-- @if (pcForm.get('description')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.DESCRIPTION }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
                       } -->
-                      @if (pcForm.get('description')?.hasError('existed')) {
-                        <mat-error>
-                          {{translatedLangText.BUFFER_TYPE }}: {{translatedLangText.EXISTED }}
-                        </mat-error>
-                        }
-                  </mat-form-field> 
-                </div>
+                @if (pcForm.get('description')?.hasError('existed')) {
+                <mat-error>
+                  {{translatedLangText.BUFFER_TYPE }}: {{translatedLangText.EXISTED }}
+                </mat-error>
+                }
+              </mat-form-field>
+            </div>
           </div>
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.COST }}</mat-label>
-                    <input matInput formControlName="cost" type="number" min="0" required >
-                    <!-- @if (pcForm.get('cost')?.hasError('required')) {
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.COST }}</mat-label>
+                <input matInput formControlName="cost" type="text" min="0" appNumericText required>
+                <!-- @if (pcForm.get('cost')?.hasError('required')) {
                       <mat-error>
                         {{langText.COST }} {{translatedLangText.CARGO_REQUIRED}}
                       </mat-error>
                       } -->
-                  </mat-form-field> 
-                </div>
+              </mat-form-field>
+            </div>
           </div>
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                 <mat-form-field class="example-full-width">
-                    <mat-label>{{translatedLangText.REMARKS}}</mat-label>
-                    <input matInput formControlName="remarks" type="text"  >
-                  </mat-form-field> 
-                </div>
+              <mat-form-field class="example-full-width">
+                <mat-label>{{translatedLangText.REMARKS}}</mat-label>
+                <input matInput formControlName="remarks" type="text">
+              </mat-form-field>
+            </div>
           </div>
         </div>
       </div>

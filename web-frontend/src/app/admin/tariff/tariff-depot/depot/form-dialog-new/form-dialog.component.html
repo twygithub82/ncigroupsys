@@ -48,8 +48,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.PREINSPECTION_COST | translate}}</mat-label>
-                <input matInput formControlName="preinspection_cost" appNumericText type="text" min="0" #preinspection_cost (focus)="preinspection_cost.select()"
-                  required>
+                <input matInput formControlName="preinspection_cost" appNumericText type="text" min="0"
+                  #preinspection_cost (focus)="preinspection_cost.select()" required>
                 <!-- @if (pcForm.get('preinspection_cost')?.hasError('required')) {
                       <mat-error>
                         {{langText.PREINSPECTION_COST | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -60,7 +60,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.LOLO_COST | translate}}</mat-label>
-                <input matInput formControlName="lolo_cost" appNumericText type="text" min="0" #lolo_cost (focus)="lolo_cost.select()" required>
+                <input matInput formControlName="lolo_cost" appNumericText type="text" min="0" #lolo_cost
+                  (focus)="lolo_cost.select()" required>
                 <!-- @if (pcForm.get('lolo_cost')?.hasError('required')) {
                       <mat-error>
                         {{langText.LOLO_COST | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -74,7 +75,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.STORAGE_COST | translate}}</mat-label>
-                <input matInput formControlName="storage_cost" appNumericText type="text" min="0" #storage_cost (focus)="storage_cost.select()" required>
+                <input matInput formControlName="storage_cost" appNumericText type="text" min="0" #storage_cost
+                  (focus)="storage_cost.select()" required>
                 <!-- @if (pcForm.get('storage_cost')?.hasError('required')) {
                       <mat-error>
                         {{langText.STORAGE_COST | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -85,7 +87,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.FREE_STORAGE | translate}}</mat-label>
-                <input matInput formControlName="free_storage" appNumericText type="text" min="0"  #free_storage (focus)="free_storage.select()">
+                <input matInput formControlName="free_storage" appNumericText type="text" min="0" #free_storage
+                  (focus)="free_storage.select()">
                 <!-- @if (pcForm.get('free_storage')?.hasError('required')) {
                       <mat-error>
                         {{langText.FREE_STORAGE | translate}} {{langText.CARGO_REQUIRED | translate}}
@@ -99,7 +102,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.GATE_IN_COST }}</mat-label>
-                <input matInput formControlName="gate_in_cost" appNumericText type="text" min="0" #gate_in_cost (focus)="gate_in_cost.select()" required>
+                <input matInput formControlName="gate_in_cost" appNumericText type="text" min="0" #gate_in_cost
+                  (focus)="gate_in_cost.select()" required>
                 <!-- @if (pcForm.get('gate_in_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.GATE_IN_COST }} {{translatedLangText.CARGO_REQUIRED }}
@@ -110,7 +114,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{translatedLangText.GATE_OUT_COST }}</mat-label>
-                <input matInput formControlName="gate_out_cost" appNumericText type="text" min="0" #gate_out_cost (focus)="gate_out_cost.select()" required>
+                <input matInput formControlName="gate_out_cost" appNumericText type="text" min="0" #gate_out_cost
+                  (focus)="gate_out_cost.select()" required>
                 <!-- @if (pcForm.get('gate_out_cost')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.GATE_OUT_COST }} {{translatedLangText.CARGO_REQUIRED}}

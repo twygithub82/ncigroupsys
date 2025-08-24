@@ -353,16 +353,14 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     }
   }
 
-
-
   save() {
 
     if (!this.pcForm?.valid) return;
 
     let where: any = { and: [] };
 
-    let maxTemp = this.pcForm?.value['max_temp'];
-    let minTemp = this.pcForm?.value['min_temp']
+    let maxTemp = Utility.convertNumber(this.pcForm?.value['max_temp']);
+    let minTemp = Utility.convertNumber(this.pcForm?.value['min_temp']);
     let custGuid = this.pcForm?.value['customer_code'].guid;
     let lastCargoGuid = this.pcForm?.value['last_cargo'].guid;
     if (!maxTemp) maxTemp = 9999;
@@ -386,9 +384,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
         var lastCargoGuids: string[] = this.pcForm.value['last_cargo'].map((cargo: { guid: string }) => cargo.guid);
         lastCargoGuids.map(cargoGuid => {
-
-
-
           let newSteam = new ExclusiveSteamingItem();
 
           // newSteam.cost= Number(this.pcForm!.value['cost']);

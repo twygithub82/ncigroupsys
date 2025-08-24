@@ -22,6 +22,7 @@ import { Apollo } from 'apollo-angular';
 import { PackageBufferItem } from 'app/data-sources/package-buffer';
 import { TariffBufferDS, TariffBufferItem } from 'app/data-sources/tariff-buffer';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { Utility } from 'app/utilities/utility';
@@ -65,7 +66,8 @@ interface Condition {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
