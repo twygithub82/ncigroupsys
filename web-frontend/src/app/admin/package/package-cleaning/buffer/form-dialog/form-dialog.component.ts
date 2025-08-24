@@ -274,7 +274,7 @@ export class FormDialogComponent {
         .filter((guid): guid is string => guid !== undefined);
 
       let cost = -1;
-      if (this.pcForm!.value["adjusted_cost"]) cost = this.pcForm!.value["adjusted_cost"];
+      if (Number(this.pcForm!.value["adjusted_cost"])) cost = Number(this.pcForm!.value["adjusted_cost"]);
 
       let remarks = this.pcForm!.value["remarks"];
       this.packBufferDS.updatePackageBuffers(pc_guids, cost, remarks).subscribe(result => {
@@ -283,7 +283,6 @@ export class FormDialogComponent {
 
           console.log('valid');
           this.dialogRef.close(result.data.updatePackageBuffers);
-
         }
       });
 
