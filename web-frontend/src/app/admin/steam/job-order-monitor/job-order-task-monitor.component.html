@@ -7,8 +7,8 @@
     </div>
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-          <div class="header">
+        <div class="card modal-card">
+          <div class="header header-custom-padding">
             <h2>
               {{translatedLangText.TANK_DETAILS}}
             </h2>
@@ -53,7 +53,7 @@
                       </div>
                     </div>
                   </div>
-              
+
                 </div>
                 <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-0">
                   <div class="row right-align-display">
@@ -128,12 +128,12 @@
     <form class="ms-0" [formGroup]="steamForm!" (ngSubmit)="onFormSubmit()" #formDirective="ngForm">
       <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
-            <!-- <div class="header">
+          <div class="card modal-card">
+            <div class="header header-custom-padding">
               <h2>
-                {{translatedLangText.JOB_DETAILS}}
+                {{translatedLangText.ESTIMATE_DETAILS}}
               </h2>
-            </div> -->
+            </div>
             <div class="body">
               @if (joDS.loadingSubject | async) {
               <div class="tbl-spinner">
@@ -195,8 +195,8 @@
       </div>
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
-            <div class="header">
+          <div class="card modal-card">
+            <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.STEAM_MONITOR}}
               </h2>
@@ -228,7 +228,8 @@
                 <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.THERMOMETER}}(&deg;C)</mat-label>
-                    <input matInput formControlName="thermometer" type="number" required="true">
+                    <input matInput formControlName="thermometer" type="text" required="true" appNumericText
+                      [allowDecimal]="false">
                     <!-- @if (steamForm?.get('thermometer')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.THERMOMETER}} {{this.translatedLangText.SO_REQUIRED}}
@@ -239,7 +240,8 @@
                 <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.TOP_SIDE}}(&deg;C)</mat-label>
-                    <input matInput formControlName="top" type="number" required="true">
+                    <input matInput formControlName="top" type="text" required="true" appNumericText
+                      [allowDecimal]="false">
                     <!-- @if (steamForm?.get('top')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.TOP_SIDE}} {{this.translatedLangText.SO_REQUIRED}}
@@ -250,7 +252,8 @@
                 <div class="col-xl-2 col-lg-2 col-md-4 col-sm-4 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BOTTOM_SIDE}}(&deg;C)</mat-label>
-                    <input matInput formControlName="bottom" type="number" required="true">
+                    <input matInput formControlName="bottom" type="text" required="true" appNumericText
+                      [allowDecimal]="false">
                     <!-- @if (steamForm?.get('bottom')?.hasError('required')) {
                     <mat-error>
                       {{this.translatedLangText.BOTTOM_SIDE}} {{this.translatedLangText.SO_REQUIRED}}
@@ -353,7 +356,7 @@
 
                       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                       <mat-row *matRowDef="let row; columns: displayedColumns; let i = index"
-                        [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
+                        [ngClass]="{'deleted-row': row.action === 'cancel', 'bg-lighter-orange': (row.guid || row.action=='NEW') && !row.delete_dt&&row.edited}"
                         [style.cursor]="'pointer'" (click)="editEstDetail($event,row)" matRipple>
                       </mat-row>
                     </table>
@@ -374,29 +377,29 @@
                 </div>
               </div>
               }
-            </div>
-            <div class="row m-t-5">
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-                <button mat-flat-button type="button" aria-label="Back to previous page"
-                  (click)="$event.preventDefault();" [routerLink]="['/admin/steam/job-order']"
-                  [queryParams]="{tabIndex: tabIndex}">
-                  <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
-                </button>
-              </div>
-              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right">
-                @if (steamDS.canMonitorTemp(this.steamItem!) && this.deList.length) {
-                <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)"
-                  (click)="this.completeSteamJob($event,true,0)">
-                  <mat-icon>
-                    @if (!(joDS.loading$ | async)) {
-                    save
-                    } @else if ((joDS.loading$ | async)) {
-                    <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                    }
-                  </mat-icon>
-                  {{translatedLangText.COMPLETE_STEAM}}
-                </button>
-                }
+              <div class="row m-t-5">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                  <button mat-flat-button type="button" aria-label="Back to previous page"
+                    (click)="$event.preventDefault();" [routerLink]="['/admin/steam/job-order']"
+                    [queryParams]="{tabIndex: tabIndex}">
+                    <mat-icon>chevron_left</mat-icon>{{translatedLangText.BACK}}
+                  </button>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2 mb-0">
+                  @if (steamDS.canMonitorTemp(this.steamItem!) && this.deList.length) {
+                  <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)"
+                    (click)="this.completeSteamJob($event,true,0)">
+                    <mat-icon>
+                      @if (!(joDS.loading$ | async)) {
+                      save
+                      } @else if ((joDS.loading$ | async)) {
+                      <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+                      }
+                    </mat-icon>
+                    {{translatedLangText.COMPLETE_STEAM}}
+                  </button>
+                  }
+                </div>
               </div>
             </div>
           </div>

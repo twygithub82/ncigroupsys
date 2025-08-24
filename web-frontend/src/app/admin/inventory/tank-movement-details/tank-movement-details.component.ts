@@ -1279,7 +1279,6 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     let tempDirection: Direction = this.getViewDirection();
     const dialogRef = this.dialog.open(PreviewRepairEstFormDialog, {
       disableClose: true,
-      height: '90vh',
       data: {
         repair_guid: repair?.guid,
       },

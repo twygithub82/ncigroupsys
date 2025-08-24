@@ -30,6 +30,7 @@ import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 
 
 export interface DialogData {
@@ -65,7 +66,8 @@ export interface DialogData {
     MatTabsModule,
     MatTableModule,
     MatSortModule,
-    PreventNonNumericDirective
+    PreventNonNumericDirective,
+    NumericTextDirective
   ],
 })
 export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
