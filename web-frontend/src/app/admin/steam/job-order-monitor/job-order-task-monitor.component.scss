@@ -1,23 +1,25 @@
 ::ng-deep {
   .multiline-tooltip {
-      white-space: pre-line;
+    white-space: pre-line;
 
-      .mdc-tooltip__surface {
-        max-width: unset;
-      }
-  }
-      ngx-mat-datepicker-content {
-        background-color: white !important;
-        position: absolute;
+    .mdc-tooltip__surface {
+      max-width: unset;
     }
- 
+  }
+
+  ngx-mat-datepicker-content {
+    background-color: white !important;
+    position: absolute;
+  }
+
   mat-icon {
-      font-family: 'Material Icons' !important;
+    font-family: 'Material Icons' !important;
   }
 }
 
 .mat-calendar-body-selected {
-  background-color: #3f51b5 !important; /* Material Blue */
+  background-color: #3f51b5 !important;
+  /* Material Blue */
   color: #ffffff !important;
 }
 
