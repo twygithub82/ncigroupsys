@@ -41,6 +41,7 @@ import { Utility } from 'app/utilities/utility';
 import { BehaviorSubject, debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { ModulePackageService } from 'app/services/module-package.service';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 
 @Component({
@@ -182,9 +183,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     CARGO_CLASS_2_2: "COMMON-FORM.CARGO-CALSS-2-2",
     CARGO_CLASS_2_3: "COMMON-FORM.CARGO-CALSS-2-3",
     ATTACHMENT_TOO_BIG: "COMMON-FORM.ATTACHMENT-TOO-BIG",
+    ATTACH_FILE: "COMMON-FORM.ATTACH-FILE",
     SDS_FILE: "COMMON-FORM.SDS-FILE",
     DUPLICATE_CARGO_FOUND: 'COMMON-FORM.DUPLICATE-CARGO-FOUND',
     WARNING: 'COMMON-FORM.WARNING',
+    PREVIEW: 'COMMON-FORM.PREVIEW'
   }
 
   historyState: any = {};
@@ -868,9 +871,9 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      width: '400px',
-       autoFocus: false,
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      //width: '380px',
+      //autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.WARNING,
