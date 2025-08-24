@@ -1049,7 +1049,7 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '700px',
+      //width: '700px',
       disableClose: true,
       data: {
         action: 'cancel',
