@@ -1272,19 +1272,21 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         tempDirection = 'ltr';
       }
 
-      let headerText = "";
+      let messageText = "";
       if (tempStatus == 2) {
-        headerText = this.translatedLangText.OVER_REQUIRED_TEMP
+        messageText = this.translatedLangText.OVER_REQUIRED_TEMP
       }
       else if (tempStatus == 1) {
-        headerText = this.translatedLangText.LOWER_REQUIRED_TEMP
+        messageText = this.translatedLangText.LOWER_REQUIRED_TEMP
       }
 
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: '490px',
         disableClose: true,
         data: {
           action: 'confirm',
-          headerText: headerText
+          headerText: this.translatedLangText.ARE_YOU_SURE_COMPLETE,
+          messageText: messageText
         },
         direction: tempDirection
       });

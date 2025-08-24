@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,7 +15,7 @@ export interface DialogData {
   allowRemarksWithRequired?: boolean;
   cache: any;
   headerText?: any;
-  messageText?: any[];
+  messageText?: string;
   index: number;
   remarks?: string;
 }
@@ -27,6 +27,7 @@ export interface DialogData {
   standalone: true,
   imports: [
     MatDialogTitle,
+    MatDialogContent,
     MatDialogActions,
     MatButtonModule,
     MatDividerModule,
@@ -41,6 +42,7 @@ export interface DialogData {
 export class ConfirmationDialogComponent {
   index: number;
   headerText: string;
+  messageText?: string;
   act: string;
   translatedLangText: any = {};
   langText: any = {
@@ -67,7 +69,8 @@ export class ConfirmationDialogComponent {
     this.translateLangText();
     // Set the defaults
     this.initForm();
-    this.headerText = data.headerText || this.langText.CONFIRM_DELETE
+    this.headerText = data.headerText || this.langText.CONFIRM_DELETE;
+    this.messageText = data.messageText;
     this.index = data.index;
     this.allowRemarks = data.allowRemarks || false;
     this.allowRemarksWithRequired = data.allowRemarksWithRequired || false;
