@@ -388,7 +388,7 @@
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2 mb-0">
                   @if (steamDS.canMonitorTemp(this.steamItem!) && this.deList.length) {
                   <button mat-flat-button color="primary" [disabled]="(steamDS.loading$ | async)"
-                    (click)="this.completeSteamJob($event,true,0)">
+                    (click)="this.completeSteamJob($event, true, 0)">
                     <mat-icon>
                       @if (!(joDS.loading$ | async)) {
                       save

@@ -26,7 +26,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
+import { OwlDateTimeModule, OwlNativeDateTimeModule, DateTimeAdapter } from '@danielmoncada/angular-datetime-picker';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -318,9 +318,11 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private dateTimeAdapter: DateTimeAdapter<any>
   ) {
     super();
+    this.dateTimeAdapter.setLocale('en-GB');
     this.translateLangText();
     this.initForm();
     this.sotDS = new StoringOrderTankDS(this.apollo);
@@ -1209,8 +1211,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       });
       this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
         if (result?.action === 'confirmed') {
-
-
           let jobOrder = this.steamItem?.steaming_part?.[0]?.job_order;
           var updJobOrderReq: UpdateJobOrderRequest = new UpdateJobOrderRequest(jobOrder);
           updJobOrderReq.complete_dt = Math.floor(Date.now() / 1000);
@@ -1263,22 +1263,21 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   }
 
   DisplayEpochToDate(epochTimeInSeconds: number): string {
-
-    let tm: Date = new Date;
-
-    if (epochTimeInSeconds) {
-      const convertedVal = Utility.convertDate(epochTimeInSeconds);
-      if (convertedVal instanceof Date) {
-        tm = convertedVal; // Assign only if it's a Date
-      }
-    }
-    return tm.toLocaleString(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return Utility.convertEpochToDateTimeStr(epochTimeInSeconds) || '-';
+    // let tm: Date = new Date;
+    // if (epochTimeInSeconds) {
+    //   const convertedVal = Utility.convertDate(epochTimeInSeconds);
+    //   if (convertedVal instanceof Date) {
+    //     tm = convertedVal; // Assign only if it's a Date
+    //   }
+    // }
+    // return tm.toLocaleString(undefined, {
+    //   year: 'numeric',
+    //   month: '2-digit',
+    //   day: '2-digit',
+    //   hour: '2-digit',
+    //   minute: '2-digit',
+    // });
   }
 
   CheckAndGetTempStatus(steamTemp?: SteamTemp): number {
