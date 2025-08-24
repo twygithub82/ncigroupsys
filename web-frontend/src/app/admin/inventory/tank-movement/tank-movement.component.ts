@@ -34,7 +34,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
@@ -199,7 +199,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     this.loadData();
   }
 
- 
+
 
   initSearchForm() {
     this.searchForm = this.fb.group({
@@ -276,7 +276,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       this.yardCvList = addDefaultSelectOption(data, 'All');
     });
 
-    
+
     const savedCriteria = this.searchStateService.getCriteria(this.pageStateType);
     const savedPagination = this.searchStateService.getPagination(this.pageStateType);
 
@@ -344,7 +344,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         }
       }
     };
-    
+
     if (this.searchForm!.get('tank_no')?.value) {
       const tankNo = this.searchForm!.get('tank_no')?.value;
       where.or = [
@@ -628,11 +628,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       retval = `${itm.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (itm?.length == 1) {
-       const maxLength = maxLengthDisplaySingleSelectedItem;
-            const value=`${this.ccDS.displayCodeDashName(itm[0])}`;
-            retval = `${value.length > maxLength 
-              ? value.slice(0, maxLength) + '...' 
-              : value}`;
+      const value = `${this.ccDS.displayCodeDashName(itm[0])}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -702,13 +699,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
       retval = `${itm.length} ${this.translatedLangText.CARGO_SELECTED}`;
     }
     else if (itm?.length == 1) {
-     // retval = `${itm[0].cargo}`
-        const buffer = 0;
-        const maxLength = (maxLengthDisplaySingleSelectedItem-buffer);
-            const value=`${itm[0].cargo}`;
-            retval = `${value.length > maxLength 
-              ? value.slice(0, maxLength) + '...' 
-              : value}`;
+      const value = `${itm[0].cargo}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -763,8 +755,8 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
     cnt?.setValue(null);
   }
 
-  AutoSearch(){
-    if(Utility.IsAllowAutoSearch()){
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
       this.search();
     }
   }

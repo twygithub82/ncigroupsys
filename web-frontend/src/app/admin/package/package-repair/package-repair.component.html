@@ -9,8 +9,8 @@
         <div class="row">
           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card p-0">
-              <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm"  (ngSubmit)="AutoSearch()">
-                  <button  type="submit"  matSuffix  mat-icon-button   aria-label="Submit"   style="display: none" ></button>
+              <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm" (ngSubmit)="AutoSearch()">
+                <button type="submit" matSuffix mat-icon-button aria-label="Submit" style="display: none"></button>
                 <mat-accordion>
                   <mat-expansion-panel [expanded]="true">
                     <mat-expansion-panel-header>
@@ -39,7 +39,8 @@
                         @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                         <!-- <div class="m-l-10" [matTooltip]="translatedLangText.EDIT +' '+ translatedLangText.MATERIAL_COST"> -->
                         <div class="m-l-10" [matTooltip]="translatedLangText.GROUP_ADJUSTMENT">
-                          <button mat-mini-fab class="orange-button" (click)="adjustCost()" (click)="$event.stopPropagation()">
+                          <button mat-mini-fab class="orange-button" (click)="adjustCost()"
+                            (click)="$event.stopPropagation()">
                             <mat-icon class="material-symbols-outlined col-white">percent</mat-icon>
                           </button>
                         </div>
@@ -56,7 +57,6 @@
                       <div class="row">
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width" appearance="fill">
-                           
                             <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                             <mat-chip-grid #chipGrid class="nowrap single-line-chip-grid">
                               <!-- @for (cust of selectedCustomers; track cust) { -->
@@ -68,19 +68,17 @@
                                 </button>
                               </mat-chip-row>
                               }
-
-                              <!-- } -->
-
                               <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
                                 [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                                 (matChipInputTokenEnd)="add($event)">
                               <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                                 @for (cc of customer_companyList; track cc) {
-                                <mat-option [value]="cc"  [class.mdc-list-item--selected]="itemSelected(cc)">
+                                <mat-option [value]="cc" [class.mdc-list-item--selected]="itemSelected(cc)">
                                   <div class="horizontal-container">
-                                  <mat-checkbox color="primary" (click)="onCheckboxClicked(cc);$event.stopPropagation()"
-                                    [checked]="itemSelected(cc) || false"></mat-checkbox>
-                                <div class="option-text">  {{ccDS.displayCodeDashName(cc)}}</div>
+                                    <mat-checkbox color="primary"
+                                      (click)="onCheckboxClicked(cc);$event.stopPropagation()"
+                                      [checked]="itemSelected(cc) || false"></mat-checkbox>
+                                    <div class="option-text"> {{ccDS.displayCodeDashName(cc)}}</div>
                                   </div>
                                 </mat-option>
                                 }
@@ -116,11 +114,13 @@
                         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
-                            <input matInput [matAutocomplete]="partName" [formControl]="partNameControl" (keyup.enter)="AutoSearch()">
-                            <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn" (optionSelected)="AutoSearch()">
+                            <input matInput [matAutocomplete]="partName" [formControl]="partNameControl"
+                              (keyup.enter)="AutoSearch()">
+                            <mat-autocomplete #partName="matAutocomplete" [displayWith]="displayPartNameFn"
+                              (optionSelected)="AutoSearch()">
                               @for (pn of partNameList; track pn) {
                               <mat-option [value]="pn">
-                              <span class="truncate-one-wrap">  {{pn}}</span>
+                                <span class="truncate-one-wrap"> {{pn}}</span>
                               </mat-option>
                               }
                             </mat-autocomplete>
@@ -129,13 +129,15 @@
                         <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.LABOUR_HOUR}}</mat-label>
-                            <input matInput formControlName="labour_hour" type="number" min="0" (keyup.enter)="AutoSearch()">
+                            <input matInput formControlName="labour_hour" type="number" min="0"
+                              (keyup.enter)="AutoSearch()">
                           </mat-form-field>
                         </div>
                         <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.MATERIAL_COST$}}</mat-label>
-                            <input matInput formControlName="material_cost" type="number" min="0" (keyup.enter)="AutoSearch()">
+                            <input matInput formControlName="material_cost" type="number" min="0"
+                              (keyup.enter)="AutoSearch()">
                           </mat-form-field>
                         </div>
                         <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -240,7 +242,8 @@
                       <mat-header-cell *matHeaderCellDef mat-sort-header
                         [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center extra-left-padding'">{{translatedLangText.CUSTOMER_CODE
                         }}</mat-header-cell>
-                      <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center extra-left-padding'"
+                      <mat-cell *matCellDef="let row"
+                        [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center extra-left-padding'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE}}:</span>
                         <!-- {{custCompDS.displayName(row.customer_company)}} -->
@@ -294,7 +297,8 @@
                         {{displayCurrency(row.material_cost)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="last_update">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef
+                        mat-sort-header>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                         {{this.displayLastUpdated(row)}}</mat-cell>
@@ -303,11 +307,12 @@
                     <ng-container matColumnDef="actions">
                       <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
                       <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                        <button mat-icon-button color="accent" (click)="$event.stopPropagation()" class="tbl-action-btn">
+                        <button mat-icon-button color="accent" (click)="$event.stopPropagation()"
+                          class="tbl-action-btn">
                           <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
                         </button>
-                        <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
-                          class="tbl-action-btn">
+                        <button mat-icon-button color="accent" (click)="$event.stopPropagation()"
+                          (click)="deleteItem(row)" class="tbl-action-btn">
                           <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
                         </button>
                       </mat-cell>
@@ -331,8 +336,8 @@
                   </mat-progress-spinner>
                 </div>
                 }
-                <mat-paginator #paginator [length]="packRepairDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-                  [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
+                <mat-paginator #paginator [length]="packRepairDS.totalCount" [pageIndex]="pageIndex"
+                  [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
                 </mat-paginator>
               </div>
             </div>

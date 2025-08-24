@@ -238,7 +238,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.action = data.action!;
     this.translateLangText();
     this.loadData()
-    
+
     if (data.action == "duplicate") {
       this.selectedItem = data.selectedItem;
       this.pcForm.patchValue({
@@ -249,7 +249,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         height_diameter_unit_cv: this.heightDiameterUnitControl,
         width_diameter: this.selectedItem.width_diameter,
         width_diameter_unit_cv: this.widthDiameterUnitControl,
-        thickness: this.selectedItem.width_diameter,
+        thickness: this.selectedItem.thickness,
         thickness_unit_cv: this.thicknessUnitControl,
         length: this.selectedItem.length,
         labour_hour: '',
@@ -301,7 +301,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       this.unitTypeCvList = data;
       if (this.selectedItem) {
         var rec = this.selectedItem;
-        //this.lengthUnitControl.setValue(this.GetCodeValue(codeValue,this.unitTypeCvList);//this.getUnitTypeCodeValue(rec.length_unit_cv!));
+        this.lengthUnitControl.setValue(this.GetCodeValue(rec.thickness_unit_cv, this.unitTypeCvList));
         this.widthDiameterUnitControl.setValue(this.GetCodeValue(rec.width_diameter_unit_cv!, this.unitTypeCvList));
         this.heightDiameterUnitControl.setValue(this.GetCodeValue(rec.height_diameter_unit_cv!, this.unitTypeCvList));
         this.thicknessUnitControl.setValue(this.GetCodeValue(rec.thickness_unit_cv!, this.unitTypeCvList));
@@ -362,8 +362,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
-    if (!this.pcForm?.valid) return;
-
     let newRepair = new TariffRepairItem();
     newRepair.part_name = String(this.pcForm.value['part_name']);
     newRepair.alias = String(this.pcForm.get('alias')?.value || this.pcForm.value['part_name']);
@@ -381,8 +379,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     newRepair.thickness = Number(this.pcForm.value['thickness']);
     newRepair.thickness_unit_cv = String(this.RetrieveCodeValue(this.pcForm.value['thickness_unit_cv']));
 
-
-
     let where: any = {};
     if (newRepair.alias) {
       where.alias = { eq: newRepair.alias };
@@ -395,23 +391,15 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
 
     this.subs.sink = this.trfRepairDS.SearchTariffRepair(where).subscribe(data => {
       if (data.length == 0) {
+        this.pcForm?.get('part_name')?.setErrors(null);
         this.trfRepairDS.addNewTariffRepair(newRepair).subscribe(result => {
-
           this.handleSaveSuccess(result?.data?.addTariffRepair);
         });
       }
       else {
         this.pcForm?.get('part_name')?.setErrors({ existed: true });
-        // this.pcForm?.get('length')?.setErrors({ existed: true });
       }
-
-
     });
-
-
-
-
-
   }
 
   RetrieveCodeDesc(CdValue: CodeValuesItem): String {
@@ -466,9 +454,7 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   }
 
   listenTheValueChangesForPartNameDiameter(): void {
-
-    this.pcForm.get("part_name")?.valueChanges.subscribe(
-      value => { this.updateDimensionAndAliasName() });
+    this.pcForm.get("part_name")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
     this.pcForm.get("height_diameter")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
     this.pcForm.get("height_diameter_unit_cv")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
     this.pcForm.get("width_diameter")?.valueChanges.subscribe(value => { this.updateDimensionAndAliasName() });
@@ -480,7 +466,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       if (len == '') {
         this.lengthUnitControl.reset();
       }
-
     });
   }
 
@@ -524,10 +509,8 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     });
   }
 
-  GetCodeValue(codeValue: String, codeValueItems: CodeValuesItem[]) {
-
-    return codeValueItems.find(item => item.code_val === codeValue);
-
+  GetCodeValue(codeValue?: String, codeValueItems?: CodeValuesItem[]) {
+    return codeValueItems?.find(item => item.code_val === codeValue);
   }
 
   isRequired(path: string): boolean {

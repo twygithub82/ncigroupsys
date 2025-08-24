@@ -68,7 +68,7 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.PROFILE_NAME}}</mat-label>
-                    <mat-chip-grid #chipProfile>
+                    <mat-chip-grid #chipProfile class="nowrap single-line-chip-grid">
                       @if (this.selectedProfiles.length > 0) {
                       <mat-chip-row color="primary" (click)="removeSelectedProfiles()">
                         <span> {{getSelectedProfilesDisplay()}}</span>

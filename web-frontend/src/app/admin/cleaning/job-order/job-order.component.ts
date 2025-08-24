@@ -984,9 +984,7 @@ export class JobOrderCleaningComponent extends UnsubscribeOnDestroyAdapter imple
     else if (this.selectedProcesses?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
       const value = `${this.selectedProcesses[0].name}`;
-      retval = `${value.length > maxLength
-        ? value.slice(0, maxLength) + '...'
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }

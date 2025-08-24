@@ -769,7 +769,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
         } else {
           this.updateData([...this.repList.data, result.item]);
         }
-        
+
         this.calculateCostSummary();
       }
     });
@@ -1485,11 +1485,8 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
       const value = `${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength
-        ? value.slice(0, maxLength) + '...'
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -1520,9 +1517,7 @@ export class EstimateTemplateNewComponent extends UnsubscribeOnDestroyAdapter im
     else if (itm?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
       const value = `${itm[0]}`;
-      retval = `${value.length > maxLength
-        ? value.slice(0, maxLength) + '...'
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }

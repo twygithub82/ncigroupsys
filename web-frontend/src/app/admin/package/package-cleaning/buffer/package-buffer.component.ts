@@ -847,11 +847,8 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
       const value = `${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength
-        ? value.slice(0, maxLength) + '...'
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }

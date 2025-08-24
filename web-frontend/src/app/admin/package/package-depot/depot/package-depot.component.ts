@@ -858,11 +858,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     if (this.selectedProfiles?.length > 1) {
       retval = `${this.selectedProfiles.length} ${this.translatedLangText.PROFILES_SELECTED}`;
     } else if (this.selectedProfiles?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
       const value = `${this.selectedProfiles[0].profile_name}`;
-      retval = `${value.length > maxLength
-        ? value.slice(0, maxLength) + '...'
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -873,11 +870,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
       const value = `${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength
-        ? value.slice(0, maxLength) + '...'
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }

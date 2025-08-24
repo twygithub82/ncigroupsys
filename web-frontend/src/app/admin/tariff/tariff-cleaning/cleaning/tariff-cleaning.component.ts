@@ -42,7 +42,7 @@ import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility ,maxLengthDisplaySingleSelectedItem} from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -267,14 +267,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   public loadData() {
     //this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => 
-    this.cCategoryDS.loadAllItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => 
-    {
+    this.cCategoryDS.loadAllItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
       if (this.cCategoryDS.totalCount > 0) {
         this.cCategoryList = addDefaultSelectOption(data, 'All');
       }
     });
 
-     this.cMethodDS.loadAllItems({ name: { neq: null } }, { name: 'ASC' }).subscribe(data => {
+    this.cMethodDS.loadAllItems({ name: { neq: null } }, { name: 'ASC' }).subscribe(data => {
       if (this.cMethodDS.totalCount > 0) {
         this.cMethodList = addDefaultSelectOption(data, 'All');
       }
@@ -647,7 +646,7 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '15vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
@@ -743,26 +742,17 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
     return retval;
   }
 
-
-
-
   getSelectedCargoDisplay(): string {
     var retval: string = "";
     if (this.selectedCargo?.length > 1) {
       retval = `${this.selectedCargo.length} ${this.translatedLangText.CARGO_SELECTED}`;
     }
     else if (this.selectedCargo?.length == 1) {
-      // retval = `${this.selectedCargo[0].cargo}`
-       const maxLength = maxLengthDisplaySingleSelectedItem;
-          const value=`${this.selectedCargo[0].cargo}`;
-          retval = `${value.length > maxLength 
-            ? value.slice(0, maxLength) + '...' 
-            : value}`;
+      const value = `${this.selectedCargo[0].cargo}`;
+      retval = `${value}`;
     }
     return retval;
   }
-
-
 
   removeAllSelectedCargo(): void {
     this.selectedCargo = [];
@@ -845,27 +835,27 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
-  
-      // reset if no direction
-      if (!direction) {
-        this.lastOrderBy = null;
-        return this.search();
-      }
-  
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-  
-      switch (field) {
-        case 'cargo':
-          this.lastOrderBy = {
-            tariff_cleaning: {
-              cargo: dirEnum
-            },
-          };
-          break;
-            
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'cargo':
+        this.lastOrderBy = {
+          tariff_cleaning: {
+            cargo: dirEnum
+          },
+        };
+        break;
+
       case 'un_no':
         this.lastOrderBy = {
           tariff_cleaning: {
@@ -876,24 +866,24 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
       case 'method':
         this.lastOrderBy = {
           tariff_cleaning: {
-            cleaning_method: {name: dirEnum}
+            cleaning_method: { name: dirEnum }
           },
         };
         break;
-        default:
-          this.lastOrderBy = null;
-      }
-  
-      this.search();
+      default:
+        this.lastOrderBy = null;
     }
 
-   displayProcessCleaningStatusFilter(row:any):String{
-    var retval: string = '';
-     retval = row.name||row.description||'';
-    return retval;
-   } 
+    this.search();
+  }
 
-    AutoSearch() {
+  displayProcessCleaningStatusFilter(row: any): String {
+    var retval: string = '';
+    retval = row.name || row.description || '';
+    return retval;
+  }
+
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch()) {
       this.search();
     }

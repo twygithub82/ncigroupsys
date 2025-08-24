@@ -113,7 +113,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
   cleaning_categoryList?: CleaningCategoryItem[];
-  residueTypeList?:TariffResidueItem[] = [];
+  residueTypeList?: TariffResidueItem[] = [];
 
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
@@ -137,7 +137,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   id?: number;
   pcForm?: UntypedFormGroup;
   translatedLangText: any = {};
-  allowSelectedAll:boolean =false;
+  allowSelectedAll: boolean = false;
   langText = {
     NEW: 'COMMON-FORM.NEW',
     EDIT: 'COMMON-FORM.EDIT',
@@ -332,7 +332,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     ).subscribe();
 
 
-     this.pcForm!.get('residue_disposal')!.valueChanges.pipe(
+    this.pcForm!.get('residue_disposal')!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -391,7 +391,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       //height: '80vh',
       data: {
@@ -464,8 +464,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.packResidueItems.filter(r=>this.selectedPackEst?.tariff_residue_guid === r.tariff_residue_guid).length;
-    var bretval=(numSelected === numRows)&& numSelected>0;
+    const numRows = this.packResidueItems.filter(r => this.selectedPackEst?.tariff_residue_guid === r.tariff_residue_guid).length;
+    var bretval = (numSelected === numRows) && numSelected > 0;
     return bretval;
   }
 
@@ -478,24 +478,22 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     this.isAllSelected()
       ? this.selection.clear()
       : this.packResidueItems.forEach((row) =>
-       
+
         this.selection.select(row)
       );
   }
 
-   masterToggle_r1() {
+  masterToggle_r1() {
     this.isAllSelected()
       ? this.resetSelection()
-      : this.packResidueItems.forEach((row) =>{
-       if(this.selectedPackEst?.tariff_residue_guid === row.tariff_residue_guid)
-       {
-        this.selection.select(row);
-       }
-       else if (this.allowSelectedAll)
-       {
-        if(!this.selectedPackEst)this.selectedPackEst=row;
-        this.selection.select(row);
-       }
+      : this.packResidueItems.forEach((row) => {
+        if (this.selectedPackEst?.tariff_residue_guid === row.tariff_residue_guid) {
+          this.selection.select(row);
+        }
+        else if (this.allowSelectedAll) {
+          if (!this.selectedPackEst) this.selectedPackEst = row;
+          this.selection.select(row);
+        }
       }
       );
   }
@@ -509,7 +507,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   search() {
     this.selectedPackEst = undefined;
-    this.allowSelectedAll=false;
+    this.allowSelectedAll = false;
     const where: any = {
       customer_company: { delete_dt: { eq: null } }
     };
@@ -522,17 +520,16 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
     }
 
-    if (this.pcForm?.get("customer_cost")?.value!==null &&this.pcForm?.get("customer_cost")?.value!==""){
+    if (this.pcForm?.get("customer_cost")?.value !== null && this.pcForm?.get("customer_cost")?.value !== "") {
       const selectedCost: number = Number(this.pcForm?.get("customer_cost")?.value);
       where.cost = { eq: selectedCost }
     }
 
-   // if (this.pcForm!.get("residue_disposal")?.value) 
-   if(this.selectedResidue.length>0)
-   {
+    // if (this.pcForm!.get("residue_disposal")?.value) 
+    if (this.selectedResidue.length > 0) {
       var residueGuids = this.selectedResidue.map(c => c.guid);
-      
-      
+
+
       where.tariff_residue_guid = { in: residueGuids };
     }
 
@@ -797,7 +794,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-   searchResidueist(searchCriteria: string) {
+  searchResidueist(searchCriteria: string) {
     this.subs.sink = this.tariffResidueDS.SearchTariffResidue({ or: [{ description: { contains: searchCriteria } }] }, { description: 'ASC' }).subscribe(data => {
       if (this.residueInput?.nativeElement.value === searchCriteria) {
         this.residueTypeList = data;
@@ -826,22 +823,19 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-  HideSelectAllCheckBox()
-  {
-     var retval: boolean = true;
+  HideSelectAllCheckBox() {
+    var retval: boolean = true;
 
-     retval = !(this.selectedPackEst);
-     if(retval)
-     {
-       var first = this.packResidueItems[0];
-       if(first)
-       {
-         var total = this.packResidueItems.length;
-         retval = ! (this.packResidueItems.filter(r=>r.tariff_residue_guid===first.tariff_residue_guid).length===total) 
-         this.allowSelectedAll=!retval;
-       }
-     }
-     return retval
+    retval = !(this.selectedPackEst);
+    if (retval) {
+      var first = this.packResidueItems[0];
+      if (first) {
+        var total = this.packResidueItems.length;
+        retval = !(this.packResidueItems.filter(r => r.tariff_residue_guid === first.tariff_residue_guid).length === total)
+        this.allowSelectedAll = !retval;
+      }
+    }
+    return retval
   }
 
   onTabFocused() {
@@ -849,20 +843,14 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     this.search();
   }
 
-
- 
-
- getSelectedResiduesDisplay(): string {
+  getSelectedResiduesDisplay(): string {
     var retval: string = "";
     if (this.selectedResidue?.length > 1) {
       retval = `${this.selectedResidue.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedResidue?.length == 1) {
-     const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedResidue[0].description}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      const value = `${this.selectedResidue[0].description}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -877,11 +865,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedResidue.findIndex(c => c.guid === residue.guid);
     if (!(index >= 0)) {
       this.selectedResidue.push(residue);
-    
+
     }
     else {
       this.selectedResidue.splice(index, 1);
-    
+
     }
 
     if (this.custInput) {
@@ -899,14 +887,14 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     retval = (index >= 0);
     return retval;
   }
-    onResidueCheckboxClicked(row: TariffResidueItem) {
+  onResidueCheckboxClicked(row: TariffResidueItem) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selectedResidueItem(fakeEvent);
 
   }
 
 
-   itemSelected(row: CustomerCompanyItem): boolean {
+  itemSelected(row: CustomerCompanyItem): boolean {
     var retval: boolean = false;
     const index = this.selectedCustomers.findIndex(c => c.code === row.code);
     retval = (index >= 0);
@@ -919,11 +907,8 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-     const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -939,11 +924,11 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-    
+
     }
     else {
       this.selectedCustomers.splice(index, 1);
-    
+
     }
 
     if (this.custInput) {
@@ -961,50 +946,49 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-  AutoSearch()
-  {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
       this.search();
   }
 
-  
+
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }
   onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
+    const { active: field, direction } = event;
 
-      // reset if no direction
-      if (!direction) {
-        this.lastOrderBy = null;
-        return this.search();
-      }
-
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-
-      switch (field) {
-        case 'last_update_dt':
-          this.lastOrderBy = {
-              update_dt: dirEnum,
-              create_dt: dirEnum,
-          };
-          break;
-
-        case 'customer_name':
-          this.lastOrderBy = {
-            customer_company:{
-              name: dirEnum,
-            }
-          };
-          break;
-      
-        default:
-          this.lastOrderBy = null;
-      }
-
-      this.search();
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'last_update_dt':
+        this.lastOrderBy = {
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+        };
+        break;
+
+      case 'customer_name':
+        this.lastOrderBy = {
+          customer_company: {
+            name: dirEnum,
+          }
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
 }
 

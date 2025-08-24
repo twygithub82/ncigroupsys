@@ -38,7 +38,7 @@ import { TariffLabourItem } from 'app/data-sources/tariff-labour';
 import { TariffSteamingItem } from 'app/data-sources/tariff-steam';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility ,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent_New } from './form-dialog-new/form-dialog.component';
 @Component({
@@ -293,7 +293,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
       height: 'auto',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -352,7 +352,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
@@ -424,9 +424,9 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     const numSelected = this.selection.selected.length;
     // const numRows = this.packageSteamItems.length;
     // return numSelected === numRows;
-     const numRows = this.packageSteamItems.filter(r => this.selectedPackEst?.tariff_steaming?.guid === r.tariff_steaming?.guid).length;
+    const numRows = this.packageSteamItems.filter(r => this.selectedPackEst?.tariff_steaming?.guid === r.tariff_steaming?.guid).length;
     return (numSelected === numRows && numSelected > 0);
-    
+
   }
 
   isSelected(option: any): boolean {
@@ -463,7 +463,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     //this.allowSelectedAll=false;
   }
 
-   toggleEstimate(row: PackageSteamingItem) {
+  toggleEstimate(row: PackageSteamingItem) {
 
     this.selection.toggle(row);
     if (this.selection.selected.length == 1) {
@@ -484,7 +484,7 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-   HideSelectAllCheckBox() {
+  HideSelectAllCheckBox() {
     var retval: boolean = true;
 
     retval = !(this.selectedPackEst);
@@ -822,20 +822,15 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-
-
-
   getSelectedCustomersDisplay(): string {
     var retval: string = "";
     if (this.selectedCustomers?.length > 1) {
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-       const maxLength = maxLengthDisplaySingleSelectedItem;
-            const value=`${this.selectedCustomers[0].name}`;
-            retval = `${value.length > maxLength 
-              ? value.slice(0, maxLength) + '...' 
-              : value}`;
+      const maxLength = maxLengthDisplaySingleSelectedItem;
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -845,17 +840,15 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     this.AutoSearch();
   }
 
-
   selected(event: MatAutocompleteSelectedEvent): void {
     const customer = event.option.value;
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-     
+
     }
     else {
       this.selectedCustomers.splice(index, 1);
-     
     }
 
     if (this.custInput) {
@@ -877,49 +870,48 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-  AutoSearch()
-  {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
-        this.search();
+      this.search();
   }
   displayNumber(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
 
   onSortChange(event: Sort): void {
-          const { active: field, direction } = event;
-      
-          // reset if no direction
-          if (!direction) {
-            this.lastOrderBy = null;
-            return this.search();
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'lastUpdate':
+        this.lastOrderBy = {
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+        };
+        break;
+
+      case 'companyName':
+        this.lastOrderBy = {
+          customer_company: {
+            name: dirEnum,
           }
-      
-          // convert to GraphQL enum (uppercase)
-          const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-          // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-      
-          switch (field) {
-            case 'lastUpdate':
-              this.lastOrderBy = {
-                  update_dt: dirEnum,
-                  create_dt: dirEnum,
-              };
-              break;
-    
-            case 'companyName':
-              this.lastOrderBy = {
-                customer_company:{
-                  name: dirEnum,
-                }
-              };
-              break;
-          
-            default:
-              this.lastOrderBy = null;
-          }
-      
-          this.search();
-        }
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
 
 }

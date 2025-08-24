@@ -81,7 +81,7 @@
                           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                             <mat-form-field class="example-full-width" appearance="fill">
                               <mat-label>{{translatedLangText.PROCESS}}</mat-label>
-                              <mat-chip-grid #chipGrid>
+                              <mat-chip-grid #chipGrid class="nowrap single-line-chip-grid">
                                 @if(selectedProcesses.length>0){
                                 <mat-chip-row color="primary" (click)="removeAllSelectedProcesses()">
                                   <button matChipRemove hidden>
@@ -225,13 +225,13 @@
                           <mat-cell *matCellDef="let row; let i=index;"
                             [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
                             @if (canShowAction(row)) {
-                              <!-- @if (canStartJob(row)) {
+                            <!-- @if (canStartJob(row)) {
                               <button mat-icon-button (click)="toggleJobState($event, isStarted(row), row.job_order)"
                                 [disabled]="anyResidueIncomplete(row)">
                                 <mat-icon [ngClass]="{'custom-timer-icon': true}">timer</mat-icon>
                               </button>
                               } -->
-                              
+
                             <!-- @if (canCompleteJob(row, isStarted(row))) {
                             <button mat-icon-button (click)="stopEventTrigger($event)" (click)="completeJob($event, row)">
                               <mat-icon>check_box</mat-icon>

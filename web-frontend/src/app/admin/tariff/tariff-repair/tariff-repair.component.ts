@@ -964,20 +964,14 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-
-
   getSelectedPartDisplay(): string {
     var retval: string = "";
     if (this.selectedParts?.length > 1) {
       retval = `${this.selectedParts.length} ${this.translatedLangText.PART_SELECTED}`;
     }
     else if (this.selectedParts?.length == 1) {
-      //retval = `${this.selectedParts[0]}`;
-      const maxLength = maxLengthDisplaySingleSelectedItem;
       const value = `${this.selectedParts[0]}`;
-      retval = `${value.length > maxLength
-        ? value.slice(0, maxLength) + '...'
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }

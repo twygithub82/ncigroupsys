@@ -323,8 +323,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
     this.subs.sink = this.mthDS.search(where, order, first, after, last, before).subscribe(data => {
-      this.clnMethodItem =data;
-     // this.clnMethodItem =data.sort( (a,b)=> Utility.naturalSort(a.name!, b.name!) );
+      this.clnMethodItem = data;
+      // this.clnMethodItem =data.sort( (a,b)=> Utility.naturalSort(a.name!, b.name!) );
       // data.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       // this.clnMethodItem = data.map(i => {
       //   i.cleaning_method_formula?.sort((a, b) => a.sequence! - b.sequence!);
@@ -549,18 +549,15 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       retval = `${itm.length} ${this.translatedLangText.PROCESS_NAME_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${itm[0]}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      const value = `${itm[0]}`;
+      retval = `${value}`;
     }
     return retval;
   }
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
-   this.AutoSearch();
+    this.AutoSearch();
   }
 
   name_selected(event: MatAutocompleteSelectedEvent): void {
@@ -571,11 +568,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-      
+
     }
     else {
       itm.splice(index, 1);
-     
+
     }
 
     if (elmInput) {
@@ -584,15 +581,15 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       cnt?.setValue('');
     }
 
-   this.AutoSearch();
-    
-  // if (Utility.IsAllowAutoSearch())
-  //  {
-  //   var interval=2*1000;
-  //    setTimeout(() => {
-  //      this.search();
-  //    },interval)
-  //  }
+    this.AutoSearch();
+
+    // if (Utility.IsAllowAutoSearch())
+    //  {
+    //   var interval=2*1000;
+    //    setTimeout(() => {
+    //      this.search();
+    //    },interval)
+    //  }
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
     //this.pcForm?.patchValue({ customer_code: null });
@@ -637,16 +634,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       retval = `${itm.length} ${this.translatedLangText.PROCESS_DESCRIPTION_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${itm[0]}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      const value = `${itm[0]}`;
+      retval = `${value}`;
     }
     return retval;
   }
-
-
 
   description_removeAllSelected(): void {
     this.selectedDescs = [];
@@ -661,11 +653,11 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-    
+
     }
     else {
       itm.splice(index, 1);
-      
+
     }
 
     if (elmInput) {
@@ -675,7 +667,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
 
     }
 
-    
+
     this.AutoSearch();
     // this.updateFormControl();
     //this.customerCodeControl.setValue(null);
@@ -715,43 +707,42 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_PROCESS_DELETE']);
   }
 
-  AutoSearch()
-  {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
-        this.search();
+      this.search();
   }
 
-    onSortChange(event: Sort): void {
-          const { active: field, direction } = event;
-      
-          // reset if no direction
-          if (!direction) {
-            this.lastOrderBy = null;
-            return this.search();
-          }
-      
-          // convert to GraphQL enum (uppercase)
-          const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-          // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-      
-          switch (field) {
-            case 'update_date':
-              this.lastOrderBy = {
-                  update_dt: dirEnum,
-                  create_dt: dirEnum,
-              };
-              break;
-    
-            case 'category_name':
-              this.lastOrderBy = {
-                  name: dirEnum,
-              };
-              break;
-          
-            default:
-              this.lastOrderBy = null;
-          }
-      
-          this.search();
-        }
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'update_date':
+        this.lastOrderBy = {
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+        };
+        break;
+
+      case 'category_name':
+        this.lastOrderBy = {
+          name: dirEnum,
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
 }

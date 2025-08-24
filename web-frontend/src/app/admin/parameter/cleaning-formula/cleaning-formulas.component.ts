@@ -571,9 +571,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     else if (itm?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
       const value=`${itm[0]}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      retval = `${value}`;
     }
     return retval;
   }

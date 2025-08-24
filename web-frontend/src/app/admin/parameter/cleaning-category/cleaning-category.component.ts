@@ -579,12 +579,9 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       retval = `${itm.length} ${this.translatedLangText.CATEGORY_NAME_SELECTED}`;
     }
     else if (itm?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
-            const value=`${itm[0]}`;
-            retval = `${value.length > maxLength 
-              ? value.slice(0, maxLength) + '...' 
-              : value}`;
-      
+      const value = `${itm[0]}`;
+      retval = `${value}`;
+
     }
     return retval;
   }
@@ -593,7 +590,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
 
   name_removeAllSelected(): void {
     this.selectedNames = [];
-   this.AutoSearch();
+    this.AutoSearch();
   }
 
   name_selected(event: MatAutocompleteSelectedEvent): void {
@@ -608,7 +605,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     }
     else {
       itm.splice(index, 1);
-     
+
     }
 
     if (elmInput) {
@@ -623,10 +620,9 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     //this.pcForm?.patchValue({ customer_code: null });
   }
 
-  AutoSearch()
-  {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
-        this.search();
+      this.search();
   }
   name_onCheckboxClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
@@ -662,9 +658,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     return retval;
   }
 
-
-
-
   description_getSelectedDisplay(): string {
     var itm = this.selectedDescs;
     var retval: string = "";
@@ -673,10 +666,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     }
     else if (itm?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${itm[0]}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      const value = `${itm[0]}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -696,11 +687,11 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
     const index = itm.findIndex(c => c === val);
     if (!(index >= 0)) {
       itm.push(val);
-    
+
     }
     else {
       itm.splice(index, 1);
-      
+
     }
 
     if (elmInput) {
@@ -750,38 +741,38 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
 
-  
-    onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = {name: 'ASC'}
-          return this.search();
-        }
-    
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'update_date':
-            this.lastOrderBy = {
-                update_dt: dirEnum,
-                create_dt: dirEnum,
-            };
-            break;
-  
-          case 'category_name':
-            this.lastOrderBy = {
-                name: dirEnum,
-            };
-            break;
-        
-          default:
-            this.lastOrderBy =  { name: "ASC" };
-        }
-    
-        this.search();
-      }
+
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = { name: 'ASC' }
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'update_date':
+        this.lastOrderBy = {
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+        };
+        break;
+
+      case 'category_name':
+        this.lastOrderBy = {
+          name: dirEnum,
+        };
+        break;
+
+      default:
+        this.lastOrderBy = { name: "ASC" };
+    }
+
+    this.search();
+  }
 }

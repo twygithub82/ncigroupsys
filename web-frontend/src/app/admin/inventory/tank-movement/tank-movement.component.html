@@ -39,7 +39,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                          <mat-chip-grid #name_chipGrid>
+                          <mat-chip-grid #name_chipGrid class="nowrap single-line-chip-grid">
                             @if(this.selectedNames.length>0){
                             <mat-chip-row color="primary" (click)="name_removeAllSelected()">
                               <span> {{name_getSelectedDisplay()}}</span>
@@ -97,7 +97,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
-                          <mat-chip-grid #cargo_chipGrid>
+                          <mat-chip-grid #cargo_chipGrid class="nowrap single-line-chip-grid">
 
                             @if(this.selectedCargoes.length>0){
                             <mat-chip-row color="primary" (click)="cargo_removeAllSelected()">

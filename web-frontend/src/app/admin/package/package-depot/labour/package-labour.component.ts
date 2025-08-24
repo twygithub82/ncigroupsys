@@ -350,7 +350,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       maxHeight: '80vh',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -384,7 +384,7 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       maxHeight: '80vh',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -763,21 +763,14 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-
-
-
-
   getSelectedCustomersDisplay(): string {
     var retval: string = "";
     if (this.selectedCustomers?.length > 1) {
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -793,11 +786,11 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-   
+
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      
+
     }
 
     if (this.custInput) {
@@ -818,46 +811,46 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-   AutoSearch(){
-        if (Utility.IsAllowAutoSearch())
-          this.search();
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
+
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
 
-   onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = null;
-          return this.search();
-        }
-    
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'gender':
-            this.lastOrderBy = {
-                update_dt: dirEnum,
-                create_dt: dirEnum,
-            };
-            break;
-  
-          case 'lName':
-            this.lastOrderBy = {
-              customer_company:{
-                name: dirEnum,
-              }
-            };
-            break;
-        
-          default:
-            this.lastOrderBy = null;
-        }
-    
-        this.search();
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'gender':
+        this.lastOrderBy = {
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+        };
+        break;
+
+      case 'lName':
+        this.lastOrderBy = {
+          customer_company: {
+            name: dirEnum,
+          }
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
     }
+
+    this.search();
+  }
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }

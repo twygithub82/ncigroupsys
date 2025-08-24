@@ -304,7 +304,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       //height: 'auto',
       data: {
@@ -363,7 +363,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '55vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'edit',
@@ -430,7 +430,7 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
@@ -818,20 +818,14 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-
-
-
   getSelectedCustomersDisplay(): string {
     var retval: string = "";
     if (this.selectedCustomers?.length > 1) {
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-       const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${this.selectedCustomers[0].name}`;
-      retval = `${value.length > maxLength 
-        ? value.slice(0, maxLength) + '...' 
-        : value}`;
+      const value = `${this.selectedCustomers[0].name}`;
+      retval = `${value}`;
     }
     return retval;
   }
@@ -847,11 +841,11 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-    
+
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      
+
     }
 
     if (this.custInput) {
@@ -866,10 +860,9 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
     //this.pcForm?.patchValue({ customer_code: null });
   }
 
-  AutoSearch()
-  {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
-        this.search();
+      this.search();
   }
   onCheckboxClicked(row: CustomerCompanyItem) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
