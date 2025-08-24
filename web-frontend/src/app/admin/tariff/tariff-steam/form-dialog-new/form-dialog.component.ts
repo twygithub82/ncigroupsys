@@ -22,7 +22,6 @@ import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-//import {CleaningCategoryDS,CleaningCategoryItem} from 'app/data-sources/cleaning-category';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { TankItem } from 'app/data-sources/tank';
 import { TariffDepotItem } from 'app/data-sources/tariff-depot';
@@ -36,12 +35,8 @@ import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 export interface DialogData {
   action?: string;
   selectedValue?: number;
-  // item: StoringOrderTankItem;
   langText?: any;
   selectedItem: TariffResidueItem;
-  // populateData?: any;
-  // index: number;
-  // sotExistedList?: StoringOrderTankItem[]
 }
 
 interface Condition {
@@ -254,7 +249,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
       min_temp: ['', [Validators.required]],
       max_temp: [''],
       labour: [''],
-      // qty:[''],
       cost: [''],
       remarks: ['']
 
