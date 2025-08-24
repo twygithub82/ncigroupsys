@@ -1,35 +1,16 @@
 <div class="container">
     <h3 mat-dialog-title class="align-center">{{data.langText.ARE_YOU_SURE_COMPLETE | translate}}</h3>
     <div class="mb-1 p-l-10">
-        <ul >
-            <li hidden>
-                <span class="font-weight-bold">
-                    {{rep.steaming_part?.[0]?.description}}
-                </span>
-            </li>
-            
-            <li>&nbsp;</li>
-            <li class="font-bold col-red message-font-size ">
-                
-                <span> 
-                    @if(data.tempStatus==2)
-                    {
-                        {{data.langText.OVER_REQUIRED_TEMP}}
-                    }
-                    @else if(data.tempStatus==1)
-                    {
-                        {{data.langText.LOWER_REQUIRED_TEMP}}
-                    }
-                </span>
-            </li>
-            <!-- }
-           
-            <li>&nbsp;</li>
-            <li class="font-bold col-red">
-                <span> {{data.langText.LOWER_REQUIRED_TEMP}}</span>
-            </li>
-            } -->
-        </ul>
+        <span class="font-bold col-red message-font-size ">
+            @if(data.tempStatus==2)
+            {
+            {{data.langText.OVER_REQUIRED_TEMP}}
+            }
+            @else if(data.tempStatus==1)
+            {
+            {{data.langText.LOWER_REQUIRED_TEMP}}
+            }
+        </span>
     </div>
 
     <div mat-dialog-actions class="mb-1 p-l-10">
