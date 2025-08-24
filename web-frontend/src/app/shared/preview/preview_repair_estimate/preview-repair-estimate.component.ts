@@ -1,6 +1,5 @@
 import { Direction } from '@angular/cdk/bidi';
 import { CommonModule, NgClass } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -9,7 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,38 +19,33 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FileManagerService } from '@core/service/filemanager.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TlxFormFieldComponent } from '@shared/components/tlx-form/tlx-form-field/tlx-form-field.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { CustomerCompanyDS, CustomerCompanyGO, CustomerCompanyItem } from 'app/data-sources/customer-company';
+import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { InGateDS } from 'app/data-sources/in-gate';
 import { InGateSurveyItem } from 'app/data-sources/in-gate-survey';
 import { MasterEstimateTemplateDS, MasterTemplateItem } from 'app/data-sources/master-template';
-import { PackageLabourDS, PackageLabourItem } from 'app/data-sources/package-labour';
+import { PackageLabourDS } from 'app/data-sources/package-labour';
 import { PackageRepairDS } from 'app/data-sources/package-repair';
-import { RepairDS, RepairGO, RepairItem } from 'app/data-sources/repair';
+import { RepairDS, RepairItem } from 'app/data-sources/repair';
 import { RepairPartDS, RepairPartItem } from 'app/data-sources/repair-part';
-import { RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { UserDS, UserItem } from 'app/data-sources/user';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
-import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { Observable } from 'rxjs';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
 
 export interface DialogData {
   repair_guid?: string;
@@ -92,6 +86,7 @@ export interface DialogData {
     MatCardModule,
     TlxFormFieldComponent,
     PreventNonNumericDirective,
+    MatDialogContent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: TlxMatPaginatorIntl }
@@ -509,7 +504,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
   }
 
   getSurveyorList() {
-    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
+    const where = { user_role: { some: { role: { position: { eq: "SURVEYOR" } } } } }
     this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
       if (data?.length > 0) {
         this.surveyorList = data;

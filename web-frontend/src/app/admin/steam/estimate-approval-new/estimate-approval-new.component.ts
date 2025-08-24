@@ -557,15 +557,6 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
     return this.prDS.getCustomerPackageCost(where);
   }
 
-  getSurveyorList() {
-    const where = { aspnetuserroles: { some: { aspnetroles: { Role: { eq: "Surveyor" } } } } }
-    this.subs.sink = this.userDS.searchUser(where).subscribe(data => {
-      if (data?.length > 0) {
-        this.surveyorList = data;
-      }
-    });
-  }
-
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
