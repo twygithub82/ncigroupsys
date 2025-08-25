@@ -1098,7 +1098,6 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     if (this.updateSelectedItem) {
       this.updateSelectedItem.item.edited = false;
       this.updateSelectedItem = null;
-
     }
     this.resetValue();
   }
@@ -1116,30 +1115,78 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     return steamTmp;
   }
 
+  // callRecordSteamingTemp(steamTemp: SteamTemp, action?: string, event?: Event) {
+  //   var ReqTemp: number = this.reqTemp!;
+  //   this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
+  //     if (result.data.recordSteamingTemp) {
+  //       let checkAction = [
+  //         'NEW',
+  //         'EDIT',
+  //       ];
+  //       if (!checkAction.includes(action!)) {
+  //         this.QuerySteamTemp();
+  //         this.resetSelectedItemForUpdating();
+  //       } else {
+  //         if (this.RequiredShowConfirmation(ReqTemp, steamTemp)) {
+  //           let tempStatus: number = this.CheckAndGetTempStatus(steamTemp);
+  //           this.completeSteamJob(event!, false, tempStatus);
+  //         }
+  //         else {
+  //           this.QuerySteamTemp();
+  //           this.resetSelectedItemForUpdating();
+  //         }
+  //       }
+  //       //this.resetValue();
+  //     }
+  //   });
+  // }
+
   callRecordSteamingTemp(steamTemp: SteamTemp, action?: string, event?: Event) {
     var ReqTemp: number = this.reqTemp!;
-    this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
-      if (result.data.recordSteamingTemp) {
-        let checkAction = [
-          'NEW',
-          'EDIT',
-        ];
-        if (!checkAction.includes(action!)) {
+    if (action != 'CANCEL' && this.RequiredShowConfirmation(ReqTemp, steamTemp)) {
+      let tempStatus: number = this.CheckAndGetTempStatus(steamTemp);
+      let tempDirection: Direction;
+      if (localStorage.getItem('isRtl') === 'true') {
+        tempDirection = 'rtl';
+      } else {
+        tempDirection = 'ltr';
+      }
+
+      let messageText = "";
+      if (tempStatus == 2) {
+        messageText = this.translatedLangText.OVER_REQUIRED_TEMP
+      }
+      else if (tempStatus == 1) {
+        messageText = this.translatedLangText.LOWER_REQUIRED_TEMP
+      }
+
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: !!messageText ? '490px' : '',
+        disableClose: true,
+        data: {
+          action: 'confirm',
+          headerText: this.translatedLangText.ARE_YOU_SURE_COMPLETE,
+          messageText: messageText
+        },
+        direction: tempDirection
+      });
+      this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'confirmed') {
+          this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
+            if (result.data.recordSteamingTemp) {
+              this.completeSteamJobWithoutConfirm(event!);
+            }
+          });
+        }
+      });
+    } else {
+      this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
+        if (result.data.recordSteamingTemp) {
           this.QuerySteamTemp();
           this.resetSelectedItemForUpdating();
-        } else {
-          if (this.RequiredShowConfirmation(ReqTemp, steamTemp)) {
-            let tempStatus: number = this.CheckAndGetTempStatus(steamTemp);
-            this.completeSteamJob(event!, false, tempStatus);
-          }
-          else {
-            this.QuerySteamTemp();
-            this.resetSelectedItemForUpdating();
-          }
         }
-        //this.resetValue();
-      }
-    });
+      });
+    }
   }
 
   RequiredShowConfirmation(reqTemp: number, steamTemp: SteamTemp): boolean {
@@ -1338,6 +1385,49 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
         }
       });
     }
+  }
+
+  completeSteamJobWithoutConfirm(event: Event) {
+    this.preventDefault(event);
+    let jobOrder = this.steamItem?.steaming_part?.[0]?.job_order;
+    var updJobOrderReq: UpdateJobOrderRequest = new UpdateJobOrderRequest(jobOrder);
+    updJobOrderReq.complete_dt = Math.floor(Date.now() / 1000);
+    var updJobOrderReqs: UpdateJobOrderRequest[] = [];
+    updJobOrderReqs.push(updJobOrderReq);
+    var steaming: any = undefined;
+    if (!this.steamItem?.storing_order_tank?.tank?.flat_rate) {
+      const minItem = this.deList.reduce((minItem, item) =>
+        item.report_dt < minItem.report_dt ? item : minItem
+      );
+      steaming = new SteamGO(this.steamItem);
+      steaming.action = "EDIT";
+      var startTime = minItem?.report_dt || 0;
+      var endTime = Math.floor(Date.now() / 1000);
+      // Calculate time difference in seconds
+      const timeDiffSeconds = endTime - startTime;
+
+      // Convert to hours (decimal)
+      const decimalHours = timeDiffSeconds / 3600;
+
+      // Round to nearest 0.25 increment
+      const roundedHours = Math.round(decimalHours * 4) / 4;
+      steaming.total_hour = roundedHours;
+    }
+    this.joDS.completeJobOrder(updJobOrderReqs, steaming).subscribe(result => {
+      console.log(result);
+      if (result.data.completeJobOrder > 0) {
+        let stmStatus: SteamStatusRequest = new SteamStatusRequest();
+        stmStatus.action = "COMPLETE";
+        stmStatus.guid = this.steamItem?.guid;
+        stmStatus.sot_guid = this.steamItem?.sot_guid;
+        this.steamDS.updateSteamStatus(stmStatus).subscribe(result => {
+          if (result.data.updateSteamingStatus > 0) {
+            console.log(result);
+            this.handleSaveSuccess(result.data.updateSteamingStatus);
+          }
+        });
+      }
+    });
   }
 
   DisplayEpochToDate(epochTimeInSeconds: number): string {
