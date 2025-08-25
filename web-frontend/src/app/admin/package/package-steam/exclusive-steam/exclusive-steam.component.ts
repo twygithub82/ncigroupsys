@@ -486,26 +486,37 @@ export class ExclusiveSteamComponent extends UnsubscribeOnDestroyAdapter
       where.and.push({ package_steaming: { customer_company: { code: { in: custCodes } } } });
     }
 
-    if (this.pcForm!.value["min_labour"]) {
-      const minLabour: number = Number(this.pcForm!.value["min_labour"]);
-      where.and.push({ package_steaming: { labour: { gte: minLabour } } })
+     if (this.pcForm!.value["hourly_rate"]) {
+      const flat_rate: number = Number(this.pcForm!.value["hourly_rate"]);
+      where.and.push({ package_steaming: { labour: { eq: flat_rate } } })
     }
 
-    if (this.pcForm!.value["max_labour"]) {
-      const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
-      where.and.push({ package_steaming: { labour: { ngte: maxLabour } } })
+     if (this.pcForm!.value["flat_rate"]) {
+
+      const hourly_rate: number = Number(this.pcForm!.value["flat_rate"]);
+      where.and.push({ package_steaming: { cost: { eq: hourly_rate } } })
     }
 
-    if (this.pcForm!.value["min_cost"]) {
+    // if (this.pcForm!.value["min_labour"]) {
+    //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
+    //   where.and.push({ package_steaming: { labour: { gte: minLabour } } })
+    // }
 
-      const minCost: number = Number(this.pcForm!.value["min_cost"]);
-      where.and.push({ package_steaming: { cost: { gte: minCost } } })
-    }
+    // if (this.pcForm!.value["max_labour"]) {
+    //   const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
+    //   where.and.push({ package_steaming: { labour: { ngte: maxLabour } } })
+    // }
 
-    if (this.pcForm!.value["max_cost"]) {
-      const maxCost: number = Number(this.pcForm!.value["max_cost"]);
-      where.and.push({ package_steaming: { cost: { ngte: maxCost } } })
-    }
+    // if (this.pcForm!.value["min_cost"]) {
+
+    //   const minCost: number = Number(this.pcForm!.value["min_cost"]);
+    //   where.and.push({ package_steaming: { cost: { gte: minCost } } })
+    // }
+
+    // if (this.pcForm!.value["max_cost"]) {
+    //   const maxCost: number = Number(this.pcForm!.value["max_cost"]);
+    //   where.and.push({ package_steaming: { cost: { ngte: maxCost } } })
+    // }
 
     this.lastSearchCriteria = where;
     this.subs.sink = this.packSteamExclDS.SearchExclusiveSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {

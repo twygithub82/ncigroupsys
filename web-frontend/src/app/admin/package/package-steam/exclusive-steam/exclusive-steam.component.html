@@ -82,13 +82,13 @@
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.FLAT_RATE}}</mat-label>
-                    <input matInput formControlName="flat_rate" type="number" min="0">
+                    <input matInput formControlName="flat_rate" type="number" min="0" (keyup.enter) ="search()">
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.HOURLY_RATE}}</mat-label>
-                    <input matInput formControlName="hourly_rate" type="number" min="0">
+                    <input matInput formControlName="hourly_rate" type="number" min="0" (keyup.enter) ="search()">
                   </mat-form-field>
                 </div>
 
@@ -157,7 +157,7 @@
                 [ngClass]="'justify-content-center'">{{this.translatedLangText.FLAT_RATE}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.COST}}:</span>
+                <span class="mobile-label">{{this.translatedLangText.FLAT_RATE}}:</span>
                 {{displayNumber(row.package_steaming?.cost)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="labour">
@@ -165,7 +165,7 @@
                 [ngClass]="'justify-content-center'">{{this.translatedLangText.HOURLY_RATE }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.LABOUR }}:</span>
+                <span class="mobile-label">{{this.translatedLangText.HOURLY_RATE }}:</span>
                 {{displayNumber(row.package_steaming?.labour)}}</mat-cell>
             </ng-container>
             <!-- <ng-container matColumnDef="qty">

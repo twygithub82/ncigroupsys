@@ -17,7 +17,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{getCostLabel()}}</mat-label>
-                <input matInput #adjustCost (focus)="adjustCost.select()" formControlName="adjusted_cost" appNumericText type="text" min="0">
+                <input matInput #adjustCost (focus)="adjustCost.select()" formControlName="adjusted_cost" appNumericText type="text" min="0" required>
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" hidden>

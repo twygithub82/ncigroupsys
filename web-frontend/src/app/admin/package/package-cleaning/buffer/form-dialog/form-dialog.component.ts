@@ -250,6 +250,7 @@ export class FormDialogComponent {
   }
 
   save() {
+    if (this.pcForm.invalid) return;
     var adjusted_price = Number(this.pcForm!.value["adjusted_cost"]);
     var remarks = this.pcForm!.value["remarks"];
 
