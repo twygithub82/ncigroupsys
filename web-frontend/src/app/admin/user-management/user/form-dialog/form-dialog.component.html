@@ -12,8 +12,8 @@
   <div mat-dialog-content class="auto-height">
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
       <div class="row justify-content-center">
-        <div class="col-xl-11 col-lg-11 col-md-11 col-sm-11 mb-1">
-          <div class="">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+          <div class="p-l-20 p-r-20">
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">
@@ -348,7 +348,7 @@
           </div>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right m-r-50">
+      <div mat-dialog-actions class=" align-right m-r-25 m-b-20">
         @if (canEdit()) {
         <button mat-flat-button color="primary" class="me-1" (click)="save()" [disabled]="userDs?.loading$|async">{{translatedLangText.UPDATE}}</button>
         }
