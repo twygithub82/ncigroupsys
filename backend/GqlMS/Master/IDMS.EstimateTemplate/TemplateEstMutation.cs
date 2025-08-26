@@ -315,37 +315,33 @@ namespace IDMS.EstimateTemplate.GqlTypes
                 {
                     foreach (var item in estPart.tep_damage_repair)
                     {
-
-                        //if (string.IsNullOrEmpty(item.action) && !string.IsNullOrEmpty(item.guid))
-                        //   throw new GraphQLException(new Error($"Tep_damage_repair action cannot be null for update", "ERROR"));
-
                         if (string.IsNullOrEmpty(item.action))
                             continue;
 
                         if (string.IsNullOrEmpty(item.guid) && (ObjectAction.NEW.EqualsIgnore(item.action) || string.IsNullOrEmpty(item.action)))
                         {
-                            var tepDamage = item;//new tep_damage_repair();
-                            tepDamage.guid = Util.GenerateGUID();
-                            tepDamage.create_by = user;
-                            tepDamage.create_dt = currentDateTime;
-                            tepDamage.update_by = user;
-                            tepDamage.update_dt = currentDateTime;
+                            var newTepDamage = item;//new tep_damage_repair();
+                            newTepDamage.guid = Util.GenerateGUID();
+                            newTepDamage.create_by = user;
+                            newTepDamage.create_dt = currentDateTime;
+                            newTepDamage.update_by = user;
+                            newTepDamage.update_dt = currentDateTime;
 
-                            tepDamage.tep_guid = estPart.guid;
-                            tepDamage.code_type = item.code_type;
-                            tepDamage.code_cv = item.code_cv;
-                            await context.tep_damage_repair.AddAsync(tepDamage);
+                            newTepDamage.tep_guid = estPart.guid;
+                            newTepDamage.code_type = item.code_type;
+                            newTepDamage.code_cv = item.code_cv;
+                            await context.tep_damage_repair.AddAsync(newTepDamage);
                             continue;
                         }
 
+
+                        if (string.IsNullOrEmpty(item.guid))
+                            throw new GraphQLException(new Error($"Template_part_damage_repair guid cannot null or empty for update", "ERROR"));
+
+                        var tepDamage = tepDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+
                         if (ObjectAction.EDIT.EqualsIgnore(item.action))
                         {
-                            if (string.IsNullOrEmpty(item.guid))
-                                throw new GraphQLException(new Error($"Template_part_damage_repair guid cannot null or empty for update", "ERROR"));
-
-                            //var tepDamage = new tep_damage_repair() { guid = item.guid };
-                            var tepDamage = tepDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
-                            //context.Attach(tepDamage);
                             if (tepDamage != null)
                             {
                                 tepDamage.update_dt = currentDateTime;
@@ -359,15 +355,28 @@ namespace IDMS.EstimateTemplate.GqlTypes
 
                         if (ObjectAction.CANCEL.EqualsIgnore(item.action))
                         {
-                            if (string.IsNullOrEmpty(item.guid))
-                                throw new GraphQLException(new Error($"Template_part_damage_repair guid cannot null or empty for cancel", "ERROR"));
+                            //if (string.IsNullOrEmpty(item.guid))
+                            //    throw new GraphQLException(new Error($"Template_part_damage_repair guid cannot null or empty for cancel", "ERROR"));
 
-                            //var tepDamage = new tep_damage_repair() { guid = item.guid };
-                            //context.Attach(tepDamage);
-                            var tepDamage = tepDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            //var tepDamage = tepDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
                             if (tepDamage != null)
                             {
                                 tepDamage.delete_dt = currentDateTime;
+                                tepDamage.update_by = user;
+                                tepDamage.update_dt = currentDateTime;
+                            }
+                            continue;
+                        }
+
+                        if (ObjectAction.ROLLBACK.EqualsIgnore(item.action))
+                        {
+                            //if (string.IsNullOrEmpty(item.guid))
+                            //    throw new GraphQLException(new Error($"Template_part_damage_repair guid cannot null or empty for cancel", "ERROR"));
+
+                            //var tepDamage = tepDamageRepair?.Where(t => t.guid == item.guid).FirstOrDefault();
+                            if (tepDamage != null)
+                            {
+                                tepDamage.delete_dt = null;
                                 tepDamage.update_by = user;
                                 tepDamage.update_dt = currentDateTime;
                             }

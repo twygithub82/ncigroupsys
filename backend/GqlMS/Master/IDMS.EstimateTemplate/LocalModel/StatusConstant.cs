@@ -19,7 +19,7 @@ namespace IDMS.EstimateTemplate.GqlTypes.LocalModel
         {
             public const string NEW = "NEW";
             public const string EDIT = "EDIT";
-            //public const string ROLLBACK = "ROLLBACK";
+            public const string ROLLBACK = "ROLLBACK";
             public const string CANCEL = "CANCEL";
             //public const string PREORDER = "PREORDER";
         }
