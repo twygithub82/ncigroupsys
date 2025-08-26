@@ -43,7 +43,7 @@ builder.Services.AddGraphQLServer()
                 .AddProjections()
                 .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
                 {
-                    MaxPageSize = 100
+                    MaxPageSize = 1000
                 })
                .AddSorting();
 

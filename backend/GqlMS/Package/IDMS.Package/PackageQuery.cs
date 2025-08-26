@@ -140,6 +140,71 @@ namespace IDMS.Models.Package.GqlTypes
         [UseProjection()]
         [UseFiltering()]
         [UseSorting]
+        public IQueryable<PackageRepairResult?> QueryPackageRepairWithCount(ApplicationPackageDBContext context,
+            [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
+        {
+            IQueryable<PackageRepairResult> query = null;
+            try
+            {
+                List<string> invalidStatus = new List<string>() { "CANCELED", "NO_ACTION" };
+                GqlUtils.IsAuthorize(config, httpContextAccessor);
+
+                //var result = context.package_repair
+                //                     .Include(pr => pr.tariff_repair)
+                //                     .ThenInclude(tr => tr.repair_part)
+                //                     .ThenInclude(rp => rp.repair)
+                //                     .ThenInclude(r => r.storing_order_tank)
+                //                     .ThenInclude(sot => sot.storing_order)
+                //                     .Where(pr => (pr.delete_dt == null || pr.delete_dt == 0))
+                //                     .Select(pr => new PackageRepairResult
+                //                     {
+                //                         package_repair = pr,
+                //                         count = pr.tariff_repair.repair_part.Count(rp => rp.repair != null && rp.repair.delete_dt == null
+                //                                                          && !invalidStatus.Contains(rp.repair.status_cv)
+                //                                                          && rp.delete_dt == null
+                //                                                          && pr.customer_company_guid == rp.repair.storing_order_tank.storing_order.customer_company_guid)
+                //                     })
+                //                     .AsSplitQuery()
+                //                     .AsQueryable();
+                //return result;
+
+                var result = context.package_repair
+                    .Include(pr => pr.tariff_repair)
+                        .ThenInclude(tr => tr.repair_part)
+                            .ThenInclude(rp => rp.repair)
+                                .ThenInclude(r => r.storing_order_tank)
+                                    .ThenInclude(sot => sot.storing_order)
+                    .Where(pr => pr.delete_dt == null)
+                    .Select(pr => new PackageRepairResult
+                    {
+                        package_repair = pr,
+                        count = pr.tariff_repair.repair_part
+                            .Where(rp =>
+                                rp.delete_dt == null &&
+                                rp.repair != null &&
+                                rp.repair.delete_dt == null &&
+                                !invalidStatus.Contains(rp.repair.status_cv) &&
+                                rp.repair.storing_order_tank != null &&
+                                rp.repair.storing_order_tank.storing_order != null &&
+                                rp.repair.storing_order_tank.storing_order.customer_company_guid == pr.customer_company_guid
+                            )
+                            .Count()
+                    })
+                    .AsSplitQuery()
+                    .AsQueryable();
+                return result;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 10)]
+        [UseProjection()]
+        [UseFiltering()]
+        [UseSorting]
         public IQueryable<package_repair?> QueryPackageRepair(ApplicationPackageDBContext context,
             [Service] IConfiguration config, [Service] IHttpContextAccessor httpContextAccessor)
         {

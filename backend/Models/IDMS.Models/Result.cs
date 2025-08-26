@@ -1,5 +1,6 @@
 ﻿using HotChocolate;
 using IDMS.Models.Master;
+using IDMS.Models.Package;
 using IDMS.Models.Shared;
 using IDMS.Models.Tariff;
 using System;
@@ -62,6 +63,14 @@ namespace IDMS.Models
         public tariff_buffer tariff_buffer { get; set; }
         public int tank_count { get; set; }
     }
+
+    [NotMapped]
+    public class PackageRepairResult
+    {
+        public package_repair package_repair { get; set; }
+        public int count { get; set; }
+    }
+
     [NotMapped]
     public class CustomerCompanyResult
     {
