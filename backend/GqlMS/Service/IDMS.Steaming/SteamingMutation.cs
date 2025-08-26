@@ -650,7 +650,7 @@ namespace IDMS.Steaming.GqlTypes
                             sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                                     $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
                         }
-                    }
+                    }   
                     else
                     {
                         if (rollbackSteaming.create_by.EqualsIgnore("system"))
@@ -727,12 +727,15 @@ namespace IDMS.Steaming.GqlTypes
 
                     //Timetable handling
                     var jobIdList = item.job_order.Select(j => j.guid).ToList();
-                    var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
-                    foreach (var tt in timeTables)
+                    var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid))
+                                                             .OrderByDescending(t => t.stop_time).FirstOrDefaultAsync();
+
+                    //TODO:: Sort by stop time... only change to null
+                    if (timeTables != null)
                     {
-                        tt.stop_time = null;
-                        tt.update_by = user;
-                        tt.update_dt = currentDateTime;
+                        timeTables.stop_time = null;
+                        timeTables.update_by = user;
+                        timeTables.update_dt = currentDateTime;
                     }
                 }
 

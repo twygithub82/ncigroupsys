@@ -257,12 +257,13 @@ namespace IDMS.Cleaning.GqlTypes
                 context.Database.ExecuteSqlRaw(sql);
 
                 //Timetable handling
-                var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid)).ToListAsync();
-                foreach (var tt in timeTables)
+                var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid))
+                                                         .OrderByDescending(t => t.stop_time).FirstOrDefaultAsync();
+                if (timeTables != null)
                 {
-                    tt.stop_time = null;
-                    tt.update_by = user;
-                    tt.update_dt = currentDateTime;
+                    timeTables.stop_time = null;
+                    timeTables.update_by = user;
+                    timeTables.update_dt = currentDateTime;
                 }
 
                 var tankStatus = cleaningJobOrder.sot_status;

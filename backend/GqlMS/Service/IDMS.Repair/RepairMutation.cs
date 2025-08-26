@@ -687,7 +687,8 @@ namespace IDMS.Repair.GqlTypes
                     //    tt.update_dt = currentDateTime;
                     //}
                     var timeTables = await context.time_table.Where(t => jobIdList.Contains(t.job_order_guid))
-                        .OrderByDescending(t => t.stop_time).FirstOrDefaultAsync();
+                                                             .OrderByDescending(t => t.stop_time).FirstOrDefaultAsync();
+
                     if (timeTables != null)
                     {
                         timeTables.stop_time = null;
