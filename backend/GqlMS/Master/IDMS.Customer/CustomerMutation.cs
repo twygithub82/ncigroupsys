@@ -168,8 +168,9 @@ namespace IDMS.Customer.GqlTypes
                                 context.Attach(delCustomer);
                                 delCustomer.update_by = user;
                                 delCustomer.update_dt = currentDateTime;
-                                delCustomer.delete_dt = currentDateTime;
+                                //delCustomer.delete_dt = currentDateTime;
                                 delCustomer.remarks = branch.BranchCustomer.remarks;
+                                delCustomer.main_customer_guid = "";
                                 mainCustomerGuid = branch.BranchCustomer.guid;
                             }
 
