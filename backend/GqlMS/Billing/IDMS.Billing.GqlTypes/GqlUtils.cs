@@ -201,5 +201,11 @@ namespace IDMS.Billing.Application
             double result = Math.Ceiling(Convert.ToDouble(materialCost * 20)) / 20.0;
             return result;
         }
+
+        public static string? GetSpecificTimeZone([Service] IConfiguration config)
+        {
+            var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+            return specificTimeZone;
+        }
     }
 }

@@ -30,7 +30,8 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                //var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
 
                 //string completedStatus = "COMPLETED";
                 //string qcCompletedStatus = "QC_COMPLETED";
@@ -134,7 +135,8 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                //var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
 
                 //string completedStatus = "COMPLETED";
                 //string qcCompletedStatus = "QC_COMPLETED";
@@ -1157,7 +1159,8 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                //var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
 
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";
@@ -1197,7 +1200,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "repair", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.repair_monthly_revenue = monthlyRevenue;
                     }
@@ -1209,7 +1212,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "steaming", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.steam_monthly_revenue = monthlyRevenue;
                     }
@@ -1220,7 +1223,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "cleaning", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.cleaning_monthly_revenue = monthlyRevenue;
                     }
@@ -1231,7 +1234,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "residue", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.residue_monthly_revenue = monthlyRevenue;
                     }
@@ -1242,7 +1245,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "lolo", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.lolo_monthly_revenue = monthlyRevenue;
                     }
@@ -1254,7 +1257,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.gate_monthly_revenue = monthlyRevenue;
                     }
@@ -1265,7 +1268,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "preinspection", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.preinspection_monthly_revenue = monthlyRevenue;
                     }
@@ -1276,7 +1279,7 @@ namespace IDMS.Billing.GqlTypes
                         var revenueQuery = GetRevenueQuery(context, query, "storage", startEpoch, endEpoch);
                         var approvedResult = await revenueQuery.OrderBy(c => c.appv_date).ToListAsync();
 
-                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth);
+                        var approveResultPerMonth = await GetRevenuePerDay(approvedResult, startOfMonth, endOfMonth, specificTimeZone);
                         var monthlyRevenue = await GetMonthlyRevenue(approveResultPerMonth);
                         monthlyRevenueResult.storage_monthly_revenue = monthlyRevenue;
                     }
@@ -1298,7 +1301,8 @@ namespace IDMS.Billing.GqlTypes
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
-                var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                //var specificTimeZone = string.IsNullOrEmpty(config["TimeZoneId"]) ? "Singapore Standard Time" : config["TimeZoneId"];
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
 
                 string completedStatus = "COMPLETED";
                 string qcCompletedStatus = "QC_COMPLETED";

@@ -1,17 +1,18 @@
-﻿using HotChocolate.Types;
+﻿using CommonUtil.Core.Service;
 using HotChocolate;
+using HotChocolate.Types;
 using IDMS.Billing.Application;
-using IDMS.Models.DB;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using IDMS.Billing.GqlTypes.BillingResult;
 using IDMS.Billing.GqlTypes.LocalModel;
-using IDMS.Models.Tariff;
-using Microsoft.EntityFrameworkCore;
-using IDMS.Models.Service;
+using IDMS.Models.DB;
 using IDMS.Models.Parameter;
+using IDMS.Models.Service;
 using IDMS.Models.Shared;
-using CommonUtil.Core.Service;
+using IDMS.Models.Tariff;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using TimeZoneConverter;
 
 namespace IDMS.Billing.GqlTypes
 {
@@ -658,7 +659,9 @@ namespace IDMS.Billing.GqlTypes
                 long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
-                //List<string> reportTypes = monthlySalesReportRequest.report_type;
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
+                // Normalize to the platform-correct ID
+                TimeZoneInfo timeZone = TZConvert.GetTimeZoneInfo(specificTimeZone);
 
                 foreach (var type in monthlySalesRequest.report_type)
                 {
@@ -668,8 +671,13 @@ namespace IDMS.Billing.GqlTypes
                     foreach (var item in resultList)
                     {
                         // Convert epoch timestamp to DateTimeOffset (local time zone)
-                        DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
+                        //DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
+
+                        // Convert epoch timestamp to UTC
+                        DateTimeOffset utcDateTime = DateTimeOffset.FromUnixTimeSeconds(item.date);
+
                         // Format the date as yyyy-MM-dd and replace the code with date
+                        DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                         item.code = dateTimeOffset.ToString("dd/MM/yyyy");
                     }
                     // Group nodes by FormattedDate and count the number of SotGuids for each group
@@ -776,6 +784,11 @@ namespace IDMS.Billing.GqlTypes
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
 
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
+                // Normalize to the platform-correct ID
+                TimeZoneInfo timeZone = TZConvert.GetTimeZoneInfo(specificTimeZone);
+
+
                 foreach (var type in yearlySalesRequest.report_type)
                 {
                     var resultList = await RetriveSalesResult(context, type, startEpoch, endEpoch, yearlySalesRequest.customer_code);
@@ -784,8 +797,15 @@ namespace IDMS.Billing.GqlTypes
                     foreach (var item in resultList)
                     {
                         // Convert epoch timestamp to DateTimeOffset (local time zone)
-                        DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
+                        //DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
                         // Format the date as yyyy-MM-dd and replace the code with date
+                        //item.code = dateTimeOffset.ToString("MMMM");
+
+
+                        DateTimeOffset utcDateTime = DateTimeOffset.FromUnixTimeSeconds(item.date);
+
+                        // Format the date as yyyy-MM-dd and replace the code with date
+                        DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                         item.code = dateTimeOffset.ToString("MMMM");
                     }
                     // Group nodes by FormattedDate and count the number of SotGuids for each group
@@ -886,15 +906,24 @@ namespace IDMS.Billing.GqlTypes
                 long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
-
                 var resultList = await RetriveProcessInventoryResult(context, monthlyProcessRequest.report_type, startEpoch, endEpoch, monthlyProcessRequest.customer_code);
+
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
+                // Normalize to the platform-correct ID
+                TimeZoneInfo timeZone = TZConvert.GetTimeZoneInfo(specificTimeZone);
 
                 // Convert epoch timestamp to local date (yyyy-MM-dd)
                 foreach (var item in resultList)
                 {
                     // Convert epoch timestamp to DateTimeOffset (local time zone)
-                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
+                    //DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
                     // Format the date as yyyy-MM-dd and replace the code with date
+                    //item.code = dateTimeOffset.ToString("dd/MM/yyyy");
+
+                    DateTimeOffset utcDateTime = DateTimeOffset.FromUnixTimeSeconds(item.date);
+
+                    // Format the date as yyyy-MM-dd and replace the code with date
+                    DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                     item.code = dateTimeOffset.ToString("dd/MM/yyyy");
                 }
                 // Group nodes by FormattedDate and count the number of SotGuids for each group
@@ -978,15 +1007,25 @@ namespace IDMS.Billing.GqlTypes
                 long startEpoch = ((DateTimeOffset)startOfMonth).ToUnixTimeSeconds();
                 long endEpoch = ((DateTimeOffset)endOfMonth).ToUnixTimeSeconds();
 
-
                 var resultList = await RetriveProcessInventoryResult(context, yearlyProcessRequest.report_type, startEpoch, endEpoch, yearlyProcessRequest.customer_code);
+
+
+                var specificTimeZone = GqlUtils.GetSpecificTimeZone(config);
+                // Normalize to the platform-correct ID
+                TimeZoneInfo timeZone = TZConvert.GetTimeZoneInfo(specificTimeZone);
 
                 // Convert epoch timestamp to local date (yyyy-MM-dd)
                 foreach (var item in resultList)
                 {
                     // Convert epoch timestamp to DateTimeOffset (local time zone)
-                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
+                    //DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(item.date).ToLocalTime();
                     // Format the date as yyyy-MM-dd and replace the code with date
+                    //item.code = dateTimeOffset.ToString("MMMM");
+
+                    DateTimeOffset utcDateTime = DateTimeOffset.FromUnixTimeSeconds(item.date);
+
+                    // Format the date as yyyy-MM-dd and replace the code with date
+                    DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                     item.code = dateTimeOffset.ToString("MMMM");
                 }
                 // Group nodes by FormattedDate and count the number of SotGuids for each group
