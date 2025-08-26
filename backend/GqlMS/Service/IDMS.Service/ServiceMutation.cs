@@ -729,27 +729,27 @@ namespace IDMS.Service.GqlTypes
                     }
                 }
 
-                foreach (var item in teamsRequest)
+                foreach (var item1 in teamsRequest)
                 {
-                    if (string.IsNullOrEmpty(item?.guid))
+                    if (string.IsNullOrEmpty(item1?.guid))
                         throw new GraphQLException(new Error($"Team guid cannot be null or empty", "ERROR"));
 
-                    if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
+                    if (ObjectAction.NEW.EqualsIgnore(item1?.action ?? ""))
                     {
                         var newUserTeam = new team_user();
                         newUserTeam.guid = Util.GenerateGUID();
                         newUserTeam.userId = userRequest.Id;
-                        newUserTeam.team_guid = item.guid;
+                        newUserTeam.team_guid = item1.guid;
                         newUserTeam.create_by = user;
                         newUserTeam.update_by = user;
                         newUserTeam.create_dt = currentDateTime;
                         newUserTeam.update_dt = currentDateTime;
-                        await context.Set<team_user>().AddAsync(newUserTeam);
+                        await context.team_user.AddAsync(newUserTeam);
                     }
 
-                    if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
+                    if (ObjectAction.CANCEL.EqualsIgnore(item1?.action ?? ""))
                     {
-                        var delUserTeam = await context.Set<team_user>().Where(t => t.userId == userRequest.Id && t.team_guid == item.guid).FirstOrDefaultAsync();
+                        var delUserTeam = await context.Set<team_user>().Where(t => t.userId == userRequest.Id && t.team_guid == item1.guid).FirstOrDefaultAsync();
                         if (delUserTeam != null)
                         {
                             delUserTeam.update_by = user;
@@ -759,19 +759,19 @@ namespace IDMS.Service.GqlTypes
                     }
                 }
 
-                foreach (var item in functionsRequest)
+                foreach (var item2 in functionsRequest)
                 {
-                    if (string.IsNullOrEmpty(item?.guid))
+                    if (string.IsNullOrEmpty(item2?.guid))
                         throw new GraphQLException(new Error($"Function guid cannot be null or empty", "ERROR"));
 
-                    if (ObjectAction.NEW.EqualsIgnore(item?.action ?? ""))
+                    if (ObjectAction.NEW.EqualsIgnore(item2?.action ?? ""))
                     {
                         var newUserFunctions = new user_functions();
                         newUserFunctions.guid = Util.GenerateGUID();
                         newUserFunctions.user_guid = userRequest.Id;
-                        newUserFunctions.functions_guid = item.guid;
-                        newUserFunctions.adhoc = true;
-                        newUserFunctions.remarks = item.remarks;
+                        newUserFunctions.functions_guid = item2.guid;
+                        newUserFunctions.adhoc = item2.addhoc ?? true;
+                        newUserFunctions.remarks = item2.remarks;
                         newUserFunctions.create_by = user;
                         newUserFunctions.update_by = user;
                         newUserFunctions.create_dt = currentDateTime;
@@ -779,13 +779,27 @@ namespace IDMS.Service.GqlTypes
                         await context.Set<user_functions>().AddAsync(newUserFunctions);
                     }
 
-                    if (ObjectAction.CANCEL.EqualsIgnore(item?.action ?? ""))
+
+                    if (ObjectAction.EDIT.EqualsIgnore(item2?.action ?? ""))
                     {
-                        var delUserFunctions = await context.Set<user_functions>().Where(f=>f.user_guid == userRequest.Id && f.functions_guid == item.guid).FirstOrDefaultAsync(); 
-                        if(delUserFunctions != null)
+                        var updateUserFunctions = await context.Set<user_functions>().Where(f => f.guid == item2.guid).FirstOrDefaultAsync();
+                        if (updateUserFunctions != null)
+                        {
+                            updateUserFunctions.adhoc = item2.addhoc;
+                            updateUserFunctions.remarks = item2.remarks;
+                            updateUserFunctions.update_by = user;
+                            updateUserFunctions.update_dt = currentDateTime;
+                        }
+                    }
+
+
+                    if (ObjectAction.CANCEL.EqualsIgnore(item2?.action ?? ""))
+                    {
+                        var delUserFunctions = await context.Set<user_functions>().Where(f => f.guid == item2.guid).FirstOrDefaultAsync();
+                        if (delUserFunctions != null)
                         {
                             delUserFunctions.adhoc = false;
-                            delUserFunctions.remarks = item.remarks;
+                            delUserFunctions.remarks = item2.remarks;
                             delUserFunctions.update_by = user;
                             delUserFunctions.update_dt = currentDateTime;
                             delUserFunctions.delete_dt = currentDateTime;
@@ -798,6 +812,7 @@ namespace IDMS.Service.GqlTypes
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.StackTrace);
                 throw new GraphQLException(new Error($"{ex.Message}--{ex.InnerException}", "ERROR"));
             }
         }

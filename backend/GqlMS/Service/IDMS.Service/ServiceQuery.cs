@@ -92,7 +92,7 @@ namespace IDMS.Service.GqlTypes
             try
             {
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
-                var user = context.aspnetusers.AsQueryable(); //.Include(a => a.aspnetuserroles);
+                var user = context.aspnetusers.AsSplitQuery(); //.Include(a => a.aspnetuserroles);
                 return user;
             }
             catch (Exception ex)
