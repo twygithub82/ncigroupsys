@@ -1,7 +1,7 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Apollo } from 'apollo-angular';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize, map, tap } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 import { BaseDataSource } from './base-ds';
@@ -125,6 +125,39 @@ export class CodeValuesDS extends BaseDataSource<CodeValuesItem> {
         );
     }
   
+    getCodeValuesByType_observable(queries: { alias: string, codeValType: string }[]): Observable<any> {
+  this.loadingSubject.next(true);
+
+  const aliases = queries.map(query => query.alias);
+  const variables = queries.reduce((acc, query) => {
+    acc[`${query.alias}Type`] = { code_val_type: query.codeValType };
+    return acc;
+  }, {} as any);
+
+  const dynamicQuery: DocumentNode = getCodeValuesByTypeQueries(aliases);
+
+  return this.apollo
+    .query<any>({
+      query: dynamicQuery,
+      variables: variables
+    })
+    .pipe(
+      map((result) => result.data),
+      catchError(() => of(aliases.reduce((acc: any, alias) => {
+        acc[alias] = [];
+        return acc;
+      }, {}))),
+      finalize(() => this.loadingSubject.next(false)),
+      tap(result => {
+        aliases.forEach(alias => {
+          const subject = this.itemsSubjects.get(alias) || new BehaviorSubject<CodeValuesItem[]>([]);
+          subject.next(result[alias]);
+          this.itemsSubjects.set(alias, subject);
+          this.totalCounts.set(alias, result[alias].length);
+        });
+      })
+    );
+}
   getCodeValuesByType(queries: { alias: string, codeValType: string }[]) {
     this.loadingSubject.next(true);
 

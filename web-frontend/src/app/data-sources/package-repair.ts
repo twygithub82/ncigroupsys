@@ -53,12 +53,91 @@ export class PackageRepairItem extends PackageRepairGO {
     this.customer_company = item.customer_company;
   }
 }
+
+export class PackageRepairItemWithCount  {
+  public count?: number;
+  public package_repair?: PackageRepairItem;
+   constructor(item: Partial<PackageRepairItemWithCount> = {}) {
+    
+    this.package_repair = item.package_repair;
+    this.count = item.count;
+  }
+}
 export interface TariffRepairResult {
   items: PackageRepairItem[];
   totalCount: number;
 }
 
-
+export const GET_PACKAGE_REPAIR_WITH_COUNT_QUERY = gql`
+  query queryPackageRepairWithCount($where: PackageRepairResultFilterInput, $order:[PackageRepairResultSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
+    packageRepairResult : queryPackageRepairWithCount(where: $where, order:$order, first: $first, after: $after, last: $last, before: $before) {
+      nodes {
+       count
+       package_repair {
+        create_by
+        create_dt
+        customer_company_guid
+        delete_dt
+        guid
+        labour_hour
+        material_cost
+        remarks
+        tariff_repair_guid
+        update_by
+        update_dt
+        customer_company {
+            city
+            code
+            country
+            create_by
+            create_dt
+            delete_dt
+            effective_dt
+            email
+            guid
+            name
+            phone
+            postal
+            type_cv
+            update_by
+            update_dt
+        }
+        tariff_repair {
+            alias
+            create_by
+            create_dt
+            delete_dt
+            dimension
+            group_name_cv
+            guid
+            height_diameter
+            height_diameter_unit_cv
+            labour_hour
+            length
+            length_unit_cv
+            material_cost
+            part_name
+            remarks
+            subgroup_name_cv
+            thickness
+            thickness_unit_cv
+            update_by
+            update_dt
+            width_diameter
+            width_diameter_unit_cv
+        }
+       }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      totalCount
+    }
+  }
+`;
 
 export const GET_PACKAGE_REPAIR_QUERY = gql`
   query queryParkageRepair($where: package_repairFilterInput, $order:[package_repairSortInput!], $first: Int, $after: String, $last: Int, $before: String ) {
@@ -212,6 +291,34 @@ export class PackageRepairDS extends BaseDataSource<PackageRepairItem> {
     return this.apollo
       .query<any>({
         query: GET_PACKAGE_REPAIR_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TariffRepairItem[]); // Return an empty array on error
+        }),
+        finalize(() => this.loadingSubject.next(false)),
+        map((result) => {
+          const packRepairResult = result.packageRepairResult || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(packRepairResult.nodes);
+          this.pageInfo = packRepairResult.pageInfo;
+          this.totalCount = packRepairResult.totalCount;
+          return packRepairResult.nodes;
+        })
+      );
+  }
+
+   SearchPackageRepairWithCount(where?: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<PackageRepairItemWithCount[]> {
+    this.loadingSubject.next(true);
+    if (!last)
+      if (!first)
+        first = 10;
+    return this.apollo
+      .query<any>({
+        query: GET_PACKAGE_REPAIR_WITH_COUNT_QUERY,
         variables: { where, order, first, after, last, before },
         fetchPolicy: 'no-cache' // Ensure fresh data
       })

@@ -247,7 +247,7 @@
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.CUSTOMER_CODE}}:</span>
                         <!-- {{custCompDS.displayName(row.customer_company)}} -->
-                        {{row.customer_company.code}}
+                        {{row.package_repair?.customer_company.code}}
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="PartName">
@@ -257,20 +257,20 @@
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3-xl'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.PART_NAME
-                          }}:</span>{{getTariffRepairAlias(row.tariff_repair)}}</mat-cell>
+                          }}:</span>{{getTariffRepairAlias(row.package_repair?.tariff_repair)}}</mat-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="group">
                       <mat-header-cell *matHeaderCellDef>{{translatedLangText.GROUP}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.GROUP}}:</span>
-                        {{this.displayGroupNameCodeValue_Description(row.tariff_repair.group_name_cv)}}</mat-cell>
+                        {{this.displayGroupNameCodeValue_Description(row.package_repair?.tariff_repair.group_name_cv)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="subgroup">
                       <mat-header-cell *matHeaderCellDef>{{translatedLangText.SUB_GROUP}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.SUB_GROUP}}:</span>
-                        {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair.subgroup_name_cv)}}</mat-cell>
+                        {{this.displaySubGroupNameCodeValue_Description(row.package_repair?.tariff_repair.subgroup_name_cv)}}</mat-cell>
                     </ng-container>
                     <!-- <ng-container matColumnDef="alias_name">
                       <mat-header-cell *matHeaderCellDef >{{translatedLangText.ALIAS_NAME
@@ -286,7 +286,7 @@
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.LABOUR_HOUR}}:</span>
-                        {{row.labour_hour}}</mat-cell>
+                        {{row.package_repair?.labour_hour}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="material_cost">
                       <mat-header-cell *matHeaderCellDef
@@ -294,7 +294,7 @@
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl justify-content-center'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.MATERIAL_COST$}}:</span>
-                        {{displayCurrency(row.material_cost)}}</mat-cell>
+                        {{displayCurrency(row.package_repair?.material_cost)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="last_update">
                       <mat-header-cell *matHeaderCellDef
