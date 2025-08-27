@@ -21,8 +21,11 @@ export class AuthApiService {
     return this.api.post<any>(endpoint, { refreshToken });
   }
 
-  forgotPassword(email: string): Observable<any> {
-    const endpoint = `${api_endpoints.user_forgot_password}?mail=${encodeURIComponent(email)}`;
+  forgotPassword(username: string, email?: string): Observable<any> {
+    let endpoint = `${api_endpoints.user_forgot_password}?username=${encodeURIComponent(username)}`;
+    if (email) {
+      endpoint += `&mail=${encodeURIComponent(email)}`;
+    }
     return this.api.post<any>(endpoint, {});
   }
 
@@ -31,7 +34,7 @@ export class AuthApiService {
     return this.api.post<any>(endpoint, { password: password, confirmPassword: confirmPassword, email: email, token: token });
   }
 
-  resetStaffPassword(newPassword: string,  username: string): Observable<any> {
+  resetStaffPassword(newPassword: string, username: string): Observable<any> {
     const endpoint = api_endpoints.staff_post_reset_password;
     return this.api.post<any>(endpoint, { newPassword: newPassword, username: username });
   }

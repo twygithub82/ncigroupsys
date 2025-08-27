@@ -185,8 +185,8 @@ export class AuthService {
     );
   }
 
-  forgotPassword(email: string): Observable<any> {
-    return this.authApiService.forgotPassword(email).pipe(
+  forgotPassword(username: string, email?: string): Observable<any> {
+    return this.authApiService.forgotPassword(username, email).pipe(
       map(response => response),
       catchError((error: HttpErrorResponse) => {
         const msg = error.error?.message?.[0];

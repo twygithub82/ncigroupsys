@@ -41,9 +41,11 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     SUBMIT: 'COMMON-FORM.SUBMIT',
     LOGIN: 'COMMON-FORM.LOGIN',
     EMAIL_NOT_FOUND: 'COMMON-FORM.EMAIL-NOT-FOUND',
+    USER_NOT_FOUND: 'COMMON-FORM.USER-NOT-FOUND',
     SOMETHING_WENT_WRONG_TRY_AGAIN_LATER: 'COMMON-FORM.SOMETHING-WENT-WRONG-TRY-AGAIN-LATER',
     EMAIL_SENT: 'COMMON-FORM.EMAIL-SENT',
-    AUTH_CAPTION: 'LANDING-SIGNIN.AUTH-CAPTION'
+    AUTH_CAPTION: 'LANDING-SIGNIN.AUTH-CAPTION',
+    USERNAME: 'LANDING-SIGNIN.USERNAME'
   }
 
   authForm!: UntypedFormGroup;
@@ -63,10 +65,14 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
 
   ngOnInit() {
     this.authForm = this.formBuilder.group({
-      email: [
+      username: [
         '',
-        [Validators.required, Validators.email, Validators.minLength(5)],
+        [Validators.required, Validators.minLength(5)],
       ],
+      // email: [
+      //   '',
+      //   [Validators.required, Validators.email, Validators.minLength(5)],
+      // ],
     });
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
@@ -88,11 +94,11 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
     if (this.authForm.invalid) {
       return;
     } else {
-      const emailForm = this.authForm.get('email');
-      if (emailForm) {
+      const usernameForm = this.authForm.get('username');
+      if (usernameForm) {
         this.loading = true;
         this.subs.sink = this.authService
-          .forgotPassword(emailForm.value)
+          .forgotPassword(usernameForm.value)
           .pipe(
             finalize(() => {
               this.loading = false; // always run after success or error
@@ -105,9 +111,9 @@ export class ForgotPasswordComponent extends UnsubscribeOnDestroyAdapter impleme
             },
             error: (error) => {
               if (error.message === 'EMAIL_NOT_FOUND') {
-                emailForm.setErrors({ notFound: true })
+                usernameForm.setErrors({ notFound: true })
               } else {
-                emailForm.setErrors({ commonError: true })
+                usernameForm.setErrors({ commonError: true })
               }
             }
           });
