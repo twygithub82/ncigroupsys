@@ -164,6 +164,7 @@ export class OverwriteSteamingApprovalFormDialogComponent {
     }
     this.isSteamRepair = this.steamDS.IsSteamRepair(this.steamItem!);
     this.flat_rate = ((this.steamItem?.flat_rate || 0) === 0) ? false : true;
+    this.onFlatRateChanged(false);
     return formGroup;
   }
 
