@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
   title: 'Home',
-  companyNameShort: 'DMS Global',
-  companyName: 'DMS GLOBAL PTE LTD',
+  companyNameShort: 'NCI Global',
+  companyName: 'NCI GLOBAL PTE LTD',
   apiUrl: 'https://tlx-idms-userlogin.azurewebsites.net',
   fileManagerURL: 'https://tlx-filemanagemenr-app.greenplant-68cf0a82.southeastasia.azurecontainerapps.io',
   graphQLUrl: 'https://tlx-idms-gateway.azurewebsites.net/graphql',
@@ -16,8 +16,8 @@ export const testTypeMapping: any = {
 }
 
 export const customerInfo = {
-  companyName: 'DMS GLOBAL PTE LTD',
-  companyAbb: 'DMS Global',
+  companyName: 'NCI GLOBAL PTE LTD',
+  companyAbb: 'NCI Global',
   companyAddress: '10G Enterprise Road, Enterprise 10, Singapore 629833',
   companyPhone: '+65 6517 9848',
   companyFax: '+65 6517 9848',
