@@ -5,12 +5,13 @@
         <h4>{{dialogTitle}}</h4>
       </div>
     </div>
-    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button me-2" aria-label="Close dialog" hidden>
+    <button mat-icon-button (click)="dialogRef.close()" class="modal-close-button me-2" aria-label="Close dialog"
+      hidden>
       <mat-icon>close</mat-icon>
     </button>
   </div>
   <div mat-dialog-content>
-    <div class="card">
+    <div class="card modal-card">
       <div class="header">
         <h2>
           {{translatedLangText.TANK_DETAILS}}
@@ -130,7 +131,7 @@
     <form class="ms-0" [formGroup]="repairForm!" #formDirective="ngForm">
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
+          <div class="card modal-card">
             <div class="header">
               <h2>
                 {{translatedLangText.ESTIMATE_DETAILS}}
@@ -332,7 +333,7 @@
       </div>
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <div class="card">
+          <div class="card modal-card">
             <div class="header">
               <h2>
                 {{translatedLangText.ESTIMATE_SUMMARY}}
@@ -764,39 +765,34 @@
       </div>
     </form>
     <div class="row m-t-5">
-      <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-        &nbsp;
-      </div> -->
-      <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 align-right pt-2 m-r-10"> -->
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pt-2  ">
-          <div class=" align-right   m-r-30 m-b-35">
-              @if (canExport()) {
-              <button mat-flat-button color="accent"
-                [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async)" class="m-r-5 me-1"
-                (click)="onExport($event)" hidden>
-                @if (!(repairDS.loading$ | async) && !(isFileActionLoading$ | async)) {
-                <i class="fas fa-file-export"></i>
-                } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)) {
-                <mat-icon>
-                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                </mat-icon>
-                }
-                {{translatedLangText.EXPORT}}
-              </button>
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pt-2">
+        <div class="align-right">
+          @if (canExport()) {
+          <button mat-flat-button color="accent"
+            [disabled]="(repairDS.loading$ | async) || (isFileActionLoading$ | async)" class="m-r-5 me-1"
+            (click)="onExport($event)" hidden>
+            @if (!(repairDS.loading$ | async) && !(isFileActionLoading$ | async)) {
+            <i class="fas fa-file-export"></i>
+            } @else if ((repairDS.loading$ | async) || (isFileActionLoading$ | async)) {
+            <mat-icon>
+              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
+            </mat-icon>
+            }
+            {{translatedLangText.EXPORT}}
+          </button>
+          }
+          <button mat-stroked-button [disabled]="(repairDS.actionLoading$ | async)" (click)="onClose($event)">
+            <mat-icon>
+              @if (!(repairDS.actionLoading$ | async)) {
+              close
+              } @else if ((repairDS.actionLoading$ | async)) {
+              <mat-spinner color="primary" [diameter]="18"></mat-spinner>
               }
-              <button mat-stroked-button [disabled]="(repairDS.actionLoading$ | async)" (click)="onClose($event)">
-                <mat-icon>
-                  @if (!(repairDS.actionLoading$ | async)) {
-                  close
-                  } @else if ((repairDS.actionLoading$ | async)) {
-                  <mat-spinner color="primary" [diameter]="18"></mat-spinner>
-                  }
-                </mat-icon>
-                {{translatedLangText.CLOSE}}
-              </button>
-       
-          </div>
+            </mat-icon>
+            {{translatedLangText.CLOSE}}
+          </button>
         </div>
+      </div>
     </div>
   </div>
 </div>
