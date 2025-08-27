@@ -36,16 +36,17 @@ import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-s
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageDepotItem } from 'app/data-sources/package-depot';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import { PackageRepairDS, PackageRepairItem, PackageRepairItemWithCount } from 'app/data-sources/package-repair';
 import { TariffRepairDS, TariffRepairItem, TariffRepairLengthItem } from 'app/data-sources/tariff-repair';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
-import { debounceTime, startWith, tap } from 'rxjs';
+import { debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { pack } from 'd3';
 
 @Component({
   selector: 'app-package-repair',
@@ -138,7 +139,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   custCompDS: CustomerCompanyDS;
 
 
-  packRepairItems: PackageRepairItem[] = [];
+  packRepairItems: PackageRepairItemWithCount[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
   customer_companyList: CustomerCompanyItem[] = [];
@@ -147,7 +148,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" } };
+  lastOrderBy: any = { package_repair:{ customer_company: { code: "ASC" } }};
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -155,7 +156,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   hasPreviousPage = false;
 
   searchField: string = "";
-  selection = new SelectionModel<PackageDepotItem>(true, []);
+  selection = new SelectionModel<PackageRepairItemWithCount>(true, []);
 
   selectedCustomers: any[] = [];
 
@@ -313,11 +314,12 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       part_name: this.partNameControl,
       group_name_cv: this.groupNameControl,
       sub_group_name_cv: this.subGroupNameControl,
-      handled_item_cv: this.handleItemControl,
+      handled_item_cv: ['ALL'],
       labour_hour: [''],
       material_cost: [''],
-      //handled_item_cv: ['']
+      //handled_item_cv: ['ALL']
     });
+    this.handleItemControl.setValue('ALL');
   }
 
   displayColumnChanged() {
@@ -470,7 +472,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-  editCall(row: PackageRepairItem) {
+  editCall(row: PackageRepairItemWithCount) {
     // this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -478,7 +480,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     } else {
       tempDirection = 'ltr';
     }
-    var rows: PackageRepairItem[] = [];
+    var rows: PackageRepairItemWithCount[] = [];
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '65vw',
@@ -527,21 +529,26 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
+    this.packRepairItems=[];
     const where: any = {
-      customer_company: { delete_dt: { eq: null } }
-    };
+      package_repair:{  and:[{customer_company: { delete_dt: { eq: null } }}]
+      }
+  };
+
+   where.count ={gte:0};
 
     if (this.selectedCustomers.length > 0) {
       var custGuids = this.selectedCustomers.map(c => c.guid);
-      where.customer_company_guid = { in: custGuids };
+      where.package_repair.and.push({customer_company_guid : { in: custGuids }});
     }
 
     if (this.groupNameControl.value?.code_val) {
 
       const cdValues: CodeValuesItem[] = [this.groupNameControl.value];
       var codes = cdValues.map(cc => cc.code_val);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.group_name_cv = { in: codes };
+      //where.tariff_repair = where.tariff_repair || {};
+      //where.tariff_repair.group_name_cv = { in: codes };
+      where.package_repair.and.push({tariff_repair: {group_name_cv : { in: codes }}});
 
     }
 
@@ -549,32 +556,34 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
       const cdValues: CodeValuesItem[] = [this.subGroupNameControl.value];
       var codes = cdValues.map(cc => cc.code_val);
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.subgroup_name_cv = { in: codes };
-
+      //where.tariff_repair = where.tariff_repair || {};
+      //where.tariff_repair.subgroup_name_cv = { in: codes };
+      where.package_repair.and.push({tariff_repair: {subgroup_name_cv : { in: codes }}});
     }
 
     if (this.pcForm!.value["part_name"]) {
       const description: Text = this.pcForm!.value["part_name"];
-      where.tariff_repair = where.tariff_repair || {};
-      where.tariff_repair.alias = { contains: description }
+      // where.tariff_repair = where.tariff_repair || {};
+      // where.tariff_repair.alias = { contains: description }
+      where.package_repair.and.push({tariff_repair: {alias : { contains: description }}});
     }
 
     // Handling material_cost
     if (this.pcForm!.value["material_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["material_cost"]);
-      where.material_cost = { eq: selectedCost }
+      // where.material_cost = { eq: selectedCost }
+      where.package_repair.and.push({material_cost : { eq: selectedCost }});
     }
 
 
-    // if (this.pcForm!.value["handled_item_cv"]) {
-    //   const handled = this.pcForm!.value["handled_item_cv"];
-    //   if (handled.code_val === 'HANDLED') {
-    //     where.and.push({ tank_count: { gt: 0 } })
-    //   } else if (handled.code_val === 'NON_HANDLED') {
-    //     where.and.push({ tank_count: { lte: 0 } })
-    //   }
-    // }
+    if (this.pcForm!.value["handled_item_cv"]) {
+      const handled = this.pcForm!.value["handled_item_cv"];
+      if (handled.code_val === 'HANDLED') {
+         where.count ={gt:0};
+      } else if (handled.code_val === 'NON_HANDLED') {
+         where.count ={eq:0};
+      }
+    }
 
 
     // if (this.pcForm!.value["min_cost"] && this.pcForm!.value["max_cost"]) {
@@ -674,7 +683,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     // // Handling labour_hour
     if (this.pcForm!.value["labour_hour"]) {
       const selectedHour: number = Number(this.pcForm!.value["labour_hour"]);
-      where.labour_hour = { eq: selectedHour }
+      //where.labour_hour = { eq: selectedHour }
+      where.package_repair.and.push({labour_hour:{eq:selectedHour}});
     }
     // if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
     //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
@@ -692,7 +702,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     // }
 
     this.lastSearchCriteria = where;
-    this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => {
+    //this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => 
+    this.subs.sink = this.packRepairDS.SearchPackageRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => 
+    {
       this.packRepairItems = data;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
@@ -768,7 +780,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
     this.previous_endCursor = this.endCursor;
-    this.subs.sink = this.packRepairDS.SearchPackageRepair(where, order, first, after, last, before).subscribe(data => {
+    this.subs.sink = this.packRepairDS.SearchPackageRepairWithCount(where, order, first, after, last, before).subscribe(data => {
       this.packRepairItems = data;
       this.endCursor = this.packRepairDS.pageInfo?.endCursor;
       this.startCursor = this.packRepairDS.pageInfo?.startCursor;
@@ -836,13 +848,14 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
         }
       });
       if (subqueries.length > 0) {
-        this.CodeValuesDS?.getCodeValuesByType(subqueries)
-        subqueries.map(s => {
-          this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
-            data = this.sortByDescription(data)
-            this.allSubGroupNameCvList.push(...data);
-          });
-        });
+        this.loadCodeValues(subqueries);
+        // this.CodeValuesDS?.getCodeValuesByType(subqueries).subscribe
+        // subqueries.map(s => {
+        //   this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
+        //     data = this.sortByDescription(data)
+        //     this.allSubGroupNameCvList.push(...data);
+        //   });
+        // });
       }
     });
     // this.CodeValuesDS?.connectAlias('subGroupName').subscribe(data => {
@@ -850,12 +863,27 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     // });
     this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
       this.handledItemCvList = addDefaultSelectOption(data, 'All');
+      this.pcForm?.get("handled_item_cv")!.setValue(
+      this.handledItemCvList.find(t => t.description === 'All')
+    );
     });
     this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
     });
     //this.search();
   }
+
+  async loadCodeValues(subqueries: { alias: string, codeValType: string }[]) {
+  await firstValueFrom(this.CodeValuesDS!.getCodeValuesByType_observable(subqueries));
+
+  subqueries.forEach(s => {
+    this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
+      data = this.sortByDescription(data);
+      this.allSubGroupNameCvList.push(...data);
+    });
+  });
+}
+
 
   sortByDescription<T extends { description?: string }>(list: T[]): T[] {
     return [...list].sort((a, b) => (a.description || '').localeCompare(b.description || ''));
@@ -918,7 +946,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displaySubGroupNameCodeValue_Description(codeValue: String) {
-    return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
+   // return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
+   return this.GetCodeValue_Description(codeValue, this.allSubGroupNameCvList);
   }
 
   getTariffRepairAlias(row: TariffRepairItem) {
@@ -939,10 +968,10 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-  displayLastUpdated(r: PackageRepairItem) {
-    var updatedt = r.update_dt;
+  displayLastUpdated(r: PackageRepairItemWithCount) {
+    var updatedt = r.package_repair?.update_dt;
     if (updatedt === null) {
-      updatedt = r.create_dt;
+      updatedt = r.package_repair?.create_dt;
     }
     return this.displayDate(updatedt);
 
@@ -1124,16 +1153,21 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       switch (field) {
         case 'last_update':
           this.lastOrderBy = {
+            package_repair: {
               update_dt: dirEnum,
               create_dt: dirEnum,
+            }
           };
           break;
 
         case 'custCompanyName':
           this.lastOrderBy = {
-            customer_company:{
-              code: dirEnum,
+            package_repair:{
+              customer_company:{
+                code: dirEnum,
+              }  
             }
+            
           };
           break;
       
