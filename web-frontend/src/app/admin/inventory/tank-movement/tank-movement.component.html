@@ -36,7 +36,7 @@
                           <input matInput formControlName="tank_no">
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                           <mat-chip-grid #name_chipGrid class="nowrap single-line-chip-grid">
@@ -77,7 +77,7 @@
                       </mat-autocomplete> -->
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                           <input matInput formControlName="eir_no">
@@ -94,7 +94,7 @@
                           <mat-date-range-picker #eta_picker></mat-date-range-picker>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                           <mat-chip-grid #cargo_chipGrid class="nowrap single-line-chip-grid">
@@ -153,7 +153,7 @@
                           </mat-select>
                         </mat-form-field>
                       </div>
-                      <div class="col-xl-2 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+                      <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
                           <mat-select formControlName="tank_status_cv" (selectionChange)="AutoSearch()">
@@ -226,11 +226,11 @@
                     </ng-container>
                     <ng-container matColumnDef="eir_no">
                       <mat-header-cell mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                         {{translatedLangText.EIR_NO}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                        [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                         <span
                           class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{igDS.getInGateItem(row.in_gate)?.eir_no}}
                       </mat-cell>
@@ -259,11 +259,11 @@
                     </ng-container>
                     <ng-container matColumnDef="last_cargo">
                       <mat-header-cell *matHeaderCellDef
-                        [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
+                        [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'">
                         {{translatedLangText.LAST_CARGO}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row"
-                        [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-2_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'"
+                        [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm tbl-col-width-per-12-xs'"
                         (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.LAST_CARGO}}:</span>
                         <span class="mobile-label-value">{{row.tariff_cleaning?.cargo}}</span>

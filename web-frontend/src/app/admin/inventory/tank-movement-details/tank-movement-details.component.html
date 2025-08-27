@@ -101,7 +101,8 @@
                           </div>
                           <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
-                              {{ccDS.displayName(sot?.storing_order?.customer_company)}}
+                              <!-- {{ccDS.displayName(sot?.storing_order?.customer_company)}} -->
+                              {{sot?.storing_order?.customer_company?.name}}
                             </span>
                           </div>
                         </div>
@@ -111,7 +112,8 @@
                           </div>
                           <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
-                              {{ccDS.displayName(sot?.customer_company)}}
+                              <!-- {{ccDS.displayName(sot?.customer_company)}} -->
+                              {{sot?.storing_order?.customer_company?.name}}
                               @if (tiItem?.previous_customer_company) {
                               (<span class="previous-label">{{tiItem?.previous_customer_company?.code}}</span>)
                               }
@@ -129,7 +131,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-4-5 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                      <div class="col-xl-4 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <div class="row right-align-display">
                           <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
@@ -171,7 +173,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-3-25 col-lg-3-25 col-md-12 col-sm-12 col-xs-12 m-b-0">
+                      <div class="col-xl-4 col-lg-3-25 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <div class="row right-align-display">
                           <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
@@ -1675,7 +1677,7 @@
                         }
                         <div class="row">
                           <div
-                            class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 mt-xl-0 mt-lg-4 mt-md-4 mt-sm-4 mt-xs-4 m-t-70 m-b-0">
+                            class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-xs-12 mt-xl-0 mt-lg-4 mt-md-4 mt-sm-4 mt-xs-4 m-t-105 m-b-0">
                             <div class="row justify-content-center">
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-5">
                                 <div class="row">
@@ -1743,7 +1745,7 @@
                           <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-0">
                             <div class="responsive_table">
                               <table mat-table [dataSource]="sotDepotCostDetails" matSort
-                                class="mat-cell advance-tab-table striped-rows hover-highlight dark-header curve-table">
+                                class="mat-cell advance-tab-table striped-rows dark-header curve-table">
                                 <ng-container matColumnDef="description">
                                   <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                                     {{translatedLangText.DESCRIPTION}}

@@ -24,3 +24,12 @@
     top: 10px;
     right: 0px;
 }
+
+/* Class for striped rows */
+.striped-rows .mdc-data-table__row:nth-child(even) {
+  background-color: lighten(#b3cbff, 10%);
+}
+
+.striped-rows .mdc-data-table__row:nth-child(odd) {
+  background-color: #ffffff;
+}

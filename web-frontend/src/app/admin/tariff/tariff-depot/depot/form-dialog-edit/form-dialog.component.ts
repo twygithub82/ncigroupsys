@@ -307,27 +307,52 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
               }
             }
             if (update) {
-              var updatedTD = new TariffDepotItem(this.selectedItem);
-              updatedTD.profile_name = this.pcForm!.value['name'];
-              updatedTD.description = this.pcForm!.value['description'];
-              updatedTD.free_storage = Utility.convertNumber(this.pcForm!.value['free_storage']);
-              updatedTD.lolo_cost = Utility.convertNumber(this.pcForm!.value['lolo_cost'], 2);
-              updatedTD.preinspection_cost = Utility.convertNumber(this.pcForm!.value['preinspection_cost'], 2);
-              updatedTD.storage_cost = Utility.convertNumber(this.pcForm!.value['storage_cost'], 2);
-              updatedTD.gate_in_cost = Utility.convertNumber(this.pcForm!.value['gate_in_cost'], 2);
-              updatedTD.gate_out_cost = Utility.convertNumber(this.pcForm!.value['gate_out_cost'], 2);
-              updatedTD.tanks = unit_types;
-              this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result => {
-                this.handleSaveSuccess(result?.data?.updateTariffDepot);
-              });
+              // var updatedTD = new TariffDepotItem(this.selectedItem);
+              // updatedTD.profile_name = this.pcForm!.value['name'];
+              // updatedTD.description = this.pcForm!.value['description'];
+              // updatedTD.free_storage = Utility.convertNumber(this.pcForm!.value['free_storage']);
+              // updatedTD.lolo_cost = Utility.convertNumber(this.pcForm!.value['lolo_cost'], 2);
+              // updatedTD.preinspection_cost = Utility.convertNumber(this.pcForm!.value['preinspection_cost'], 2);
+              // updatedTD.storage_cost = Utility.convertNumber(this.pcForm!.value['storage_cost'], 2);
+              // updatedTD.gate_in_cost = Utility.convertNumber(this.pcForm!.value['gate_in_cost'], 2);
+              // updatedTD.gate_out_cost = Utility.convertNumber(this.pcForm!.value['gate_out_cost'], 2);
+              // updatedTD.tanks = unit_types;
+              // this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result => {
+              //   this.handleSaveSuccess(result?.data?.updateTariffDepot);
+              // });
+              this.performUpdate(unit_types);
             } else {
               this.pcForm?.get('unit_types')?.setErrors({ assigned: true });
             }
           });
         }
+        else {
+          // No value selected, allow null in unit_types
+          unit_types = [];
+          this.performUpdate(unit_types);
+        }
       }
     });
   }
+
+
+  performUpdate(unit_types: TankItem[]) {
+    const updatedTD = new TariffDepotItem(this.selectedItem);
+    updatedTD.profile_name = this.pcForm!.value['name'];
+    updatedTD.description = this.pcForm!.value['description'];
+    updatedTD.free_storage = Utility.convertNumber(this.pcForm!.value['free_storage']);
+    updatedTD.lolo_cost = Utility.convertNumber(this.pcForm!.value['lolo_cost'], 2);
+    updatedTD.preinspection_cost = Utility.convertNumber(this.pcForm!.value['preinspection_cost'], 2);
+    updatedTD.storage_cost = Utility.convertNumber(this.pcForm!.value['storage_cost'], 2);
+    updatedTD.gate_in_cost = Utility.convertNumber(this.pcForm!.value['gate_in_cost'], 2);
+    updatedTD.gate_out_cost = Utility.convertNumber(this.pcForm!.value['gate_out_cost'], 2);
+    updatedTD.tanks = unit_types;
+
+    this.trfDepotDS.updateTariffDepot(updatedTD).subscribe(result => {
+      this.handleSaveSuccess(result?.data?.updateTariffDepot);
+    });
+  }
+
 
   displayLastUpdated(r: TariffDepotItem) {
     return Utility.convertEpochToDateStr(r.update_dt || r.create_dt)
