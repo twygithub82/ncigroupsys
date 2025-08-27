@@ -5,11 +5,10 @@
       <!-- breadcrumb -->
       <app-breadcrumb [title]="pageTitle" [items]="breadcrumsMiddleList" [active_item]="pageTitle"></app-breadcrumb>
     </div>
-    
+
     @if (modulePackageService.isStarterPackage()) {
     <div class="card info-card dashboard-logo p-0 mt-0">
       <div class="dashboard-content">
-
         <!-- <img src="assets/images/landing-logo.png" alt="bg-01" class="img-fluid" />  -->
       </div>
     </div>
@@ -93,7 +92,8 @@
 
         @if (AllowToView(translatedLangText.RESIDUE_PENDING)) {
 
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.RESIDUE_PENDING)">
           <div class="card info-card pointer">
             <dashboard-residue-waiting />
           </div>
@@ -101,7 +101,8 @@
         }
         @if (AllowToView(translatedLangText.STEAMING_PENDING)) {
 
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.STEAMING_PENDING)">
           <div class="card info-card pointer">
             <dashboard-steaming-waiting />
           </div>
@@ -110,7 +111,8 @@
 
         @if (AllowToView(translatedLangText.TANK_PERIODIC_TEST_DUE)){
 
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.TANK_PERIODIC_TEST_DUE)">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.TANK_PERIODIC_TEST_DUE)">
           <div class="card info-card pointer">
             <dashboard-tank-test-due />
           </div>
@@ -119,7 +121,8 @@
 
         @if (AllowToView(translatedLangText.RELEASE_PENDING)){
 
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.RELEASE_PENDING)">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.RELEASE_PENDING)">
           <div class="card info-card pointer">
             <dashboard-release-waiting />
           </div>
@@ -128,7 +131,8 @@
 
         @if (AllowToView(translatedLangText.GATE_IN_PUBLISH_PENDING)){
 
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.GATE_IN_PUBLISH_PENDING)">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.GATE_IN_PUBLISH_PENDING)">
           <div class="card info-card pointer">
             <dashboard-gatein-publish-waiting />
           </div>
@@ -137,7 +141,8 @@
 
         @if (AllowToView(translatedLangText.GATE_OUT_PUBLISH_PENDING)){
 
-        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12" (click)="onIconClick($event, translatedLangText.GATE_OUT_PUBLISH_PENDING)">
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12"
+          (click)="onIconClick($event, translatedLangText.GATE_OUT_PUBLISH_PENDING)">
           <div class="card info-card pointer">
             <dashboard-gateout-publish-waiting />
           </div>

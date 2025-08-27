@@ -146,7 +146,7 @@
                           </div>
                           <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
-                              {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt)|| "-"}}
+                              {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt) || "-"}}
                             </span>
                           </div>
                         </div>
@@ -1249,7 +1249,8 @@
                                       </div>
                                       <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
                                         <span class="value-display-info">
-                                          {{displayDate(cleaningItem?.[0]?.create_dt) || "-"}}
+                                          <!-- {{displayDate(cleaningItem?.[0]?.create_dt) || "-"}} -->
+                                          {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt) || "-"}}
                                         </span>
                                       </div>
                                     </div>
