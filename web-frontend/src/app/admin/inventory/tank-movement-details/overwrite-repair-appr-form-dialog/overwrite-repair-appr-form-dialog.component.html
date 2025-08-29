@@ -10,153 +10,151 @@
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
         <div class="row">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-            <div class="row">
-              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.TANK_NO}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{sot.tank_no}}
-                    </span>
-                  </div>
-                </div>
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.CUSTOMER}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{ccDS.displayName(sot.storing_order?.customer_company)}}
-                    </span>
-                  </div>
-                </div>
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.LAST_CARGO}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{sot.tariff_cleaning?.cargo}}
-                    </span>
-                  </div>
-                </div>
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.OWNER}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <div class="d-flex align-items-center">
-                      <span class="value-display-info">
-                        {{ccDS.displayName(sot.customer_company)}}
-                      </span>
-                      @if (shouldDisplay()) {
-                      <mat-checkbox class="compact-checkbox m-r-5" color="primary" [(ngModel)]="isOwner"
-                        [disabled]="!canToggleOwner()" (change)="onOwnerToggle($event)">
-                      </mat-checkbox>
-                      }
-                    </div>
-                  </div>
-                </div>
+          <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.TANK_NO}}:</span>
               </div>
-              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.EIR_NO}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{igItem.eir_no}}
-                    </span>
-                  </div>
-                </div>
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.EIR_DATE}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{displayDate(igItem.eir_dt)}}
-                    </span>
-                  </div>
-                </div>
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.PURPOSE}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{data.populateData.sot_purpose}}
-                    </span>
-                  </div>
-                </div>
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.LAST_TEST}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{data.populateData.last_test_desc || '-'}}
-                    </span>
-                  </div>
-                </div>
-                <div class="row right-align-display">
-                  <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
-                    <span class="label-display-info">{{data.translatedLangText.NEXT_TEST}}:</span>
-                  </div>
-                  <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
-                    <span class="value-display-info">
-                      {{data.populateData.next_test_desc || '-'}}
-                    </span>
-                  </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{sot.tank_no}}
+                </span>
+              </div>
+            </div>
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.CUSTOMER}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{ccDS.displayName(sot.storing_order?.customer_company)}}
+                </span>
+              </div>
+            </div>
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.LAST_CARGO}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{sot.tariff_cleaning?.cargo}}
+                </span>
+              </div>
+            </div>
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.OWNER}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <div class="d-flex align-items-center">
+                  <span class="value-display-info">
+                    {{ccDS.displayName(sot.customer_company)}}
+                  </span>
+                  @if (shouldDisplay()) {
+                  <mat-checkbox class="compact-checkbox m-r-5" color="primary" [(ngModel)]="isOwner"
+                    [disabled]="!canToggleOwner()" (change)="onOwnerToggle($event)">
+                  </mat-checkbox>
+                  }
                 </div>
               </div>
             </div>
           </div>
+          <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 mb-1">
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.EIR_NO}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{igItem.eir_no}}
+                </span>
+              </div>
+            </div>
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.EIR_DATE}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{displayDate(igItem.eir_dt)}}
+                </span>
+              </div>
+            </div>
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.PURPOSE}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{data.populateData.sot_purpose}}
+                </span>
+              </div>
+            </div>
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.LAST_TEST}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{data.populateData.last_test_desc || '-'}}
+                </span>
+              </div>
+            </div>
+            <div class="row right-align-display">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 m-b-5">
+                <span class="label-display-info">{{data.translatedLangText.NEXT_TEST}}:</span>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 m-b-5">
+                <span class="value-display-info">
+                  {{data.populateData.next_test_desc || '-'}}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-        <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
-          <div class="row">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <div class="card">
-                <div class="header">
-                  <h2>
-                    {{data.translatedLangText.BILLING_PROFILE}}
-                  </h2>
-                </div>
-                <div class="body">
-                  <mat-card-content>
+      </div>
+    </div>
+    <form class="register-form" [formGroup]="overwriteForm" #formDirective="ngForm">
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                {{data.translatedLangText.BILLING_PROFILE}}
+              </h2>
+            </div>
+            <div class="body">
+              <mat-card-content>
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                     <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
-                        <div class="row">
-                          <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
-                            <mat-form-field class="example-full-width" appearance="fill">
-                              <mat-label>{{data.translatedLangText.BILLING_TO}}</mat-label>
-                              <mat-select formControlName="billing_to">
-                                @for (item of data.populateData.billingBranchList; track item) {
-                                <mat-option [value]="item">
-                                  {{ this.ccDS.displayName(item)}}
-                                </mat-option>
-                                }
-                              </mat-select>
-                            </mat-form-field>
-                          </div>
-                          <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                            <mat-form-field class="example-full-width" appearance="fill">
-                              <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
-                              <input matInput formControlName="job_no">
-                            </mat-form-field>
-                          </div>
-                          <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-5">
-                            <mat-form-field class="example-full-width" appearance="fill">
-                              <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
-                              <input matInput formControlName="overwrite_remarks">
-                            </mat-form-field>
-                          </div>
-                        </div>
+                      <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-5 align-right">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{data.translatedLangText.BILLING_TO}}</mat-label>
+                          <mat-select formControlName="billing_to">
+                            @for (item of data.populateData.billingBranchList; track item) {
+                            <mat-option [value]="item">
+                              {{ this.ccDS.displayName(item)}}
+                            </mat-option>
+                            }
+                          </mat-select>
+                        </mat-form-field>
                       </div>
-                      <!-- <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
+                      <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{data.translatedLangText.JOB_NO}}</mat-label>
+                          <input matInput formControlName="job_no">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-8 col-sm-8 col-xs-8 m-b-5">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{data.translatedLangText.REMARKS}}</mat-label>
+                          <input matInput formControlName="overwrite_remarks">
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
                         <div class="row">
                           <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-5">
                             <mat-form-field class="example-full-width" appearance="fill">
@@ -166,558 +164,554 @@
                           </div>
                         </div>
                       </div> -->
-                    </div>
-                  </mat-card-content>
                 </div>
-              </div>
+              </mat-card-content>
             </div>
           </div>
-        </form>
-        <div class="body overflow-auto">
-          <div class="responsive_table">
-            <table mat-table [dataSource]="repList" matSort
-              class="mat-cell advance-table hover-highlight dark-header curve-table squeeze-form-field"
-              multiTemplateDataRows>
-              <ng-container matColumnDef="group_name_cv">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{data.translatedLangText.GROUP}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length"
-                  [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{getGroupNameCodeDescription(row.tariff_repair?.group_name_cv)}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="seq">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">No.</mat-header-cell>
-                <mat-cell *matCellDef="let row;"
-                  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{row.index
-                  + 1}}</mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="subgroup_name_cv">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{data.translatedLangText.SUBGROUP}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.SUBGROUP}}:</span>
-                  {{getSubgroupNameCodeDescription(row.tariff_repair?.subgroup_name_cv)}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="damange">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{data.translatedLangText.DAMAGE}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="truncate-text">
-                    <span class="mobile-label">{{data.translatedLangText.DAMAGE}}:</span>
-                    <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
-                      matTooltipClass="multiline-tooltip">
-                      {{displayDamageRepairCode(row.rp_damage_repair, 0)}}
-                    </span>
-                  </span>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="repair">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{data.translatedLangText.REPAIR}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.REPAIR}}:</span>
-                  <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
-                    matTooltipClass="multiline-tooltip">
-                    {{displayDamageRepairCode(row.rp_damage_repair, 1)}}
-                  </span>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="description">
-                <mat-header-cell *matHeaderCellDef [ngClass]="''">
-                  {{data.translatedLangText.DESCRIPTION}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
-                  <span class="mobile-label">{{data.translatedLangText.DESCRIPTION}}:</span>
-                  {{row.description}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="quantity">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  {{data.translatedLangText.QTY}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  <span class="mobile-label">{{data.translatedLangText.QTY}}:</span>
-                  {{row.quantity}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="hour">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  {{data.translatedLangText.HOUR}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  <span class="mobile-label">{{data.translatedLangText.HOUR}}:</span>
-                  {{row.hour}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="price">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  {{data.translatedLangText.PRICE}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.PRICE}}:</span>
-                  <div class="cost-label justify-content-end">
-                    <span>{{parse2Decimal(row.material_cost)}}</span>
-                  </div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="material">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  {{data.translatedLangText.MATERIAL}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  <span class="mobile-label">{{data.translatedLangText.MATERIAL}}:</span>
-                  <div class="cost-label justify-content-end">
-                    <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
-                  </div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="approve_part">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <mat-icon>more_vert</mat-icon>
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>
-                  @if (repairPartDS.is4X(row.rp_damage_repair)){
-                  <mat-icon class="font-bold">close</mat-icon>
-                  }
-                  @else {
-                  @if (row.approve_part === null || row.approve_part === undefined ||
-                  repairPartDS.isApproved(row)){
-                  <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event, row)">check</mat-icon>
-                  }
-                  @else {
-                  <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event, row)">close</mat-icon>
-                  }
-                  }
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="approve_qty">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  {{data.translatedLangText.QTY}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  <span class="mobile-label">{{data.translatedLangText.QTY}}:</span>
-                  <tlx-form-field customClass="mat-table-form-txt-40px">
-                    <mat-form-field>
-                      <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
-                        (change)="calculateCost(summaryTableForm);" [disabled]="isDisabledPart(row)"
-                        (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
-                    </mat-form-field>
-                  </tlx-form-field>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="approve_hour">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  {{data.translatedLangText.HOUR}}
-                </mat-header-cell>
-                <mat-cell mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.HOUR}}:</span>
-                  <tlx-form-field customClass="mat-table-form-txt-40px">
-                    <mat-form-field>
-                      <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour"
-                        (change)="calculateCost(summaryTableForm);" [disabled]="isDisabledPart(row)"
-                        [allowDecimal]="true" (wheel)="preventDefault($event)" (focus)="selectText($event)"
-                        type="number" min="0">
-                    </mat-form-field>
-                  </tlx-form-field>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="approve_cost">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
-                  {{data.translatedLangText.PRICE}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.PRICE}}:</span>
-                  <div class="cost-label">
-                    <span></span>
-                    <tlx-form-field customClass="mat-table-form-txt-70px">
-                      <mat-form-field>
-                        <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
-                          (change)="calculateCost(summaryTableForm);" [disabled]="isDisabledPart(row)" appNumericText
-                          [allowDecimal]="true" (wheel)="preventDefault($event)" (focus)="selectText($event)"
-                          type="text">
-                      </mat-form-field>
-                    </tlx-form-field>
-                  </div>
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="isOwner">
-                <mat-header-cell *matHeaderCellDef
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  {{data.translatedLangText.OWNER}}
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row"
-                  [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
-                  <span class="mobile-label">{{data.translatedLangText.OWNER}}:</span>
-                  <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner" [ngClass]="'tbl-checkbox'">
-                  </mat-checkbox>
-                </mat-cell>
-              </ng-container>
-              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-              <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];" [hidden]="!row.isGroupHeader"
-                [ngClass]="{'bg-lightest-blue font-bold': true}" [style.cursor]="'pointer'" matRipple>
-              </mat-row>
-              <!-- <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+        </div>
+      </div>
+    </form>
+    <div class="body overflow-auto">
+      <div class="responsive_table">
+        <table mat-table [dataSource]="repList" matSort
+          class="mat-cell advance-table hover-highlight dark-header curve-table squeeze-form-field"
+          multiTemplateDataRows>
+          <ng-container matColumnDef="group_name_cv">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.GROUP}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length"
+              [ngClass]="'tbl-col-width-per-12-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{getGroupNameCodeDescription(row.tariff_repair?.group_name_cv)}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="seq">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">No.</mat-header-cell>
+            <mat-cell *matCellDef="let row;"
+              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{row.index
+              + 1}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="subgroup_name_cv">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.SUBGROUP}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.SUBGROUP}}:</span>
+              {{getSubgroupNameCodeDescription(row.tariff_repair?.subgroup_name_cv)}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="damange">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.DAMAGE}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="truncate-text">
+                <span class="mobile-label">{{data.translatedLangText.DAMAGE}}:</span>
+                <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 0)"
+                  matTooltipClass="multiline-tooltip">
+                  {{displayDamageRepairCode(row.rp_damage_repair, 0)}}
+                </span>
+              </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="repair">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.REPAIR}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.REPAIR}}:</span>
+              <span [matTooltip]="displayDamageRepairCodeDescription(row.rp_damage_repair, 1)"
+                matTooltipClass="multiline-tooltip">
+                {{displayDamageRepairCode(row.rp_damage_repair, 1)}}
+              </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef [ngClass]="''">
+              {{data.translatedLangText.DESCRIPTION}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row" [ngClass]="''">
+              <span class="mobile-label">{{data.translatedLangText.DESCRIPTION}}:</span>
+              {{row.description}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="quantity">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              {{data.translatedLangText.QTY}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              <span class="mobile-label">{{data.translatedLangText.QTY}}:</span>
+              {{row.quantity}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="hour">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              {{data.translatedLangText.HOUR}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              <span class="mobile-label">{{data.translatedLangText.HOUR}}:</span>
+              {{row.hour}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              {{data.translatedLangText.PRICE}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.PRICE}}:</span>
+              <div class="cost-label justify-content-end">
+                <span>{{parse2Decimal(row.material_cost)}}</span>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="material">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              {{data.translatedLangText.MATERIAL}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              <span class="mobile-label">{{data.translatedLangText.MATERIAL}}:</span>
+              <div class="cost-label justify-content-end">
+                <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="approve_part">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <mat-icon>more_vert</mat-icon>
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.APPROVAL}}:</span>
+              @if (repairPartDS.is4X(row.rp_damage_repair)){
+              <mat-icon class="font-bold">close</mat-icon>
+              }
+              @else {
+              @if (row.approve_part === null || row.approve_part === undefined ||
+              repairPartDS.isApproved(row)){
+              <mat-icon class="col-green font-bold" (click)="toggleApprovePart($event, row)">check</mat-icon>
+              }
+              @else {
+              <mat-icon class="col-red font-bold" (click)="toggleApprovePart($event, row)">close</mat-icon>
+              }
+              }
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="approve_qty">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              {{data.translatedLangText.QTY}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              <span class="mobile-label">{{data.translatedLangText.QTY}}:</span>
+              <tlx-form-field customClass="mat-table-form-txt-40px">
+                <mat-form-field>
+                  <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_qty"
+                    (change)="calculateCost(summaryTableForm);" [disabled]="isDisabledPart(row)"
+                    (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                </mat-form-field>
+              </tlx-form-field>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="approve_hour">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              {{data.translatedLangText.HOUR}}
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.HOUR}}:</span>
+              <tlx-form-field customClass="mat-table-form-txt-40px">
+                <mat-form-field>
+                  <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_hour"
+                    (change)="calculateCost(summaryTableForm);" [disabled]="isDisabledPart(row)" [allowDecimal]="true"
+                    (wheel)="preventDefault($event)" (focus)="selectText($event)" type="number" min="0">
+                </mat-form-field>
+              </tlx-form-field>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="approve_cost">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-center'">
+              {{data.translatedLangText.PRICE}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.PRICE}}:</span>
+              <div class="cost-label">
+                <span></span>
+                <tlx-form-field customClass="mat-table-form-txt-70px">
+                  <mat-form-field>
+                    <input class="text-end" tlxFormInput matInput [(ngModel)]="row.approve_cost"
+                      (change)="calculateCost(summaryTableForm);" [disabled]="isDisabledPart(row)" appNumericText
+                      [allowDecimal]="true" (wheel)="preventDefault($event)" (focus)="selectText($event)" type="text">
+                  </mat-form-field>
+                </tlx-form-field>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="isOwner">
+            <mat-header-cell *matHeaderCellDef
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              {{data.translatedLangText.OWNER}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"
+              [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <span class="mobile-label">{{data.translatedLangText.OWNER}}:</span>
+              <mat-checkbox (click)="selectOwner($event, row)" [checked]="row.owner" [ngClass]="'tbl-checkbox'">
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; let i = index; columns: ['group_name_cv'];" [hidden]="!row.isGroupHeader"
+            [ngClass]="{'bg-lightest-blue font-bold': true}" [style.cursor]="'pointer'" matRipple>
+          </mat-row>
+          <!-- <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
                         [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
                         (click)="editApproveDetails($event, row, row.index)" [style.cursor]="'pointer'" matRipple>
                       </mat-row> -->
-              <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
-                [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
-                [style.cursor]="'pointer'" matRipple>
-              </mat-row>
-            </table>
-          </div>
-          <!-- No result -->
-          <!-- @if (!(igDS.loading$ | async) && !deList.length) {
+          <mat-row *matRowDef="let row; let i = index; columns: displayedColumns;"
+            [ngClass]="{'deleted-row': row.action === 'cancel', 'edited-row': row.guid && !row.delete_dt && row.edited}"
+            [style.cursor]="'pointer'" matRipple>
+          </mat-row>
+        </table>
+      </div>
+      <!-- No result -->
+      <!-- @if (!(igDS.loading$ | async) && !deList.length) {
           <div class="no-results m-l-20 pt-3" [style.display]="deList.length === 0 ? '' : 'none'">
             <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
           </div>
           } -->
-          <!-- Loading spinner -->
-          <!-- @if (igDS.loading$ | async) {
+      <!-- Loading spinner -->
+      <!-- @if (igDS.loading$ | async) {
           <div class="tbl-spinner">
             <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
             </mat-progress-spinner>
           </div>
           } -->
-        </div>
+    </div>
 
-        <form class="register-form" [formGroup]="summaryTableForm" #formDirective="ngForm">
-          <div class="row m-0 mt-3">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
-              <div class="row p-l-0 p-r-0">
-                <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border bg-light-grey">
-                      <span class="font-bold">{{data.translatedLangText.DESCRIPTION}}</span>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{data.translatedLangText.LABOUR}}
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{data.translatedLangText.MATERIAL_COST}}
-                    </div>
-                    @if (shouldDisplay()) {
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{data.translatedLangText.TOTAL_COST}}
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{data.translatedLangText.LABOUR_DISCOUNT}} (%)
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{data.translatedLangText.MATERIAL_DISCOUNT}} (%)
-                    </div>
-                    }
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                      {{data.translatedLangText.NET_COST}}
-                    </div>
-                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+    <form class="register-form" [formGroup]="summaryTableForm" #formDirective="ngForm">
+      <div class="row m-0 mt-3">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+          <div class="row p-l-0 p-r-0">
+            <div class="col-xl-2-5 col-lg-2-5 col-md-2-5 col-sm-2-5 m-b-0">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 border bg-light-grey">
+                  <span class="font-bold">{{data.translatedLangText.DESCRIPTION}}</span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                  {{data.translatedLangText.LABOUR}}
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                  {{data.translatedLangText.MATERIAL_COST}}
+                </div>
+                @if (shouldDisplay()) {
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                  {{data.translatedLangText.TOTAL_COST}}
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                  {{data.translatedLangText.LABOUR_DISCOUNT}} (%)
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                  {{data.translatedLangText.MATERIAL_DISCOUNT}} (%)
+                </div>
+                }
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
+                  {{data.translatedLangText.NET_COST}}
+                </div>
+                <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.CONVERTED_TO}}
                         </div> -->
+              </div>
+            </div>
+            <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                  <span class="font-bold">{{data.translatedLangText.RATE}}</span>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                  <div class="table-label cost-label">
+                    <span>$</span><span>{{getLabourCost() | number: '1.2-2'}}</span>
                   </div>
                 </div>
-                <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{data.translatedLangText.RATE}}</span>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label cost-label">
-                        <span>$</span><span>{{getLabourCost() | number: '1.2-2'}}</span>
-                      </div>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label"></div>
-                    </div>
-                    @if (shouldDisplay()) {
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label"></div>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                      <tlx-form-field customClass="example-full-width">
-                        <mat-form-field>
-                          <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
-                            [allowDecimal]="true" (focus)="selectText($event)"
-                            [placeholder]="data.translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
-                        </mat-form-field>
-                      </tlx-form-field>
-                    </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                      <tlx-form-field customClass="example-full-width">
-                        <mat-form-field>
-                          <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
-                            [allowDecimal]="true" (focus)="selectText($event)"
-                            [placeholder]="data.translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
-                        </mat-form-field>
-                      </tlx-form-field>
-                    </div>
-                    }
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                      <div class="table-label"></div>
-                    </div>
-                    <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                  <div class="table-label"></div>
+                </div>
+                @if (shouldDisplay()) {
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                  <div class="table-label"></div>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
+                  <tlx-form-field customClass="example-full-width">
+                    <mat-form-field>
+                      <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
+                        [allowDecimal]="true" (focus)="selectText($event)"
+                        [placeholder]="data.translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
+                    </mat-form-field>
+                  </tlx-form-field>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
+                  <tlx-form-field customClass="example-full-width">
+                    <mat-form-field>
+                      <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
+                        [allowDecimal]="true" (focus)="selectText($event)"
+                        [placeholder]="data.translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0">
+                    </mat-form-field>
+                  </tlx-form-field>
+                </div>
+                }
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                  <div class="table-label"></div>
+                </div>
+                <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label cost-label font-bold">
                             <span>$</span><span>{{translatedLangText.CONVERTED_TO}}</span>
                           </div>
                         </div> -->
-                  </div>
+              </div>
+            </div>
+            @if (shouldDisplay()) {
+            @if (isOwner) {
+            <div class="col-xl col-lg col-md col-sm m-b-0">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                  <span class="font-bold">{{data.translatedLangText.OWNER}}</span>
                 </div>
-                @if (shouldDisplay()) {
-                @if (isOwner) {
-                <div class="col-xl col-lg col-md col-sm m-b-0">
+              </div>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{data.translatedLangText.OWNER}}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>{{summaryTableForm.get('total_owner_hour')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <!-- <div
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span></span><span>{{summaryTableForm.get('total_owner_hour')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <!-- <div
                                     class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                                     <div class="table-label"></div>
                                   </div> -->
+                      </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_owner_labour_cost')?.value}}</span>
                           </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_owner_labour_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_owner_mat_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_owner_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>-
-                                  {{summaryTableForm.get('discount_labour_owner_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>-
-                                  {{summaryTableForm.get('discount_mat_owner_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('net_owner_cost')?.value}}</span>
-                              </div>
-                            </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_owner_mat_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_owner_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>-
+                              {{summaryTableForm.get('discount_labour_owner_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>-
+                              {{summaryTableForm.get('discount_mat_owner_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('net_owner_cost')?.value}}</span>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="col-xl col-lg col-md col-sm m-b-0">
+              </div>
+            </div>
+            <div class="col-xl col-lg col-md col-sm m-b-0">
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                  <span class="font-bold">{{data.translatedLangText.LESSEE}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{data.translatedLangText.LESSEE}}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span></span><span>{{summaryTableForm.get('total_lessee_hour')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span></span><span>{{summaryTableForm.get('total_lessee_hour')?.value}}</span>
                           </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_lessee_labour_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_lessee_mat_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_lessee_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>-
-                                  {{summaryTableForm.get('discount_labour_lessee_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>-
-                                  {{summaryTableForm.get('discount_mat_lessee_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('net_lessee_cost')?.value}}</span>
-                              </div>
-                            </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_lessee_labour_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_lessee_mat_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_lessee_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>-
+                              {{summaryTableForm.get('discount_labour_lessee_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>-
+                              {{summaryTableForm.get('discount_mat_lessee_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('net_lessee_cost')?.value}}</span>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                }
-                }
-                <div class="col-xl col-lg col-md col-sm m-b-0">
+              </div>
+            </div>
+            }
+            }
+            <div class="col-xl col-lg col-md col-sm m-b-0">
+              <div class="row">
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                  <span class="font-bold">{{data.translatedLangText.LABOUR}}</span>
+                </div>
+                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
+                  <span class="font-bold">{{data.translatedLangText.TOTAL}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
                   <div class="row">
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{data.translatedLangText.LABOUR}}</span>
-                    </div>
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0 ps-4 border text-center bg-light-grey">
-                      <span class="font-bold">{{data.translatedLangText.TOTAL}}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
                       <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label">
-                                <span>{{summaryTableForm.get('total_hour')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            @if (shouldDisplay()) {
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
-                              <div class="table-label"></div>
-                            </div>
-                            }
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label"></div>
-                            </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label">
+                            <span>{{summaryTableForm.get('total_hour')?.value}}</span>
                           </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
-                          <div class="row">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_labour_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_mat_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            @if (shouldDisplay()) {
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('total_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>- {{summaryTableForm.get('discount_labour_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>- {{summaryTableForm.get('discount_mat_cost')?.value}}</span>
-                              </div>
-                            </div>
-                            }
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
-                              <div class="table-label cost-label">
-                                <span>$</span><span>{{summaryTableForm.get('net_cost')?.value}}</span>
-                              </div>
-                            </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        @if (shouldDisplay()) {
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label"></div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 border">
+                          <div class="table-label"></div>
+                        </div>
+                        }
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 m-b-0">
+                      <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_labour_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_mat_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        @if (shouldDisplay()) {
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('total_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>- {{summaryTableForm.get('discount_labour_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>- {{summaryTableForm.get('discount_mat_cost')?.value}}</span>
+                          </div>
+                        </div>
+                        }
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
+                          <div class="table-label cost-label">
+                            <span>$</span><span>{{summaryTableForm.get('net_cost')?.value}}</span>
                           </div>
                         </div>
                       </div>
@@ -727,9 +721,9 @@
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </form>
     <div mat-dialog-actions class="mb-3 mt-3 align-right">
       <button mat-flat-button color="primary" class="me-1" (click)="submit()"
         [disabled]="(tcDS.actionLoading$ | async)">

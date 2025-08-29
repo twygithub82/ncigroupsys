@@ -300,8 +300,6 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   async ngOnInit() {
-    this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-
     // Await the data fetching
     const [data, pdfData] = await Promise.all([
       this.getRepairData(),
@@ -310,6 +308,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
     if (data?.length > 0) {
       this.repairItem = data[0];
       this.estimate_no = this.repairItem?.estimate_no;
+      this.pdfTitle = this.repairItem?.storing_order_tank?.purpose_repair_cv === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
       await this.getCodeValuesData();
       this.updateData(this.repairItem?.repair_part);
       this.last_test_desc = this.getLastTest(this.repairItem?.storing_order_tank?.in_gate?.[0]?.in_gate_survey);
@@ -1519,7 +1518,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
       body: data,
       // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin ,top:topMargin+45},
+      margin: { left: leftMargin, top: topMargin + 45 },
       styles: {
         cellPadding: { left: 1, right: 1, top: 1, bottom: 1 },
         fontSize: fontSz,
@@ -1549,7 +1548,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
           }
         }
       },
@@ -1651,7 +1650,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         lineWidth: 0 // remove all borders initially
       },
       theme: 'grid',
-      margin: { left: leftMargin,top:50 },
+      margin: { left: leftMargin, top: 50 },
       headStyles: {
         fillColor: [240, 240, 240],
         textColor: 0,
@@ -1834,7 +1833,7 @@ export class RepairEstimatePdfComponent extends UnsubscribeOnDestroyAdapter impl
         lineWidth: lineWidth // remove all borders initially
       },
       theme: 'grid',
-      margin: { left: leftMargin ,top:50},
+      margin: { left: leftMargin, top: 50 },
       headStyles: {
         fillColor: lineColor,
         textColor: 0,

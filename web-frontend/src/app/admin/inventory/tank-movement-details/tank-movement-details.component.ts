@@ -516,7 +516,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     FLAT: "COMMON-FORM.FLAT",
     HOURLY: "COMMON-FORM.HOURLY",
     HOUR_RATE: "COMMON-FORM.HOUR-RATE",
-    STEAM_LOG: "COMMON-FORM.STEAM-LOG"
+    STEAM_LOG: "COMMON-FORM.STEAM-LOG",
+    ESTIMATE_DETAILS: "COMMON-FORM.ESTIMATE-DETAILS",
   }
 
   sot_guid: string | null | undefined;
@@ -1299,7 +1300,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
     const dialogRef = this.dialog.open(SteamHeatingPdfComponent, {
       width: '794px',
-      height: '80vh',
+      maxHeight: '80vh',
       data: {
         steam_guid: steam?.guid,
         customer_company_guid: this.sot?.storing_order?.customer_company_guid,
@@ -2096,7 +2097,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteSteamingApprovalFormDialogComponent, {
       disableClose: true,
       width: '80vw',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
         sot: this.sot,
         steamItem: row,
@@ -2161,7 +2162,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteResidueApprovalFormDialogComponent, {
       disableClose: true,
       width: '80vw',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
         sot: this.sot,
         residueItem: row,
@@ -2222,7 +2223,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     const dialogRef = this.dialog.open(OverwriteRepairApprovalFormDialogComponent, {
       disableClose: true,
       width: '80vw',
-      height: '90vh',
+      maxHeight: '90vh',
       data: {
         sot: this.sot,
         repairItem: row,
@@ -2305,7 +2306,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
 
     const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
       width: '794px',
-      height: '80vh',
+      maxHeight: '80vh',
       data: {
         type: this.sot?.purpose_repair_cv,
         repair_guid: selectedItem?.guid,
