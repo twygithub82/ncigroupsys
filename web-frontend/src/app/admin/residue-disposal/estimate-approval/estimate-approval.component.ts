@@ -47,6 +47,7 @@ import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-p
 import { ResidueDS, ResidueItem, ResiduePartRequest, ResidueStatusRequest } from 'app/data-sources/residue';
 import { ResiduePartItem } from 'app/data-sources/residue-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-estimate',
@@ -298,44 +299,40 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
   }
 
   cancelRow(row: ResidueItem) {
-    const found = this.reSelection.selected.some(x => x.guid === row.guid);
-    let selectedList = [...this.reSelection.selected];
-    if (!found) {
-      // this.toggleRow(row);
-      selectedList.push(row);
-    }
-    this.cancelSelectedRows(selectedList)
+    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    // let selectedList = [...this.reSelection.selected];
+    // if (!found) {
+    //   // this.toggleRow(row);
+    //   selectedList.push(row);
+    // }
+    this.cancelSelectedRows(row)
   }
 
-  cancelSelectedRows(row: ResidueItem[]) {
+  cancelSelectedRows(row: ResidueItem) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.ARE_YOU_SURE_CANCEL,
-        item: [...row],
+        // item: [...row],
+        allowRemarks: true,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: ResidueItem) => new ResidueItem(item));
-        console.log(reList);
-
         let residueStatus: ResidueStatusRequest = new ResidueStatusRequest();
         residueStatus.action = "CANCEL";
-        residueStatus.guid = row[0]?.guid;
-        residueStatus.sot_guid = row[0]?.sot_guid;
-        residueStatus.remarks = reList[0].remarks;
+        residueStatus.guid = row?.guid;
+        residueStatus.sot_guid = row?.sot_guid;
+        residueStatus.remarks = result.remarks;
         this.residueDS.updateResidueStatus(residueStatus).subscribe(result => {
-
           this.handleCancelSuccess(result?.data?.UpdateResidueStatus)
           this.performSearch(this.pageSize, 0, this.pageSize);
         });
@@ -628,19 +625,25 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       .subscribe(data => {
         var residueStatusFilter = this.searchForm!.value['est_status_cv'];
         this.sotList = data.map(sot => {
-          sot.residue = sot.residue?.map(res => {
+          sot.residue = (sot.residue || []).map(res => {
             if (residueStatusFilter.length) {
               if (residueStatusFilter.includes(res.status_cv)) {
                 var res_part = [...res.residue_part!];
                 res.residue_part = res_part?.filter(data => !data.delete_dt);
                 return { ...res, net_cost: this.calculateNetCost(res) }
+              } else if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+                return { ...res, net_cost: this.calculateNetCost(res) };
               }
               return {};
             }
             else {
-              var res_part = [...res.residue_part!];
-              res.residue_part = res_part?.filter(data => !data.delete_dt);
-              return { ...res, net_cost: this.calculateNetCost(res) }
+              if (!residueStatusFilter.length && res.status_cv !== 'CANCELED') {
+                var res_part = [...res.residue_part!];
+                res.residue_part = res_part?.filter(data => !data.delete_dt);
+                return { ...res, net_cost: this.calculateNetCost(res) }
+              } else {
+                return []
+              }
             }
           })
 
@@ -979,19 +982,19 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
     });
   }
 
-  IsEnable3Dots(residueRow:any):boolean{
-    var bRetval:boolean=false;
-    
-    bRetval=this.residueDS.canApprove(residueRow);
-    if(bRetval) return bRetval;
-    bRetval=this.residueDS.canCopy(residueRow);
-    if(bRetval) return bRetval;
-    bRetval=this.residueDS.canRollback(residueRow);
-    if(bRetval) return bRetval;
-    bRetval=this.residueDS.canCancel(residueRow);
-    if(bRetval) return bRetval;
-    bRetval=this.residueDS.canNoAction(residueRow);
-    if(bRetval) return bRetval;
+  IsEnable3Dots(residueRow: any): boolean {
+    var bRetval: boolean = false;
+
+    bRetval = this.residueDS.canApprove(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canCopy(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canRollback(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canCancel(residueRow);
+    if (bRetval) return bRetval;
+    bRetval = this.residueDS.canNoAction(residueRow);
+    if (bRetval) return bRetval;
 
     return bRetval;
   }
