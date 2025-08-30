@@ -76,7 +76,7 @@ import { SteamHeatingPdfComponent } from 'app/document-template/pdf/steam-heatin
 import { ModulePackageService } from 'app/services/module-package.service';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { Utility } from 'app/utilities/utility';
+import { Utility, HAS_AV_DATE_TANK_STATUS } from 'app/utilities/utility';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 import { Observable, Subscription } from 'rxjs';
@@ -2528,15 +2528,45 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   getAvailableDate(sot: StoringOrderTankItem) {
-    const maxCompleteDt: number[] | undefined = sot.repair
-      ?.map(item => item.complete_dt)
-      .filter((dt): dt is number => dt !== undefined && dt !== null);
+    if (!HAS_AV_DATE_TANK_STATUS.includes(sot.tank_status_cv || '')) {
+      // if tank is not in storage means not available
+      return undefined;
+    }
 
-    const max = maxCompleteDt && maxCompleteDt.length > 0
-      ? Math.max(...maxCompleteDt)
-      : undefined;
+    if (sot.purpose_steam) {
+      const maxCompleteDt: number[] | undefined = this.steamItem
+        ?.map(item => item.complete_dt)
+        .filter((dt): dt is number => dt !== undefined && dt !== null);
 
-    return this.displayDate(max);
+      const max = maxCompleteDt && maxCompleteDt.length > 0
+        ? Math.max(...maxCompleteDt)
+        : undefined;
+
+      return this.displayDate(max);
+    }
+
+    if (sot.purpose_cleaning && !sot.purpose_repair_cv) {
+      const maxCompleteDt: number[] | undefined = this.cleaningItem
+        ?.map(item => item.complete_dt)
+        .filter((dt): dt is number => dt !== undefined && dt !== null);
+
+      const max = maxCompleteDt && maxCompleteDt.length > 0
+        ? Math.max(...maxCompleteDt)
+        : undefined;
+
+      return this.displayDate(max);
+    } else if (!!sot.purpose_repair_cv) {
+      const maxCompleteDt: number[] | undefined = this.repairItem
+        ?.map(item => item.complete_dt)
+        .filter((dt): dt is number => dt !== undefined && dt !== null);
+
+      const max = maxCompleteDt && maxCompleteDt.length > 0
+        ? Math.max(...maxCompleteDt)
+        : undefined;
+
+      return this.displayDate(max);
+    }
+    return undefined
   }
 
   displayColumnChanged() {

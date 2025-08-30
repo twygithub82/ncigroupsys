@@ -1,17 +1,15 @@
 import { TranslateService } from "@ngx-translate/core";
+import { CodeValuesItem } from 'app/data-sources/code-values';
 import { StoringOrderTankItem } from "app/data-sources/storing-order-tank";
+import { Canvg } from 'canvg';
+import * as domtoimage from 'dom-to-image-more';
+import html2canvas from "html2canvas";
 import { jsPDF } from 'jspdf';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import * as moment from "moment";
 import { Observable, from, map } from "rxjs";
-import { PDFUtility } from "./pdf-utility";
 import { systemCurrencyCode } from '../../environments/environment';
-import * as domtoimage from 'dom-to-image-more';
-import html2canvas from "html2canvas";
-import { ApexChart, ChartComponent } from "ng-apexcharts";
-import {ElementRef} from '@angular/core';
-import { Canvg } from 'canvg';
-import { CodeValuesItem } from 'app/data-sources/code-values';
+import { PDFUtility } from "./pdf-utility";
 
 export class Utility {
   static formatString(template: string, ...values: any[]): string {
@@ -758,25 +756,25 @@ export class Utility {
 
   static async addReportTitle(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number,
     topPosition: number, fontSize: number = 14, underline: boolean = true, additionalBufferX: number = 0) {
-   
+
 
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline, additionalBufferX);
   }
 
   static addReportTitleToggleUnderline(pdf: jsPDF, title: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, underline: boolean, fontSize: number = 14) {
-   
+
     PDFUtility.addReportTitle(pdf, title, pageWidth, leftMargin, rightMargin, topPosition, fontSize, underline);
   }
 
-   static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
+  static AddTextAtLeftCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
     pdf.saveGraphicsState();
     pdf.setFontSize(fontSize); // Title font size 
     const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
-    const titleX =leftMargin+1; // Centering the title
+    const titleX = leftMargin + 1; // Centering the title
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
-   
+
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
@@ -787,7 +785,7 @@ export class Utility {
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
- 
+
   }
 
   static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
@@ -797,7 +795,7 @@ export class Utility {
 
     pdf.text(text, titleX, topPosition); // Position it at the top
 
-  
+
   }
 
 
@@ -805,134 +803,130 @@ export class Utility {
 
 
   static async ConvertApexChartSvgToImage64String(chartRef: any): Promise<string> {
-      const containerEl = chartRef;
-      if (!containerEl) return '';
+    const containerEl = chartRef;
+    if (!containerEl) return '';
 
-      const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
-      if (!chartWrapper) return '';
+    const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
+    if (!chartWrapper) return '';
 
-      const svgEl = chartWrapper.querySelector('svg');
-      if (!svgEl) return '';
+    const svgEl = chartWrapper.querySelector('svg');
+    if (!svgEl) return '';
 
-      const serializer = new XMLSerializer();
-      const svgString = serializer.serializeToString(svgEl);
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgEl);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-      if (!ctx) throw new Error('Canvas context is null');
+    if (!ctx) throw new Error('Canvas context is null');
 
-      // Create a Canvg instance
-      const v = await Canvg.fromString(ctx, svgString);
+    // Create a Canvg instance
+    const v = await Canvg.fromString(ctx, svgString);
 
-      // Set canvas size
-      canvas.width = svgEl.clientWidth;
-      canvas.height = svgEl.clientHeight;
+    // Set canvas size
+    canvas.width = svgEl.clientWidth;
+    canvas.height = svgEl.clientHeight;
 
-      // Render SVG onto canvas
-      await v.render();
-      return this.ConvertCanvasElementToImage64String(canvas);
-  
-}
-
-  static ConvertApexChartToImage64String(chartRef:any):string
-  {
-     var retval :string ='';
-      
-      const containerEl = chartRef;
-      if (!containerEl) return retval;
-      const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
-      if (!chartWrapper) return retval;
-      const canvas = chartWrapper.querySelector('canvas');
-      if (!canvas) return retval;
-      retval =this.ConvertCanvasElementToImage64String(canvas);
-      return retval;
+    // Render SVG onto canvas
+    await v.render();
+    return this.ConvertCanvasElementToImage64String(canvas);
 
   }
- static ConvertCanvasElementToImage64String(canvas :HTMLCanvasElement ) :string
- {
-   var retval :string ='';
-   var quality:number =0.9;
-    if(canvas)
-      { 
-        var cvs =this.adjustImageSizeAndBackground(canvas);
-        retval = cvs.toDataURL('image/jpeg', quality);
-       // retval =this.getPureBase64(retval);
-      }
-   return retval;
- }
 
-/**
- * Adjusts image size while maintaining aspect ratio and adds white background
- * @param canvas - Source canvas element
- * @param options - Configuration options
- * @returns New canvas with adjusted size and background
- */
-static adjustImageSizeAndBackground(
-  canvas: HTMLCanvasElement,
-  options: {
-    targetWidth?: number;
-    backgroundColor?: string;
-    maintainAspectRatio?: boolean;
-  } = {}
-): HTMLCanvasElement {
-  // Validate input
-  if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
-    throw new Error("Invalid canvas element provided");
+  static ConvertApexChartToImage64String(chartRef: any): string {
+    var retval: string = '';
+
+    const containerEl = chartRef;
+    if (!containerEl) return retval;
+    const chartWrapper = containerEl.querySelector('.apexcharts-canvas');
+    if (!chartWrapper) return retval;
+    const canvas = chartWrapper.querySelector('canvas');
+    if (!canvas) return retval;
+    retval = this.ConvertCanvasElementToImage64String(canvas);
+    return retval;
+
+  }
+  static ConvertCanvasElementToImage64String(canvas: HTMLCanvasElement): string {
+    var retval: string = '';
+    var quality: number = 0.9;
+    if (canvas) {
+      var cvs = this.adjustImageSizeAndBackground(canvas);
+      retval = cvs.toDataURL('image/jpeg', quality);
+      // retval =this.getPureBase64(retval);
+    }
+    return retval;
   }
 
-  // Set defaults
-  const {
-    targetWidth = 1280,
-    backgroundColor = '#ffffff',
-    maintainAspectRatio = true
-  } = options;
+  /**
+   * Adjusts image size while maintaining aspect ratio and adds white background
+   * @param canvas - Source canvas element
+   * @param options - Configuration options
+   * @returns New canvas with adjusted size and background
+   */
+  static adjustImageSizeAndBackground(
+    canvas: HTMLCanvasElement,
+    options: {
+      targetWidth?: number;
+      backgroundColor?: string;
+      maintainAspectRatio?: boolean;
+    } = {}
+  ): HTMLCanvasElement {
+    // Validate input
+    if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
+      throw new Error("Invalid canvas element provided");
+    }
 
-  // Calculate new dimensions
-  let targetHeight: number;
-  if (maintainAspectRatio) {
-    const aspectRatio = canvas.height / canvas.width;
-    targetHeight = Math.round(targetWidth * aspectRatio);
-  } else {
-    targetHeight = canvas.height;
+    // Set defaults
+    const {
+      targetWidth = 1280,
+      backgroundColor = '#ffffff',
+      maintainAspectRatio = true
+    } = options;
+
+    // Calculate new dimensions
+    let targetHeight: number;
+    if (maintainAspectRatio) {
+      const aspectRatio = canvas.height / canvas.width;
+      targetHeight = Math.round(targetWidth * aspectRatio);
+    } else {
+      targetHeight = canvas.height;
+    }
+
+    // Create new canvas
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = targetWidth;
+    tempCanvas.height = targetHeight;
+
+    const ctx = tempCanvas.getContext('2d');
+    if (!ctx) {
+      throw new Error("Failed to get 2D context");
+    }
+
+    // Fill background
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+    // Draw image with proper scaling and anti-aliasing
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+
+    return tempCanvas;
   }
 
-  // Create new canvas
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = targetWidth;
-  tempCanvas.height = targetHeight;
 
-  const ctx = tempCanvas.getContext('2d');
-  if (!ctx) {
-    throw new Error("Failed to get 2D context");
+  static getPureBase64(base64Value: string): string {
+    const fullBase64 = base64Value; // Get full data URL
+    return fullBase64.split(',')[1]; // Returns just the Base64 data
   }
 
-  // Fill background
-  ctx.fillStyle = backgroundColor;
-  ctx.fillRect(0, 0, targetWidth, targetHeight);
+  static async DrawBase64ImageAtCenterPage(pdf: jsPDF, base64: string, pageWidth: number, leftMargin: number,
+    rightMargin: number, topPosition: number, maxChartWidth: number) {
+    let chartContentWidth = maxChartWidth;
 
-  // Draw image with proper scaling and anti-aliasing
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
-
-  return tempCanvas;
-}
-
-
- static getPureBase64(base64Value:string): string {
-  const fullBase64 =base64Value; // Get full data URL
-  return fullBase64.split(',')[1]; // Returns just the Base64 data
- }
-
-  static async DrawBase64ImageAtCenterPage(pdf: jsPDF,base64:string, pageWidth: number, leftMargin: number, 
-    rightMargin: number, topPosition: number, maxChartWidth: number)
-    {
-      let chartContentWidth = maxChartWidth;
-
-      let startY: number = topPosition;
-       const imgInfo = await Utility.getImageSizeFromBase64(base64);
-       const aspectRatio = imgInfo.width / imgInfo.height;
-       let imgHeight1 = chartContentWidth / aspectRatio;
+    let startY: number = topPosition;
+    const imgInfo = await Utility.getImageSizeFromBase64(base64);
+    const aspectRatio = imgInfo.width / imgInfo.height;
+    let imgHeight1 = chartContentWidth / aspectRatio;
 
     // Check if the scaled height exceeds the available page height
     const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
@@ -943,13 +937,13 @@ static adjustImageSizeAndBackground(
       chartContentWidth = imgHeight1 * aspectRatio;
     }
 
-      let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
+    let startX = leftMargin + ((pageWidth - leftMargin - rightMargin) / 2) - (chartContentWidth / 2);
 
     // Add the image to the PDF
-      pdf.addImage(base64, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
-    }
+    pdf.addImage(base64, 'JPEG', startX, topPosition, chartContentWidth, imgHeight1);
+  }
 
-  static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number, 
+  static async DrawCardForImageAtCenterPage(pdf: jsPDF, card: any, pageWidth: number, leftMargin: number,
     rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
     let chartContentWidth = maxChartWidth;
 
@@ -957,9 +951,9 @@ static adjustImageSizeAndBackground(
 
     // card.style.boxShadow = 'none';
     // card.style.transition = 'none';
-    const imgData1 = await this.convertToImage(card,"jpeg");
-   await this.DrawBase64ImageAtCenterPage(pdf,imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
-   
+    const imgData1 = await this.convertToImage(card, "jpeg");
+    await this.DrawBase64ImageAtCenterPage(pdf, imgData1, pageWidth, leftMargin, rightMargin, startY, maxChartWidth);
+
   }
 
   static DrawImageAtCenterPage(pdf: jsPDF, canvas: HTMLCanvasElement, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, maxChartWidth: number, imgQuality: number) {
@@ -1019,9 +1013,9 @@ static adjustImageSizeAndBackground(
     // a.target = '_blank';
     // a.click();
     // Try opening in a new window
-   // const newWindow = window.open(blobUrl, '_blank');
-   // if (!newWindow) {
-      pdf.save(fileName);
+    // const newWindow = window.open(blobUrl, '_blank');
+    // if (!newWindow) {
+    pdf.save(fileName);
     // } else {
     //   newWindow.document.write(html);
     //   newWindow.document.close();
@@ -1148,7 +1142,7 @@ static adjustImageSizeAndBackground(
         lastTest += ` ${(sot.out_gate?.[0]?.out_gate_survey?.last_test_cv == "2.5" ? "(A)" : "(H)")}`;
       }
     }
-   
+
     return lastTest;
   }
 
@@ -1255,11 +1249,11 @@ static adjustImageSizeAndBackground(
   }
 
   static formatUKDateString(date: Date): string {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
-}
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
 
   static extractYearFromMonthYear(monthYearStr: string): number | null {
     // Split the string at " - " and get the second part (year)
@@ -1418,236 +1412,236 @@ static adjustImageSizeAndBackground(
   }
 
   static async convertToImage_html2canvas(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
-    var imgScale=2;
-    var imgQty=0.95;
+    var imgScale = 2;
+    var imgQty = 0.95;
     if (!element) throw new Error('Invalid element');
 
-  // Ensure all fonts and images are loaded first
-      await document.fonts.ready;
-      await Promise.all(Array.from(document.images).map(img =>
-        img.complete ? Promise.resolve() : new Promise(resolve => img.onload = img.onerror = resolve)
-      ));
+    // Ensure all fonts and images are loaded first
+    await document.fonts.ready;
+    await Promise.all(Array.from(document.images).map(img =>
+      img.complete ? Promise.resolve() : new Promise(resolve => img.onload = img.onerror = resolve)
+    ));
 
-      await Promise.all([
-        document.fonts.load('1em Material Icons'),
-        // Add other fonts you're using
-      ]);
-       var canvas = await html2canvas(element, { scale: imgScale });
-       var imgType ="image/jpeg";
-       if(type === 'png') imgType="image/png";
-        return canvas.toDataURL(imgType, imgQty);
+    await Promise.all([
+      document.fonts.load('1em Material Icons'),
+      // Add other fonts you're using
+    ]);
+    var canvas = await html2canvas(element, { scale: imgScale });
+    var imgType = "image/jpeg";
+    if (type === 'png') imgType = "image/png";
+    return canvas.toDataURL(imgType, imgQty);
   }
 
- 
-static async convertToImage_domToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
-  if (!element) throw new Error('Invalid element');
 
-  // 1. Ensure all resources are loaded
-  await this.waitForResources();
+  static async convertToImage_domToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
+    if (!element) throw new Error('Invalid element');
 
-  // 2. Create a clone with proper dimensions
-  const clone = await this.createCloneForConversion(element);
-  
- 
-  return await this.convertWithDomToImage_r1(clone, type);
-}
+    // 1. Ensure all resources are loaded
+    await this.waitForResources();
 
-static async convertToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
-  if (!element) throw new Error('Invalid element');
+    // 2. Create a clone with proper dimensions
+    const clone = await this.createCloneForConversion(element);
 
-  // 1. Ensure all resources are loaded
-  await this.waitForResources();
 
-  // 2. Create a clone with proper dimensions
-  const clone = await this.createCloneForConversion(element);
-  
-  // 3. Use html2canvas if available (more reliable)
-  // if (typeof html2canvas === 'function') {
-  //   try {
-  //     return await this.convertWithHtml2Canvas(clone, type);
-  //   } catch (error) {
-  //     console.warn('html2canvas failed, falling back to dom-to-image', error);
-  //   }
-  // }
+    return await this.convertWithDomToImage_r1(clone, type);
+  }
 
-  // 4. Fallback to dom-to-image with proper sizing
-  return await this.convertWithDomToImage(clone, type);
-}
+  static async convertToImage(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
+    if (!element) throw new Error('Invalid element');
 
-private static async waitForResources(): Promise<void> {
-  await document.fonts.ready;
-  await Promise.all(Array.from(document.images).map(img => 
-    img.complete ? Promise.resolve() : new Promise(resolve => img.onload = img.onerror = resolve)
-  ));
-}
+    // 1. Ensure all resources are loaded
+    await this.waitForResources();
 
-private static async createCloneForConversion(element: HTMLElement): Promise<HTMLElement> {
-  // Create clone with proper dimensions
-  const clone = element.cloneNode(true) as HTMLElement;
-  const container = document.createElement('div');
-  
-  // Position clone off-screen but maintain layout
-  container.style.position = 'fixed';
-  container.style.left = '-10000px';
-  container.style.top = '0';
-  container.style.visibility = 'hidden';
-  container.style.width = `${element.scrollWidth}px`;
-  container.style.height = `${element.scrollHeight}px`;
-  container.appendChild(clone);
-  document.body.appendChild(container);
+    // 2. Create a clone with proper dimensions
+    const clone = await this.createCloneForConversion(element);
 
-  // Copy all styles
-  await this.copyStyles(element, clone);
-  
-  // Force layout calculation
-  await this.forceReflow(clone);
-  
-  return clone;
-}
+    // 3. Use html2canvas if available (more reliable)
+    // if (typeof html2canvas === 'function') {
+    //   try {
+    //     return await this.convertWithHtml2Canvas(clone, type);
+    //   } catch (error) {
+    //     console.warn('html2canvas failed, falling back to dom-to-image', error);
+    //   }
+    // }
 
-private static async copyStyles(source: HTMLElement, target: HTMLElement): Promise<void> {
-  const computedStyle = window.getComputedStyle(source);
-  const styleProps = Array.from(computedStyle)
-    .filter(prop => {
-      const value = computedStyle.getPropertyValue(prop);
-      return value && !prop.startsWith('-webkit');
+    // 4. Fallback to dom-to-image with proper sizing
+    return await this.convertWithDomToImage(clone, type);
+  }
+
+  private static async waitForResources(): Promise<void> {
+    await document.fonts.ready;
+    await Promise.all(Array.from(document.images).map(img =>
+      img.complete ? Promise.resolve() : new Promise(resolve => img.onload = img.onerror = resolve)
+    ));
+  }
+
+  private static async createCloneForConversion(element: HTMLElement): Promise<HTMLElement> {
+    // Create clone with proper dimensions
+    const clone = element.cloneNode(true) as HTMLElement;
+    const container = document.createElement('div');
+
+    // Position clone off-screen but maintain layout
+    container.style.position = 'fixed';
+    container.style.left = '-10000px';
+    container.style.top = '0';
+    container.style.visibility = 'hidden';
+    container.style.width = `${element.scrollWidth}px`;
+    container.style.height = `${element.scrollHeight}px`;
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
+    // Copy all styles
+    await this.copyStyles(element, clone);
+
+    // Force layout calculation
+    await this.forceReflow(clone);
+
+    return clone;
+  }
+
+  private static async copyStyles(source: HTMLElement, target: HTMLElement): Promise<void> {
+    const computedStyle = window.getComputedStyle(source);
+    const styleProps = Array.from(computedStyle)
+      .filter(prop => {
+        const value = computedStyle.getPropertyValue(prop);
+        return value && !prop.startsWith('-webkit');
+      });
+
+    // Copy styles to target
+    styleProps.forEach(prop => {
+      target.style.setProperty(
+        prop,
+        computedStyle.getPropertyValue(prop),
+        computedStyle.getPropertyPriority(prop)
+      );
     });
 
-  // Copy styles to target
-  styleProps.forEach(prop => {
-    target.style.setProperty(
-      prop, 
-      computedStyle.getPropertyValue(prop),
-      computedStyle.getPropertyPriority(prop)
-    );
-  });
+    // Handle children recursively
+    const sourceChildren = Array.from(source.children) as HTMLElement[];
+    const targetChildren = Array.from(target.children) as HTMLElement[];
 
-  // Handle children recursively
-  const sourceChildren = Array.from(source.children) as HTMLElement[];
-  const targetChildren = Array.from(target.children) as HTMLElement[];
-  
-  await Promise.all(sourceChildren.map((child, i) => {
-    if (targetChildren[i]) {
-      return this.copyStyles(child, targetChildren[i]);
-    }
-    return Promise.resolve();
-  }));
-}
+    await Promise.all(sourceChildren.map((child, i) => {
+      if (targetChildren[i]) {
+        return this.copyStyles(child, targetChildren[i]);
+      }
+      return Promise.resolve();
+    }));
+  }
 
-private static forceReflow(element: HTMLElement): Promise<void> {
-  return new Promise(resolve => {
-    void element.offsetHeight; // Trigger reflow
-    setTimeout(resolve, 50); // Small delay
-  });
-}
+  private static forceReflow(element: HTMLElement): Promise<void> {
+    return new Promise(resolve => {
+      void element.offsetHeight; // Trigger reflow
+      setTimeout(resolve, 50); // Small delay
+    });
+  }
 
-private static async convertWithHtml2Canvas(element: HTMLElement, type: 'png' | 'jpeg'): Promise<string> {
-  const canvas = await html2canvas(element, {
-    backgroundColor: '#ffffff',
-    scale: 2, // Higher quality
-    logging: false,
-    useCORS: true,
-    allowTaint: true,
-    scrollX: 0,
-    scrollY: 0
-  });
-  
-  return type === 'jpeg' 
-    ? canvas.toDataURL('image/jpeg', 0.95)
-    : canvas.toDataURL('image/png');
-}
+  private static async convertWithHtml2Canvas(element: HTMLElement, type: 'png' | 'jpeg'): Promise<string> {
+    const canvas = await html2canvas(element, {
+      backgroundColor: '#ffffff',
+      scale: 2, // Higher quality
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0
+    });
 
-public static async convertWithDomToImage_r1(
-  element: HTMLElement,
-  type: 'png' | 'jpeg'
-): Promise<string> {
-  // Use custom scale if provided, otherwise default to 2x device pixel ratio
-  const scale = 1.5 ; // || 2 * (window.devicePixelRatio || 1);
-  
-  // Calculate scaled dimensions
-  const originalWidth = element.scrollWidth;
-  const originalHeight = element.scrollHeight;
-  const scaledWidth = originalWidth * scale;
-  const scaledHeight = originalHeight * scale;
+    return type === 'jpeg'
+      ? canvas.toDataURL('image/jpeg', 0.95)
+      : canvas.toDataURL('image/png');
+  }
 
-  const options = {
-    width: scaledWidth,
-    height: scaledHeight,
-    quality: type === 'jpeg' ? 0.95 : 1.0, // Higher quality for PNG
-    bgcolor: '#ffffff',
-    style: {
-      transform: `scale(${scale})`,
-      transformOrigin: 'top left',
+  public static async convertWithDomToImage_r1(
+    element: HTMLElement,
+    type: 'png' | 'jpeg'
+  ): Promise<string> {
+    // Use custom scale if provided, otherwise default to 2x device pixel ratio
+    const scale = 1.5; // || 2 * (window.devicePixelRatio || 1);
+
+    // Calculate scaled dimensions
+    const originalWidth = element.scrollWidth;
+    const originalHeight = element.scrollHeight;
+    const scaledWidth = originalWidth * scale;
+    const scaledHeight = originalHeight * scale;
+
+    const options = {
+      width: scaledWidth,
+      height: scaledHeight,
+      quality: type === 'jpeg' ? 0.95 : 1.0, // Higher quality for PNG
+      bgcolor: '#ffffff',
+      style: {
+        transform: `scale(${scale})`,
+        transformOrigin: 'top left',
+        width: `${originalWidth}px`,
+        height: `${originalHeight}px`,
+        margin: '0',
+        padding: '0',
+        overflow: 'visible',
+        fontFamily: 'sans-serif, Material Icons'
+      },
+      filter: (node: Node) => {
+        // Skip hidden elements for better performance
+        if (node instanceof HTMLElement) {
+          return window.getComputedStyle(node).display !== 'none';
+        }
+        return true;
+      },
+    };
+
+    // Create wrapper with proper dimensions
+    const wrapper = document.createElement('div');
+    Object.assign(wrapper.style, {
+      position: 'absolute',
+      left: '0',
+      top: '0',
       width: `${originalWidth}px`,
       height: `${originalHeight}px`,
-      margin: '0',
-      padding: '0',
-      overflow: 'visible',
-      fontFamily: 'sans-serif, Material Icons'
-    },
-    filter: (node: Node) => {
-      // Skip hidden elements for better performance
-      if (node instanceof HTMLElement) {
-        return window.getComputedStyle(node).display !== 'none';
+      transform: `scale(${scale})`,
+      transformOrigin: 'top left',
+      overflow: 'visible'
+    });
+
+    // Clone and append the element
+    wrapper.appendChild(element.cloneNode(true) as HTMLElement);
+
+    try {
+      return type === 'jpeg'
+        ? await domtoimage.toJpeg(wrapper, options)
+        : await domtoimage.toPng(wrapper, options);
+    } finally {
+      // Clean up if needed
+      if (wrapper.parentNode) {
+        wrapper.parentNode.removeChild(wrapper);
       }
-      return true;
-    },
-  };
-
-  // Create wrapper with proper dimensions
-  const wrapper = document.createElement('div');
-  Object.assign(wrapper.style, {
-    position: 'absolute',
-    left: '0',
-    top: '0',
-    width: `${originalWidth}px`,
-    height: `${originalHeight}px`,
-    transform: `scale(${scale})`,
-    transformOrigin: 'top left',
-    overflow: 'visible'
-  });
-
-  // Clone and append the element
-  wrapper.appendChild(element.cloneNode(true) as HTMLElement);
-
-  try {
-    return type === 'jpeg'
-      ? await domtoimage.toJpeg(wrapper, options)
-      : await domtoimage.toPng(wrapper, options);
-  } finally {
-    // Clean up if needed
-    if (wrapper.parentNode) {
-      wrapper.parentNode.removeChild(wrapper);
     }
   }
-}
 
-public static async convertWithDomToImage(element: HTMLElement, type: 'png' | 'jpeg'): Promise<string> {
-  const options = {
-    width: element.scrollWidth,
-    height: element.scrollHeight,
-    quality: 0.95,
-    bgcolor: '#ffffff',
-    style: {
-      
-      margin: '0',
-      padding: '0',
-      overflow: 'visible',
-      fontFamily: 'sans-serif, Material Icons' // Fallback fonts
-    },
-    filter: (node: Node) => {
-      // Skip problematic nodes if needed
-      return true;
-    }
-  };
+  public static async convertWithDomToImage(element: HTMLElement, type: 'png' | 'jpeg'): Promise<string> {
+    const options = {
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+      quality: 0.95,
+      bgcolor: '#ffffff',
+      style: {
 
-  return type === 'jpeg'
-    ? await domtoimage.toJpeg(element, options)
-    : await domtoimage.toPng(element, options);
-}
+        margin: '0',
+        padding: '0',
+        overflow: 'visible',
+        fontFamily: 'sans-serif, Material Icons' // Fallback fonts
+      },
+      filter: (node: Node) => {
+        // Skip problematic nodes if needed
+        return true;
+      }
+    };
+
+    return type === 'jpeg'
+      ? await domtoimage.toJpeg(element, options)
+      : await domtoimage.toPng(element, options);
+  }
 
 
- static  async  convertToImage_old(element: HTMLElement, type: 'png' | 'jpeg' = 'jpeg'): Promise<string> {
+  static async convertToImage_old(element: HTMLElement, type: 'png' | 'jpeg' = 'jpeg'): Promise<string> {
     if (!element) throw new Error('Invalid element');
 
     const rect = element.getBoundingClientRect();
@@ -1656,23 +1650,25 @@ public static async convertWithDomToImage(element: HTMLElement, type: 'png' | 'j
     element.style.transition = 'none';
     return type === 'jpeg'
       ? await domtoimage.toJpeg(element,
-       
-        {  quality: 0.95,
-          skipFonts: true ,
-           width: rect.width,
-        height:rect.height,
-        filter: (node:any) => {
-          // Optionally filter out problematic elements if needed
-          return true;
-        },
-        // Optional workaround: manually clone inline styles only
-        style: {
-          fontFamily: 'Material Symbols Outlined'
-        } })
+
+        {
+          quality: 0.95,
+          skipFonts: true,
+          width: rect.width,
+          height: rect.height,
+          filter: (node: any) => {
+            // Optionally filter out problematic elements if needed
+            return true;
+          },
+          // Optional workaround: manually clone inline styles only
+          style: {
+            fontFamily: 'Material Symbols Outlined'
+          }
+        })
       : await domtoimage.toPng(element);
   }
 
-  static async  getImageSizeFromBase64(base64: string): Promise<{ width: number; height: number }> {
+  static async getImageSizeFromBase64(base64: string): Promise<{ width: number; height: number }> {
     const img = new Image();
     img.crossOrigin = 'Anonymous';
 
@@ -1689,18 +1685,18 @@ public static async convertWithDomToImage(element: HTMLElement, type: 'png' | 'j
     });
   }
 
-static SortCodeValues(codeValueList: CodeValuesItem[], seqList: string[]): CodeValuesItem[] {
-  return codeValueList.slice().sort((a, b) => {
-    const indexA = seqList.indexOf(a.code_val!);
-    const indexB = seqList.indexOf(b.code_val!);
+  static SortCodeValues(codeValueList: CodeValuesItem[], seqList: string[]): CodeValuesItem[] {
+    return codeValueList.slice().sort((a, b) => {
+      const indexA = seqList.indexOf(a.code_val!);
+      const indexB = seqList.indexOf(b.code_val!);
 
-    // Missing values go to the end
-    return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
-  });
-}
+      // Missing values go to the end
+      return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+    });
+  }
 
-static async GetReportGeneratedDate(translateService: TranslateService):Promise<string>{
-   const translatedLangText: any = {};
+  static async GetReportGeneratedDate(translateService: TranslateService): Promise<string> {
+    const translatedLangText: any = {};
     const langText = {
       DATE: 'COMMON-FORM.DATE'
     };
@@ -1715,14 +1711,14 @@ static async GetReportGeneratedDate(translateService: TranslateService):Promise<
       }
     }
 
-  var dt= new Date();
-  var dtStr= this.formatUKDateString(dt);
-  var result =`${translatedLangText.DATE}: ${dtStr}`;
+    var dt = new Date();
+    var dtStr = this.formatUKDateString(dt);
+    var result = `${translatedLangText.DATE}: ${dtStr}`;
 
-  return `${result}`;
-}
+    return `${result}`;
+  }
 
-static displayTankPurpose_InShort(sot: any):string {
+  static displayTankPurpose_InShort(sot: any): string {
     let purposes: any[] = [];
     if (sot?.purpose_storage) {
       purposes.push("S");
@@ -1736,94 +1732,94 @@ static displayTankPurpose_InShort(sot: any):string {
     if (sot?.purpose_repair_cv) {
       purposes.push("R");
     }
-    
+
     return purposes.join('; ');
   }
-static displayTankStatus_InShort(status_codevalue: string): string {
-  let sRetval: string = "";
+  static displayTankStatus_InShort(status_codevalue: string): string {
+    let sRetval: string = "";
 
-  switch (status_codevalue) {
-    case 'SO_GENERATED':
-      sRetval = "SO";
-      break;
-    case 'IN_GATE':
-      sRetval = "IG";
-      break;
-    case 'IN_SURVEY':
-      sRetval = "IS";
-      break;
-    case 'STEAM':
-      sRetval = "SE";
-      break;
-    case 'RESIDUE':
-      sRetval = "RE";
-      break;
-    case 'CLEANING':
-      sRetval = "C";
-      break;
-    case 'REPAIR':
-      sRetval = "R";
-      break;
-    case 'STORAGE':
-      sRetval = "S";
-      break;
-    case 'RO_GENERATED':
-      sRetval = "RO";
-      break;
-    case 'OUT_GATE':
-      sRetval = "OG";
-      break;
-    case 'OUT_SURVEY':
-      sRetval = "OS";
-      break;
-    case 'RELEASED':
-      sRetval = "RL";
-      break;
+    switch (status_codevalue) {
+      case 'SO_GENERATED':
+        sRetval = "SO";
+        break;
+      case 'IN_GATE':
+        sRetval = "IG";
+        break;
+      case 'IN_SURVEY':
+        sRetval = "IS";
+        break;
+      case 'STEAM':
+        sRetval = "SE";
+        break;
+      case 'RESIDUE':
+        sRetval = "RE";
+        break;
+      case 'CLEANING':
+        sRetval = "C";
+        break;
+      case 'REPAIR':
+        sRetval = "R";
+        break;
+      case 'STORAGE':
+        sRetval = "S";
+        break;
+      case 'RO_GENERATED':
+        sRetval = "RO";
+        break;
+      case 'OUT_GATE':
+        sRetval = "OG";
+        break;
+      case 'OUT_SURVEY':
+        sRetval = "OS";
+        break;
+      case 'RELEASED':
+        sRetval = "RL";
+        break;
+    }
+
+    return sRetval;
   }
 
-  return sRetval;
+  static toPascalCase(value: string): string {
+    if (!value) return '';
+
+    return value
+      .toLowerCase()
+      .replace(/(^\w|[^a-zA-Z0-9]+(\w))/g, (_match, chr: string) =>
+        chr.toUpperCase()
+      );
+  }
+  //   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
+  //   {
+  //     var imgRetval:string ='';
+  //      const chartInstance = chartRef?.chart; 
+  //     if(chartInstance)
+  //     {
+  //       const result = await chartInstance.dataURI();
+  //       imgRetval =result.imgURI;
+  //     }
+
+  //     return imgRetval;
+
+  //   }
+  //  static async getChartAsBase64(chartRef:ChartComponent): Promise<string> {
+  //     return new Promise((resolve, reject) => {
+  //       if (chartRef && chartRef.chart) {
+  //         // Access the underlying ApexCharts instance
+  //         chartRef.chart.exportSVG()
+  //           .then(({ imgURI }) => {
+  //             resolve(imgURI);
+  //           })
+  //           .catch(error => {
+  //             console.error('Error exporting chart:', error);
+  //             reject(error);
+  //           });
+  //       } else {
+  //         reject('Chart instance not available');
+  //       }
+  //     });
+  //   }
 }
-
-static toPascalCase(value: string): string {
-  if (!value) return '';
-
-  return value
-    .toLowerCase()
-    .replace(/(^\w|[^a-zA-Z0-9]+(\w))/g, (_match, chr: string) =>
-      chr.toUpperCase()
-    );
-}
-//   static async convertChartComponentToBase64Image(chartRef:ChartComponent):Promise<string>
-//   {
-//     var imgRetval:string ='';
-//      const chartInstance = chartRef?.chart; 
-//     if(chartInstance)
-//     {
-//       const result = await chartInstance.dataURI();
-//       imgRetval =result.imgURI;
-//     }
-
-//     return imgRetval;
-    
-//   }
-//  static async getChartAsBase64(chartRef:ChartComponent): Promise<string> {
-//     return new Promise((resolve, reject) => {
-//       if (chartRef && chartRef.chart) {
-//         // Access the underlying ApexCharts instance
-//         chartRef.chart.exportSVG()
-//           .then(({ imgURI }) => {
-//             resolve(imgURI);
-//           })
-//           .catch(error => {
-//             console.error('Error exporting chart:', error);
-//             reject(error);
-//           });
-//       } else {
-//         reject('Chart instance not available');
-//       }
-//     });
-//   }
- }
 
 
 
@@ -1844,26 +1840,25 @@ export const TANK_STATUS_IN_YARD = [
   'OUT_SURVEY',
 ]
 
-export const BILLING_TANK_STATUS_IN_YARD=[
+export const BILLING_TANK_STATUS_IN_YARD = [
   'STEAM',
   'RESIDUE',
   'CLEANING',
   'REPAIR',
   'STORAGE',
- 
+
 ]
 
-export const BILLING_TANK_STATUS=[
+export const BILLING_TANK_STATUS = [
   'RELEASED',
   'STEAM',
   'RESIDUE',
   'CLEANING',
   'REPAIR',
   'STORAGE',
- 
 ]
 
-export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE","COMPLETED", "ASSIGNED", "JOB_IN_PROGRESS"];
+export const ESTIMATE_APPROVED_STATUS = ["QC_COMPLETE", "APPROVED", "COMPLETE", "COMPLETED", "ASSIGNED", "JOB_IN_PROGRESS"];
 
 export const TANK_STATUS_POST_IN_YARD = [
   'RELEASED',
@@ -1884,3 +1879,10 @@ export const selected_job_task_color = "bg-lighter-orange";
 
 export const unassigned_icon = "chip_extraction";
 
+export const HAS_AV_DATE_TANK_STATUS = [
+  'STORAGE',
+  'RO_GENERATED',
+  'OUT_GATE',
+  'OUT_SURVEY',
+  'RELEASED',
+]
