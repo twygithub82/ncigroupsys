@@ -1662,6 +1662,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
         this.sotDS.updateStoringOrderTank(newSot, newSo, this.igs?.tank_comp_guid).subscribe(result => {
           console.log(result)
           this.handleSaveSuccess(result?.data?.updateStoringOrderTank);
+          this.loadFullPage();
         });
       }
     });
