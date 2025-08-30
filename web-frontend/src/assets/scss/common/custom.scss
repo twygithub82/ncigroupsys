@@ -1267,10 +1267,10 @@ $breakpoints: (
 
 .table-label {
   min-height: 24px;
+}
 
-  mat-form-field.mat-mdc-form-field {
-    min-height: 28px;
-  }
+.table-label mat-form-field.mat-mdc-form-field {
+  min-height: 28px;
 }
 
 .table-column {

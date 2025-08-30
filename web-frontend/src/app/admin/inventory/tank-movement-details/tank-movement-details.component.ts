@@ -518,6 +518,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     HOUR_RATE: "COMMON-FORM.HOUR-RATE",
     STEAM_LOG: "COMMON-FORM.STEAM-LOG",
     ESTIMATE_DETAILS: "COMMON-FORM.ESTIMATE-DETAILS",
+    ESTIMATE_SUMMARY: "COMMON-FORM.ESTIMATE-SUMMARY"
   }
 
   sot_guid: string | null | undefined;
