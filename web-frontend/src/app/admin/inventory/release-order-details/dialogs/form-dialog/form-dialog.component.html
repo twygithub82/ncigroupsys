@@ -153,8 +153,12 @@
       }
     </div>
     <div mat-dialog-actions class="pt-2 mb-1 align-right">
-      <button mat-flat-button color="primary" class="me-1" (click)="submit()">{{data.translatedLangText.SAVE}}</button>
-      <button mat-flat-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CLOSE}}</button>
+      <button mat-flat-button color="primary" class="me-1" (click)="submit()"> {{data.translatedLangText.SAVE}}           
+        <mat-icon>
+            save
+          </mat-icon>
+      </button>
+      <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CLOSE}}</button>
     </div>
   </div>
 </div>

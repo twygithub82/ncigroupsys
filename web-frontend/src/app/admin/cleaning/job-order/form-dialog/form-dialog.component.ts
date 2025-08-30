@@ -37,9 +37,9 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component';
-import { ConfirmationDialogComponent } from '../dialogs/confirm-form-dialog/confirm-form-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 export interface DialogData {
   action?: string;
@@ -852,17 +852,13 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   UpdateCleaningStatusInProgress(clean_guid: string) {
-
-
     const where: any = {
       and: []
     };
 
-
     where.and.push({
       guid: { eq: clean_guid }
     });
-
 
     this.subs.sink = this.igCleanDS.search(where)
       .subscribe(data => {
@@ -886,8 +882,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       });
   }
 
-
-
   onRollback(event: Event) {
     this.preventDefault(event);  // Prevents the form submission
     let tempDirection: Direction;
@@ -897,14 +891,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '380px',
       data: {
-        action: "EDIT",
-        item: this.selectedItems[0].storing_order_tank,
-        langText: this.translatedLangText,
-        confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
-        index: -1
-
+        headerText: this.translatedLangText.ARE_SURE_ROLLBACK,
+        allowRemarks: true
       },
       direction: tempDirection
     });

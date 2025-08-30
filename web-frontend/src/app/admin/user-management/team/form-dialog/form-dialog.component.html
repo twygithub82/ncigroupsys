@@ -40,17 +40,17 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DEPARTMENT}}</mat-label>
-                  
-                  
-                    <mat-select formControlName="department" required >
-                      
-                      @for (d of departmentCvList; track d) {
-                      <mat-option [value]="d">
-                        {{d.description}}
-                      </mat-option>
-                      }
-                    </mat-select>
-                  
+
+
+                  <mat-select formControlName="department" required>
+
+                    @for (d of departmentCvList; track d) {
+                    <mat-option [value]="d">
+                      {{d.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
+
                 </mat-form-field>
               </div>
             </div>
@@ -59,16 +59,19 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-         
-            <button mat-flat-button color="primary" class="me-1" (click)="save()">
+
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">
           @if (isNew()) {
-            {{translatedLangText.SAVE}}
+          {{translatedLangText.SAVE}}
           }
           @else
           {
-            {{translatedLangText.UPDATE}}
+          {{translatedLangText.UPDATE}}
           }
-          </button>
+          <mat-icon>
+            save
+          </mat-icon>
+        </button>
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>

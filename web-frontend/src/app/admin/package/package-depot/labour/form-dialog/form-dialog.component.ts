@@ -269,6 +269,7 @@ export class FormDialogComponent {
   }
 
   save() {
+    if (this.pcForm.invalid) return;
     if (this.selectedItems.length == 1) {
       var packLabour = new PackageLabourItem(this.selectedItems[0]);
       packLabour.cost = Utility.convertNumber(this.pcForm!.value["adjusted_cost"], 2);

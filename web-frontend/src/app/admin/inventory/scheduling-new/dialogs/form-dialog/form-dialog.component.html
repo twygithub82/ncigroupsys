@@ -19,10 +19,10 @@
                 <table mat-table [dataSource]="dataSource" formArrayName="schedulingSot" matSort
                   class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table squeeze-form-field">
                   <ng-container matColumnDef="tank_no">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25-xl'">
                       {{data.translatedLangText.TANK_NO}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'">
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
                       <span
                         class="mobile-label">{{data.translatedLangText.TANK_NO}}:</span>{{row.get('tank_no')?.value}}
                     </mat-cell>
@@ -54,19 +54,19 @@
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="capacity">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75-xl justify-content-center'">
                       {{data.translatedLangText.CAPACITY}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75-xl justify-content-center'">
                       <span
                         class="mobile-label">{{data.translatedLangText.CAPACITY}}:</span>{{row.get('capacity')?.value}}
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="tare_weight">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
                       {{data.translatedLangText.TARE_WEIGHT}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'">
+                    <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl justify-content-center'">
                       <span
                         class="mobile-label">{{data.translatedLangText.TARE_WEIGHT}}:</span>{{row.get('tare_weight')?.value}}
                     </mat-cell>
@@ -90,10 +90,10 @@
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="reference">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1-xl'">
                       {{data.translatedLangText.REFERENCE}}
                     </mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row; let i = index" [ngClass]="''" [formGroupName]="i">
+                    <mat-cell mat-cell *matCellDef="let row; let i = index" [ngClass]="'tbl-col-width-per-1-xl'" [formGroupName]="i">
                       <span class="mobile-label">{{data.translatedLangText.REFERENCE}}:</span>
                       <tlx-form-field customClass="mat-table-form-txt-40px">
                         <mat-form-field>
@@ -108,7 +108,7 @@
                     <mat-cell mat-cell *matCellDef="let row; let i=index;"
                       [ngClass]="'pr-0 justify-content-end tbl-col-width-per-0_75-xl'">
                       <button mat-icon-button color="warn" (click)="removeSot($event, i)"
-                        [disabled]="dataSource.length <= 1" [matTooltip]="data.translatedLangText.CANCEL"
+                        [hidden]="dataSource.length <= 1" [matTooltip]="data.translatedLangText.CANCEL"
                         class="tbl-action-btn">
                         <mat-icon>cancel</mat-icon>
                       </button>
@@ -218,7 +218,7 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" (click)="submit()" [disabled]="(schedulingDS.actionLoading$ | async)">
+        <button mat-flat-button class="me-1" color="primary" (click)="submit()" [disabled]="(schedulingDS.actionLoading$ | async)">
           <mat-icon>
             @if (!(schedulingDS.actionLoading$ | async)) {
             save

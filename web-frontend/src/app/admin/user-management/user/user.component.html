@@ -55,7 +55,7 @@
           <div class="body overflow-auto">
             <div class="responsive_table">
               <table mat-table [dataSource]="userList" matSort  (matSortChange)="onSortChange($event)"
-                class="mat-cell advance-table striped-rows hover-highlight dark-header">
+                class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="fName">
                   <mat-header-cell *matHeaderCellDef mat-sort-header
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.USERNAME }}</mat-header-cell>

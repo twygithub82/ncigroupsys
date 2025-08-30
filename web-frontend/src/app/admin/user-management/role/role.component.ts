@@ -330,6 +330,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '720px',
       height: 'auto',
+      disableClose: true,
       data: {
         action: 'update',
         langText: this.langText,
@@ -365,6 +366,7 @@ addCall(event: Event) {
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '65vw',
       maxHeight: '75vh',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.translatedLangText ,
@@ -398,7 +400,8 @@ addCall(event: Event) {
     // if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '40vw',
-      maxHeight: '75vh',
+      //maxHeight: '75vh',
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.translatedLangText ,
