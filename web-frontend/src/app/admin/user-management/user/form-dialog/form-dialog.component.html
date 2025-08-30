@@ -20,7 +20,7 @@
                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1" hidden>
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.NAME}}</mat-label>
-                      <input matInput formControlName="name" type="text" >
+                      <input matInput formControlName="name" type="text">
                       @if (pcForm.get('name')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.NAME }} {{translatedLangText.CARGO_REQUIRED }}
@@ -28,7 +28,7 @@
                       }
                     </mat-form-field>
                   </div>
-                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1" hidden>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1" hidden>
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.CONTACT_NO}}</mat-label>
                       <input matInput formControlName="contact" type="text">
@@ -45,303 +45,305 @@
                       </mat-error>
                       }
                     </mat-form-field>
-                   </div>
-                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.EMAIL}}</mat-label>
                       <input matInput formControlName="email" type="text" readonly>
 
                     </mat-form-field>
                   </div>
-                
-             
-                    
-                   <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.PASSWORD}}</mat-label>
-                        <input matInput formControlName="pwd" type="password">
-                      </mat-form-field>
-                       <div *ngIf="pcForm.get('pwd')?.errors?.['strongPassword']">
-                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].minLength">
-                           {{ translatedLangText.MIN_8_CHARS }}
-                        </mat-error>
-                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasUpperCase">
-                         {{ translatedLangText.MUST_ONE_UPPERCASE }}
-                        </mat-error>
-                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasLowerCase">
-                          {{ translatedLangText.MUST_ONE_LOWERCASE }}
-                        </mat-error>
-                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasNumeric">
-                         {{ translatedLangText.MUST_ONE_NUMBER }}
-                        </mat-error>
-                        <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasSpecial">
-                          {{ translatedLangText.MUST_ONE_SPECIAL }}
-                        </mat-error>
-                      </div>
+
+
+
+                  <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.PASSWORD}}</mat-label>
+                      <input matInput formControlName="pwd" type="password">
+                    </mat-form-field>
+                    <div *ngIf="pcForm.get('pwd')?.errors?.['strongPassword']">
+                      <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].minLength">
+                        {{ translatedLangText.MIN_8_CHARS }}
+                      </mat-error>
+                      <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasUpperCase">
+                        {{ translatedLangText.MUST_ONE_UPPERCASE }}
+                      </mat-error>
+                      <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasLowerCase">
+                        {{ translatedLangText.MUST_ONE_LOWERCASE }}
+                      </mat-error>
+                      <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasNumeric">
+                        {{ translatedLangText.MUST_ONE_NUMBER }}
+                      </mat-error>
+                      <mat-error *ngIf="!pcForm.get('pwd')?.errors?.['strongPassword'].hasSpecial">
+                        {{ translatedLangText.MUST_ONE_SPECIAL }}
+                      </mat-error>
                     </div>
-                    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.CONFIRM_PASSWORD}}</mat-label>
-                        <input matInput formControlName="confirm_pwd" type="password">
-                      </mat-form-field>
-                    </div>
-                    <div  class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1 text-end">
-        
-                        <button mat-flat-button color="primary" class="mt-2 mr-4" [class.auth-spinner]="loading" (click)="changePassword()" [disabled]="!allowChangePassword()">
-                          @if (!loading) {
-                          {{translatedLangText.UPDATE}}  
-                          }
-                          
-                        </button>
-                    </div>
-        
+                  </div>
+                  <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.CONFIRM_PASSWORD}}</mat-label>
+                      <input matInput formControlName="confirm_pwd" type="password">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6 mb-1 text-end">
+
+                    <button mat-flat-button color="primary" class="mt-2 mr-4" [class.auth-spinner]="loading"
+                      (click)="changePassword()" [disabled]="!allowChangePassword()">
+                      @if (!loading) {
+                      {{translatedLangText.UPDATE}}
+                      }
+
+                    </button>
+                  </div>
+
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
                       <mat-label>{{translatedLangText.ROLE}}</mat-label>
                       <!-- <input matInput formControlName="role" type="text"> -->
-                     <mat-chip-grid #role_chipGrid class="nowrap single-line-chip-grid">
-                          
-                              <input #roleInput [matAutocomplete]="role" formControlName="role"
-                                [matChipInputFor]="role_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                >
-                              <mat-autocomplete #role="matAutocomplete" (optionSelected)="onRoleSelected($event)">
-                    
-                                @for (r of roleNameList; track r) {
-                                 
-                                    <mat-option [value]="r" class="checkbox-option">
-                                      <div class="horizontal-container">
-                                        <div class="option-text" > {{ r.description }}
-                                        </div>
-                                      </div>
-                                    </mat-option>
-                                }
-                              </mat-autocomplete>
-                            </mat-chip-grid>
+                      <mat-chip-grid #role_chipGrid class="nowrap single-line-chip-grid">
+
+                        <input #roleInput [matAutocomplete]="role" formControlName="role"
+                          [matChipInputFor]="role_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                        <mat-autocomplete #role="matAutocomplete" (optionSelected)="onRoleSelected($event)">
+
+                          @for (r of roleNameList; track r) {
+
+                          <mat-option [value]="r" class="checkbox-option">
+                            <div class="horizontal-container">
+                              <div class="option-text"> {{ r.description }}
+                              </div>
+                            </div>
+                          </mat-option>
+                          }
+                        </mat-autocomplete>
+                      </mat-chip-grid>
                     </mat-form-field>
-                   </div>
-                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                     <mat-form-field class="example-full-width">
-                      
-                        <mat-label>{{translatedLangText.TEAM}}</mat-label>
-                            <mat-chip-grid #team_chipGrid class="nowrap single-line-chip-grid">
-                          
-                             <input #teamInput [matAutocomplete]="team" formControlName="team"
-                                [matChipInputFor]="team_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                > 
-                              <mat-autocomplete #team="matAutocomplete" (optionSelected)="onTeamSelected($event)">
-                    
-                                @for (pn of teamNameList; track pn) {
-                                 
-                                    <mat-option [value]="pn" class="checkbox-option">
-                                      <div class="horizontal-container">
-                                        <div class="option-text" >{{ pn.department_cv }} - {{ pn.description }}
-                                        </div>
-                                      </div>
-                                    </mat-option>
-                                  
-                                
-                                }
-                              </mat-autocomplete>
-                            </mat-chip-grid>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                      <mat-form-field class="example-full-width">
-                        <mat-label>{{translatedLangText.ADHOC}}</mat-label>
-                        <!-- <input matInput formControlName="adhoc" type="text"> -->
-                        <mat-chip-grid #adhoc_chipGrid class="nowrap single-line-chip-grid">
-                          
-                             <input #adhocInput [matAutocomplete]="adhoc" formControlName="adhoc"
-                                [matChipInputFor]="adhoc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                > 
-                              <mat-autocomplete #adhoc="matAutocomplete" (optionSelected)="onAdhocSelected($event)">
-                    
-                                @for (f of adhocFuntionList; track f) {
-                                
-                                  
-                                    <mat-option [value]="f" class="checkbox-option">
-                                      <div class="horizontal-container">
-                                        <div class="option-text" >{{ f.code }}  
-                                        </div>
-                                      </div>
-                                    </mat-option>
-                                  
-                                
-                                }
-                              </mat-autocomplete>
-                        </mat-chip-grid>
-                      </mat-form-field>
-                    </div>
+
+                      <mat-label>{{translatedLangText.TEAM}}</mat-label>
+                      <mat-chip-grid #team_chipGrid class="nowrap single-line-chip-grid">
+
+                        <input #teamInput [matAutocomplete]="team" formControlName="team"
+                          [matChipInputFor]="team_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                        <mat-autocomplete #team="matAutocomplete" (optionSelected)="onTeamSelected($event)">
+
+                          @for (pn of teamNameList; track pn) {
+
+                          <mat-option [value]="pn" class="checkbox-option">
+                            <div class="horizontal-container">
+                              <div class="option-text">{{ pn.department_cv }} - {{ pn.description }}
+                              </div>
+                            </div>
+                          </mat-option>
+
+
+                          }
+                        </mat-autocomplete>
+                      </mat-chip-grid>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>{{translatedLangText.ADHOC}}</mat-label>
+                      <!-- <input matInput formControlName="adhoc" type="text"> -->
+                      <mat-chip-grid #adhoc_chipGrid class="nowrap single-line-chip-grid">
+
+                        <input #adhocInput [matAutocomplete]="adhoc" formControlName="adhoc"
+                          [matChipInputFor]="adhoc_chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                        <mat-autocomplete #adhoc="matAutocomplete" (optionSelected)="onAdhocSelected($event)">
+
+                          @for (f of adhocFuntionList; track f) {
+
+
+                          <mat-option [value]="f" class="checkbox-option">
+                            <div class="horizontal-container">
+                              <div class="option-text">{{ f.code }}
+                              </div>
+                            </div>
+                          </mat-option>
+
+
+                          }
+                        </mat-autocomplete>
+                      </mat-chip-grid>
+                    </mat-form-field>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                     <div class="card">
-                        <div class="header">
-                          <h2>{{translatedLangText.SELECTED_ROLES}} </h2>
-                        </div>
-                        <div class="body">
-                         
-                          @if (userDs?.loading$| async) {
-                          <div class="tbl-spinner">
-                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                            </mat-progress-spinner>
-                          </div>
-                          }@else if (updatedRoleList.length) {
-                          <div cdkDropList class="steps-list" >
-                            @for (r of updatedRoleList; let i = $index; track r) {
-                              @if(!r.is_deleted)
-                              {
-                                <div class="step-box cursor-pointer rounded role-content" >
-                                  <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                                  
-                                  @if (canEdit()) {
-                                  <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem(r)"
-                                    [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
-                                    <mat-icon>cancel</mat-icon>
-                                  </button>
-                                  }
-                                  <span class="">{{r.role.description}}</span>
-                                </div>
-                              }
-                            }
-                          </div>
-                          }
-                        </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <div class="card">
+                      <div class="header">
+                        <h2>{{translatedLangText.SELECTED_ROLES}} </h2>
                       </div>
-                   </div>
-                   <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                     <div class="card">
-                        <div class="header">
-                          <h2>{{translatedLangText.SELECTED_TEAMS}} </h2>
+                      <div class="body">
+
+                        @if (userDs?.loading$| async) {
+                        <div class="tbl-spinner">
+                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                          </mat-progress-spinner>
                         </div>
-                        <div class="body">
-                          @if (userDs?.loading$| async) {
-                          <div class="tbl-spinner">
-                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                            </mat-progress-spinner>
-                          </div>
-                          }@else if (updatedTeamList.length) {
-                          <div cdkDropList class="steps-list" >
-                            @for (t of updatedTeamList; let i = $index; track t) {
-                               @if(!t.is_deleted)
-                                  {
-                                  <div class="step-box cursor-pointer rounded role-content" >
-                                    <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                                    
-                                    @if (canEdit()) {
-                                    <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelTeamtem(t)"
-                                      [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger lower-btn">
-                                      <mat-icon>cancel</mat-icon>
-                                    </button>
-                                    }
-                                    <span class="">{{ t.team.department_cv }} - {{ t.team.description }}</span>
-                                  </div>
-                              }
+                        }@else if (updatedRoleList.length) {
+                        <div cdkDropList class="steps-list">
+                          @for (r of updatedRoleList; let i = $index; track r) {
+                          @if(!r.is_deleted)
+                          {
+                          <div class="step-box cursor-pointer rounded role-content">
+                            <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+
+                            @if (canEdit()) {
+                            <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelRoleItem(r)"
+                              [matTooltip]="translatedLangText.DELETE"
+                              class="tbl-action-btn text-custom-danger lower-btn">
+                              <mat-icon>cancel</mat-icon>
+                            </button>
                             }
+                            <span class="">{{r.role.description}}</span>
                           </div>
                           }
-                         
+                          }
                         </div>
+                        }
                       </div>
-                   </div>
-                     <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
-                     <div class="card">
-                        <div class="header">
-                          <h2>{{translatedLangText.SELECTED_ADHOC}} </h2>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <div class="card">
+                      <div class="header">
+                        <h2>{{translatedLangText.SELECTED_TEAMS}} </h2>
+                      </div>
+                      <div class="body">
+                        @if (userDs?.loading$| async) {
+                        <div class="tbl-spinner">
+                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                          </mat-progress-spinner>
                         </div>
-                        <div class="body">
-                         @if (userDs?.loading$| async) {
-                          <div class="tbl-spinner">
-                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                            </mat-progress-spinner>
-                          </div>
-                          }@else if (updatedAdhocList.length) {
-                          <div cdkDropList class="steps-list" >
-                            @for (f of updatedAdhocList; let i = $index; track f) {
-                              @if(f.adhoc && !f.is_deleted && f.delete_dt===null)
-                              {
-                                 <div class="step-box-features cursor-pointer rounded  role-content" >
-                                  <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                                  <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelAdhocItem(f)"
-                                    [matTooltip]="translatedLangText.DELETE"  class="tbl-action-btn text-custom-danger lower-btn">
-                                   <mat-icon>cancel</mat-icon>
-                                  </button>
-                                  
-                                  <span  >{{f.functions.code||f.code}}
-                                  </span>
-                                </div>
-                              }
+                        }@else if (updatedTeamList.length) {
+                        <div cdkDropList class="steps-list">
+                          @for (t of updatedTeamList; let i = $index; track t) {
+                          @if(!t.is_deleted)
+                          {
+                          <div class="step-box cursor-pointer rounded role-content">
+                            <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+
+                            @if (canEdit()) {
+                            <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelTeamtem(t)"
+                              [matTooltip]="translatedLangText.DELETE"
+                              class="tbl-action-btn text-custom-danger lower-btn">
+                              <mat-icon>cancel</mat-icon>
+                            </button>
                             }
+                            <span class="">{{ t.team.department_cv }} - {{ t.team.description }}</span>
                           </div>
                           }
-                          @else {
-                          <!-- <div class="text-center">
+                          }
+                        </div>
+                        }
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
+                    <div class="card">
+                      <div class="header">
+                        <h2>{{translatedLangText.SELECTED_ADHOC}} </h2>
+                      </div>
+                      <div class="body">
+                        @if (userDs?.loading$| async) {
+                        <div class="tbl-spinner">
+                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                          </mat-progress-spinner>
+                        </div>
+                        }@else if (updatedAdhocList.length) {
+                        <div cdkDropList class="steps-list">
+                          @for (f of updatedAdhocList; let i = $index; track f) {
+                          @if(f.adhoc && !f.is_deleted && f.delete_dt===null)
+                          {
+                          <div class="step-box-features cursor-pointer rounded  role-content">
+                            <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                            <button mat-icon-button (click)="$event.stopPropagation()" (click)="cancelAdhocItem(f)"
+                              [matTooltip]="translatedLangText.DELETE"
+                              class="tbl-action-btn text-custom-danger lower-btn">
+                              <mat-icon>cancel</mat-icon>
+                            </button>
+
+                            <span>{{f.functions.code||f.code}}
+                            </span>
+                          </div>
+                          }
+                          }
+                        </div>
+                        }
+                        @else {
+                        <!-- <div class="text-center">
                             <h5>{{translatedLangText.NO_RESULT}}</h5>
                           </div> -->
-                          }
-                        </div>
+                        }
                       </div>
-                   </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
                 <div class="row">
-                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                     <div class="card">
-                        <div class="header">
-                          <h2>{{translatedLangText.SELECTED_FEATURES}} </h2>
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                    <div class="card">
+                      <div class="header">
+                        <h2>{{translatedLangText.SELECTED_FEATURES}} </h2>
+                      </div>
+                      <div class="body">
+                        @if (userDs?.loading$| async) {
+                        <div class="tbl-spinner">
+                          <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                          </mat-progress-spinner>
                         </div>
-                        <div class="body">
-                          @if (userDs?.loading$| async) {
-                          <div class="tbl-spinner">
-                            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                            </mat-progress-spinner>
-                          </div>
-                          }@else if (updatedRoleList.length) {
-                          <div cdkDropList class="steps-list-features" >
-                            @for (f of updatedRoleFeaturesList; let i = $index; track f) {
-                              @if(f.functions?.code)
-                              {
-                                <div class="step-box-features cursor-pointer rounded  role-content" >
-                                  <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                                  
-                                 
-                                  <button mat-icon-button (click)="$event.stopPropagation()" (click)="toggleFunction(f)"
-                                    [matTooltip]="translatedLangText.DISABLE"  [ngClass]="f.is_disabled ? 'text-custom-danger lower-btn' : 'text-custom-success lower-btn'">
-                                    <span class="material-symbols-outlined ">
-                                       @if (!f.is_disabled) {
-                                          person_check
-                                       }
-                                       @else
-                                       {
-                                          person_cancel
-                                       }
-                                      </span>
-                                  </button>
-                                  
-                                  <span [class.strike-text]="f.is_disabled" (click)="toggleFunction(f)" >{{f.functions?.code}}
-                                  </span>
-                                </div>
-                              }
-                            }
+                        }@else if (updatedRoleList.length) {
+                        <div cdkDropList class="steps-list-features">
+                          @for (f of updatedRoleFeaturesList; let i = $index; track f) {
+                          @if(f.functions?.code)
+                          {
+                          <div class="step-box-features cursor-pointer rounded  role-content">
+                            <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+
+
+                            <button mat-icon-button (click)="$event.stopPropagation()" (click)="toggleFunction(f)"
+                              [matTooltip]="translatedLangText.DISABLE"
+                              [ngClass]="f.is_disabled ? 'text-custom-danger lower-btn' : 'text-custom-success lower-btn'">
+                              <span class="material-symbols-outlined ">
+                                @if (!f.is_disabled) {
+                                person_check
+                                }
+                                @else
+                                {
+                                person_cancel
+                                }
+                              </span>
+                            </button>
+
+                            <span [class.strike-text]="f.is_disabled" (click)="toggleFunction(f)">{{f.functions?.code}}
+                            </span>
                           </div>
                           }
-                         
+                          }
                         </div>
+                        }
+
                       </div>
-                   </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -350,7 +352,12 @@
       </div>
       <div mat-dialog-actions class=" align-right m-r-25 m-b-20">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()" [disabled]="userDs?.loading$|async">{{translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" class="me-1" (click)="save()"
+          [disabled]="userDs?.loading$|async">{{translatedLangText.UPDATE}}
+          <mat-icon>
+            save
+          </mat-icon>
+        </button>
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>

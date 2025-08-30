@@ -14,7 +14,7 @@
       <div class="row justify-content-center">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
           <div class="card">
-          
+
             <div class="row">
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
@@ -26,78 +26,80 @@
               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DEPARTMENT}}</mat-label>
-                  
-                  
-                    <mat-select formControlName="department" readonly >
-                      
-                      @for (d of departmentCvList; track d) {
-                      <mat-option [value]="d">
-                        {{d.description}}
-                      </mat-option>
-                      }
-                    </mat-select>
-                  
+
+
+                  <mat-select formControlName="department" readonly>
+
+                    @for (d of departmentCvList; track d) {
+                    <mat-option [value]="d">
+                      {{d.description}}
+                    </mat-option>
+                    }
+                  </mat-select>
+
                 </mat-form-field>
               </div>
-               <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.POSITION}}</mat-label>
                   <input matInput formControlName="position" type="text" readonly>
 
                 </mat-form-field>
               </div>
-           
-             
-                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
-                    <mat-form-field class="example-full-width">
-                      <mat-label>{{translatedLangText.FEATURES}}</mat-label>
-                      <input matInput formControlName="feature" type="text" [matAutocomplete]="featureItem" (keydown.enter)="AddFunctions()">
-                        <mat-autocomplete #featureItem="matAutocomplete" [displayWith]="displayFunctionFn">
-                          @for (cc of functionsList; track cc) {
-                            @if(!isSelected(cc)){
-                              <mat-option [value]="cc">
-                                {{cc.code}}
-                              </mat-option>    
-                            }
-                          
-                          }
-                        </mat-autocomplete>
-                      <!-- @if (pcForm.get('feature')?.hasError('required')) {
+
+
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-1">
+                <mat-form-field class="example-full-width">
+                  <mat-label>{{translatedLangText.FEATURES}}</mat-label>
+                  <input matInput formControlName="feature" type="text" [matAutocomplete]="featureItem"
+                    (keydown.enter)="AddFunctions()">
+                  <mat-autocomplete #featureItem="matAutocomplete" [displayWith]="displayFunctionFn">
+                    @for (cc of functionsList; track cc) {
+                    @if(!isSelected(cc)){
+                    <mat-option [value]="cc">
+                      {{cc.code}}
+                    </mat-option>
+                    }
+
+                    }
+                  </mat-autocomplete>
+                  <!-- @if (pcForm.get('feature')?.hasError('required')) {
                       <mat-error>
                         {{translatedLangText.FEATURES }} {{translatedLangText.CARGO_REQUIRED }}
                       </mat-error>
                       } -->
-                    </mat-form-field>
+                </mat-form-field>
+              </div>
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
+                <div>
+                  <div class="header">
+                    <h2>{{translatedLangText.SELECTED_FEATURES}} </h2>
                   </div>
-                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-1">
-                     <div >
-                        <div class="header">
-                          <h2>{{translatedLangText.SELECTED_FEATURES}} </h2>
-                        </div>
-                        <div class="body">
-                         
-                          <div cdkDropList class="step-box-container" >
-                           @for (item of selectedItem.role_functions; let i = $index; track item) {
-                              @if(item.functions?.code){
-                                @if(item.functions?.opt != 'X'){
-                                  <div class="step-box cursor-pointer p-2 mb-2 rounded" >
-                                  <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-                                  <span class="list-item-text">{{item.functions?.code}}</span>
-                                  @if (canEdit()) {
-                                  <button mat-icon-button (click)="$event.stopPropagation(); cancelFeatureItem($event, i)" (keydown.enter)="$event.preventDefault(); $event.stopPropagation();"
-                                    [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
-                                    <mat-icon>close</mat-icon>
-                                  </button>
-                                  }
-                                </div>
-                               }
-                              }
-                            }
-                          </div>
-                          
-                        </div>
+                  <div class="body">
+
+                    <div cdkDropList class="step-box-container">
+                      @for (item of selectedItem.role_functions; let i = $index; track item) {
+                      @if(item.functions?.code){
+                      @if(item.functions?.opt != 'X'){
+                      <div class="step-box cursor-pointer p-2 mb-2 rounded">
+                        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                        <span class="list-item-text">{{item.functions?.code}}</span>
+                        @if (canEdit()) {
+                        <button mat-icon-button (click)="$event.stopPropagation(); cancelFeatureItem($event, i)"
+                          (keydown.enter)="$event.preventDefault(); $event.stopPropagation();"
+                          [matTooltip]="translatedLangText.DELETE" class="tbl-action-btn text-custom-danger">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                        }
                       </div>
-                  
+                      }
+                      }
+                      }
+                    </div>
+
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -105,7 +107,11 @@
       </div>
       <div mat-dialog-actions class="mb-1 align-right">
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.UPDATE}}</button>
+        <button mat-flat-button color="primary" class="me-1" (click)="save()">{{translatedLangText.UPDATE}}
+          <mat-icon>
+            save
+          </mat-icon>
+        </button>
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{translatedLangText.CANCEL}}</button>
       </div>
