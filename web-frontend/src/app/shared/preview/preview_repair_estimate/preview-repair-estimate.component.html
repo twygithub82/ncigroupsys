@@ -12,7 +12,7 @@
   </div>
   <div mat-dialog-content>
     <div class="card modal-card">
-      <div class="header">
+      <div class="header header-custom-padding">
         <h2>
           {{translatedLangText.TANK_DETAILS}}
         </h2>
@@ -132,7 +132,7 @@
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card modal-card">
-            <div class="header">
+            <div class="heade header-custom-paddingr">
               <h2>
                 {{translatedLangText.ESTIMATE_DETAILS}}
               </h2>
@@ -334,7 +334,7 @@
       <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="card modal-card">
-            <div class="header">
+            <div class="header header-custom-padding">
               <h2>
                 {{translatedLangText.ESTIMATE_SUMMARY}}
               </h2>
@@ -439,23 +439,29 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label"></div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <tlx-form-field customClass="example-full-width">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
+                          <!-- <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.LABOUR_DISCOUNT"
                                 type="number" min="0" max="99">
                             </mat-form-field>
-                          </tlx-form-field>
+                          </tlx-form-field> -->
+                          <div class="table-label cost-label">
+                            <span></span><span>{{repairForm?.get('labour_cost_discount')?.value}}</span>
+                          </div>
                         </div>
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <tlx-form-field customClass="example-full-width">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 border">
+                          <div class="table-label cost-label">
+                            <span></span><span>{{repairForm?.get('material_cost_discount')?.value}}</span>
+                          </div>
+                          <!-- <tlx-form-field customClass="example-full-width">
                             <mat-form-field>
                               <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
                                 (focus)="selectText($event)" [placeholder]="translatedLangText.MATERIAL_DISCOUNT"
                                 type="number" min="0" max="99">
                             </mat-form-field>
-                          </tlx-form-field>
+                          </tlx-form-field> -->
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label"></div>

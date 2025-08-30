@@ -50,6 +50,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dia
 import { TlxCardListComponent } from '@shared/components/tlx-card-list/tlx-card-list.component';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { TableColumn, TableFooter, TableGroup, TlxTableCardComponent } from '@shared/components/tlx-table-card/tlx-table-card.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-estimate',
@@ -339,42 +340,38 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   cancelRow(row: SteamItem) {
-    const found = this.reSelection.selected.some(x => x.guid === row.guid);
-    let selectedList = [...this.reSelection.selected];
-    if (!found) {
-      // this.toggleRow(row);
-      selectedList.push(row);
-    }
-    this.cancelSelectedRows(selectedList)
+    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    // let selectedList = [...this.reSelection.selected];
+    // if (!found) {
+    //   // this.toggleRow(row);
+    //   selectedList.push(row);
+    // }
+    this.cancelSelectedRows(row)
   }
 
-  cancelSelectedRows(row: SteamItem[]) {
+  cancelSelectedRows(row: SteamItem) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.CONFIRM_CANCEL,
-        item: [...row],
+        allowRemarks: true,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: SteamItem) => new SteamItem(item));
-        console.log(reList);
-
         let steamStatus: SteamStatusRequest = new SteamStatusRequest();
         steamStatus.action = "CANCEL";
-        steamStatus.guid = row[0]?.guid;
-        steamStatus.sot_guid = row[0]?.sot_guid;
-        steamStatus.remarks = reList[0].remarks;
+        steamStatus.guid = row?.guid;
+        steamStatus.sot_guid = row?.sot_guid;
+        steamStatus.remarks = result.remarks;
         this.steamDS.updateSteamStatus(steamStatus).subscribe(result => {
 
           this.handleCancelSuccess(result?.data?.UpdateSteamStatus)
@@ -611,7 +608,6 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
       .subscribe(data => {
         if (data) {
           const steamingStatusFilter = this.searchForm!.value['est_status_cv'];
-
           this.sotList = data.map(sot => {
             sot.steaming = (sot.steaming || []).map(stm => {
               const stm_part = (stm.steaming_part || []).filter(p => !p.delete_dt);

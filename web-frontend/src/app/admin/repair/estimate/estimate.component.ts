@@ -46,6 +46,7 @@ import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { RepairEstimatePdfComponent } from 'app/document-template/pdf/repair-estimate-pdf/repair-estimate-pdf.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-estimate',
@@ -299,40 +300,38 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   cancelRow(row: RepairItem, sot: StoringOrderTankItem) {
-    const found = this.reSelection.selected.some(x => x.guid === row.guid);
-    let selectedList = [...this.reSelection.selected];
-    if (!found) {
-      // this.toggleRow(row);
-      selectedList.push(row);
-    }
-    this.cancelSelectedRows(selectedList, sot)
+    // const found = this.reSelection.selected.some(x => x.guid === row.guid);
+    // let selectedList = [...this.reSelection.selected];
+    // if (!found) {
+    //   // this.toggleRow(row);
+    //   selectedList.push(row);
+    // }
+    this.cancelSelectedRows(row, sot)
   }
 
-  cancelSelectedRows(row: RepairItem[], sot: StoringOrderTankItem) {
+  cancelSelectedRows(row: RepairItem, sot: StoringOrderTankItem) {
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         action: 'cancel',
         dialogTitle: this.translatedLangText.CONFIRM_DELETE,
-        item: [...row],
+        allowRemarks: true,
         translatedLangText: this.translatedLangText
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'confirmed') {
-        const reList = result.item.map((item: RepairItem) => new RepairGO(item));
         var repairStatusReq: RepairStatusRequest = new RepairStatusRequest({
-          guid: reList[0].guid,
+          guid: row.guid,
           sot_guid: sot!.guid,
           action: "CANCEL",
-          remarks: reList[0].remarks
+          remarks: result.remarks
         });
         console.log(repairStatusReq);
         this.repairDS.updateRepairStatus(repairStatusReq).subscribe(result => {

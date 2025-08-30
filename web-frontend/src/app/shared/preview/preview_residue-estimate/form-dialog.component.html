@@ -8,7 +8,7 @@
   </div>
   <div mat-dialog-content class="content-block">
     <div class="card modal-card">
-      <div class="header">
+      <div class="header header-custom-padding">
         <h2>
           {{translatedLangText.TANK_DETAILS}}
         </h2>
@@ -47,16 +47,6 @@
                   </span>
                 </div>
               </div>
-              <div class="row right-align-display">
-                <div class="col-xl-5 col-lg-5 col-md-5 col-sm-5 col-xs-5 col-xs-3-75 m-b-0">
-                  <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
-                </div>
-                <div class="col-xl-7 col-lg-7 col-md-7 col-sm-7 col-xs-7 col-xs-8-25 m-b-0">
-                  <span class="value-display-info">
-                    {{ccDS.displayName(sotItem?.customer_company)}}
-                  </span>
-                </div>
-              </div>
             </div>
             <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-xs-12 m-b-5">
               <div class="row right-align-display">
@@ -89,39 +79,19 @@
                   </span>
                 </div>
               </div>
-              <div class="row right-align-display">
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-0">
-                  <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
-                </div>
-                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-0">
-                  <span class="value-display-info">
-                    {{lastTestDesc}}
-                  </span>
-                </div>
-              </div>
-              <div class="row right-align-display">
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4 m-b-0">
-                  <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
-                </div>
-                <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 col-xs-8 m-b-0">
-                  <span class="value-display-info">
-                    {{nextTestDesc}}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </mat-card-content>
       </div>
     </div>
     <div class="card modal-card">
-      <div class="header">
+      <div class="header header-custom-padding">
         <h2>
           {{translatedLangText.ESTIMATE_DETAILS}}
         </h2>
       </div>
       <div class="body">
-        <div class="row">
+        <mat-card-content>
           <div class="responsive_table">
             <table mat-table [dataSource]="deList!" matSort
               class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
@@ -258,7 +228,7 @@
             <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
           </div>
           }
-        </div>
+        </mat-card-content>
       </div>
     </div>
     <div mat-dialog-actions class="pt-2 pb-2 align-right">
