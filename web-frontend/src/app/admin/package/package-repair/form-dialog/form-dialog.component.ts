@@ -22,7 +22,7 @@ import { Apollo } from 'apollo-angular';
 import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryDS } from 'app/data-sources/customer-company-category';
-import { PackageRepairDS, PackageRepairItem } from 'app/data-sources/package-repair';
+import { PackageRepairDS, PackageRepairItem, PackageRepairItemWithCount } from 'app/data-sources/package-repair';
 import { StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { NumericTextDirective } from 'app/directive/numeric-text.directive';
@@ -35,7 +35,7 @@ export interface DialogData {
   action?: string;
   selectedValue?: number;
   langText?: any;
-  selectedItems: PackageRepairItem[];
+  selectedItems: PackageRepairItemWithCount[];
 }
 
 @Component({
@@ -195,7 +195,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   };
 
 
-  selectedItems: PackageRepairItem[];
+  selectedItems: PackageRepairItemWithCount[];
   //tcDS: TariffCleaningDS;
   //sotDS: StoringOrderTankDS;
 
@@ -266,9 +266,9 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     if (this.selectedItems.length == 1) {
       var pckRepairItem = this.selectedItems[0];
       this.pcForm.patchValue({
-        material_cost: pckRepairItem.material_cost?.toFixed(2),
-        labour_hour: pckRepairItem.labour_hour,
-        remarks: pckRepairItem.remarks
+        material_cost: this.parse2Decimal(pckRepairItem.package_repair?.material_cost),
+        labour_hour: pckRepairItem.package_repair?.labour_hour,
+        remarks: pckRepairItem.package_repair?.remarks
       });
     }
   }
@@ -321,7 +321,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
 
     if (this.selectedItems.length > 1) {
       let pd_guids: string[] = this.selectedItems
-        .map(cc => cc.guid)
+        .map(cc => cc.package_repair?.guid)
         .filter((guid): guid is string => guid !== undefined);
 
       var material_cost = 1;
@@ -339,7 +339,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       });
     }
     else {
-      var packRepairItm = new PackageRepairItem(this.selectedItems[0]);
+      var packRepairItm = new PackageRepairItem(this.selectedItems[0].package_repair);
       packRepairItm.tariff_repair = undefined; packRepairItm.customer_company = undefined;
       packRepairItm.material_cost = Number(this.pcForm!.value["material_cost"]);
       packRepairItm.labour_hour = Number(this.pcForm!.value["labour_hour"]);

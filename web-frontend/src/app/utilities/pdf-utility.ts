@@ -220,7 +220,7 @@ export class PDFUtility {
     // Add company address
     pdf.setFontSize(10);
     posX -= 20.5;
-    posY += 5;
+    posY += 10;
     pdf.text(customerInfo.companyAddress, posX, posY);
 
     // Add phone, fax
@@ -234,8 +234,8 @@ export class PDFUtility {
 
     // Add website, company UEN
     // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    posX += 0;
-    posY += 5;
+    posX += 20;
+    posY = topMargin + 8+5;
     nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
     pdf.text(nextLine, posX, posY);
     
@@ -336,7 +336,7 @@ export class PDFUtility {
     // Add company address
     pdf.setFontSize(10);
     posX -= 20.5;
-    posY += 5;
+    posY += 5+5;
     pdf.text(customerInfo.companyAddress, posX, posY);
 
     // Add phone, fax
@@ -350,8 +350,10 @@ export class PDFUtility {
 
     // Add website, company UEN
     // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    posX += 0;
-    posY += 5;
+    // posX += 0;
+    // posY += 5;
+    posX += 20;
+    posY = topMargin + 8+5;
     nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
     pdf.text(nextLine, posX, posY);
     // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
