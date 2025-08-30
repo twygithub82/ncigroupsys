@@ -35,9 +35,9 @@ import { TeamDS, TeamItem } from 'app/data-sources/teams';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-import { ConfirmationDialogComponent } from '../../bay-overview/dialogs/confirm-form-dialog/confirm-form-dialog.component';
 import { CancelFormDialogComponent } from '../dialogs/cancel-form-dialog/cancel-form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 export interface DialogData {
   action?: string;
@@ -49,8 +49,6 @@ export interface DialogData {
   // index: number;
   // sotExistedList?: StoringOrderTankItem[]
 }
-
-
 
 @Component({
   selector: 'app-package-depot-form-dialog',
@@ -841,16 +839,10 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-     width: '380px',
       disableClose: true,
-      // height: '250px',
       data: {
-        action: "EDIT",
-        item: this.selectedItems[0].steaming_part[0].job_order,
-        langText: this.translatedLangText,
-        confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
-        index: -1
-
+        headerText: this.translatedLangText.ARE_SURE_ROLLBACK,
+        allowRemarks: true
       },
       direction: tempDirection
     });
@@ -867,8 +859,6 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
           sot_status: this.selectedItems[0]?.storing_order_tank?.tank_status_cv,
           remarks: result.remarks
         });
-
-
 
         console.log(stmJobOrder);
         if (this.selectedItems[0]?.status_cv === "COMPLETED") {

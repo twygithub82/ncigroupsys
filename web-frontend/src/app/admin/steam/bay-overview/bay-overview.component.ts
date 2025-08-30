@@ -45,8 +45,8 @@ import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { NgxGaugeModule } from 'ngx-gauge';
 import { Observable, Subscription } from 'rxjs';
-import { ConfirmationDialogComponent } from './dialogs/confirm-form-dialog/confirm-form-dialog.component';
 import { TankInfoFormDialogComponent } from './dialogs/tank-form-dialog/tank-info-form-dialog.component';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-bay-overview',
@@ -245,7 +245,7 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   triggerRefresh() {
-    this.refreshMainTab.emit();
+    this.refreshMainTab?.emit();
   }
 
   initSearchForm() {
@@ -761,14 +761,10 @@ export class BayOverviewComponent extends UnsubscribeOnDestroyAdapter implements
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '380px',
-      //height: '250px',
       data: {
-        action: "EDIT",
         item: team.jobOrderItem,
-        langText: this.translatedLangText,
-        confirmStatement: this.translatedLangText.ARE_SURE_ROLLBACK,
-        index: -1
+        headerText: this.translatedLangText.ARE_SURE_ROLLBACK,
+        allowRemarks: true,
       },
       direction: tempDirection
     });
