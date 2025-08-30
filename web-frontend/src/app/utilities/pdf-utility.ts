@@ -225,19 +225,21 @@ export class PDFUtility {
 
     // Add phone, fax
     let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    posX += 8.5;
+    posX += 8;
     posY += 5;
     pdf.text(nextLine, posX, posY);
     nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
-    pdf.text(nextLine, posX + 39, posY);
+    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+     pdf.text(nextLine, posX + 42, posY);
 
     // Add website, company UEN
-    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
     posX += 0;
     posY += 5;
-    pdf.text(nextLine, posX, posY);
     nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    pdf.text(nextLine, posX + 39, posY);
+    pdf.text(nextLine, posX, posY);
+    
+    // pdf.text(nextLine, posX + 39, posY);
 
     // // Load and add company logo
     // const imgUrl = customerInfo.companyReportLogo;
@@ -251,11 +253,13 @@ export class PDFUtility {
     // });
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
-     const posX1_img = pageWidth / 1.7; //leftMargin + 5;
-     const posY1_img = topMargin + 1;
+     const posX1_img = pageWidth / 1.5; //leftMargin + 5;
+     const posY1_img = topMargin + 6;
     // Calculate dimensions to fit your desired space while maintaining aspect ratio
-      const maxWidth = 77.5; // Your desired width
-      const maxHeight = 25; // Maximum height you want to allow
+      // const maxWidth = 60.5; // Your desired width
+      // const maxHeight = 20; // Maximum height you want to allow
+      const maxWidth = 60.5; // Your desired width
+      const maxHeight = 17; // Maximum height you want to allow
       const aspectRatio = height / width;
 
       let finalWidth = maxWidth;
@@ -337,19 +341,21 @@ export class PDFUtility {
 
     // Add phone, fax
     let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    posX += 8.5;
+    posX += 8;
     posY += 5;
     pdf.text(nextLine, posX, posY);
     nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
-    pdf.text(nextLine, posX + 39, posY);
+    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    pdf.text(nextLine, posX + 42, posY);
 
     // Add website, company UEN
-    nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+    // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
     posX += 0;
     posY += 5;
-    pdf.text(nextLine, posX, posY);
     nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    pdf.text(nextLine, posX + 39, posY);
+    pdf.text(nextLine, posX, posY);
+    // nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    // pdf.text(nextLine, posX + 39, posY);
 
     // // Load and add company logo
     // const imgUrl = customerInfo.companyReportLogo;
@@ -364,14 +370,17 @@ export class PDFUtility {
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
     // Add the image to the PDF
-    const posX1_img = pageWidth / 1.45;
-    const posY1_img = topMargin + 1;
+    // const posX1_img = pageWidth / 1.45;
+    // const posY1_img = topMargin + 1;
+    const posX1_img = pageWidth / 1.3;
+    const posY1_img = topMargin + 5;
   
    
     
-
-      const maxWidth = 77.5; // Your desired width
-      const maxHeight = 25; // Maximum height you want to allow
+      const maxWidth = 60.5; // Your desired width
+      const maxHeight = 17; // Maximum height you want to allow
+      // const maxWidth = 77.5; // Your desired width
+      // const maxHeight = 25; // Maximum height you want to allow
       const aspectRatio = height / width;
 
       let finalWidth = maxWidth;
