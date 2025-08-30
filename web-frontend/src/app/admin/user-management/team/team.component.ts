@@ -365,6 +365,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     // if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '600px',
+      disableClose: true,
       data: {
         action: 'new',
         langText: this.langText,
@@ -400,6 +401,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     // if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '600px',
+      disableClose: true,
       data: {
         action: 'edit',
         langText: this.langText,

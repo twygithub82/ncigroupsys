@@ -428,7 +428,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent,{
 
       width: '70vw',
-      maxHeight:'90vh',
+      //maxHeight:'90vh',
       disableClose:true,
       data: {
         action: 'update',

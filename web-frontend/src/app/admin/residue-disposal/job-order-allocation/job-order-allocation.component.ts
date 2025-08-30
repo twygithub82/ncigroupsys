@@ -217,6 +217,7 @@ export class JobOrderAllocationResidueDisposalComponent extends UnsubscribeOnDes
     ABORT: 'COMMON-FORM.ABORT',
     VIEW: 'COMMON-FORM.VIEW',
     UNASSIGN: 'COMMON-FORM.UNASSIGN',
+    CONFIRM_TEAM_UNASSIGN: 'COMMON-FORM.CONFIRM-TEAM-UNASSIGN',
     APPROVED: 'COMMON-FORM.APPROVED'
   }
 

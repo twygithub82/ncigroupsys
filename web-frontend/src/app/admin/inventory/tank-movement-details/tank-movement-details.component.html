@@ -83,10 +83,10 @@
                     <div class="row justify-content-center">
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.TANK_NO}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{sot?.tank_no}}
                               @if (tiItem?.previous_tank_no) {
@@ -96,10 +96,10 @@
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.CUSTOMER}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               <!-- {{ccDS.displayName(sot?.storing_order?.customer_company)}} -->
                               {{sot?.storing_order?.customer_company?.name}}
@@ -107,10 +107,10 @@
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.OWNER}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               <!-- {{ccDS.displayName(sot?.customer_company)}} -->
                               {{sot?.customer_company?.name}}
@@ -121,10 +121,10 @@
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.CURRENT_STATUS}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{getTankStatusDescription(sot?.tank_status_cv)}}
                             </span>
@@ -133,40 +133,40 @@
                       </div>
                       <div class="col-xl-4 col-lg-4-5 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.EIR_NO}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{igDS.getInGateItem(sot?.in_gate)?.eir_no ||"-"}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.EIR_DATE}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{displayDateTime(igDS.getInGateItem(sot?.in_gate)?.eir_dt) || "-"}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.LAST_CARGO}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{sot?.tariff_cleaning?.cargo}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.CLEAN_STATUS}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{getCleanStatusDescription(sot?.clean_status_cv)}}
                             </span>
@@ -175,40 +175,40 @@
                       </div>
                       <div class="col-xl-4 col-lg-3-25 col-md-12 col-sm-12 col-xs-12 m-b-0">
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.PURPOSE}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{displayTankPurpose(sot!)}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.LAST_TEST}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{last_test_desc || '-'}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.NEXT_TEST}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{next_test_desc || '-'}}
                             </span>
                           </div>
                         </div>
                         <div class="row right-align-display">
-                          <div class="col-xl-3 col-lg-3-75 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
+                          <div class="col-xl-5 col-lg-5 col-md-3-75 col-sm-3-75 col-xs-3-75 m-b-5">
                             <span class="label-display-info">{{translatedLangText.YARD}}:</span>
                           </div>
-                          <div class="col-xl-9 col-lg-8-25 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
+                          <div class="col-xl-7 col-lg-7 col-md-8-25 col-sm-8-25 col-xs-8-25 m-b-5">
                             <span class="value-display-info">
                               {{getYardDescription(getLastLocation())}}
                             </span>
@@ -812,28 +812,28 @@
                                         </ng-container>
                                         <ng-container matColumnDef="estimate_no">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.ESTIMATE_NO}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1_25-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span class="mobile-tab-label">{{translatedLangText.ESTIMATE_NO}}:</span>
                                             <span class="me-1">{{row.estimate_no}}</span>
-                                            @if (isAutoApproveSteaming(row)) {
+                                            <!-- @if (isAutoApproveSteaming(row)) {
                                             <mat-icon>whatshot</mat-icon>
                                             }
                                             @else {
                                             <mat-icon>build</mat-icon>
-                                            }
+                                            } -->
                                           </mat-cell>
                                         </ng-container>
                                         <ng-container matColumnDef="degree_celsius">
                                           <mat-header-cell mat-header-cell *matHeaderCellDef
-                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             {{translatedLangText.DEGREE_CELSIUS_SYMBOL}}
                                           </mat-header-cell>
                                           <mat-cell mat-cell *matCellDef="let row"
-                                            [ngClass]="'tbl-col-width-per-0_5-xl tbl-col-width-per-0_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+                                            [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-0_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                                             <span
                                               class="mobile-tab-label">{{translatedLangText.DEGREE_CELSIUS_SYMBOL}}:</span>{{steamDS.getSteamHighestTemp(row)}}
                                           </mat-cell>

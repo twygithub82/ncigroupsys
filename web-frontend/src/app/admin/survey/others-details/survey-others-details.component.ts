@@ -362,6 +362,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         action: 'new',
         translatedLangText: this.translatedLangText,
@@ -394,6 +395,7 @@ export class SurveyOthersDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         action: 'edit',
         translatedLangText: this.translatedLangText,
