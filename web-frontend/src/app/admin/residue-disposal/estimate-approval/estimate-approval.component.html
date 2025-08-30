@@ -235,8 +235,8 @@
                               <mat-cell *matCellDef="let residueRow; let i=index;"
                                 [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
 
-                                @if(residueRow.status_cv !== 'JOB_IN_PROGRESS'){
-                                <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                                @if(residueRow.status_cv !== 'JOB_IN_PROGRESS' && IsEnable3Dots(residueRow)){
+                                <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)" >
                                   <mat-icon>more_vert</mat-icon>
                                 </button>
                                 }

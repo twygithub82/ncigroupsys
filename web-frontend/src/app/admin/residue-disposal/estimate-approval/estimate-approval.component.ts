@@ -978,4 +978,21 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
       this.handleSaveSuccess(result?.data?.approveResidue);
     });
   }
+
+  IsEnable3Dots(residueRow:any):boolean{
+    var bRetval:boolean=false;
+    
+    bRetval=this.residueDS.canApprove(residueRow);
+    if(bRetval) return bRetval;
+    bRetval=this.residueDS.canCopy(residueRow);
+    if(bRetval) return bRetval;
+    bRetval=this.residueDS.canRollback(residueRow);
+    if(bRetval) return bRetval;
+    bRetval=this.residueDS.canCancel(residueRow);
+    if(bRetval) return bRetval;
+    bRetval=this.residueDS.canNoAction(residueRow);
+    if(bRetval) return bRetval;
+
+    return bRetval;
+  }
 }

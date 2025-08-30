@@ -1355,14 +1355,15 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
           content: this.parse2Decimal(cost),
           styles: {
             fontSize: fontSz, halign: 'right', valign: 'middle',
-            cellPadding: { right: rightPadding_cost }
+            cellPadding: { top:2,right: rightPadding_cost }
           }
         },
         {
           content: this.parse2Decimal(totalCost),
           styles: {
+            
             fontSize: fontSz, halign: 'right', valign: 'middle',
-            cellPadding: { right: rightPadding_cost }
+            cellPadding: { top: 2,right: rightPadding_cost }
           }
         },
         app
@@ -1395,7 +1396,7 @@ export class SteamEstimatePdfComponent extends UnsubscribeOnDestroyAdapter imple
       startY: startY, // Start table at the current startY value
       tableWidth: tableWidth,
       styles: {
-        cellPadding: { left: 2, right: 2, top: 2, bottom: 0 }, // Reduce padding
+        cellPadding: { left: 2, right: 2, top: 2, bottom: 1 }, // Reduce padding
         fontSize: fontSz,
         lineWidth: 0 // remove all borders initially
       },

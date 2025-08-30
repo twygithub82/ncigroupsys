@@ -206,10 +206,13 @@
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row;"
                         [ngClass]="'pr-0 tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm justify-content-end'">
-                        <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)"
-                          [hidden]="MenuButtonHidden(row)">
-                          <mat-icon>more_vert</mat-icon>
-                        </button>
+                        @if(IsEnable3Dots(row))
+                        {
+                          <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)"
+                            [hidden]="MenuButtonHidden(row)">
+                            <mat-icon>more_vert</mat-icon>
+                          </button>
+                        }
                         <mat-menu #menu="matMenu">
                           <button mat-menu-item (click)="ApproveTank(row)" [hidden]="HiddenMenu(row,'APPROVED')">
                             <mat-icon>check_circle</mat-icon>

@@ -788,11 +788,11 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
     
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
-    const bufferX =110;
+    const bufferX =135;
     const posX1_img = leftMargin +bufferX ;
-    const posY1_img = topMargin ;
+    const posY1_img = topMargin+6;
     const aspectRatio = height/width ;
-    const w=80;
+    const w=55;
     const h=aspectRatio*w;
     
     pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)

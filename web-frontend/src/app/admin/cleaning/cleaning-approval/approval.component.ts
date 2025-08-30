@@ -678,4 +678,20 @@ export class CleaningApprovalComponent extends UnsubscribeOnDestroyAdapter imple
 
     });
   }
+
+    IsEnable3Dots(row:any):boolean{
+    var bRetval:boolean=false;
+    
+    bRetval=!this.HiddenMenu(row,'APPROVED');
+    if(bRetval) return bRetval;
+    bRetval=!this.HiddenMenu(row,'KIV');
+    if(bRetval) return bRetval;
+    bRetval=!this.HiddenMenu(row,'NO_ACTION');
+    if(bRetval) return bRetval;
+    bRetval=this.canExport(row);
+    if(bRetval) return bRetval;
+    
+
+    return bRetval;
+  }
 }

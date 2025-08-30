@@ -443,7 +443,7 @@
                                 <mat-icon>delete_forever</mat-icon>
                               </button>
                               }
-                              } @else {
+                              } @else if(IsEnable3Dots(steamRow)) {
 
                               <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
                                 <mat-icon>more_vert</mat-icon>
