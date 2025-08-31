@@ -669,9 +669,9 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 7;
+    let fontSz = 6;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 

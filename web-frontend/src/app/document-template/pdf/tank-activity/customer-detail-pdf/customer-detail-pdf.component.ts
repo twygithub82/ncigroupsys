@@ -468,7 +468,6 @@ export class CustomerDetailPdfComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   displayTankPurpose_InShort(sot: any) {
-
     return Utility.displayTankPurpose_InShort(sot);
   }
 
