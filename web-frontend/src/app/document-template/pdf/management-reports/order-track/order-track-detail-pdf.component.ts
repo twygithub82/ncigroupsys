@@ -27,8 +27,9 @@ import { report_status_yard, report_status, DailyQCDetail, DailyTeamRevenue } fr
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
-import { autoTable, Styles } from 'jspdf-autotable';
+import { autoTable, Cell, Styles } from 'jspdf-autotable';
 import { OrderTrackingItem } from 'app/data-sources/reports-management';
+import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -580,7 +581,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 6;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -598,17 +599,17 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 35,minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle', cellWidth: 45,minCellHeight: minHeightBodyCell },
-      6: { halign: 'left', valign: 'middle', cellWidth: 25,minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle',  cellWidth: 10,minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle',  cellWidth: 23,minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 18,  minCellHeight: minHeightBodyCell },
+      5: { halign: 'left', valign: 'middle', cellWidth: 65,minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      6: { halign: 'left', valign: 'middle', cellWidth: 30,minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       
       
@@ -951,6 +952,9 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     return retval;
 
   }
- 
+
+    displayTankPurpose_InShort(sot: any) {
+    return Utility.displayTankPurpose_InShort(sot);
+  } 
 }
 
