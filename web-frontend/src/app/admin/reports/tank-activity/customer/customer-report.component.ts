@@ -608,6 +608,14 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
     }
     else
     {
+      if(!(this.searchForm!.get('eir_dt_start')?.value && this.searchForm!.get('eir_dt_end')?.value))
+      {
+        this.isGeneratingReport = false;
+        this.searchForm!.get('eir_dt_start')?.setErrors({'required': true});
+          this.searchForm!.get('eir_dt_start')?.markAsTouched(); // <-- Add this line
+        return;
+      }
+      
        var tnxType: string = "All";
        var queryType:number =3;
        var invType:string='All';
@@ -1089,14 +1097,15 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
       dailyInvReq.end_date = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
       cond_counter++;
     }
-    else {
-      var startdt = new Date(2024, 8, 1, 0, 0, 0, 0);
-      var enddt = new Date();
-      date=`${Utility.convertDateToStr(startdt)} - ${Utility.convertDateToStr(enddt)}`
-      dailyInvReq.start_date = Utility.convertDate(startdt) || Utility.convertDate(new Date());
-      dailyInvReq.end_date = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
-      // cond_counter++;
-    }
+    // else {
+    //   var startdt = new Date(2024, 8, 1, 0, 0, 0, 0);
+    //   var enddt = new Date();
+    //   date=`${Utility.convertDateToStr(startdt)} - ${Utility.convertDateToStr(enddt)}`
+    //   dailyInvReq.start_date = Utility.convertDate(startdt) || Utility.convertDate(new Date());
+    //   dailyInvReq.end_date = Utility.convertDate(enddt, true) || Utility.convertDate(new Date(), true);
+    //   // cond_counter++;
+      
+    // }
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) {

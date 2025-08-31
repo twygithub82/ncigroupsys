@@ -461,7 +461,7 @@ export class TankActivitiyYardReportComponent extends UnsubscribeOnDestroyAdapte
 
     // if(queryType==1)
     // {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReportAll(this.lastSearchCriteria, this.lastOrderBy, first)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;

@@ -88,6 +88,11 @@
                   </mat-date-range-input>
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #eir_picker></mat-date-range-picker>
+                  @if (searchForm?.get('eir_dt_start')?.hasError('required')) {
+                    <mat-error>
+                      {{this.translatedLangText.EIR_DATE}} {{this.translatedLangText.SO_REQUIRED}}
+                    </mat-error>
+                  }
                   <!-- <input matInput [matDatepicker]="eir_picker" placeholder="Select date" formControlName="eir_dt">
                   <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
                   <mat-datepicker #eir_picker></mat-datepicker> -->
@@ -130,6 +135,7 @@
                   </mat-date-range-input>
                   <mat-datepicker-toggle matSuffix [for]="clean_picker"></mat-datepicker-toggle>
                   <mat-date-range-picker #clean_picker></mat-date-range-picker>
+                   
                   <!-- <input matInput [matDatepicker]="clean_picker" placeholder="Select date" formControlName="clean_dt">
                   <mat-datepicker-toggle matSuffix [for]="clean_picker"></mat-datepicker-toggle>
                   <mat-datepicker #clean_picker></mat-datepicker> -->
