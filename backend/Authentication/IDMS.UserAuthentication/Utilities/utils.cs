@@ -68,6 +68,26 @@ namespace IDMS.User.Authentication.API.Utilities
                         functionNamesArray.Add(item);
                     }
                 }
+
+                var adHocFuncDisable= from f in _dbContext.user_functions where f.delete_dt == null && f.user_guid == userId && f.adhoc == false
+                                       join func in _dbContext.functions on f.functions_guid equals func.guid
+                                       select func.code;
+
+                if (adHocFuncDisable != null)
+                {
+                    var resultNames = await adHocFuncDisable.ToArrayAsync();
+
+                    foreach (var disabled in JArray.FromObject(resultNames))
+                    {
+                        Console.WriteLine(disabled.ToString());
+                        //var token = functionNamesArray.FirstOrDefault(t => t.ToString() == disabled);
+                        //if (token != null)
+                        //{
+                        //    functionNamesArray.Remove(token);
+                        //}
+                    }
+                }
+
                 return functionNamesArray;
 
             }

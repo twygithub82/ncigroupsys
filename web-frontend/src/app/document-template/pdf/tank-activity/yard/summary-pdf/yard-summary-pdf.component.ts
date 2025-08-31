@@ -892,7 +892,7 @@ export class YardSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impleme
     pdf.setFontSize(8);
     pdf.setTextColor(0, 0, 0); // Black text
     const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 8);
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, startY - 5, 8);
 
     //const invType=`(${this.invType})`
     //Utility.AddTextAtCenterPage(pdf,invType,pageWidth,leftMargin,rightMargin,startY-11,9);

@@ -923,11 +923,13 @@ export class LocationStatusSummaryPdfComponent extends UnsubscribeOnDestroyAdapt
 
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+    var lMargin = leftMargin + (bufferTabletWidth/2);
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,
       body: data,
-       margin: { left: leftMargin ,top:topMargin+45},
+       margin: { left: lMargin ,top:topMargin+45},
       //startY: startY, // Start table at the current startY value
       theme: 'grid',
       styles: {

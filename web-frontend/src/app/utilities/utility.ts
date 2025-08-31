@@ -922,14 +922,14 @@ export class Utility {
   static async DrawBase64ImageAtCenterPage(pdf: jsPDF, base64: string, pageWidth: number, leftMargin: number,
     rightMargin: number, topPosition: number, maxChartWidth: number) {
     let chartContentWidth = maxChartWidth;
-
+    let bottomMargin =10;
     let startY: number = topPosition;
     const imgInfo = await Utility.getImageSizeFromBase64(base64);
     const aspectRatio = imgInfo.width / imgInfo.height;
     let imgHeight1 = chartContentWidth / aspectRatio;
 
     // Check if the scaled height exceeds the available page height
-    const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+    const maxPageHeight = pdf.internal.pageSize.height - startY -bottomMargin; // Remaining space on the page
     if (imgHeight1 > maxPageHeight) {
       // Adjust height to fit within the page
       imgHeight1 = maxPageHeight;
