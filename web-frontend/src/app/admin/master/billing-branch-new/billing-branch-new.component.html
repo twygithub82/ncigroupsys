@@ -81,7 +81,8 @@
                   <mat-form-field class="example-full-width">
                     <mat-label><mat-icon>flag</mat-icon></mat-label>
                     <input matInput formControlName="country_code" [matAutocomplete]="countryCode" required>
-                    <mat-autocomplete #countryCode="matAutocomplete" [displayWith]="displayCountryCodeFn"  [panelWidth]="'346px'">
+                    <mat-autocomplete #countryCode="matAutocomplete" [displayWith]="displayCountryCodeFn"
+                      [panelWidth]="'346px'">
                       @for (cc of countryCodesFiltered; track cc) {
                       <mat-option [value]="cc">
                         <img [src]="cc.flagUrl" width="24" height="18" style="margin-right: 6px;">
@@ -108,6 +109,11 @@
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.EMAIL }}</mat-label>
                     <input matInput formControlName="email" required>
+                    @if (ccForm?.get('email')?.hasError('email')) {
+                    <mat-error>
+                      {{this.translatedLangText.EMAIL}} {{this.translatedLangText.INVALID_FORMAT}}
+                    </mat-error>
+                  }
                   </mat-form-field>
                 </div>
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-1">
@@ -379,7 +385,7 @@
                   @if (canEdit()) {
                   <button mat-flat-button color="primary" [disabled]="!isAnyItemEdited()">
                     <mat-icon>save</mat-icon>
-                    {{ translatedLangText.UPDATE }}
+                    {{this.branch_guid ? translatedLangText.UPDATE : translatedLangText.SAVE_AND_SUBMIT}}
                   </button>
                   }
                 </div>

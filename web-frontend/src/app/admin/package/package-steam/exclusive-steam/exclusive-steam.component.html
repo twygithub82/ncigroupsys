@@ -188,7 +188,7 @@
                 [ngClass]="'tbl-col-width-per-0_75 justify-content-end'"></mat-header-cell>
               <mat-cell *matCellDef="let row; let i=index;" [ngClass]="'tbl-col-width-per-0_75 justify-content-end'">
                 <button mat-icon-button (click)="$event.stopPropagation()" (click)="deleteItem($event,row)"
-                  class="tbl-action-btn text-custom-danger">
+                  class="tbl-action-btn text-custom-danger" [matTooltip]="translatedLangText.DELETE">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
               </mat-cell>
