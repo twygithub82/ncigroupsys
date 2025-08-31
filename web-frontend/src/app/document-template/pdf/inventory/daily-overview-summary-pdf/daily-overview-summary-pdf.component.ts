@@ -1091,7 +1091,7 @@ export class DailyOverviewSummaryPdfComponent extends UnsubscribeOnDestroyAdapte
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: '15%',
+          columnWidth: '30%',
           borderRadius: 5,
           dataLabels: {
             position: 'top', // top, center, bottom

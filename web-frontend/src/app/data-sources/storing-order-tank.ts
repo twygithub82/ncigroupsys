@@ -1,7 +1,7 @@
 import { ApolloError } from '@apollo/client/errors';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, of } from 'rxjs';
 import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { BaseDataSource } from './base-ds';
 import { BillingSOTItem, BillingStorageDetail, StorageDetailRequest } from './billing';
@@ -4323,6 +4323,43 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
       );
   }
 
+    searchStoringOrderTanksStatusReportAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
+     let allNodes: StoringOrderTankItem[] = [];
+
+    const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+      return this.apollo.query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL,
+        variables: { where, order, first: pageSize, after: afterCursor },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map(result => result.data?.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
+        switchMap(sotList => {
+          allNodes = [...allNodes, ...sotList.nodes];
+
+          if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+            // fetch next page
+            return fetchPage(sotList.pageInfo.endCursor);
+          } else {
+            // finished fetching
+            return of(allNodes);
+          }
+        })
+      );
+    };
+
+    this.loadingSubject.next(true);
+    return fetchPage().pipe(
+      finalize(() => this.loadingSubject.next(false)),
+      tap(finalList => {
+        this.dataSubject.next(finalList);
+        this.totalCount = finalList.length;
+      }),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of([]);
+      })
+    );
+  }
 
   searchStoringOrderTanksActivityReport(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {
     this.loadingSubject.next(true);
@@ -4348,6 +4385,44 @@ export class StoringOrderTankDS extends BaseDataSource<StoringOrderTankItem> {
           return sotList.nodes;
         })
       );
+  }
+
+    searchStoringOrderTanksActivityReportAll(where: any, order?: any, pageSize: number = 50): Observable<StoringOrderTankItem[]> {
+     let allNodes: StoringOrderTankItem[] = [];
+
+    const fetchPage = (afterCursor?: string): Observable<StoringOrderTankItem[]> => {
+      return this.apollo.query<any>({
+        query: GET_STORING_ORDER_TANKS_FOR_ACTIVITY,
+        variables: { where, order, first: pageSize, after: afterCursor },
+        fetchPolicy: 'no-cache'
+      }).pipe(
+        map(result => result.data?.sotList || { nodes: [], pageInfo: { hasNextPage: false } }),
+        switchMap(sotList => {
+          allNodes = [...allNodes, ...sotList.nodes];
+
+          if (sotList.pageInfo?.hasNextPage && sotList.pageInfo?.endCursor) {
+            // fetch next page
+            return fetchPage(sotList.pageInfo.endCursor);
+          } else {
+            // finished fetching
+            return of(allNodes);
+          }
+        })
+      );
+    };
+
+    this.loadingSubject.next(true);
+    return fetchPage().pipe(
+      finalize(() => this.loadingSubject.next(false)),
+      tap(finalList => {
+        this.dataSubject.next(finalList);
+        this.totalCount = finalList.length;
+      }),
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of([]);
+      })
+    );
   }
 
   searchStoringOrderTanksEstimateDetails(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<StoringOrderTankItem[]> {

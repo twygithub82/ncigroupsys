@@ -460,7 +460,7 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: number) {
-    this.subs.sink = this.sotDS.searchStoringOrderTanksStatusReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksStatusReportAll(this.lastSearchCriteria, this.lastOrderBy, first)
       .subscribe(data => {
         this.sotList = data;
         this.endCursor = this.stmDS.pageInfo?.endCursor;
