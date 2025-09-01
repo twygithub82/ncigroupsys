@@ -639,8 +639,8 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     let startY = 0;
     for (let n = 0; n < this.report_transfer_location.length; n++) {
       //if (n > 0) lastTableFinalY += 9;
-      if (n > 0) lastTableFinalY += 5;
-
+        if (n>0) lastTableFinalY+=6;
+        else lastTableFinalY=49;
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.report_transfer_location[n];
@@ -690,7 +690,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
           body: data,
          // startY: startY, // Start table at the current startY value
           theme: 'grid',
-           margin: {left:leftMargin, top:topMargin+46 },
+           margin: {left:leftMargin, top:topMargin+45 },
           styles: {
             fontSize: fontSize,
             minCellHeight: minHeightHeaderCol
@@ -712,8 +712,8 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-                Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, lastTableFinalY, 8);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+                Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+5, topMargin+44, 8);
               }
             }
           },

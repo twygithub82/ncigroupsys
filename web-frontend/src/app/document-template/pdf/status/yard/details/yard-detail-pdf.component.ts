@@ -724,8 +724,8 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
     for (let n = 0; n < this.report_yard_detail.length; n++) {
       // lastTableFinalY += 8;
-      if (n > 0) lastTableFinalY += 5; // 2nd table
-      else lastTableFinalY = 49; // First table of the page
+      if (n > 0) lastTableFinalY += 6; // 2nd table
+      else lastTableFinalY = 47; // First table of the page
 
       const data: any[][] = []; // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
@@ -742,7 +742,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
 
       if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + 20 + topMargin)) {
         pdf.addPage();
-        lastTableFinalY = 49;
+        lastTableFinalY = 47;
       }
       else {
         CurrentPage = repPage;
@@ -787,7 +787,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
           head: headers,
           body: data,
           // startY: startY, // Start table at the current startY value
-          margin: { left: leftMargin, top:topMargin+45 },
+          margin: { left: leftMargin, top:topMargin+43 },
           theme: 'grid',
           styles: {
             fontSize: fontSize,
@@ -1258,7 +1258,7 @@ export class YardDetailInventoryPdfComponent extends UnsubscribeOnDestroyAdapter
   }
   DisplayRemarks(sot: StoringOrderTankItem): string {
 
-    return sot?.remarks || '';
+    return sot?.tank_note || '';
   }
 
   DisplayCustomerName(repCustomer: report_customer_tank_activity) {

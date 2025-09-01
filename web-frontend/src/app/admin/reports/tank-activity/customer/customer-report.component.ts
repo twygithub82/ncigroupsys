@@ -645,7 +645,7 @@ export class TankActivitiyCustomerReportComponent extends UnsubscribeOnDestroyAd
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, report_type?: string, customerNm?: string) {
     // this.selection.clear();
     var filterSpecificTankStatus = false;
-    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReport(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksActivityReportAll(this.lastSearchCriteria, this.lastOrderBy, first)
       .subscribe(data => {
 
         this.sotList = data;
