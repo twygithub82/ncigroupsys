@@ -1,5 +1,5 @@
 <div class="container confirmation-dialog p-2">
-  <h4 mat-dialog-title [ngClass]="{'pt-4 ': true, 'align-center': true}">{{dialogTitle}}
+  <h4 mat-dialog-title [ngClass]="{'pt-3 align-center': true}">{{dialogTitle}}
   </h4>
   <div mat-dialog-content class="pt-2">
     <div class="row">
@@ -9,8 +9,7 @@
         }
       </div>
     </div>
-    <div mat-dialog-actions
-      [ngClass]="{'pt-2 mb-1': true, 'd-flex justify-content-center': true}">
+    <div mat-dialog-actions [ngClass]="{'pt-2 mb-0 d-flex justify-content-center': true}">
       @if (canEdit()) {
       <button mat-flat-button color="warn" class="me-2" (click)="submit()">{{data.translatedLangText.CONFIRM}}</button>
       }

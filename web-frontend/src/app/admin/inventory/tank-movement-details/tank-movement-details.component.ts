@@ -1587,6 +1587,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ReownerTankFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '500px',
       data: {
@@ -1636,6 +1637,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(ReownerTankFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '500px',
       data: {
