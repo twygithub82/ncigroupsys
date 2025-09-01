@@ -1,5 +1,10 @@
 .mat-mdc-dialog-content.mdc-dialog__content {
     overflow-x: hidden;
-    padding-left: 7px !important;
-    padding-right: 7px !important;
+}
+
+@media (max-width: 575.98px) {
+    .mat-mdc-dialog-content.mdc-dialog__content {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
 }

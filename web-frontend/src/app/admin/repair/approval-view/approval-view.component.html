@@ -551,39 +551,33 @@
                           <div class="table-label">
                             {{translatedLangText.LABOUR}}
                           </div>
-
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">
                             {{translatedLangText.MATERIAL_COST}}
                           </div>
-
                         </div>
                         @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">
                             {{translatedLangText.TOTAL_COST}}
                           </div>
-
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">
                             {{translatedLangText.LABOUR_DISCOUNT}} (%)
                           </div>
-
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">
                             {{translatedLangText.MATERIAL_DISCOUNT}} (%)
                           </div>
-
                         </div>
                         }
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           <div class="table-label">
                             {{translatedLangText.NET_COST}}
                           </div>
-
                         </div>
                         <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
                           {{translatedLangText.CONVERTED_TO}}
@@ -609,27 +603,22 @@
                           <div class="table-label"></div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <div class="table-label">
-                            <tlx-form-field customClass="example-full-width">
-                              <mat-form-field>
-                                <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
-                                  appNumericText [allowDecimal]="true" (focus)="selectText($event)"
-                                  [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="text" max="100" min="0">
-                              </mat-form-field>
-                            </tlx-form-field>
-                          </div>
-
+                          <tlx-form-field customClass="table-label example-full-width">
+                            <mat-form-field>
+                              <input class="text-end" tlxFormInput matInput formControlName="labour_cost_discount"
+                                appNumericText [allowDecimal]="true" (focus)="selectText($event)"
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="text" max="100" min="0">
+                            </mat-form-field>
+                          </tlx-form-field>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <div class="table-label">
-                            <tlx-form-field customClass="example-full-width">
-                              <mat-form-field>
-                                <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
-                                  appNumericText [allowDecimal]="true" (focus)="selectText($event)"
-                                  [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="text" max="100" min="0">
-                              </mat-form-field>
-                            </tlx-form-field>
-                          </div>
+                          <tlx-form-field customClass="table-label example-full-width">
+                            <mat-form-field>
+                              <input class="text-end" tlxFormInput matInput formControlName="material_cost_discount"
+                                appNumericText [allowDecimal]="true" (focus)="selectText($event)"
+                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="text" max="100" min="0">
+                            </mat-form-field>
+                          </tlx-form-field>
                         </div>
                         }
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
