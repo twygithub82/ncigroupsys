@@ -414,7 +414,7 @@
                     (click)="onRollbackCompleted($event)">
                     <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {
-                      cached
+                      undo
                       } @else if ((joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
