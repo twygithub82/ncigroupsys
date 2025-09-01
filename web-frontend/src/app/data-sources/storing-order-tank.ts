@@ -3218,6 +3218,7 @@ const GET_STORING_ORDER_TANKS_FOR_ACTIVITY = gql`
          job_no
          create_dt
          delete_dt
+         status_cv
         }
         customer_company {
           code
@@ -3369,6 +3370,7 @@ const GET_STORING_ORDER_TANKS_FOR_STATUS_DETAIL = gql`
         status_cv
         tank_no
         tank_status_cv
+        tank_note
         unit_type_guid
         update_by
         update_dt
