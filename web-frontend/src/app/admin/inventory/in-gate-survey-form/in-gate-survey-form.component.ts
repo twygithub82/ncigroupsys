@@ -1626,7 +1626,7 @@ export class InGateSurveyFormComponent extends UnsubscribeOnDestroyAdapter imple
     }
     const dialogRef = this.dialog.open(UpdateTankNoDialogComponent, {
       disableClose: true,
-      width: '300px',
+      width: '500px',
       data: {
         action: 'edit',
         translatedLangText: this.translatedLangText,

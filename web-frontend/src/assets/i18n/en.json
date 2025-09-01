@@ -1356,7 +1356,7 @@
     "TANK-PERIODIC-TEST-DUE": "Periodic Test Due",
     "CLEANING-KIV": "KIV Cleaning",
     "ERROR": "Error",
-    "FORGOT-PASSWORD-CAPTION": "Please enter your email address to reset your password.",
+    "FORGOT-PASSWORD-CAPTION": "Please enter your username to reset your password.",
     "GATE-OUT-PUBLISH-PENDING": "Gate Out Publish: Pending",
     "GATE-IN-PUBLISH-PENDING": "Gate In Publish: Pending",
     "PCS": "Pcs",
