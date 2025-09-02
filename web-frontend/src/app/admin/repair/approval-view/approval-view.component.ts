@@ -1322,15 +1322,26 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
   }
 
   displayApproveQty(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_qty !== null && rep.approve_qty !== undefined ? rep.approve_qty : rep.quantity) : 0;
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return 0;
+    }
+    return rep.approve_part === true ? rep.approve_qty : rep.quantity;
   }
 
   displayApproveHour(rep: RepairPartItem) {
-    return (rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_hour !== null && rep.approve_hour !== undefined ? rep.approve_hour : rep.hour) : 0;
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return 0;
+    }
+    return rep.approve_part === true ? rep.approve_hour : rep.hour;
   }
 
   displayApproveCost(rep: RepairPartItem) {
-    return Utility.convertNumber((rep.approve_part ?? !this.repairPartDS.is4X(rep.rp_damage_repair)) ? (rep.approve_cost !== null && rep.approve_cost !== undefined ? rep.approve_cost : rep.material_cost) : 0, 2);
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return Utility.convertNumber(0, 2);
+    }
+    
+    const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
+    return Utility.convertNumber(cost, 2);
   }
 
   canEdit() {
@@ -1347,5 +1358,9 @@ export class RepairApprovalViewComponent extends UnsubscribeOnDestroyAdapter imp
 
   displayApproveUpdateButton() {
     return this.canEdit() && this.repairItem?.status_cv === "PENDING" ? this.translatedLangText.APPROVE : this.translatedLangText.UPDATE;
+  }
+
+  isNotApprovedRepair() {
+    return ['', 'PENDING', 'NO_ACTION', 'CANCELED'].includes(this.repairItem?.status_cv || '');
   }
 }

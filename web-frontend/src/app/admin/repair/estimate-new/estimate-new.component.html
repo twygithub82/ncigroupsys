@@ -296,12 +296,12 @@
                         <mat-header-cell *matHeaderCellDef
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           [class.justify-content-center]="!isMobile">
-                          {{translatedLangText.MATERIAL}} $
+                          {{translatedLangText.MATERIAL}}
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           [class.justify-content-center]="!isMobile">
-                          <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
+                          <span class="mobile-label">{{translatedLangText.MATERIAL}}:</span>
                           <div class="">
                             <span>{{parse2Decimal(row.material_cost)}}</span>
                           </div>
@@ -316,7 +316,7 @@
                         <mat-cell *matCellDef="let row"
                           [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
                           [class.justify-content-center]="!isMobile">
-                          <span class="mobile-label">{{translatedLangText.MATERIAL}} $:</span>
+                          <span class="mobile-label">{{translatedLangText.PRICE}}:</span>
                           <div class="">
                             <span>{{parse2Decimal(row.quantity * row.material_cost)}}</span>
                           </div>

@@ -928,11 +928,15 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
 
           return new RepairPartItem({
             ...item,
+            approve_qty: this.isNotApprovedRepair() ? item.quantity : item.approve_qty,
+            approve_hour: this.isNotApprovedRepair() ? item.hour : item.approve_hour,
+            approve_cost: this.isNotApprovedRepair() ? item.material_cost : item.approve_cost,
             tariff_repair: undefined,
             rp_damage_repair: rp_damage_repair,
             action: (!item.guid || item.action === 'new') ? 'new' : (item.action === 'cancel' ? 'cancel' : 'edit')
           });
         });
+
         re.repair_part = rep;
         re.sot_guid = this.sotItem?.guid;
         re.aspnetusers_guid = this.repairForm.get('surveyor_id')?.value;
@@ -1198,8 +1202,8 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
+    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (this.isNotApprovedRepair() || (item.approve_part ?? true)));
+    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (this.isNotApprovedRepair() || (item.approve_part ?? true)));
     const labourDiscount = this.repairForm?.get('labour_cost_discount')?.value;
     const matDiscount = this.repairForm?.get('material_cost_discount')?.value;
 
@@ -1211,7 +1215,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     let discount_mat_cost = 0;
     let net_cost = 0;
 
-    const totalOwner = this.repairDS.getTotal(ownerList);
+    const totalOwner = this.isNotApprovedRepair() ? this.repairDS.getTotalEst(ownerList) : this.repairDS.getTotal(ownerList);
     const total_owner_hour = BusinessLogicUtil.roundUpHour(totalOwner.hour);
     const total_owner_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost()));
     const total_owner_mat_cost = BusinessLogicUtil.roundUpCost(totalOwner.total_mat_cost);
@@ -1236,7 +1240,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     discount_mat_cost += discount_mat_owner_cost;
     net_cost += net_owner_cost;
 
-    const totalLessee = this.repairDS.getTotal(lesseeList);
+    const totalLessee = this.isNotApprovedRepair() ? this.repairDS.getTotalEst(lesseeList) : this.repairDS.getTotal(lesseeList);
     const total_lessee_hour = BusinessLogicUtil.roundUpHour(totalLessee.hour);
     const total_lessee_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost()));
     const total_lessee_mat_cost = BusinessLogicUtil.roundUpCost(totalLessee.total_mat_cost);
@@ -1283,7 +1287,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     let discount_labour_cost = 0;
     let discount_mat_cost = 0;
     let net_cost = 0;
-    
+
     const totalOwner = this.repairDS.getTotalEst(ownerList);
     const total_owner_hour = BusinessLogicUtil.roundUpHour(totalOwner.hour);
     const total_owner_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost()));
@@ -1375,6 +1379,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     return (
       this.canEdit()
     );
+  }
+
+  isNotApprovedRepair() {
+    return ['', 'PENDING', 'NO_ACTION', 'CANCELED'].includes(this.repairItem?.status_cv || '');
   }
 
   goBack() {

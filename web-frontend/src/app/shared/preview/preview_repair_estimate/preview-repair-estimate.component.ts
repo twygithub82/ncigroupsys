@@ -785,11 +785,11 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
   }
 
   calculateCost() {
-    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (item.approve_part ?? true));
-    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (item.approve_part ?? true));
+    const ownerList = this.repList.filter(item => item.owner && !item.delete_dt && (this.isNotApprovedRepair() || (item.approve_part ?? true)));
+    const lesseeList = this.repList.filter(item => !item.owner && !item.delete_dt && (this.isNotApprovedRepair() || (item.approve_part ?? true)));
     const labourDiscount = this.repairForm?.getRawValue()?.labour_cost_discount;
     const matDiscount = this.repairForm?.getRawValue()?.material_cost_discount;
-    
+
     let total_hour = 0;
     let total_labour_cost = 0;
     let total_mat_cost = 0;
@@ -798,7 +798,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     let discount_mat_cost = 0;
     let net_cost = 0;
 
-    const totalOwner = this.repairDS.getTotal(ownerList);
+    const totalOwner = this.isNotApprovedRepair() ? this.repairDS.getTotalEst(ownerList) : this.repairDS.getTotal(ownerList);
     const total_owner_hour = BusinessLogicUtil.roundUpHour(totalOwner.hour);
     const total_owner_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_owner_hour, this.getLabourCost()));
     const total_owner_mat_cost = BusinessLogicUtil.roundUpCost(totalOwner.total_mat_cost);
@@ -823,7 +823,7 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
     discount_mat_cost += discount_mat_owner_cost;
     net_cost += net_owner_cost;
 
-    const totalLessee = this.repairDS.getTotal(lesseeList);
+    const totalLessee = this.isNotApprovedRepair() ? this.repairDS.getTotalEst(lesseeList) : this.repairDS.getTotal(lesseeList);
     const total_lessee_hour = BusinessLogicUtil.roundUpHour(totalLessee.hour);
     const total_lessee_labour_cost = BusinessLogicUtil.roundUpCost(this.repairDS.getTotalLabourCost(total_lessee_hour, this.getLabourCost()));
     const total_lessee_mat_cost = BusinessLogicUtil.roundUpCost(totalLessee.total_mat_cost);
@@ -971,5 +971,32 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
 
   isAllowViewCost() {
     return this.modulePackageService.hasFunctions(['EXCLUSIVE_COSTING_VIEW']);
+  }
+
+  isNotApprovedRepair() {
+    return ['', 'PENDING', 'NO_ACTION', 'CANCELED'].includes(this.repairItem?.status_cv || '');
+  }
+
+  displayApproveQty(rep: RepairPartItem) {
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return 0;
+    }
+    return rep.approve_part === true ? rep.approve_qty || 0 : rep.quantity || 0;
+  }
+
+  displayApproveHour(rep: RepairPartItem) {
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return 0;
+    }
+    return rep.approve_part === true ? rep.approve_hour : rep.hour;
+  }
+
+  displayApproveCost(rep: RepairPartItem) {
+    if (rep.approve_part === false && this.repairPartDS.is4X(rep.rp_damage_repair)) {
+      return Utility.convertNumber(0, 2);
+    }
+    
+    const cost = rep.approve_part === true ? rep.approve_cost : rep.material_cost;
+    return Utility.convertNumber(cost, 2);
   }
 }
