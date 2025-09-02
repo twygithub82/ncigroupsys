@@ -315,16 +315,24 @@
                           <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          {{translatedLangText.ESTIMATE}}
+                          <div class="table-label">
+                            {{translatedLangText.ESTIMATE}}
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          {{translatedLangText.APPROVAL}}
+                          <div class="table-label">
+                            {{translatedLangText.APPROVAL}}
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          {{translatedLangText.JOB_ALLOCATION}}
+                          <div class="table-label">
+                            {{translatedLangText.JOB_ALLOCATION}}
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 text-center border">
-                          {{translatedLangText.QC_DETAILS}}
+                          <div class="table-label">
+                            {{translatedLangText.QC_DETAILS}}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -414,7 +422,7 @@
                     (click)="onRollbackCompleted($event)">
                     <mat-icon>
                       @if (!(joDS.actionLoading$ | async) && !(repairDS.actionLoading$ | async)) {
-                      cached
+                      undo
                       } @else if ((joDS.actionLoading$ | async) || (repairDS.actionLoading$ | async)) {
                       <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                       }
