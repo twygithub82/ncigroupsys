@@ -1089,6 +1089,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
           if (pageCount > 1) {
 
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35); //Add Second Page
+             Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 49.5, 11);
           }
         }
       },

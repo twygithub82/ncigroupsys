@@ -536,8 +536,12 @@ export class DailyTeamReportComponent extends UnsubscribeOnDestroyAdapter implem
       if (Array.isArray(teamValue)) {
         const teams: string[] = teamValue.map(t => t);
         where.team = teams;
-        team = teams.join(", ");;
+        team = teams.join(", ");
       }
+    }
+    else
+    {
+       team = this.repairTeamList.map(t => t.description).join(", ");
     }
 
     if (this.searchForm!.get('repair_type')?.value) {

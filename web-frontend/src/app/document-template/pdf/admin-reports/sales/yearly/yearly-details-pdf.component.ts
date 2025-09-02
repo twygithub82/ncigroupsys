@@ -854,7 +854,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
       average_counter++;
       total_tank_In_out+=monthData.in_out?.count||0; total_tank_lolo+=monthData.lolo?.count||0; total_tank_storage+=monthData.storage?.count||0;
       total_tank_steam+=monthData.steaming?.count||0; total_tank_residue+=monthData.residue?.count||0;total_tank_clean+=monthData.cleaning?.count||0;
-      total_tank_repair+=monthData.repair?.count||0;
+      total_tank_repair+=monthData.repair?.count||0;total_tank_preinspect+=monthData.preinspection?.count||0;
 
       average_tank_In_out+=(monthData.in_out?.count||0>0?1:0);  average_tank_lolo+=(monthData.lolo?.count||0>0?1:0);  average_tank_storage+=(monthData.storage?.count||0>0?1:0);
       average_tank_steam+=(monthData.steaming?.count||0>0?1:0);  average_tank_residue+=(monthData.residue?.count||0>0?1:0);average_tank_clean+=(monthData.cleaning?.count||0>0?1:0);
@@ -1082,12 +1082,21 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
         // }
        
 
-        // if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)) 
-        //   && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
-        // ) {
-        //   data.cell.text = ''; // Remove text from hidden columns
-        //   data.cell.colSpan = 0; // Hide these columns
-        // }
+        if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex))) {
+           data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [231, 231, 231];
+          data.cell.styles.valign = 'middle'; // Center text vertically
+          data.cell.fontSize = 8;
+          colSpan = 1;
+          //if (data.column.index>0 && data.row.index==averageRowIndex)  colSpan=2;
+          if (data.column.index == 0) colSpan = 2
+          if (((data.column.index % 2 == 1 && data.column.index != 1) || data.column.index == 0)) {
+            data.cell.colSpan = colSpan;  // Merge 4 columns into one
+            
+            if (data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+          }
+
+        }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
