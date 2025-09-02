@@ -26,6 +26,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '@core/service/auth.service';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
@@ -180,6 +181,7 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   currentEndCursor: string | undefined = undefined;
   lastCursorDirection: string | undefined = undefined;
 
+  userTeam: string[] = [];
   teamList: TeamItem[] = [];
 
   constructor(
@@ -191,7 +193,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private translate: TranslateService,
     public modulePackageService: ModulePackageService,
     private searchStateService: SearchStateService,
-    private notificationService: SingletonNotificationService
+    private notificationService: SingletonNotificationService,
+    private authService: AuthService
   ) {
     super();
     this.translateLangText();
@@ -264,8 +267,10 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       this.processStatusCvList = data;
     });
 
+    this.userTeam = this.authService?.getTeamsGuid('REPAIR');
+
     if (this.modulePackageService.isGrowthPackage() || this.modulePackageService.isCustomizedPackage()) {
-      this.teamDS.getTeamListByDepartment(['REPAIR']).subscribe(data => {
+      this.teamDS.getTeamListByDepartmentAndGuid(this.userTeam, ['REPAIR']).subscribe(data => {
         this.teamList = data
       });
 
@@ -280,7 +285,6 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       ];
     }
     if (this.modulePackageService.isStarterPackage()) {
-
       this.displayedColumnsJobOrder = [
         'tank_no',
         'customer',
@@ -391,12 +395,14 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
       // where.create_dt = { gte: Utility.convertDate(this.filterJobOrderForm!.get('allocate_dt_start')?.value), lte: Utility.convertDate(this.filterJobOrderForm!.get('allocate_dt_end')?.value, true) };
     }
 
-    // TODO:: Get login user team
+    // Get login user team
     if (this.filterJobOrderForm!.get('teamList')?.value?.length) {
       const team_guidList = this.filterJobOrderForm!.get('teamList')?.value?.map((x: any) => x.guid) ?? []
       where.team_guid = { in: team_guidList }
     } else {
-      // where.team_guid = { nin: [null, ''] }
+      if (this.userTeam?.length) {
+        where.team_guid = { in: this.userTeam }
+      }
     }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);

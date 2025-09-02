@@ -26,6 +26,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '@core/service/auth.service';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
@@ -180,7 +181,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private apollo: Apollo,
     private translate: TranslateService,
     private searchStateService: SearchStateService,
-    private notificationService: SingletonNotificationService
+    private notificationService: SingletonNotificationService,
+    private authService: AuthService,
   ) {
     super();
     this.translateLangText();
@@ -327,10 +329,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
         storing_order_tank: { storing_order: { customer_company: { code: { eq: (this.filterJobOrderForm!.get('customer')?.value).code } } } }
       });
     }
+
     // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
+    const userTeam = this.authService?.getTeamsGuid('RESIDUE_DISPOSAL');
+    if (userTeam?.length) {
+      where.team_guid = { in: userTeam }
+    }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
   }

@@ -45,7 +45,7 @@ export class TeamUserLinkage {
     this.guid = item.guid;
     this.team_guid = item.team_guid;
     this.userId = item.userId;
-    this.team=item.team;
+    this.team = item.team;
     this.create_dt = item.create_dt;
     this.create_by = item.create_by;
     this.update_dt = item.update_dt;
@@ -60,13 +60,13 @@ export class TeamItem extends TeamGO {
   }
 }
 
-export class TeamItemWithCount{
-  public team?:TeamItem;
-  public assign_count?:number;
+export class TeamItemWithCount {
+  public team?: TeamItem;
+  public assign_count?: number;
 
-   constructor(item: Partial<TeamItemWithCount> = {}) {
-    this.team =item.team;
-    this.assign_count=item.assign_count;
+  constructor(item: Partial<TeamItemWithCount> = {}) {
+    this.team = item.team;
+    this.assign_count = item.assign_count;
   }
 }
 
@@ -93,6 +93,23 @@ export const GET_TEAM_QUERY = gql`
 `;
 
 export const GET_TEAM_BY_DEPARTMENT_QUERY = gql`
+  query queryTeams($where: teamFilterInput, $order: [teamSortInput!],$first:Int) {
+    resultList: queryTeams(where: $where, order: $order,first:$first) {
+      nodes {
+        create_by
+        create_dt
+        delete_dt
+        department_cv
+        description
+        guid
+        update_by
+        update_dt
+      }
+    }
+  }
+`;
+
+export const GET_TEAM_BY_DEPARTMENT_AND_GUID_QUERY = gql`
   query queryTeams($where: teamFilterInput, $order: [teamSortInput!],$first:Int) {
     resultList: queryTeams(where: $where, order: $order,first:$first) {
       nodes {
@@ -214,6 +231,42 @@ export class TeamDS extends BaseDataSource<TeamItem> {
       );
   }
 
+  getTeamListByDepartmentAndGuid(guid?: string[], department_cv?: string[]): Observable<TeamItem[]> {
+    this.loadingSubject.next(true);
+    const where: any = {
+      department_cv: { in: department_cv },
+    }
+    
+    if (guid?.length) {
+      where.guid = { in: guid }
+    }
+    const order = { description: "ASC" }
+    const first = 100;
+    return this.apollo
+      .query<any>({
+        query: GET_TEAM_BY_DEPARTMENT_AND_GUID_QUERY,
+        variables: { where, order, first },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as TeamItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const resultList = result.resultList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(resultList.nodes);
+          this.totalCount = resultList.totalCount;
+          this.pageInfo = resultList.pageInfo;
+          return resultList.nodes;
+        })
+      );
+  }
+
 
   loadItemsWithAssigedCount(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<TeamItemWithCount[]> {
     this.loadingSubject.next(true);
@@ -243,47 +296,47 @@ export class TeamDS extends BaseDataSource<TeamItem> {
   }
 
   addTeam(teamsRequest: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: ADD_TEAM,
-        variables: {
-          teamsRequest
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+    return this.apollo.mutate({
+      mutation: ADD_TEAM,
+      variables: {
+        teamsRequest
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
-    updateTeam(teamRequest: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: UPDATE_TEAM,
-        variables: {
-          teamRequest
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  updateTeam(teamRequest: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: UPDATE_TEAM,
+      variables: {
+        teamRequest
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
 
-     deleteTeam(teamsGuid: any): Observable<any> {
-      return this.apollo.mutate({
-        mutation: DELETE_TEAM,
-        variables: {
-          teamsGuid
-        }
-      }).pipe(
-        catchError((error: ApolloError) => {
-          console.error('GraphQL Error:', error);
-          return of(0); // Return an empty array on error
-        }),
-      );
-    }
+  deleteTeam(teamsGuid: any): Observable<any> {
+    return this.apollo.mutate({
+      mutation: DELETE_TEAM,
+      variables: {
+        teamsGuid
+      }
+    }).pipe(
+      catchError((error: ApolloError) => {
+        console.error('GraphQL Error:', error);
+        return of(0); // Return an empty array on error
+      }),
+    );
+  }
 
-  
+
 }

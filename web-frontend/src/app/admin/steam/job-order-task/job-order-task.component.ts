@@ -48,6 +48,7 @@ import { SteamDS, SteamItem, SteamStatusRequest } from 'app/data-sources/steam';
 import { SteamPartItem } from 'app/data-sources/steam-part';
 import { SearchStateService } from 'app/services/search-criteria.service';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
+import { AuthService } from '@core/service/auth.service';
 
 @Component({
   selector: 'app-job-order-task',
@@ -183,7 +184,8 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     private translate: TranslateService,
     private router: Router,
     private searchStateService: SearchStateService,
-    private notificationService: SingletonNotificationService
+    private notificationService: SingletonNotificationService,
+    private authService: AuthService,
   ) {
     super();
     this.translateLangText();
@@ -332,10 +334,12 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     //     in: this.filterJobOrderForm!.get('customer')?.value
     //   };
     // }
-    // TODO:: Get login user team
-    // if (false) {
-    //   where.team_guid = { eq: "" }
-    // }
+
+    // Get login user team
+    const userTeam = this.authService?.getTeamsGuid('REPAIR');
+    if (userTeam?.length) {
+      where.team_guid = { in: userTeam }
+    }
 
     this.lastSearchCriteriaJobOrder = this.joDS.addDeleteDtCriteria(where);
   }

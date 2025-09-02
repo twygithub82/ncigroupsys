@@ -215,7 +215,7 @@ export class AuthService {
     );
   }
 
-  resetStaffPassword(password: string,  userName: string): Observable<any> {
+  resetStaffPassword(password: string, userName: string): Observable<any> {
     return this.authApiService.resetStaffPassword(password, userName).pipe(
       map(response => response),
       catchError((error: HttpErrorResponse) => {
@@ -263,12 +263,12 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    const userToken = JSON.parse(localStorage.getItem('userToken') || '{}');
+    const userToken = JSON.parse(localStorage.getItem(this.tokenKey) || '{}');
     return userToken?.token || null;
   }
 
   getRefreshToken(): string | null {
-    const userToken = JSON.parse(localStorage.getItem('userToken') || '{}');
+    const userToken = JSON.parse(localStorage.getItem(this.tokenKey) || '{}');
     return userToken?.refreshToken || null;
   }
 
@@ -276,6 +276,18 @@ export class AuthService {
     const userToken = JSON.parse(localStorage.getItem(this.tokenKey) || '{}');
     if (!userToken?.expiration) return null;
     return new Date(userToken.expiration).getTime(); // Convert to milliseconds
+  }
+
+  getTeams(type: string) {
+    const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
+    if (!user?.userdata?.length) return null;
+    return user.userdata.filter((item: any) => item.department === type) || null;
+  }
+
+  getTeamsGuid(type: string) {
+    const user = JSON.parse(localStorage.getItem(this.userKey) || '{}');
+    if (!user?.userdata?.length) return null;
+    return user.userdata.filter((item: any) => item.department === type).map((item: any) => item.guid) || null;
   }
 
   hasRole(expectedRoles: string[] | undefined): boolean {
@@ -318,7 +330,7 @@ export class AuthService {
         return `/kiosk/${kioskYard[0].description}/in-gate`.toLowerCase();
       }
     }
-    
+
     if (this.currentUserValue.token && this.isKioskUserOutGate()) {
       const kioskYard: any[] = this.currentUserValue?.userdata?.filter((x: any) => x.department == "YARD")
       if (kioskYard?.length) {
