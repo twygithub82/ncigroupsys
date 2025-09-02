@@ -872,10 +872,12 @@ export class YardStatusReportComponent extends UnsubscribeOnDestroyAdapter imple
         }
         repCust.number_tank ??= 0;
         repCust.number_tank += 1;
-        var yard: report_status_yard = repCust.yards?.find(y => y.code === (s.in_gate?.[0]?.yard_cv || " ")) || new report_status_yard();
+        //var yard: report_status_yard = repCust.yards?.find(y => y.code === (s.in_gate?.[0]?.yard_cv || " ")) || new report_status_yard();
+        var yard: report_status_yard = repCust.yards?.find(y => y.code === (s.tank_info?.yard_cv || " ")) || new report_status_yard();
         let newYard = false;
         if (!yard.code) {
-          yard.code = s.in_gate?.[0]?.yard_cv || " ";
+          //yard.code = s.in_gate?.[0]?.yard_cv || " ";
+          yard.code = s.tank_info?.yard_cv || " ";
           yard.storing_order_tank = [];
           newYard = true;
         }
