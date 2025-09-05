@@ -239,9 +239,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
     this.pckSteamDS = new PackageSteamingDS(this.apollo);
 
     this.pcForm = this.createPackageSteam();
-
-
-
     this.tnkItems = [];
     this.action = data.action!;
     this.translateLangText();
@@ -375,16 +372,17 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         });
       }
     }
-
-
-
-
-
-
   }
 
   update() {
-
+    if (this.isMultiSelect() &&
+      !this.pcForm?.get('cost')?.value && !this.pcForm?.get('labour')?.value) {
+      this.pcForm?.get('cost')?.setErrors({ required: true });
+      this.pcForm?.get('labour')?.setErrors({ required: true });
+    } else if (this.isMultiSelect()) {
+      this.pcForm?.get('cost')?.setErrors(null);
+      this.pcForm?.get('labour')?.setErrors(null);
+    }
     if (!this.pcForm?.valid) return;
 
     if (this.selectedItems.length === 1) {
@@ -411,11 +409,6 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
         });
       }
     }
-
-
-
-
-
   }
 
   displayLastUpdated(r: TariffDepotItem) {
@@ -452,5 +445,10 @@ export class FormDialogComponent_New extends UnsubscribeOnDestroyAdapter {
   selectAll(event: FocusEvent) {
     const input = event.target as HTMLInputElement;
     input.select();  // Selects all text in the input
+  }
+
+  isMultiSelect(): boolean {
+    var bRetval: boolean = (this.selectedItems?.length || 0) > 1;
+    return bRetval;
   }
 }

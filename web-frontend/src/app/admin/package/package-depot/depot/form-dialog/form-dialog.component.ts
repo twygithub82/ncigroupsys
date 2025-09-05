@@ -328,6 +328,27 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
   }
 
   save() {
+    if (this.isMultiSelect() &&
+      !this.pcForm?.get('gate_in_cost_cust')?.value && !this.pcForm?.get('gate_out_cost_cust')?.value &&
+      !this.pcForm?.get('preinspection_cost_cust')?.value && !this.pcForm?.get('lolo_cost_cust')?.value &&
+      !this.pcForm?.get('storage_cost_cust')?.value && !this.pcForm?.get('free_storage_days')?.value &&
+      !this.pcForm?.get('storage_cal_cv')?.value) {
+      this.pcForm?.get('gate_in_cost_cust')?.setErrors({ required: true });
+      this.pcForm?.get('gate_out_cost_cust')?.setErrors({ required: true });
+      this.pcForm?.get('preinspection_cost_cust')?.setErrors({ required: true });
+      this.pcForm?.get('lolo_cost_cust')?.setErrors({ required: true });
+      this.pcForm?.get('storage_cost_cust')?.setErrors({ required: true });
+      this.pcForm?.get('free_storage_days')?.setErrors({ required: true });
+      this.pcForm?.get('storage_cal_cv')?.setErrors({ required: true });
+    } else if (this.isMultiSelect()) {
+      this.pcForm?.get('gate_in_cost_cust')?.setErrors(null);
+      this.pcForm?.get('gate_out_cost_cust')?.setErrors(null);
+      this.pcForm?.get('preinspection_cost_cust')?.setErrors(null);
+      this.pcForm?.get('lolo_cost_cust')?.setErrors(null);
+      this.pcForm?.get('storage_cost_cust')?.setErrors(null);
+      this.pcForm?.get('free_storage_days')?.setErrors(null);
+      this.pcForm?.get('storage_cal_cv')?.setErrors(null);
+    }
     if (!this.pcForm?.valid) return;
 
     let pd_guids: string[] = this.selectedItems
@@ -335,22 +356,22 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       .filter((guid): guid is string => guid !== undefined);
 
     var lolo_cost = -1;
-    if (this.pcForm!.value["lolo_cost_cust"] || this.pcForm!.value["lolo_cost_cust"]===0) lolo_cost = Utility.convertNumber(this.pcForm!.value["lolo_cost_cust"], 2);
+    if (this.pcForm!.value["lolo_cost_cust"] || this.pcForm!.value["lolo_cost_cust"] === 0) lolo_cost = Utility.convertNumber(this.pcForm!.value["lolo_cost_cust"], 2);
 
     var preinspection_cost = -1;
-    if (this.pcForm!.value["preinspection_cost_cust"]|| this.pcForm!.value["preinspection_cost_cust"]===0) preinspection_cost = Utility.convertNumber(this.pcForm!.value["preinspection_cost_cust"], 2);
+    if (this.pcForm!.value["preinspection_cost_cust"] || this.pcForm!.value["preinspection_cost_cust"] === 0) preinspection_cost = Utility.convertNumber(this.pcForm!.value["preinspection_cost_cust"], 2);
     var free_storage = -1;
-    if (this.pcForm!.value["free_storage_days"]|| this.pcForm!.value["free_storage_days"]===0) free_storage = this.pcForm!.value["free_storage_days"];
+    if (this.pcForm!.value["free_storage_days"] || this.pcForm!.value["free_storage_days"] === 0) free_storage = this.pcForm!.value["free_storage_days"];
 
 
     var storage_cost = -1;
-    if (this.pcForm!.value["storage_cost_cust"]|| this.pcForm!.value["storage_cost_cust"]===0) storage_cost = Utility.convertNumber(this.pcForm!.value["storage_cost_cust"], 2);
+    if (this.pcForm!.value["storage_cost_cust"] || this.pcForm!.value["storage_cost_cust"] === 0) storage_cost = Utility.convertNumber(this.pcForm!.value["storage_cost_cust"], 2);
 
     var gate_in_cost = -1;
-    if (this.pcForm!.value["gate_in_cost_cust"]|| this.pcForm!.value["gate_in_cost_cust"]===0) gate_in_cost = Utility.convertNumber(this.pcForm!.value["gate_in_cost_cust"], 2);
+    if (this.pcForm!.value["gate_in_cost_cust"] || this.pcForm!.value["gate_in_cost_cust"] === 0) gate_in_cost = Utility.convertNumber(this.pcForm!.value["gate_in_cost_cust"], 2);
 
     var gate_out_cost = -1;
-    if (this.pcForm!.value["gate_out_cost_cust"]|| this.pcForm!.value["gate_out_cost_cust"]===0) gate_out_cost = Utility.convertNumber(this.pcForm!.value["gate_out_cost_cust"], 2);
+    if (this.pcForm!.value["gate_out_cost_cust"] || this.pcForm!.value["gate_out_cost_cust"] === 0) gate_out_cost = Utility.convertNumber(this.pcForm!.value["gate_out_cost_cust"], 2);
 
     var storageCalValue: String = "";
     if (this.pcForm?.get('storage_cal_cv')?.value) {
@@ -383,8 +404,12 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
       }
     });
   }
+
   onNoClick(): void {
     this.dialogRef.close();
   }
 
+  isMultiSelect(): boolean {
+    return (this.selectedItems?.length || 0) > 1;
+  }
 }

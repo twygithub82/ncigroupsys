@@ -471,6 +471,13 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter {
 
   update() {
     let update = true;
+    if (this.isMultiSelect() && !this.pcForm?.get('labour_hour')?.value && !this.pcForm?.get('material_cost')?.value) {
+      this.pcForm?.get('labour_hour')?.setErrors({ required: true });
+      this.pcForm?.get('material_cost')?.setErrors({ required: true });
+    } else {
+      this.pcForm?.get('labour_hour')?.setErrors(null);
+      this.pcForm?.get('material_cost')?.setErrors(null);
+    }
     if (!this.pcForm?.valid) return;
 
     if (this.selectedItems.length == 1) {

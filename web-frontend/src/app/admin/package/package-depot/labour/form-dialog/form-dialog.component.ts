@@ -269,6 +269,12 @@ export class FormDialogComponent {
   }
 
   save() {
+    if (this.isMultiSelect() &&
+      !this.pcForm?.get('adjusted_cost')?.value) {
+      this.pcForm?.get('adjusted_cost')?.setErrors({ required: true });
+    } else if (this.isMultiSelect()) {
+      this.pcForm?.get('adjusted_cost')?.setErrors(null);
+    }
     if (this.pcForm.invalid) return;
     if (this.selectedItems.length == 1) {
       var packLabour = new PackageLabourItem(this.selectedItems[0]);
@@ -334,8 +340,11 @@ export class FormDialogComponent {
     this.dialogRef.close();
   }
 
-   displayNumber(value: number) {
+  displayNumber(value: number) {
     return Utility.formatNumberDisplay(value);
   }
 
+  isMultiSelect(): boolean {
+    return (this.selectedItems?.length || 0) > 1;
+  }
 }

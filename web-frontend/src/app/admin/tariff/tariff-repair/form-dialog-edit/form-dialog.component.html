@@ -8,8 +8,9 @@
   </div>
   <div mat-dialog-content>
     <form class="register-form" [formGroup]="pcForm" #formDirective="ngForm">
+      @if (!isMultiSelect()) {
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1" [hidden]="isMultiSelect()">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
           <!-- <mat-form-field class="example-full-width"> -->
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.GROUP_NAME}}</mat-label>
@@ -25,7 +26,7 @@
               } -->
           </mat-form-field>
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 ms-10 mb-1" [hidden]="isMultiSelect()">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 ms-10 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{translatedLangText.SUB_GROUP_NAME}}</mat-label>
             <mat-select formControlName="sub_group_name_cv">
@@ -47,11 +48,6 @@
             <mat-label>{{translatedLangText.PART_NAME}}</mat-label>
             <input matInput formControlName="part_name" type="text" maxlength="200" required
               (focus)="selectAll($event)">
-            <!-- @if (pcForm.get('part_name')?.hasError('required')) {
-              <mat-error>
-                {{translatedLangText.PART_NAME }} {{translatedLangText.CARGO_REQUIRED }}
-              </mat-error>
-              } -->
             @if (pcForm.get('part_name')?.hasError('existed')) {
             <mat-error>
               {{translatedLangText.PART_NAME }} {{translatedLangText.EXISTED }}
@@ -60,10 +56,6 @@
           </mat-form-field>
         </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 mb-1" [hidden]="isMultiSelect()">
-          <!-- <mat-form-field class="example-full-width">
-              <mat-label>{{translatedLangText.DIMENSION}}</mat-label>
-              <input matInput formControlName="dimension" type="text">
-            </mat-form-field> -->
           {{translatedLangText.DIMENSION}}:
           <span class="font-bold">
             {{this.pcForm.get('dimension')?.value}}
@@ -204,21 +196,20 @@
           </mat-form-field>
         </div>
       </div>
+      }
       <div class="row">
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetLabourCostLabel()}}</mat-label>
             <input matInput formControlName="labour_hour" type="text" [attr.min]="isMultiSelect() ? -20 : 0"
-              appNumericText (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)"
-              (focus)="selectAll($event)">
+              appNumericText (focus)="selectAll($event)">
           </mat-form-field>
         </div>
         <div class="col-xl-6 col-lg6 col-md-6 col-sm-6 mb-1">
           <mat-form-field class="example-full-width">
             <mat-label>{{GetMaterialCostLabel()}}</mat-label>
             <input matInput formControlName="material_cost" type="text" [attr.min]="isMultiSelect() ? -20 : 0"
-              appNumericText (keypress)="isMultiSelect() ? allowNegative($event) : positiveOnly($event)"
-              (focus)="selectAll($event)">
+              appNumericText (focus)="selectAll($event)">
           </mat-form-field>
         </div>
       </div>

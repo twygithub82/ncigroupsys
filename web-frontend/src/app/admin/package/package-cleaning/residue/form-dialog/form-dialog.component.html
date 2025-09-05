@@ -15,13 +15,8 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
               <mat-form-field class="example-full-width">
                 <mat-label>{{getCostLabel()}}</mat-label>
-                <input matInput #adjustCost formControlName="cost_cust" appNumericText type="text" min="0"  (focus)="adjustCost.select()"
-                  [required]="this.selectedItems.length===1">
-                <!-- @if (pcForm.get('cost_cust')?.hasError('required')) {
-                    <mat-error>
-                      {{translatedLangText.COST }} {{translatedLangText.CARGO_REQUIRED }}
-                    </mat-error>
-                    } -->
+                <input matInput #adjustCost formControlName="cost_cust" appNumericText type="text" min="0"
+                  (focus)="adjustCost.select()" required>
               </mat-form-field>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-11 mb-1">
@@ -55,8 +50,8 @@
                         }}:</span>{{row.customer_company.name}}</mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="description">
-                    <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                     >{{translatedLangText.RESIDUE_TYPE
+                    <mat-header-cell *matHeaderCellDef
+                      [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{translatedLangText.RESIDUE_TYPE
                       }}</mat-header-cell>
                     <mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
