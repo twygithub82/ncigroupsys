@@ -1844,6 +1844,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(EditGateDetailsFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '50vw',
       data: {
@@ -1900,6 +1901,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteStorageFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '50vw',
       data: {
@@ -1957,6 +1959,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteLastCargoFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '600px',
       data: {
@@ -2002,6 +2005,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteCleanStatusFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '600px',
       data: {
@@ -2044,6 +2048,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteCleaningApprovalFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '80vw',
       height: '80vh',
@@ -2099,6 +2104,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteSteamingApprovalFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '80vw',
       maxHeight: '90vh',
@@ -2164,6 +2170,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
       tempDirection = 'ltr';
     }
     const dialogRef = this.dialog.open(OverwriteResidueApprovalFormDialogComponent, {
+      autoFocus: false,
       disableClose: true,
       width: '80vw',
       maxHeight: '90vh',
@@ -2226,6 +2233,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const dialogRef = this.dialog.open(OverwriteRepairApprovalFormDialogComponent, {
       disableClose: true,
+      autoFocus: false,
       width: '80vw',
       maxHeight: '90vh',
       data: {
@@ -2309,6 +2317,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
 
     const dialogRef = this.dialog.open(RepairEstimatePdfComponent, {
+      autoFocus: false,
       width: '794px',
       maxHeight: '80vh',
       data: {
@@ -2337,6 +2346,7 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
     }
     const headerText = this.translatedLangText.PREVIEW_PHOTOS;
     const dialogRef = this.dialog.open(PreviewImageDialogComponent, {
+      autoFocus: false,
       data: {
         headerText: headerText,
         previewImages: "",//this.getImages(),

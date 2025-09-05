@@ -397,8 +397,6 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
   }
 
   search() {
-
-
     var cond_counter = 1;
     var report_type: string = this.searchForm!.get('report_type')?.value;
     const where: any = {};
@@ -440,7 +438,6 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         cond_counter++;
       }
 
-
       var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
       if (this.searchForm!.get('clean_dt_start')?.value && this.searchForm!.get('clean_dt_end')?.value) {
         var start_dt = new Date(this.searchForm!.get('clean_dt_start')?.value);
@@ -452,9 +449,6 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         cond_counter++;
         //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
       }
-
-
-
 
       if (this.searchForm!.get('last_cargo')?.value) {
         where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
@@ -491,8 +485,6 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         cond_counter++;
       }
 
-
-
       if (this.searchForm!.get('customer_code')?.value) {
         // if(!where.storing_order_tank) where.storing_order_tank={};
         this.lastSearchCriteria.customer_code = this.searchForm!.get('customer_code')?.value.code;
@@ -519,9 +511,6 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
         this.lastSearchCriteria.end_date = Utility.convertDate(end_dt, true);
       }
 
-
-
-
       if (this.searchForm!.get('last_cargo')?.value) {
         this.lastSearchCriteria.last_cargo = this.searchForm!.get('last_cargo')?.value.cargo;
         cond_counter++;
@@ -547,7 +536,6 @@ export class TankActivitiyCleaningReportComponent extends UnsubscribeOnDestroyAd
       this.lastSearchCriteria.report_type = this.GetReportType(report_type);
       this.performSearchCleaningInventorySummary(report_type, date);
     }
-
   }
 
   GetReportType(report_type: String): String {
