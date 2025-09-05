@@ -566,7 +566,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       where.tariff_cleaning = { guid: { eq: this.searchForm!.get('last_cargo')?.value.guid } };
       //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
-
+    this.pageIndex=0;
 
     this.lastSearchCriteria = this.repDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);

@@ -323,7 +323,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
 
-
+    this.pageIndex=0;
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }

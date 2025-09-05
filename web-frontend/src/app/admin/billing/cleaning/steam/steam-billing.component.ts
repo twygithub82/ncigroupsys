@@ -456,7 +456,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       where.customer_billing_guid = { neq: null };
     }
 
-    if (this.searchForm!.get('branch_code')?.value) {
+   if (this.searchForm!.get('branch_code')?.value) {
       where.customer_company = { code: { eq: this.searchForm!.get('branch_code')?.value.code } }
     }
 
@@ -529,7 +529,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
 
     this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {

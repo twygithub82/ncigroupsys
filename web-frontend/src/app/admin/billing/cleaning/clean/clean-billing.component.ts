@@ -429,7 +429,14 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      where.customer_company = { code: { eq: this.searchForm!.get('branch_code')?.value.code } }
+      if(!where.customer_company){
+        where.customer_company = { code: { eq: this.searchForm!.get('branch_code')?.value.code } }
+      }
+      else
+      {
+        var existingWhere = where.customer_company;
+        where.customer_company = [existingWhere,{ code: { eq: this.searchForm!.get('branch_code')?.value.code } }]
+      }
     }
 
     if (this.searchForm!.get('eir_dt')?.value) {
@@ -498,7 +505,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
 
     this.lastSearchCriteria = this.clnDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {

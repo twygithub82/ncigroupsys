@@ -365,21 +365,23 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       where.and.push(itm);
     }
 
-    if (this.searchForm!.get('customer_code')?.value) {
-      const soSearch: any = {};
+    // if (this.searchForm!.get('customer_code')?.value) {
+    //   const soSearch: any = {};
       if (this.searchForm!.get('customer_code')?.value) {
           where.and.push(
             {or:[
-              {storing_order:{ customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } }},
+               {storing_order:{ customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } }},
+             // { customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } },
+             
               {
                 owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid }
               }
             ]}
           )
             //  soSearch.customer_company = { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } };
-      }
-      // where.storing_order = soSearch;
-    }
+       }
+    //   // where.storing_order = soSearch;
+    // }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined, reportType);
@@ -554,7 +556,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          if (c.status_cv != 'NO_ACTION') {
+          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!)) {
 
             rep_bill_item.clean_est_no += 1;
             rep_bill_item.clean_cost = Number(Number(rep_bill_item?.clean_cost || 0) + (c.cleaning_cost || 0) + (c.buffer_cost || 0)).toFixed(2);
@@ -757,7 +759,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          if (c.status_cv != 'NO_ACTION') {
+          // if (c.status_cv != 'NO_ACTION') 
+          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!))
+            {
 
             const totalCost = this.repDS.calculateCost(c, c.repair_part!, c.labour_cost);
             rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.total_lessee_mat_cost || 0) : Number(totalCost.total_owner_cost || 0))).toFixed(2);
@@ -796,7 +800,10 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          if (c.status_cv != 'NO_ACTION') {
+          // if (c.status_cv != 'NO_ACTION') 
+          if(!['NO_ACTION', 'KIV'].includes(c.status_cv!))
+          {
+
             let total = 0;
             c.residue_part?.forEach(p => {
 
@@ -837,7 +844,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          if (c.status_cv != 'NO_ACTION') {
+          // if (c.status_cv != 'NO_ACTION') 
+          if(!['NO_ACTION', 'KIV'].includes(c.status_cv!))
+            {
             let total = 0;
             let cost = this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);
             total = (this.stmDS.getApprovalTotalWithLabourCost(c?.steaming_part, cost).total_mat_cost || 0);
@@ -938,6 +947,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
       this.sotList.forEach((b) => {
         var repCusts = repCustomers.filter(c => c.guid === b.storing_order?.customer_company?.guid);
+        //var repCusts = repCustomers.filter(c => c.guid === b.customer_company?.guid);
         var repCust: report_billing_customer = new report_billing_customer();
         var newCust: boolean = true;
         if (repCusts.length > 0) {
@@ -947,9 +957,11 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
         else {
           repCust.guid = b.storing_order?.customer_company?.guid;
+          //repCust.guid = b.customer_company?.guid;
           repCust.items = [];
         }
-        repCust.customer = b.storing_order?.customer_company?.name;
+        //repCust.customer = b.customer_company?.name;
+         repCust.customer = b.storing_order?.customer_company?.name;
         //this.ccDS.displayName(b.storing_order?.customer_company);
         //  if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
         //     repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;

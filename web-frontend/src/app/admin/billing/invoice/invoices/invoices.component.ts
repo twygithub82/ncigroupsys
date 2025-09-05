@@ -901,7 +901,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
       where.and.push(itm);
     }
-
+ this.pageIndex=0;
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }

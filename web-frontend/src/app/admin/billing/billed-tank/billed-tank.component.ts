@@ -326,6 +326,10 @@ export class BilledTankComponent extends UnsubscribeOnDestroyAdapter implements 
       where.storing_order = soSearch;
     }
 
+    if (this.searchForm!.get('branch_code')?.value) {
+      where.customer_company = { code: { eq: this.searchForm!.get('branch_code')?.value.code } }
+    }
+
     // if (this.searchForm!.get('tank_no')?.value || this.searchForm!.get('tank_status_cv')?.value || this.searchForm!.get('so_no')?.value || this.searchForm!.get('customer_code')?.value || this.searchForm!.get('purpose')?.value) {
     //   const sotSearch: any = {};
 

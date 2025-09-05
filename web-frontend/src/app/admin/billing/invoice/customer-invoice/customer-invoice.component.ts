@@ -907,7 +907,7 @@ export class CustomerInvoiceComponent extends UnsubscribeOnDestroyAdapter implem
       where.and.push(itm);
     }
 
-
+    this.pageIndex=0;
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performBillingSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
