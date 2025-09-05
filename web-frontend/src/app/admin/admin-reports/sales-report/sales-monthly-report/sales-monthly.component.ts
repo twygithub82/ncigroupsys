@@ -176,7 +176,8 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   tcDS: TariffCleaningDS;
 
 
-  reportDS:ManagementReportDS; //ReportDS;
+  //reportDS:ManagementReportDS; //ReportDS;
+  reportDS:ReportDS;
 
   distinctCustomerCodes: any;
   selectedEstimateItem?: SteamItem;
@@ -214,8 +215,10 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
-  invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
-  invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
+  invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING",  "REPAIR", "LOLO", "RESIDUE", "PREINSPECTION"];
+  //invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "IN_OUT", "REPAIR", "LOLO", "STORAGE", "RESIDUE", "PREINSPECTION"];
+  //invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
+  invTypes: string[] =  ["ALL",  "PREINSPECTION","LOLO", "STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
 
   constructor(
     public httpClient: HttpClient,
@@ -236,7 +239,8 @@ export class SalesMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdapte
     this.tcDS = new TariffCleaningDS(this.apollo);
 
     this.sotDS = new StoringOrderTankDS(this.apollo);
-    this.reportDS = new ManagementReportDS(this.apollo);
+    //this.reportDS = new ManagementReportDS(this.apollo);
+    this.reportDS = new ReportDS(this.apollo);
   }
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -396,7 +400,8 @@ this.isGeneratingReport = true;
 
     var customerName: string = "";
     var invTypes = this.invTypesAll.filter(v => v !== "ALL");
-    where.revenue_type = invTypes;
+   // where.revenue_type = invTypes;
+    where.report_type = invTypes;
     if (this.searchForm?.get('cost_type')?.value.code_val != "ALL") {
       where.revenue_type = [this.searchForm?.get('cost_type')?.value.code_val];
       invTypes = [this.searchForm?.get('cost_type')?.value.code_val];
@@ -468,10 +473,12 @@ this.isGeneratingReport = true;
 
  performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[],reportName:string='') {
 
+   var reportDS:any= this.reportDS;
     // if(queryType==1)
     // {
-    this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
-      .subscribe(data => {
+   // this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
+   this.subs.sink = reportDS.searchAdminReportMonthlySales(this.lastSearchCriteria)
+      .subscribe((data:any) => {
         this.repData = data;
         this.ProcessMonthlyReport(this.repData, date!, reportType!, customerName!, invTypes!,reportName);
       });

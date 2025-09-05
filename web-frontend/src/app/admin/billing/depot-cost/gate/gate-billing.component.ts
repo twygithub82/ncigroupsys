@@ -437,6 +437,10 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
     if (this.searchForm!.get('invoiced')?.value) {
       where.or = [{ gin_billing_guid: { neq: null } }, { gout_billing_guid: { neq: null } }];
     }
+    // else
+    // {
+    //    where.or = [{ gin_billing_guid: { eq: null } }, { gout_billing_guid: { eq: null } }];
+    // }
 
     if (this.searchForm!.get('customer_code')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};

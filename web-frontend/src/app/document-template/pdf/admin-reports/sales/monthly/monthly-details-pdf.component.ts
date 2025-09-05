@@ -23,8 +23,9 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard } from 'app/data-sources/reports';
-import { ManagementReportYearlyRevenueItem, MonthlyProcessData, InventoryAnalyzer, ManagementReportMonthlyInventory, ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
+import { AdminReportMonthlySalesReport, AdminReportYearlySalesReport, report_status_yard } from 'app/data-sources/reports';
+import { ManagementReportYearlyRevenueItem,MonthlyProcessData,   ManagementReportMonthlyInventory, ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
+import {InventoryAnalyzer,} from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
@@ -57,7 +58,7 @@ interface SeriesItem {
 }
 
 export interface DialogData {
-  repData: ManagementReportMonthlyRevenueItem,
+  repData: AdminReportMonthlySalesReport,
   date: string,
   repType: string,
   customer: string,
@@ -350,7 +351,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
   private generatingPdfLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
-  repData?: ManagementReportMonthlyRevenueItem;
+  repData?: AdminReportMonthlySalesReport;//ManagementReportMonthlyRevenueItem;
   date?: string;
   repType?: string;
   customer?: string;
@@ -782,7 +783,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     }
     var idx = 0;
 
-    var grpData = InventoryAnalyzer.groupRevenueMonthlyByDate(repData!);
+    var grpData = InventoryAnalyzer.groupSalesMonthlyByDate(repData!);
 
 
     var series: SeriesItem[] = [];
@@ -820,7 +821,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       // +(monthData.steaming?.cost||0)+(monthData.residue?.cost||0)+(monthData.cleaning?.cost||0)+(monthData.repair?.cost||0)
       // total_all_cost+=total;
       // average_counter++;
-      const entry = grpData[date];
+      var entry:any = grpData[date];
       data.push([
         (++idx).toString(), date, entry.day,
         ...(showGateSurcharge ? [
@@ -921,57 +922,57 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     }
     data.push([
       this.translatedLangText.TOTAL, "", "",
-      ...(showGateSurcharge ? [
-        Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_cost || ''),
-        // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
-      ] : []),
+      // ...(showGateSurcharge ? [
+      //   Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_cost || ''),
+      //   // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
+      // ] : []),
       ...(showPreinspectSurcharge ? [
-        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.total_count || ''),
-        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.total_cost || '')
+        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.total_count || ''),
+        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.total_cost || '')
       ] : []),
-      ...(showLoloSurcharge ? [Utility.formatNumberDisplay(this.repData?.lolo_monthly_revenue?.total_count || ''),
-      Utility.formatNumberDisplay(this.repData?.lolo_monthly_revenue?.total_cost || '')
+      ...(showLoloSurcharge ? [Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_count || ''),
+      Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_cost || '')
       ] : []),
-      ...(showStorageSurcharge ? [Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_count || ''),
-      Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_cost || '')
+      // ...(showStorageSurcharge ? [Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_count || ''),
+      // Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_cost || '')
+      // ] : []),
+      ...(showSteamSurcharge ? [Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_count || ''),
+      Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_cost || '')] : []),
+      ...(showResidueSurcharge ? [Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_count || ''),
+      Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_cost || '')
       ] : []),
-      ...(showSteamSurcharge ? [Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.total_count || ''),
-      Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.total_cost || '')] : []),
-      ...(showResidueSurcharge ? [Utility.formatNumberDisplay(this.repData?.residue_monthly_revenue?.total_count || ''),
-      Utility.formatNumberDisplay(this.repData?.residue_monthly_revenue?.total_cost || '')
-      ] : []),
-      ...(showCleanSurcharge ? [Utility.formatNumberDisplay(this.repData?.cleaning_monthly_revenue?.total_count || ''),
-      Utility.formatNumberDisplay(this.repData?.cleaning_monthly_revenue?.total_cost || '')] : []),
-      ...(showRepairSurcharge ? [Utility.formatNumberDisplay(this.repData?.repair_monthly_revenue?.total_count || ''),
-      Utility.formatNumberDisplay(this.repData?.repair_monthly_revenue?.total_cost || '')] : []),
+      ...(showCleanSurcharge ? [Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_count || ''),
+      Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_cost || '')] : []),
+      ...(showRepairSurcharge ? [Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_count || ''),
+      Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_cost || '')] : []),
       //Utility.formatNumberDisplay(total_all_cost)
     ]);
 
     data.push([
       this.translatedLangText.AVERAGE, "", "",
-      ...(showGateSurcharge ? [
-        Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_cost || ''),
-        // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
-      ] : []),
+      // ...(showGateSurcharge ? [
+      //   Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_cost || ''),
+      //   // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
+      // ] : []),
       ...(showPreinspectSurcharge ? [
-        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.average_count || ''),
-        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_revenue?.average_cost || '')
+        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.average_count || ''),
+        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.average_cost || '')
       ] : []),
-      ...(showLoloSurcharge ? [Utility.formatNumberDisplay(this.repData?.lolo_monthly_revenue?.average_count || ''),
-      Utility.formatNumberDisplay(this.repData?.lolo_monthly_revenue?.average_cost || '')
+      ...(showLoloSurcharge ? [Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_count || ''),
+      Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_cost || '')
       ] : []),
-      ...(showStorageSurcharge ? [Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_count || ''),
-      Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_cost || '')
+      // ...(showStorageSurcharge ? [Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_count || ''),
+      // Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_cost || '')
+      // ] : []),
+      ...(showSteamSurcharge ? [Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_count || ''),
+      Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_cost || '')] : []),
+      ...(showResidueSurcharge ? [Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_count || ''),
+      Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_cost || '')
       ] : []),
-      ...(showSteamSurcharge ? [Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_count || ''),
-      Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_cost || '')] : []),
-      ...(showResidueSurcharge ? [Utility.formatNumberDisplay(this.repData?.residue_monthly_revenue?.average_count || ''),
-      Utility.formatNumberDisplay(this.repData?.residue_monthly_revenue?.average_cost || '')
-      ] : []),
-      ...(showCleanSurcharge ? [Utility.formatNumberDisplay(this.repData?.cleaning_monthly_revenue?.average_count || ''),
-      Utility.formatNumberDisplay(this.repData?.cleaning_monthly_revenue?.average_cost || '')] : []),
-      ...(showRepairSurcharge ? [Utility.formatNumberDisplay(this.repData?.repair_monthly_revenue?.average_count || ''),
-      Utility.formatNumberDisplay(this.repData?.repair_monthly_revenue?.average_cost || '')] : []),
+      ...(showCleanSurcharge ? [Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_count || ''),
+      Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_cost || '')] : []),
+      ...(showRepairSurcharge ? [Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_count || ''),
+      Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_cost || '')] : []),
     ]);
 
 

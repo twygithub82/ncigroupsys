@@ -972,14 +972,17 @@ export class PendingSummaryPdfComponent extends UnsubscribeOnDestroyAdapter impl
         this.DisplayGateIONo(cust) || "",
         this.DisplayPreinspectionNo(cust) || "",
         this.DisplayLOLONo(cust) || "",
-        this.DisplayStorageNo(cust) || "",
-        this.DisplayCleanNo(cust) || ""
+        this.DisplayStorageNo(cust) || ""
+        
       ];
 
+       if (!this.modulePackageService.isStarterPackage()) {
+        row.push(this.DisplaySteamNo(cust) || "");
+       }
+      row.push(this.DisplayCleanNo(cust) || "");
       if (!this.modulePackageService.isStarterPackage()) {
         row.push(
-          this.DisplayResidueNo(cust) || "",
-          this.DisplaySteamNo(cust) || ""
+          this.DisplayResidueNo(cust) || ""
         );
       }
       row.push(this.DisplayRepairNo(cust) || "");

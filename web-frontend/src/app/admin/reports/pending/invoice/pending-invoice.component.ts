@@ -541,6 +541,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       if (itms.length > 0) {
 
         itms.forEach(c => {
+          if(c.customer_billing_guid!=null) return;
           c.storing_order_tank = sot;
           let newItem = false;
           let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
@@ -573,7 +574,12 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const item: BillingSOTItem = sot.billing_sot!;
 
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.gout_billing_guid == null && item.gin_billing_guid == null)) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) &&
+      (item.gout_billing_guid == null && item.gin_billing_guid == null)
+      //(item.gout_billing_guid == null || item.gin_billing_guid == null)
+    ) 
+      
+    {
       item.storing_order_tank = sot;
 
       let newItem = false;
@@ -632,7 +638,11 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const item = sot.billing_sot; // Single object instead of an array
 
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && (item.lon_billing_guid == null && item.loff_billing_guid == null)) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) && 
+       (item.lon_billing_guid == null && item.loff_billing_guid == null)
+   // (item.lon_billing_guid == null || item.loff_billing_guid == null)
+     
+  ) {
       item.storing_order_tank = sot;
 
       let newItem = false;

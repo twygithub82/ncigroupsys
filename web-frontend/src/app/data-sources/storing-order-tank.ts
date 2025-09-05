@@ -3843,6 +3843,7 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
           guid
           approve_dt
           customer_billing_guid
+          status_cv
           customer_company {
             code
             guid
@@ -3931,11 +3932,15 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
           gate_in_cost
           gate_out
           gate_out_cost
+          gin_billing_guid
+          gout_billing_guid
           guid
           lift_off
           lift_off_cost
           lift_on
           lift_on_cost
+          loff_billing_guid
+          lon_billing_guid
           preinsp_billing_guid
           preinspection
           preinspection_cost

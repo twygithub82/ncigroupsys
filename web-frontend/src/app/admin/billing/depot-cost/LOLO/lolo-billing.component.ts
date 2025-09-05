@@ -423,9 +423,11 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
     if (this.searchForm!.get('invoiced')?.value) {
       where.or = [{ loff_billing_guid: { neq: null } }, { lon_billing_guid: { neq: null } }];
-
-
     }
+    // else
+    // {
+    //   where.or = [{ loff_billing_guid: { eq: null } }, { lon_billing_guid: { eq: null } }];
+    // }
 
     if (this.searchForm!.get('customer_code')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -502,7 +504,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
 
 
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
-    this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined);
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string) {

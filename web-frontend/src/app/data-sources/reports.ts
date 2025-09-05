@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import { BaseDataSource } from './base-ds';
 import { ApolloError } from '@apollo/client/errors';
 import { StoringOrderTankItem } from "./storing-order-tank";
+import { GroupedByDate, MonthlyProcessDataRevenue } from './reports-management';
 
 export class report_customer_inventory{
   guid?:string;
@@ -884,6 +885,179 @@ export class InventoryAnalyzer {
     ];
     return months.indexOf(monthName);
   }
+
+  static groupByMonthAndFindExtremes_Sales(data: AdminReportYearlySalesReport) {
+    // Initialize a map to group by month with proper typing
+    const monthlyData: Record<string, MonthlyProcessDataRevenue> = {};
+
+    // Process each inventory type
+    const processData = [
+      { name: 'cleaning', data: data.cleaning_yearly_sales?.result_per_month },
+      // { name: 'depot', data: data.?.result_per_month },
+      { name: 'lolo', data: data.lolo_yearly_sales?.result_per_month },
+      { name: 'preinspection', data: data.preinspection_yearly_sales?.result_per_month },
+      { name: 'repair', data: data.repair_yearly_sales?.result_per_month },
+      { name: 'steaming', data: data.steaming_yearly_sales?.result_per_month },
+       { name: 'residue', data: data.residue_yearly_sales?.result_per_month },
+    ];
+
+    // Populate monthlyData with type-safe assignments
+    processData.forEach(process => {
+    
+        process.data?.forEach(monthData => {
+          if (!monthData.month) return;
+          
+          if (!monthlyData[monthData.month]) {
+            monthlyData[monthData.month] = { key: monthData.month };
+          }
+          
+          // Use count if available, otherwise percentage
+          const value = monthData.count ?? monthData.cost;
+          
+          // Type-safe assignment using a type assertion
+          const monthlyEntry = monthlyData[monthData.month];
+          switch (process.name) {
+            case 'cleaning':
+              monthlyEntry.cleaning= {
+                count: monthData.count,
+                cost: monthData.cost,
+                //percentage: monthData.cost,
+                key:monthData.month,
+                name:monthData.month
+              };
+              break;
+            case 'preinspection':
+              monthlyEntry.preinspection= {
+                count: monthData.count,
+                cost: monthData.cost,
+                //percentage: monthData.cost,
+                key:monthData.month,
+                name:monthData.month
+              };
+              break;
+            // case 'depot':
+            //   monthlyEntry.depot= {
+            //     count: monthData.count,
+            //    cost: monthData.cost,
+            //     key:monthData.month,
+            //     name:monthData.month
+            //   };
+            //   break;
+            case "lolo":
+               monthlyEntry.lolo = {
+                 count: monthData.count,
+                cost: monthData.cost,
+                //percentage: monthData.cost,
+                key:monthData.month,
+                name:monthData.month
+              };
+              break;
+            // case 'gateIn':
+            //   monthlyEntry.gateIn = {
+            //     count: monthData.count,
+            //     percentage: monthData.percentage,
+            //     key:monthData.key,
+            //     name:monthData.name
+            //   };
+            //   break;
+            // case 'gateOut':
+            //   monthlyEntry.gateOut = {
+            //     count: monthData.count,
+            //     percentage: monthData.percentage,
+            //     key:monthData.key,
+            //     name:monthData.name
+            //   };
+            //   break;
+            case 'repair':
+              monthlyEntry.repair = {
+                count: monthData.count,
+                cost: monthData.cost,
+                //percentage: monthData.cost,
+                key:monthData.month,
+                name:monthData.month
+              };
+              break;
+            case 'steaming':
+              monthlyEntry.steaming = {
+                count: monthData.count,
+                cost: monthData.cost,
+                //percentage: monthData.cost,
+                key:monthData.month,
+                name:monthData.month
+              };
+              break;
+            case 'residue':
+              monthlyEntry.residue = {
+                count: monthData.count,
+                cost: monthData.cost,
+                //percentage: monthData.cost,
+                key:monthData.month,
+                name:monthData.month
+              };
+              break;
+          }
+        });
+    });
+
+    // Rest of your code remains the same...
+    // Convert to array and sort by month if needed
+    const monthlyArray = Object.values(monthlyData).sort((a, b) => {
+      const monthIndexA = this.getMonthIndex(a.key!);
+      const monthIndexB = this.getMonthIndex(b.key!);
+      return monthIndexA - monthIndexB;
+    });
+
+    // Find highest and lowest for each process
+    const processExtremes: Record<string, {
+      highest: { key: string; value: number | undefined };
+      lowest: { key: string; value: number | undefined };
+    }> = {};
+
+    processData.forEach(process => {
+      const processName = process.name;
+      const values = monthlyArray
+        .map(item => {
+          let process:any = item[processName as keyof MonthlyProcessDataRevenue];
+          return{
+            key: item.key!,
+            value: process?.count,
+            percentage: process?.percentage,
+            name: process?.name
+          }
+          // key: item.key!,
+          // value: item[processName as keyof MonthlyProcessData]? //as number | undefined
+        })
+        .filter(item => item.value !== undefined && item.value > 0);
+
+      // const values = monthlyArray
+      // .map(item => ({
+      //   key: item.key,
+      //   value: item[processName as keyof MonthlyProcessData] as number | undefined
+      // }))
+      // .filter(item => item.value !== undefined && (item.value as number) > 0)as { month: string; value: number }[];
+
+      if (values.length > 0) {
+        const sorted = [...values].sort((a, b) => a.value! - b.value!);
+        
+        processExtremes[processName] = {
+          highest: sorted[sorted.length - 1],
+          lowest: sorted[0] // This will now be the smallest value > 0
+        };
+      } else {
+        // Handle case where no values > 0 exist
+        processExtremes[processName] = {
+          highest: { key: '', value: undefined },
+          lowest: { key: '', value: undefined }
+        };
+      }
+    });
+
+    return {
+      monthlyData: monthlyArray,
+      processExtremes
+    };
+  }
+
   static groupByMonthAndFindExtremes(data: ManagementReportYearlyInventory) {
     // Initialize a map to group by month with proper typing
     const monthlyData: Record<string, MonthlyProcessData> = {};
@@ -1033,6 +1207,94 @@ export class InventoryAnalyzer {
       processExtremes
     };
   }
+
+
+  static groupSalesMonthlyByDate(data: AdminReportMonthlySalesReport): GroupedByDate {
+      const grouped: GroupedByDate = {};
+    
+      // Group cleaning inventory
+      data.cleaning_monthly_sales?.result_per_day?.forEach(item => {
+        if (!grouped[item.date!]) {
+          grouped[item.date!] = { day: item.day! };
+        }
+  
+        grouped[item.date!].cleaning = item;
+      });
+    
+      // data.gate_monthly_sales?.result_per_day?.forEach(item => {
+      //   if (item.date && item.day) {
+      //     if (!grouped[item.date]) {
+      //       grouped[item.date] = {
+      //         day: item.day,
+      //       };
+      //     }
+      //     grouped[item.date].gate = item;
+      //   }
+      // });
+    
+      data.preinspection_monthly_sales?.result_per_day?.forEach(item => {
+        if (item.date && item.day) {
+          if (!grouped[item.date]) {
+            grouped[item.date] = {
+              day: item.day,
+            };
+          }
+          grouped[item.date].preinspection = item;
+        }
+      });
+  
+      data.residue_monthly_sales?.result_per_day?.forEach(item => {
+        if (item.date && item.day) {
+          if (!grouped[item.date]) {
+            grouped[item.date] = {
+              day: item.day,
+            };
+          }
+          grouped[item.date].residue = item;
+        }
+      });
+  
+      data.lolo_monthly_sales?.result_per_day?.forEach(item => {
+        if (item.date && item.day) {
+          if (!grouped[item.date]) {
+            grouped[item.date] = {
+              day: item.day,
+            };
+          }
+          grouped[item.date].lolo = item;
+        }
+      });
+  
+      // data.storage_monthly_revenue?.result_per_day?.forEach(item => {
+      //   if (item.date && item.day) {
+      //     if (!grouped[item.date]) {
+      //       grouped[item.date] = {
+      //         day: item.day,
+      //       };
+      //     }
+      //     grouped[item.date].storage = item;
+      //   }
+      // });
+    
+    
+      // Group repair inventory
+      data.repair_monthly_sales?.result_per_day?.forEach(item => {
+        if (!grouped[item.date!]) {
+          grouped[item.date!] = { day: item.day! };
+        }
+        grouped[item.date!].repair = item;
+      });
+    
+      // Group steaming inventory
+      data.steaming_monthly_sales?.result_per_day?.forEach(item => {
+        if (!grouped[item.date!]) {
+          grouped[item.date!] = { day: item.day! };
+        }
+        grouped[item.date!].steaming = item;
+      });
+    
+      return grouped;
+    }
 }
 
 export const GET_CLEANING_INVENTORY_REPORT = gql`
@@ -1811,7 +2073,7 @@ export class ReportDS extends BaseDataSource<any> {
       );
   }
 
-  searchAdminReportMonthlySales(monthlySalesRequest:any): Observable<AdminReportYearlyReport> {
+  searchAdminReportMonthlySales(monthlySalesRequest:any): Observable<AdminReportMonthlySalesReport> {
     this.loadingSubject.next(true);
     var first=this.first;
     return this.apollo
