@@ -44,6 +44,7 @@ import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { reportPreviewWindowDimension } from 'environments/environment';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
+import { ErrorDialogComponent } from '@shared/components/error-dialog/error-dialog.component';
 
 @Component({
   selector: 'app-revenue-yearly',
@@ -217,7 +218,7 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   monthList: string[] = [];
   //invTypes: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
   invTypesAll: string[] = ["ALL", "STEAMING", "CLEANING", "GATE", "REPAIR", "LOLO", "PREINSPECTION", "STORAGE", "RESIDUE"];
-  invTypes: string[] = ["ALL", "CLEANING", "REPAIR","STEAMING",  "RESIDUE"];
+  invTypes: string[] = ["ALL", "CLEANING", "REPAIR", "STEAMING", "RESIDUE"];
   repTypes: string[] = ["MONTH_WISE", "CUSTOMER_WISE"];
   repData: any;
 
@@ -369,7 +370,6 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     this.search(3);
   }
 
-
   search(report_type: number) {
     if (this.searchForm?.invalid) return;
     this.isGeneratingReport = true;
@@ -378,8 +378,6 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     const where: any = {};
     let reportType = "";
     //let processType=this.processType;
-
-
 
     var customerName: string = "";
    // var invTypes = this.invTypes.filter(v => v !== "ALL");
@@ -432,43 +430,32 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
     cond_counter++;
     //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
-
-
     this.lastSearchCriteria = where;
     this.performSearch(report_type, date, customerName, reportType, invTypes);
   }
 
-
-
-
   performSearch(reportType?: number, date?: string, customerName?: string, report_type?: string, invTypes?: string[]) {
-
-    // if(queryType==1)
-    // {
     this.subs.sink = this.reportDS.searchManagementReportRevenueYearlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
         this.ProcessYearlyReport(this.repData, date!, customerName!, report_type!, invTypes!);
       });
-
-
   }
 
-  
-   ZeroTransaction(data: ManagementReportYearlyRevenueItem): boolean {
-      var retval: boolean = true;
-      if (data) {
-        retval = ((data.cleaning_yearly_revenue?.average_count||0) == 0) &&
-          ((data.gate_yearly_revenue?.average_count||0) == 0) &&
-          ((data.lolo_yearly_revenue?.average_count||0) == 0) &&
-          ((data.preinspection_yearly_revenue?.average_count||0) == 0) &&
-          ((data.repair_yearly_revenue?.average_count||0) == 0) &&
-          ((data.residue_yearly_revenue?.average_count||0) == 0) &&
-          ((data.steam_yearly_revenue?.average_count||0) == 0) &&
-          ((data.storage_yearly_revenue?.average_count||0) == 0)
-      }
-      return retval;
+  ZeroTransaction(data: ManagementReportYearlyRevenueItem): boolean {
+    var retval: boolean = true;
+    if (data) {
+      retval = ((data.cleaning_yearly_revenue?.average_count || 0) == 0) &&
+        ((data.gate_yearly_revenue?.average_count || 0) == 0) &&
+        ((data.lolo_yearly_revenue?.average_count || 0) == 0) &&
+        ((data.preinspection_yearly_revenue?.average_count || 0) == 0) &&
+        ((data.repair_yearly_revenue?.average_count || 0) == 0) &&
+        ((data.residue_yearly_revenue?.average_count || 0) == 0) &&
+        ((data.steam_yearly_revenue?.average_count || 0) == 0) &&
+        ((data.storage_yearly_revenue?.average_count || 0) == 0)
     }
+    return retval;
+  }
 
 
   onPageEvent(event: PageEvent) {
@@ -570,34 +557,23 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   ProcessReportDailySummaryDetail(invType: string, date: string, report_type: number, queryType: number) {
     if (this.dailySumList.length === 0) return;
-
   }
 
   ProcessYearlyReport(repData: ManagementReportYearlyRevenueItem, date: string, customerName: string, report_type: string, invTypes: string[]) {
-
-
-
-    if (!this.ZeroTransaction(repData)) {
-
-      this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
-
-
-    }
-    else {
-      this.repData = [];
-      this.isGeneratingReport = false;
-    }
-
-
+    this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+    // if (!this.ZeroTransaction(repData)) {
+    //   this.onExportChart_r1(repData, date, customerName, report_type, invTypes);
+    // }
+    // else {
+    //   this.repData = [];
+    //   this.isGeneratingReport = false;
+    //   this.ShowWarningMessage();
+    // }
   }
-
-
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
-
-
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -614,7 +590,6 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
         date: date,
         repType: this.processType,
         customer: customerName
-
       },
 
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
@@ -646,8 +621,8 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
     const dialogRef = this.dialog.open(RevenueYearlySalesReportDetailsPdfComponent, {
       position: {
-       top: '-1999px',  // Move far above the screen
-       left: '-1999px'  // Move far to the left of the screen
+        top: '-1999px',  // Move far above the screen
+        left: '-1999px'  // Move far to the left of the screen
       },
       width: reportPreviewWindowDimension.portrait_width_rate,
       maxWidth: reportPreviewWindowDimension.portrait_maxWidth,
@@ -710,6 +685,25 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
   onTabFocused() {
     this.resetForm();
+  }
 
+  ShowWarningMessage() {
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ErrorDialogComponent, {
+      disableClose: true,
+      data: {
+        headerText: this.translatedLangText.WARNING,
+        messageText: [this.translatedLangText.NO_RESULT],
+        act: "warn"
+      },
+      direction: tempDirection
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }

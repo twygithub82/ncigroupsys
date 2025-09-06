@@ -36,7 +36,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 
-import { ManagementReportDS,ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
+import { ManagementReportDS, ManagementReportMonthlyRevenueItem } from 'app/data-sources/reports-management';
 import { YearlyReportDetailsPdfComponent } from 'app/document-template/pdf/admin-reports/yearly/details/yearly-details-pdf.component';
 import { RevenueMonthlySalesReportDetailsPdfComponent } from 'app/document-template/pdf/management-reports/monthly/revenue/revenue-sales-details-pdf.component';
 import { Utility } from 'app/utilities/utility';
@@ -215,8 +215,8 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
- //invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
-  invTypes:string[] = ["ALL", "CLEANING",  "REPAIR","STEAMING", "RESIDUE"];
+  //invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"];
+  invTypes: string[] = ["ALL", "CLEANING", "REPAIR", "STEAMING", "RESIDUE"];
 
   constructor(
     public httpClient: HttpClient,
@@ -365,8 +365,6 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
     const where: any = {};
     //let processType=this.processType;
 
-
-
     var customerName: string = "";
     var invTypes = this.invTypes.filter(v => v !== "ALL");
     where.revenue_type = invTypes;
@@ -401,24 +399,16 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
     cond_counter++;
     //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
 
-
     this.lastSearchCriteria = where;
     this.performSearch(report_type, date, customerName, invTypes);
   }
 
-
-
-
   performSearch(reportType?: number, date?: string, customerName?: string, invTypes?: string[]) {
-
-    // if(queryType==1)
-    // {
     this.subs.sink = this.reportDS.searchManagementReportRevenueMonthlyReport(this.lastSearchCriteria)
       .subscribe(data => {
         this.repData = data;
         this.ProcessReport(this.repData, date!, reportType!, customerName!, invTypes!);
       });
-
   }
 
   onPageEvent(event: PageEvent) {
@@ -521,31 +511,21 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   ProcessReport(repData: any, date: string, report_type: number, customerName: string, invTypes: string[]) {
+    this.onExportChart_r1(repData, date, customerName, invTypes);
+    // if (repData) {
+    //   if (!this.ZeroTransaction(repData)) {
+    //     this.onExportChart_r1(repData, date, customerName, invTypes);
 
-
-
-    if (repData) {
-
-      if (!this.ZeroTransaction(repData)) {
-
-      //this.onExportDetail(repData, date, customerName, report_type, invTypes);
-       this.onExportChart_r1(repData, date, customerName, invTypes);
-
-        }
-        else {
-          this.repData = [];
-          this.isGeneratingReport = false;
-        }
-      //if (report_type == 1) {
-      
-      //}
-    }
-    else {
-      this.sotList = [];
-      this.isGeneratingReport = false;
-    }
-
-
+    //   }
+    //   else {
+    //     this.repData = [];
+    //     this.isGeneratingReport = false;
+    //   }
+    // }
+    // else {
+    //   this.sotList = [];
+    //   this.isGeneratingReport = false;
+    // }
   }
 
 
@@ -663,18 +643,18 @@ export class RevenueMonthlyAdminReportComponent extends UnsubscribeOnDestroyAdap
 
   }
   ZeroTransaction(data: ManagementReportMonthlyRevenueItem): boolean {
-         var retval: boolean = true;
-         if (data) {
-           retval = ((data.cleaning_monthly_revenue?.average_cost||0) == 0) &&
-             ((data.gate_monthly_revenue?.average_cost||0) == 0) &&
-             ((data.lolo_monthly_revenue?.average_cost||0) == 0) &&
-             ((data.preinspection_monthly_revenue?.average_cost||0) == 0) &&
-             ((data.repair_monthly_revenue?.average_cost||0) == 0) &&
-             ((data.residue_monthly_revenue?.average_cost||0) == 0) &&
-             ((data.steam_monthly_revenue?.average_cost||0) == 0) &&
-             ((data.storage_monthly_revenue?.average_cost||0) == 0)
-         }
-         return retval;
-       }
+    var retval: boolean = true;
+    if (data) {
+      retval = ((data.cleaning_monthly_revenue?.average_cost || 0) == 0) &&
+        ((data.gate_monthly_revenue?.average_cost || 0) == 0) &&
+        ((data.lolo_monthly_revenue?.average_cost || 0) == 0) &&
+        ((data.preinspection_monthly_revenue?.average_cost || 0) == 0) &&
+        ((data.repair_monthly_revenue?.average_cost || 0) == 0) &&
+        ((data.residue_monthly_revenue?.average_cost || 0) == 0) &&
+        ((data.steam_monthly_revenue?.average_cost || 0) == 0) &&
+        ((data.storage_monthly_revenue?.average_cost || 0) == 0)
+    }
+    return retval;
+  }
 
 }

@@ -515,9 +515,6 @@ export class ManHourYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
   }
 
   ProcessYearlyReport(repData: AdminReportMonthlyReport, date: string, report_type: number, customerName: string) {
-
-
-
     if (repData) {
       if (report_type == 1) {
         this.onExportChart_r1(repData, date, customerName);
@@ -525,17 +522,12 @@ export class ManHourYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
       else if (report_type == 2) {
         this.onExportSummary(repData, date, customerName);
       }
-
     }
     else {
       this.sotList = [];
       this.isGeneratingReport = false;
     }
-
-
   }
-
-
 
   onExportSummary(repData: AdminReportMonthlyReport, date: string, customerName: string) {
     //this.preventDefault(event);
@@ -644,5 +636,4 @@ export class ManHourYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
     return bAllow;
 
   }
-
 }
