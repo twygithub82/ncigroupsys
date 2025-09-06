@@ -142,7 +142,7 @@ export class FormDialogComponent {
     this.pcForm = this.createCleaningFormula();
     this.fmlDS = new CleaningFormulaDS(this.apollo);
     this.action = data.action!;
-    
+
     const a = (!!this.selectedItem?.guid && this.isAllowEdit());
     const b = (!this.selectedItem?.guid && this.isAllowAdd());
 
@@ -192,6 +192,7 @@ export class FormDialogComponent {
   }
 
   save() {
+    this.pcForm?.get('description')?.setErrors(null);
     if (!this.pcForm?.valid) return;
     let cf: CleaningFormulaItem = new CleaningFormulaItem(this.selectedItem);
     Utility.removeTypenameFields(cf)
@@ -226,17 +227,7 @@ export class FormDialogComponent {
           });
         }
       } else {
-        var allowUpdate = false;
-        // if (allowUpdate) {
-        //   if (this.selectedItem.guid) {
-        //     this.fmlDS.updateCleaningFormula(cf).subscribe(result => {
-        //       console.log(result)
-        //       this.handleSaveSuccess(result?.data?.updateCleaningFormula);
-        //     });
-        //   }
-        // } else {
-        //   this.pcForm?.get('description')?.setErrors({ existed: true });
-        // }
+        this.pcForm?.get('description')?.setErrors({ existed: true });
       }
     });
   }

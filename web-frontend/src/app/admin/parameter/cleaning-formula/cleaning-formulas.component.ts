@@ -40,7 +40,7 @@ import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { ModulePackageService } from 'app/services/module-package.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { maxLengthDisplaySingleSelectedItem, pageSizeInfo, Utility } from 'app/utilities/utility';
+import { Utility, maxLengthDisplaySingleSelectedItem, pageSizeInfo } from 'app/utilities/utility';
 import { Subscription } from 'rxjs';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -167,7 +167,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   hasPreviousPage = false;
 
   constructor(
-    
     public httpClient: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -182,6 +181,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);
   }
+  
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;
@@ -208,16 +208,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
 
   initializeValueChanges() {
     var searchObj = this.searchForm;
-    // searchObj?.get("name")!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     this.fmlDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
-    //       this.nameList = data.map(i => i.name || '');
-    //     });
-    //   })
-    // ).subscribe();
-
     searchObj?.get("description")!.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
@@ -322,15 +312,9 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       where.name = { contains: this.searchForm!.value['name'] };
     }
 
-
     if (this.selectedDescs.length > 0) {
       where.description = { in: this.selectedDescs };
     }
-
-
-    // if (this.searchForm!.value['description']) {
-    //   where.description = { contains: this.searchForm!.value['description'] };
-    // }
 
     if (this.searchForm!.value['min_duration']) {
       where.duration = { gte: Number(this.searchForm!.value['min_duration']) }
@@ -494,9 +478,6 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       description: '',
     });
     this.selectedDescs = [];
-    // this.categoryControl.reset();
-    // this.hazardLevelControl.reset();
-    // this.banTypeControl.reset();
   }
 
   handleDelete(event: Event, row: any,): void {
@@ -555,12 +536,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   selectedDescs: any[] = [];
   description_itemSelected(row: any): boolean {
     var itm = this.selectedDescs;
-    var retval: boolean =this.selectedDescs.includes(row);
-    //const index = itm.findIndex(c => c === row);
-//this.cdRef.detectChanges(); // Force update
-   // retval = (index >= 0);
-  console.log('Checked for', row, ':', retval);
-   // retval = (index >= 0);
+    var retval: boolean = this.selectedDescs.includes(row);
     return retval;
   }
 
@@ -572,13 +548,11 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     }
     else if (itm?.length == 1) {
       const maxLength = maxLengthDisplaySingleSelectedItem;
-      const value=`${itm[0]}`;
+      const value = `${itm[0]}`;
       retval = `${value}`;
     }
     return retval;
   }
-
-
 
   description_removeAllSelected(): void {
     this.selectedDescs = [];
@@ -586,100 +560,40 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.AutoSearch();
   }
 
-   checkboxCalled:boolean=false;
-  description_selected(event: MatAutocompleteSelectedEvent , checked:boolean=true): void {
-      var itm = this.selectedDescs;
-        var cnt = this.searchForm?.get('description');
-        var elmInput = this.descInput;
-        
-        const val = event.option.value;
-        const index = itm.findIndex(c => c === val);
-        if (!(index >= 0)) {
-          itm.push(val);
-          // if (Utility.IsAllowAutoSearch())this.search();
-        }
-        else {
-          itm.splice(index, 1);
+  checkboxCalled: boolean = false;
+  description_selected(event: MatAutocompleteSelectedEvent, checked: boolean = true): void {
+    var itm = this.selectedDescs;
+    var cnt = this.searchForm?.get('description');
+    var elmInput = this.descInput;
 
-           //if (Utility.IsAllowAutoSearch()) this.search();
-        }
-    
-        if (elmInput) {
-          elmInput.nativeElement.value = '';
-          cnt?.setValue('');
-        }
+    const val = event.option.value;
+    const index = itm.findIndex(c => c === val);
+    if (!(index >= 0)) {
+      itm.push(val);
+    } else {
+      itm.splice(index, 1);
+    }
 
-      this.AutoSearch();
+    if (elmInput) {
+      elmInput.nativeElement.value = '';
+      cnt?.setValue('');
+    }
 
-  //   // if(event.source===undefined) 
-  //   // { 
-  //   //   var itm = this.selectedDescs;
-  //   //    const val = event.option.value;
-  //   //      const index = itm.findIndex(c => c === val);
-  //   //    if(checked && !(index >= 0))
-  //   //    {
-  //   //       itm.push(val);
-
-  //   //    }
-  //   //    else
-  //   //    {
-  //   //      itm.splice(index, 1);
-  //   //    }
-  //   //     //this.checkboxCalled=false;
-  //   //     // this.resetDescriptionValue();
-  //   //     return;
-  //   // }
-  //   // this.checkboxCalled = (event.source===undefined);
-  //   var itm = this.selectedDescs;
-  //   var cnt = this.searchForm?.get('description');
-   
-  //   const val = event.option.value;
-  //   const index = itm.findIndex(c => c === val);
-  //   var dataChanged=false;
-  //   if (!(index >= 0)) {
-  //     itm.push(val);
-  //     dataChanged=true;
-  //     // if (Utility.IsAllowAutoSearch())
-  //     //   this.search();
-  //   }
-  //   else {
-  //     itm.splice(index, 1);
-  //     dataChanged=true;
-     
-  //   }
-  //   //  this.resetDescriptionValue();
-    
-
-  //   if (Utility.IsAllowAutoSearch() && dataChanged)  
-  //     {
-         
-  //       setTimeout(() => {
-  //         this.search();
-         
-  //       })
-        
-  //     }
-  //  //  if (Utility.IsAllowAutoSearch() && dataChanged)  this.search();
-  //   // this.updateFormControl();
-  //   //this.customerCodeControl.setValue(null);
-  //   //this.pcForm?.patchValue({ customer_code: null });
+    this.AutoSearch();
   }
 
-  resetDescriptionValue()
-  {
-     var elmInput = this.descInput;
+  resetDescriptionValue() {
+    var elmInput = this.descInput;
     if (elmInput) {
-            elmInput.nativeElement.value = '';
-           this.searchForm?.patchValue({
-            description: ''
-           });
-          }
+      elmInput.nativeElement.value = '';
+      this.searchForm?.patchValue({
+        description: ''
+      });
+    }
   }
 
   description_onCheckboxClicked(row: any) {
-    // const checkbox = event.target as HTMLInputElement;
-    // const isChecked = checkbox.checked;
-    const fakeEvent = { option: { value: row} } as MatAutocompleteSelectedEvent;
+    const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.description_selected(fakeEvent);
 
   }
@@ -711,46 +625,42 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_FORMULA_DELETE']);
   }
 
-  AutoSearch()
-  {
-    if(Utility.IsAllowAutoSearch())  
-      {
-         this.search();
-      
-      }
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
+    }
   }
 
-    onSortChange(event: Sort): void {
-          const { active: field, direction } = event;
-      
-          // reset if no direction
-          if (!direction) {
-            this.lastOrderBy = null;
-            return this.search();
-          }
-      
-          // convert to GraphQL enum (uppercase)
-          const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-          // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-      
-          switch (field) {
-            case 'update_date':
-              this.lastOrderBy = {
-                  update_dt: dirEnum,
-                  create_dt: dirEnum,
-              };
-              break;
-    
-            case 'category_description':
-              this.lastOrderBy = {
-                  description: dirEnum,
-              };
-              break;
-          
-            default:
-              this.lastOrderBy = null;
-          }
-      
-          this.search();
-        }
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+
+    switch (field) {
+      case 'update_date':
+        this.lastOrderBy = {
+          update_dt: dirEnum,
+          create_dt: dirEnum,
+        };
+        break;
+
+      case 'category_description':
+        this.lastOrderBy = {
+          description: dirEnum,
+        };
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
 }
