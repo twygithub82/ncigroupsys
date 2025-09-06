@@ -32,10 +32,10 @@ import { autoTable, Styles } from 'jspdf-autotable';
 
 export interface DialogData {
   repData: DailyQCDetail[],
-  date:string,
-  repType:string,
-  customer:string,
-  team:string
+  date: string,
+  repType: string,
+  customer: string,
+  team: string
 }
 @Component({
   selector: 'app-daily-qc-detail-pdf',
@@ -243,23 +243,23 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    DAILY_QC_DETAIL_REPORT:'COMMON-FORM.DAILY-QC-DETAIL-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    CODE:'COMMON-FORM.CODE',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    QC_BY:'COMMON-FORM.QC-BY',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST',
-    REPORTED_BY:'COMMON-FORM.REPORTED-BY',
-    TEAM:'COMMON-FORM.TEAM',
-    QC_DATE:'COMMON-FORM.QC-DATE',
-    SIGN:'COMMON-FORM.SIGN',
-    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    MAN_HOUR:'COMMON-FORM.MAN-HOUR',
-    MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
-    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
-    S_N:'COMMON-FORM.S_N',
+    DAILY_QC_DETAIL_REPORT: 'COMMON-FORM.DAILY-QC-DETAIL-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    CODE: 'COMMON-FORM.CODE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    QC_BY: 'COMMON-FORM.QC-BY',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
+    REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    SIGN: 'COMMON-FORM.SIGN',
+    VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
+    MAN_HOUR: 'COMMON-FORM.MAN-HOUR',
+    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -309,10 +309,10 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: DailyQCDetail[];
-  date?:string;
-  repType?:string;
-  team?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  team?: string;
+  customer?: string;
   index: number = 0;
   // date:string='';
   // invType:string='';
@@ -352,10 +352,10 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    this.date= this.data.date;
-    this.repType=this.data.repType;
-    this.customer=this.data.customer;
-    this.team=this.data.team;
+    this.date = this.data.date;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
+    this.team = this.data.team;
     this.onDownloadClick();
 
   }
@@ -365,7 +365,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -569,13 +569,13 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
@@ -600,7 +600,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 6;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -609,17 +609,17 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATE_DATE,
-      this.translatedLangText.REPAIR_TYPE,this.translatedLangText.MAN_HOUR, this.translatedLangText.MATERIAL_COST,
-      this.translatedLangText.TOTAL_COST,this.translatedLangText.QC_BY
-      
+      this.translatedLangText.CODE, this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATE_DATE,
+      this.translatedLangText.REPAIR_TYPE, this.translatedLangText.MAN_HOUR, this.translatedLangText.MATERIAL_COST,
+      this.translatedLangText.TOTAL_COST, this.translatedLangText.QC_BY
+
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 15,minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -627,7 +627,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      
+
     };
 
     // Define headStyles with valid fontStyle
@@ -652,13 +652,13 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   var dtstr=await Utility.GetReportGeneratedDate(this.translate);
-    await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
+    var dtstr = await Utility.GetReportGeneratedDate(this.translate);
+    await Utility.AddTextAtRightCornerPage(pdf, dtstr, pageWidth, leftMargin, rightMargin, startY, 9);
     var approvalDt = `${this.translatedLangText.QC_DATE}: ${this.date}`;
-    await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);    
-       startY+=3;
+    await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);
+    startY += 3;
 
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
@@ -670,29 +670,29 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // }
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
-    let totalHours=0;
-    let totalMaterialCost=0;
-    for (let n = 0; n < (this.repData?.length||0); n++) {
+    let totalHours = 0;
+    let totalMaterialCost = 0;
+    for (let n = 0; n < (this.repData?.length || 0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.repData?.[n];
       const repairCost = itm?.repair_cost || 0;
-      const materialCost = itm?.appv_material_cost||0;
-      const appHour = itm?.appv_hour||0;
+      const materialCost = itm?.appv_material_cost || 0;
+      const appHour = itm?.appv_hour || 0;
       totalRepairCost += repairCost; // Add to the total
       totalMaterialCost += materialCost; // Add to the total
-      totalHours+=appHour;
-        data.push([
-          (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no ||"",this.displayDate(itm?.estimate_date)||'',
-          this.getRepairOption(itm?.repair_type||""),Utility.formatNumberDisplay(itm?.appv_hour),Utility.formatNumberDisplay(itm?.appv_material_cost),
-          Utility.formatNumberDisplay(itm?.repair_cost),itm?.qc_by
-        ]);
+      totalHours += appHour;
+      data.push([
+        (++idx).toString(), itm?.tank_no || "", itm?.code || "", itm?.estimate_no || "", this.displayDate(itm?.estimate_date) || '',
+        this.getRepairOption(itm?.repair_type || ""), Utility.formatNumberDisplay(itm?.appv_hour), Utility.formatNumberDisplay(itm?.appv_material_cost),
+        Utility.formatNumberDisplay(itm?.repair_cost), itm?.qc_by
+      ]);
     }
 
 
-    data.push([this.translatedLangText.TOTAL,"","","","","",Utility.formatNumberDisplay(totalHours),
-            Utility.formatNumberDisplay(totalMaterialCost),Utility.formatNumberDisplay(totalRepairCost),""]);
-    
+    data.push([this.translatedLangText.TOTAL, "", "", "", "", "", Utility.formatNumberDisplay(totalHours),
+    Utility.formatNumberDisplay(totalMaterialCost), Utility.formatNumberDisplay(totalRepairCost), ""]);
+
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
     // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
@@ -707,7 +707,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
       head: headers,
       body: data,
       startY: startY,
-       margin:{left: leftMargin, right: rightMargin},
+      margin: { left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -723,22 +723,22 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
-        let colSpan:number=6;
+        let colSpan: number = 6;
         let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
         // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
         // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
-        
+
         //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        if(data.row.index==totalRowIndex){
+        if (data.row.index == totalRowIndex) {
           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
+          data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
           if (data.column.index === 0) {
             data.cell.colSpan = colSpan;  // Merge 4 columns into one
             data.cell.styles.halign = 'right'; // Center text horizontally
           }
         }
-        if ((data.row.index==totalRowIndex ) && data.column.index > 0 && data.column.index < colSpan) {
+        if ((data.row.index == totalRowIndex) && data.column.index > 0 && data.column.index < colSpan) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
@@ -759,13 +759,12 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
       },
     });
 
-    var gap=7;
+    var gap = 7;
 
-    if(lastTableFinalY+ topMargin+bottomMargin+ (gap*4.5)> pageHeight)
-    {
-        pdf.addPage();
-        const pageCount = pdf.getNumberOfPages();
-        pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
+      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
     }
 
     const totalPages = pdf.getNumberOfPages();
@@ -774,15 +773,14 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     pagePositions.forEach(({ page, x, y }) => {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
-     pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
       pdf.setFontSize(8);
       pdf.setPage(page);
       var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 
- 
 
     //Sign , verified tables-------------start--------------
     // var content:string[]=[];
@@ -802,10 +800,10 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     // content.push(str.padEnd(maxSpace," "));
     // values.push(": "+`${this.team}`);
     // var startX=leftMargin;
-    
+
     // startY = pageHeight-(bottomMargin+10);
     // var buffer = maxSpace *3;
-   
+
     // pdf.setPage(pdf.getNumberOfPages());
     // pdf.setLineWidth(0.01);
     // pdf.setLineDashPattern([1,1], 1);
@@ -851,7 +849,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     this.dialogRef.close();
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -956,8 +954,8 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-     title = `${this.translatedLangText.DAILY_QC_DETAIL_REPORT}`
+    var title: string = '';
+    title = `${this.translatedLangText.DAILY_QC_DETAIL_REPORT}`
     return `${title}`
   }
 
@@ -994,6 +992,6 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     return retval;
 
   }
- 
+
 }
 

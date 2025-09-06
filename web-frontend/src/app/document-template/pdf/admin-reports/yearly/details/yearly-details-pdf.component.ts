@@ -685,7 +685,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 9, 12);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 12);
 
     if (this.customer) {
       const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`
