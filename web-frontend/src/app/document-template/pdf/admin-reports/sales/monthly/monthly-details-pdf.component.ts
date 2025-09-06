@@ -689,6 +689,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
     var repData: any = this.data.repData;
     const reportTitle = this.GetReportTitle();
+    const NoTankTitle = this.translatedLangText.NO_OF_TANKS;
     const vAlign = "bottom"
     const headers = [[
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
@@ -710,17 +711,17 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     ],
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      ...(showPreinspectSurcharge ? [this.translatedLangText.TANK, this.translatedLangText.COST] : []), // Sub-headers for preinspection
-      ...(showLoloSurcharge ? [this.translatedLangText.TANK, this.translatedLangText.COST] : []), // Sub-headers for LOLO
-      ...(showStorageSurcharge ? [this.translatedLangText.TANK, this.translatedLangText.COST] : []), // Sub-headers for storage
+      ...(showPreinspectSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for preinspection
+      ...(showLoloSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for LOLO
+      ...(showStorageSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for storage
       ...(showGateSurcharge ? [
-        this.translatedLangText.TANK, this.translatedLangText.COST,
+        NoTankTitle, this.translatedLangText.COST,
         //  this.translatedLangText.LIFT_ON, this.translatedLangText.LIFT_OFF
       ] : []), // Sub-headers for GATE_SURCHARGE
-      ...(showSteamSurcharge ? [this.translatedLangText.TANK, this.translatedLangText.COST] : []), // Sub-headers for STEAM
-      ...(showResidueSurcharge ? [this.translatedLangText.TANK, this.translatedLangText.COST] : []), // Sub-headers for residue
-      ...(showCleanSurcharge ? [this.translatedLangText.TANK, this.translatedLangText.COST] : []), // Sub-headers for RESIDUE
-      ...(showRepairSurcharge ? [this.translatedLangText.TANK, this.translatedLangText.COST] : []), // Sub-headers for CLEANING
+      ...(showSteamSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for STEAM
+      ...(showResidueSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for residue
+      ...(showCleanSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for RESIDUE
+      ...(showRepairSurcharge ? [NoTankTitle, this.translatedLangText.COST] : []), // Sub-headers for CLEANING
       // this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for REPAIR
     ]];
 

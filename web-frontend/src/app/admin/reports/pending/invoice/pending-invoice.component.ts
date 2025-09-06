@@ -859,6 +859,17 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if (c.status_cv != 'NO_ACTION') 
           if(!['NO_ACTION', 'KIV','QC_COMPLETED'].includes(c.status_cv!))
             {
+              var bProcess=false;
+              var cutoff_dt = Number( Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) ) ;
+             if(((c.approve_by=="system" && ["QC_COMPLETED","COMPLETED"].includes(c.status_cv!))||
+             (c.approve_by!="system" && ["QC_COMPLETED","COMPLETED","APPROVED","JOB_IN_PROGRESS","ASSIGNED","PARTIAL_ASSIGNED"].includes(c.status_cv!))
+             )&& cutoff_dt>=(c.approve_dt||0))  
+             {
+                bProcess=true;
+             }
+            
+             if(!bProcess) return;
+
             let total = 0;
             let cost = this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);
             total = (this.stmDS.getApprovalTotalWithLabourCost(c?.steaming_part, cost).total_mat_cost || 0);
