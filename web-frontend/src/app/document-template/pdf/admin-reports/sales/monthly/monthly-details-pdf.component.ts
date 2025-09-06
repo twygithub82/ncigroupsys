@@ -789,15 +789,15 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     var series: SeriesItem[] = [];
     var index: number = 1;
     var prcss: string[] = [
-      ...(showGateSurcharge ? [
-        this.translatedLangText.GATE_IN,
-        this.translatedLangText.GATE_OUT,
-        this.translatedLangText.LIFT_ON,
-        this.translatedLangText.LIFT_OFF,
-      ] : []),
+      // ...(showGateSurcharge ? [
+      //   this.translatedLangText.GATE_IN,
+      //   this.translatedLangText.GATE_OUT,
+      //   this.translatedLangText.LIFT_ON,
+      //   this.translatedLangText.LIFT_OFF,
+      // ] : []),
       ...(showPreinspectSurcharge ? [this.translatedLangText.PREINSPECTION] : []),
       ...(showLoloSurcharge ? [this.translatedLangText.LOLO] : []),
-      ...(showStorageSurcharge ? [this.translatedLangText.STORAGE] : []),
+      // ...(showStorageSurcharge ? [this.translatedLangText.STORAGE] : []),
       ...(showSteamSurcharge ? [this.translatedLangText.STEAM] : []),
       ...(showResidueSurcharge ? [this.translatedLangText.RESIDUE] : []),
       ...(showCleanSurcharge ? [this.translatedLangText.CLEANING] : []),
@@ -824,17 +824,17 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       var entry:any = grpData[date];
       data.push([
         (++idx).toString(), date, entry.day,
-        ...(showGateSurcharge ? [
-          Utility.formatNumberDisplay(entry.gate?.count || ''), Utility.formatNumberDisplay(entry.gate?.cost || ''),
-          // Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count),Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
-        ] : []),
-        ...(showPreinspectSurcharge ? [Utility.formatNumberDisplay(entry.preinspection?.count || ''), Utility.formatNumberDisplay(entry.preinspection?.cost || '')] : []),
-        ...(showLoloSurcharge ? [Utility.formatNumberDisplay(entry.lolo?.count || ''), Utility.formatNumberDisplay(entry.lolo?.cost || '')] : []),
-        ...(showStorageSurcharge ? [Utility.formatNumberDisplay(entry.storage?.count || ''), Utility.formatNumberDisplay(entry.storage?.cost || '')] : []),
-        ...(showSteamSurcharge ? [Utility.formatNumberDisplay(entry.steaming?.count || ''), Utility.formatNumberDisplay(entry.steaming?.cost || '')] : []),
-        ...(showResidueSurcharge ? [Utility.formatNumberDisplay(entry.residue?.count || ''), Utility.formatNumberDisplay(entry.residue?.cost || '')] : []),
-        ...(showCleanSurcharge ? [Utility.formatNumberDisplay(entry.cleaning?.count || ''), Utility.formatNumberDisplay(entry.cleaning?.cost || '')] : []),
-        ...(showRepairSurcharge ? [Utility.formatNumberDisplay(entry.repair?.count || ''), Utility.formatNumberDisplay(entry.repair?.cost || '')] : []),
+        // ...(showGateSurcharge ? [
+        //   Utility.formatNumberDisplay(entry.gate?.count || ''), Utility.formatNumberDisplay(entry.gate?.cost || ''),
+        //   // Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count),Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
+        // ] : []),
+        ...(showPreinspectSurcharge ? [(entry.preinspection?.count || ''), Utility.formatNumberDisplay(entry.preinspection?.cost || '')] : []),
+        ...(showLoloSurcharge ? [(entry.lolo?.count || ''), Utility.formatNumberDisplay(entry.lolo?.cost || '')] : []),
+        // ...(showStorageSurcharge ? [Utility.formatNumberDisplay(entry.storage?.count || ''), Utility.formatNumberDisplay(entry.storage?.cost || '')] : []),
+        ...(showSteamSurcharge ? [(entry.steaming?.count || ''), Utility.formatNumberDisplay(entry.steaming?.cost || '')] : []),
+        ...(showResidueSurcharge ? [(entry.residue?.count || ''), Utility.formatNumberDisplay(entry.residue?.cost || '')] : []),
+        ...(showCleanSurcharge ? [(entry.cleaning?.count || ''), Utility.formatNumberDisplay(entry.cleaning?.cost || '')] : []),
+        ...(showRepairSurcharge ? [(entry.repair?.count || ''), Utility.formatNumberDisplay(entry.repair?.cost || '')] : []),
         // Utility.formatNumberDisplay(total)
       ]);
 
@@ -927,23 +927,23 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       //   // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
       // ] : []),
       ...(showPreinspectSurcharge ? [
-        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.total_count || ''),
+       (this.repData?.preinspection_monthly_sales?.total_count || ''),
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.total_cost || '')
       ] : []),
-      ...(showLoloSurcharge ? [Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_count || ''),
+      ...(showLoloSurcharge ? [(this.repData?.lolo_monthly_sales?.total_count || ''),
       Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.total_cost || '')
       ] : []),
       // ...(showStorageSurcharge ? [Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_count || ''),
       // Utility.formatNumberDisplay(this.repData?.storage_monthly_revenue?.total_cost || '')
       // ] : []),
-      ...(showSteamSurcharge ? [Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_count || ''),
+      ...(showSteamSurcharge ? [(this.repData?.steaming_monthly_sales?.total_count || ''),
       Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.total_cost || '')] : []),
-      ...(showResidueSurcharge ? [Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_count || ''),
+      ...(showResidueSurcharge ? [(this.repData?.residue_monthly_sales?.total_count || ''),
       Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.total_cost || '')
       ] : []),
-      ...(showCleanSurcharge ? [Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_count || ''),
+      ...(showCleanSurcharge ? [(this.repData?.cleaning_monthly_sales?.total_count || ''),
       Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.total_cost || '')] : []),
-      ...(showRepairSurcharge ? [Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_count || ''),
+      ...(showRepairSurcharge ? [(this.repData?.repair_monthly_sales?.total_count || ''),
       Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.total_cost || '')] : []),
       //Utility.formatNumberDisplay(total_all_cost)
     ]);
@@ -958,20 +958,20 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.average_count || ''),
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.average_cost || '')
       ] : []),
-      ...(showLoloSurcharge ? [Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_count || ''),
+      ...(showLoloSurcharge ? [(this.repData?.lolo_monthly_sales?.average_count || ''),
       Utility.formatNumberDisplay(this.repData?.lolo_monthly_sales?.average_cost || '')
       ] : []),
       // ...(showStorageSurcharge ? [Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_count || ''),
       // Utility.formatNumberDisplay(this.repData?.steam_monthly_revenue?.average_cost || '')
       // ] : []),
-      ...(showSteamSurcharge ? [Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_count || ''),
+      ...(showSteamSurcharge ? [(this.repData?.steaming_monthly_sales?.average_count || ''),
       Utility.formatNumberDisplay(this.repData?.steaming_monthly_sales?.average_cost || '')] : []),
-      ...(showResidueSurcharge ? [Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_count || ''),
+      ...(showResidueSurcharge ? [(this.repData?.residue_monthly_sales?.average_count || ''),
       Utility.formatNumberDisplay(this.repData?.residue_monthly_sales?.average_cost || '')
       ] : []),
-      ...(showCleanSurcharge ? [Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_count || ''),
+      ...(showCleanSurcharge ? [(this.repData?.cleaning_monthly_sales?.average_count || ''),
       Utility.formatNumberDisplay(this.repData?.cleaning_monthly_sales?.average_cost || '')] : []),
-      ...(showRepairSurcharge ? [Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_count || ''),
+      ...(showRepairSurcharge ? [(this.repData?.repair_monthly_sales?.average_count || ''),
       Utility.formatNumberDisplay(this.repData?.repair_monthly_sales?.average_cost || '')] : []),
     ]);
 
