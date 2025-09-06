@@ -210,8 +210,9 @@
                     <mat-cell mat-cell *matCellDef="let row"
                       [ngClass]="'tbl-col-width-per-1-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                       <span class="mobile-tab-label">{{translatedLangText.COST}}:</span>
-                      {{row.net_cost}}
+                      <!-- {{row.net_cost}} -->
                       <!-- <span class="dollar-sign">$</span><span>{{row.net_cost}}</span> -->
+                       {{parse2Decimal(row.total_cost)}}
                     </mat-cell>
                   </ng-container>
                   <ng-container matColumnDef="status_cv">

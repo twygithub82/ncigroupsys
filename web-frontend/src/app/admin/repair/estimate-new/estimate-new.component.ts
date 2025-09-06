@@ -1394,7 +1394,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   }
 
   canEdit() {
-    return ((!this.repairItem?.guid && this.isAllowAdd()) || (!!this.repairItem?.guid && this.isAllowEdit())) && this.repairDS.canAmend(this.repairItem);
+    return ((!this.repairItem?.guid && this.isAllowAdd()) || (!!this.repairItem?.guid && this.isAllowEdit())) && this.repairDS.canUpdate(this.repairItem);
   }
 
   isAllowEdit() {
