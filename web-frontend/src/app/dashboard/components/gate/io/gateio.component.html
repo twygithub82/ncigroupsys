@@ -1,38 +1,37 @@
- <div class="card-container info-box8">
-    <i class="material-symbols-outlined bg-blue card1-icon"> expand</i>
-    <div class="card-box">
-      <div class="card-icon icon-blue">
-        <i class="material-icons">vertical_align_bottom</i>
-      </div>
-        @if (sotDS.loading$ | async) {
-        <div class="tbl-spinner">
-          <mat-progress-spinner color="primary" [diameter]="20" mode="indeterminate">
-          </mat-progress-spinner>
-        </div>
-        }
-        @else if (!(sotDS.loading$ | async)) {
-           <div [ngClass]="blinkClass_InGate" class="card-number">{{result_gate_in}}</div>
-          
-        } 
-      <!-- <div class="card-number">85,246</div> -->
-      <div class="card-label">{{this.translatedLangText.GATE_IN}}</div>
-    </div>    
-    <div class="card-separator"></div>
-    <div class="card-box">
-      <div class="card-icon icon-green">
-        <i class="material-icons">vertical_align_top</i>
-      </div>
-        @if (sotDS.loading$ | async) {
-        <div class="tbl-spinner">
-          <mat-progress-spinner color="primary" [diameter]="20" mode="indeterminate">
-          </mat-progress-spinner>
-        </div>
-        }
-        @else if (!(sotDS.loading$ | async)) {
-           <div [ngClass]="blinkClass_OutGate" class="card-number">{{result_gate_out}}</div>
-        } 
-      
-      <div class="card-label">{{this.translatedLangText.GATE_OUT}}</div>
+<div class="card-container info-box8">
+  <i class="material-symbols-outlined bg-blue card1-icon"> expand</i>
+  <div class="card-box">
+    <div class="card-icon icon-blue">
+      <i class="material-icons">vertical_align_bottom</i>
     </div>
-   
+    @if (sotDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="20" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
+    @else if (!(sotDS.loading$ | async)) {
+    <div [ngClass]="blinkClass_InGate" class="card-number">{{result_gate_in}}</div>
+
+    }
+    <!-- <div class="card-number">85,246</div> -->
+    <div class="card-label">{{this.translatedLangText.GATE_IN}}</div>
   </div>
+  <div class="card-separator"></div>
+  <div class="card-box">
+    <div class="card-icon icon-green">
+      <i class="material-icons">vertical_align_top</i>
+    </div>
+    @if (sotDS.loading$ | async) {
+    <div class="tbl-spinner">
+      <mat-progress-spinner color="primary" [diameter]="20" mode="indeterminate">
+      </mat-progress-spinner>
+    </div>
+    }
+    @else if (!(sotDS.loading$ | async)) {
+    <div [ngClass]="blinkClass_OutGate" class="card-number">{{result_gate_out}}</div>
+    }
+    <div class="card-label">{{this.translatedLangText.GATE_OUT}}</div>
+  </div>
+
+</div>

@@ -295,7 +295,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     } else if (storage_cal_cv === 'AFTER_CLEANING_DATE') {
       //return sotItem?.cleaning;
     } else if (storage_cal_cv === 'AFTER_AV_DATE') {
-
+      // Has been removed from selection
     } else if (storage_cal_cv === 'NO_STORAGE') {
 
     }
@@ -376,7 +376,7 @@ export class PackageDepotDS extends BaseDataSource<PackageDepotItem> {
     const createDate = this.getStorageStartDate(sotItem, storage_cal_cv);
     const differenceInMs = currentDateOut.getTime() - createDate.getTime();
     const differenceInDays = Math.ceil(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;//Math.floor(differenceInMs / (1000 * 60 * 60 * 24)) - free_storage;
-
+    
     return (differenceInDays > 0 ? differenceInDays : 0);
     // if (pdItem?.storage_cal_cv === 'TANK_IN_DATE') {
     //   sotItem.in_gate = sotItem.in_gate?.filter(inGate => inGate.delete_dt == 0 || inGate.delete_dt == null);
