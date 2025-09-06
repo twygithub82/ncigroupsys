@@ -8,15 +8,15 @@
               {{this.translatedLangText.SUMMARY_REPORT}}
             </mat-panel-title> -->
             <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.GENERATE_REPORT">
+              <div class="m-l-" [matTooltip]="translatedLangText.SUMMARY_REPORT">
                 <button mat-mini-fab color="primary" (click)="search_summary()" (click)="$event.stopPropagation()"
                   [disabled]="(isGeneratingReport) || !AllowToSearch()">
                  <mat-icon>view_week</mat-icon>
                 </button>
               </div>
-               <div class="m-l-10" [matTooltip]="translatedLangText.GENERATE_REPORT">
+               <div class="m-l-10" [matTooltip]="translatedLangText.DETAIL_REPORT">
                 <button class="m-l" mat-mini-fab color="primary" (click)="search_detail()" (click)="$event.stopPropagation()"
-                  [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.GENERATE_REPORT}}>
+                  [disabled]="(isGeneratingReport)">
                   <mat-icon>assignment</mat-icon>
                 </button>
               </div>

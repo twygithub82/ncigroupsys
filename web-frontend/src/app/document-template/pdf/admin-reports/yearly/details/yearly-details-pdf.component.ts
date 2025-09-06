@@ -733,6 +733,7 @@ export class YearlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapter
         let averageRowIndex = data.table.body.length - 1; // Ensure the correct last row index
         if (data.row.index == totalRowIndex || data.row.index == averageRowIndex) {
           data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
           if (data.column.index === 0) {
             data.cell.colSpan = 2;  // Merge 4 columns into one

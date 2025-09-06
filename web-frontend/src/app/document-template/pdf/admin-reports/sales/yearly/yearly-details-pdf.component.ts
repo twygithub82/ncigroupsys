@@ -1086,7 +1086,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
        
 
         if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex))) {
-           data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
           data.cell.fontSize = 8;

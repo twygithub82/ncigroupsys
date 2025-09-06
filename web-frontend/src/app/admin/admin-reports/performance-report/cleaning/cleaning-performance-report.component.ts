@@ -170,7 +170,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     CLEANING_PROCESS: 'COMMON-FORM.CLEANING-PROCESS',
     CARGO: "COMMON-FORM.CARGO",
     CLEANER: "COMMON-FORM.CLEANER",
-    CLEANING_BAY: "COMMON-FORM.CLEANING-BAY"
+    CLEANING_BAY: "COMMON-FORM.CLEANING-BAY",
   }
 
   invForm?: UntypedFormGroup;

@@ -43,6 +43,7 @@ import {
   ApexTitleSubtitle,
   ApexPlotOptions,
 } from "ng-apexcharts";
+import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
 
 export interface DialogData {
   repData: SteamPerformance[],
@@ -915,7 +916,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      3: { halign: 'left', valign: 'middle', cellWidth: 70, minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle', cellWidth: 70, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
