@@ -445,20 +445,20 @@ export class PreviewRepairEstFormDialog extends UnsubscribeOnDestroyAdapter impl
   populateRepair(repair: RepairItem | undefined) {
     this.populateFoundRepair(repair!);
 
-    this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
-      next: (response) => {
-        console.log('Files retrieved successfully:', response);
-        if (response?.length) {
-          this.repairEstimatePdf = response.filter((f: any) => f.description === 'REPAIR_ESTIMATE');
-        }
-      },
-      error: (error) => {
-        console.error('Error retrieving files:', error);
-      },
-      complete: () => {
-        console.log('File retrieval process completed.');
-      }
-    });
+    // this.fileManagerService.getFileUrlByGroupGuid([this.repair_guid!]).subscribe({
+    //   next: (response) => {
+    //     console.log('Files retrieved successfully:', response);
+    //     if (response?.length) {
+    //       this.repairEstimatePdf = response.filter((f: any) => f.description === 'REPAIR_ESTIMATE');
+    //     }
+    //   },
+    //   error: (error) => {
+    //     console.error('Error retrieving files:', error);
+    //   },
+    //   complete: () => {
+    //     console.log('File retrieval process completed.');
+    //   }
+    // });
     this.isOwnerChanged();
   }
 
