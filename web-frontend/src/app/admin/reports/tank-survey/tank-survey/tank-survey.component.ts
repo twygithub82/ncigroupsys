@@ -323,7 +323,7 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     const queries = [
       { alias: 'purposeOptionCv', codeValType: 'PURPOSE_OPTION' },
       // { alias: 'eirStatusCv', codeValType: 'EIR_STATUS' },
-      { alias: 'surveyTypeCv', codeValType: 'BOOKING_TYPE' },
+      { alias: 'surveyTypeCv', codeValType: 'SURVEY_TYPE' },
       { alias: 'inventoryTypeCv', codeValType: 'INVENTORY_TYPE' },
       { alias: 'yardCv', codeValType: 'YARD' },
     ];
