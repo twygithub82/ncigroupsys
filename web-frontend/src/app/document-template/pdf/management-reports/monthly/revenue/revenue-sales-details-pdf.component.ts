@@ -779,7 +779,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     const data: any[][] = []; // Explicitly define data as a 2D array
    
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY , 11);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 1 , 11);
 
     if(this.customer)
     {
@@ -1104,7 +1104,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-             Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48 , 11);
+             Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48 - 1 , 11);
           }
         }
 
