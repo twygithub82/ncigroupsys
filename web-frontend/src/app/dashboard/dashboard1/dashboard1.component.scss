@@ -1,5 +1,5 @@
-.card_min_width{
-    min-width:520px;
+.card_min_width {
+  min-width: 520px;
 }
 
 .pointer {
@@ -7,7 +7,7 @@
 }
 
 .card.info-card.pointer {
-   height: 130px; /* adjust as needed */
+  height: 110px;
+  /* adjust as needed */
   // overflow: hidden; /* hides overflow if child content is too tall */
 }
-

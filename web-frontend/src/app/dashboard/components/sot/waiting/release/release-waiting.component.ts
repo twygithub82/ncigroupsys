@@ -58,7 +58,7 @@ export class ReleaseWaitingComponent {
   private loadData() {
     this.sot_waiting ="-";
     this.roDS.getTotalReleaseOrderPendingCount().subscribe(data => {
-      this.sot_waiting = String(data);
+      this.sot_waiting = String(data || 0);
     });
   }
 
