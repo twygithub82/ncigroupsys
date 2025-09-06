@@ -267,7 +267,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       max_cost: [''],
       min_labour: [''],
       max_labour: ['']
-
     });
     this.selectedCustomers = [];
   }
@@ -306,9 +305,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
-        // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-
       }
     });
   }
@@ -517,7 +513,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     if (this.selectedCustomers.length > 0) {
       var custCodes = this.selectedCustomers.map(c => c.code);
       where.and.push({ customer_company: { code: { in: custCodes } } });
-
     }
 
     // if (this.pcForm!.get('customer_code')?.value) {
@@ -526,30 +521,26 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
     // }
 
     if (this.pcForm!.value["min_labour"]) {
-
       const minLabour: number = Number(this.pcForm!.value["min_labour"]);
       where.and.push({ labour: { gte: minLabour } })
     }
 
     if (this.pcForm!.value["max_labour"]) {
-
       const maxLabour: number = Number(this.pcForm!.value["max_labour"]);
       where.and.push({ labour: { ngte: maxLabour } })
 
     }
 
     if (this.pcForm!.value["min_cost"]) {
-
       const minCost: number = Number(this.pcForm!.value["min_cost"]);
       where.and.push({ cost: { gte: minCost } })
     }
 
     if (this.pcForm!.value["max_cost"]) {
-
       const maxCost: number = Number(this.pcForm!.value["max_cost"]);
       where.and.push({ cost: { ngte: maxCost } })
-
     }
+
     this.lastSearchCriteria = where;
     this.subs.sink = this.packSteamDS.SearchPackageSteam(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.packageSteamItems = data;
@@ -571,7 +562,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-
       });
     }
   }
@@ -691,6 +681,13 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   public loadData() {
+    this.sort.active = 'lastUpdate';
+    this.sort.direction = 'desc';
+
+    this.lastOrderBy = {
+      update_dt: 'DESC',
+      create_dt: 'DESC',
+    };
     this.search();
   }
 

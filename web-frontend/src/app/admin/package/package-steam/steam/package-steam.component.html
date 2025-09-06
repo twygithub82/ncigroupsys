@@ -107,26 +107,12 @@
                   [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="HideCheckBox(row)">
                 </mat-checkbox>
               </mat-cell>
-              <!-- <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox color="primary" (click)="$event.stopPropagation()"
-                  (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
-                  [ngClass]="'tbl-checkbox'">
-                </mat-checkbox>
-              </mat-cell> -->
             </ng-container>
-            <!-- <ng-container matColumnDef="customerCode">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.CUSTOMER_CODE
-                }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_CODE
-                  }}:</span>{{row.customer_company?.code}}</mat-cell>
-            </ng-container> -->
             <ng-container matColumnDef="companyName">
               <mat-header-cell *matHeaderCellDef mat-sort-header
                 [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-3_5 justify-content-start'">
-                <!-- <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
                 <span
                   class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
@@ -192,7 +178,6 @@
             </mat-row>
           </table>
         </div>
-        <!-- Loading spinner -->
         @if (!(packSteamDS.loading$ | async) && !packageSteamItems.length) {
         <div class="no-results m-l-20 pt-3" [style.display]="packageSteamItems.length === 0 ? '' : 'none'">
           <h5 class="m-b-15">{{translatedLangText.NO_RESULT }}</h5>
