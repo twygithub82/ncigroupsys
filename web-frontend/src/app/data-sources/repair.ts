@@ -1956,6 +1956,10 @@ export class RepairDS extends BaseDataSource<RepairItem> {
     );
   }
 
+  canUpdate(re: RepairItem | undefined): boolean {
+    return !re?.status_cv || re?.status_cv === 'PENDING';
+  }
+
   canAmend(re: RepairItem | undefined): boolean {
     //return !re?.status_cv || re?.status_cv === 'PENDING' || re?.status_cv === 'APPROVED';
     //added below to allow job-in-progress to amend
