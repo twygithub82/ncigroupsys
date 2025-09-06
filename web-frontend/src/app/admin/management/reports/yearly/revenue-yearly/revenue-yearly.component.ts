@@ -382,7 +382,8 @@ export class RevenueYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapt
 
 
     var customerName: string = "";
-    var invTypes = this.invTypes.filter(v => v !== "ALL");
+   // var invTypes = this.invTypes.filter(v => v !== "ALL");
+    var invTypes = this.invTypesAll.filter(v => v !== "ALL");
     where.revenue_type = invTypes;
     if (this.searchForm?.get('inventory_type')?.value != "ALL") {
       where.revenue_type = this.searchForm?.get('inventory_type')?.value;

@@ -869,7 +869,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
       data.push([
         (++idx).toString(), itm.tank_no || "", this.DisplayCustomerCode(itm) || "", this.DisplayEIRNo(itm) || "",
         //this.DisplayOwner(itm) || "", 
-        this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "", this.DisplayRepairInDate(itm) || "", 
+        this.DisplayEIRDate(itm) || "", this.DisplayCleanDate(itm) || "", this.DisplayCleanEnd(itm) || "", 
         this.DisplayRepairType(itm) || "", this.DisplayDays(itm) || "0",
       ]);
     }
@@ -1654,7 +1654,7 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
   DisplayCleanDate(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
-    return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt!)!;
+    return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.allocate_dt)!;
   }
 
 
@@ -1665,6 +1665,19 @@ export class PendingEstimateReportPdfComponent extends UnsubscribeOnDestroyAdapt
 
   }
 
+  DisplayCleanEnd(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt) || '';
+
+  }
+
+  DisplayCleanBeing(sot: StoringOrderTankItem): string {
+    this.removeDeletedInGateAndOutGate(sot);
+    var bRetval = sot.tank_status_cv=="CLEANING";
+    return (bRetval) ? this.translatedLangText.YES : this.translatedLangText.NO;
+    //return Utility.convertEpochToDateStr(sot.cleaning?.[0]?.complete_dt) || '';
+
+  }
   DisplayTareWeight(sot: StoringOrderTankItem): string {
     this.removeDeletedInGateAndOutGate(sot);
     return `${sot.in_gate?.[0]?.in_gate_survey?.tare_weight || ''}`;
