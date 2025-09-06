@@ -339,7 +339,19 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     itm.or.push({ and: [{ cleaning: { any: true } }, { cleaning: { some: { customer_billing_guid: { eq: null } } } }] });
     itm.or.push({ and: [{ repair: { any: true } }, { repair: { some: { or: [{ customer_billing_guid: { eq: null } }, { and: [{ owner_billing_guid: { eq: null } }, { owner_enable: { eq: true } }] }] } } }] });
     itm.or.push({ and: [{ residue: { any: true } }, { residue: { some: { customer_billing_guid: { eq: null } } } }] });
-    itm.or.push({ and: [{ steaming: { any: true } }, { steaming: { some: { customer_billing_guid: { eq: null } } } }] });
+    itm.or.push({ and: [{ steaming: { any: true } }, { steaming: { some: { customer_billing_guid: { eq: null } } } },{
+      or:[
+        {and:[
+        {create_by:{neq:"system"}},
+        {status_cv:{in:["QC_COMPLETED","COMPLETED","APPROVED","JOB_IN_PROGRESS","ASSIGNED","PARTIAL_ASSIGNED"]}}
+        ]
+      },
+      {and:[
+          {create_by:{eq:"system"}},
+          {status_cv:{in:["QC_COMPLETED","COMPLETED"]}}]}
+      ]
+    }
+    ] });
     itm.or.push({
       and: [{
         or: [
@@ -556,7 +568,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!)) {
+          if (!['NO_ACTION', 'KIV' ,'QC_COMPLETED'].includes(c.status_cv!)) {
 
             rep_bill_item.clean_est_no += 1;
             rep_bill_item.clean_cost = Number(Number(rep_bill_item?.clean_cost || 0) + (c.cleaning_cost || 0) + (c.buffer_cost || 0)).toFixed(2);
@@ -801,7 +813,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
           // if (c.status_cv != 'NO_ACTION') 
-          if(!['NO_ACTION', 'KIV'].includes(c.status_cv!))
+          if(!['NO_ACTION', 'KIV','QC_COMPLETED'].includes(c.status_cv!))
           {
 
             let total = 0;
@@ -845,7 +857,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
           // if (c.status_cv != 'NO_ACTION') 
-          if(!['NO_ACTION', 'KIV'].includes(c.status_cv!))
+          if(!['NO_ACTION', 'KIV','QC_COMPLETED'].includes(c.status_cv!))
             {
             let total = 0;
             let cost = this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);

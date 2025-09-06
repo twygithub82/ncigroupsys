@@ -390,7 +390,7 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
     //where.revenue_type = invTypes;
     where.report_type=invTypes;
     if (this.searchForm?.get('cost_type')?.value.code_val != "ALL") {
-      where.revenue_type = [this.searchForm?.get('cost_type')?.value.code_val];
+      where.report_type = [this.searchForm?.get('cost_type')?.value.code_val];
       invTypes = [this.searchForm?.get('cost_type')?.value.code_val];
        repName=this.searchForm?.get('cost_type')?.value.description;
     }
