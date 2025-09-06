@@ -24,8 +24,8 @@
         <form class="ms-0" [formGroup]="inGateForm!" (ngSubmit)="onInGateFormSubmit()" #formDirective="ngForm">
           <div class="row">
             <div class="col-xl-7 col-lg-12 col-md-12 col-sm-12">
-              <div class="card">
-                <div class="header">
+              <div class="card modal-card">
+                <div class="header header-custom-padding">
                   <h2>
                     {{translatedLangText.ORDER_DETAILS}}
                   </h2>
@@ -150,8 +150,8 @@
               </div>
             </div>
             <div class="col-xl-5 col-lg-12 col-md-12 col-sm-12">
-              <div class="card">
-                <div class="header">
+              <div class="card modal-card">
+                <div class="header header-custom-padding">
                   <h2>
                     {{translatedLangText.TANK_DETAILS}}
                   </h2>
@@ -166,7 +166,7 @@
                   @if (!(sotDS.loading$ | async)) {
                   <mat-card-content>
                     <div class="row">
-                      <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-5">
+                      <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 m-b-0">
                         <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5 p-l-25">
                             <span class="contact-detail-label">{{translatedLangText.TANK_NO}}:</span>
@@ -207,7 +207,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-5">
+                      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 m-b-0">
                         <!-- <div class="row">
                           <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-5">
                             <span class="contact-detail-label">{{translatedLangText.EIR_NO}}:</span>
@@ -328,8 +328,8 @@
               </div> -->
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                  <div class="card">
-                    <div class="header">
+                  <div class="card modal-card">
+                    <div class="header header-custom-padding">
                       <h2>
                         {{translatedLangText.IN_GATE}} {{translatedLangText.DETAILS}}
                       </h2>
@@ -521,8 +521,8 @@
               </div>
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 m-b-5">
-              <div class="card">
-                <div class="header">
+              <div class="card modal-card">
+                <div class="header header-custom-padding">
                   <h2>
                     {{translatedLangText.CARGO_DETAILS}}
                   </h2>
