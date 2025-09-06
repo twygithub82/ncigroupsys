@@ -541,7 +541,7 @@ export class FormDialogComponent extends UnsubscribeOnDestroyAdapter {
     newJobOrderReq.team_guid = team?.guid;
     newJobOrderReq.sot_guid = selItem.storing_order_tank?.guid;
     newJobOrderReq.total_hour = this.cleaningTotalHours;
-    //newJobOrderReq.process_guid=selItem.guid;
+    newJobOrderReq.process_guid = selItem.guid;
     newJobOrderReq.part_guid = [];
     newJobOrderReq.part_guid.push(selItem.guid);
 
