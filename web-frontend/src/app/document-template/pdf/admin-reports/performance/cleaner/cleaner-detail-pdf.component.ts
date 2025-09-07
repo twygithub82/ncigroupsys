@@ -29,6 +29,7 @@ import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
 import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -673,7 +674,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
     //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
     //var dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    await Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, 9);
+    await Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
     startY += 2;
     // if(this.customer)
     // {
@@ -766,7 +767,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
             startY = 50;
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
             //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
-            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, 9);
+            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
           }
         }
 

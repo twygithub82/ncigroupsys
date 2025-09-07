@@ -905,6 +905,11 @@ static async captureFullCardImage(card: HTMLElement): Promise<string> {
   
   }
 
+  static ReportSubTitleFontSize(): number{
+    const fontSize = 8;
+    return fontSize;
+  }
+
   static async ReportFooter_CompanyInfo_portrait(pdf: jsPDF, 
     pageWidth: number, topMargin: number, 
     bottomMargin: number, leftMargin: number, 

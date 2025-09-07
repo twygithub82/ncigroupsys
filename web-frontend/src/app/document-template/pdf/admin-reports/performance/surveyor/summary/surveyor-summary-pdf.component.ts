@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -610,9 +611,9 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
 
-    let reportTitleCompanyLogo = 32;
-    let tableHeaderHeight = 12;
-    let tableRowHeight = 8.5;
+    //let reportTitleCompanyLogo = 32;
+    //let tableHeaderHeight = 12;
+    //let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 5.5;
@@ -668,7 +669,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
 
     const repGeneratedDate = `${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
     //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
-    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, 9);
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
     startY += 2;
     // if(this.customer)
     // {
@@ -772,7 +773,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, 9);
+            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
           }
         }
 
