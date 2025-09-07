@@ -235,7 +235,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
     CLEANING_INVENTORY: 'COMMON-FORM.CLEANING-INVENTORY',
-    CLEANING_ACTIVITY:'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
+    CLEANING_ACTIVITY: 'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
     CUSTOMER_WISE: 'COMMON-FORM.CUSTOMER-WISE',
     CARGO_WISE: 'COMMON-FORM.CARGO-WISE',
     UN_WISE: 'COMMON-FORM.UN-WISE',
@@ -739,7 +739,6 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-
   }
 
   downloadFile(blob: Blob, fileName: string) {
@@ -895,7 +894,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-      margin:{top:topMargin+45},
+      margin: { top: topMargin + 45 },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -936,7 +935,7 @@ export class CargoUNWiseInventorySummaryPdfComponent extends UnsubscribeOnDestro
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
             Utility.AddTextAtRightCornerPage(pdf, clnDate, pageWidth, leftMargin, rightMargin + 5, 48, 8);
           }
         }
