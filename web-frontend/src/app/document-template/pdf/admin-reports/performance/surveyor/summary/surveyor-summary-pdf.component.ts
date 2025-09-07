@@ -580,7 +580,6 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-
   }
 
 

@@ -226,7 +226,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   repData: any[] = [];
   monthList: string[] = [];
   yearList: string[] = [];
-  today :Date =new Date();
+  today: Date = new Date();
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -278,12 +278,11 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         est_dt_start: [''],
         est_dt_end: [''],
         est_status: [''],
-         tank_no: [''],
+        tank_no: [''],
         eir_no: [''],
         customer_code: this.customerCodeControlDetail,
         repair_type: [''],
         surveyor: [''],
-       
       },
     );
   }
@@ -299,10 +298,10 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         month_start: [`${thisMonth}`],
         month_end: [`${thisMonth}`],
         year: [`${thisYear}`],
-         est_dt_start: [''],
+        est_dt_start: [''],
         est_dt_end: [''],
         est_status: [''],
-         tank_no: [''],
+        tank_no: [''],
         eir_no: ['']
       },
     );
@@ -310,13 +309,10 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
   // Custom validator to check if min <= max
   minMaxDaysValidator(form: UntypedFormGroup) {
-
     const minControl = form.get('min_days');
     const maxControl = form.get('max_days');
-
     const min = minControl?.value;
     const max = maxControl?.value;
-
     if (min !== null && max !== null && min !== '' && max !== '' && min > max) {
       minControl?.setErrors({ invalidRange: true });
       maxControl?.setErrors({ invalidRange: true });
@@ -329,7 +325,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   initializeValueChanges() {
-    this.searchFormSummary!.get('surveyor')!.valueChanges.pipe(
+    this.searchFormSummary!.get('surveyor')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -338,27 +334,26 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
           searchCriteria = value;
         }
 
-        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { aspnetuserroles: { some: { aspnetroles: { Role: { eq: 'Surveyor' } } } } }] },
+        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { user_role: { some: { role: { code: { eq: 'OPERATION_SURVEYOR' } } } } }] },
           { userName: 'ASC' }).subscribe(data => {
             this.surveyorList = data
               .map(u => u.userName)
               .filter((name): name is string => name !== undefined);
-
           });
       })
     ).subscribe();
 
-    this.searchFormSummary!.get('customer_code')!.valueChanges.pipe(
+    this.searchFormSummary!.get('customer_code')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         this.branch_companyList = [];
         this.branchCodeControl.reset('');
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (typeof value === 'object') {
+          searchCriteria = value?.code || '';
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList_summary = data
@@ -369,7 +364,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     ).subscribe();
 
 
-    this.searchFormDetail!.get('surveyor')!.valueChanges.pipe(
+    this.searchFormDetail!.get('surveyor')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -378,7 +373,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
           searchCriteria = value;
         }
 
-        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { aspnetuserroles: { some: { aspnetroles: { Role: { eq: 'Surveyor' } } } } }] },
+        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { user_role: { some: { role: { code: { eq: 'OPERATION_SURVEYOR' } } } } }] },
           { userName: 'ASC' }).subscribe(data => {
             this.surveyorList = data
               .map(u => u.userName)
@@ -388,17 +383,17 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       })
     ).subscribe();
 
-    this.searchFormDetail!.get('customer_code')!.valueChanges.pipe(
+    this.searchFormDetail!.get('customer_code')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         this.branch_companyList = [];
         this.branchCodeControl.reset('');
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (typeof value === 'object') {
+          searchCriteria = value?.code || '';
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList_detail = data
@@ -406,10 +401,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
         });
       })
     ).subscribe();
-
-
   }
-
 
   public loadData() {
     var thisYear = new Date().getFullYear();
@@ -550,7 +542,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
     if (searchFrm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${searchFrm!.get('customer_code')?.value.code}`;
+      where.customer_code = `${searchFrm!.get('customer_code')?.value?.code}`;
       cond_counter++;
     }
 
@@ -637,7 +629,7 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
     if (searchFrm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${searchFrm!.get('customer_code')?.value.code}`;
+      where.customer_code = `${searchFrm!.get('customer_code')?.value?.code}`;
       cond_counter++;
     }
 
@@ -842,8 +834,8 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       month_end: thisMonth,
       surveyor: '',
       year: thisYear,
-      eir_no:'',
-      tank_no:'',
+      eir_no: '',
+      tank_no: '',
       est_dt_start: '',
       est_dt_end: '',
       est_status: ''

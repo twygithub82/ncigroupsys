@@ -289,17 +289,17 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
 
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.searchForm!.get('customer_code')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         this.branch_companyList = [];
         this.branchCodeControl.reset('');
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (typeof value === 'object') {
+          searchCriteria = value?.code || '';
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -309,19 +309,19 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
       })
     ).subscribe();
 
-    this.searchForm!.get('cargo')!.valueChanges.pipe(
+    this.searchForm!.get('cargo')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         this.branch_companyList = [];
         this.branchCodeControl.reset('');
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (typeof value === 'object') {
+          searchCriteria = value?.cargo || '';
         } else {
-          searchCriteria = value.cargo;
+          searchCriteria = value || '';
         }
-        this.subs.sink = this.tcDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { sequence: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.tcDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { cargo: 'ASC' }).subscribe(data => {
           this.cargoList = data
         });
       })
@@ -447,7 +447,7 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value?.code}`;
       cond_counter++;
     }
 
@@ -467,7 +467,7 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     }
 
     if ((this.searchForm!.get('yard')?.value)) {
-      where.yard = `${this.searchForm!.get('yard')?.value.code_val}`;
+      where.yard = `${this.searchForm!.get('yard')?.value?.code_val}`;
       cond_counter++;
     }
 
@@ -492,9 +492,9 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = this.reportDS.searchAdminReportSteamPerformance(this.lastSearchCriteria)
       .subscribe(data => {
 
-         this.repData = data;
-          this.onExportSteamPerformanceReport(this.repData, date!, team!);
-          this.isGeneratingReport = false;
+        this.repData = data;
+        this.onExportSteamPerformanceReport(this.repData, date!, team!);
+        this.isGeneratingReport = false;
         // if (data.length > 0) {
         //   this.repData = data;
         //   this.onExportSteamPerformanceReport(this.repData, date!, team!);
