@@ -3952,7 +3952,34 @@ const GET_STORING_ORDER_TANKS_ESTIMATES_DETAILS = gql`
           tariff_depot_guid
           update_by
           update_dt
+          storage_billing {
+            bill_to_guid
+            currency_guid
+            guid
+            invoice_dt
+            invoice_due
+            invoice_no
+            invoice_type
+            remarks
+            status_cv
+            update_by
+            update_dt
+          }
         }
+        storage_detail (where: { delete_dt: { eq: null } }) {
+          billing_guid
+          delete_dt
+          end_dt
+          guid
+          remaining_free_storage
+          remarks
+          sot_guid
+          start_dt
+          state_cv
+          total_cost
+        
+        }
+        
       }
       pageInfo {
         endCursor

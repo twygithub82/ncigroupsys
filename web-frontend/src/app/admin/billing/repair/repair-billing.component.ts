@@ -504,7 +504,17 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
 
     if (this.searchForm!.get('customer_code')?.value) {
 
-      where.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
+      if(!where.or) where.or=[];
+      where.or.push({ storing_order:{customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } }});
+      where.or.push(
+        {
+          and:[
+            {owner_guid:{eq: this.searchForm!.get('customer_code')?.value.guid}},
+            {repair: { some: {  owner_enable: { eq: true } } } } 
+          ]
+        }
+      );
+  
       //where.customer_company={code:{eq: this.searchForm!.get('customer_code')?.value.code }}
     }
 
@@ -596,11 +606,27 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         // this.calculateResidueTotalCost();
         this.checkInvoicedAndTotalCost();
         this.distinctCustomerCodes = [... new Set(this.sotRepList.map(item => item.storing_order?.customer_company?.code))];
+        if(this.searchForm!.get('customer_code')?.value){
+          this.filterCustomerCodeOnly();
+        }
       });
 
     this.pageSize = pageSize;
     this.pageIndex = pageIndex;
   }
+
+filterCustomerCodeOnly() {
+  const custCode = this.searchForm!.get('customer_code')?.value.code;
+
+  this.sotRepList = this.sotRepList
+    .map(item => ({
+      ...item,
+      repair: item.repair?.filter(rep =>
+        rep.storing_order_tank?.storing_order?.customer_company?.code === custCode
+      ) || []
+    }))
+    .filter(item => item.repair.length > 0); // remove item if no repair left
+}
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -1063,7 +1089,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
           // Update the customer_company field
           if (newRepItem.storing_order_tank && newRepItem.storing_order_tank.storing_order) {
             newRepItem.guid = `${newRepItem.guid}_1`;
-            newRepItem.bill_to_guid = newRepItem.storing_order_tank.customer_company.guid;
+            // newRepItem.bill_to_guid = newRepItem.storing_order_tank.customer_company.guid;
+            newRepItem.bill_to_guid = newRepItem.storing_order_tank.owner_guid;
             newRepItem.owner_enable = false;
             newRepItem.storing_order_tank.storing_order.customer_company = newRepItem.storing_order_tank.customer_company;
           }

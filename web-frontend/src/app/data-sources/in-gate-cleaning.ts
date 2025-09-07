@@ -185,6 +185,16 @@ const SEARCH_CLEANING_BILLING_QUERY = gql`
         storing_order_tank {
           tank_no
           tank_status_cv
+          storing_order {
+            guid
+            haulier
+            remarks
+            so_no
+            customer_company {
+              code
+              country
+            }
+          }
           customer_company {
               code
               currency_guid
