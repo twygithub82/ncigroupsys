@@ -962,8 +962,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
 
     //const repGeneratedDate = await Utility.GetReportGeneratedDate(this.translate);
     // Replace with your actual cutoff date
-    const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD}: ${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, PDFUtility.ReportSubTitleFontSize());
+    const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.STEAMING_PERIOD, this.date);
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, PDFUtility.RightSubTitleFontSize());
     // Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
@@ -1035,7 +1035,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
             //Utility.AddTextAtCenterPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 6, 9);
-            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.ReportSubTitleFontSize());
+            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.RightSubTitleFontSize());
           }
 
         }

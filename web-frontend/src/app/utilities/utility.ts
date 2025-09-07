@@ -1721,7 +1721,7 @@ export class Utility {
 
     var dt = new Date();
     var dtStr = this.formatUKDateString(dt);
-    var result = `${translatedLangText.DATE}: ${dtStr}`;
+    var result = PDFUtility.FormatColon(translatedLangText.DATE, dtStr);
 
     return `${result}`;
   }

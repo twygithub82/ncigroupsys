@@ -667,10 +667,10 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     const data: any[][] = []; // Explicitly define data as a 2D array
 
 
-    const repGeneratedDate = `${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
+    const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.SURVEY_PERIOD, this.date); // Replace with your actual cutoff date
     //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
-    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
-    startY += 2;
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+    startY += PDFUtility.TableStartTopBuffer();
     // if(this.customer)
     // {
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -773,7 +773,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
-            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
+            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
           }
         }
 

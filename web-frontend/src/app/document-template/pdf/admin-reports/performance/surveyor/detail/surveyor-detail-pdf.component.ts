@@ -603,9 +603,9 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
 
     lastTableFinalY += 4;
     pdf.setFontSize(8);
-    const invDate = `${this.translatedLangText.SURVEY_PERIOD}: ${this.date}`;
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, PDFUtility.ReportSubTitleFontSize());
-    lastTableFinalY += 2;
+    const invDate =  PDFUtility.FormatColon(this.translatedLangText.SURVEY_PERIOD, this.date);
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, PDFUtility.RightSubTitleFontSize());
+    lastTableFinalY += PDFUtility.TableStartTopBuffer();
     var CurrentPage = 1;
     var buffer = 20;
     for (let n = 0; n < this.repData.length; n++) {
@@ -642,7 +642,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
 
       //lastTableFinalY+=gap;
       lastTableFinalY += 2;
-      pdf.setFontSize(PDFUtility.ReportSubTitleFontSize());
+      pdf.setFontSize(PDFUtility.RightSubTitleFontSize());
       pdf.setTextColor(0, 0, 0); // Black text
       pdf.text(`${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
       let startY = 0;
@@ -719,7 +719,7 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
                 Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-                Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.ReportSubTitleFontSize());
+                Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.RightSubTitleFontSize());
               }
             }
           },

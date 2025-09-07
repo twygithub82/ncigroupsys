@@ -671,11 +671,11 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     const data: any[][] = []; // Explicitly define data as a 2D array
 
 
-    const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
+    const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.CLEANING_PERIOD, this.date); // Replace with your actual cutoff date
     //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
     //var dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    await Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
-    startY += 2;
+    await Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+    startY += PDFUtility.TableStartTopBuffer();
     // if(this.customer)
     // {
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -767,7 +767,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
             startY = 50;
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
             //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
-            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
+            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
           }
         }
 
