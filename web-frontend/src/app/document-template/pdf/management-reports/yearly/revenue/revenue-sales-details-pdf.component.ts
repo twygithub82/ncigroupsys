@@ -760,14 +760,14 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
-    let showPreinspectSurcharge: boolean = this.invTypes?.includes("PREINSPECTION")!;
-    let showLoloSurcharge: boolean = this.invTypes?.includes("LOLO")!;
-    let showStorageSurcharge: boolean = this.invTypes?.includes("STORAGE")!;
-    let showGateSurcharge: boolean = this.invTypes?.includes("GATE")!;
-    let showResidueSurcharge: boolean = this.invTypes?.includes("RESIDUE")!;
-    let showSteamSurcharge: boolean = this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge: boolean = this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge: boolean = this.invTypes?.includes("REPAIR")!;
+    let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
+    let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
+    let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
+    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
+    let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
+    let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
+    let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
+    let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
     const reportTitle = this.GetReportTitle();
     const vAlign = "bottom"
     const headers = [[
@@ -1050,8 +1050,8 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
               data.cell.styles.textColor = textColor;
             }
           }
-        }
-        if ((data.row.index == totalRowIndex || data.row.index == averageRowIndex)) {
+        
+        if((data.row.index==totalRowIndex ||data.row.index==averageRowIndex)){
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
@@ -1078,6 +1078,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
+      }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();

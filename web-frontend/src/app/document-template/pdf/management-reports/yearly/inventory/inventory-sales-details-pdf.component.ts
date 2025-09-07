@@ -1027,7 +1027,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
           //       data.cell.styles.textColor=textColor;
           //     }
           // }
-        }
+        
         if (data.row.index == totalRowIndex || data.row.index == averageRowIndex) {
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor = [231, 231, 231];
@@ -1063,6 +1063,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
+       }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
