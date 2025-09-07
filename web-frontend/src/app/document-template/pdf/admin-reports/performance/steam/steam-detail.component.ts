@@ -259,6 +259,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     GATEIO_S: 'COMMON-FORM.GATEIO-S',
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
+    STEAMING_PERFORMANCE_REPORT: "COMMON-FORM.STEAMING-PERFORMANCE-REPORT",
     TOTAL_COST: "COMMON-FORM.TOTAL-COST",
     COMPLETED_DATE: "COMMON-FORM.COMPLETED-DATE",
     CARGO: "COMMON-FORM.CARGO",
@@ -853,7 +854,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.REPORT_TITLE} `
+    return `${this.translatedLangText.STEAMING_PERFORMANCE_REPORT}`
   }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -955,8 +956,12 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     let lastTableFinalY = 40;
 
 
-    const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, 8);
+    const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD} : ${this.date}`;
+    Utility.AddTextAtCenterPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 6, 9);
+
+    const repGeneratedDate = await Utility.GetReportGeneratedDate(this.translate);
+     // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, 8);
     // Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
@@ -986,8 +991,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       let itm = this.repData[n];
       data.push([
         (n + 1).toString(), itm.tank_no || "",
-        itm.customer_code || '', itm.last_cargo || "", Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "", itm.bay, itm.require_temp || "",
-        Utility.formatNumberDisplay(itm.cost) || "", (itm.themometer?.begin_temp) || "", (itm.themometer?.close_temp) || "",
+        itm.customer_code || '', itm.last_cargo || "", Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "", itm.require_temp,
+        Utility.formatNumberDisplay(itm.cost) || "", itm.bay || "", (itm.themometer?.begin_temp) || "", (itm.themometer?.close_temp) || "",
         (itm.top?.begin_temp) || "", (itm.top?.close_temp) || "", (itm.bottom?.begin_temp) || "", (itm.bottom?.close_temp) || "",
 
       ]);

@@ -33,10 +33,10 @@ import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overfl
 
 export interface DialogData {
   repData: CleanerPerformance[],
-  date:string,
-  repType:string,
-  customer:string,
-  team:string
+  date: string,
+  repType: string,
+  customer: string,
+  team: string
 }
 @Component({
   selector: 'app-cleaner-performance-detail-pdf',
@@ -244,30 +244,31 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    DAILY_TEAM_REVENUE_REPORT:'COMMON-FORM.DAILY-TEAM-REVENUE-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    CODE:'COMMON-FORM.CODE',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    QC_BY:'COMMON-FORM.QC-BY',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST',
-    REPORTED_BY:'COMMON-FORM.REPORTED-BY',
-    TEAM:'COMMON-FORM.TEAM',
-    QC_DATE:'COMMON-FORM.QC-DATE',
-    SIGN:'COMMON-FORM.SIGN',
-    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    BAY:'COMMON-FORM.BAY',
-    COMPLETED_ON:'COMMON-FORM.COMPLETED-ON',
-    COST:"COMMON-FORM.COST",
-    CLEANING_PROCESS:'COMMON-FORM.CLEANING-PROCESS',
-    CLEANER:'COMMON-FORM.CLEANER',
-    CARGO:'COMMON-FORM.CARGO',
-    CLEANING_PERIOD:'COMMON-FORM.CLEANING-PERIOD',
-    CLEANER_PERFORMANCE_REPORT:"COMMON-FORM.CLEANER-PERFORMANCE-REPORT",
-    S_N:'COMMON-FORM.S_N',
-    CLEAN_CATEGORY:'COMMON-FORM.CLEAN-CATEGORY',
-    CLEAN_DURATION:'COMMON-FORM.CLEAN-DURATION'
+    DAILY_TEAM_REVENUE_REPORT: 'COMMON-FORM.DAILY-TEAM-REVENUE-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    CODE: 'COMMON-FORM.CODE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    QC_BY: 'COMMON-FORM.QC-BY',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
+    REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    SIGN: 'COMMON-FORM.SIGN',
+    VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
+    BAY: 'COMMON-FORM.BAY',
+    COMPLETED_ON: 'COMMON-FORM.COMPLETED-ON',
+    COST: "COMMON-FORM.COST",
+    CLEANING_PROCESS: 'COMMON-FORM.CLEANING-PROCESS',
+    CLEANER: 'COMMON-FORM.CLEANER',
+    CARGO: 'COMMON-FORM.CARGO',
+    CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
+    CLEANER_PERFORMANCE_REPORT: "COMMON-FORM.CLEANER-PERFORMANCE-REPORT",
+    S_N: 'COMMON-FORM.S_N',
+    CLEAN_CATEGORY: 'COMMON-FORM.CLEAN-CATEGORY',
+    DURATION: 'COMMON-FORM.DURATION',
+    HRS: "COMMON-FORM.HRS",
   }
 
   type?: string | null;
@@ -317,10 +318,10 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: CleanerPerformance[];
-  date?:string;
-  repType?:string;
-  team?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  team?: string;
+  customer?: string;
   index: number = 0;
   // date:string='';
   // invType:string='';
@@ -360,10 +361,10 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    this.date= this.data.date;
-    this.repType=this.data.repType;
-    this.customer=this.data.customer;
-    this.team=this.data.team;
+    this.date = this.data.date;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
+    this.team = this.data.team;
     this.onDownloadClick();
 
   }
@@ -373,7 +374,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -577,13 +578,13 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
@@ -617,28 +618,28 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.CODE,this.translatedLangText.CARGO,
-      this.translatedLangText.CLEAN_DURATION,
+      this.translatedLangText.CUSTOMER, this.translatedLangText.CARGO,
+      this.translatedLangText.DURATION + " (" + this.translatedLangText.HRS + ")",
       this.translatedLangText.CLEAN_CATEGORY,
-      this.translatedLangText.COST, 
+      this.translatedLangText.COST,
       // this.translatedLangText.EIR_NO,
       //  this.translatedLangText.ESTIMATE_DATE,
       // this.translatedLangText.COMPLETED_ON,
-      this.translatedLangText.BAY,this.translatedLangText.CLEANER
-      
+      this.translatedLangText.BAY, this.translatedLangText.CLEANER
+
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle',  cellWidth: 20, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 14,minCellHeight: minHeightBodyCell },
-      3: { halign: 'left', valign: 'middle',cellWidth: 60, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle', cellWidth: 60, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 22, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 13, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle',  cellWidth: 20, minCellHeight: minHeightBodyCell , overflow: 'ellipsize'},
+      8: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       //9: { halign: 'center', valign: 'middle', cellWidth: 8,  minCellHeight: minHeightBodyCell },
       //10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
@@ -665,15 +666,15 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    
+
+
     const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD} : ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
-     var dtstr=await Utility.GetReportGeneratedDate(this.translate);
-    await Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
-    startY +=2;
+    var dtstr = await Utility.GetReportGeneratedDate(this.translate);
+    await Utility.AddTextAtRightCornerPage(pdf, dtstr, pageWidth, leftMargin, rightMargin, startY, 9);
+    startY += 2;
     // if(this.customer)
     // {
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -681,27 +682,27 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     // }
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
-    for (let n = 0; n < (this.repData?.length||0); n++) {
+    for (let n = 0; n < (this.repData?.length || 0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
-      let itm :any = this.repData?.[n];
+      let itm: any = this.repData?.[n];
       // const repairCost = itm?.repair_cost || 0;
       // totalRepairCost += repairCost; // Add to the total
-        // data.push([
-        //   (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", itm?.customer_code ||"",this.displayDate(itm?.eir_dt)||'',
-        //   itm?.last_cargo||'',this.displayDate(itm?.complete_dt)||'',Utility.formatNumberDisplay(itm?.cost),itm?.method||'',
-        //   itm?.bay||'',itm?.cleaner_name||''
-        // ]);
+      // data.push([
+      //   (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", itm?.customer_code ||"",this.displayDate(itm?.eir_dt)||'',
+      //   itm?.last_cargo||'',this.displayDate(itm?.complete_dt)||'',Utility.formatNumberDisplay(itm?.cost),itm?.method||'',
+      //   itm?.bay||'',itm?.cleaner_name||''
+      // ]);
 
-         data.push([
-          (++idx).toString(), itm?.tank_no || "",  itm?.customer_code ||"", itm?.last_cargo||'',itm?.duration||'',itm?.method||'',
-         Utility.formatNumberDisplay(itm?.cost), itm?.bay||'',itm?.cleaner_name||''
-        ]);
+      data.push([
+        (++idx).toString(), itm?.tank_no || "", itm?.customer_code || "", itm?.last_cargo || '', itm?.duration || '', itm?.method || '',
+        Utility.formatNumberDisplay(itm?.cost), itm?.bay || '', itm?.cleaner_name || ''
+      ]);
     }
 
 
     //data.push([this.translatedLangText.TOTAL,"","","","","","",Utility.formatNumberDisplay(totalRepairCost)]);
-    
+
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
     // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
@@ -716,8 +717,8 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-      
-      margin:{top:startY,left: leftMargin, right: rightMargin},
+
+      margin: { top: startY, left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -737,7 +738,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
       //   let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
       //   // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
       //   // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
-        
+
       //   //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
       //   if(data.row.index==totalRowIndex){
       //     data.cell.styles.fontStyle = 'bold';
@@ -762,29 +763,28 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            startY=50;
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-             Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
-              Utility.AddTextAtRightCornerPage(pdf,dtstr,  pageWidth, leftMargin, rightMargin, startY, 9);
+            startY = 50;
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+            Utility.AddTextAtRightCornerPage(pdf, dtstr, pageWidth, leftMargin, rightMargin, startY, 9);
           }
         }
 
       },
     });
 
-    var gap=7;
+    var gap = 7;
 
-    if(lastTableFinalY+ topMargin+bottomMargin+ (gap*4.5)> pageHeight)
-    {
-        pdf.addPage();
-        const pageCount = pdf.getNumberOfPages();
-        pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
+      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
     }
 
     const totalPages = pdf.getNumberOfPages();
 
 
-     for (const { page, x, y } of pagePositions) {
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);
@@ -812,7 +812,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     // });
 
- 
+
 
     // //Sign , verified tables-------------start--------------
     // var content:string[]=[];
@@ -832,10 +832,10 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     // content.push(str.padEnd(maxSpace," "));
     // values.push(": "+`${this.team}`);
     // var startX=leftMargin;
-    
+
     // startY = pageHeight-(bottomMargin+10);
     // var buffer = maxSpace *3;
-   
+
     // pdf.setPage(pdf.getNumberOfPages());
     // pdf.setLineWidth(0.01);
     // pdf.setLineDashPattern([1,1], 1);
@@ -881,7 +881,7 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     this.dialogRef.close();
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -986,8 +986,8 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-     title = `${this.translatedLangText.CLEANER_PERFORMANCE_REPORT}`
+    var title: string = '';
+    title = `${this.translatedLangText.CLEANER_PERFORMANCE_REPORT}`
     return `${title}`
   }
 
@@ -1024,5 +1024,5 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     return retval;
 
   }
- 
+
 }

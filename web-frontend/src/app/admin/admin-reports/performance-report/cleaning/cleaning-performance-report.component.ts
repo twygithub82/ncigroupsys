@@ -486,8 +486,6 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
           startDateControl.markAsTouched();
         }
       }
-
-
       return;
     }
     this.isGeneratingReport = true;
