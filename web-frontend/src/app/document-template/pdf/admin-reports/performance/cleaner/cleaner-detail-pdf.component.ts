@@ -670,10 +670,10 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
     const data: any[][] = []; // Explicitly define data as a 2D array
 
 
-    const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
-    var dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    await Utility.AddTextAtRightCornerPage(pdf, dtstr, pageWidth, leftMargin, rightMargin, startY, 9);
+    const repGeneratedDate = `${this.translatedLangText.CLEANING_PERIOD}: ${this.date}`; // Replace with your actual cutoff date
+    //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+    //var dtstr = await Utility.GetReportGeneratedDate(this.translate);
+    await Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, 9);
     startY += 2;
     // if(this.customer)
     // {
@@ -765,8 +765,8 @@ export class CleanerPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAd
           if (pageCount > 1) {
             startY = 50;
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
-            Utility.AddTextAtRightCornerPage(pdf, dtstr, pageWidth, leftMargin, rightMargin, startY, 9);
+            //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+            Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY, 9);
           }
         }
 
