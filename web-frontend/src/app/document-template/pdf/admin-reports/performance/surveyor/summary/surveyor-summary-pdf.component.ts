@@ -32,10 +32,10 @@ import { autoTable, Styles } from 'jspdf-autotable';
 
 export interface DialogData {
   repData: SurveyorPerformanceSummary[],
-  date:string,
-  repType:string,
-  customer:string,
-  team:string
+  date: string,
+  repType: string,
+  customer: string,
+  team: string
 }
 @Component({
   selector: 'app-surveyor-performance-summary-pdf',
@@ -243,36 +243,36 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    DAILY_TEAM_REVENUE_REPORT:'COMMON-FORM.DAILY-TEAM-REVENUE-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    CODE:'COMMON-FORM.CODE',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    QC_BY:'COMMON-FORM.QC-BY',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST',
-    REPORTED_BY:'COMMON-FORM.REPORTED-BY',
-    TEAM:'COMMON-FORM.TEAM',
-    QC_DATE:'COMMON-FORM.QC-DATE',
-    SIGN:'COMMON-FORM.SIGN',
-    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    BAY:'COMMON-FORM.BAY',
-    COMPLETED_ON:'COMMON-FORM.COMPLETED-ON',
-    COST:"COMMON-FORM.COST",
-    CLEANING_PROCESS:'COMMON-FORM.CLEANING-PROCESS',
-    CLEANER:'COMMON-FORM.CLEANER',
-    CARGO:'COMMON-FORM.CARGO',
-    CLEANING_PERIOD:'COMMON-FORM.CLEANING-PERIOD',
-    SURVEYOR_PERFORMANCE_SUMMARY_REPORT:"COMMON-FORM.SURVEYOR-PERFORMANCE-SUMMARY-REPORT",
-    SURVEYOR:"COMMON-FORM.SURVEYOR",
-    NO_OF_ESTIMATE:"COMMON-FORM.NO-OF-ESTIMATE",
-    DIFFERENCE_COST:"COMMON-FORM.DIFFERENCE-COST",
-    AVERAGE_APPROVAL:"COMMON-FORM.AVERAGE-APPROVAL",
-    REJECTED:"COMMON-FORM.REJECTED",
-    MONTH_TOTAL:"COMMON-FORM.MONTH-TOTAL",
-    GRAND_TOTAL:"COMMON-FORM.GRAND-TOTAL",
-    STEAM_PERIOD:"COMMON-FORM.STEAM-PERIOD",
-    ESTIMATE_AMOUNT:"COMMON-FORM.ESTIMATE-AMOUNT",
+    DAILY_TEAM_REVENUE_REPORT: 'COMMON-FORM.DAILY-TEAM-REVENUE-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    CODE: 'COMMON-FORM.CODE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    QC_BY: 'COMMON-FORM.QC-BY',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
+    REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    SIGN: 'COMMON-FORM.SIGN',
+    VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
+    BAY: 'COMMON-FORM.BAY',
+    COMPLETED_ON: 'COMMON-FORM.COMPLETED-ON',
+    COST: "COMMON-FORM.COST",
+    CLEANING_PROCESS: 'COMMON-FORM.CLEANING-PROCESS',
+    CLEANER: 'COMMON-FORM.CLEANER',
+    CARGO: 'COMMON-FORM.CARGO',
+    CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
+    SURVEYOR_PERFORMANCE_SUMMARY_REPORT: "COMMON-FORM.SURVEYOR-PERFORMANCE-SUMMARY-REPORT",
+    SURVEYOR: "COMMON-FORM.SURVEYOR",
+    NO_OF_ESTIMATE: "COMMON-FORM.NO-OF-ESTIMATE",
+    DIFFERENCE_COST: "COMMON-FORM.DIFFERENCE-COST",
+    AVERAGE_APPROVAL: "COMMON-FORM.AVERAGE-APPROVAL",
+    REJECTED: "COMMON-FORM.REJECTED",
+    MONTH_TOTAL: "COMMON-FORM.MONTH-TOTAL",
+    GRAND_TOTAL: "COMMON-FORM.GRAND-TOTAL",
+    STEAM_PERIOD: "COMMON-FORM.STEAM-PERIOD",
+    ESTIMATE_AMOUNT: "COMMON-FORM.ESTIMATE-AMOUNT",
   }
 
   type?: string | null;
@@ -322,10 +322,10 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: SurveyorPerformanceSummary[];
-  date?:string;
-  repType?:string;
-  team?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  team?: string;
+  customer?: string;
   index: number = 0;
   // date:string='';
   // invType:string='';
@@ -365,10 +365,10 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    this.date= this.data.date;
-    this.repType=this.data.repType;
-    this.customer=this.data.customer;
-    this.team=this.data.team;
+    this.date = this.data.date;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
+    this.team = this.data.team;
     this.onDownloadClick();
 
   }
@@ -378,7 +378,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -579,16 +579,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-
   }
-
- 
-
-
-
- 
-
-  
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
@@ -621,23 +612,22 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
 
     const reportTitle = this.GetReportTitle();
     const headers = [[
-      this.translatedLangText.MONTH, this.translatedLangText.SURVEYOR,this.translatedLangText.NO_OF_ESTIMATE,
-      this.translatedLangText.ESTIMATE_AMOUNT, this.translatedLangText.APPROVED_COST,this.translatedLangText.DIFFERENCE_COST,
-      this.translatedLangText.AVERAGE_APPROVAL,this.translatedLangText.REJECTED
-      
+      this.translatedLangText.MONTH, this.translatedLangText.SURVEYOR, this.translatedLangText.NO_OF_ESTIMATE,
+      this.translatedLangText.ESTIMATE_AMOUNT, this.translatedLangText.APPROVED_COST, this.translatedLangText.DIFFERENCE_COST,
+      this.translatedLangText.AVERAGE_APPROVAL, this.translatedLangText.REJECTED
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle',  cellWidth: 20, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      5: { halign: 'center', valign: 'middle',  cellWidth: 20,minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      
+
     };
 
     // Define headStyles with valid fontStyle
@@ -662,13 +652,13 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
-    let startY = lastTableFinalY+10 ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    
+
+
     const repGeneratedDate = `${this.translatedLangText.STEAM_PERIOD} : ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
-    startY +=5;
+    startY += 5;
     // if(this.customer)
     // {
     //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -677,37 +667,36 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
     var repRec = this.repData?.[0];
-    
-    for (let n = 0; n < (repRec?.monthly_summary?.length||0); n++) {
+
+    for (let n = 0; n < (repRec?.monthly_summary?.length || 0); n++) {
 
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = repRec?.monthly_summary?.[n];
       // const repairCost = itm?.repair_cost || 0;
       // totalRepairCost += repairCost; // Add to the total
-      for(let i=0;i<(itm?.surveyorList?.length||0);i++)
-      {
-        let mnth = (i==0)?itm?.month:'';
-        let subItm=itm?.surveyorList?.[i];
+      for (let i = 0; i < (itm?.surveyorList?.length || 0); i++) {
+        let mnth = (i == 0) ? itm?.month : '';
+        let subItm = itm?.surveyorList?.[i];
         data.push([
-          mnth || "", subItm?.surveyor_name || "", subItm?.est_count ||"",Utility.formatNumberDisplay(subItm?.est_cost)||'',
-          Utility.formatNumberDisplay(subItm?.appv_cost)||'',Utility.formatNumberDisplay(subItm?.diff_cost)||'',
-          Utility.formatNumberDisplay(subItm?.average),subItm?.rejected||''
+          mnth || "", subItm?.surveyor_name || "", subItm?.est_count || "", Utility.formatNumberDisplay(subItm?.est_cost) || '',
+          Utility.formatNumberDisplay(subItm?.appv_cost) || '', Utility.formatNumberDisplay(subItm?.diff_cost) || '',
+          Utility.formatNumberDisplay(subItm?.average), subItm?.rejected || ''
         ]);
       }
       data.push([
-        this.translatedLangText.MONTH_TOTAL,"",itm?.monthly_total_est_count,Utility.formatNumberDisplay(itm?.monthly_total_est_cost)||'',
-        Utility.formatNumberDisplay(itm?.monthly_total_appv_cost)||'',Utility.formatNumberDisplay(itm?.monthly_total_diff_cost)||'',
-        Utility.formatNumberDisplay(itm?.monthly_total_average)||'',Utility.formatNumberDisplay(itm?.monthly_total_rejected)||'',
+        this.translatedLangText.MONTH_TOTAL, "", itm?.monthly_total_est_count, Utility.formatNumberDisplay(itm?.monthly_total_est_cost) || '',
+        Utility.formatNumberDisplay(itm?.monthly_total_appv_cost) || '', Utility.formatNumberDisplay(itm?.monthly_total_diff_cost) || '',
+        Utility.formatNumberDisplay(itm?.monthly_total_average) || '', Utility.formatNumberDisplay(itm?.monthly_total_rejected) || '',
       ]);
     }
     data.push([
-      this.translatedLangText.GRAND_TOTAL,"",repRec?.grand_total_est_count,Utility.formatNumberDisplay(repRec?.grand_total_est_cost)||'',
-      Utility.formatNumberDisplay(repRec?.grand_total_appv_cost)||'',Utility.formatNumberDisplay(repRec?.grand_total_diff_cost)||'',
-      Utility.formatNumberDisplay(repRec?.grand_total_average)||'',Utility.formatNumberDisplay(repRec?.grand_total_rejected)||'',
+      this.translatedLangText.GRAND_TOTAL, "", repRec?.grand_total_est_count, Utility.formatNumberDisplay(repRec?.grand_total_est_cost) || '',
+      Utility.formatNumberDisplay(repRec?.grand_total_appv_cost) || '', Utility.formatNumberDisplay(repRec?.grand_total_diff_cost) || '',
+      Utility.formatNumberDisplay(repRec?.grand_total_average) || '', Utility.formatNumberDisplay(repRec?.grand_total_rejected) || '',
     ])
 
     //data.push([this.translatedLangText.TOTAL,"","","","","","",Utility.formatNumberDisplay(totalRepairCost)]);
-    
+
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
     // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
@@ -728,7 +717,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
         minCellHeight: minHeightHeaderCol
 
       },
-       tableWidth: pageWidth - leftMargin - rightMargin,
+      tableWidth: pageWidth - leftMargin - rightMargin,
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
       bodyStyles: {
@@ -737,27 +726,26 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
-        let colSpan:number=2;
+        let colSpan: number = 2;
         let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
         // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-         if(data.cell.raw==this.translatedLangText.MONTH_TOTAL) 
-          { 
-            data.cell.styles.halign = 'right';
-            data.cell.styles.fontStyle = 'bold';
-            data.cell.colSpan = colSpan;
-          }
-        
-        //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-        if(data.row.index==totalRowIndex){
+        if (data.cell.raw == this.translatedLangText.MONTH_TOTAL) {
+          data.cell.styles.halign = 'right';
           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor=[231, 231, 231];
+          data.cell.colSpan = colSpan;
+        }
+
+        //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
+        if (data.row.index == totalRowIndex) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [231, 231, 231];
           data.cell.styles.valign = 'middle'; // Center text vertically
           if (data.column.index === 0) {
             data.cell.colSpan = colSpan;  // Merge 4 columns into one
             data.cell.styles.halign = 'right'; // Center text horizontally
           }
         }
-        if ((data.row.index==totalRowIndex ) && data.column.index > 0 && data.column.index < colSpan) {
+        if ((data.row.index == totalRowIndex) && data.column.index > 0 && data.column.index < colSpan) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
@@ -778,13 +766,12 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
       },
     });
 
-    var gap=7;
+    var gap = 7;
 
-    if(lastTableFinalY+ topMargin+bottomMargin+ (gap*4.5)> pageHeight)
-    {
-        pdf.addPage();
-        const pageCount = pdf.getNumberOfPages();
-        pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
+      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
     }
 
     const totalPages = pdf.getNumberOfPages();
@@ -801,7 +788,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     });
 
- 
+
 
     // //Sign , verified tables-------------start--------------
     // var content:string[]=[];
@@ -821,10 +808,10 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     // content.push(str.padEnd(maxSpace," "));
     // values.push(": "+`${this.team}`);
     // var startX=leftMargin;
-    
+
     // startY = pageHeight-(bottomMargin+10);
     // var buffer = maxSpace *3;
-   
+
     // pdf.setPage(pdf.getNumberOfPages());
     // pdf.setLineWidth(0.01);
     // pdf.setLineDashPattern([1,1], 1);
@@ -870,7 +857,7 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     this.dialogRef.close();
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -975,8 +962,8 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-     title = `${this.translatedLangText.SURVEYOR_PERFORMANCE_SUMMARY_REPORT}`
+    var title: string = '';
+    title = `${this.translatedLangText.SURVEYOR_PERFORMANCE_SUMMARY_REPORT}`
     return `${title}`
   }
 
@@ -1013,5 +1000,5 @@ export class SurveyorPerformanceSummaryPdfComponent extends UnsubscribeOnDestroy
     return retval;
 
   }
- 
+
 }

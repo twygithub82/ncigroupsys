@@ -154,7 +154,7 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
-    <div hidden >
+    <!-- <div hidden >
       <mat-accordion>
         <mat-expansion-panel expanded="true">
           <mat-expansion-panel-header>
@@ -168,9 +168,6 @@
                   [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.GENERATE_REPORT}}>
                   <mat-icon>assignment</mat-icon>
                 </button>
-                <!-- <button mat-mini-fab class="m-l-10 bg-blue" (click)="resetDialog($event)">
-                  <mat-icon>cached</mat-icon>
-                </button> -->
                 <button mat-mini-fab class="m-l-10 bg-dark-gold" (click)="resetDialog($event,2)" (click)="$event.stopPropagation()"
                   [disabled]="(isGeneratingReport)" matTooltip={{translatedLangText.CLEAR_ALL}}>
                   <mat-icon>clear_all</mat-icon>
@@ -260,7 +257,7 @@
           </form>
         </mat-expansion-panel>
       </mat-accordion>
-    </div>
+    </div> -->
     <div class="body overflow-auto" hidden>
 
       <!-- No result -->

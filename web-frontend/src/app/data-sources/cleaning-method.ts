@@ -37,21 +37,21 @@ export const GET_CLEANING_METHOD_QUERY = gql`
       nodes {
         category_guid
         create_by
-          create_dt
-          delete_dt
-          description
-          guid
-          name
-          update_by
-          update_dt
+        create_dt
+        delete_dt
+        description
+        guid
+        name
+        update_by
+        update_dt
       }
-          totalCount
-        pageInfo {
-          endCursor
-          hasNextPage
-          hasPreviousPage
-          startCursor
-        }
+      totalCount
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
     }
   }
 `;
