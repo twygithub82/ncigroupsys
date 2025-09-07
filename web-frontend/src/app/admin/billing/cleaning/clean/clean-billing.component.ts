@@ -421,7 +421,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
       if (!where.storing_order_tank) where.storing_order_tank = {};
       if (!where.storing_order_tank.storing_order) where.storing_order_tank.storing_order = {};
       where.storing_order_tank.storing_order = { customer_company: { code: { eq: this.searchForm!.get('customer_code')?.value.code } } };
-      where.customer_company = { code: { eq: this.searchForm!.get('customer_code')?.value.code } }
+      // where.customer_company = { code: { eq: this.searchForm!.get('customer_code')?.value.code } }
     }
 
     if (this.searchForm!.get('invoiced')?.value) {
@@ -429,14 +429,7 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     }
 
     if (this.searchForm!.get('branch_code')?.value) {
-      if(!where.customer_company){
-        where.customer_company = { code: { eq: this.searchForm!.get('branch_code')?.value.code } }
-      }
-      else
-      {
-        var existingWhere = where.customer_company;
-        where.customer_company = [existingWhere,{ code: { eq: this.searchForm!.get('branch_code')?.value.code } }]
-      }
+      where.customer_company = { code: { eq: this.searchForm!.get('branch_code')?.value.code } }
     }
 
     if (this.searchForm!.get('eir_dt')?.value) {

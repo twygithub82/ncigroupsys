@@ -647,7 +647,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     let fontSz = 7;
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
-
+     const NoTankTitle = this.translatedLangText.NO_OF_TANKS;
     const reportTitle = this.GetReportTitle();
     // const headers = [[
     //   { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: 'bottom' } },
@@ -671,11 +671,11 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const headers = [this.GetReportColumnsHeader(),
     [
       // Empty cells for the first 5 columns (they are spanned by rowSpan: 2)
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for LAST_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
-      this.translatedLangText.TANK, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      NoTankTitle, this.translatedLangText.COST, // Sub-headers for LAST_PERIODIC_TEST
+      NoTankTitle, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      NoTankTitle, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      NoTankTitle, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
+      NoTankTitle, this.translatedLangText.COST, // Sub-headers for NEXT_PERIODIC_TEST
     ]];
 
     const comStyles: any = {
