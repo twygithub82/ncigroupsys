@@ -760,7 +760,7 @@ export class MonthlyReportDetailsPdfComponent extends UnsubscribeOnDestroyAdapte
 
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    startY += 2;
+    startY += PDFUtility.TableStartTopBuffer();
     // Add table using autoTable plugin
     autoTable(pdf, {
       head: headers,
