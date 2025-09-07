@@ -78,32 +78,6 @@ export class Functions{
 
 }
 
-
-
-const GET_USERS = gql`
-  query queryUsers($where: aspnetusersFilterInput, $order: [aspnetusersSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
-    resultList: queryUsers(where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
-      totalCount
-      nodes {
-        id
-        userName
-        email
-        aspnetuserroles {
-          aspnetroles {
-            Role
-          }
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-    }
-  }
-`;
-
 const GET_ROLES= gql`
  query queryRoles($where: roleFilterInput, $order: [roleSortInput!], $first: Int, $after: String, $last: Int, $before: String) {
  resultList:  queryRoles (where: $where, order: $order, first: $first, after: $after, last: $last, before: $before) {
@@ -262,28 +236,28 @@ export class RoleDS extends BaseDataSource<RoleItem> {
   constructor(private apollo: Apollo) {
     super();
   }
-  searchUser(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RoleItem[]> {
-    this.loadingSubject.next(true);
+  // searchUser(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RoleItem[]> {
+  //   this.loadingSubject.next(true);
 
-    return this.apollo
-      .query<any>({
-        query: GET_USERS,
-        variables: { where, order, first, after, last, before },
-        fetchPolicy: 'no-cache' // Ensure fresh data
-      })
-      .pipe(
-        map((result) => result.data),
-        catchError(() => of({ items: [], totalCount: 0 })),
-        finalize(() => this.loadingSubject.next(false)),
-        map((result) => {
-          const resultList = result.resultList || { nodes: [], totalCount: 0 };
-          this.dataSubject.next(resultList.nodes);
-          this.totalCount = resultList.totalCount;
-          this.pageInfo = resultList.pageInfo;
-          return resultList.nodes;
-        })
-      );
-  }
+  //   return this.apollo
+  //     .query<any>({
+  //       query: GET_USERS,
+  //       variables: { where, order, first, after, last, before },
+  //       fetchPolicy: 'no-cache' // Ensure fresh data
+  //     })
+  //     .pipe(
+  //       map((result) => result.data),
+  //       catchError(() => of({ items: [], totalCount: 0 })),
+  //       finalize(() => this.loadingSubject.next(false)),
+  //       map((result) => {
+  //         const resultList = result.resultList || { nodes: [], totalCount: 0 };
+  //         this.dataSubject.next(resultList.nodes);
+  //         this.totalCount = resultList.totalCount;
+  //         this.pageInfo = resultList.pageInfo;
+  //         return resultList.nodes;
+  //       })
+  //     );
+  // }
 
   searchRoles(where: any, order?: any, first?: number, after?: string, last?: number, before?: string): Observable<RoleItem[]> {
     this.loadingSubject.next(true);

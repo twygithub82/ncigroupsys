@@ -43,6 +43,8 @@ import {
   ApexTitleSubtitle,
   ApexPlotOptions,
 } from "ng-apexcharts";
+import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export interface DialogData {
   repData: SteamPerformance[],
@@ -258,6 +260,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     CUTOFF_DATE: 'COMMON-FORM.CUTOFF-DATE',
     GATEIO_S: 'COMMON-FORM.GATEIO-S',
     GATE_SURCHAGRGE_PENDING_REPORT: "COMMON-FORM.GATE-SURCHAGRGE-PENDING-REPORT",
+    STEAMING_PERFORMANCE_REPORT: "COMMON-FORM.STEAMING-PERFORMANCE-REPORT",
     TOTAL_COST: "COMMON-FORM.TOTAL-COST",
     COMPLETED_DATE: "COMMON-FORM.COMPLETED-DATE",
     CARGO: "COMMON-FORM.CARGO",
@@ -852,7 +855,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
   GetReportTitle(): string {
-    return `${this.translatedLangText.REPORT_TITLE} `
+    return `${this.translatedLangText.STEAMING_PERFORMANCE_REPORT}`
   }
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
@@ -915,7 +918,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      3: { halign: 'left', valign: 'middle', cellWidth: 70, minCellHeight: minHeightBodyCell },
+      3: { halign: 'left', valign: 'middle', cellWidth: 70, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
@@ -954,8 +957,13 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     let lastTableFinalY = 40;
 
 
-    const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD}:${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, 8);
+    //const cutoffDate = `${this.translatedLangText.STEAMING_PERIOD} : ${this.date}`;
+    //Utility.AddTextAtCenterPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 6, 9);
+
+    //const repGeneratedDate = await Utility.GetReportGeneratedDate(this.translate);
+    // Replace with your actual cutoff date
+    const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.STEAMING_PERIOD, this.date);
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, PDFUtility.RightSubTitleFontSize());
     // Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
@@ -985,8 +993,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       let itm = this.repData[n];
       data.push([
         (n + 1).toString(), itm.tank_no || "",
-        itm.customer_code || '', itm.last_cargo || "", Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "", itm.bay, itm.require_temp || "",
-        Utility.formatNumberDisplay(itm.cost) || "", (itm.themometer?.begin_temp) || "", (itm.themometer?.close_temp) || "",
+        itm.customer_code || '', itm.last_cargo || "", Utility.convertEpochToDateStr(itm.complete_dt!) || "", itm.duration || "", itm.require_temp,
+        Utility.formatNumberDisplay(itm.cost) || "", itm.bay || "", (itm.themometer?.begin_temp) || "", (itm.themometer?.close_temp) || "",
         (itm.top?.begin_temp) || "", (itm.top?.close_temp) || "", (itm.bottom?.begin_temp) || "", (itm.bottom?.close_temp) || "",
 
       ]);
@@ -999,9 +1007,9 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     autoTable(pdf, {
       head: headers,
       body: data,
-     // startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin,top:topMargin+45 },
+      margin: { left: leftMargin, top: topMargin + 45 },
       styles: {
         fontSize: fontSize,
         minCellHeight: minHeightHeaderCol
@@ -1018,17 +1026,17 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       didDrawPage: (data: any) => {
         const pageCount = pdf.getNumberOfPages();
 
-       
+
         // Capture the final Y position of the table
         lastTableFinalY = data.cursor.y;
         var pg = pagePositions.find(p => p.page == pageCount);
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-           if (pageCount > 1) 
-            {
-              Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-                Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, 48, 8);
-            }
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            //Utility.AddTextAtCenterPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 6, 9);
+            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.RightSubTitleFontSize());
+          }
 
         }
       },
@@ -1089,7 +1097,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
 
     const totalPages = pdf.getNumberOfPages();
 
- for (const { page, x, y } of pagePositions) {
+    for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
       pdf.setLineDashPattern([0.01, 0.01], 0.1);

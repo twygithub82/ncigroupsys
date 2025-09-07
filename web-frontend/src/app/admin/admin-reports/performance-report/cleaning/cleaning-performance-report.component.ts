@@ -170,7 +170,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     CLEANING_PROCESS: 'COMMON-FORM.CLEANING-PROCESS',
     CARGO: "COMMON-FORM.CARGO",
     CLEANER: "COMMON-FORM.CLEANER",
-    CLEANING_BAY: "COMMON-FORM.CLEANING-BAY"
+    CLEANING_BAY: "COMMON-FORM.CLEANING-BAY",
   }
 
   invForm?: UntypedFormGroup;
@@ -317,17 +317,17 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
   }
 
   initializeValueChanges() {
-    this.searchForm!.get('customer_code')!.valueChanges.pipe(
+    this.searchForm!.get('customer_code')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         this.branch_companyList = [];
         this.branchCodeControl.reset('');
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (typeof value === 'object') {
+          searchCriteria = value?.code || '';
         } else {
-          searchCriteria = value.code;
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.search({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -336,25 +336,25 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       })
     ).subscribe();
 
-    this.searchForm!.get('cargo')!.valueChanges.pipe(
+    this.searchForm!.get('cargo')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
         this.branch_companyList = [];
         this.branchCodeControl.reset('');
-        if (typeof value === 'string') {
-          searchCriteria = value;
+        if (typeof value === 'object') {
+          searchCriteria = value?.cargo || '';
         } else {
-          searchCriteria = value.cargo;
+          searchCriteria = value || '';
         }
-        this.subs.sink = this.tcDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
+        this.subs.sink = this.tcDS.loadItems({ or: [{ cargo: { contains: searchCriteria } }] }, { cargo: 'ASC' }).subscribe(data => {
           this.cargoList = data
         });
       })
     ).subscribe();
 
-    this.searchForm!.get('cleaner')!.valueChanges.pipe(
+    this.searchForm!.get('cleaner')?.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       tap(value => {
@@ -363,7 +363,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
           searchCriteria = value;
         }
 
-        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { aspnetuserroles: { some: { aspnetroles: { Role: { eq: 'Operation' } } } } }] },
+        this.subs.sink = this.userDS.searchUser({ and: [{ userName: { contains: searchCriteria } }, { user_role: { some: { role: { code: { eq: 'OPERATION_CLEANING' } } } } }] },
           { userName: 'ASC' }).subscribe(data => {
             this.cleanerList = data
               .map(u => u.userName)
@@ -412,7 +412,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
       ]
     };
 
-    this.clnPrcsDS.loadItems(whereCln, { sequence: "DESC" }, 100).subscribe(data => {
+    this.clnPrcsDS.loadItems(whereCln, { name: "ASC" }, 100).subscribe(data => {
       this.cleanProcessList = data;
     })
 
@@ -486,8 +486,6 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
           startDateControl.markAsTouched();
         }
       }
-
-
       return;
     }
     this.isGeneratingReport = true;
@@ -499,7 +497,7 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
     if (this.searchForm!.get('customer_code')?.value) {
       // if(!where.storing_order_tank) where.storing_order_tank={};
-      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+      where.customer_code = `${this.searchForm!.get('customer_code')?.value?.code}`;
       cond_counter++;
     }
 
@@ -520,13 +518,13 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
 
 
     if ((this.searchForm!.get('cargo')?.value)) {
-      where.last_cargo = `${this.searchForm!.get('cargo')?.value.cargo || ''}`
+      where.last_cargo = `${this.searchForm!.get('cargo')?.value?.cargo || ''}`
       cond_counter++;
     }
 
     if ((this.searchForm!.get('clean_process')?.value)) {
 
-      where.method_name = `${this.searchForm!.get('clean_process')?.value.name || ''}`
+      where.method_name = `${this.searchForm!.get('clean_process')?.value?.name || ''}`
 
       cond_counter++;
     }

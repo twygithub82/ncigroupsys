@@ -50,6 +50,7 @@ import {
   ApexResponsive,
   NgApexchartsModule,
 } from 'ng-apexcharts';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 
 interface SeriesItem {
@@ -776,7 +777,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 0.5, 11);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 0.5, PDFUtility.CenterSubTitleFontSize());
 
     if (this.customer) {
       const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -1091,7 +1092,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
           if (pageCount > 1) {
 
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35); //Add Second Page
-             Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 49.5, 11);
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 49.5, PDFUtility.CenterSubTitleFontSize());
           }
         }
       },

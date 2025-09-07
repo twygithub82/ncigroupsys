@@ -28,14 +28,15 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
   repData: ZeroApprovalCostItem[],
-  date:string,
-  repType:string,
-  customer:string,
-  code:string
+  date: string,
+  repType: string,
+  customer: string,
+  code: string
 }
 @Component({
   selector: 'app-zero-approval-cost-pdf',
@@ -243,27 +244,27 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    DAILY_TEAM_APPROVAL_REPORT:'COMMON-FORM.DAILY-TEAM-APPROVAL-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    CODE:'COMMON-FORM.CODE',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    QC_BY:'COMMON-FORM.QC-BY',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST',
-    REPORTED_BY:'COMMON-FORM.REPORTED-BY',
-    TEAM:'COMMON-FORM.TEAM',
-    QC_DATE:'COMMON-FORM.QC-DATE',
-    SIGN:'COMMON-FORM.SIGN',
-    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    APPROVED_DATE:'COMMON-FORM.APPROVED-DATE',
-    CUSTOMER_TOTAL:'COMMON-FORM.CUSTOMER-TOTAL',
-    GRAND_TOTAL:"COMMON-FORM.GRAND-TOTAL",
-    ZERO_APPROVAL_COST:'COMMON-FORM.ZERO-APPROVAL-COST',
-    ESTIMATED:"COMMON-FORM.ESTIMATED",
-    COMPLETED_DATE:"COMMON-FORM.COMPLETED-DATE",
-    S_N:'COMMON-FORM.S_N',
-    
+    DAILY_TEAM_APPROVAL_REPORT: 'COMMON-FORM.DAILY-TEAM-APPROVAL-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    CODE: 'COMMON-FORM.CODE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    QC_BY: 'COMMON-FORM.QC-BY',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
+    REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    SIGN: 'COMMON-FORM.SIGN',
+    VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
+    APPROVED_DATE: 'COMMON-FORM.APPROVED-DATE',
+    CUSTOMER_TOTAL: 'COMMON-FORM.CUSTOMER-TOTAL',
+    GRAND_TOTAL: "COMMON-FORM.GRAND-TOTAL",
+    ZERO_APPROVAL_COST: 'COMMON-FORM.ZERO-APPROVAL-COST',
+    ESTIMATED: "COMMON-FORM.ESTIMATED",
+    COMPLETED_DATE: "COMMON-FORM.COMPLETED-DATE",
+    S_N: 'COMMON-FORM.S_N',
+
   }
 
   type?: string | null;
@@ -271,7 +272,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   // steamPartDS: SteamPartDS;
   // sotDS: StoringOrderTankDS;
   // ccDS: CustomerCompanyDS;
-   cvDS: CodeValuesDS;
+  cvDS: CodeValuesDS;
   repair_guid?: string | null;
   customer_company_guid?: string | null;
   estimate_no?: string | null;
@@ -314,10 +315,10 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: ZeroApprovalCostItem[];
-  date?:string;
-  repType?:string;
-  code?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  code?: string;
+  customer?: string;
   index: number = 0;
   // date:string='';
   // invType:string='';
@@ -335,16 +336,16 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     private sanitizer: DomSanitizer) {
     super();
     this.translateLangText();
-   // this.steamDS = new SteamDS(this.apollo);
+    // this.steamDS = new SteamDS(this.apollo);
     //this.steamPartDS = new SteamPartDS(this.apollo);
     ///this.sotDS = new StoringOrderTankDS(this.apollo);
     //this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.repData = this.data.repData;
-    this.date= this.data.date;
-    this.repType=this.data.repType;
-    this.customer=this.data.customer;
-    this.code=this.data.code;
+    this.date = this.data.date;
+    this.repType = this.data.repType;
+    this.customer = this.data.customer;
+    this.code = this.data.code;
     // this.repair_guid = data.repair_guid;
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
@@ -361,7 +362,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   async ngOnInit() {
     await this.getCodeValuesData();
     //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-   
+
     this.onDownloadClick();
 
   }
@@ -371,7 +372,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -412,7 +413,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   async getCodeValuesData(): Promise<void> {
     const queries = [
       { alias: 'repairOptionCv', codeValType: 'REPAIR_OPTION' },
-       { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
+      { alias: 'processStatusCv', codeValType: 'PROCESS_STATUS' },
       // { alias: 'unitTypeCv', codeValType: 'UNIT_TYPE' },
     ];
 
@@ -549,13 +550,13 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
@@ -580,7 +581,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-    let minHeightBodyCell = 9;
+    let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
     let fontSz = 6;
     const pagePositions: { page: number; x: number; y: number }[] = [];
@@ -590,15 +591,15 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
       this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE,
-      this.translatedLangText.COMPLETED_DATE,this.translatedLangText.APPROVED_DATE, 
-      this.translatedLangText.ESTIMATE_NO,this.translatedLangText.ESTIMATED
+      this.translatedLangText.COMPLETED_DATE, this.translatedLangText.APPROVED_DATE,
+      this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATED
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: 8,minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle',cellWidth: 25, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 25,minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -628,126 +629,125 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 46;
 
-    let date = `${this.translatedLangText.INVENTORY_PERIOD} : ${this.date}`;
-    await Utility.AddTextAtCenterPage(pdf,date,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
-    lastTableFinalY+=5;
+    let date = PDFUtility.FormatColon(this.translatedLangText.INVENTORY_PERIOD, this.date);
+    //await Utility.AddTextAtCenterPage(pdf,date,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+    await Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+    lastTableFinalY += 5;
 
-    let startY = lastTableFinalY ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    
+
+
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
-    let GrandTotal=0;
+    let GrandTotal = 0;
     var zeroCostRep = ZeroApprovalCostItem.groupByCustomer(this.repData!);
-    var totalCust =Object.entries(zeroCostRep).length;
-    var counter=0;
+    var totalCust = Object.entries(zeroCostRep).length;
+    var counter = 0;
     Object.entries(zeroCostRep).forEach(([customerCode, items]) => {
-      let CustomerTotal=0;
+      let CustomerTotal = 0;
       counter++;
       let customer = `${customerCode}-${items[0].customer_name}`;
       data.push([
-        customer,"","","","","",""
+        customer, "", "", "", "", "", ""
       ]);
       // Access individual items
       items.forEach(itm => {
-        GrandTotal+=itm?.est_cost||0;
-        CustomerTotal+=itm?.est_cost||0;
+        GrandTotal += itm?.est_cost || 0;
+        CustomerTotal += itm?.est_cost || 0;
         data.push([
-                (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "",Utility.convertEpochToDateStr(itm?.eir_dt) ||"",
-                Utility.convertEpochToDateStr(itm?.complete_dt)||"",Utility.convertEpochToDateStr(itm?.approve_dt)||"",
-                itm?.estimate_no,Utility.formatNumberDisplay(itm?.est_cost)
-              ]);
+          (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", Utility.convertEpochToDateStr(itm?.eir_dt) || "",
+          Utility.convertEpochToDateStr(itm?.complete_dt) || "", Utility.convertEpochToDateStr(itm?.approve_dt) || "",
+          itm?.estimate_no, Utility.formatNumberDisplay(itm?.est_cost)
+        ]);
       });
-      data.push([this.translatedLangText.CUSTOMER_TOTAL,"","","","","","",Utility.formatNumberDisplay(CustomerTotal)]);
+      data.push([this.translatedLangText.CUSTOMER_TOTAL, "", "", "", "", "", "", Utility.formatNumberDisplay(CustomerTotal)]);
       // Add table using autoTable plugin
-  });
+    });
 
-  data.push([this.translatedLangText.GRAND_TOTAL,"","","","","","",Utility.formatNumberDisplay(GrandTotal)]);
-        
-  pdf.setDrawColor(0, 0, 0); // red line color
+    data.push([this.translatedLangText.GRAND_TOTAL, "", "", "", "", "", "", Utility.formatNumberDisplay(GrandTotal)]);
 
-  pdf.setLineWidth(0.1);
-  pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    pdf.setDrawColor(0, 0, 0); // red line color
 
-  let AllowedRowColSpan=-1;
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-  autoTable(pdf, {
-    head: headers,
-    body: data,
-    startY: startY, // Start table at the current startY value
-    theme: 'grid',
-    styles: {
-      fontSize: fontSz,
-      minCellHeight: minHeightHeaderCol
+    let AllowedRowColSpan = -1;
 
-    },
-    columnStyles: comStyles,
-    headStyles: headStyles, // Custom header styles
-    bodyStyles: {
-      fillColor: [255, 255, 255],
-      //halign: 'left', // Left-align content for body by default
-      //valign: 'middle', // Vertically align content
-    },
-    didParseCell: (data: any) => {
-      let colSpan:number=7;
-      let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-      let bColSpan=false;
-      
-      if(data.cell.raw==this.translatedLangText.CUSTOMER_TOTAL && data.section=='body'  &&  AllowedRowColSpan!==data.row.index) 
-        { 
-          colSpan=7;
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        //halign: 'left', // Left-align content for body by default
+        //valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+        let colSpan: number = 7;
+        let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        let bColSpan = false;
+
+        if (data.cell.raw == this.translatedLangText.CUSTOMER_TOTAL && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
+          colSpan = 7;
           data.cell.styles.halign = 'right';
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fontSize = 8;
           data.cell.colSpan = colSpan;
-          AllowedRowColSpan=data.row.index;
-          data.cell.styles.fillColor=[231, 231, 231];
+          AllowedRowColSpan = data.row.index;
+          data.cell.styles.fillColor = [231, 231, 231];
         }
 
-      if(data.cell.raw==this.translatedLangText.GRAND_TOTAL&& data.section=='body'  &&  AllowedRowColSpan!==data.row.index) 
-        { 
-          colSpan=7;
+        if (data.cell.raw == this.translatedLangText.GRAND_TOTAL && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
+          colSpan = 7;
           data.cell.styles.halign = 'right';
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fontSize = 8;
           data.cell.colSpan = colSpan;
           data.cell.styles.fontSize = 8;
-          AllowedRowColSpan=data.row.index;
-          data.cell.styles.fillColor=[231, 231, 231];
+          AllowedRowColSpan = data.row.index;
+          data.cell.styles.fillColor = [231, 231, 231];
         }
-      if(data.column.index==0 && !Utility.isParsableToNumber(data.cell.raw) && data.section=='body' &&  AllowedRowColSpan!==data.row.index)
-      {
-        colSpan=8;
-        data.cell.styles.halign = 'left';
-        data.cell.styles.fontStyle = 'bold';
-        data.cell.styles.fontSize = 8;
-        data.cell.colSpan = colSpan;
-        AllowedRowColSpan=data.row.index;
-      }
-
-      if ((AllowedRowColSpan==data.row.index)&& data.section=='body' && data.column.index > 0 && data.column.index < colSpan) {
-        data.cell.text = ''; // Remove text from hidden columns
-        data.cell.colSpan = 0; // Hide these columns
-        //bColSpan=false;
-      }
-    },
-    didDrawPage: (d: any) => {
-      const pageCount = pdf.getNumberOfPages();
-
-      lastTableFinalY = d.cursor.y;
-
-      var pg = pagePositions.find(p => p.page == pageCount);
-      if (!pg) {
-        pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-        if (pageCount > 1) {
-          Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+        if (data.column.index == 0 && !Utility.isParsableToNumber(data.cell.raw) && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
+          colSpan = 8;
+          data.cell.styles.halign = 'left';
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fontSize = 8;
+          data.cell.colSpan = colSpan;
+          AllowedRowColSpan = data.row.index;
         }
-      }
 
-    },
-  });
-  
+        if ((AllowedRowColSpan == data.row.index) && data.section == 'body' && data.column.index > 0 && data.column.index < colSpan) {
+          data.cell.text = ''; // Remove text from hidden columns
+          data.cell.colSpan = 0; // Hide these columns
+          //bColSpan=false;
+        }
+      },
+      didDrawPage: (d: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = d.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+          }
+        }
+
+      },
+    });
+
     // for (let n = 0; n < zeroCostRep.; n++) {
 
     //   //let startY = lastTableFinalY + 15; // Start Y position for the current table
@@ -762,29 +762,28 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     //     ]);
     // }
 
-    
 
 
-    
-    
+
+
+
 
     // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
     // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
     // this.displayTotalWithRO()]);
 
-  
-    var gap=7;
 
-    if(lastTableFinalY+ topMargin+bottomMargin+ (gap*4.5)> pageHeight)
-    {
-        pdf.addPage();
-        const pageCount = pdf.getNumberOfPages();
-        pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    var gap = 7;
+
+    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
+      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
     }
 
     const totalPages = pdf.getNumberOfPages();
 
-    
+
     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
@@ -820,7 +819,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     this.dialogRef.close();
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -925,8 +924,8 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-     title = `${this.repType} - ${this.translatedLangText.ZERO_APPROVAL_COST}`
+    var title: string = '';
+    title = `${this.repType} - ${this.translatedLangText.ZERO_APPROVAL_COST}`
     return `${title}`
   }
 
@@ -966,5 +965,5 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     return retval;
 
   }
- 
+
 }

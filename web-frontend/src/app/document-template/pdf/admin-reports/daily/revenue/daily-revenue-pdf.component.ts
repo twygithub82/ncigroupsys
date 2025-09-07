@@ -28,6 +28,7 @@ import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Styles } from 'jspdf-autotable';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -649,13 +650,13 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     var dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    var approvalDt = `${this.translatedLangText.QC_DATE} : ${this.date}`;
+    var approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
 
-    await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, 9);
+    await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
 
-    var teamStr = `${this.translatedLangText.TEAM} : ${this.team}`;
-    await Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, 9);
-    startY += 3;
+    var teamStr = PDFUtility.FormatColon(this.translatedLangText.TEAM, this.team);
+    await Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+    startY += PDFUtility.TableStartTopBuffer();
 
 
 

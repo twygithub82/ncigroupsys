@@ -773,8 +773,6 @@ export class Utility {
     const titleX = leftMargin + 1; // Centering the title
 
     pdf.text(text, titleX, topPosition); // Position it at the top
-
-
   }
 
   static AddTextAtRightCornerPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
@@ -784,8 +782,18 @@ export class Utility {
     const titleX = (pageWidth - titleWidth) - rightMargin; // Centering the title
 
     pdf.text(text, titleX, topPosition); // Position it at the top
+  }
 
+  static AddTextAtRightCornerPage2(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number): number {
+    pdf.saveGraphicsState();
+    pdf.setFontSize(fontSize);
+    const titleWidth = pdf.getStringUnitWidth(text) * pdf.getFontSize() / pdf.internal.scaleFactor;
+    const titleX = (pageWidth - titleWidth) - rightMargin;
 
+    pdf.text(text, titleX, topPosition);
+
+    const textHeight = fontSize * 0.352778;
+    return textHeight;
   }
 
   static AddTextAtCenterPage(pdf: jsPDF, text: string, pageWidth: number, leftMargin: number, rightMargin: number, topPosition: number, fontSize: number) {
@@ -922,14 +930,14 @@ export class Utility {
   static async DrawBase64ImageAtCenterPage(pdf: jsPDF, base64: string, pageWidth: number, leftMargin: number,
     rightMargin: number, topPosition: number, maxChartWidth: number) {
     let chartContentWidth = maxChartWidth;
-    let bottomMargin =10;
+    let bottomMargin = 10;
     let startY: number = topPosition;
     const imgInfo = await Utility.getImageSizeFromBase64(base64);
     const aspectRatio = imgInfo.width / imgInfo.height;
     let imgHeight1 = chartContentWidth / aspectRatio;
 
     // Check if the scaled height exceeds the available page height
-    const maxPageHeight = pdf.internal.pageSize.height - startY -bottomMargin; // Remaining space on the page
+    const maxPageHeight = pdf.internal.pageSize.height - startY - bottomMargin; // Remaining space on the page
     if (imgHeight1 > maxPageHeight) {
       // Adjust height to fit within the page
       imgHeight1 = maxPageHeight;
@@ -1713,7 +1721,7 @@ export class Utility {
 
     var dt = new Date();
     var dtStr = this.formatUKDateString(dt);
-    var result = `${translatedLangText.DATE}: ${dtStr}`;
+    var result = PDFUtility.FormatColon(translatedLangText.DATE, dtStr);
 
     return `${result}`;
   }

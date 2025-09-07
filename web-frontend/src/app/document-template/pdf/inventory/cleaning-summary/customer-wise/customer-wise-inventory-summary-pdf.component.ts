@@ -234,7 +234,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     INVENTORY_PERIOD: 'COMMON-FORM.INVENTORY-PERIOD',
     LOCATION_STATUS: 'COMMON-FORM.LOCATION-STATUS',
     CLEANING_INVENTORY: 'COMMON-FORM.CLEANING-INVENTORY',
-    CLEANING_ACTIVITY:'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
+    CLEANING_ACTIVITY: 'MENUITEMS.REPORTS.LIST.CLEANING-ACTIVITY',
     CUSTOMER_WISE: 'COMMON-FORM.CUSTOMER-WISE',
     CLEANING_PERIOD: 'COMMON-FORM.CLEANING-PERIOD',
     S_N: 'COMMON-FORM.S_N',
@@ -289,9 +289,6 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
   report_summary_item: cleaning_report_summary_item[] = [];
   date: string;
 
-
-
-
   constructor(
     public dialogRef: MatDialogRef<CustomerWiseInventorySummaryPdfComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -326,7 +323,6 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
 
   async ngOnInit() {
     this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-
   }
 
   async generatePDF(): Promise<void> {
@@ -859,7 +855,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
-    
+
     //Utility.AddTextAtCenterPage(pdf, this.translatedLangText.CUSTOMER_WISE, pageWidth, leftMargin, rightMargin, topMargin + 42, 9);
 
     // Variable to store the final Y position of the last table
@@ -928,8 +924,8 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
-             Utility.AddTextAtRightCornerPage(pdf, clnDate, pageWidth, leftMargin, rightMargin + 4, 48, 8);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            Utility.AddTextAtRightCornerPage(pdf, clnDate, pageWidth, leftMargin, rightMargin + 4, 48, 8);
           }
         }
 
@@ -938,7 +934,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
 
     const totalPages = pdf.getNumberOfPages();
 
-    
+
     for (const { page, x, y } of pagePositions) {
       pdf.setDrawColor(0, 0, 0); // black line color
       pdf.setLineWidth(0.1);
@@ -954,7 +950,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
         await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
       }
     }// Add Second Page, Add For Loop
-    
+
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color
     //   pdf.setLineWidth(0.1);
@@ -974,7 +970,7 @@ export class CustomerWiseInventorySummaryPdfComponent extends UnsubscribeOnDestr
     this.dialogRef.close();
   }
 
- 
+
 
   async CopyCanvas(canvas: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number): Promise<HTMLCanvasElement> {
 
