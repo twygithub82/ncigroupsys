@@ -762,7 +762,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     let showPreinspectSurcharge:boolean=this.invTypes?.includes("PREINSPECTION")!;
     let showLoloSurcharge:boolean=this.invTypes?.includes("LOLO")!;
     let showStorageSurcharge:boolean=this.invTypes?.includes("STORAGE")!;
-    let showGateSurcharge:boolean=this.invTypes?.includes("GATE")!;
+    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
     let showResidueSurcharge:boolean=this.invTypes?.includes("RESIDUE")!;
     let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
     let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
@@ -1059,7 +1059,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
                 data.cell.styles.textColor=textColor;
               }
           }
-        }
+        
         if((data.row.index==totalRowIndex ||data.row.index==averageRowIndex)){
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor=[231, 231, 231];
@@ -1087,6 +1087,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
         }
+      }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
