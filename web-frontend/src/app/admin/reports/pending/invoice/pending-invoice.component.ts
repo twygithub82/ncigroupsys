@@ -377,6 +377,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       itm.or.push({ repair: { some: approveSearch } });
       itm.or.push({ residue: { some: approveSearch } });
       itm.or.push({ steaming: { some: approveSearch } });
+      itm.or.push({ billing_sot:{create_dt:{lte:Utility.convertDate(this.searchForm!.value['cutoff_dt'], true)}} });
       where.and.push(itm);
     }
 
@@ -616,7 +617,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       // Calculate gate I/O cost and update rep_bill_item
       const gateIOCost = (item.gate_in ? (item.gate_in_cost || 0) : 0) + (item.gate_out ? (item.gate_out_cost || 0) : 0);
 
-      if (gateIOCost > 0) {
+      //if (gateIOCost > 0) 
+      if(item.gate_in||item.gate_out)
+      {
         rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number
       }
 
@@ -676,7 +679,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
       const loloCost = (item.lift_off ? item.lift_off_cost! : 0) + (item.lift_on ? item.lift_on_cost! : 0);
 
-      if (loloCost > 0) {
+      //if (loloCost > 0)
+      if(item.lift_off||item.lift_on)
+         {
         rep_bill_item.lolo_est_no += 1;
       }
 
@@ -708,7 +713,9 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
       const preinsCost = item.preinspection ? item.preinspection_cost! : 0;
 
-      if (preinsCost > 0) {
+      // if (preinsCost > 0) 
+      if(item.preinspection)
+        {
         rep_bill_item.preins_est_no += 1;
       }
 
