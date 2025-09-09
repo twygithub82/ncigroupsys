@@ -777,7 +777,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 0.5, PDFUtility.CenterSubTitleFontSize());
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
 
     if (this.customer) {
       const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`
@@ -983,7 +983,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
 
-    startY += 5;
+    //startY += 5;
     //Add Second Page Header
     // Add table using autoTable plugin
     autoTable(pdf, {
@@ -991,7 +991,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       body: data,
       //  startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { top: 55 }, // top margin for all pages
+      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 + PDFUtility.TableStartTopBuffer()}, //{ top: 55 }, // top margin for all pages
       styles: {
         fontSize: fontSz,
         minCellHeight: minHeightHeaderCol
@@ -1092,7 +1092,7 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
           if (pageCount > 1) {
 
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35); //Add Second Page
-            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 49.5, PDFUtility.CenterSubTitleFontSize());
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 47, PDFUtility.CenterSubTitleFontSize());
           }
         }
       },

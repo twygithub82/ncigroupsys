@@ -849,7 +849,6 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
-
     let startY = lastTableFinalY + 15; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
@@ -858,7 +857,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, PDFUtility.CenterSubTitleFontSize());
 
     if (this.customer) {
-      const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`
+      const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
       Utility.addText(pdf, customer, startY - 2, leftMargin + 4, PDFUtility.RightSubTitleFontSize());
     }
     var idx = 0;
@@ -968,7 +967,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 },
+      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 + PDFUtility.TableStartTopBuffer()},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1076,7 +1075,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48, PDFUtility.CenterSubTitleFontSize());
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 47, PDFUtility.CenterSubTitleFontSize());
           }
         }
 
