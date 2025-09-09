@@ -402,7 +402,6 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-
     var cond_counter = 0;
     var report_type: string = "ALL";
     const where: any = {};
@@ -625,7 +624,7 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
 
     if (repData.length == 0) {
       this.isGeneratingReport = false;
-      return;
+      // return;
     }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
