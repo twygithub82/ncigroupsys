@@ -361,18 +361,11 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   async ngOnInit() {
     await this.getCodeValuesData();
-    //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
-
     this.onDownloadClick();
-
   }
 
   ngAfterViewInit() {
-
-
   }
-
-
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -536,18 +529,8 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     return Utility.convertEpochToDateStr(input);
   }
 
-  // parse2Decimal(input: number | string | undefined) {
-  //   return Utility.formatNumberDisplay(input);
-  // }
-
-  calculateCost() {
-    // this.repairCost = this.steamDS.calculateCost(this.repairItem, this.repairItem?.repair_part);
-    // console.log(this.repairCost)
-  }
-
   async onDownloadClick() {
     this.exportToPDF_r1();
-
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content

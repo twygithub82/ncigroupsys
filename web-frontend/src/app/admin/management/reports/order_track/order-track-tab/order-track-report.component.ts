@@ -412,7 +412,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   search() {
-   if (this.searchForm?.invalid) {
+    if (this.searchForm?.invalid) {
       this.searchForm.markAllAsTouched();
       return;
     }
@@ -425,32 +425,12 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.stmEstList = [];
     this.selection.clear();
 
-    // var invType:string = this.inventoryTypeCvList.find(i=>i.code_val==(this.searchForm!.get('inv_type')?.value))?.description||'';
-
-    // if(this.searchForm!.get('inv_type')?.value=="MASTER_OUT")
-    // {
-    //    queryType=2;
-    // }
-
-    // if (this.searchForm!.get('tank_status_cv')?.value) {
-    //   where.tank_status_cv = { contains: this.searchForm!.get('tank_status_cv')?.value };
-    //   cond_counter++;
-    // }
-
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
       cond_counter++;
     }
 
     if (this.searchForm!.get('status_cv')?.value != '') {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
-      // report_type = "RELEASED";
-      // var cond: any = { in: TANK_STATUS_POST_IN_YARD };
-      // if (this.searchForm!.get('depot_status_cv')?.value != "RELEASED") {
-      //   cond = { in: TANK_STATUS_IN_YARD }; //{ neq: "RELEASED" };
-      //   report_type = "IN_YARD";
-      // }
-      // if (where.tank_status_cv) where.tank_status_cv = {};
       where.tank_status_cv = [this.searchForm!.get('status_cv')?.value];
       cond_counter++;
     }
@@ -458,30 +438,22 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       where.status = this.availableStatus.filter(s => { s != '' });
     }
 
-
     if (this.searchForm!.get('customer_code')?.value) {
-      // if(!where.storing_order_tank) where.storing_order_tank={};
       where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('eir_no')?.value) {
-
-
       where.eir_no = `${this.searchForm!.get('eir_no')?.value}`;
-      //where.out_gate.some=cond;
       cond_counter++;
     }
 
     if (this.searchForm!.get('job_no')?.value) {
-
       where.job_no = `${this.searchForm!.get('job_no')?.value}`;
       cond_counter++;
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
-
-
       where.last_cargo = `${this.searchForm!.get('job_no')?.value.cargo}`;
       cond_counter++;
     }
@@ -492,9 +464,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
     where.order_type = report_type;
 
-    var date: string = ` - ${Utility.convertDateToStr(new Date())}`;
     if (this.searchForm!.get('dt_start')?.value && this.searchForm!.get('dt_end')?.value) {
-
       var startdt = new Date(this.searchForm!.value['dt_start']);
       var enddt = new Date(this.searchForm!.value['dt_end']);
       var start_dt: any = Utility.convertDate(startdt) || Utility.convertDate(new Date());
@@ -503,10 +473,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       where.start_date = start_dt;
       where.end_date = end_dt;
       cond_counter++;
-      //where.eir_dt = { gte: Utility.convertDate(this.searchForm!.value['eir_dt_start']), lte: Utility.convertDate(this.searchForm!.value['eir_dt_end']) };
     }
-
-
 
     this.noCond = (cond_counter === 0);
     if (this.noCond) {
@@ -678,12 +645,11 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     });
   }
 
-
   ProcessReport(repData: OrderTrackingItem[], report_type: string) {
-    if (repData.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
-    }
+    // if (repData.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
     this.onExportDetail(repData, report_type);
   }
@@ -692,7 +658,6 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   onExportDetail(repData: OrderTrackingItem[], report_type: string) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
-
 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -707,8 +672,9 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       maxHeight: reportPreviewWindowDimension.report_maxHeight,
       data: {
         repData: repData,
-        repType: report_type
-
+        repType: report_type,
+        start_dt: this.lastSearchCriteria.start_date,
+        end_dt: this.lastSearchCriteria.end_date
       },
       // panelClass: this.eirPdf?.length ? 'no-scroll-dialog' : '',
       direction: tempDirection

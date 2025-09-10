@@ -34,8 +34,9 @@ import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overfl
 
 export interface DialogData {
   repData: OrderTrackingItem[],
-  repType:string,
-
+  repType: string,
+  start_dt: number,
+  end_dt: number,
 }
 @Component({
   selector: 'app-order-track-detail-pdf',
@@ -213,30 +214,30 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    DAILY_QC_DETAIL_REPORT:'COMMON-FORM.DAILY-QC-DETAIL-REPORT',
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    CODE:'COMMON-FORM.CODE',
-    REPAIR_TYPE:'COMMON-FORM.REPAIR-TYPE',
-    QC_BY:'COMMON-FORM.QC-BY',
-    REPAIR_COST:'COMMON-FORM.REPAIR-COST',
-    REPORTED_BY:'COMMON-FORM.REPORTED-BY',
-    TEAM:'COMMON-FORM.TEAM',
-    QC_DATE:'COMMON-FORM.QC-DATE',
-    SIGN:'COMMON-FORM.SIGN',
-    VERIFIED_BY:'COMMON-FORM.VERIFIED-BY',
-    MAN_HOUR:'COMMON-FORM.MAN-HOUR',
-    MATERIAL_COST:'COMMON-FORM.MATERIAL-COST',
-    TOTAL_COST:'COMMON-FORM.TOTAL-COST',
-    ORDER_NO:'COMMON-FORM.ORDER-NO',
-    ORDER_DATE:'COMMON-FORM.ORDER-DATE',
-    CANCEL_DATE:'COMMON-FORM.CANCEL-DATE',
-    CANCEL_REMARK:'COMMON-FORM.CANCEL-REMARK',
-    STORING_ORDER_TRACKING_REPORT:'COMMON-FORM.STORING-ORDER-TRACKING-REPORT',
-    RELEASE_ORDER_TRACKING_REPORT:'COMMON-FORM.RELEASE-ORDER-TRACKING-REPORT',
-    RELEASE_DATE:'COMMON-FORM.RELEASE-DATE',
-    S_N:'COMMON-FORM.S_N',
+    DAILY_QC_DETAIL_REPORT: 'COMMON-FORM.DAILY-QC-DETAIL-REPORT',
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    CODE: 'COMMON-FORM.CODE',
+    REPAIR_TYPE: 'COMMON-FORM.REPAIR-TYPE',
+    QC_BY: 'COMMON-FORM.QC-BY',
+    REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
+    REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
+    TEAM: 'COMMON-FORM.TEAM',
+    QC_DATE: 'COMMON-FORM.QC-DATE',
+    SIGN: 'COMMON-FORM.SIGN',
+    VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
+    MAN_HOUR: 'COMMON-FORM.MAN-HOUR',
+    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
+    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
+    ORDER_NO: 'COMMON-FORM.ORDER-NO',
+    ORDER_DATE: 'COMMON-FORM.ORDER-DATE',
+    CANCEL_DATE: 'COMMON-FORM.CANCEL-DATE',
+    CANCEL_REMARK: 'COMMON-FORM.CANCEL-REMARK',
+    STORING_ORDER_TRACKING_REPORT: 'COMMON-FORM.STORING-ORDER-TRACKING-REPORT',
+    RELEASE_ORDER_TRACKING_REPORT: 'COMMON-FORM.RELEASE-ORDER-TRACKING-REPORT',
+    RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
+    S_N: 'COMMON-FORM.S_N',
   }
 
   type?: string | null;
@@ -286,10 +287,10 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: OrderTrackingItem[];
-  date?:string;
-  repType?:string;
-  team?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  team?: string;
+  customer?: string;
   index: number = 0;
   // date:string='';
   // invType:string='';
@@ -312,12 +313,6 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     this.sotDS = new StoringOrderTankDS(this.apollo);
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
-
-
 
     this.disclaimerNote = customerInfo.eirDisclaimerNote
       .replace(/{companyName}/g, this.customerInfo.companyName)
@@ -327,13 +322,11 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
 
   async ngOnInit() {
     await this.getCodeValuesData();
-    //this.pdfTitle = this.type === "REPAIR" ? this.translatedLangText.IN_SERVICE_ESTIMATE : this.translatedLangText.OFFHIRE_ESTIMATE;
     this.repData = this.data.repData;
-    
-    this.repType=this.data.repType;
-    
-    this.onDownloadClick();
 
+    this.repType = this.data.repType;
+
+    this.onDownloadClick();
   }
 
   ngAfterViewInit() {
@@ -341,7 +334,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -504,9 +497,9 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
 
   displayTankPurpose(dataPurpose: string[]) {
     let purposes: any[] = [];
-    dataPurpose.forEach(s=>{
-    purposes.push(this.getPurposeOptionDescription(s)||s);
-  });
+    dataPurpose.forEach(s => {
+      purposes.push(this.getPurposeOptionDescription(s) || s);
+    });
     // if (sot?.purpose_storage) {
     //   purposes.push(this.getPurposeOptionDescription('STORAGE'));
     // }
@@ -547,20 +540,9 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
 
   async onDownloadClick() {
     this.exportToPDF_r1();
-
   }
 
- 
-
-
-
- 
-
-  
-
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-
-
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 297; // A4 width in mm (landscape)
     const pageHeight = 220; // A4 height in mm (landscape)
@@ -590,29 +572,26 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     const reportTitle = this.GetReportTitle();
     const headers = [[
       this.translatedLangText.S_N, this.translatedLangText.TANK_NO,
-      this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE,this.translatedLangText.RELEASE_DATE,
-      this.translatedLangText.LAST_CARGO,this.translatedLangText.PURPOSE, this.translatedLangText.ORDER_NO,
-      this.translatedLangText.ORDER_DATE,this.translatedLangText.CANCEL_DATE,
-      this.translatedLangText.CANCEL_REMARK,this.translatedLangText.STATUS
-      
+      this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE, this.translatedLangText.RELEASE_DATE,
+      this.translatedLangText.LAST_CARGO, this.translatedLangText.PURPOSE, this.translatedLangText.ORDER_NO,
+      this.translatedLangText.ORDER_DATE, this.translatedLangText.CANCEL_DATE,
+      this.translatedLangText.CANCEL_REMARK, this.translatedLangText.STATUS
     ]];
 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle',  cellWidth: 10,minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle',  cellWidth: 23,minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 18,  minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle', cellWidth: 65,minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      6: { halign: 'left', valign: 'middle', cellWidth: 30,minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      5: { halign: 'left', valign: 'middle', cellWidth: 65, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      6: { halign: 'left', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      
-      
     };
 
     // Define headStyles with valid fontStyle
@@ -630,67 +609,50 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
-
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
 
-    let startY = lastTableFinalY ; // Start table 20mm below the customer name
+    let startY = lastTableFinalY; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
 
-    // if(this.customer)
-    // {
-    //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-    //   Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-    // }
+    const cutoffDate = `${this.translatedLangText.DATE}: ${Utility.convertEpochToDateStr(this.data.start_dt)} - ${Utility.convertEpochToDateStr(this.data.end_dt)}`; // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, 46, 8);
+
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
-    let totalHours=0;
-    let totalMaterialCost=0;
-    let CustomerCodeName='';
-    for (let n = 0; n < (this.repData?.length||0); n++) {
-
+    let totalHours = 0;
+    let totalMaterialCost = 0;
+    let CustomerCodeName = '';
+    for (let n = 0; n < (this.repData?.length || 0); n++) {
       let itm = this.repData?.[n];
       var CurrentCustomer = `${itm?.customer_code} - ${itm?.customer_name}`;
-      if(CustomerCodeName!==CurrentCustomer)
-      {
-        CustomerCodeName=CurrentCustomer;
-        data.push([CustomerCodeName,"","","","","","","","","",""]);
+      if (CustomerCodeName !== CurrentCustomer) {
+        CustomerCodeName = CurrentCustomer;
+        data.push([CustomerCodeName, "", "", "", "", "", "", "", "", "", ""]);
       }
-        data.push([
-          (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", Utility.convertEpochToDateStr(itm?.eir_date) ||"",
-          Utility.convertEpochToDateStr(itm?.release_date)||'',(itm?.last_cargo||""),itm?.purpose||'',
-          itm?.order_no||'',Utility.convertEpochToDateStr(itm?.order_date)||'',Utility.convertEpochToDateStr(itm?.cancel_date)||'',
-          itm?.cancel_remarks || "",itm?.status||''
-        ]);
+      data.push([
+        (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", Utility.convertEpochToDateStr(itm?.eir_date) || "",
+        Utility.convertEpochToDateStr(itm?.release_date) || '', (itm?.last_cargo || ""), itm?.purpose || '',
+        itm?.order_no || '', Utility.convertEpochToDateStr(itm?.order_date) || '', Utility.convertEpochToDateStr(itm?.cancel_date) || '',
+        itm?.cancel_remarks || "", itm?.status || ''
+      ]);
     }
-
-
-    // data.push([this.translatedLangText.TOTAL,"","","","","",Utility.formatNumberDisplay(totalHours),
-    //         Utility.formatNumberDisplay(totalMaterialCost),Utility.formatNumberDisplay(totalRepairCost),""]);
-    
-
-    // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    // this.displayTotalWithRO()]);
 
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    let AllowedRowColSpan=-1;
+    let AllowedRowColSpan = -1;
     // Add table using autoTable plugin
 
     autoTable(pdf, {
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-       margin: { left: leftMargin, right: rightMargin ,top:topMargin+45},
+      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -705,22 +667,21 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
-        let colSpan:number=0;
-        if(data.column.index==0 && !Utility.isParsableToNumber(data.cell.raw) && data.section=='body' &&  AllowedRowColSpan!==data.row.index)
-          {
-            colSpan=12;
-            data.cell.styles.halign = 'left';
-            data.cell.styles.valign = 'bottom';
-            data.cell.styles.fontStyle = 'bold';
-            data.cell.styles.fontSize = 8;
-            data.cell.colSpan = colSpan;
-            AllowedRowColSpan=data.row.index;
-          }
-        
-       // let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        let colSpan: number = 0;
+        if (data.column.index == 0 && !Utility.isParsableToNumber(data.cell.raw) && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
+          colSpan = 12;
+          data.cell.styles.halign = 'left';
+          data.cell.styles.valign = 'bottom';
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fontSize = 8;
+          data.cell.colSpan = colSpan;
+          AllowedRowColSpan = data.row.index;
+        }
+
+        // let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
         // let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
         // if(data.row.raw[2]=="Sunday") data.cell.styles.fillColor=[231, 231, 231];
-        
+
         //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
         // if(data.row.index==totalRowIndex){
         //   data.cell.styles.fontStyle = 'bold';
@@ -731,7 +692,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
         //     data.cell.styles.halign = 'right'; // Center text horizontally
         //   }
         // }
-        if ((AllowedRowColSpan==data.row.index)&& data.section=='body' && data.column.index > 0 && data.column.index < colSpan) {
+        if ((AllowedRowColSpan == data.row.index) && data.section == 'body' && data.column.index > 0 && data.column.index < colSpan) {
           data.cell.text = ''; // Remove text from hidden columns
           data.cell.colSpan = 0; // Hide these columns
           //bColSpan=false;
@@ -746,20 +707,19 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, 46, 8);
           }
         }
-
       },
     });
 
-    var gap=7;
+    var gap = 7;
 
-    if(lastTableFinalY+ topMargin+bottomMargin+ (gap*4.5)> pageHeight)
-    {
-        pdf.addPage();
-        const pageCount = pdf.getNumberOfPages();
-        pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
+      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
     }
 
     const totalPages = pdf.getNumberOfPages();
@@ -791,9 +751,9 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
     // });
 
- 
 
-   
+
+
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
     this.generatingPdfProgress = 0;
@@ -802,7 +762,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     this.dialogRef.close();
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -907,14 +867,12 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-    if(this.repType=="so")
-    {
-     title = `${this.translatedLangText.STORING_ORDER_TRACKING_REPORT}`
+    var title: string = '';
+    if (this.repType == "so") {
+      title = `${this.translatedLangText.STORING_ORDER_TRACKING_REPORT}`
     }
-    else
-    {
-       title = `${this.translatedLangText.RELEASE_ORDER_TRACKING_REPORT}`
+    else {
+      title = `${this.translatedLangText.RELEASE_ORDER_TRACKING_REPORT}`
     }
     return `${title}`
   }
@@ -953,8 +911,8 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
 
   }
 
-    displayTankPurpose_InShort(sot: any) {
+  displayTankPurpose_InShort(sot: any) {
     return Utility.displayTankPurpose_InShort(sot);
-  } 
+  }
 }
 
