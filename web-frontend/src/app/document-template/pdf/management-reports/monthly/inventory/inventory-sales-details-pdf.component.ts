@@ -49,6 +49,7 @@ import {
 } from 'ng-apexcharts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 
 export interface DialogData {
@@ -848,12 +849,13 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
     let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
+    //Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, 9);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
 
     if (this.customer) {
-      const customer = `${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer, startY - 2, leftMargin + 4, 9);
+      const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
+      Utility.addText(pdf, customer, startY, leftMargin, PDFUtility.RightSubTitleFontSize());
     }
     var idx = 0;
 
@@ -1036,7 +1038,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
       head: headers,
       body: data,
       // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 },
+      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 + PDFUtility.TableStartTopBuffer()},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1152,6 +1154,7 @@ export class InventoryMonthlySalesReportDetailsPdfComponent extends UnsubscribeO
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
           }
         }
 

@@ -780,11 +780,11 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 1, 11);
+    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 1, PDFUtility.CenterSubTitleFontSize());
 
     if (this.customer) {
       const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
-      Utility.addText(pdf, customer, startY, leftMargin + 4, 9);
+      Utility.addText(pdf, customer, startY + 2, leftMargin, PDFUtility.RightSubTitleFontSize());
     }
     startY += 3;
     var idx = 0;
@@ -992,7 +992,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       head: headers,
       body: data,
       // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 },
+      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 + PDFUtility.TableStartTopBuffer()},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -1093,7 +1093,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48 - 1, 11);
+            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48 - 1, PDFUtility.CenterSubTitleFontSize());
           }
         }
 

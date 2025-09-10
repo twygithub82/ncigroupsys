@@ -749,8 +749,6 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
 
-
-
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
@@ -853,7 +851,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
 
     if (this.customer) {
       const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
-      Utility.addText(pdf, customer, startY - 2, leftMargin + 4, PDFUtility.RightSubTitleFontSize());
+      Utility.addText(pdf, customer, startY, leftMargin, PDFUtility.RightSubTitleFontSize());
     }
     var idx = 0;
 

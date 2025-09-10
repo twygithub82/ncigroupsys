@@ -743,6 +743,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
+    let tableTopMargin = 45;
 
     //let reportTitleCompanyLogo = 32;
     //let tableHeaderHeight = 12;
@@ -858,7 +859,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     if (this.customer) {
       const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
-      Utility.addText(pdf, customer, startY - 2, leftMargin + 4, PDFUtility.RightSubTitleFontSize());
+      Utility.addText(pdf, customer, startY - 2, leftMargin, PDFUtility.RightSubTitleFontSize());
+      tableTopMargin = 47;
     }
     var idx = 0;
 
@@ -967,7 +969,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 + PDFUtility.TableStartTopBuffer()},
+      margin: { left: leftMargin, right: rightMargin, top: topMargin + tableTopMargin + PDFUtility.TableStartTopBuffer()},
       theme: 'grid',
       styles: {
         fontSize: fontSz,
