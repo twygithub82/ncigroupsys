@@ -377,7 +377,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       itm.or.push({ repair: { some: approveSearch } });
       itm.or.push({ residue: { some: approveSearch } });
       itm.or.push({ steaming: { some: approveSearch } });
-      itm.or.push({ billing_sot:{create_dt:{lte:Utility.convertDate(this.searchForm!.value['cutoff_dt'], true)}} });
+      itm.or.push({ billing_sot:{create_dt:{lte:Utility.convertDate(this.searchForm!.value['cutoff_dt'], true), gt:1600000000}}});
       where.and.push(itm);
     }
 
