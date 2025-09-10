@@ -550,14 +550,6 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
 
   }
 
-
-
-
-
-
-
-
-
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
