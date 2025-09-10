@@ -23,7 +23,7 @@ import { FileManagerService } from '@core/service/filemanager.service';
 import { CustomerCompanyDS } from 'app/data-sources/customer-company';
 import { RepairCostTableItem } from 'app/data-sources/repair';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { report_status_yard,  MonthlyProcessData,InventoryAnalyzer, ManagementReportYearlyInventory } from 'app/data-sources/reports';
+import { report_status_yard, MonthlyProcessData, InventoryAnalyzer, ManagementReportYearlyInventory } from 'app/data-sources/reports';
 import { SteamDS } from 'app/data-sources/steam';
 import { SteamPartDS } from 'app/data-sources/steam-part';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
@@ -48,13 +48,14 @@ import {
   NgApexchartsModule,
 } from 'ng-apexcharts';
 import { WeeklyPerformmanceItem } from 'app/data-sources/reports-management';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 
 export interface DialogData {
   repData: WeeklyPerformmanceItem[],
-  date:string,
-  repType:string,
-  customer:string,
-  inventory_type:string[]
+  date: string,
+  repType: string,
+  customer: string,
+  inventory_type: string[]
 }
 
 interface SeriesItem {
@@ -261,37 +262,37 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     PENDING: 'COMMON-FORM.PENDING',
     WITH_RO: 'COMMON-FORM.WITH-RO',
     LOCATION: 'COMMON-FORM.LOCATION',
-    STEAM_MONTHLY_DETAILS_REPORT:'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
-    RESIDUE_MONTHLY_DETAILS_REPORT:'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
-    REPAIR_MONTHLY_DETAILS_REPORT:'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
-    CLEAN_MONTHLY_DETAILS_REPORT:'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
-    CUSTOMER_MONTHLY_SALES_REPORT:'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT',
-    YEARLY_INVENTORY_REPORT:'COMMON-FORM.YEARLY-INVENTORY-REPORT',
-    SUMMARY_OF_INVENTORY:"COMMON-FORM.SUMMARY-OF-INVENTORY",
-    DAY:'COMMON-FORM.DAY',
-    MONTH:'COMMON-FORM.MONTH',
-    AVERAGE:'COMMON-FORM.AVERAGE',
-    OFFHIRE:'COMMON-FORM.OFFHIRE',
-    IN_SERVICE:'COMMON-FORM.IN-SERVICE',
-    TANK_IN_QTY:"COMMON-FORM.TANK-IN-QTY",
-    TANK:"COMMON-FORM.TANK",
-    COST:"COMMON-FORM.COST",
-    YEARLY_SALES_REPORT:'COMMON-FORM.YEARLY-SALES-REPORT',
-    GATE_SURCHARGE:'COMMON-FORM.GATE-SURCHARGE',
-    LOLO:'COMMON-FORM.LOLO',
-    PREINSPECTION:'COMMON-FORM.PREINSPECTION',
-    ON_DEPOT:'COMMON-FORM.ON-DEPOT',
-    OUT_GATE:'COMMON-FORM.OUT-GATE',
-    PERCENTAGE_SYMBOL:'COMMON-FORM.PERCENTAGE-SYMBOL',
-    NO_OF_CLEAN:'COMMON-FORM.NO-OF-CLEAN',
-    NO_OF_REPAIR_ORDER:'COMMON-FORM.NO-OF-REPAIR-ORDER',
-    NO_OF_GATE_IN:'COMMON-FORM.NO-OF-GATE-IN',
-    NO_OF_GATE_OUT:'COMMON-FORM.NO-OF-GATE-OUT',
-    TOTAL_IN_OUT:'COMMON-FORM.TOTAL-IN-OUT',
-    AVERAGE_IN_OUT:'COMMON-FORM.AVERAGE-IN-OUT',
-    DEPOT_PERFORMANCE_DATA_WEEKLY:'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY'
-    
-    
+    STEAM_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.STEAM-MONTHLY-DETAILS-REPORT',
+    RESIDUE_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.RESIDUE-MONTHLY-DETAILS-REPORT',
+    REPAIR_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.REPAIR-MONTHLY-DETAILS-REPORT',
+    CLEAN_MONTHLY_DETAILS_REPORT: 'COMMON-FORM.CLEAN-MONTHLY-DETAILS-REPORT',
+    CUSTOMER_MONTHLY_SALES_REPORT: 'COMMON-FORM.CUSTOMER-MONTHLY-SALES-REPORT',
+    YEARLY_INVENTORY_REPORT: 'COMMON-FORM.YEARLY-INVENTORY-REPORT',
+    SUMMARY_OF_INVENTORY: "COMMON-FORM.SUMMARY-OF-INVENTORY",
+    DAY: 'COMMON-FORM.DAY',
+    MONTH: 'COMMON-FORM.MONTH',
+    AVERAGE: 'COMMON-FORM.AVERAGE',
+    OFFHIRE: 'COMMON-FORM.OFFHIRE',
+    IN_SERVICE: 'COMMON-FORM.IN-SERVICE',
+    TANK_IN_QTY: "COMMON-FORM.TANK-IN-QTY",
+    TANK: "COMMON-FORM.TANK",
+    COST: "COMMON-FORM.COST",
+    YEARLY_SALES_REPORT: 'COMMON-FORM.YEARLY-SALES-REPORT',
+    GATE_SURCHARGE: 'COMMON-FORM.GATE-SURCHARGE',
+    LOLO: 'COMMON-FORM.LOLO',
+    PREINSPECTION: 'COMMON-FORM.PREINSPECTION',
+    ON_DEPOT: 'COMMON-FORM.ON-DEPOT',
+    OUT_GATE: 'COMMON-FORM.OUT-GATE',
+    PERCENTAGE_SYMBOL: 'COMMON-FORM.PERCENTAGE-SYMBOL',
+    NO_OF_CLEAN: 'COMMON-FORM.NO-OF-CLEAN',
+    NO_OF_REPAIR_ORDER: 'COMMON-FORM.NO-OF-REPAIR-ORDER',
+    NO_OF_GATE_IN: 'COMMON-FORM.NO-OF-GATE-IN',
+    NO_OF_GATE_OUT: 'COMMON-FORM.NO-OF-GATE-OUT',
+    TOTAL_IN_OUT: 'COMMON-FORM.TOTAL-IN-OUT',
+    AVERAGE_IN_OUT: 'COMMON-FORM.AVERAGE-IN-OUT',
+    DEPOT_PERFORMANCE_DATA_WEEKLY: 'COMMON-FORM.DEPOT-PERFORMANCE-DATA-WEEKLY'
+
+
   }
 
   type?: string | null;
@@ -340,13 +341,13 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
   generatingPdfLoading$: Observable<boolean> = this.generatingPdfLoadingSubject.asObservable();
   generatingPdfProgress = 0;
   repData?: WeeklyPerformmanceItem[];
-  date?:string;
-  repType?:string;
-  customer?:string;
+  date?: string;
+  repType?: string;
+  customer?: string;
   index: number = 0;
-  lineChartOptions?:any; 
-  pieChartOptions?:any;
-  invTypes?:string[];
+  lineChartOptions?: any;
+  pieChartOptions?: any;
+  invTypes?: string[];
   // date:string='';
   // invType:string='';
 
@@ -370,10 +371,10 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
     this.repData = data.repData;
-    this.date= data.date;
-    this.repType=data.repType;
-    this.customer=data.customer;
-    this.invTypes=data.inventory_type;
+    this.date = data.date;
+    this.repType = data.repType;
+    this.customer = data.customer;
+    this.invTypes = data.inventory_type;
     // this.repair_guid = data.repair_guid;
     // this.customer_company_guid = data.customer_company_guid;
     // this.estimate_no = data.estimate_no;
@@ -405,7 +406,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
 
   }
 
- 
+
 
   async getImageBase64(url: string): Promise<string> {
     const response = await fetch(url);
@@ -635,18 +636,18 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
 
   }
 
- 
 
 
 
- 
 
-  
+
+
+
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
- 
+
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -664,7 +665,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
     let pageNumber = 1;
 
-    
+
 
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
@@ -675,12 +676,12 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
-    let showGateSurcharge:boolean=this.invTypes?.includes("IN_OUT")!;
-    let showSteamSurcharge:boolean=this.invTypes?.includes("STEAMING")!;
-    let showCleanSurcharge:boolean=this.invTypes?.includes("CLEANING")!;
-    let showRepairSurcharge:boolean =this.invTypes?.includes("REPAIR")!;
+    let showGateSurcharge: boolean = this.invTypes?.includes("IN_OUT")!;
+    let showSteamSurcharge: boolean = this.invTypes?.includes("STEAMING")!;
+    let showCleanSurcharge: boolean = this.invTypes?.includes("CLEANING")!;
+    let showRepairSurcharge: boolean = this.invTypes?.includes("REPAIR")!;
     const reportTitle = this.GetReportTitle();
-    const headers = [[ ]];
+    const headers = [[]];
 
 
     const comStyles: any = {
@@ -692,15 +693,15 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      7: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle',  minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       12: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       13: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-     // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-     // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 14: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      // 15: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -726,19 +727,20 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     let lastTableFinalY = 40;
 
     let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
-   // const data: any[][] = []; // Explicitly define data as a 2D array
-   
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, 9);
+    // const data: any[][] = []; // Explicitly define data as a 2D array
 
-    if(this.customer)
-    {
-      const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
+    const repGeneratedDate = PDFUtility.FormatColon(this.translatedLangText.MONTH, this.date); // Replace with your actual cutoff date
+    //Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 2, PDFUtility.RightSubTitleFontSize());
+    Utility.AddTextAtRightCornerPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin, startY - 2, PDFUtility.RightSubTitleFontSize());
+
+    if (this.customer) {
+      const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
+      Utility.addText(pdf, customer, startY - 2, leftMargin, PDFUtility.RightSubTitleFontSize());
     }
+
     var idx = 0;
-    var hdr:string[][]=[['']];
-    var data:string[][]=[
+    var hdr: string[][] = [['']];
+    var data: string[][] = [
       [`${this.translatedLangText.NO_OF_CLEAN}`],
       [`${this.translatedLangText.NO_OF_REPAIR_ORDER}`],
       [`${this.translatedLangText.NO_OF_GATE_IN}`],
@@ -746,27 +748,27 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       [`${this.translatedLangText.TOTAL_IN_OUT}`],
       [`${this.translatedLangText.AVERAGE_IN_OUT}`],
       [`${this.translatedLangText.ON_DEPOT}`]
-     ];
+    ];
     // var cleaning:string[][]=[[`${this.translatedLangText.NO_OF_CLEANING}`]];
     // var repair:string[]=[`${this.translatedLangText.NO_OF_REPAIR_ORDER}`];
     // var gateIn:string[]=[`${this.translatedLangText.NO_OF_GATE_IN}`];
     // var gateOut:string[]=[`${this.translatedLangText.NO_OF_GATE_OUT}`];
     // var totalInOut:string[]=[`${this.translatedLangText.TOTAL_IN_OUT}`];
     // var averageInOut:string[]=[`${this.translatedLangText.AVERAGE_IN_OUT}`];
-    var year :number = Utility.extractYearFromMonthYear(this.date!)||(new Date()).getFullYear();
-    this.repData?.forEach(itm=>{
-        var isoWkRange = `WK-${ String(itm.week_of_year!).padStart(2, '0')} (${Utility.getISOWeekRange(year, itm.week_of_year!)})`;
-        hdr[0].push(isoWkRange!);
-        data[0].push(`${itm.cleaning_count||''}`);
-        data[1].push(`${itm.repair_count||''}`);
-        data[2].push(`${itm.gate_in_count||''}`);
-        data[3].push(`${itm.gate_out_count||''}`);
-        data[4].push(`${itm.total_gate_count||''}`);
-        data[5].push(`${itm.average_gate_count||''}`);
-        data[6].push(`${itm.depot_count||''}`);
-    } );
+    var year: number = Utility.extractYearFromMonthYear(this.date!) || (new Date()).getFullYear();
+    this.repData?.forEach(itm => {
+      var isoWkRange = `WK-${String(itm.week_of_year!).padStart(2, '0')} (${Utility.getISOWeekRange(year, itm.week_of_year!)})`;
+      hdr[0].push(isoWkRange!);
+      data[0].push(`${itm.cleaning_count || ''}`);
+      data[1].push(`${itm.repair_count || ''}`);
+      data[2].push(`${itm.gate_in_count || ''}`);
+      data[3].push(`${itm.gate_out_count || ''}`);
+      data[4].push(`${itm.total_gate_count || ''}`);
+      data[5].push(`${itm.average_gate_count || ''}`);
+      data[6].push(`${itm.depot_count || ''}`);
+    });
     //var grpData= InventoryAnalyzer.groupByMonthAndFindExtremes(this.repData!);
-   
+
 
     // var series:SeriesItem[]=[];
     // var index:number=1;
@@ -776,7 +778,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     //   ...(showCleanSurcharge?[this.translatedLangText.CLEANING]:[]),
     //   ...(showRepairSurcharge?[this.translatedLangText.REPAIR]:[])
     // ]
-    var prcsValues:number[]=[]
+    var prcsValues: number[] = []
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
@@ -786,7 +788,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       head: hdr,
       body: data,
       // startY: startY, // Start table at the current startY value
-       margin: { left: leftMargin, right: rightMargin ,top:topMargin+45},
+      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 },
       theme: 'grid',
       styles: {
         fontSize: fontSz,
@@ -800,93 +802,93 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
         //halign: 'left', // Left-align content for body by default
         //valign: 'middle', // Vertically align content
       },
-    //   didParseCell: (data: any) => {
-    //     let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
-    //     let colSpan=2;
-    //     let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
-    //     let depotCell=[6,7];
-    //     if(!showGateSurcharge) depotCell=[];
-    //     if(data.section=="body" && ((data.column.index%2)==0))
-    //     {
-    //        var key = `${data.row.raw[1]}`;
-          
-    //        var matched=0;
-    //        var prop="";
-    //        switch (data.column.index)
-    //        {
-    //          case 2:
-    //           if(showGateSurcharge) prop="gateIn";
-    //           else if(showSteamSurcharge) prop="steaming";
-    //           else if(showCleanSurcharge) prop="cleaning";
-    //           else if(showRepairSurcharge) prop="repair";
-    //            break;
-    //          case 4:
-    //           if(showGateSurcharge) prop="gateOut";
-    //           break;
-    //          case 8:
-    //           if(showSteamSurcharge) prop="steaming";
-    //           break;
-    //         case 10:
-    //           if(showCleanSurcharge)prop="cleaning";
-    //            break;
-    //         case 12:
-    //           if(showRepairSurcharge)var prop="repair";
-    //           break;
-    //        }
-    //        if(prop)
-    //        {
-    //          var textColor="";
-    //         if(grpData.processExtremes[prop].highest?.key==key)
-    //           {
-    //             textColor="#009F00";
-    //           }
-    //           else if(grpData.processExtremes[prop].lowest?.key==key)
-    //           {
-    //             textColor="#EF0000";
-    //           }
-    //           if(textColor)
-    //           {
-    //             data.cell.styles.textColor=textColor;
-    //           }
-    //       }
-    //     }
-    //     if(data.row.index==totalRowIndex ||data.row.index==averageRowIndex){
-    //       data.cell.styles.fontStyle = 'bold';
-    //       data.cell.styles.fillColor=[231, 231, 231];
-    //       data.cell.styles.valign = 'middle'; // Center text vertically
-    //       if (data.column.index %2==0) {
-    //         data.cell.colSpan = colSpan;  // Merge 4 columns into one
-    //         data.cell.fontSize=8;
-    //         if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
-            
-    //       }
-        
-    //     }
-    //     else if (depotCell.includes(data.column.index))
-    //     {
-    //       var dpWidth=10
-    //       data.cell.colSpan = colSpan;
-    //       data.column.width = `${dpWidth}px`;  // Add unit
-    
-    // // Alternative approach if above doesn't work
-    // // setTimeout(() => {
-    // //     data.column.width = `${dpWidth}px`;
-    // //     // If your framework has a refresh/update method, call it here
-    // //     // e.g., gridApi.refreshHeader() for AG-Grid
-    // // }, 0);
-    
-    // // Or try setting minWidth and maxWidth as well
-    // data.column.minWidth = dpWidth;
-    // data.column.maxWidth = dpWidth;
-    //     }
+      //   didParseCell: (data: any) => {
+      //     let totalRowIndex = data.table.body.length - 2; // Ensure the correct last row index
+      //     let colSpan=2;
+      //     let averageRowIndex= data.table.body.length - 1; // Ensure the correct last row index
+      //     let depotCell=[6,7];
+      //     if(!showGateSurcharge) depotCell=[];
+      //     if(data.section=="body" && ((data.column.index%2)==0))
+      //     {
+      //        var key = `${data.row.raw[1]}`;
 
-    //     if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)||depotCell.includes(data.column.index)) 
-    //       && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
-    //     ) {
-    //       data.cell.text = ''; // Remove text from hidden columns
-    //       data.cell.colSpan = 0; // Hide these columns
-    //     }
-    //   },
+      //        var matched=0;
+      //        var prop="";
+      //        switch (data.column.index)
+      //        {
+      //          case 2:
+      //           if(showGateSurcharge) prop="gateIn";
+      //           else if(showSteamSurcharge) prop="steaming";
+      //           else if(showCleanSurcharge) prop="cleaning";
+      //           else if(showRepairSurcharge) prop="repair";
+      //            break;
+      //          case 4:
+      //           if(showGateSurcharge) prop="gateOut";
+      //           break;
+      //          case 8:
+      //           if(showSteamSurcharge) prop="steaming";
+      //           break;
+      //         case 10:
+      //           if(showCleanSurcharge)prop="cleaning";
+      //            break;
+      //         case 12:
+      //           if(showRepairSurcharge)var prop="repair";
+      //           break;
+      //        }
+      //        if(prop)
+      //        {
+      //          var textColor="";
+      //         if(grpData.processExtremes[prop].highest?.key==key)
+      //           {
+      //             textColor="#009F00";
+      //           }
+      //           else if(grpData.processExtremes[prop].lowest?.key==key)
+      //           {
+      //             textColor="#EF0000";
+      //           }
+      //           if(textColor)
+      //           {
+      //             data.cell.styles.textColor=textColor;
+      //           }
+      //       }
+      //     }
+      //     if(data.row.index==totalRowIndex ||data.row.index==averageRowIndex){
+      //       data.cell.styles.fontStyle = 'bold';
+      //       data.cell.styles.fillColor=[231, 231, 231];
+      //       data.cell.styles.valign = 'middle'; // Center text vertically
+      //       if (data.column.index %2==0) {
+      //         data.cell.colSpan = colSpan;  // Merge 4 columns into one
+      //         data.cell.fontSize=8;
+      //         if(data.column.index === 0) data.cell.styles.halign = 'right'; // Center text horizontally
+
+      //       }
+
+      //     }
+      //     else if (depotCell.includes(data.column.index))
+      //     {
+      //       var dpWidth=10
+      //       data.cell.colSpan = colSpan;
+      //       data.column.width = `${dpWidth}px`;  // Add unit
+
+      // // Alternative approach if above doesn't work
+      // // setTimeout(() => {
+      // //     data.column.width = `${dpWidth}px`;
+      // //     // If your framework has a refresh/update method, call it here
+      // //     // e.g., gridApi.refreshHeader() for AG-Grid
+      // // }, 0);
+
+      // // Or try setting minWidth and maxWidth as well
+      // data.column.minWidth = dpWidth;
+      // data.column.maxWidth = dpWidth;
+      //     }
+
+      //     if (((data.row.index==totalRowIndex)||(data.row.index==averageRowIndex)||depotCell.includes(data.column.index)) 
+      //       && (data.column.index%2==1)//((data.column.index > 0 && data.column.index < colSpan)||(data.column.index%2==))
+      //     ) {
+      //       data.cell.text = ''; // Remove text from hidden columns
+      //       data.cell.colSpan = 0; // Hide these columns
+      //     }
+      //   },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
 
@@ -896,7 +898,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+45);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
             Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 50, 9);
           }
         }
@@ -920,7 +922,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Cleaning"].includes(s.name));}
     // if(!showRepairSurcharge) 
     //   {this.lineChartOptions.series=this.lineChartOptions.series.filter((s:{ name: string })=>!["Repair"].includes(s.name));}
-    
+
     // this.pieChartOptions.labels=prcss;
     // this.pieChartOptions.series2=prcsValues;
 
@@ -940,84 +942,84 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     // };
 
 
- setTimeout(async()=>{
+    setTimeout(async () => {
 
-  // startY=lastTableFinalY+10;
-  // let chartContentWidth = pageWidth - leftMargin - rightMargin;
-  // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
-  // for (var i = 0; i < cardElements.length; i++) {
-  //   if (i > 0) {
-  //     pdf.addPage();
-  //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
-  //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-  //     startY=topMargin+20;
-  //   }
-  //   const card1 = cardElements[i];
-  //   const canvas1 = await html2canvas(card1, { scale: scale });
-  //   const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
+      // startY=lastTableFinalY+10;
+      // let chartContentWidth = pageWidth - leftMargin - rightMargin;
+      // const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+      // for (var i = 0; i < cardElements.length; i++) {
+      //   if (i > 0) {
+      //     pdf.addPage();
+      //     Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 8);
+      //     pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
+      //     startY=topMargin+20;
+      //   }
+      //   const card1 = cardElements[i];
+      //   const canvas1 = await html2canvas(card1, { scale: scale });
+      //   const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
 
-  //   // Calculate aspect ratio
-  //   const aspectRatio = canvas1.width / canvas1.height;
+      //   // Calculate aspect ratio
+      //   const aspectRatio = canvas1.width / canvas1.height;
 
-  //   // Calculate scaled height based on available width
-  //   let imgHeight1 = chartContentWidth / aspectRatio;
+      //   // Calculate scaled height based on available width
+      //   let imgHeight1 = chartContentWidth / aspectRatio;
 
-  //   // Check if the scaled height exceeds the available page height
-  //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-  //   if (imgHeight1 > maxPageHeight) {
-  //     // Adjust height to fit within the page
-  //     imgHeight1 = maxPageHeight;
-  //     // Recalculate width to maintain aspect ratio
-  //     chartContentWidth = imgHeight1 * aspectRatio;
-  //   }
+      //   // Check if the scaled height exceeds the available page height
+      //   const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
+      //   if (imgHeight1 > maxPageHeight) {
+      //     // Adjust height to fit within the page
+      //     imgHeight1 = maxPageHeight;
+      //     // Recalculate width to maintain aspect ratio
+      //     chartContentWidth = imgHeight1 * aspectRatio;
+      //   }
 
-  //   // Add the image to the PDF
-  //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
-  // }
+      //   // Add the image to the PDF
+      //   pdf.addImage(imgData1, 'JPEG', leftMargin, startY, chartContentWidth, imgHeight1);
+      // }
 
-    const totalPages = pdf.getNumberOfPages();
+      const totalPages = pdf.getNumberOfPages();
 
 
-     for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+      for (const { page, x, y } of pagePositions) {
+        pdf.setDrawColor(0, 0, 0); // black line color
+        pdf.setLineWidth(0.1);
+        pdf.setLineDashPattern([0.01, 0.01], 0.1);
+        pdf.setFontSize(8);
+        pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+        const lineBuffer = 13;
+        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+        if (page > 1) {
+          await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+        }
+      }// Add Second Page, Add For Loop
 
-    // pagePositions.forEach(({ page, x, y }) => {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
-    //   var lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    // });
+      // pagePositions.forEach(({ page, x, y }) => {
+      //   pdf.setDrawColor(0, 0, 0); // black line color
+      //   pdf.setLineWidth(0.1);
+      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      //   pdf.setFontSize(8);
+      //   pdf.setPage(page);
+      //   var lineBuffer = 13;
+      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
+      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+      // });
 
-  //  this.generatingPdfProgress = 100;
-    //pdf.save(fileName);
-  //  this.generatingPdfProgress = 0;
-    this.generatingPdfLoadingSubject.next(false);
-    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
-    this.dialogRef.close();
+      //  this.generatingPdfProgress = 100;
+      //pdf.save(fileName);
+      //  this.generatingPdfProgress = 0;
+      this.generatingPdfLoadingSubject.next(false);
+      Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+      this.dialogRef.close();
 
-  },50);
+    }, 50);
 
-   // this.dialogRef.close();
+    // this.dialogRef.close();
   }
 
- 
+
 
   async exportToPDF(fileName: string = 'document.pdf') {
     this.generatingPdfLoadingSubject.next(true);
@@ -1122,8 +1124,8 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     return Utility.convertDateToStr(new Date());
   }
   GetReportTitle(): string {
-    var title:string='';
-         title = `${this.translatedLangText.DEPOT_PERFORMANCE_DATA_WEEKLY}`;
+    var title: string = '';
+    title = `${this.translatedLangText.DEPOT_PERFORMANCE_DATA_WEEKLY}`;
     return `${title}`
   }
 
@@ -1161,7 +1163,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
 
   }
 
-  InitChartValues(){
+  InitChartValues() {
     this.pieChartOptions = {
       title: {
         text: this.translatedLangText.SUMMARY_OF_INVENTORY,
@@ -1180,17 +1182,17 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       },
       labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
       series2: [44, 55, 13, 43, 22],
-      legend:{
-        fontSize:'14px',
+      legend: {
+        fontSize: '14px',
         // position: "bottom",
         // horizontalAlign: "center",
         // itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
         labels: {
           colors: "#333", // Set label text color
           useSeriesColors: false, // Use the color of the series for labels
-      //    padding: 10, // Adjust space between marker and label
+          //    padding: 10, // Adjust space between marker and label
         },
-      
+
       },
       // series: [
       //   {
@@ -1242,7 +1244,7 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
     };
 
     this.lineChartOptions = {
-      
+
       chart: {
         height: 350,
         type: 'line',
@@ -1301,17 +1303,17 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
         min: 5,
         max: 40,
       },
-      legend:{
-        fontSize:'14px',
+      legend: {
+        fontSize: '14px',
         position: "bottom",
         horizontalAlign: "center",
         itemMargin: { horizontal: 15, vertical: 5 }, // Adjusts spacing between items
         labels: {
           colors: "#333", // Set label text color
           useSeriesColors: false, // Use the color of the series for labels
-      //    padding: 10, // Adjust space between marker and label
+          //    padding: 10, // Adjust space between marker and label
         },
-      
+
       },
       // legend: {
       //   position: 'top',
@@ -1331,5 +1333,5 @@ export class WeeklyPerformanceReportDetailsPdfComponent extends UnsubscribeOnDes
       },
     };
   }
- 
+
 }

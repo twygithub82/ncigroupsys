@@ -848,7 +848,7 @@ export class RevenueYearlySalesReportDetailsPdfComponent extends UnsubscribeOnDe
     let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
-    const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
+    const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 3, PDFUtility.CenterSubTitleFontSize());
 
     if (this.customer) {
