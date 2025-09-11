@@ -431,7 +431,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     if (this.searchForm!.get('status_cv')?.value != '') {
-      where.tank_status_cv = [this.searchForm!.get('status_cv')?.value];
+      where.status = [this.searchForm!.get('status_cv')?.value];
       cond_counter++;
     }
     else {
@@ -454,7 +454,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     if (this.searchForm!.get('last_cargo')?.value) {
-      where.last_cargo = `${this.searchForm!.get('job_no')?.value.cargo}`;
+      where.last_cargo = `${this.searchForm!.get('last_cargo')?.value.cargo}`;
       cond_counter++;
     }
 
