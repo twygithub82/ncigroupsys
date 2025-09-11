@@ -304,8 +304,8 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     LOCATION: 'COMMON-FORM.LOCATION',
     INVENTORY_DATE: 'COMMON-FORM.INVENTORY-DATE',
     DAILY_INVENTORY_SUMMARY: 'MENUITEMS.REPORTS.LIST.INVENTORY-SUMMARY',
-    S_N:'COMMON-FORM.S_N',
-    
+    S_N: 'COMMON-FORM.S_N',
+
 
   }
 
@@ -379,15 +379,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     this.translateLangText();
     this.InitialDefaultData();
 
-    // this.steamDS = new SteamDS(this.apollo);
-    // this.steamPartDS = new SteamPartDS(this.apollo);
-    // this.sotDS = new StoringOrderTankDS(this.apollo);
-    // this.ccDS = new CustomerCompanyDS(this.apollo);
     this.cvDS = new CodeValuesDS(this.apollo);
-    // this.repair_guid = data.repair_guid;
-    // this.customer_company_guid = data.customer_company_guid;
-    // this.estimate_no = data.estimate_no;
-    // this.existingPdf = data.existingPdf;
     this.report_inventory = data.report_daily_inventory_summary;
     this.queryType = data.queryType;
     this.invType = data.type;
@@ -412,10 +404,10 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   async ngAfterViewInit() {
-   
+
     var delay = 2000;
-   setTimeout(() => { this.onDownloadClick(); }, delay);
-   
+    setTimeout(() => { this.onDownloadClick(); }, delay);
+
   }
 
   public loadData() {
@@ -811,7 +803,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
-   @ViewChild('chartRef') chartRef!: ChartComponent;
+  @ViewChild('chartRef') chartRef!: ChartComponent;
   async exportToPDF_r1(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
@@ -833,7 +825,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     //   putOnlyUsedFonts: true,
     //   compress: true
     // });
-    
+
     let pageNumber = 1;
 
     let reportTitleCompanyLogo = 32;
@@ -855,7 +847,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 35,  minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 35, minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
@@ -887,13 +879,11 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     //  pdf.setFontSize(8);
     //  pdf.setTextColor(0, 0, 0); // Black text
 
-  const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
+    const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
     Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 8, 8)
 
-    
     if (this.report_inventory.length > 0) {
       if ((this.report_inventory[0].opening_balance?.length || 0) > 0) {
-
         startY = lastTableFinalY + 15;
         const subHeaders = [[
           this.translatedLangText.S_N, this.translatedLangText.LOCATION,
@@ -927,7 +917,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           head: subHeaders,
           body: subData,
           startY: startY - 5, // Start table at the current startY value
-          
+
           theme: 'grid',
           styles: {
             fontSize: fontSz,
@@ -965,24 +955,18 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
+                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
               }
             }
-
           },
         });
-
       }
     }
 
-    startY = lastTableFinalY + 10; 
-
-  
-    // pdf.text(invDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
+    startY = lastTableFinalY + 10;
 
     var idx = 0;
     for (let n = 0; n < this.report_inventory.length; n++) {
-
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let itm = this.report_inventory[n];
       data.push([
@@ -1000,7 +984,6 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       styles: {
         fontSize: fontSz,
         minCellHeight: minHeightHeaderCol
-
       },
       columnStyles: comStyles,
       headStyles: headStyles, // Custom header styles
@@ -1010,6 +993,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
+        if (data.table.body.length === 0) return;
         let lastRowIndex = data.table.body.length - 1; // Ensure the correct last row index
         if (data.row.index === lastRowIndex) {
           data.cell.styles.fillColor = [221, 221, 221]; // Light gray background
@@ -1018,14 +1002,12 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           if (data.column.index === 0) {
             data.cell.colSpan = 3;  // Merge 4 columns into one
             data.cell.styles.halign = 'right'; // Center text horizontally
-
-
           }
         }
-        if (data.row.index === idx && data.column.index > 0 && data.column.index <= 2) {
-          data.cell.text = ''; // Remove text from hidden columns
-          data.cell.colSpan = 0; // Hide these columns
-        }
+        // if (data.row.index === idx && data.column.index > 0 && data.column.index <= 2) {
+        //   data.cell.text = ''; // Remove text from hidden columns
+        //   data.cell.colSpan = 0; // Hide these columns
+        // }
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
@@ -1036,22 +1018,16 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 5);
           }
         }
 
       },
     });
 
-    
+    pdf.addPage();
 
-      pdf.addPage();
-
-      await this.AddOverviewSummary(pdf,topMargin,pageNumber,pageWidth,pageHeight,rightMargin,leftMargin,
-        minHeightBodyCell,minHeightHeaderCol,bottomMargin,pagePositions);
-
-
-
+    await this.AddOverviewSummary(pdf, topMargin, pageNumber, pageWidth, pageHeight, rightMargin, leftMargin, minHeightBodyCell, minHeightHeaderCol, bottomMargin, pagePositions);
 
     const totalPages = pdf.getNumberOfPages();
 
@@ -1076,17 +1052,16 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
   }
 
 
-  async AddOverviewSummary(pdf:jsPDF,topMargin:number,pageNumber:number,
-    pageWidth:number,pageHeight:number,
-    rightMargin:number,leftMargin:number,
-    minHeightBodyCell:number,minHeightHeaderCol:number,
-    bottomMargin:number,pagePositions:any[])
-  {
-    const tablewidth=10;
-    const fontSz=6;
-    const bufferContent=8;
-    const contentWidth = pageWidth - leftMargin - rightMargin -bufferContent;
-    const chartContentWidth= contentWidth ;
+  async AddOverviewSummary(pdf: jsPDF, topMargin: number, pageNumber: number,
+    pageWidth: number, pageHeight: number,
+    rightMargin: number, leftMargin: number,
+    minHeightBodyCell: number, minHeightHeaderCol: number,
+    bottomMargin: number, pagePositions: any[]) {
+    const tablewidth = 10;
+    const fontSz = 6;
+    const bufferContent = 8;
+    const contentWidth = pageWidth - leftMargin - rightMargin - bufferContent;
+    const chartContentWidth = contentWidth;
     const reportTitle = this.GetReportTitle();
     // const headers = [[
     //   this.translatedLangText.DESCRIPTION,
@@ -1113,7 +1088,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 38);
 
 
- pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
     let lastTableFinalY = 40;
@@ -1121,15 +1096,15 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
 
 
 
-     const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin+(bufferContent/2) , lastTableFinalY + 8, 8)
+    const invDate = `${this.translatedLangText.INVENTORY_PERIOD}:  ${this.date}`; // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin + (bufferContent / 2), lastTableFinalY + 8, 8)
 
-   
+
 
     let startY = lastTableFinalY + 10;
     let startX = pageWidth - rightMargin - tablewidth;
 
-   
+
     //Add table using autoTable plugin
 
     const headers = [[
@@ -1137,23 +1112,23 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       this.translatedLangText.GATE_OUT, this.translatedLangText.CLOSING_BALANCE,
     ]];
 
-    var cWidth =contentWidth/4;
+    var cWidth = contentWidth / 4;
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
-      0: { halign: 'center', valign: 'middle', cellWidth: cWidth,minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: cWidth,minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: cWidth,minCellHeight: minHeightBodyCell },
+      0: { halign: 'center', valign: 'middle', cellWidth: cWidth, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: cWidth, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: cWidth, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: cWidth, minCellHeight: minHeightBodyCell },
     };
 
     const data: any[][] = [];
-    data.push([this.displayOpeningBalance(),this.displayTotalInGate(),this.displayTotalOutGate(),this.displayClosingBalance()]);
-    
+    data.push([this.displayOpeningBalance(), this.displayTotalInGate(), this.displayTotalOutGate(), this.displayClosingBalance()]);
+
     //var bufferX:number =65;
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY , // Start table at the current startY value
+      startY: startY, // Start table at the current startY value
       //margin: { left: leftMargin },
       theme: 'grid',
       styles: {
@@ -1171,7 +1146,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       didDrawPage: (data: any) => {
         const pageCount = pdf.getNumberOfPages();
 
-       // if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
+        // if (pageCount > 1) Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin+5);
         // Capture the final Y position of the table
         lastTableFinalY = data.cursor.y;
         var pg = pagePositions.find(p => p.page == pageCount);
@@ -1180,20 +1155,20 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
     });
 
 
-    var bufferY :number=10;
-    var bufferX :number=5;
-    startY =lastTableFinalY +bufferY;
-     if (cardElements.length > 0) {
+    var bufferY: number = 10;
+    var bufferX: number = 5;
+    startY = lastTableFinalY + bufferY;
+    if (cardElements.length > 0) {
 
 
-       const card = cardElements[0];
-       
-       const canvas = await html2canvas(card, { scale: 1.5 });
-       let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
-       const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
-       pdf.addImage(imgData, 'JPG', leftMargin+bufferX, startY, chartContentWidth, imgHeight);
+      const card = cardElements[0];
+
+      const canvas = await html2canvas(card, { scale: 1.5 });
+      let imgData = canvas.toDataURL('image/JPEG', this.imageQuality);
+      const imgHeight = (canvas.height * chartContentWidth) / canvas.width;
+      pdf.addImage(imgData, 'JPG', leftMargin + bufferX, startY, chartContentWidth, imgHeight);
     }
-    
+
 
   }
 
@@ -1800,7 +1775,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       ],
       chart: {
         type: 'bar',
-        
+
         height: 350,
         foreColor: '#9aa0ac',
         toolbar: {
@@ -1814,7 +1789,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           blur: 3,
           opacity: 1,
         }
-        
+
       },
       stroke: {
         width: 10,
@@ -1861,7 +1836,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           },
         },
       },
-     yaxis: {
+      yaxis: {
         title: {
           text: '$ (thousands)',
         },
@@ -2014,7 +1989,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       //categories;
 
       this.barChartOptions.yaxis = {
-       // max: maxYAxisValue,
+        // max: maxYAxisValue,
         min: 0,
         max: function (max: number) {
           return max * 1.2; // Increase max by 20%
@@ -2028,7 +2003,7 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
           maxWidth: 100,  // Set a maximum width for the labels
           offsetX: 10,    // Add horizontal offset to the labels
           formatter: (value: number) => {
-           return Math.round(value).toString(); // Return string, not number
+            return Math.round(value).toString(); // Return string, not number
           },
         },
         forceNiceScale: true,
@@ -2043,9 +2018,9 @@ export class DailyDetailSummaryPdfComponent extends UnsubscribeOnDestroyAdapter 
       this.barChartOptions.series = series;
       this.barChartOptions!.chart!.events = {
 
-       
+
       }
     }
   }
-  
+
 }
