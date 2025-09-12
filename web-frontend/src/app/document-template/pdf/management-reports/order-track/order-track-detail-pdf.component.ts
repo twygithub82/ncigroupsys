@@ -30,6 +30,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { autoTable, Cell, Styles } from 'jspdf-autotable';
 import { OrderTrackingItem } from 'app/data-sources/reports-management';
 import { overflow } from 'html2canvas/dist/types/css/property-descriptors/overflow';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -93,46 +94,20 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     CLASS: "COMMON-FORM.CLASS",
     IN_GATE_DETAILS: "COMMON-FORM.IN-GATE-DETAILS",
     IN_GATE_REMARKS: "COMMON-FORM.IN-GATE-REMARKS",
-    HAULIER: 'COMMON-FORM.HAULIER',
-    VEHICLE_NO: 'COMMON-FORM.VEHICLE-NO',
-    DRIVER_NAME: 'COMMON-FORM.DRIVER-NAME',
     LAST_UPDATE_BY: 'COMMON-FORM.LAST-UPDATE-BY',
     LAST_UPDATE_ON: 'COMMON-FORM.LAST-UPDATE-ON',
     TANK_DETAILS: 'COMMON-FORM.TANK-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
-    MANUFACTURER_DOM: 'COMMON-FORM.MANUFACTURER-AND-DOM',
-    CLADDING: 'COMMON-FORM.CLADDING',
-    CAPACITY: 'COMMON-FORM.CAPACITY',
-    TARE_WEIGHT: 'COMMON-FORM.TARE-WEIGHT',
-    MAX_GROSS_WEIGHT: 'COMMON-FORM.MAX-GROSS-WEIGHT',
-    TANK_HEIGHT: 'COMMON-FORM.TANK-HEIGHT',
     WALKWAY: 'COMMON-FORM.WALKWAY',
-    BOTTOM_DISCHARGE_TYPE: 'COMMON-FORM.BOTTOM-DISCHARGE-TYPE',
-    COMPARTMENT_TYPE: 'COMMON-FORM.COMPARTMENT-TYPE',
     BACK: 'COMMON-FORM.BACK',
     SAVE_AND_SUBMIT: 'COMMON-FORM.SAVE-AND-SUBMIT',
-    BOTTOM_DIS_COMP: 'COMMON-FORM.BOTTOM-DIS-COMP',
-    FOOT_VALVE: 'COMMON-FORM.FOOT-VALVE',
-    BOTTOM_DIS_VALVE: 'COMMON-FORM.BOTTOM-DIS-VALVE',
-    THERMOMETER: 'COMMON-FORM.THERMOMETER',
-    LADDER: 'COMMON-FORM.LADDER',
     DATA_SCS_TRANSPORT_PLATE: 'COMMON-FORM.DATA-SCS-TRANSPORT-PLATE',
     SAFETY_HANDRAIL: 'COMMON-FORM.SAFETY-HANDRAIL',
     BUFFER_PLATE: 'COMMON-FORM.BUFFER-PLATE',
     RESIDUE: 'COMMON-FORM.RESIDUE',
     SPECIFICATION: 'COMMON-FORM.SPECIFICATION',
-    FRAME_TYPE: 'COMMON-FORM.FRAME-TYPE',
-    LEFT_SIDE: 'COMMON-FORM.LEFT-SIDE',
-    REAR_SIDE: 'COMMON-FORM.REAR-SIDE',
-    RIGHT_SIDE: 'COMMON-FORM.RIGHT-SIDE',
-    TOP_SIDE: 'COMMON-FORM.TOP-SIDE',
-    FRONT_SIDE: 'COMMON-FORM.FRONT-SIDE',
-    BOTTOM_SIDE: 'COMMON-FORM.BOTTOM-SIDE',
-    TANK_PHOTOS: 'COMMON-FORM.TANK-PHOTOS',
     SO_REQUIRED: 'COMMON-FORM.IS-REQUIRED',
     SAVE_SUCCESS: 'COMMON-FORM.ACTION-SUCCESS',
-    MARK_DAMAGE: 'COMMON-FORM.MARK-DAMAGE',
-    SIDES: 'COMMON-FORM.SIDES',
     SAVE_ERROR: 'COMMON-FORM.SAVE-ERROR',
     DAMAGE_PHOTOS: 'COMMON-FORM.DAMAGE-PHOTOS',
     PREVIEW: 'COMMON-FORM.PREVIEW',
@@ -149,11 +124,6 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     TAKE_IN_STATUS: 'COMMON-FORM.TAKE-IN-STATUS',
     YES: 'COMMON-FORM.YES',
     NO: 'COMMON-FORM.NO',
-    BOTTOM_DIS_COMP__ABB: 'COMMON-FORM.BOTTOM-DIS-COMP--ABB',
-    BOTTOM_DIS_VALVE__ABB: 'COMMON-FORM.BOTTOM-DIS-VALVE--ABB',
-    TOP_DIS_COMP__ABB: 'COMMON-FORM.TOP-DIS-COMP--ABB',
-    TOP_DIS_VALVE__ABB: 'COMMON-FORM.TOP-DIS-VALVE--ABB',
-    MANLID_COMP__ABB: 'COMMON-FORM.MANLID-COMP--ABB',
     CRN: 'COMMON-FORM.CRN',
     EIR_COMPANY_DECLARATION: 'COMMON-FORM.EIR-COMPANY-DECLARATION',
     EIR_HAULIER_DECLARATION: 'COMMON-FORM.EIR-HAULIER-DECLARATION',
@@ -169,17 +139,12 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     OFFHIRE_ESTIMATE: 'COMMON-FORM.OFFHIRE-ESTIMATE',
     ESTIMATE_NO: 'COMMON-FORM.ESTIMATE-NO',
     ESTIMATE_DATE: 'COMMON-FORM.ESTIMATE-DATE',
-    MANUFACTURER: 'COMMON-FORM.MANUFACTURER',
-    DAMAGE_CODE: 'COMMON-FORM.DAMAGE-CODE',
-    REPAIR_CODE: 'COMMON-FORM.REPAIR-CODE',
     NO_DOT: 'COMMON-FORM.NO-DOT',
     ITEM: 'COMMON-FORM.ITEM',
     DESCRIPTION: 'COMMON-FORM.DESCRIPTION',
     DEPOT_ESTIMATE: 'COMMON-FORM.DEPOT-ESTIMATE',
     CUSTOMER_APPROVAL: 'COMMON-FORM.CUSTOMER-APPROVAL',
     QTY: 'COMMON-FORM.QTY',
-    LABOUR: 'COMMON-FORM.LABOUR',
-    MATERIAL: 'COMMON-FORM.MATERIAL',
     LESSEE_OWNER__ABB: 'COMMON-FORM.LESSEE-OWNER--ABB',
     REMARKS: 'COMMON-FORM.REMARKS',
     APPROVED_COST: 'COMMON-FORM.APPROVED-COST',
@@ -187,15 +152,8 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     ESTIMATE_COST: 'COMMON-FORM.ESTIMATE-COST',
     FOR: 'COMMON-FORM.FOR',
     NET_COST: 'COMMON-FORM.NET-COST',
-    LABOUR_DISCOUNT: 'COMMON-FORM.LABOUR-DISCOUNT',
-    MATERIAL_DISCOUNT: 'COMMON-FORM.MATERIAL-DISCOUNT',
     PAGE: 'COMMON-FORM.PAGE',
     OF: 'COMMON-FORM.OF',
-    INVOICE_PERIOD: 'COMMON-FORM.INVOICE-PERIOD',
-    CUSTOMER_INVOICE: 'MENUITEMS.BILLING.LIST.CUSTOMER-INVOICE',
-    LOLO_COST: 'COMMON-FORM.LOLO-COST-REPORT',
-    STEAM_COST: 'COMMON-FORM.STEAM-COST-REPORT',
-    RESIDUE_COST: 'COMMON-FORM.RESIDUE-COST-REPORT',
     IN_DATE: 'COMMON-FORM.IN-DATE',
     OUT_DATE: 'COMMON-FORM.OUT-DATE',
     TOTAL: 'COMMON-FORM.TOTAL',
@@ -223,19 +181,14 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     QC_BY: 'COMMON-FORM.QC-BY',
     REPAIR_COST: 'COMMON-FORM.REPAIR-COST',
     REPORTED_BY: 'COMMON-FORM.REPORTED-BY',
-    TEAM: 'COMMON-FORM.TEAM',
-    QC_DATE: 'COMMON-FORM.QC-DATE',
     SIGN: 'COMMON-FORM.SIGN',
     VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
-    MAN_HOUR: 'COMMON-FORM.MAN-HOUR',
-    MATERIAL_COST: 'COMMON-FORM.MATERIAL-COST',
-    TOTAL_COST: 'COMMON-FORM.TOTAL-COST',
     ORDER_NO: 'COMMON-FORM.ORDER-NO',
     ORDER_DATE: 'COMMON-FORM.ORDER-DATE',
     CANCEL_DATE: 'COMMON-FORM.CANCEL-DATE',
     CANCEL_REMARK: 'COMMON-FORM.CANCEL-REMARK',
-    STORING_ORDER_TRACKING_REPORT: 'COMMON-FORM.STORING-ORDER-TRACKING-REPORT',
-    RELEASE_ORDER_TRACKING_REPORT: 'COMMON-FORM.RELEASE-ORDER-TRACKING-REPORT',
+    STORING_ORDER: 'COMMON-FORM.STORING-ORDER',
+    RELEASE_ORDER: 'COMMON-FORM.RELEASE-ORDER',
     RELEASE_DATE: 'COMMON-FORM.RELEASE-DATE',
     S_N: 'COMMON-FORM.S_N',
   }
@@ -582,16 +535,16 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
-      2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle', cellWidth: 65, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      6: { halign: 'left', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
+      5: { halign: 'left', valign: 'middle', cellWidth: 68, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      6: { halign: 'left', valign: 'middle', cellWidth: 33, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      11: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -618,8 +571,8 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     let startY = lastTableFinalY; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
-    const cutoffDate = `${this.translatedLangText.DATE}: ${Utility.convertEpochToDateStr(this.data.start_dt)} - ${Utility.convertEpochToDateStr(this.data.end_dt)}`; // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, 46, 8);
+    const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.DATE, (Utility.convertEpochToDateStr(this.data.start_dt) + " - " + Utility.convertEpochToDateStr(this.data.end_dt))); // Replace with your actual cutoff date
+    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin , startY - 2, PDFUtility.RightSubTitleFontSize());
 
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
@@ -708,7 +661,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
             Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 4, 46, 8);
+            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, startY - 2, PDFUtility.RightSubTitleFontSize());
           }
         }
       },
@@ -869,10 +822,10 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
   GetReportTitle(): string {
     var title: string = '';
     if (this.repType == "so") {
-      title = `${this.translatedLangText.STORING_ORDER_TRACKING_REPORT}`
+      title = `${this.translatedLangText.STORING_ORDER}`
     }
     else {
-      title = `${this.translatedLangText.RELEASE_ORDER_TRACKING_REPORT}`
+      title = `${this.translatedLangText.RELEASE_ORDER}`
     }
     return `${title}`
   }

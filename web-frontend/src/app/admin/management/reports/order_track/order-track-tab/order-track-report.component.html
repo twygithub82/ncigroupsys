@@ -23,13 +23,14 @@
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <div class="row">
-              <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+              <!-- <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                   <input matInput formControlName="tank_no">
                 </mat-form-field>
-              </div>
-               <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              </div> -->
+
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                   <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -43,20 +44,21 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.JOB_NO}}</mat-label>
                   <input matInput formControlName="job_no">
                 </mat-form-field>
               </div>
-              <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
+
+              <!-- <div class="col-xl-2 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" hidden>
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                   <input matInput formControlName="eir_no">
                 </mat-form-field>
-              </div>
-             
-              <div class="col-xl-4 col-lg-3 col-md-12 col-sm-12 mb-0">
+              </div> -->
+
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.LAST_CARGO}}</mat-label>
                   <input matInput [formControl]="lastCargoControl" [matAutocomplete]="lastCargo"
@@ -75,7 +77,8 @@
                   }
                 </mat-form-field>
               </div>
-              <div class="col-xl-34 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="eir_picker" required>
@@ -89,8 +92,8 @@
                   <mat-datepicker #eir_picker></mat-datepicker> -->
                 </mat-form-field>
               </div>
-            
-              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
+
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.PURPOSE}}</mat-label>
                   <mat-select formControlName="purpose">
@@ -104,7 +107,8 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0" >
+
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   @if((searchForm?.get('order_type')?.value||1)==='1')
                   {
@@ -116,9 +120,9 @@
                   }
                   <input matInput formControlName="order_no">
                 </mat-form-field>
-              </div>
+              </div> -->
 
-              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0" >
+              <!-- <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.STATUS}}</mat-label>
                   <mat-select formControlName="status_cv">
@@ -131,15 +135,8 @@
                     }
                   </mat-select>
                 </mat-form-field>
-              </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 ">
-                <div class="radio-group">
-                  <input type="radio" id="option-one" name="order_type" formControlName="order_type" value="1"
-                    checked><label for="option-one">{{translatedLangText.STORING_ORDER}}</label>
-                  <input type="radio" id="option-two" name="order_type" formControlName="order_type" value="2"><label
-                    for="option-two">{{translatedLangText.RELEASE_ORDER}}</label>
-                </div>
-              </div>
+              </div> -->
+
               <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center  ms-auto justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.DETAIL_REPORT}}
@@ -152,6 +149,16 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div> -->
+            </div>
+            <div row>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 ">
+                <div class="radio-group">
+                  <input type="radio" id="option-one" name="order_type" formControlName="order_type" value="1"
+                    checked><label for="option-one">{{translatedLangText.STORING_ORDER}}</label>
+                  <input type="radio" id="option-two" name="order_type" formControlName="order_type" value="2"><label
+                    for="option-two">{{translatedLangText.RELEASE_ORDER}}</label>
+                </div>
+              </div>
             </div>
           </form>
         </mat-expansion-panel>
@@ -241,7 +248,7 @@
             </ng-container>
             <!-- ID Column -->
             <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
               <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="tank_no">
@@ -290,7 +297,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_cargo">
-              <mat-header-cell *matHeaderCellDef  [ngClass]="'tbl-col-width-per-2'">
+              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-2'">
                 {{translatedLangText.LAST_CARGO}}
               </mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
