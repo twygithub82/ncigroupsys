@@ -22,19 +22,19 @@
           </mat-expansion-panel-header>
           <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm">
             <div class="row">
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
                   <input matInput formControlName="tank_no">
                 </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              </div> -->
+              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
                   <input matInput formControlName="eir_no">
                 </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              </div> -->
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
                   <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
@@ -48,7 +48,7 @@
                   </mat-autocomplete>
                 </mat-form-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.CARGO}}</mat-label>
                   <input matInput formControlName="cargo" [matAutocomplete]="cargoCode">
@@ -74,7 +74,7 @@
                 </mat-form-field>
               </div>
 
-              <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.STEAM_DATE}}</mat-label>
                   <mat-date-range-input [rangePicker]="allocation_picker" [max]="maxManuDOMDt" required>
