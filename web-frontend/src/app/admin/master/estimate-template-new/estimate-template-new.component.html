@@ -349,24 +349,23 @@
                           <span class="font-bold">{{translatedLangText.DESCRIPTION}}</span>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.LABOUR}}
+                          <div class="table-label">{{translatedLangText.LABOUR}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.MATERIAL_COST}}
+                          <div class="table-label">{{translatedLangText.MATERIAL_COST}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.TOTAL_COST}}
+                          <div class="table-label">{{translatedLangText.TOTAL_COST}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.LABOUR_DISCOUNT}}
+                          <div class="table-label">{{translatedLangText.LABOUR_DISCOUNT}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.MATERIAL_DISCOUNT}}
+                          <div class="table-label">{{translatedLangText.MATERIAL_DISCOUNT}}</div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 ps-4 border">
-                          {{translatedLangText.NET_COST}}
+                          <div class="table-label">{{translatedLangText.NET_COST}}</div>
                         </div>
-
                       </div>
                     </div>
                     <div class="col-xl-1-5 col-lg-1-5 col-md-1-5 col-sm-1-5 m-b-0">
@@ -386,30 +385,34 @@
                           <div class="table-label"></div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <tlx-form-field customClass="example-full-width">
-                            <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput formControlName="labour_discount"
-                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
-                              <!-- @if (tempForm?.get('labour_discount')?.hasError('required')) {
+                          <div class="table-label">
+                            <tlx-form-field customClass="example-full-width">
+                              <mat-form-field>
+                                <input class="text-end" tlxFormInput matInput formControlName="labour_discount"
+                                  [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
+                                <!-- @if (tempForm?.get('labour_discount')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.LABOUR_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
                               </mat-error>
                               } -->
-                            </mat-form-field>
-                          </tlx-form-field>
+                              </mat-form-field>
+                            </tlx-form-field>
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-1 pb-2 border">
-                          <tlx-form-field customClass="example-full-width">
-                            <mat-form-field>
-                              <input class="text-end" tlxFormInput matInput formControlName="material_discount"
-                                [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
-                              <!-- @if (tempForm?.get('material_discount')?.hasError('required')) {
+                          <div class="table-label">
+                            <tlx-form-field customClass="example-full-width">
+                              <mat-form-field>
+                                <input class="text-end" tlxFormInput matInput formControlName="material_discount"
+                                  [placeholder]="translatedLangText.PERCENTAGE_SYMBOL" type="number" min="0" required>
+                                <!-- @if (tempForm?.get('material_discount')?.hasError('required')) {
                               <mat-error>
                                 {{translatedLangText.MATERIAL_DISCOUNT}} {{translatedLangText.SO_REQUIRED}}
                               </mat-error>
                               } -->
-                            </mat-form-field>
-                          </tlx-form-field>
+                              </mat-form-field>
+                            </tlx-form-field>
+                          </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 m-b-0 pt-2 pb-2 pe-4 text-end border">
                           <div class="table-label"></div>

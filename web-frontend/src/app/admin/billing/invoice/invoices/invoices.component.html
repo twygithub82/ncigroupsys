@@ -244,10 +244,10 @@
                 </ng-container>
 
                 <ng-container matColumnDef="customer">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                     {{translatedLangText.CUSTOMER}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
                       matTooltip={{row.customer_company?.name}}>{{row.customer_company?.code}}</span>
                   </mat-cell>
@@ -263,10 +263,10 @@
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="currency">
-                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+                  <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
                     {{translatedLangText.CURRENCY}}
                   </mat-header-cell>
-                  <mat-cell mat-cell *matCellDef="let row" class="">
+                  <mat-cell mat-cell *matCellDef="let row" [ngClass]="'justify-content-center'">
                     <span class="mobile-label">{{translatedLangText.CURRENCY}}:</span>{{row.currency?.currency_code}}
                   </mat-cell>
                 </ng-container>

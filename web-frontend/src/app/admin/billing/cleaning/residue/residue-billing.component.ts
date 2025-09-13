@@ -41,7 +41,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { invoice_type_mapping } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility,BILLING_TANK_STATUS,BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -90,9 +90,9 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     'last_cargo',
     //'purpose',
     'cost',
-    'tank_status_cv',
     'invoice_no',
     'invoice_date',
+    'tank_status_cv',
     //'invoiced',
     // 'action'
   ];
@@ -388,7 +388,7 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     where.status_cv = { in: ['COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] };
     where.bill_to_guid = { neq: null };
     if (!where.storing_order_tank) where.storing_order_tank = {};
-     where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS};
+    where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
     if (this.searchForm?.get('depot_status_cv')?.value != "") {
       if (!where.storing_order_tank) where.storing_order_tank = {};
       if (!where.storing_order_tank.tank_status_cv) where.storing_order_tank.tank_status_cv = {};
