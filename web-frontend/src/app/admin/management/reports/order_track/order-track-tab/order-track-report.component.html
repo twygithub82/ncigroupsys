@@ -81,7 +81,7 @@
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <mat-form-field class="example-full-width" appearance="fill">
                   <mat-label>{{translatedLangText.DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="eir_picker" required>
+                  <mat-date-range-input [rangePicker]="eir_picker" [max]="maxManuDOMDt" required>
                     <input matStartDate placeholder="Start date" formControlName="dt_start" required>
                     <input matEndDate placeholder="End date" formControlName="dt_end" required>
                   </mat-date-range-input>
