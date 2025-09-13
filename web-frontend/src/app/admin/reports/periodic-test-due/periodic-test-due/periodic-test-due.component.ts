@@ -352,11 +352,6 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     }
   }
 
-
-  search_summary() {
-    this.search(1);
-  }
-
   search_detail() {
     this.search(2);
   }
@@ -409,15 +404,13 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
     if (this.noCond) return;
     this.lastSearchCriteria = periodicTestDueReq;
     this.performSearch(periodicTestDueReq);
-
-
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
   }
 
-  
+
   performSearch(date: string) {
     this.subs.sink = this.repDS.searchPeriodicTestDueSummaryReport(this.lastSearchCriteria)
       .subscribe(data => {
@@ -499,7 +492,7 @@ export class PeriodicTestDueReportComponent extends UnsubscribeOnDestroyAdapter 
 
 
   ProcessPeriodicTestDueReport() {
-    if (this.periodicTestRes.length === 0) return;
+    // if (this.periodicTestRes.length === 0) return;
 
     var report_records: report_periodic_test_due_group_customer[] = [];
 

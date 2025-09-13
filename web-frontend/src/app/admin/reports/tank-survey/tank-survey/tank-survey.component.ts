@@ -392,13 +392,12 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     var cond_counter = 0;
     let queryType = 1;
     var dailytankSurveyReq: any = {};
-    
-    if(this.searchForm?.invalid)
-    {
-       this.searchForm.markAllAsTouched();
-        this.isGeneratingReport = false;
-        return;
-    } 
+
+    if (this.searchForm?.invalid) {
+      this.searchForm.markAllAsTouched();
+      this.isGeneratingReport = false;
+      return;
+    }
 
     // where.tank_status_cv = { neq: "RELEASED" };
     // if (this.searchForm?.get('customer_code')?.value) {
@@ -470,8 +469,6 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
     // this.lastSearchCriteria = this.stmDS.addDeleteDtCriteria(where);
     this.performSearch(dailytankSurveyReq, date);
-
-
   }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
@@ -566,10 +563,10 @@ export class TankSurveyReportComponent extends UnsubscribeOnDestroyAdapter imple
 
 
   ProcessReportTankSurvey(date: string) {
-    if (this.surveyList.length === 0) {
-      this.isGeneratingReport = false;
-      return;
-    }
+    // if (this.surveyList.length === 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
     var report_summary: tank_survey_summary_group_by_survey_dt[] = [];
 
