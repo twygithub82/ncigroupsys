@@ -38,7 +38,7 @@
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.USER }}</mat-label>
-                        <input matInput formControlName="user" type="text">
+                        <input matInput formControlName="user" type="text"  (keyup.enter)="search()">
                         <mat-icon matSuffix class="date-icon">search</mat-icon>
 
                       </mat-form-field>
