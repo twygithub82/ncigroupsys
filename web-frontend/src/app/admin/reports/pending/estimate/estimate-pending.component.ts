@@ -395,9 +395,9 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     this.selection.clear();
 
     //var invType: string = this.repairTypeCvList.find(i => i.code_val == (this.searchForm!.get('rep_type')?.value))?.description || '';
-    where.and=[
-      {repair:{any:false}},
-      {tank_status_cv:{in:["REPAIR"]}}
+    where.and = [
+      { repair: { any: false } },
+      { tank_status_cv: { in: ["REPAIR"] } }
     ]
     if (this.searchForm!.get('tank_no')?.value) {
       where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
@@ -697,19 +697,15 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     return retval;
   }
 
-
-
-
-
   onExportDetail(sot: StoringOrderTankItem[]) {
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if (sot?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
+    // if (sot?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
-    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -762,11 +758,11 @@ export class EstimatePendingComponent extends UnsubscribeOnDestroyAdapter implem
     });
   }
 
-  getMaxDate(){
+  getMaxDate() {
     return new Date();
   }
 
-   onTabFocused() {
+  onTabFocused() {
     this.resetForm();
   }
 }

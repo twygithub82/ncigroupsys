@@ -336,25 +336,32 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     where.and = [];
 
     const itm: any = { or: [] };
-    itm.or.push({ and: [
-      { cleaning: { any: true } }, 
-      { cleaning: { some: { customer_billing_guid: { eq: null } } } }
-    ] });
+    itm.or.push({
+      and: [
+        { cleaning: { any: true } },
+        { cleaning: { some: { customer_billing_guid: { eq: null } } } }
+      ]
+    });
     itm.or.push({ and: [{ repair: { any: true } }, { repair: { some: { or: [{ customer_billing_guid: { eq: null } }, { and: [{ owner_billing_guid: { eq: null } }, { owner_enable: { eq: true } }] }] } } }] });
     itm.or.push({ and: [{ residue: { any: true } }, { residue: { some: { customer_billing_guid: { eq: null } } } }] });
-    itm.or.push({ and: [{ steaming: { any: true } }, { steaming: { some: { customer_billing_guid: { eq: null } } } },{
-      or:[
-        {and:[
-        {create_by:{neq:"system"}},
-        {status_cv:{in:["QC_COMPLETED","COMPLETED","APPROVED","JOB_IN_PROGRESS","ASSIGNED","PARTIAL_ASSIGNED"]}}
+    itm.or.push({
+      and: [{ steaming: { any: true } }, { steaming: { some: { customer_billing_guid: { eq: null } } } }, {
+        or: [
+          {
+            and: [
+              { create_by: { neq: "system" } },
+              { status_cv: { in: ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"] } }
+            ]
+          },
+          {
+            and: [
+              { create_by: { eq: "system" } },
+              { status_cv: { in: ["QC_COMPLETED", "COMPLETED"] } }]
+          }
         ]
-      },
-      {and:[
-          {create_by:{eq:"system"}},
-          {status_cv:{in:["QC_COMPLETED","COMPLETED"]}}]}
+      }
       ]
-    }
-    ] });
+    });
     itm.or.push({
       and: [{
         or: [
@@ -377,29 +384,31 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       itm.or.push({ repair: { some: approveSearch } });
       itm.or.push({ residue: { some: approveSearch } });
       itm.or.push({ steaming: { some: approveSearch } });
-      itm.or.push({ billing_sot:{create_dt:{lte:Utility.convertDate(this.searchForm!.value['cutoff_dt'], true), gt:1600000000}}});
+      itm.or.push({ billing_sot: { create_dt: { lte: Utility.convertDate(this.searchForm!.value['cutoff_dt'], true), gt: 1600000000 } } });
       where.and.push(itm);
     }
 
     // if (this.searchForm!.get('customer_code')?.value) {
     //   const soSearch: any = {};
-      if (this.searchForm!.get('customer_code')?.value) {
-          where.and.push(
-            {or:[
-               {storing_order:{ customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } }},
-             // { customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } },
-             
-              {
-                and :[
-                  {owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid }},
-                  {repair:{some:{owner_enable:{eq:true}}}}
-                ]
-                
-              }
-            ]}
-          )
-            //  soSearch.customer_company = { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } };
-       }
+    if (this.searchForm!.get('customer_code')?.value) {
+      where.and.push(
+        {
+          or: [
+            { storing_order: { customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } } },
+            // { customer_company: { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } } },
+
+            {
+              and: [
+                { owner_guid: { eq: this.searchForm!.get('customer_code')?.value.guid } },
+                { repair: { some: { owner_enable: { eq: true } } } }
+              ]
+
+            }
+          ]
+        }
+      )
+      //  soSearch.customer_company = { guid: { eq: this.searchForm!.get('customer_code')?.value.guid } };
+    }
     //   // where.storing_order = soSearch;
     // }
 
@@ -408,8 +417,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, reportType: number = 1) {
-   // this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetails(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-   this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetailsAll(this.lastSearchCriteria, this.lastOrderBy)
+    // this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetails(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.sotDS.searchStoringOrderTanksEstimateDetailsAll(this.lastSearchCriteria, this.lastOrderBy)
       .subscribe(data => {
         this.sotList = data.filter(sot => (sot.tank_status_cv ?? '') !== '');
         this.endCursor = this.sotDS.pageInfo?.endCursor;
@@ -563,7 +572,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       if (itms.length > 0) {
 
         itms.forEach(c => {
-          if(c.customer_billing_guid!=null) return;
+          if (c.customer_billing_guid != null) return;
           c.storing_order_tank = sot;
           let newItem = false;
           let rep_bill_item = rep_bill_items.find(item => item.sot_guid === c.storing_order_tank?.guid);
@@ -576,7 +585,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.tank_no){ rep_bill_item.tank_no= c.storing_order_tank?.tank_no;}
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
-          if (!['NO_ACTION', 'KIV' ,'QC_COMPLETED'].includes(c.status_cv!)) {
+          if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
 
             rep_bill_item.clean_est_no += 1;
             rep_bill_item.clean_cost = Number(Number(rep_bill_item?.clean_cost || 0) + (c.cleaning_cost || 0) + (c.buffer_cost || 0)).toFixed(2);
@@ -599,9 +608,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
     if (item && (item.delete_dt === null || item.delete_dt === 0) &&
       (item.gout_billing_guid == null && item.gin_billing_guid == null)
       //(item.gout_billing_guid == null || item.gin_billing_guid == null)
-    ) 
-      
-    {
+    ) {
       item.storing_order_tank = sot;
 
       let newItem = false;
@@ -618,8 +625,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       const gateIOCost = (item.gate_in ? (item.gate_in_cost || 0) : 0) + (item.gate_out ? (item.gate_out_cost || 0) : 0);
 
       //if (gateIOCost > 0) 
-      if(item.gate_in||item.gate_out)
-      {
+      if (item.gate_in || item.gate_out) {
         rep_bill_item.gateio_est_no += 1; // Increment gate I/O estimation number
       }
 
@@ -662,11 +668,11 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
     const item = sot.billing_sot; // Single object instead of an array
 
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && 
-       (item.lon_billing_guid == null && item.loff_billing_guid == null)
-   // (item.lon_billing_guid == null || item.loff_billing_guid == null)
-     
-  ) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) &&
+      (item.lon_billing_guid == null && item.loff_billing_guid == null)
+      // (item.lon_billing_guid == null || item.loff_billing_guid == null)
+
+    ) {
       item.storing_order_tank = sot;
 
       let newItem = false;
@@ -680,8 +686,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       const loloCost = (item.lift_off ? item.lift_off_cost! : 0) + (item.lift_on ? item.lift_on_cost! : 0);
 
       //if (loloCost > 0)
-      if(item.lift_off||item.lift_on)
-         {
+      if (item.lift_off || item.lift_on) {
         rep_bill_item.lolo_est_no += 1;
       }
 
@@ -714,8 +719,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
       const preinsCost = item.preinspection ? item.preinspection_cost! : 0;
 
       // if (preinsCost > 0) 
-      if(item.preinspection)
-        {
+      if (item.preinspection) {
         rep_bill_item.preins_est_no += 1;
       }
 
@@ -730,12 +734,12 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
   calculateStorageCost(sot: StoringOrderTankItem, rep_bill_items: report_billing_item[]) {
     const item = sot.billing_sot; // Single object instead of an array
-    let dt =new Date();
-    if(this.searchForm?.get('cutoff_dt')?.value) dt = new Date( this.searchForm?.get('cutoff_dt')?.value);
-    
+    let dt = new Date();
+    if (this.searchForm?.get('cutoff_dt')?.value) dt = new Date(this.searchForm?.get('cutoff_dt')?.value);
+
     const epochSeconds = Math.floor(dt.getTime() / 1000); // seconds
     var lastEnd = sot.storage_detail?.[0]?.end_dt ?? 0;
-    if (item && (item.delete_dt === null || item.delete_dt === 0) && lastEnd<epochSeconds) {
+    if (item && (item.delete_dt === null || item.delete_dt === 0) && lastEnd < epochSeconds) {
       item.storing_order_tank = sot;
 
       let newItem = false;
@@ -792,8 +796,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
           // if (c.status_cv != 'NO_ACTION') 
-          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED","COMPLETED","APPROVED","JOB_IN_PROGRESS","ASSIGNED","PARTIAL_ASSIGNED"].includes(c.status_cv!))
-            {
+          if (!['NO_ACTION', 'KIV'].includes(c.status_cv!) && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!)) {
 
             const totalCost = this.repDS.calculateCost(c, c.repair_part!, c.labour_cost);
             rep_bill_item.repair_cost = Number(Number(rep_bill_item?.repair_cost || 0) + (CustomerType == 0 ? Number(totalCost.total_lessee_mat_cost || 0) : Number(totalCost.total_owner_cost || 0))).toFixed(2);
@@ -833,8 +836,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
           // if (c.status_cv != 'NO_ACTION') 
-          if(!['NO_ACTION', 'KIV','QC_COMPLETED'].includes(c.status_cv!))
-          {
+          if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
 
             let total = 0;
             c.residue_part?.forEach(p => {
@@ -877,18 +879,16 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           // if(c.storing_order_tank?.job_no){ rep_bill_item.job_no=c.storing_order_tank?.job_no;}
           // if(c.storing_order_tank?.tariff_cleaning?.cargo) rep_bill_item.last_cargo=c.storing_order_tank?.tariff_cleaning?.cargo;
           // if (c.status_cv != 'NO_ACTION') 
-          if(!['NO_ACTION', 'KIV','QC_COMPLETED'].includes(c.status_cv!))
-            {
-              var bProcess=false;
-              var cutoff_dt = Number( Utility.convertDate(this.searchForm!.value['cutoff_dt'], true) ) ;
-             if(((c.approve_by=="system" && ["QC_COMPLETED","COMPLETED"].includes(c.status_cv!))||
-             (c.approve_by!="system" && ["QC_COMPLETED","COMPLETED","APPROVED","JOB_IN_PROGRESS","ASSIGNED","PARTIAL_ASSIGNED"].includes(c.status_cv!))
-             )&& cutoff_dt>=(c.approve_dt||0))  
-             {
-                bProcess=true;
-             }
-            
-             if(!bProcess) return;
+          if (!['NO_ACTION', 'KIV', 'QC_COMPLETED'].includes(c.status_cv!)) {
+            var bProcess = false;
+            var cutoff_dt = Number(Utility.convertDate(this.searchForm!.value['cutoff_dt'], true));
+            if (((c.approve_by == "system" && ["QC_COMPLETED", "COMPLETED"].includes(c.status_cv!)) ||
+              (c.approve_by != "system" && ["QC_COMPLETED", "COMPLETED", "APPROVED", "JOB_IN_PROGRESS", "ASSIGNED", "PARTIAL_ASSIGNED"].includes(c.status_cv!))
+            ) && cutoff_dt >= (c.approve_dt || 0)) {
+              bProcess = true;
+            }
+
+            if (!bProcess) return;
 
             let total = 0;
             let cost = this.retrieveLabourCost(c.storing_order_tank?.storing_order?.customer_company?.guid!);
@@ -979,10 +979,10 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   export_report(reportType: number) {
-    if (!this.sotList.length) {
-      this.isGeneratingReport = false;
-      return;
-    }
+    // if (!this.sotList.length) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
     this.getAllClientLabourCost().then(() => {
       var repCustomers: report_billing_customer[] = []
@@ -1004,7 +1004,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           repCust.items = [];
         }
         //repCust.customer = b.customer_company?.name;
-         repCust.customer = b.storing_order?.customer_company?.name;
+        repCust.customer = b.storing_order?.customer_company?.name;
         //this.ccDS.displayName(b.storing_order?.customer_company);
         //  if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
         //     repCust.invoice_period=`${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
@@ -1015,7 +1015,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
         if (newCust) repCustomers.push(repCust);
 
-         this.checkRepairBillingForTankOwner(b, repCustomers);
+        this.checkRepairBillingForTankOwner(b, repCustomers);
 
       });
       repCustomers.map(c => {
@@ -1183,23 +1183,22 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
 
 
-  calculateTotalCost(items:StoringOrderTankItem[]) {
+  calculateTotalCost(items: StoringOrderTankItem[]) {
     // this.invoiceTotalCostControl.setValue('0.00');
     var invalidItm: any[] = [];
     const totalCost = items.reduce((accumulator, s) => {
       // Add buffer_cost and cleaning_cost of the current item to the accumulator
 
-      var itm: BillingSOTItem = s.billing_sot||new BillingSOTItem();
-      var total_cost =0;
+      var itm: BillingSOTItem = s.billing_sot || new BillingSOTItem();
+      var total_cost = 0;
       //if (itm.storage_billing) itm.storage_billing.storage_detail = this.filterDeleted(itm.storage_billing.storage_detail);
       if (!itm.storage_billing) {
         let packDepotItm: PackageDepotItem = new PackageDepotItem();
         packDepotItm.storage_cal_cv = itm.storage_cal_cv;
-        
+
         let cutOffDt: Date = new Date();
-        if(this.searchForm!.get('cutoff_dt')?.value)
-        {
-          cutOffDt =  new Date( this.searchForm?.get('cutoff_dt')?.value);
+        if (this.searchForm!.get('cutoff_dt')?.value) {
+          cutOffDt = new Date(this.searchForm?.get('cutoff_dt')?.value);
         }
         cutOffDt.setHours(23);
         cutOffDt.setMinutes(59);
@@ -1207,7 +1206,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
         let startDate = this.pdDS.getStorageStartDate(itm.storing_order_tank!, packDepotItm?.storage_cal_cv);
         let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0, (cutOffDt.getTime() / 1000)));
-        let freeStorage = itm.free_storage||0;
+        let freeStorage = itm.free_storage || 0;
         let remainFreeDays = freeStorage - daysDifference;
         let startDt = new Date(startDate);
         //startDt.setDate(startDt.getDate()+(-1*(daysDifference+freeStorage)));
@@ -1215,7 +1214,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           cutOffDt = new Date(startDt);
           cutOffDt.setDate(cutOffDt.getDate() + daysDifference + freeStorage - 1);
         }
-        total_cost= (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost||0));
+        total_cost = (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost || 0));
         // itm.currentStorageBilling = new StorageDetailRequest();
         // itm.currentStorageBilling.start_dt = Utility.convertDate(startDt);
         // itm.currentStorageBilling.end_dt = Utility.convertDate(cutOffDt);
@@ -1230,9 +1229,8 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
         let packDepotItm: PackageDepotItem = new PackageDepotItem();
         packDepotItm.storage_cal_cv = itm.storage_cal_cv;
         let cutOffDt: Date = new Date();
-        if(this.searchForm!.get('cutoff_dt')?.value)
-        {
-          cutOffDt =  new Date( this.searchForm?.get('cutoff_dt')?.value);
+        if (this.searchForm!.get('cutoff_dt')?.value) {
+          cutOffDt = new Date(this.searchForm?.get('cutoff_dt')?.value);
         }
         cutOffDt.setHours(23);
         cutOffDt.setMinutes(59);
@@ -1240,7 +1238,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
         let startDt = this.pdDS.getStorageStartDate(itm.storing_order_tank!, packDepotItm?.storage_cal_cv);
         let daysDifference: number = Number(this.pdDS.getStorageDays(itm.storing_order_tank!, packDepotItm, 0, (cutOffDt.getTime() / 1000)));
-        let freeStorage = itm.free_storage||0;
+        let freeStorage = itm.free_storage || 0;
         let remainFreeDays = freeStorage - daysDifference;
         // let startDt= new Date(this.invoiceDateControl.value!);
         // startDt.setDate(startDt.getDate()+(-1*(daysDifference+freeStorage)));
@@ -1248,7 +1246,7 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
         var state = "BILLING"
         if (s?.tank_status_cv == "RELEASED") {
-          if ((s?.storage_detail?.length||0) > 0) state = "END";
+          if ((s?.storage_detail?.length || 0) > 0) state = "END";
           else state = "START_END";
 
         }
@@ -1258,26 +1256,26 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
 
 
 
-        if ((s?.storage_detail?.length||0) > 0) {
+        if ((s?.storage_detail?.length || 0) > 0) {
           var storageDetails = [...s?.storage_detail || []].sort((a, b) =>
             (b.end_dt || 0) - (a.end_dt || 0)
           );
 
           var lastStorageDetail = storageDetails[0]
           if (["END", "BILLING"].includes(state)) {
-            startDt = new Date((lastStorageDetail?.end_dt||0) * 1000);
+            startDt = new Date((lastStorageDetail?.end_dt || 0) * 1000);
             startDt.setDate(startDt.getDate() + 1);
             daysDifference = this.calculateDateDifference(startDt, cutOffDt);
-            remainFreeDays = (lastStorageDetail?.remaining_free_storage||0) - daysDifference;
+            remainFreeDays = (lastStorageDetail?.remaining_free_storage || 0) - daysDifference;
 
-            if ((state === "END" || state === "START_END") && (s?.out_gate?.length||0) > 0) {
-              cutOffDt = new Date((lastStorageDetail?.end_dt||0) * 1000);
+            if ((state === "END" || state === "START_END") && (s?.out_gate?.length || 0) > 0) {
+              cutOffDt = new Date((lastStorageDetail?.end_dt || 0) * 1000);
               cutOffDt.setHours(23);
               cutOffDt.setMinutes(59);
               cutOffDt.setSeconds(59);
-             var outGate = s?.out_gate?.[0] ?? undefined;
+              var outGate = s?.out_gate?.[0] ?? undefined;
 
-              var outDt = new Date(((outGate?.eir_dt||0) * 1000) || 0);
+              var outDt = new Date(((outGate?.eir_dt || 0) * 1000) || 0);
               outDt.setHours(23);
               outDt.setMinutes(59);
               outDt.setSeconds(59);
@@ -1293,10 +1291,10 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           }
         }
         else if (["END", "START_END"].includes(state)) {
-          if ((s?.out_gate?.length||0) > 0) {
+          if ((s?.out_gate?.length || 0) > 0) {
 
-             var outGate = s?.out_gate?.[0] ?? undefined;
-             var outDt = new Date(((outGate?.eir_dt||0) * 1000) || 0);
+            var outGate = s?.out_gate?.[0] ?? undefined;
+            var outDt = new Date(((outGate?.eir_dt || 0) * 1000) || 0);
             outDt.setHours(23);
             outDt.setMinutes(59);
             outDt.setSeconds(59);
@@ -1311,15 +1309,15 @@ export class PendingInvoiceComponent extends UnsubscribeOnDestroyAdapter impleme
           }
 
         }
-         total_cost= (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost||0));
-     
+        total_cost = (remainFreeDays > 0 ? 0 : Math.abs(remainFreeDays) * (itm?.storage_cost || 0));
+
 
       }
-    
+
       return accumulator + total_cost;
       //return accumulator + (this.resDS.getApproveTotal(s.residue_part)?.total_mat_cost||0);
     }, 0); // Initialize accumulator to 0
-    
+
 
     return totalCost;
 
