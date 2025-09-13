@@ -261,7 +261,6 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
       purpose: [''],
       trf_dt_start: [''],
       trf_dt_end: ['']
-
     });
   }
 
@@ -356,17 +355,15 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
     this.search(1);
   }
 
-  search_detail() {
-    this.search(2);
-  }
-
   search(report_type: number) {
-
     var cond_counter = 0;
     let queryType = 1;
     const where: any = {};
 
-    if (this.searchForm?.invalid) return;
+    if (this.searchForm?.invalid) {
+      this.searchForm.markAllAsTouched();
+      return;
+    }
     this.isGeneratingReport = true;
     // where.tank_status_cv = { neq: "RELEASED" };
     // if (this.searchForm?.get('customer_code')?.value) {
@@ -529,10 +526,10 @@ export class LocationTransferReportComponent extends UnsubscribeOnDestroyAdapter
 
 
   ProcessReportTransferYard(date: string) {
-    if (this.sotList.length === 0) {
-      this.isGeneratingReport = false;
-      return;
-    }
+    // if (this.sotList.length === 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
     var report_customer_tank_acts: report_customer_tank_activity[] = [];
 
