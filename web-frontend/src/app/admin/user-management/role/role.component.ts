@@ -20,7 +20,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule,Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -36,11 +36,11 @@ import { CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
 import { CustomerCompanyCleaningCategoryItem } from 'app/data-sources/customer-company-category';
 import { PackageResidueItem } from 'app/data-sources/package-residue';
-import { SearchCriteriaService, SearchStateService  } from 'app/services/search-criteria.service';
+import { SearchCriteriaService, SearchStateService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import {RoleDS, RoleItem} from 'app/data-sources/role';
+import { RoleDS, RoleItem } from 'app/data-sources/role';
 @Component({
   selector: 'app-role',
   standalone: true,
@@ -105,13 +105,13 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
   handledItemCvList: CodeValuesItem[] = [];
   departmentCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
-  
+
   ccDS: CustomerCompanyDS;
   // tariffResidueDS:TariffResidueDS;
   // packResidueDS:PackageResidueDS;
   // clnCatDS:CleaningCategoryDS;
   custCompDS: CustomerCompanyDS;
-  roleDS:RoleDS;
+  roleDS: RoleDS;
   roleList: RoleItem[] = [];
   packResidueItems: PackageResidueItem[] = [];
 
@@ -146,7 +146,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     CUSTOMER_COMPANY_NAME: 'COMMON-FORM.COMPANY-NAME',
     SO_NO: 'COMMON-FORM.SO-NO',
     SO_NOTES: 'COMMON-FORM.SO-NOTES',
-    HAULIER: 'COMMON-FORM.HAULIER',
+    SEARCH: 'COMMON-FORM.SEARCH',
     ORDER_DETAILS: 'COMMON-FORM.ORDER-DETAILS',
     UNIT_TYPE: 'COMMON-FORM.UNIT-TYPE',
     TANK_NO: 'COMMON-FORM.TANK-NO',
@@ -226,11 +226,11 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
-    USER:'COMMON-FORM.USER',
-    ROLE:'COMMON-FORM.ROLE',
-    DEPARTMENT:'COMMON-FORM.DEPARTMENT',
-    POSITION:'COMMON-FORM.POSITION',
+    GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
+    USER: 'COMMON-FORM.USER',
+    ROLE: 'COMMON-FORM.ROLE',
+    DEPARTMENT: 'COMMON-FORM.DEPARTMENT',
+    POSITION: 'COMMON-FORM.POSITION',
   }
 
   constructor(
@@ -249,7 +249,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     super();
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
-    this.roleDS=new RoleDS(this.apollo);
+    this.roleDS = new RoleDS(this.apollo);
     // this.tariffResidueDS = new TariffResidueDS(this.apollo);
     // this.packResidueDS= new PackageResidueDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
@@ -353,7 +353,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     });
   }
 
-addCall(event: Event) {
+  addCall(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
 
     let tempDirection: Direction;
@@ -369,7 +369,7 @@ addCall(event: Event) {
       disableClose: true,
       data: {
         action: 'new',
-        langText: this.translatedLangText ,
+        langText: this.translatedLangText,
         selectedItem: this.selection.selected
       }
 
@@ -383,13 +383,13 @@ addCall(event: Event) {
         }
       }
     });
-    
+
   }
 
 
-  editCall(event: Event,row: RoleItem) {
+  editCall(event: Event, row: RoleItem) {
 
-      event.stopPropagation(); // Stop the click event from propagating
+    event.stopPropagation(); // Stop the click event from propagating
 
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
@@ -404,9 +404,9 @@ addCall(event: Event) {
       disableClose: true,
       data: {
         action: 'edit',
-        langText: this.translatedLangText ,
+        langText: this.translatedLangText,
         selectedItem: row,
-        departmentList:this.departmentCvList
+        departmentList: this.departmentCvList
       }
 
     });
@@ -420,7 +420,7 @@ addCall(event: Event) {
       }
     });
     //  event.stopPropagation(); // Stop the click event from propagating
-   
+
 
     // let tempDirection: Direction;
     // if (localStorage.getItem('isRtl') === 'true') {
@@ -499,7 +499,7 @@ addCall(event: Event) {
   //     where.alias = { contains: this.pcForm!.value["alias"] };
   //   }
 
-   
+
   //   if (this.pcForm!.value["country"]) {
   //     where.country = { eq: this.pcForm!.value["country"] };
   //   }
@@ -631,9 +631,9 @@ addCall(event: Event) {
   }
   public loadData() {
 
-   const queries = [
+    const queries = [
       { alias: 'departmentCv', codeValType: 'DEPARTMENT' }
-     
+
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('departmentCv').subscribe(data => {
@@ -697,11 +697,11 @@ addCall(event: Event) {
   }
 
   displayLastUpdated(r: RoleItem) {
-      var updatedt = r.update_dt;
+    var updatedt = r.update_dt;
     if (updatedt === null) {
       updatedt = r.create_dt;
     }
-    
+
 
     return Utility.convertEpochToDateStr(updatedt);
 
@@ -717,18 +717,20 @@ addCall(event: Event) {
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        headerText: this.translatedLangText.CONFIRM_RESET,
-        action: 'new',
-      },
-      direction: tempDirection
-    });
-    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result.action === 'confirmed') {
-        this.resetForm();
-      }
-    });
+
+    this.resetForm();
+    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    //   data: {
+    //     headerText: this.translatedLangText.CONFIRM_RESET,
+    //     action: 'new',
+    //   },
+    //   direction: tempDirection
+    // });
+    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.action === 'confirmed') {
+    //     this.resetForm();
+    //   }
+    // });
   }
 
   resetForm() {
@@ -736,156 +738,151 @@ addCall(event: Event) {
     //this.customerCodeControl.reset();
   }
 
-  getSearchUserAndRoleLabel()
-  {
+  getSearchUserAndRoleLabel() {
     return `${this.translatedLangText.ROLE}/${this.translatedLangText.USER}`;
   }
 
-  
-       constructSearchCriteria() {
-          const where: any = {
-                 };
-      
-        if (this.pcForm!.value["description"]) {
-           var value= this.pcForm!.value["description"]; 
-          where.or = [
-            {description:{ contains: value }},
-            {department:{ contains: value }},
-            {position:{ contains: value }}
-          ];
-        }
-          this.lastSearchCriteria =where;
-        }
-      
-        search() {
-          this.constructSearchCriteria();
-          this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-            this.updatePageSelection();
-          });
-        }
-      
-        performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-          this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
-          this.searchStateService.setPagination(this.pageStateType, {
-            pageSize,
-            pageIndex,
-            first,
-            after,
-            last,
-            before
-          });
-          console.log(this.searchStateService.getPagination(this.pageStateType))
-          this.subs.sink = this.roleDS.searchRolesWithFunctions(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-            .subscribe(data => {
-              this.roleList = data;
-              this.endCursor = this.roleDS.pageInfo?.endCursor;
-              this.startCursor = this.roleDS.pageInfo?.startCursor;
-              this.hasNextPage = this.roleDS.pageInfo?.hasNextPage ?? false;
-              this.hasPreviousPage = this.roleDS.pageInfo?.hasPreviousPage ?? false;
-            });
-      
-          this.pageSize = pageSize;
-          this.pageIndex = pageIndex;
-        }
-      
-        onPageEvent(event: PageEvent) {
-          const { pageIndex, pageSize } = event;
-          let first: number | undefined = undefined;
-          let after: string | undefined = undefined;
-          let last: number | undefined = undefined;
-          let before: string | undefined = undefined;
-      
-          // Check if the page size has changed
-          if (this.pageSize !== pageSize) {
-            // Reset pagination if page size has changed
-            this.pageIndex = 0;
-            first = pageSize;
-            after = undefined;
-            last = undefined;
-            before = undefined;
-          } else {
-            if (pageIndex > this.pageIndex && this.hasNextPage) {
-              // Navigate forward
-              first = pageSize;
-              after = this.endCursor;
-            } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-              // Navigate backward
-              last = pageSize;
-              before = this.startCursor;
-            }
-          }
-      
-          this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
-            this.updatePageSelection();
-          });
-        }
-    
-        updatePageSelection()
-        {
-    
-        }
-    
-         onSortChange(event: Sort): void {
-            const { active: field, direction } = event;
-        
-            // reset if no direction
-            if (!direction) {
-              this.lastOrderBy = null;
-              return this.search();
-            }
-        
-            // convert to GraphQL enum (uppercase)
-            const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-            // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-        
-            switch (field) {
-              case 'description':
-                this.lastOrderBy = {
-                  
-                   description: dirEnum 
-                  
-                };
-                break;
-              case 'last_update':
-                this.lastOrderBy = {
-                  
-                   update_dt: dirEnum 
-                  
-                };
-                break;
-              default:
-                this.lastOrderBy = { description: "ASC" };
-            }
-        
-            this.search();
-          }
-        
-          AutoSearch() {
-            if (Utility.IsAllowAutoSearch())
-              this.search();
-          }
-  
-          ShowDepartment(row:RoleItem):string{
-           var retval:string="";
-              this.departmentCvList.forEach(codeval => {
-                if(codeval.code_val==row.department)
-                {
-                  retval=codeval.description||'';
-                }
-                if(!retval) retval=row.department||'';
-              })
-           return retval;
-          }
-  
-          AllowDelete(row:RoleItem):boolean{
-            if(row.userrole?.length==0)
-            {
-              return true;
-            }
-            else
-            {
-              return false;
-            }
-          }
+
+  constructSearchCriteria() {
+    const where: any = {
+    };
+
+    if (this.pcForm!.value["description"]) {
+      var value = this.pcForm!.value["description"];
+      where.or = [
+        { description: { contains: value } },
+        { department: { contains: value } },
+        { position: { contains: value } }
+      ];
+    }
+    this.lastSearchCriteria = where;
+  }
+
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
+    });
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.roleDS.searchRolesWithFunctions(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.roleList = data;
+        this.endCursor = this.roleDS.pageInfo?.endCursor;
+        this.startCursor = this.roleDS.pageInfo?.startCursor;
+        this.hasNextPage = this.roleDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.roleDS.pageInfo?.hasPreviousPage ?? false;
+      });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
+  }
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      }
+    }
+
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
+  }
+
+  updatePageSelection() {
+
+  }
+
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'description':
+        this.lastOrderBy = {
+
+          description: dirEnum
+
+        };
+        break;
+      case 'last_update':
+        this.lastOrderBy = {
+
+          update_dt: dirEnum
+
+        };
+        break;
+      default:
+        this.lastOrderBy = { description: "ASC" };
+    }
+
+    this.search();
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
+
+  ShowDepartment(row: RoleItem): string {
+    var retval: string = "";
+    this.departmentCvList.forEach(codeval => {
+      if (codeval.code_val == row.department) {
+        retval = codeval.description || '';
+      }
+      if (!retval) retval = row.department || '';
+    })
+    return retval;
+  }
+
+  AllowDelete(row: RoleItem): boolean {
+    if (row.userrole?.length == 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 }
 

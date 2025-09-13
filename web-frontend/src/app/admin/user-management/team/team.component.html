@@ -87,8 +87,9 @@
                     </button> -->
                     @if (AllowDelete(row)) {
                     <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
-                      class="tbl-action-btn">
-                      <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
+                      class="tbl-action-btn text-custom-danger" [matTooltip]="translatedLangText.DELETE">
+                      <!-- <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons> -->
+                      <mat-icon>delete_forever</mat-icon>
                     </button>
                   }
                   </mat-cell>
