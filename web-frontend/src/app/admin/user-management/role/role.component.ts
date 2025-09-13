@@ -719,6 +719,7 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.resetForm();
+    this.search();
     // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
     //   data: {
     //     headerText: this.translatedLangText.CONFIRM_RESET,
