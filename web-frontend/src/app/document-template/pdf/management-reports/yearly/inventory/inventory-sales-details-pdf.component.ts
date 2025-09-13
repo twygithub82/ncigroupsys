@@ -763,7 +763,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const vAlign = 'bottom';
     const headers = [[
       { content: this.translatedLangText.S_N, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
-      { content: this.translatedLangText.MONTH, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
+      { content: this.repType, rowSpan: 2, styles: { halign: 'center', valign: vAlign } },
       ...(showGateSurcharge ?
         [{ content: this.translatedLangText.IN_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
         { content: this.translatedLangText.OUT_GATE, colSpan: 2, styles: { halign: 'center', valign: vAlign } },
