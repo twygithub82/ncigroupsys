@@ -426,7 +426,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     this.selection.clear();
 
     if (this.searchForm!.get('tank_no')?.value) {
-      where.tank_no = { contains: this.searchForm!.get('tank_no')?.value };
+      where.tank_no =  this.searchForm!.get('tank_no')?.value ;
       cond_counter++;
     }
 
@@ -439,7 +439,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     if (this.searchForm!.get('customer_code')?.value) {
-      where.customer_code = `${this.searchForm!.get('customer_code')?.value.code}`;
+      where.customer_code =  `${this.searchForm!.get('customer_code')?.value.code}`;
       cond_counter++;
     }
 
@@ -458,11 +458,16 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       cond_counter++;
     }
 
+     if (this.searchForm!.get('purpose')?.value) {
+      where.purpose = [`${this.searchForm!.get('purpose')?.value}`];
+      cond_counter++;
+    }
+
     report_type = "so";
     if (this.searchForm!.get('order_type')?.value !== '1') {
       report_type = "ro";
     }
-    where.order_type = report_type;
+    where.order_type = report_type;// report_type;
 
     if (this.searchForm!.get('dt_start')?.value && this.searchForm!.get('dt_end')?.value) {
       var startdt = new Date(this.searchForm!.value['dt_start']);
