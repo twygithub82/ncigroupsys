@@ -549,19 +549,17 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // {
     this.subs.sink = this.reportDS.searchAdminReportCleanerPerformance(this.lastSearchCriteria)
       .subscribe(data => {
-        if (data.length > 0) {
-          this.repData = data;
-          this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
-        }
-        else {
-          this.isGeneratingReport = false
-        }
-
+        // if (data.length > 0) {
+        //   this.repData = data;
+        //   this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
+        // }
+        // else {
+        //   this.isGeneratingReport = false
+        // }
+        this.repData = data;
+        this.onExportAdminReportCleanerPerformanceDetailReport(this.repData, date!, team!);
       });
-
-
   }
-
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -702,11 +700,10 @@ export class CleaningPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if (repData?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
-
-    }
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

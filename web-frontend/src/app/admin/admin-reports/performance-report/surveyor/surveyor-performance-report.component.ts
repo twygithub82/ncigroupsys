@@ -685,13 +685,15 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // {
     this.subs.sink = this.reportDS.searchAdminReportSurveyorPerformanceSummary(this.lastSearchCriteria)
       .subscribe(data => {
-        if (data) {
-          this.repData = [data];
-          this.onExportSurveyorPerformanceSummaryReport(this.repData, date!, team!);
-        }
-        else {
-          this.isGeneratingReport = false
-        }
+        // if (data) {
+        //   this.repData = [data];
+        //   this.onExportSurveyorPerformanceSummaryReport(this.repData, date!, team!);
+        // }
+        // else {
+        //   this.isGeneratingReport = false
+        // }
+        this.repData = [data];
+        this.onExportSurveyorPerformanceSummaryReport(this.repData, date!, team!);
 
       });
 
@@ -705,19 +707,17 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     // {
     this.subs.sink = this.reportDS.searchAdminReportSurveyorPerformanceDetail(this.lastSearchCriteria)
       .subscribe(data => {
-        if (data.length > 0) {
-          this.repData = data;
-          this.onExportSurveyorPerformanceDetialReport(this.repData, date!, team!);
-        }
-        else {
-          this.isGeneratingReport = false
-        }
-
+        // if (data.length > 0) {
+        //   this.repData = data;
+        //   this.onExportSurveyorPerformanceDetialReport(this.repData, date!, team!);
+        // }
+        // else {
+        //   this.isGeneratingReport = false
+        // }
+        this.repData = data;
+        this.onExportSurveyorPerformanceDetialReport(this.repData, date!, team!);
       });
-
-
   }
-
 
   onPageEvent(event: PageEvent) {
     const { pageIndex, pageSize } = event;
@@ -878,11 +878,10 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if (repData?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
-
-    }
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
@@ -912,11 +911,11 @@ export class SurveyorPerformanceReportComponent extends UnsubscribeOnDestroyAdap
     //this.preventDefault(event);
     let cut_off_dt = new Date();
 
-    if (repData?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
-
-    }
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
+    
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';

@@ -647,11 +647,11 @@ export class SteamPerformanceReportComponent extends UnsubscribeOnDestroyAdapter
 
     let cut_off_dt = new Date();
 
-    if (repData?.length <= 0) {
-      this.isGeneratingReport = false;
-      return;
+    // if (repData?.length <= 0) {
+    //   this.isGeneratingReport = false;
+    //   return;
+    // }
 
-    }
     let tempDirection: Direction;
     if (localStorage.getItem('isRtl') === 'true') {
       tempDirection = 'rtl';
