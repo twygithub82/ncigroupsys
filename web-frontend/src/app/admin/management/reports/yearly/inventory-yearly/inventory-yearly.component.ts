@@ -603,7 +603,6 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
   AllowToSearch(): boolean {
     var bAllow: boolean = true;
 
-
     if (this.searchForm?.get('month_start')?.value) {
       var month_start = this.searchForm?.get('month_start')?.value;
       const monthStartIndex = this.monthList.findIndex(m => month_start === m);
@@ -634,6 +633,5 @@ export class InventoryYearlyAdminReportComponent extends UnsubscribeOnDestroyAda
 
   onTabFocused() {
     this.resetForm();
-
   }
 }

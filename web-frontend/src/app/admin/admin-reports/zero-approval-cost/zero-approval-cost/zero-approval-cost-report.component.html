@@ -9,7 +9,7 @@
             <mat-panel-description>
               <div class="m-l-" [matTooltip]="translatedLangText.DETAIL_REPORT">
                 <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()"
-                  [disabled]="((repDS.loading$ | async) || isGeneratingReport)">
+                  [disabled]="((repDS.loading$ | async) || isGeneratingReport) || !AllowToSearch()">
                   <mat-icon>assignment</mat-icon>
                 </button>
               </div>

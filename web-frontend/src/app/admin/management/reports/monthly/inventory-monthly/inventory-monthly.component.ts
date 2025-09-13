@@ -609,33 +609,19 @@ export class InventoryMonthlyAdminReportComponent extends UnsubscribeOnDestroyAd
   AllowToSearch(): boolean {
     var bAllow: boolean = true;
 
+    if (this.searchForm?.get('month')?.value) {
+      var month = this.searchForm?.get('month')?.value;
+      const monthIndex = this.monthList.findIndex(m => month === m);
+      month = (monthIndex + 1);
 
-    if (this.searchForm?.get('month_start')?.value) {
-      var month_start = this.searchForm?.get('month_start')?.value;
-      const monthStartIndex = this.monthList.findIndex(m => month_start === m);
-      month_start = (monthStartIndex + 1);
 
-      if (this.searchForm?.get('month_end')?.value) {
-
-        var month_end = this.searchForm?.get('month_end')?.value;
-        const monthEndIndex = this.monthList.findIndex(m => month_end === m);
-        month_end = (monthEndIndex + 1);
-
-        if (this.searchForm?.get('year')?.value) {
-          var year = Number(this.searchForm?.get('year')?.value);
-          bAllow = !Utility.isSelectedDateGreaterThanToday(month_start, year);
-          if (bAllow) {
-            bAllow = !Utility.isSelectedDateGreaterThanToday(month_end, year);
-            if (bAllow) {
-              bAllow = month_start <= month_end;
-            }
-          }
-        }
+      if (this.searchForm?.get('year')?.value) {
+        var year = Number(this.searchForm?.get('year')?.value);
+        bAllow = !Utility.isSelectedDateGreaterThanToday(month, year);
       }
     }
 
     return bAllow;
-
   }
 
   onTabFocused() {

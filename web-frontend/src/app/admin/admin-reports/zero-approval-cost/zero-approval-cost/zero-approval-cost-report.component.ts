@@ -655,6 +655,21 @@ export class ZeroApprovalCostReportComponent extends UnsubscribeOnDestroyAdapter
     return cs.description || '';
   }
 
+  AllowToSearch(): boolean {
+    var bAllow: boolean = true;
+
+    if (this.searchForm?.get('month')?.value) {
+      var month = this.searchForm?.get('month')?.value;
+      const monthIndex = this.monthList.findIndex(m => month === m);
+      month = (monthIndex + 1);
 
 
+      if (this.searchForm?.get('year')?.value) {
+        var year = Number(this.searchForm?.get('year')?.value);
+        bAllow = !Utility.isSelectedDateGreaterThanToday(month, year);
+      }
+    }
+
+    return bAllow;
+  }
 }

@@ -180,7 +180,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   customerCodeControl = new UntypedFormControl();
   branchCodeControl = new UntypedFormControl();
   lastCargoControl = new UntypedFormControl();
-
+  maxManuDOMDt: Date = new Date();
 
   //sotDS: StoringOrderTankDS;
   ccDS: CustomerCompanyDS;
