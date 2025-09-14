@@ -923,27 +923,27 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
 
       data.push([
       this.translatedLangText.TOTAL,"",
-     // ...(showGateSurcharge?[total_tank_In_out,Utility.formatNumberDisplay(this.repData?.?.total_cost)]:[]),
-      ...(showPreinspectSurcharge?[total_tank_preinspect,Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost)]:[]),
-      ...(showLoloSurcharge?[total_tank_lolo,Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost)]:[]),
+      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.total_cost)]:[]),
+      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.total_cost)]:[]),
+      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.total_cost)]:[]),
      // ...(showStorageSurcharge?[total_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.total_cost)]:[]),
-      ...(showSteamSurcharge?[total_tank_steam,Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost)]:[]),
-      ...(showResidueSurcharge?[total_tank_residue,Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)]:[]),
-      ...(showCleanSurcharge?[total_tank_clean,Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost)]:[]),
-      ...(showRepairSurcharge?[total_tank_repair,Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost)]:[]),
+      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.total_cost)]:[]),
+      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.total_cost)]:[]),
+      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.total_cost)]:[]),
+      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.total_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.total_cost)]:[]),
       Utility.formatNumberDisplay(total_all_cost)
     ]);
 
     data.push([
       this.translatedLangText.AVERAGE,"",
-      //...(showGateSurcharge?[average_tank_In_out,Utility.formatNumberDisplay(this.repData?.gate_yearly_revenue?.average_cost||'')]:[]),
-      ...(showPreinspectSurcharge?[average_tank_preinspect,Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_cost||'')]:[]),
-      ...(showLoloSurcharge?[average_tank_lolo,Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost||'')]:[]),
+      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.gate_yearly_sales?.average_cost||'')]:[]),
+      ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.preinspection_yearly_sales?.average_cost||'')]:[]),
+      ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.lolo_yearly_sales?.average_cost||'')]:[]),
       //...(showStorageSurcharge?[average_tank_storage,Utility.formatNumberDisplay(this.repData?.storage_yearly_revenue?.average_cost||'')]:[]),
-      ...(showSteamSurcharge?[average_tank_steam,Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost||'')]:[]),
-      ...(showResidueSurcharge?[average_tank_residue,Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost||'')]:[]),
-      ...(showCleanSurcharge?[average_tank_clean,Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost||'')]:[]),
-      ...(showRepairSurcharge?[average_tank_repair,Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost||'')]:[]),  
+      ...(showSteamSurcharge?[(this.repData?.steaming_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.steaming_yearly_sales?.average_cost||'')]:[]),
+      ...(showResidueSurcharge?[(this.repData?.residue_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.residue_yearly_sales?.average_cost||'')]:[]),
+      ...(showCleanSurcharge?[(this.repData?.cleaning_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.cleaning_yearly_sales?.average_cost||'')]:[]),
+      ...(showRepairSurcharge?[(this.repData?.repair_yearly_sales?.average_count||0),Utility.formatNumberDisplay(this.repData?.repair_yearly_sales?.average_cost||'')]:[]),  
       Utility.formatNumberDisplay((total_all_cost/average_counter))
     ]);
     
@@ -974,7 +974,7 @@ export class YearlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyAd
     // ]);
     
     prcsValues=[
-      // ...(showGateSurcharge?[(this.repData?.gate_yearly_revenue?.total_cost||0)]:[]),
+      ...(showGateSurcharge?[(this.repData?.gate_yearly_sales?.total_cost||0)]:[]),
       ...(showPreinspectSurcharge?[(this.repData?.preinspection_yearly_sales?.total_cost||0)]:[]),
       ...(showLoloSurcharge?[(this.repData?.lolo_yearly_sales?.total_cost||0)]:[]),
       // ...(showStorageSurcharge?[(this.repData?.storage_yearly_revenue?.total_cost||0)]:[]),

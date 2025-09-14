@@ -791,15 +791,15 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     var series: SeriesItem[] = [];
     var index: number = 1;
     var prcss: string[] = [
-      // ...(showGateSurcharge ? [
-      //   this.translatedLangText.GATE_IN,
-      //   this.translatedLangText.GATE_OUT,
-      //   this.translatedLangText.LIFT_ON,
-      //   this.translatedLangText.LIFT_OFF,
-      // ] : []),
+      ...(showGateSurcharge ? [
+        this.translatedLangText.GATE_IN,
+        this.translatedLangText.GATE_OUT,
+        this.translatedLangText.LIFT_ON,
+        this.translatedLangText.LIFT_OFF,
+      ] : []),
       ...(showPreinspectSurcharge ? [this.translatedLangText.PREINSPECTION] : []),
       ...(showLoloSurcharge ? [this.translatedLangText.LOLO] : []),
-      // ...(showStorageSurcharge ? [this.translatedLangText.STORAGE] : []),
+      ...(showStorageSurcharge ? [this.translatedLangText.STORAGE] : []),
       ...(showSteamSurcharge ? [this.translatedLangText.STEAM] : []),
       ...(showResidueSurcharge ? [this.translatedLangText.RESIDUE] : []),
       ...(showCleanSurcharge ? [this.translatedLangText.CLEANING] : []),
@@ -826,13 +826,13 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
       var entry:any = grpData[date];
       data.push([
         (++idx).toString(), date, entry.day,
-        // ...(showGateSurcharge ? [
-        //   Utility.formatNumberDisplay(entry.gate?.count || ''), Utility.formatNumberDisplay(entry.gate?.cost || ''),
-        //   // Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count),Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
-        // ] : []),
+        ...(showGateSurcharge ? [
+         (entry.gate?.count || ''), Utility.formatNumberDisplay(entry.gate?.cost || ''),
+          // Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_on_count),Utility.formatNumberDisplay(entry.gateInOut?.lolo?.lift_off_count)
+        ] : []),
         ...(showPreinspectSurcharge ? [(entry.preinspection?.count || ''), Utility.formatNumberDisplay(entry.preinspection?.cost || '')] : []),
         ...(showLoloSurcharge ? [(entry.lolo?.count || ''), Utility.formatNumberDisplay(entry.lolo?.cost || '')] : []),
-        // ...(showStorageSurcharge ? [Utility.formatNumberDisplay(entry.storage?.count || ''), Utility.formatNumberDisplay(entry.storage?.cost || '')] : []),
+        ...(showStorageSurcharge ? [(entry.storage?.count || ''), Utility.formatNumberDisplay(entry.storage?.cost || '')] : []),
         ...(showSteamSurcharge ? [(entry.steaming?.count || ''), Utility.formatNumberDisplay(entry.steaming?.cost || '')] : []),
         ...(showResidueSurcharge ? [(entry.residue?.count || ''), Utility.formatNumberDisplay(entry.residue?.cost || '')] : []),
         ...(showCleanSurcharge ? [(entry.cleaning?.count || ''), Utility.formatNumberDisplay(entry.cleaning?.cost || '')] : []),
@@ -873,13 +873,13 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
             if (showStorageSurcharge) s.data.push(entry.storage?.cost || 0);
             break;
           case this.translatedLangText.STEAM:
-            if (showSteamSurcharge) s.data.push(entry.steaming?.completed_count || 0);
+            if (showSteamSurcharge) s.data.push(entry.steaming?.cost || 0);
             break;
           case this.translatedLangText.CLEANING:
-            if (showCleanSurcharge) s.data.push(entry.cleaning?.completed_count || 0);
+            if (showCleanSurcharge) s.data.push(entry.cleaning?.cost || 0);
             break;
           case this.translatedLangText.REPAIR:
-            if (showRepairSurcharge) s.data.push(entry.repair?.completed_hour || 0);
+            if (showRepairSurcharge) s.data.push(entry.repair?.cost || 0);
             break;
           case this.translatedLangText.RESIDUE:
             if (showResidueSurcharge) s.data.push(entry.residue?.cost || 0);
@@ -924,10 +924,10 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
     }
     data.push([
       this.translatedLangText.TOTAL, "", "",
-      // ...(showGateSurcharge ? [
-      //   Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.total_cost || ''),
-      //   // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
-      // ] : []),
+      ...(showGateSurcharge ? [
+        (this.repData?.gate_monthly_sales?.total_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_sales?.total_cost || ''),
+        // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
+      ] : []),
       ...(showPreinspectSurcharge ? [
        (this.repData?.preinspection_monthly_sales?.total_count || ''),
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.total_cost || '')
@@ -952,12 +952,12 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
     data.push([
       this.translatedLangText.AVERAGE, "", "",
-      // ...(showGateSurcharge ? [
-      //   Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_revenue?.average_cost || ''),
-      //   // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
-      // ] : []),
+      ...(showGateSurcharge ? [
+        (this.repData?.gate_monthly_sales?.average_count || ''), Utility.formatNumberDisplay(this.repData?.gate_monthly_sales?.average_cost || ''),
+        // Utility.formatNumberDisplay(liftOnCount),Utility.formatNumberDisplay(liftOffCount),
+      ] : []),
       ...(showPreinspectSurcharge ? [
-        Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.average_count || ''),
+        (this.repData?.preinspection_monthly_sales?.average_count || ''),
         Utility.formatNumberDisplay(this.repData?.preinspection_monthly_sales?.average_cost || '')
       ] : []),
       ...(showLoloSurcharge ? [(this.repData?.lolo_monthly_sales?.average_count || ''),

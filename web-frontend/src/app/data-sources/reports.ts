@@ -343,6 +343,8 @@ export class AdminReportMonthlySalesReport{
   repair_monthly_sales?:MonthlySales;
   residue_monthly_sales?:MonthlySales;
   steaming_monthly_sales?:MonthlySales;
+  storage_monthly_sales?:MonthlySales;
+  gate_monthly_sales?:MonthlySales;
   constructor(item: Partial<AdminReportMonthlySalesReport> = {}) {
     this.customer=item.customer;
     this.cleaning_monthly_sales=item.cleaning_monthly_sales;
@@ -351,6 +353,8 @@ export class AdminReportMonthlySalesReport{
     this.repair_monthly_sales=item.repair_monthly_sales;
     this.residue_monthly_sales=item.residue_monthly_sales;
     this.steaming_monthly_sales=item.steaming_monthly_sales;
+    this.storage_monthly_sales=item.storage_monthly_sales;
+    this.gate_monthly_sales=item.gate_monthly_sales;
     } 
 
 
@@ -381,6 +385,8 @@ export class AdminReportYearlySalesReport{
   repair_yearly_sales?:YearlySales;
   residue_yearly_sales?:YearlySales;
   steaming_yearly_sales?:YearlySales;
+  storage_yearly_sales?:YearlySales;
+  gate_yearly_sales?:YearlySales;
   constructor(item: Partial<AdminReportYearlySalesReport> = {}) {
     this.customer=item.customer;
     this.cleaning_yearly_sales=item.cleaning_yearly_sales;
@@ -389,6 +395,8 @@ export class AdminReportYearlySalesReport{
     this.repair_yearly_sales=item.repair_yearly_sales;
     this.residue_yearly_sales=item.residue_yearly_sales;
     this.steaming_yearly_sales=item.steaming_yearly_sales;
+    this.gate_yearly_sales=item.gate_yearly_sales;
+    this.storage_yearly_sales=item.storage_yearly_sales;
     } 
 
 
@@ -893,6 +901,7 @@ export class InventoryAnalyzer {
     // Process each inventory type
     const processData = [
       { name: 'cleaning', data: data.cleaning_yearly_sales?.result_per_month },
+       { name: 'in_out', data: data.gate_yearly_sales?.result_per_month },
       // { name: 'depot', data: data.?.result_per_month },
       { name: 'lolo', data: data.lolo_yearly_sales?.result_per_month },
       { name: 'preinspection', data: data.preinspection_yearly_sales?.result_per_month },
@@ -935,14 +944,14 @@ export class InventoryAnalyzer {
                 name:monthData.month
               };
               break;
-            // case 'depot':
-            //   monthlyEntry.depot= {
-            //     count: monthData.count,
-            //    cost: monthData.cost,
-            //     key:monthData.month,
-            //     name:monthData.month
-            //   };
-            //   break;
+            case 'in_out':
+              monthlyEntry.in_out= {
+                count: monthData.count,
+               cost: monthData.cost,
+                key:monthData.month,
+                name:monthData.month
+              };
+              break;
             case "lolo":
                monthlyEntry.lolo = {
                  count: monthData.count,
@@ -1221,16 +1230,16 @@ export class InventoryAnalyzer {
         grouped[item.date!].cleaning = item;
       });
     
-      // data.gate_monthly_sales?.result_per_day?.forEach(item => {
-      //   if (item.date && item.day) {
-      //     if (!grouped[item.date]) {
-      //       grouped[item.date] = {
-      //         day: item.day,
-      //       };
-      //     }
-      //     grouped[item.date].gate = item;
-      //   }
-      // });
+      data.gate_monthly_sales?.result_per_day?.forEach(item => {
+        if (item.date && item.day) {
+          if (!grouped[item.date]) {
+            grouped[item.date] = {
+              day: item.day,
+            };
+          }
+          grouped[item.date].gate = item;
+        }
+      });
     
       data.preinspection_monthly_sales?.result_per_day?.forEach(item => {
         if (item.date && item.day) {
@@ -1398,6 +1407,28 @@ export const GET_ADMIN_REPORT_YEARLY_PROCESS = gql`
 export const GET_ADMIN_REPORT_YEARLY_SALES_REPORT = gql`
   query queryYearlySalesReport($yearlySalesRequest: YearlySalesRequestInput!) {
     resultList: queryYearlySalesReport(yearlySalesRequest: $yearlySalesRequest) {
+    storage_yearly_sales {
+      average_cost
+      average_count
+      total_cost
+      total_count
+      result_per_month {
+        cost
+        count
+        month
+      }
+    }
+    gate_yearly_sales {
+      average_cost
+      average_count
+      total_cost
+      total_count
+      result_per_month {
+        cost
+        count
+        month
+      }
+    }
     cleaning_yearly_sales {
         average_cost
         average_count
@@ -1471,6 +1502,30 @@ export const GET_ADMIN_REPORT_YEARLY_SALES_REPORT = gql`
 export const GET_ADMIN_REPORT_MONTHLY_SALES_REPORT = gql`
   query queryMonthlySalesReport($monthlySalesRequest: MonthlySalesRequestInput!) {
     resultList: queryMonthlySalesReport(monthlySalesRequest: $monthlySalesRequest) {
+    gate_monthly_sales {
+      average_cost
+      average_count
+      total_cost
+      total_count
+      result_per_day {
+        cost
+        count
+        date
+        day
+      }
+    }
+    storage_monthly_sales {
+      average_cost
+      average_count
+      total_cost
+      total_count
+      result_per_day {
+        cost
+        count
+        date
+        day
+      }
+    }
     cleaning_monthly_sales {
         average_cost
         average_count

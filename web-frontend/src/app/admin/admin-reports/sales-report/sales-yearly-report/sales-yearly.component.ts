@@ -214,8 +214,8 @@ export class SalesYearlyAdminReportComponent extends UnsubscribeOnDestroyAdapter
   yearList: string[] = [];
   monthList: string[] = [];
   repData: any;
-  //invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
-  invTypes: string[] =  ["ALL",  "PREINSPECTION","LOLO", "STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
+//  invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STORAGE","STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
+  invTypes: string[] =  ["ALL", "IN_OUT", "PREINSPECTION","LOLO", "STEAMING",  "RESIDUE", "CLEANING", "REPAIR"]
 
   constructor(
     public httpClient: HttpClient,
