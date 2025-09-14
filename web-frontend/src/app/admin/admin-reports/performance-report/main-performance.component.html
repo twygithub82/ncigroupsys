@@ -7,19 +7,17 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <div class="body overflow-auto">
-            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
-              <mat-tab [label]="translatedLangText.CLEANER">
-                <app-cleaning-performance-report #cleanPerformRep></app-cleaning-performance-report>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.SURVEYOR">
-                <app-surveyor-performance-report #surveyorPerformRep></app-surveyor-performance-report>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.STEAM">
-                <app-steam-performance-report #steamPerformRep></app-steam-performance-report>
-              </mat-tab>
-            </mat-tab-group>
-          </div>
+          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
+            <mat-tab [label]="translatedLangText.CLEANER">
+              <app-cleaning-performance-report #cleanPerformRep></app-cleaning-performance-report>
+            </mat-tab>
+            <mat-tab [label]="translatedLangText.SURVEYOR">
+              <app-surveyor-performance-report #surveyorPerformRep></app-surveyor-performance-report>
+            </mat-tab>
+            <mat-tab [label]="translatedLangText.STEAM">
+              <app-steam-performance-report #steamPerformRep></app-steam-performance-report>
+            </mat-tab>
+          </mat-tab-group>
         </div>
       </div>
     </div>

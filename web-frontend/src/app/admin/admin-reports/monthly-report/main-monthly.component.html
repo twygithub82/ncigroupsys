@@ -7,39 +7,8 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <div class="body overflow-auto">
-            @if (allowedTabs.length > 1) {
-            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
-              @for (tab of allowedTabs; track tab.label) {
-              @if (tab.component == 'app-steam-monthly') {
-              <mat-tab [label]="translatedLangText.STEAM_REPORT">
-                <app-steam-monthly #steamAdminReport></app-steam-monthly>
-              </mat-tab>
-              }
-              @if (tab.component == 'app-residue-monthly') {
-              <mat-tab [label]="translatedLangText.RESIDUE_REPORT">
-                <app-residue-monthly #residueAdminReport></app-residue-monthly>
-              </mat-tab>
-              }
-              @if (tab.component == 'app-repair-monthly') {
-              <mat-tab [label]="translatedLangText.REPAIR_REPORT">
-                <app-repair-monthly #repairAdminReport></app-repair-monthly>
-              </mat-tab>
-              }
-              @if (tab.component == 'app-clean-monthly') {
-              <mat-tab [label]="translatedLangText.CLEAN_REPORT">
-                <app-clean-monthly #cleanAdminReport></app-clean-monthly>
-              </mat-tab>
-              }
-              @if (tab.component == 'app-customer-monthly') {
-              <mat-tab [label]="translatedLangText.CUSTOMER_REPORT">
-                <app-customer-monthly #customerAdminReport></app-customer-monthly>
-              </mat-tab>
-              }
-              }
-            </mat-tab-group>
-            }
-            @else{
+          @if (allowedTabs.length > 1) {
+          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
             @for (tab of allowedTabs; track tab.label) {
             @if (tab.component == 'app-steam-monthly') {
             <mat-tab [label]="translatedLangText.STEAM_REPORT">
@@ -67,8 +36,37 @@
             </mat-tab>
             }
             }
-            }
-          </div>
+          </mat-tab-group>
+          }
+          @else{
+          @for (tab of allowedTabs; track tab.label) {
+          @if (tab.component == 'app-steam-monthly') {
+          <mat-tab [label]="translatedLangText.STEAM_REPORT">
+            <app-steam-monthly #steamAdminReport></app-steam-monthly>
+          </mat-tab>
+          }
+          @if (tab.component == 'app-residue-monthly') {
+          <mat-tab [label]="translatedLangText.RESIDUE_REPORT">
+            <app-residue-monthly #residueAdminReport></app-residue-monthly>
+          </mat-tab>
+          }
+          @if (tab.component == 'app-repair-monthly') {
+          <mat-tab [label]="translatedLangText.REPAIR_REPORT">
+            <app-repair-monthly #repairAdminReport></app-repair-monthly>
+          </mat-tab>
+          }
+          @if (tab.component == 'app-clean-monthly') {
+          <mat-tab [label]="translatedLangText.CLEAN_REPORT">
+            <app-clean-monthly #cleanAdminReport></app-clean-monthly>
+          </mat-tab>
+          }
+          @if (tab.component == 'app-customer-monthly') {
+          <mat-tab [label]="translatedLangText.CUSTOMER_REPORT">
+            <app-customer-monthly #customerAdminReport></app-customer-monthly>
+          </mat-tab>
+          }
+          }
+          }
         </div>
       </div>
     </div>

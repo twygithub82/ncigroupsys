@@ -7,50 +7,48 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <div class="body overflow-auto">
-            @if (allowedTabs.length > 1) {
-              <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
-                @for (tab of allowedTabs; track tab.label) {
-                  @if (tab.component == 'app-steam-yearly') {
-                    <mat-tab [label]="translatedLangText.STEAM_REPORT">
-                      <app-steam-yearly #steamYearlyAdminRep></app-steam-yearly>
-                    </mat-tab>
-                  }
-                  @if (tab.component == 'app-residue-yearly') {
-                    <mat-tab [label]="translatedLangText.RESIDUE_REPORT">
-                      <app-residue-yearly #residueYearlyAdminRep></app-residue-yearly>
-                    </mat-tab>
-                  }
-                  @if (tab.component == 'app-repair-yearly') {
-                    <mat-tab [label]="translatedLangText.REPAIR_REPORT">
-                      <app-repair-yearly #repairYearlyAdminRep></app-repair-yearly>
-                    </mat-tab>
-                  }
-                  @if (tab.component == 'app-clean-yearly') {
-                    <mat-tab [label]="translatedLangText.CLEAN_REPORT">
-                      <app-clean-yearly #cleanYearlyAdminRep></app-clean-yearly>
-                    </mat-tab>
-                  }
-                }
-             </mat-tab-group>
+          @if (allowedTabs.length > 1) {
+          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
+            @for (tab of allowedTabs; track tab.label) {
+            @if (tab.component == 'app-steam-yearly') {
+            <mat-tab [label]="translatedLangText.STEAM_REPORT">
+              <app-steam-yearly #steamYearlyAdminRep></app-steam-yearly>
+            </mat-tab>
             }
-            @else{
-              @for (tab of allowedTabs; track tab.label) {
-                @if (tab.component == 'app-clean-yearly') {
-                  <app-clean-yearly #cleanYearlyAdminRep></app-clean-yearly>
-                }
-                @else if (tab.component == 'app-repair-yearly') {
-                  <app-repair-yearly #repairYearlyAdminRep></app-repair-yearly>
-                }
-                @else if (tab.component == 'app-steam-yearly') {
-                  <app-steam-yearly #steamYearlyAdminRep></app-steam-yearly>
-                }
-                @else if (tab.component == 'app-residue-yearly') {
-                  <app-residue-yearly #residueYearlyAdminRep></app-residue-yearly>
-                }
-              }
+            @if (tab.component == 'app-residue-yearly') {
+            <mat-tab [label]="translatedLangText.RESIDUE_REPORT">
+              <app-residue-yearly #residueYearlyAdminRep></app-residue-yearly>
+            </mat-tab>
             }
-          </div>
+            @if (tab.component == 'app-repair-yearly') {
+            <mat-tab [label]="translatedLangText.REPAIR_REPORT">
+              <app-repair-yearly #repairYearlyAdminRep></app-repair-yearly>
+            </mat-tab>
+            }
+            @if (tab.component == 'app-clean-yearly') {
+            <mat-tab [label]="translatedLangText.CLEAN_REPORT">
+              <app-clean-yearly #cleanYearlyAdminRep></app-clean-yearly>
+            </mat-tab>
+            }
+            }
+          </mat-tab-group>
+          }
+          @else{
+          @for (tab of allowedTabs; track tab.label) {
+          @if (tab.component == 'app-clean-yearly') {
+          <app-clean-yearly #cleanYearlyAdminRep></app-clean-yearly>
+          }
+          @else if (tab.component == 'app-repair-yearly') {
+          <app-repair-yearly #repairYearlyAdminRep></app-repair-yearly>
+          }
+          @else if (tab.component == 'app-steam-yearly') {
+          <app-steam-yearly #steamYearlyAdminRep></app-steam-yearly>
+          }
+          @else if (tab.component == 'app-residue-yearly') {
+          <app-residue-yearly #residueYearlyAdminRep></app-residue-yearly>
+          }
+          }
+          }
         </div>
       </div>
     </div>
