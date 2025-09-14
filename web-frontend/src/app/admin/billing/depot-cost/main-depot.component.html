@@ -7,22 +7,20 @@
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
-          <div class="body overflow-auto">
-            <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
-              <mat-tab [label]="translatedLangText.IN_GATE_OUT_GATE">
-                <app-gate-billing #gateBilling></app-gate-billing>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.PRE_INSPECTION">
-                <app-preinspection-billing  #preinspectBilling></app-preinspection-billing>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.LOLO">
-                <app-lolo-billing  #loloBilling></app-lolo-billing>
-              </mat-tab>
-              <mat-tab [label]="translatedLangText.STORAGE">
-                <app-storage-billing  #storageBilling></app-storage-billing>
-              </mat-tab>
-            </mat-tab-group>
-          </div>
+          <mat-tab-group class="tlx-mdc-tab-group" dynamicHeight (selectedTabChange)="onTabSelected($event)">
+            <mat-tab [label]="translatedLangText.IN_GATE_OUT_GATE">
+              <app-gate-billing #gateBilling></app-gate-billing>
+            </mat-tab>
+            <mat-tab [label]="translatedLangText.PRE_INSPECTION">
+              <app-preinspection-billing #preinspectBilling></app-preinspection-billing>
+            </mat-tab>
+            <mat-tab [label]="translatedLangText.LOLO">
+              <app-lolo-billing #loloBilling></app-lolo-billing>
+            </mat-tab>
+            <mat-tab [label]="translatedLangText.STORAGE">
+              <app-storage-billing #storageBilling></app-storage-billing>
+            </mat-tab>
+          </mat-tab-group>
         </div>
       </div>
     </div>

@@ -1,28 +1,28 @@
 .cargo-text {
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limits text to 2 lines */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal; /* Allows text wrapping */
-    max-width: 100%; /* Adjust width as needed */
-  }
-
-
-  .customer-text {
-    max-width: 6ch; /* Limit text width to 6 characters */
-    overflow: hidden;
-    white-space: nowrap; /* Prevents wrapping */
-    text-overflow: ellipsis; /* Adds "..." if text is too long */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* Limits text to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  /* Allows text wrapping */
+  max-width: 100%;
+  /* Adjust width as needed */
 }
 
-.card-aligned{
-  padding-left: 0.8%;
-  padding-right: 0.8%;
+
+.customer-text {
+  max-width: 6ch;
+  /* Limit text width to 6 characters */
+  overflow: hidden;
+  white-space: nowrap;
+  /* Prevents wrapping */
+  text-overflow: ellipsis;
+  /* Adds "..." if text is too long */
 }
 
-.mat-mdc-card-content
- {
-    display: block;
-    padding: 12px 12px 0px 12px;
+.mat-mdc-card-content {
+  display: block;
+  padding: 12px 12px 0px 12px;
 }

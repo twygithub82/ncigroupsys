@@ -156,76 +156,69 @@
                     </div>
                   </mat-expansion-panel>
                 </mat-accordion>
-                <div class="row body card-aligned pb-1">
-                  <mat-card [ngClass]="{'card-content p-0 m-b-10': true}">
-                    <!-- <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
-                <mat-card-title [ngClass]="{'pt-1': true}">
-                  {{translatedLangText.INVOICE_DETAILS}}
-                </mat-card-title>
-              </mat-card-header> -->
-                    <mat-card-content>
-                      <div class="row mt-3 ms-0">
-                        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
-                          <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
-                            <input matInput [formControl]="invoiceNoControl">
-                            <!-- @if (this.invoiceNoControl.hasError('required')) {
+              </form>
+              <div class="body overflow-auto">
+                <mat-card [ngClass]="{'card-content p-0 m-b-10': true}">
+                  <mat-card-content>
+                    <div class="row mt-3 ms-0">
+                      <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
+                          <input matInput [formControl]="invoiceNoControl">
+                          <!-- @if (this.invoiceNoControl.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.INVOICE_NO}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       } -->
-                          </mat-form-field>
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-                          <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                            <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
-                              [formControl]="invoiceDateControl" [max]="maxManuDOMDt" required>
-                            <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
-                            <mat-datepicker #invoice_date_picker></mat-datepicker>
-                            <!-- @if (this.invoiceDateControl.hasError('required')) {
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
+                          <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
+                            [formControl]="invoiceDateControl" [max]="maxManuDOMDt" required>
+                          <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
+                          <mat-datepicker #invoice_date_picker></mat-datepicker>
+                          <!-- @if (this.invoiceDateControl.hasError('required')) {
                       <mat-error>
                         {{this.translatedLangText.INVOICE_DATE}} {{this.translatedLangText.SO_REQUIRED}}
                       </mat-error>
                       } -->
-                          </mat-form-field>
-                        </div>
-                        <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
-                          <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
-                            <input matInput [formControl]="invoiceTotalCostControl" readonly>
-                          </mat-form-field>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-                          <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5"
-                            (click)="save($event)">
-                            <mat-icon>
-                              save
-                            </mat-icon>
-                            {{translatedLangText.SAVE}}
-                          </button>
-                          <button mat-flat-button color="accent" class="m-r-5" (click)="onCancel($event)">
-                            <mat-icon>
-                              close
-                            </mat-icon>
-                            {{translatedLangText.CLEAR}}
-                          </button>
-                          <button mat-flat-button color="warn" [disabled]="reSelection.selected.length===0"
-                            class="m-r-5" (click)="delete($event)">
-                            <mat-icon>
-                              delete_forever
-                            </mat-icon>
-                            {{translatedLangText.DELETE}}
-                          </button>
-                        </div>
+                        </mat-form-field>
                       </div>
-                    </mat-card-content>
-                    <mat-card-actions [ngClass]="'empty-card-actions'">
-                    </mat-card-actions>
-                  </mat-card>
-                </div>
-              </form>
-              <div class="body overflow-auto pt-1">
+                      <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                          <mat-label>{{translatedLangText.TOTAL_COST}}</mat-label>
+                          <input matInput [formControl]="invoiceTotalCostControl" readonly>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+                        <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5"
+                          (click)="save($event)">
+                          <mat-icon>
+                            save
+                          </mat-icon>
+                          {{translatedLangText.SAVE}}
+                        </button>
+                        <button mat-flat-button color="accent" class="m-r-5" (click)="onCancel($event)">
+                          <mat-icon>
+                            close
+                          </mat-icon>
+                          {{translatedLangText.CLEAR}}
+                        </button>
+                        <button mat-flat-button color="warn" [disabled]="reSelection.selected.length===0" class="m-r-5"
+                          (click)="delete($event)">
+                          <mat-icon>
+                            delete_forever
+                          </mat-icon>
+                          {{translatedLangText.DELETE}}
+                        </button>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                  <mat-card-actions [ngClass]="'empty-card-actions'">
+                  </mat-card-actions>
+                </mat-card>
                 @for(sotRow of sotRepList; track sotRow) {
                 <mat-card [ngClass]="{'card-content p-0 m-b-10': true}">
                   <mat-accordion multiple>

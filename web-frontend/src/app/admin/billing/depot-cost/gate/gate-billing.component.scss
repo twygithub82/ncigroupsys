@@ -1,28 +1,34 @@
 .cargo-text {
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limits text to 2 lines */
+  -webkit-line-clamp: 2;
+  /* Limits text to 2 lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: normal; /* Allows text wrapping */
-  max-width: 100%; /* Adjust width as needed */
+  white-space: normal;
+  /* Allows text wrapping */
+  max-width: 100%;
+  /* Adjust width as needed */
 }
 
 .customer-text {
-  max-width: 6ch; /* Limit text width to 6 characters */
+  max-width: 6ch;
+  /* Limit text width to 6 characters */
   overflow: hidden;
-  white-space: nowrap; /* Prevents wrapping */
-  text-overflow: ellipsis; /* Adds "..." if text is too long */
+  white-space: nowrap;
+  /* Prevents wrapping */
+  text-overflow: ellipsis;
+  /* Adds "..." if text is too long */
 }
 
 
 $bg: #007bff;
-$fg: lighten($bg,20%);
+$fg: lighten($bg, 20%);
 $borderWidth: 2px;
 
 body {
   background: $bg;
- // font-family: roboto;
+  // font-family: roboto;
 }
 
 input[type=radio] {
@@ -35,19 +41,19 @@ label {
   color: lighten($bg, 30%);
   display: inline-block;
   cursor: pointer;
- // font-weight: bold;
+  // font-weight: bold;
   padding: 0px 20px; // Increased padding for better centering
   text-align: center; // Center text horizontally
   line-height: 1.5; // Better vertical alignment
   transition: all 0.3s ease; // Smooth transition
 }
 
-input[type=radio]:checked + label{
-  color: lighten($bg,60%);
+input[type=radio]:checked+label {
+  color: lighten($bg, 60%);
   background: $fg;
 }
 
-label + input[type=radio] + label {
+label+input[type=radio]+label {
   border-left: solid $borderWidth $fg;
 }
 
@@ -61,16 +67,5 @@ label + input[type=radio] + label {
 
 .scaled-toggle {
   margin: 5px 0;
-  font-size: 1.5rem; 
-}
-
-.card-aligned{
-  padding-left: 0.8%;
-  padding-right: 0.8%;
-}
-
-.mat-mdc-card-content
- {
-    display: block;
-    padding: 12px 12px 0px 12px;
+  font-size: 1.5rem;
 }

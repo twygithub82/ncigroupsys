@@ -1,124 +1,122 @@
-<div class="row">
-  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <div>
-      <mat-accordion>
-        <mat-expansion-panel [expanded]="true" disabled>
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-            </mat-panel-title>
-            <mat-panel-description>
-              <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                  <mat-icon>search</mat-icon>
-                </button>
-              </div>
-              <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
-                  <mat-icon>clear_all</mat-icon>
-                </button>
-              </div>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm" (ngSubmit)="search()">
-            <button type="submit" style="display: none;">Submit</button>
-            <div class="row">
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
-                  <input matInput formControlName="tank_no">
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
-                  <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
-                    [matAutocomplete]="customerCode">
-                  <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                    @for (cc of customer_companyList; track cc) {
-                    <mat-option [value]="cc">
-                      {{ccDS.displayCodeDashName(cc)}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
-                  <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
-                    [matAutocomplete]="branchCode">
-                  <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
-                    @for (cc of branch_companyList; track cc) {
-                    <mat-option [value]="cc">
-                      {{ccDS.displayName(cc)}}
-                    </mat-option>
-                    }
-                  </mat-autocomplete>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
-                  <input matInput formControlName="eir_no">
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="eir_picker" placeholder="Select date" [max]="maxManuDOMDt"
-                    formControlName="eir_dt">
-                  <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #eir_picker></mat-datepicker>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" [max]="maxManuDOMDt"
-                    formControlName="cutoff_dt">
-                  <mat-datepicker-toggle matSuffix [for]="cutoff_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #cutoff_picker></mat-datepicker>
-                </mat-form-field>
-              </div>
+<div class="card p-0 tab-card-container">
+  <form class="ms-0" [formGroup]="searchForm!" #formDirective="ngForm" (ngSubmit)="search()">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true" disabled>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+          </mat-panel-title>
+          <mat-panel-description>
+            <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+              <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                <mat-icon>search</mat-icon>
+              </button>
+            </div>
+            <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+              <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
+                <mat-icon>clear_all</mat-icon>
+              </button>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <button type="submit" style="display: none;">Submit</button>
+        <div class="row">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TANK_NO}}</mat-label>
+              <input matInput formControlName="tank_no">
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.CUSTOMER}}</mat-label>
+              <input matInput formControlName="customer_code" [formControl]="customerCodeControl"
+                [matAutocomplete]="customerCode">
+              <mat-autocomplete #customerCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                @for (cc of customer_companyList; track cc) {
+                <mat-option [value]="cc">
+                  {{ccDS.displayCodeDashName(cc)}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.BILLING_BRANCH}}</mat-label>
+              <input matInput formControlName="branch_code" [formControl]="branchCodeControl"
+                [matAutocomplete]="branchCode">
+              <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn">
+                @for (cc of branch_companyList; track cc) {
+                <mat-option [value]="cc">
+                  {{ccDS.displayName(cc)}}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.EIR_NO}}</mat-label>
+              <input matInput formControlName="eir_no">
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.EIR_DATE}}</mat-label>
+              <input matInput [matDatepicker]="eir_picker" placeholder="Select date" [max]="maxManuDOMDt"
+                formControlName="eir_dt">
+              <mat-datepicker-toggle matSuffix [for]="eir_picker"></mat-datepicker-toggle>
+              <mat-datepicker #eir_picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.CUTOFF_DATE}}</mat-label>
+              <input matInput [matDatepicker]="cutoff_picker" placeholder="Select date" [max]="maxManuDOMDt"
+                formControlName="cutoff_dt">
+              <mat-datepicker-toggle matSuffix [for]="cutoff_picker"></mat-datepicker-toggle>
+              <mat-datepicker #cutoff_picker></mat-datepicker>
+            </mat-form-field>
+          </div>
 
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                  <mat-date-range-input [rangePicker]="inv_picker" [max]="maxManuDOMDt">
-                    <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
-                    <input matEndDate placeholder="End date" formControlName="inv_dt_end">
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #inv_picker></mat-date-range-picker>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
-                  <input matInput formControlName="inv_no">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
+              <mat-date-range-input [rangePicker]="inv_picker" [max]="maxManuDOMDt">
+                <input matStartDate placeholder="Start date" formControlName="inv_dt_start">
+                <input matEndDate placeholder="End date" formControlName="inv_dt_end">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="inv_picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #inv_picker></mat-date-range-picker>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
+              <input matInput formControlName="inv_no">
 
-                </mat-form-field>
-              </div>
+            </mat-form-field>
+          </div>
 
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-                  <mat-select formControlName="depot_status_cv">
-                    @for (codeValue of depotCvList; track codeValue) {
-                    <mat-option [value]="codeValue.code_val">
-                      {{codeValue.description}}
-                    </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 col-xs-12 d-flex align-items-center">
-                <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced"
-                  (change)="onToggleInvoiced($event)">
-                  {{translatedLangText.INVOICED}}
-                </mat-slide-toggle>
-              </div>
-              <!-- <div
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
+              <mat-select formControlName="depot_status_cv">
+                @for (codeValue of depotCvList; track codeValue) {
+                <mat-option [value]="codeValue.code_val">
+                  {{codeValue.description}}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-1 col-lg-2 col-md-12 col-sm-12 col-xs-12 d-flex align-items-center">
+            <mat-slide-toggle class="scaled-toggle" color="primary" formControlName="invoiced"
+              (change)="onToggleInvoiced($event)">
+              {{translatedLangText.INVOICED}}
+            </mat-slide-toggle>
+          </div>
+          <!-- <div
                 class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0 d-flex align-items-center ms-auto justify-content-end">
                 <button mat-mini-fab color="primary" (click)="search()" matTooltip={{translatedLangText.SEARCH}}>
                   <mat-icon>search</mat-icon>
@@ -128,83 +126,82 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div> -->
-            </div>
-          </form>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <div class="body row card-aligned">
-        <mat-card [ngClass]="{'card-content p-0 m-b-10': true}">
-          <!-- <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
+  <div class="body overflow-auto">
+    <mat-card [ngClass]="{'card-content p-0 m-b-10': true}">
+      <!-- <mat-card-header class="pt-2 pe-2 pb-0 d-flex justify-content-between align-items-center">
             <mat-card-title [ngClass]="{'pt-1': true}">
               {{translatedLangText.INVOICE_DETAILS}}
             </mat-card-title>
           </mat-card-header> -->
-          <mat-card-content>
-            <div class="row mt-3 ms-0">
-              <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
-                  <input matInput [formControl]="invoiceNoControl">
-                  <!-- @if (this.invoiceNoControl.hasError('required')) {
+      <mat-card-content>
+        <div class="row mt-3 ms-0">
+          <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.INVOICE_NO}}</mat-label>
+              <input matInput [formControl]="invoiceNoControl">
+              <!-- @if (this.invoiceNoControl.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.INVOICE_NO}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
                   } -->
-                </mat-form-field>
-              </div>
-              <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
-                  <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
-                    [formControl]="invoiceDateControl" [max]="maxManuDOMDt" required>
-                  <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
-                  <mat-datepicker #invoice_date_picker></mat-datepicker>
-                  <!-- @if (this.invoiceDateControl.hasError('required')) {
+            </mat-form-field>
+          </div>
+          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{translatedLangText.INVOICE_DATE}}</mat-label>
+              <input matInput [matDatepicker]="invoice_date_picker" placeholder="Select date"
+                [formControl]="invoiceDateControl" [max]="maxManuDOMDt" required>
+              <mat-datepicker-toggle matSuffix [for]="invoice_date_picker"></mat-datepicker-toggle>
+              <mat-datepicker #invoice_date_picker></mat-datepicker>
+              <!-- @if (this.invoiceDateControl.hasError('required')) {
                   <mat-error>
                     {{this.translatedLangText.INVOICE_DATE}} {{this.translatedLangText.SO_REQUIRED}}
                   </mat-error>
                   } -->
-                </mat-form-field>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>{{GetTotalCostTypeLabel()}}</mat-label>
+              <input matInput [formControl]="invoiceTotalCostControl" readonly>
+            </mat-form-field>
+          </div>
+          <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
+            <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5" (click)="save($event)">
+              <mat-icon>
+                save
+              </mat-icon>
+              {{translatedLangText.SAVE}}
+            </button>
+            <button mat-flat-button color="accent" class="m-r-5" (click)="onCancel($event)">
+              <mat-icon>
+                close
+              </mat-icon>
+              {{translatedLangText.CLEAR}}
+            </button>
+            <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5"
+              (click)="delete($event)">
+              <mat-icon>
+                delete_forever
+              </mat-icon>
+              {{translatedLangText.DELETE}}
+            </button>
+          </div>
+          <div class="row">
+            <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
+              <div class="radio-group m-2" (change)="onInvoiceTypeChange($event)">
+                <input type="radio" id="option-one" name="invoice_type" [formControl]="invoiceTypeControl"
+                  value="LIFT_ON" checked><label for="option-one">{{translatedLangText.LIFT_ON}}</label>
+                <input type="radio" id="option-two" name="invoice_type" [formControl]="invoiceTypeControl"
+                  value="LIFT_OFF"><label for="option-two">{{translatedLangText.LIFT_OFF}}</label>
               </div>
-              <div class="col-xl-2-5 col-lg-2-5 col-md-12 col-sm-12 col-xs-12 mb-0">
-                <mat-form-field class="example-full-width" appearance="fill">
-                  <mat-label>{{GetTotalCostTypeLabel()}}</mat-label>
-                  <input matInput [formControl]="invoiceTotalCostControl" readonly>
-                </mat-form-field>
-              </div>
-              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0 d-flex align-items-center">
-                <button mat-flat-button color="primary" [disabled]="!AllowToSave()" class="m-r-5"
-                  (click)="save($event)">
-                  <mat-icon>
-                    save
-                  </mat-icon>
-                  {{translatedLangText.SAVE}}
-                </button>
-                <button mat-flat-button color="accent" class="m-r-5" (click)="onCancel($event)">
-                  <mat-icon>
-                    close
-                  </mat-icon>
-                  {{translatedLangText.CLEAR}}
-                </button>
-                <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5"
-                  (click)="delete($event)">
-                  <mat-icon>
-                    delete_forever
-                  </mat-icon>
-                  {{translatedLangText.DELETE}}
-                </button>
-              </div>
-              <div class="row">
-                <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
-                  <div class="radio-group m-2" (change)="onInvoiceTypeChange($event)">
-                    <input type="radio" id="option-one" name="invoice_type" [formControl]="invoiceTypeControl"
-                      value="LIFT_ON" checked><label for="option-one">{{translatedLangText.LIFT_ON}}</label>
-                    <input type="radio" id="option-two" name="invoice_type" [formControl]="invoiceTypeControl"
-                      value="LIFT_OFF"><label for="option-two">{{translatedLangText.LIFT_OFF}}</label>
-                  </div>
-                </div>
-              </div>
-              <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
+            </div>
+          </div>
+          <!-- <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                 <div class="radio-group" (change)="onInvoiceTypeChange($event)">
                   <input type="radio" id="option-one" name="invoice_type" [formControl]="invoiceTypeControl"
                     value="LIFT_ON" checked><label for="option-one">{{translatedLangText.LIFT_ON}}</label>
@@ -212,180 +209,173 @@
                     value="LIFT_OFF"><label for="option-two">{{translatedLangText.LIFT_OFF}}</label>
                 </div>
               </div> -->
-            </div>
-          </mat-card-content>
-          <mat-card-actions [ngClass]="'empty-card-actions'">
-          </mat-card-actions>
-        </mat-card>
-      </div>
-      <div class="body overflow-auto">
-        <div class="responsive_table">
-
-          <table mat-table [dataSource]="billSotList" matSort
-            class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-
-
-            <ng-container matColumnDef="select">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
-                <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
-                  [checked]="selection.hasValue() && isAllSelected()" [ngClass]="'tbl-checkbox'"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"
-                  [hidden]="MasterCheckBoxDisable()">
-                </mat-checkbox>
-              </mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
-                <mat-checkbox color="primary" (click)="$event.stopPropagation()"
-                  (change)="$event ? toggleRow(row) : null" [ngClass]="'tbl-checkbox'"
-                  [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'" [hidden]="CheckBoxDisable(row)">
-                </mat-checkbox>
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="id">
-              <mat-header-cell *matHeaderCellDef></mat-header-cell>
-              <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="tank_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
-                {{translatedLangText.TANK_NO}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
-                <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="customer">
-              <mat-header-cell mat-header-cell *matHeaderCellDef
-                [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
-                {{translatedLangText.CUSTOMER}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
-                <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
-                  matTooltip={{row.storing_order_tank?.storing_order?.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="eir_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                {{translatedLangText.EIR_NO}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
-
-                <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{DisplayEirNo(row)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="eir_dt">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                {{translatedLangText.EIR_DATE}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
-
-                <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{DisplayEirDate(row)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="tank_status_cv">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                {{translatedLangText.STATUS}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
-                <span
-                  class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank?.tank_status_cv)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="bill_type">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                {{translatedLangText.INVOICE_TYPE}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
-                <span
-                  class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(row.billing_type)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="cost">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
-                {{translatedLangText.COST}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
-                <span class="mobile-label">{{translatedLangText.COST}}:</span>{{DisplayCost(row)}}
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="invoice_no">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
-                {{translatedLangText.LIFT_ON}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
-                <span class="mobile-label">{{translatedLangText.LIFT_ON}}: </span>
-
-                @if(isLiftOnInvoice(row)){
-                <mat-icon class="col-green">check</mat-icon>
-                }
-                @else {
-                <!-- <mat-icon class="col-black" >remove</mat-icon> -->
-                <span class="">-</span>
-                }
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="invoice_date">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
-                {{translatedLangText.LIFT_OFF}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
-                <span class="mobile-label">{{translatedLangText.LIFT_OFF}}: </span>
-                @if(isLiftOffInvoice(row)){
-                <mat-icon class="col-green font-bold">check</mat-icon>
-                }
-                @else {
-                <!-- <mat-icon class="col-black" >remove</mat-icon> -->
-                <span class="">-</span>
-                }
-
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="invoiced">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                {{translatedLangText.INVOICED}}
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
-                @if(row.invoiced)
-                {
-                <span class="mobile-label">{{translatedLangText.INVOICED}}:</span> <mat-icon
-                  class="col-green font-bold">check</mat-icon>
-                }
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="action">
-              <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
-                <mat-icon>more_vert</mat-icon>
-              </mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let row" class="">
-                @if(row.invoiced)
-                {
-                <span class="mobile-label"><mat-icon>more_vert</mat-icon></span>
-                <button mat-icon-button (click)="handleDelete($event, row)">
-                  <mat-icon>delete_forever</mat-icon>
-                </button>
-                }
-              </mat-cell>
-            </ng-container>
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row" (click)="viewCall(row)"
-              [style.cursor]="'pointer'" matRipple>
-            </mat-row>
-          </table>
-          @if (!(billDS.loading$ | async) && !billSotList.length) {
-          <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
-            <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
-          </div>
-          }
-
-          @if (billDS.loading$ | async) {
-          <div class="tbl-spinner">
-            <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-            </mat-progress-spinner>
-          </div>
-          }
-          <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
-            [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
-          </mat-paginator>
         </div>
+      </mat-card-content>
+      <mat-card-actions [ngClass]="'empty-card-actions'">
+      </mat-card-actions>
+    </mat-card>
+    <div class="responsive_table">
+      <table mat-table [dataSource]="billSotList" matSort
+        class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
+            <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
+              [checked]="selection.hasValue() && isAllSelected()" [ngClass]="'tbl-checkbox'"
+              [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"
+              [hidden]="MasterCheckBoxDisable()">
+            </mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
+            <mat-checkbox color="primary" (click)="$event.stopPropagation()" (change)="$event ? toggleRow(row) : null"
+              [ngClass]="'tbl-checkbox'" [checked]="selection.isSelected(row)" [ngClass]="'tbl-checkbox'"
+              [hidden]="CheckBoxDisable(row)">
+            </mat-checkbox>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="tank_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+            {{translatedLangText.TANK_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+            <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="customer">
+          <mat-header-cell mat-header-cell *matHeaderCellDef
+            [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
+            {{translatedLangText.CUSTOMER}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_75 justify-content-center'">
+            <span class="mobile-label">{{translatedLangText.CUSTOMER}}:</span><span class="customer-text"
+              matTooltip={{row.storing_order_tank?.storing_order?.customer_company?.name}}>{{row.storing_order_tank?.storing_order?.customer_company?.code}}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="eir_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.EIR_NO}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+
+            <span class="mobile-label">{{translatedLangText.EIR_NO}}:</span>{{DisplayEirNo(row)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="eir_dt">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.EIR_DATE}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+
+            <span class="mobile-label">{{translatedLangText.EIR_DATE}}:</span>{{DisplayEirDate(row)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="tank_status_cv">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.STATUS}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            <span
+              class="mobile-label">{{translatedLangText.STATUS}}:</span>{{getTankStatusDescription(row.storing_order_tank?.tank_status_cv)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="bill_type">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.INVOICE_TYPE}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            <span
+              class="mobile-label">{{translatedLangText.BILLING_TYPE}}:</span>{{DisplayBillingType(row.billing_type)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="cost">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+            {{translatedLangText.COST}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+            <span class="mobile-label">{{translatedLangText.COST}}:</span>{{DisplayCost(row)}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="invoice_no">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
+            {{translatedLangText.LIFT_ON}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
+            <span class="mobile-label">{{translatedLangText.LIFT_ON}}: </span>
+
+            @if(isLiftOnInvoice(row)){
+            <mat-icon class="col-green">check</mat-icon>
+            }
+            @else {
+            <!-- <mat-icon class="col-black" >remove</mat-icon> -->
+            <span class="">-</span>
+            }
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="invoice_date">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">
+            {{translatedLangText.LIFT_OFF}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="justify-content-center">
+            <span class="mobile-label">{{translatedLangText.LIFT_OFF}}: </span>
+            @if(isLiftOffInvoice(row)){
+            <mat-icon class="col-green font-bold">check</mat-icon>
+            }
+            @else {
+            <!-- <mat-icon class="col-black" >remove</mat-icon> -->
+            <span class="">-</span>
+            }
+
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="invoiced">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            {{translatedLangText.INVOICED}}
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            @if(row.invoiced)
+            {
+            <span class="mobile-label">{{translatedLangText.INVOICED}}:</span> <mat-icon
+              class="col-green font-bold">check</mat-icon>
+            }
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
+            <mat-icon>more_vert</mat-icon>
+          </mat-header-cell>
+          <mat-cell mat-cell *matCellDef="let row" class="">
+            @if(row.invoiced)
+            {
+            <span class="mobile-label"><mat-icon>more_vert</mat-icon></span>
+            <button mat-icon-button (click)="handleDelete($event, row)">
+              <mat-icon>delete_forever</mat-icon>
+            </button>
+            }
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;" class="custom-body-row" (click)="viewCall(row)"
+          [style.cursor]="'pointer'" matRipple>
+        </mat-row>
+      </table>
+      @if (!(billDS.loading$ | async) && !billSotList.length) {
+      <div class="no-results m-l-20 pt-3" [style.display]="billSotList.length === 0 ? '' : 'none'">
+        <h5 class="m-b-15">{{translatedLangText.NO_RESULT}}</h5>
       </div>
+      }
+
+      @if (billDS.loading$ | async) {
+      <div class="tbl-spinner">
+        <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+        </mat-progress-spinner>
+      </div>
+      }
+      <mat-paginator #paginator [length]="billDS.totalCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+        [pageSizeOptions]="[25, 50, 75, 100]" (page)="onPageEvent($event)">
+      </mat-paginator>
     </div>
   </div>
