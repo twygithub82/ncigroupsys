@@ -23,8 +23,8 @@
 
 
 $bg: #007bff;
-$fg: lighten($bg, 20%);
-$borderWidth: 2px;
+$fg: lighten($bg, 10%);
+$borderWidth: 1px;
 
 body {
   background: $bg;
@@ -38,7 +38,7 @@ input[type=radio] {
 }
 
 label {
-  color: lighten($bg, 30%);
+  color: lighten($bg, 20%);
   display: inline-block;
   cursor: pointer;
   // font-weight: bold;

@@ -87,7 +87,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     'description',
     'department',
     'last_update',
-     'actions',
+    'actions',
   ];
   pageTitle = 'MENUITEMS.MANAGEMENT.LIST.GROUP'
   breadcrumsMiddleList = [
