@@ -54,8 +54,7 @@
                 <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>{{translatedLangText.BRANCH}}</mat-label>
-                    <input matInput formControlName="branch_code" 
-                      [matAutocomplete]="branchCode">
+                    <input matInput formControlName="branch_code" [matAutocomplete]="branchCode">
                     <mat-autocomplete #branchCode="matAutocomplete" [displayWith]="displayCustomerCompanyFn"
                       (optionSelected)="AutoSearch()">
                       @for (cc of all_branch_List; track cc) {
@@ -66,7 +65,7 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-<!--                 
+                <!--                 
                 <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.BRANCH }}</mat-label>
@@ -130,6 +129,7 @@
       <div class="body overflow-auto">
         <div class="responsive_table">
           <table mat-table [dataSource]="customer_companyList" matSort (matSortChange)="onSortChange($event)"
+            [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="desc">
               <mat-header-cell *matHeaderCellDef
@@ -141,7 +141,7 @@
                   }}:</span>{{this.getMainCustomerCode(row.customer_company)}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="fName">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
+              <mat-header-cell *matHeaderCellDef mat-sort-header="fName" disableClear
                 [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg justify-content-start'">{{this.translatedLangText.BRANCH
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
@@ -158,22 +158,6 @@
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COMPANY_NAME
                   }}:</span>{{row.customer_company?.name}}</mat-cell>
             </ng-container>
-            <!-- <ng-container matColumnDef="mobile">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_5-xl'" >{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{row.phone}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="gender">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.FAX_NO }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.STANDARD_COST}}:</span> {{row.fax}}</mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="email">
-              <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.EMAIL }}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
-                <span class="mobile-label">{{this.translatedLangText.EMAIL}}:</span> {{row.email}}</mat-cell>
-            </ng-container> -->
-
             <ng-container matColumnDef="category">
               <mat-header-cell [ngClass]="'tbl-col-width-per-3-xl justify-content-center'"
                 *matHeaderCellDef>{{this.translatedLangText.DEFAULT_PROFILE
@@ -183,9 +167,8 @@
                 <span class="mobile-label">{{this.translatedLangText.DEFAULT_PROFILE}}:</span>
                 {{row.customer_company?.tank?.unit_type}}</mat-cell>
             </ng-container>
-
             <ng-container matColumnDef="bDate">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
+              <mat-header-cell *matHeaderCellDef mat-sort-header="bDate" disableClear
                 [ngClass]="'tbl-col-width-per-2-xl'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_5-xl'"
@@ -208,19 +191,6 @@
                 }
               </mat-cell>
             </ng-container>
-            <!-- <ng-container matColumnDef="actions">
-              <mat-header-cell class="pr-0" *matHeaderCellDef>Actions</mat-header-cell>
-              <mat-cell *matCellDef="let row; let i=index;" class="pr-0">
-                <button mat-icon-button color="accent" (click)="$event.stopPropagation()"
-                  (click)="editBillingBranch(row)" class="tbl-action-btn">
-                  <app-feather-icons [icon]="'edit'" [class]="'tbl-fav-edit'"></app-feather-icons>
-                </button>
-                <button mat-icon-button color="accent" (click)="$event.stopPropagation()" (click)="deleteItem(row)"
-                  class="tbl-action-btn">
-                  <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons>
-                </button>
-              </mat-cell>
-            </ng-container> -->
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="editBillingBranch(row.customer_company)"
               [style.cursor]="'pointer'" matRipple>

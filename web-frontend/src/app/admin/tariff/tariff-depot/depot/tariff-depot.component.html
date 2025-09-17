@@ -41,7 +41,7 @@
             <mat-form-field class="example-full-width">
               <mat-label>{{langText.PROFILE_NAME | translate}}</mat-label>
               <input matInput formControlName="profile_name" type="text" [matAutocomplete]="profileName">
-               <mat-autocomplete #profileName="matAutocomplete">
+              <mat-autocomplete #profileName="matAutocomplete">
                 @for (cc of profileList; track cc) {
                 <mat-option [value]="cc">
                   {{cc}}
@@ -70,9 +70,10 @@
   <div class="body">
     <div class="responsive_table">
       <table mat-table [dataSource]="tariffDepotItems" matSort (matSortChange)="onSortChange($event)"
+        [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
         class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
         <ng-container matColumnDef="fName">
-          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{this.translatedLangText.PROFILE_NAME
+          <mat-header-cell *matHeaderCellDef mat-sort-header="fName" disableClear disableClear>{{this.translatedLangText.PROFILE_NAME
             }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
@@ -86,7 +87,8 @@
               }}:</span>{{row.tariff_depot?.description}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="mobile">
-          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{translatedLangText.CLEANING_LAST_UPDATED_DT}}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header="mobile"
+            disableClear disableClear>{{translatedLangText.CLEANING_LAST_UPDATED_DT}}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{translatedLangText.CLEANING_LAST_UPDATED_DT}}:</span>
             {{this.displayLastUpdated(row.tariff_depot)}}</mat-cell>

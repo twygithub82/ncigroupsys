@@ -91,13 +91,15 @@
       <div class="body overflow-auto">
         <div class="responsive_table">
           <table mat-table [dataSource]="customer_companyResultList" matSort (matSortChange)="onSortChange($event)"
+            [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <ng-container matColumnDef="customer_code">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
+              <mat-header-cell *matHeaderCellDef mat-sort-header="customer_code" disableClear
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
               <mat-cell *matCellDef="let row"
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-1_5-lg justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{row.customer_company?.code}}</mat-cell>
+                <span
+                  class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{row.customer_company?.code}}</mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="customer_name">
@@ -124,7 +126,7 @@
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
               <mat-header-cell [ngClass]="'tbl-col-width-per-2-xl justify-content-start'" *matHeaderCellDef
-                mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+                mat-sort-header="last_update_dt" disableClear>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell [ngClass]="'tbl-col-width-per-2-xl justify-content-start'" *matCellDef="let row">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>

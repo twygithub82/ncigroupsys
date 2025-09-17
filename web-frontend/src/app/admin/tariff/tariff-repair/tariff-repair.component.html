@@ -259,6 +259,7 @@
               <div class="body">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="trfRepairItems" matSort (matSortChange)="onSortChange($event)"
+                    [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
                     class="mat-cell advance-table striped-rows hover-highlight dark-header small-font-tbl curve-table">
                     <!-- Checkbox Column -->
                     @if (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage()) {
@@ -278,7 +279,8 @@
                     </ng-container>
                     }
                     <ng-container matColumnDef="fName">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header disableClear [ngClass]="'tbl-col-width-per-3_25'">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="fName" disableClear
+                        disableClear [ngClass]="'tbl-col-width-per-3_25'">
                         {{this.translatedLangText.PART_NAME
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-3_25'">
@@ -320,7 +322,7 @@
                         {{this.displaySubGroupNameCodeValue_Description(row.tariff_repair?.subgroup_name_cv)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="hour">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header disableClear
+                      <mat-header-cell *matHeaderCellDef disableClear
                         [ngClass]="'tbl-col-width-per-1-xl'">{{this.translatedLangText.LABOUR_HOUR}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1-xl'"
                         (contextmenu)="onContextMenu($event, row.tariff_repair)">
@@ -339,7 +341,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="last_date">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header disableClear
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="last_date" disableClear disableClear
                         [ngClass]="'tbl-col-width-per-1_25-xl'">{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25-xl'">
                         <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>

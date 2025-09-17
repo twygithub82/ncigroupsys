@@ -16,62 +16,62 @@
                 </mat-panel-title>
                 <mat-panel-description>
                   <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                      <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                      <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
-                        <mat-icon>clear_all</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
-                      <button mat-mini-fab class="primary-light" (click)="addCall($event)" (click)="$event.stopPropagation()">
-                        <mat-icon class="col-white">add</mat-icon>
-                      </button>
-                    </div>
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.NEW">
+                    <button mat-mini-fab class="primary-light" (click)="addCall($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon class="col-white">add</mat-icon>
+                    </button>
+                  </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
-               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <form class="ms-0" [formGroup]="pcForm!" #formDirective="ngForm">
                   <div class="row">
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.DESCRIPTION }}</mat-label>
-                        <input matInput formControlName="description" type="text"  (keyup.enter)="search()">
+                        <input matInput formControlName="description" type="text" (keyup.enter)="search()">
                         <mat-icon matSuffix class="date-icon">search</mat-icon>
-
                       </mat-form-field>
-
                     </div>
-               
                   </div>
-                
-
                 </form>
               </div>
             </mat-expansion-panel>
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="teamItemsWithCountList" matSort    (matSortChange)="onSortChange($event)"
+              <table mat-table [dataSource]="teamItemsWithCountList" matSort (matSortChange)="onSortChange($event)"
+                [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
-                  <ng-container matColumnDef="description">
-                  <mat-header-cell *matHeaderCellDef  mat-sort-header disableClear
+                <ng-container matColumnDef="description">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header="description" disableClear disableClear
                     [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.DESCRIPTION }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-3'">
-                    <span class="mobile-label">{{this.translatedLangText.DESCRIPTION }}:</span>{{row.team.description}}</mat-cell>
+                    <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
+                      }}:</span>{{row.team.description}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="department">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.DEPARTMENT
+                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.DEPARTMENT
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.DEPARTMENT
                       }}:</span>{{ShowDepartment(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_update">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header disableClear >{{this.translatedLangText.LAST_UPDATE
+                  <mat-header-cell *matHeaderCellDef mat-sort-header="last_update"
+                    disableCleardisableClear >{{this.translatedLangText.LAST_UPDATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>
@@ -91,7 +91,7 @@
                       <!-- <app-feather-icons [icon]="'trash-2'" [class]="'tbl-fav-delete'"></app-feather-icons> -->
                       <mat-icon>delete_forever</mat-icon>
                     </button>
-                  }
+                    }
                   </mat-cell>
                 </ng-container>
                 <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

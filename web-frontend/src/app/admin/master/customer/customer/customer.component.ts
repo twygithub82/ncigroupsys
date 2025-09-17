@@ -216,6 +216,8 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { customer_company: { code: "ASC" } };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'customer_code';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;

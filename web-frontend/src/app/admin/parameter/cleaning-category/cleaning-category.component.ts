@@ -151,6 +151,8 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { name: "ASC" };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'category_name';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -194,7 +196,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initializeValueChanges() {
-     // EG :: Refresh auto complete list
+    // EG :: Refresh auto complete list
     var searchObj = this.searchForm;
     searchObj?.get("name")!.valueChanges.pipe(
       startWith(''),
@@ -556,13 +558,13 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   refreshNameList() {
-     // EG :: Refresh auto complete list
+    // EG :: Refresh auto complete list
     const existingValue = this.searchForm?.get('name')?.value;
     this.searchForm?.get('name')?.setValue(existingValue);
   }
 
   refreshDescriptionList() {
-     // EG :: Refresh auto complete list
+    // EG :: Refresh auto complete list
     const existingValue = this.searchForm?.get('description')?.value;
     this.searchForm?.get('description')?.setValue(existingValue);
   }
@@ -746,8 +748,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['CLEANING_MANAGEMENT_CLEANING_CATEGORY_DELETE']);
   }
-
-
 
   onSortChange(event: Sort): void {
     const { active: field, direction } = event;

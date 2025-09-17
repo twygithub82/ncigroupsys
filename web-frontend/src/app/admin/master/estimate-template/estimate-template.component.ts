@@ -181,6 +181,8 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { template_name: "ASC" };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'template';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -661,6 +663,7 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
 
     })
   }
+
   onSortChange(event: Sort): void {
     const { active: field, direction } = event;
 
@@ -687,7 +690,6 @@ export class EstimateTemplateComponent extends UnsubscribeOnDestroyAdapter
       case 'template':
         this.lastOrderBy = {
           template_name: dirEnum,
-
         };
         break;
 

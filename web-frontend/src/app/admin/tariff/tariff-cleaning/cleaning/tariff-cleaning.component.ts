@@ -176,7 +176,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { tariff_cleaning: { update_dt: "DESC" } };
+  lastOrderBy: any = { tariff_cleaning: { cargo: "ASC" } };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'cargo';
   endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
   hasNextPage = false;

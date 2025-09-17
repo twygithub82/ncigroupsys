@@ -219,6 +219,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { customer_company: { code: "ASC" } };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'fName';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -706,7 +708,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
       case 'bDate':
         this.lastOrderBy = {
           customer_company: {
-
             update_dt: dirEnum,
             create_dt: dirEnum,
           }
@@ -715,7 +716,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
       case 'fName':
         this.lastOrderBy = {
-
           customer_company: {
             code: dirEnum,
           }

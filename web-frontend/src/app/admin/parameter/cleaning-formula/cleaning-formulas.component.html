@@ -78,7 +78,7 @@
                                 <mat-option [value]="pn" class="checkbox-option"
                                   [class.mdc-list-item--selected]="description_itemSelected(pn)">
                                   <div class="horizontal-container">
-                                    <mat-checkbox  color="primary"
+                                    <mat-checkbox color="primary"
                                       (click)="description_onCheckboxClicked(pn); $event.stopPropagation()"
                                       [checked]="description_itemSelected(pn)">
                                     </mat-checkbox>
@@ -125,14 +125,15 @@
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="clnFormulaList" matSort (matSortChange)="onSortChange($event)"
+                    [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <!-- ID Column -->
                     <ng-container matColumnDef="id">
                       <mat-header-cell *matHeaderCellDef></mat-header-cell>
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
-                    <ng-container matColumnDef="category_name" >
-                      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="''">
+                    <ng-container matColumnDef="category_name">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="''">
                         {{translatedLangText.CLEANING_FORMULA}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
@@ -140,7 +141,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="category_description">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="category_description" disableClear
                         [ngClass]="'pr-0 tbl-col-width-per-2-xl tbl-col-width-per-2-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                         {{translatedLangText.DESCRIPTION }}
                       </mat-header-cell>
@@ -159,7 +160,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="update_date" disableClear>
                         {{translatedLangText.LAST_UPDATED }}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

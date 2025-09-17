@@ -119,7 +119,9 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" } };
+  lastOrderBy: any = [{ tariff_depot: { profile_name: "ASC" } }, { customer_company: { code: "ASC" } }];
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'customer';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -388,7 +390,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       maxHeight: '80vh',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'update',
@@ -420,7 +422,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '60vw',
       //height: '80vh',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'update',
@@ -922,7 +924,7 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     if (Utility.IsAllowAutoSearch())
       this.search();
   }
-  
+
   onSortChange(event: Sort): void {
     const { active: field, direction } = event;
 
@@ -938,18 +940,22 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
 
     switch (field) {
       case 'last_update':
-        this.lastOrderBy = {
-          update_dt: dirEnum,
-          create_dt: dirEnum,
-        };
+        this.lastOrderBy = [
+          { tariff_depot: { profile_name: "ASC" } },
+          { update_dt: dirEnum },
+          { create_dt: dirEnum },
+        ];
         break;
 
       case 'customer':
-        this.lastOrderBy = {
-          customer_company: {
-            name: dirEnum,
+        this.lastOrderBy = [
+          { tariff_depot: { profile_name: "ASC" } },
+          {
+            customer_company: {
+              name: dirEnum,
+            }
           }
-        };
+        ];
         break;
 
       default:

@@ -126,6 +126,7 @@
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="catList" matSort (matSortChange)="onSortChange($event)"
+                    [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <!-- ID Column -->
                     <ng-container matColumnDef="id">
@@ -133,7 +134,8 @@
                       <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="category_name">
-                      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="''">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header="category_name" disableClear
+                        [ngClass]="''">
                         {{langText.NAME| translate}}
                       </mat-header-cell>
                       <mat-cell mat-cell *matCellDef="let row" class="">
@@ -159,7 +161,7 @@
                       </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="update_date">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="update_date" disableClear>
                         {{langText.LAST_UPDATED | translate}}
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">

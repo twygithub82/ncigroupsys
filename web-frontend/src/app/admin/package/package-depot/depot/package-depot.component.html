@@ -48,9 +48,9 @@
                         </button>
                       </mat-chip-row>
                       }
-                      <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode" (keydown.enter)="search()"
-                        [matChipInputFor]="chipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                        (matChipInputTokenEnd)="add($event)">
+                      <input #custInput [formControl]="customerCodeControl" [matAutocomplete]="customerCode"
+                        (keydown.enter)="search()" [matChipInputFor]="chipGrid"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
                       <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                         @for (cc of customer_companyList; track cc) {
                         <mat-option [value]="cc" [class.mdc-list-item--selected]="itemSelected(cc)">
@@ -77,8 +77,9 @@
                         </button>
                       </mat-chip-row>
                       }
-                      <input #profileInput [formControl]="profileNameControl" [matAutocomplete]="profileName" (keydown.enter)="search()"
-                        [matChipInputFor]="chipProfile" [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                      <input #profileInput [formControl]="profileNameControl" [matAutocomplete]="profileName"
+                        (keydown.enter)="search()" [matChipInputFor]="chipProfile"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
                       <mat-autocomplete #profileName="matAutocomplete" (optionSelected)="selectedProfile($event)">
                         @for (p of profile_nameList; track p) {
                         <mat-option [value]="p" [class.mdc-list-item--selected]="itemProfileSelected(p)">
@@ -100,7 +101,8 @@
       </form>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="packDepotItems" matSort  (matSortChange)="onSortChange($event)"
+          <table mat-table [dataSource]="packDepotItems" matSort (matSortChange)="onSortChange($event)"
+            [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
@@ -108,7 +110,8 @@
                 [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <mat-checkbox color="primary" (change)="$event ? masterToggle_r1() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"  [hidden]="HideSelectAllCheckBox()" >
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"
+                  [hidden]="HideSelectAllCheckBox()">
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row"
@@ -119,7 +122,7 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="profile">
-              <mat-header-cell *matHeaderCellDef 
+              <mat-header-cell *matHeaderCellDef
                 [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-1-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.PROFILE_NAME
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"
@@ -135,9 +138,11 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="customer">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <mat-header-cell *matHeaderCellDef mat-sort-header="customer" disableClear
+                [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 {{this.translatedLangText.CUSTOMER}}</mat-header-cell>
-              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)" [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
+              <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
+                [ngClass]="'tbl-col-width-per-2_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
                   <!-- </span>{{ccDS.displayName(row.customer_company)}}</mat-cell> -->
                 </span>{{row.customer_company.name}}</mat-cell>
@@ -188,7 +193,7 @@
                 {{row.free_storage}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="last_update">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
+              <mat-header-cell *matHeaderCellDef mat-sort-header="last_update" disableClear
                 [ngClass]="'tbl-col-width-per-1_5-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"

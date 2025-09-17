@@ -19,7 +19,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule,Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -40,7 +40,7 @@ import { PackageResidueItem } from 'app/data-sources/package-residue';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import { UserDS ,UserItem, UserItemWithDetails } from 'app/data-sources/user';
+import { UserDS, UserItem, UserItemWithDetails } from 'app/data-sources/user';
 import { SearchStateService } from 'app/services/search-criteria.service';
 
 @Component({
@@ -107,7 +107,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   handledItemCvList: CodeValuesItem[] = [];
   CodeValuesDS?: CodeValuesDS;
 
-  usrDS:UserDS;
+  usrDS: UserDS;
   ccDS: CustomerCompanyDS;
   // tariffResidueDS:TariffResidueDS;
   // packResidueDS:PackageResidueDS;
@@ -124,6 +124,8 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { userName: "ASC" };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'fName';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -233,7 +235,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     NAME: 'COMMON-FORM.NAME',
     CONTACT: 'COMMON-FORM.CONTACT',
     ROLE: 'COMMON-FORM.ROLE',
-    TEAM:'COMMON-FORM.TEAM'
+    TEAM: 'COMMON-FORM.TEAM'
 
 
   }
@@ -252,7 +254,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
   ) {
     super();
-    this.usrDS= new UserDS(this.apollo);
+    this.usrDS = new UserDS(this.apollo);
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     // this.tariffResidueDS = new TariffResidueDS(this.apollo);
@@ -272,7 +274,7 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
     this.translateLangText();
     var state = history.state;
-    
+
     if (state.type == "user") {
       let showResult = state.pagination.showResult;
       if (showResult) {
@@ -424,16 +426,16 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
 
   editCall(row: CustomerCompanyItem) {
 
-   
-    const dialogRef = this.dialog.open(FormDialogComponent,{
+
+    const dialogRef = this.dialog.open(FormDialogComponent, {
 
       width: '70vw',
-      maxHeight:'95vh',
-      disableClose:true,
+      maxHeight: '95vh',
+      disableClose: true,
       data: {
         action: 'update',
         langText: this.langText,
-        selectedItem:row
+        selectedItem: row
       },
       // position: {
       //   top: '50px'  // Adjust this value to move the dialog down from the top of the screen
@@ -442,15 +444,14 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-         //if (result) {
-          if(result>0)
-            {
-              this.handleSaveSuccess(result);
-              //this.search();
-              this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
-            }
+      //if (result) {
+      if (result > 0) {
+        this.handleSaveSuccess(result);
+        //this.search();
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+      }
       //}
-      });
+    });
 
   }
 
@@ -464,9 +465,9 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   }
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-  //   const numSelected = this.selection.selected.length;
-  //  // const numRows = this.packResidueItems.length;
-  //   return numSelected === numRows;
+    //   const numSelected = this.selection.selected.length;
+    //  // const numRows = this.packResidueItems.length;
+    //   return numSelected === numRows;
   }
 
   isSelected(option: any): boolean {
@@ -487,13 +488,13 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   // search() {
   //   const where: any = {};
 
-  
+
 
   //   if (this.pcForm!.value["alias"]) {
   //     where.alias = { contains: this.pcForm!.value["alias"] };
   //   }
 
-   
+
 
 
   //   this.lastSearchCriteria = where;
@@ -536,10 +537,10 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
- 
 
 
-  
+
+
   removeSelectedRows() {
 
   }
@@ -664,155 +665,152 @@ export class UserComponent extends UnsubscribeOnDestroyAdapter
   }
 
 
-  
-    constructSearchCriteria() {
-      const where: any = {
-             };
-  
+
+  constructSearchCriteria() {
+    const where: any = {
+    };
+
     if (this.pcForm!.value["user"]) {
-       var value= this.pcForm!.value["user"]; 
+      var value = this.pcForm!.value["user"];
       where.or = [
-        {email:{ contains: value }},
-        {userName:{ contains: value }},
+        { email: { contains: value } },
+        { userName: { contains: value } },
       ];
     }
-      this.lastSearchCriteria =where;
-    }
-  
-    search() {
-      this.constructSearchCriteria();
-      this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-        this.updatePageSelection();
-      });
-    }
-  
-    performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-      this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
-      this.searchStateService.setPagination(this.pageStateType, {
-        pageSize,
-        pageIndex,
-        first,
-        after,
-        last,
-        before
-      });
-      console.log(this.searchStateService.getPagination(this.pageStateType))
-      // this.subs.sink = this.usrDS.searchUser(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-      this.subs.sink = this.usrDS.searchUserWithRolesNTeams(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-        .subscribe(data => {
+    this.lastSearchCriteria = where;
+  }
 
-          data.forEach(user=>{
-           user.team_user= user.team_user?.filter(
-              (obj, index, self) =>
-                index === self.findIndex(t => t.team_guid === obj.team_guid)
-            );
-           user.user_functions= user.user_functions?.filter(
-               (obj, index, self) =>
-                index === self.findIndex(t => t.functions_guid === obj.functions_guid)
-           )
-          });
-         
-          this.userList = data;
-          this.endCursor = this.usrDS.pageInfo?.endCursor;
-          this.startCursor = this.usrDS.pageInfo?.startCursor;
-          this.hasNextPage = this.usrDS.pageInfo?.hasNextPage ?? false;
-          this.hasPreviousPage = this.usrDS.pageInfo?.hasPreviousPage ?? false;
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
+    });
+  }
+
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    // this.subs.sink = this.usrDS.searchUser(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+    this.subs.sink = this.usrDS.searchUserWithRolesNTeams(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+
+        data.forEach(user => {
+          user.team_user = user.team_user?.filter(
+            (obj, index, self) =>
+              index === self.findIndex(t => t.team_guid === obj.team_guid)
+          );
+          user.user_functions = user.user_functions?.filter(
+            (obj, index, self) =>
+              index === self.findIndex(t => t.functions_guid === obj.functions_guid)
+          )
         });
-  
-      this.pageSize = pageSize;
-      this.pageIndex = pageIndex;
-    }
-  
-    onPageEvent(event: PageEvent) {
-      const { pageIndex, pageSize } = event;
-      let first: number | undefined = undefined;
-      let after: string | undefined = undefined;
-      let last: number | undefined = undefined;
-      let before: string | undefined = undefined;
-  
-      // Check if the page size has changed
-      if (this.pageSize !== pageSize) {
-        // Reset pagination if page size has changed
-        this.pageIndex = 0;
-        first = pageSize;
-        after = undefined;
-        last = undefined;
-        before = undefined;
-      } else {
-        if (pageIndex > this.pageIndex && this.hasNextPage) {
-          // Navigate forward
-          first = pageSize;
-          after = this.endCursor;
-        } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-          // Navigate backward
-          last = pageSize;
-          before = this.startCursor;
-        }
-      }
-  
-      this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
-        this.updatePageSelection();
+
+        this.userList = data;
+        this.endCursor = this.usrDS.pageInfo?.endCursor;
+        this.startCursor = this.usrDS.pageInfo?.startCursor;
+        this.hasNextPage = this.usrDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.usrDS.pageInfo?.hasPreviousPage ?? false;
       });
+
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
+  }
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
+      }
     }
 
-    updatePageSelection()
-    {
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
+  }
 
+  updatePageSelection() {
+
+  }
+
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
     }
 
-     onSortChange(event: Sort): void {
-        const { active: field, direction } = event;
-    
-        // reset if no direction
-        if (!direction) {
-          this.lastOrderBy = null;
-          return this.search();
-        }
-    
-        // convert to GraphQL enum (uppercase)
-        const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-        // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-    
-        switch (field) {
-          case 'fName':
-            this.lastOrderBy = {
-              
-                userName: dirEnum,
-              
-            };
-            break;
-    
-          default:
-            this.lastOrderBy = {userName:"ASC"};
-        }
-    
-        this.search();
-      }
-    
-      AutoSearch() {
-        if (Utility.IsAllowAutoSearch())
-          this.search();
-      }
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
 
-      showUserRole(user:UserItemWithDetails):string{
-        var sRetval:string="";
+    switch (field) {
+      case 'fName':
+        this.lastOrderBy = {
+          userName: dirEnum,
+        };
+        break;
 
-         sRetval = user?.user_role
-                  ?.map(ur => ur?.role?.description)
-                  ?.filter(desc => !!desc) // remove undefined/null entries
-                  ?.join(', ') ?? '';
-        return sRetval;
-      }
+      default:
+        this.lastOrderBy = { userName: "ASC" };
+    }
 
-       showUserTeam(user:UserItemWithDetails):string{
-        var sRetval:string="";
+    this.search();
+  }
 
-         sRetval = user?.team_user
-                  ?.map(ur => `${ur?.team?.department_cv}-${ur?.team?.description}`)
-                  ?.filter(desc => !!desc) // remove undefined/null entries
-                  ?.join(', ') ?? '';
-        return sRetval;
-      }
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
+
+  showUserRole(user: UserItemWithDetails): string {
+    var sRetval: string = "";
+
+    sRetval = user?.user_role
+      ?.map(ur => ur?.role?.description)
+      ?.filter(desc => !!desc) // remove undefined/null entries
+      ?.join(', ') ?? '';
+    return sRetval;
+  }
+
+  showUserTeam(user: UserItemWithDetails): string {
+    var sRetval: string = "";
+
+    sRetval = user?.team_user
+      ?.map(ur => `${ur?.team?.department_cv}-${ur?.team?.description}`)
+      ?.filter(desc => !!desc) // remove undefined/null entries
+      ?.join(', ') ?? '';
+    return sRetval;
+  }
 
 }
 

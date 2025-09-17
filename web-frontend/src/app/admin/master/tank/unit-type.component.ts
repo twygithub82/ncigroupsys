@@ -241,6 +241,8 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { unit_type: "ASC" };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'unittype';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -725,7 +727,6 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
     }
     return retval;
   }
-
 
   onSortChange(event: Sort): void {
     const { active: field, direction } = event;

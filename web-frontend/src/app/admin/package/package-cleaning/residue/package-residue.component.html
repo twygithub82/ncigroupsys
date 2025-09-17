@@ -68,8 +68,8 @@
                 <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
                   <mat-form-field class="example-full-width">
                     <mat-label>{{translatedLangText.RESIDUE_TYPE}}</mat-label>
-                     <mat-chip-grid #testchipGrid class="nowrap single-line-chip-grid">
-                    
+                    <mat-chip-grid #testchipGrid class="nowrap single-line-chip-grid">
+
                       @if(selectedResidue.length>0){
                       <mat-chip-row color="primary" (click)="removeAllSelectedResidues()">
                         {{getSelectedResiduesDisplay()}}
@@ -78,7 +78,7 @@
                         </button>
                       </mat-chip-row>
                       }
-                      
+
                       <input #residueInput formControlName="residue_disposal" [matAutocomplete]="residueType"
                         [matChipInputFor]="testchipGrid" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                         (matChipInputTokenEnd)="add($event)">
@@ -90,10 +90,10 @@
                               (click)="onResidueCheckboxClicked(cc);$event.stopPropagation()"></mat-checkbox>
                             <div class="option-text"> {{cc.description}}</div>
                           </div>
-                        </mat-option> 
-                      }
+                        </mat-option>
+                        }
                       </mat-autocomplete>
-                    </mat-chip-grid> 
+                    </mat-chip-grid>
 
                     <!-- <input matInput formControlName="residue_disposal" type="text"> -->
                   </mat-form-field>
@@ -122,14 +122,16 @@
       </mat-accordion>
       <div class="body overflow-auto">
         <div class="responsive_table">
-          <table mat-table [dataSource]="packResidueItems" matSort  matSort (matSortChange)="onSortChange($event)"
+          <table mat-table [dataSource]="packResidueItems" matSort matSort (matSortChange)="onSortChange($event)"
+            [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
                 <mat-checkbox color="primary" (change)="$event ? masterToggle_r1() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" [hidden]="HideSelectAllCheckBox()" >
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"
+                  [hidden]="HideSelectAllCheckBox()">
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
@@ -139,24 +141,21 @@
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="residue_type">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
-              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
-              >{{this.translatedLangText.RESIDUE_TYPE
+              <mat-header-cell *matHeaderCellDef
+                [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.RESIDUE_TYPE
                 }}</mat-header-cell>
-              
+
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
-              [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
-              >
+                [ngClass]="'tbl-col-width-per-3_5-xl tbl-col-width-per-3_5-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">
                 <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
                   }}:</span>{{row.tariff_residue.description}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell *matHeaderCellDef mat-sort-header
-              [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
-               >{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header="customer_name" disableClear
+                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '">{{this.translatedLangText.CUSTOMER}}</mat-header-cell>
               <mat-cell *matCellDef="let row"
-              [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
-              (contextmenu)="onContextMenu($event, row)">
+                [ngClass]="'tbl-col-width-per-3-xl tbl-col-width-per-3-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm '"
+                (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.CUSTOMER}}:
                   <!-- </span>{{ccDS.displayName(row.customer_company)}} -->
                 </span>{{row.customer_company.name}}
@@ -186,7 +185,7 @@
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell *matHeaderCellDef  mat-sort-header
+              <mat-header-cell *matHeaderCellDef mat-sort-header="last_update_dt" disableClear
                 [ngClass]="'tbl-col-width-per-1_75-xl tbl-col-width-per-1_75-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row"

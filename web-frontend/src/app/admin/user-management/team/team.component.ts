@@ -20,7 +20,7 @@ import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule,Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -40,7 +40,7 @@ import { SearchCriteriaService, SearchStateService } from 'app/services/search-c
 import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, Utility } from 'app/utilities/utility';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
-import {TeamDS,TeamItem,TeamItemWithCount} from 'app/data-sources/teams';
+import { TeamDS, TeamItem, TeamItemWithCount } from 'app/data-sources/teams';
 
 @Component({
   selector: 'app-team',
@@ -81,7 +81,7 @@ import {TeamDS,TeamItem,TeamItemWithCount} from 'app/data-sources/teams';
 
 export class TeamComponent extends UnsubscribeOnDestroyAdapter
   implements OnInit {
-   displayedColumns = [
+  displayedColumns = [
     // 'select',
     //'desc',
     'description',
@@ -111,8 +111,8 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
   // packResidueDS:PackageResidueDS;
   // clnCatDS:CleaningCategoryDS;
   // custCompDS: CustomerCompanyDS;
-  teamItemsWithCountList : TeamItemWithCount[] = [];
-  teamItems: TeamItem[] = []; 
+  teamItemsWithCountList: TeamItemWithCount[] = [];
+  teamItems: TeamItem[] = [];
   packResidueItems: PackageResidueItem[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
@@ -122,8 +122,10 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  
-  lastOrderBy: any = { team:{description: "ASC" }};
+
+  lastOrderBy: any = { team: { description: "ASC" } };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'description';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -227,11 +229,11 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     FAX_NO: "COMMON-FORM.FAX-NO",
     CONFIRM_RESET: 'COMMON-FORM.CONFIRM-RESET',
     CLEAR_ALL: 'COMMON-FORM.CLEAR-ALL',
-    GROUP_NAME:'COMMON-FORM.GROUP-NAME',
-    USER:'COMMON-FORM.USER',
-    ROLE:'COMMON-FORM.ROLE',
-    DEPARTMENT:'COMMON-FORM.DEPARTMENT',
-    POSITION:'COMMON-FORM.POSITION',
+    GROUP_NAME: 'COMMON-FORM.GROUP-NAME',
+    USER: 'COMMON-FORM.USER',
+    ROLE: 'COMMON-FORM.ROLE',
+    DEPARTMENT: 'COMMON-FORM.DEPARTMENT',
+    POSITION: 'COMMON-FORM.POSITION',
   }
 
   constructor(
@@ -251,7 +253,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.teamDS = new TeamDS(this.apollo);
-    this.CodeValuesDS=new CodeValuesDS(this.apollo);
+    this.CodeValuesDS = new CodeValuesDS(this.apollo);
     // this.tariffResidueDS = new TariffResidueDS(this.apollo);
     // this.packResidueDS= new PackageResidueDS(this.apollo);
     //this.custCompDS = new CustomerCompanyDS(this.apollo);
@@ -289,7 +291,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
   initPcForm() {
     this.pcForm = this.fb.group({
       guid: [{ value: '' }],
-     description: [''],
+      description: [''],
     });
   }
 
@@ -353,7 +355,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
       }
     });
   }
- addCall(event: Event) {
+  addCall(event: Event) {
     event.stopPropagation(); // Stop the click event from propagating
 
     let tempDirection: Direction;
@@ -383,12 +385,12 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
         }
       }
     });
-    
+
   }
 
 
 
-  editCall(event: Event,row: TeamItemWithCount) {
+  editCall(event: Event, row: TeamItemWithCount) {
 
     event.stopPropagation(); // Stop the click event from propagating
 
@@ -419,7 +421,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
         }
       }
     });
-    
+
 
   }
 
@@ -473,7 +475,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     }
   }
 
-  
+
 
   searchData(where: any, order: any, first: any, after: any, last: any, before: any, pageIndex: number,
     previousPageIndex?: number) {
@@ -517,7 +519,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
     const queries = [
       { alias: 'departmentCv', codeValType: 'DEPARTMENT' }
-     
+
     ];
     this.CodeValuesDS?.getCodeValuesByType(queries);
     this.CodeValuesDS?.connectAlias('departmentCv').subscribe(data => {
@@ -525,7 +527,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
 
       this.search();
     });
-   
+
 
   }
 
@@ -586,7 +588,7 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     if (updatedt === null) {
       updatedt = r.team?.create_dt;
     }
-    
+
 
     // Replace the '/' with '-' to get the required format
 
@@ -626,191 +628,183 @@ export class TeamComponent extends UnsubscribeOnDestroyAdapter
     this.customerCodeControl.reset();
   }
 
-  
-      constructSearchCriteria() {
-        const where: any = {
-               };
-    
-      if (this.pcForm!.value["description"]) {
-         var value= this.pcForm!.value["description"]; 
-        where.or = [
-          {team:{description:{ contains: value }}},
-          {team:{department_cv:{ contains: value }}},
-        ];
-      }
-        this.lastSearchCriteria =where;
-      }
-    
-      search() {
-        this.constructSearchCriteria();
-        this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
-          this.updatePageSelection();
-        });
-      }
-    
-      performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
-        this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
-        this.searchStateService.setPagination(this.pageStateType, {
-          pageSize,
-          pageIndex,
-          first,
-          after,
-          last,
-          before
-        });
-        console.log(this.searchStateService.getPagination(this.pageStateType))
-        this.subs.sink = this.teamDS.loadItemsWithAssigedCount(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
-          .subscribe(data => {
-            this.teamItemsWithCountList = data;
-            this.endCursor = this.teamDS.pageInfo?.endCursor;
-            this.startCursor = this.teamDS.pageInfo?.startCursor;
-            this.hasNextPage = this.teamDS.pageInfo?.hasNextPage ?? false;
-            this.hasPreviousPage = this.teamDS.pageInfo?.hasPreviousPage ?? false;
-          });
-    
-        this.pageSize = pageSize;
-        this.pageIndex = pageIndex;
-      }
-    
-      onPageEvent(event: PageEvent) {
-        const { pageIndex, pageSize } = event;
-        let first: number | undefined = undefined;
-        let after: string | undefined = undefined;
-        let last: number | undefined = undefined;
-        let before: string | undefined = undefined;
-    
-        // Check if the page size has changed
-        if (this.pageSize !== pageSize) {
-          // Reset pagination if page size has changed
-          this.pageIndex = 0;
-          first = pageSize;
-          after = undefined;
-          last = undefined;
-          before = undefined;
-        } else {
-          if (pageIndex > this.pageIndex && this.hasNextPage) {
-            // Navigate forward
-            first = pageSize;
-            after = this.endCursor;
-          } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
-            // Navigate backward
-            last = pageSize;
-            before = this.startCursor;
-          }
-        }
-    
-        this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
-          this.updatePageSelection();
-        });
-      }
-  
-      updatePageSelection()
-      {
-  
-      }
-  
-       onSortChange(event: Sort): void {
-          const { active: field, direction } = event;
-      
-          // reset if no direction
-          if (!direction) {
-            this.lastOrderBy = null;
-            return this.search();
-          }
-      
-          // convert to GraphQL enum (uppercase)
-          const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-          // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-      
-          switch (field) {
-            case 'description':
-              this.lastOrderBy = {
-                
-                 team:{description: dirEnum }
-                
-              };
-              break;
-            case 'last_update':
-              this.lastOrderBy = {
-                
-                 team:{update_dt: dirEnum }
-                
-              };
-              break;
-            default:
-              this.lastOrderBy = { team:{description: "ASC" }};
-          }
-      
-          this.search();
-        }
-      
-        AutoSearch() {
-          if (Utility.IsAllowAutoSearch())
-            this.search();
-        }
 
-        ShowDepartment(row:TeamItemWithCount):string{
-         var retval:string="";
-            this.departmentCvList.forEach(codeval => {
-              if(codeval.code_val==row.team?.department_cv)
-              {
-                retval=codeval.description||'';
-              }
-            })
-         return retval;
-        }
+  constructSearchCriteria() {
+    const where: any = {
+    };
 
-        AllowDelete(row:TeamItemWithCount):boolean{
-          if(row.assign_count==0)
-          {
-            return true;
-          }
-          else
-          {
-            return false;
-          }
-        }
+    if (this.pcForm!.value["description"]) {
+      var value = this.pcForm!.value["description"];
+      where.or = [
+        { team: { description: { contains: value } } },
+        { team: { department_cv: { contains: value } } },
+      ];
+    }
+    this.lastSearchCriteria = where;
+  }
 
-         handleDelete(event: Event, row: any,): void {
-            event.preventDefault();
-            event.stopPropagation();
-            this.deleteItem(row);
-          }
+  search() {
+    this.constructSearchCriteria();
+    this.performSearch(this.pageSize, 0, this.pageSize, undefined, undefined, undefined, () => {
+      this.updatePageSelection();
+    });
+  }
 
-      deleteItem(row: any) {
+  performSearch(pageSize: number, pageIndex: number, first?: number, after?: string, last?: number, before?: string, callback?: () => void) {
+    this.searchStateService.setCriteria(this.pageStateType, this.pcForm?.value);
+    this.searchStateService.setPagination(this.pageStateType, {
+      pageSize,
+      pageIndex,
+      first,
+      after,
+      last,
+      before
+    });
+    console.log(this.searchStateService.getPagination(this.pageStateType))
+    this.subs.sink = this.teamDS.loadItemsWithAssigedCount(this.lastSearchCriteria, this.lastOrderBy, first, after, last, before)
+      .subscribe(data => {
+        this.teamItemsWithCountList = data;
+        this.endCursor = this.teamDS.pageInfo?.endCursor;
+        this.startCursor = this.teamDS.pageInfo?.startCursor;
+        this.hasNextPage = this.teamDS.pageInfo?.hasNextPage ?? false;
+        this.hasPreviousPage = this.teamDS.pageInfo?.hasPreviousPage ?? false;
+      });
 
-        let tempDirection: Direction;
-        if (localStorage.getItem('isRtl') === 'true') {
-          tempDirection = 'rtl';
-        } else {
-          tempDirection = 'ltr';
-        }
-        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          data: {
-            headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
-            action: 'new',
-          },
-          direction: tempDirection
-        });
-        this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-          if (result?.action === 'confirmed') {
-            this.RemoveTeam(row.team.guid!);
-          }
-        });
+    this.pageSize = pageSize;
+    this.pageIndex = pageIndex;
+  }
+
+  onPageEvent(event: PageEvent) {
+    const { pageIndex, pageSize } = event;
+    let first: number | undefined = undefined;
+    let after: string | undefined = undefined;
+    let last: number | undefined = undefined;
+    let before: string | undefined = undefined;
+
+    // Check if the page size has changed
+    if (this.pageSize !== pageSize) {
+      // Reset pagination if page size has changed
+      this.pageIndex = 0;
+      first = pageSize;
+      after = undefined;
+      last = undefined;
+      before = undefined;
+    } else {
+      if (pageIndex > this.pageIndex && this.hasNextPage) {
+        // Navigate forward
+        first = pageSize;
+        after = this.endCursor;
+      } else if (pageIndex < this.pageIndex && this.hasPreviousPage) {
+        // Navigate backward
+        last = pageSize;
+        before = this.startCursor;
       }
+    }
 
-      RemoveTeam(guid: string) {
-        this.subs.sink = this.teamDS.deleteTeam([guid]).subscribe(result => {
-          if (result.data.deleteTeam > 0) {
-            this.handleSaveSuccess(result.data.deleteTeam);
-            this.search();
-          } else {
-            ComponentUtil.showCustomNotification('error', 'snackbar-danger', this.translatedLangText.INVALID, 'top', 'center', this.snackBar);
-          }
-        }, error => {
-          ComponentUtil.showCustomNotification('error', 'snackbar-danger', error.message, 'top', 'center', this.snackBar);
-        });
+    this.performSearch(pageSize, pageIndex, first, after, last, before, () => {
+      this.updatePageSelection();
+    });
+  }
+
+  updatePageSelection() {
+
+  }
+
+  onSortChange(event: Sort): void {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'description':
+        this.lastOrderBy = {
+          team: { description: dirEnum }
+        };
+        break;
+      case 'last_update':
+        this.lastOrderBy = {
+          team: { update_dt: dirEnum }
+        };
+        break;
+      default:
+        this.lastOrderBy = { team: { description: "ASC" } };
+    }
+
+    this.search();
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
+
+  ShowDepartment(row: TeamItemWithCount): string {
+    var retval: string = "";
+    this.departmentCvList.forEach(codeval => {
+      if (codeval.code_val == row.team?.department_cv) {
+        retval = codeval.description || '';
       }
+    })
+    return retval;
+  }
+
+  AllowDelete(row: TeamItemWithCount): boolean {
+    if (row.assign_count == 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  handleDelete(event: Event, row: any,): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.deleteItem(row);
+  }
+
+  deleteItem(row: any) {
+
+    let tempDirection: Direction;
+    if (localStorage.getItem('isRtl') === 'true') {
+      tempDirection = 'rtl';
+    } else {
+      tempDirection = 'ltr';
+    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,
+        action: 'new',
+      },
+      direction: tempDirection
+    });
+    this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'confirmed') {
+        this.RemoveTeam(row.team.guid!);
+      }
+    });
+  }
+
+  RemoveTeam(guid: string) {
+    this.subs.sink = this.teamDS.deleteTeam([guid]).subscribe(result => {
+      if (result.data.deleteTeam > 0) {
+        this.handleSaveSuccess(result.data.deleteTeam);
+        this.search();
+      } else {
+        ComponentUtil.showCustomNotification('error', 'snackbar-danger', this.translatedLangText.INVALID, 'top', 'center', this.snackBar);
+      }
+    }, error => {
+      ComponentUtil.showCustomNotification('error', 'snackbar-danger', error.message, 'top', 'center', this.snackBar);
+    });
+  }
 
 }
 

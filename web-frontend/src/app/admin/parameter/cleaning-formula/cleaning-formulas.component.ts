@@ -160,6 +160,8 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { description: "ASC" };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'category_description';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -181,7 +183,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.mthDS = new CleaningMethodDS(this.apollo);
     this.fmlDS = new CleaningFormulaDS(this.apollo);
   }
-  
+
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('filter', { static: true }) filter!: ElementRef;

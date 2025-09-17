@@ -17,7 +17,8 @@
                   <mat-icon>clear_all</mat-icon>
                 </button>
               </div>
-              @if (isAllowEdit() && (modulePackageService.isGrowthPackage() || modulePackageService.isCustomizedPackage())) {
+              @if (isAllowEdit() && (modulePackageService.isGrowthPackage() ||
+              modulePackageService.isCustomizedPackage())) {
               <div class="m-l-10" [matTooltip]="translatedLangText.MULTIPLE + ' ' + translatedLangText.EDIT">
                 <button mat-mini-fab class="primary-light" (click)="adjustCost()" (click)="$event.stopPropagation()">
                   <mat-icon class="col-white">edit</mat-icon>
@@ -52,10 +53,9 @@
                         (matChipInputTokenEnd)="add($event)">
                       <mat-autocomplete #customerCode="matAutocomplete" (optionSelected)="selected($event)">
                         @for (cc of customer_companyList; track cc) {
-                        <mat-option [value]="cc"  [class.mdc-list-item--selected]="itemSelected(cc)">
+                        <mat-option [value]="cc" [class.mdc-list-item--selected]="itemSelected(cc)">
                           <div class="horizontal-container">
-                            <mat-checkbox color="primary"
-                              [checked]="itemSelected(cc) || false"
+                            <mat-checkbox color="primary" [checked]="itemSelected(cc) || false"
                               (click)="onCheckboxClicked(cc);$event.stopPropagation()"></mat-checkbox>
                             <!-- {{ccDS.displayName(cc)}} -->
                             <div class="option-text">{{ccDS.displayCodeDashName(cc)}}</div>
@@ -104,13 +104,15 @@
       <div class="body overflow-auto">
         <div class="responsive_table">
           <table mat-table [dataSource]="packBufferItems" matSort (matSortChange)="onSortChange($event)"
+            [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
             class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
             <!-- Checkbox Column -->
             <ng-container matColumnDef="select">
               <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-0_75 justify-content-start'">
                 <mat-checkbox color="primary" (change)="$event ? masterToggle_r1() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'" [hidden]="HideSelectAllCheckBox()">
+                  [indeterminate]="selection.hasValue() && !isAllSelected()" [ngClass]="'tbl-checkbox'"
+                  [hidden]="HideSelectAllCheckBox()">
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-0_75'">
@@ -134,7 +136,8 @@
                   }}:</span>{{row.customer_company.code}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="customer_name">
-              <mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="'tbl-col-width-per-3_5'">{{this.translatedLangText.CUSTOMER
+              <mat-header-cell *matHeaderCellDef mat-sort-header="customer_name" disableClear
+                [ngClass]="'tbl-col-width-per-3_5'">{{this.translatedLangText.CUSTOMER
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-3_5'">
@@ -149,7 +152,8 @@
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'tbl-col-width-per-1_5 justify-content-center'">
-                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{ displayCurrency(row.cost)}}
+                <span class="mobile-label">{{this.translatedLangText.CUSTOMER_COST }}:</span> {{
+                displayCurrency(row.cost)}}
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="tariff_cost">
@@ -167,7 +171,8 @@
                 <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.remarks}}</mat-cell>
             </ng-container> -->
             <ng-container matColumnDef="last_update_dt">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATE
+              <mat-header-cell *matHeaderCellDef mat-sort-header="last_update_dt"
+                disableClear>{{this.translatedLangText.LAST_UPDATE
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                 <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>

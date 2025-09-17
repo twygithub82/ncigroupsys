@@ -15,21 +15,23 @@
                 <mat-panel-title>
                 </mat-panel-title>
                 <mat-panel-description>
-                    <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
-                      <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
-                        <mat-icon>search</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
-                      <button mat-mini-fab color="accent" (click)="resetDialog($event)" (click)="$event.stopPropagation()">
-                        <mat-icon>clear_all</mat-icon>
-                      </button>
-                    </div>
-                    <div class="m-l-10" [matTooltip]="translatedLangText.NEW" hidden>
-                      <button mat-mini-fab class="primary-light" (click)="addCall($event)" (click)="$event.stopPropagation()">
-                        <mat-icon class="col-white">add</mat-icon>
-                      </button>
-                    </div>
+                  <div class="m-l-" [matTooltip]="translatedLangText.SEARCH">
+                    <button mat-mini-fab color="primary" (click)="search()" (click)="$event.stopPropagation()">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.CLEAR_ALL">
+                    <button mat-mini-fab color="accent" (click)="resetDialog($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon>clear_all</mat-icon>
+                    </button>
+                  </div>
+                  <div class="m-l-10" [matTooltip]="translatedLangText.NEW" hidden>
+                    <button mat-mini-fab class="primary-light" (click)="addCall($event)"
+                      (click)="$event.stopPropagation()">
+                      <mat-icon class="col-white">add</mat-icon>
+                    </button>
+                  </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -38,15 +40,15 @@
                     <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-1">
                       <mat-form-field class="example-full-width">
                         <mat-label>{{translatedLangText.USER }}</mat-label>
-                        <input matInput formControlName="user" type="text"  (keyup.enter)="search()">
+                        <input matInput formControlName="user" type="text" (keyup.enter)="search()">
                         <mat-icon matSuffix class="date-icon">search</mat-icon>
 
                       </mat-form-field>
 
                     </div>
-               
+
                   </div>
-                
+
 
                 </form>
               </div>
@@ -54,10 +56,11 @@
           </mat-accordion>
           <div class="body overflow-auto">
             <div class="responsive_table">
-              <table mat-table [dataSource]="userList" matSort  (matSortChange)="onSortChange($event)"
+              <table mat-table [dataSource]="userList" matSort (matSortChange)="onSortChange($event)"
+               [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="fName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header disableClear
+                  <mat-header-cell *matHeaderCellDef mat-sort-header="fName" disableClear disableClear
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.USERNAME }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-2'">
@@ -68,35 +71,36 @@
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.NAME }}:</span>{{row.e}}</mat-cell>
                 </ng-container> -->
-                  <ng-container matColumnDef="role">
-                  <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.ROLE }}</mat-header-cell>
+                <ng-container matColumnDef="role">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.ROLE
+                    }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-3'">
-                    <span class="mobile-label">{{this.translatedLangText.ROLE }}:</span>  
+                    <span class="mobile-label">{{this.translatedLangText.ROLE }}:</span>
                     <span class="role-text" [title]="showUserRole(row)">
                       {{ showUserRole(row) }}
-                    </span>   
+                    </span>
                   </mat-cell>
                 </ng-container>
-                 <ng-container matColumnDef="team">
-                  <mat-header-cell *matHeaderCellDef 
-                    [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.TEAM }}</mat-header-cell>
+                <ng-container matColumnDef="team">
+                  <mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.TEAM
+                    }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-3'">
                     <span class="mobile-label">{{this.translatedLangText.TEAM }}:</span>
                     <span class="role-text" [title]="showUserTeam(row)">
                       {{ showUserTeam(row) }}
-                    </span>  
-                  
+                    </span>
+
                   </mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="mobile">
-                  <mat-header-cell *matHeaderCellDef 
+                  <mat-header-cell *matHeaderCellDef
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.CONTACT_NO }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-2'">
-                    <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span> {{row.phoneNumber}}</mat-cell>
+                    <span class="mobile-label">{{this.translatedLangText.CONTACT_NO }}:</span>
+                    {{row.phoneNumber}}</mat-cell>
                 </ng-container>
                 <!-- <ng-container matColumnDef="gender">
                     <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.DID }}</mat-header-cell>
@@ -104,13 +108,13 @@
                       <span class="mobile-label">{{this.translatedLangText.DID}}:</span> {{row.did}}</mat-cell>
                   </ng-container> -->
                 <ng-container matColumnDef="bDate">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.EMAIL
+                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.EMAIL
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.REMARKS}}:</span> {{row.email}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="email">
-                  <mat-header-cell *matHeaderCellDef >{{this.translatedLangText.LAST_UPDATE
+                  <mat-header-cell *matHeaderCellDef>{{this.translatedLangText.LAST_UPDATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>

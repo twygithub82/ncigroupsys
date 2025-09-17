@@ -117,6 +117,7 @@
               <div class="body overflow-auto">
                 <div class="responsive_table">
                   <table mat-table [dataSource]="masterTemplateItem" matSort (matSortChange)="onSortChange($event)"
+                    [matSortActive]="defaultSortField" [matSortDirection]="defaultSortDirection"
                     class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                     <ng-container matColumnDef="customer">
                       <mat-header-cell *matHeaderCellDef>{{translatedLangText.CUSTOMER
@@ -126,7 +127,8 @@
                           }}:</span>{{row.template_name}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="template">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.TEMPLATE
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="template"
+                        disableClear>{{translatedLangText.TEMPLATE
                         }}</mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.TEMPLATE
@@ -140,8 +142,8 @@
                           }}:</span>{{this.displayTemplateType(row)}}</mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="last_update_dt">
-                      <mat-header-cell *matHeaderCellDef
-                        mat-sort-header>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef mat-sort-header="last_update_dt"
+                        disableClear>{{translatedLangText.LAST_UPDATED}}</mat-header-cell>
                       <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                         <span class="mobile-label">{{translatedLangText.LAST_UPDATED}}:</span>
                         {{this.displayLastUpdated(row)}}</mat-cell>

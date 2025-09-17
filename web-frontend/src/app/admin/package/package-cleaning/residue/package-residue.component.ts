@@ -118,7 +118,9 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" } };
+  lastOrderBy: any = [{ tariff_residue: { description: "ASC" } }, { customer_company: { code: "ASC" } }];
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'customer_name';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -955,6 +957,7 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
   displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }
+
   onSortChange(event: Sort): void {
     const { active: field, direction } = event;
 
@@ -970,18 +973,18 @@ export class PackageResidueComponent extends UnsubscribeOnDestroyAdapter
 
     switch (field) {
       case 'last_update_dt':
-        this.lastOrderBy = {
-          update_dt: dirEnum,
-          create_dt: dirEnum,
-        };
+        this.lastOrderBy = [
+          { tariff_residue: { description: "ASC" } },
+          { update_dt: dirEnum },
+          { create_dt: dirEnum },
+        ];
         break;
 
       case 'customer_name':
-        this.lastOrderBy = {
-          customer_company: {
-            name: dirEnum,
-          }
-        };
+        this.lastOrderBy = [
+          { tariff_residue: { description: "ASC" } },
+          { customer_company: { name: dirEnum, } }
+        ];
         break;
 
       default:

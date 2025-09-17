@@ -131,7 +131,9 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" }, cleaning_category: { sequence: "ASC" } };
+  lastOrderBy: any = [{ cleaning_category: { sequence: "ASC" } }, { customer_company: { code: "ASC" } }];
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'lName';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -379,7 +381,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '55vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -500,7 +502,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
       );
   }
 
-    resetSelection() {
+  resetSelection() {
     this.selection.clear();
     this.selectedPackEst = undefined;
     //this.allowSelectedAll=false;
@@ -943,18 +945,18 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
 
     switch (field) {
       case 'updateddt':
-        this.lastOrderBy = {
-          update_dt: dirEnum,
-          create_dt: dirEnum,
-        };
+        this.lastOrderBy = [
+          { cleaning_category: { sequence: "ASC" } },
+          { update_dt: dirEnum },
+          { create_dt: dirEnum },
+        ];
         break;
 
       case 'lName':
-        this.lastOrderBy = {
-          customer_company: {
-            name: dirEnum,
-          }
-        };
+        this.lastOrderBy = [
+          { cleaning_category: { sequence: "ASC" } },
+          { customer_company: { name: dirEnum, } }
+        ];
         break;
 
       default:
@@ -968,8 +970,7 @@ export class PackageCleaningComponent extends UnsubscribeOnDestroyAdapter
     return Utility.formatNumberDisplay(amount);
   }
 
-  AutoSearch()
-  {
+  AutoSearch() {
     if (Utility.IsAllowAutoSearch())
       this.search();
   }

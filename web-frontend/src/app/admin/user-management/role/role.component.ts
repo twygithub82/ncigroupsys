@@ -123,6 +123,8 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { description: "ASC" };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'description';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -842,16 +844,12 @@ export class RoleComponent extends UnsubscribeOnDestroyAdapter
     switch (field) {
       case 'description':
         this.lastOrderBy = {
-
           description: dirEnum
-
         };
         break;
       case 'last_update':
         this.lastOrderBy = {
-
           update_dt: dirEnum
-
         };
         break;
       default:

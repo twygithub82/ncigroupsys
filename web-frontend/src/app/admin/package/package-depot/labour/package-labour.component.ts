@@ -110,7 +110,9 @@ export class PackageLabourComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" }, cleaning_category: { sequence: "ASC" } };
+  lastOrderBy: any = { customer_company: { code: "ASC" } };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'lName';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;

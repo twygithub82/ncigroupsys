@@ -151,6 +151,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
   pageSizeOptions = pageSizeInfo.pageSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { name: "ASC" };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'category_name';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;

@@ -42,7 +42,7 @@ import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.di
 import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchCriteriaService } from 'app/services/search-criteria.service';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, Utility,maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
 import { debounceTime, firstValueFrom, startWith, tap } from 'rxjs';
 import { FormDialogComponent_Edit_Cost } from './form-dialog-edit-cost/form-dialog.component';
 import { FormDialogComponent } from './form-dialog/form-dialog.component';
@@ -138,7 +138,6 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
 
-
   packRepairItems: PackageRepairItemWithCount[] = [];
 
   custCompClnCatItems: CustomerCompanyCleaningCategoryItem[] = [];
@@ -148,7 +147,9 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { package_repair:{ customer_company: { code: "ASC" } }};
+  lastOrderBy: any = [{ package_repair: { tariff_repair: { alias: "ASC" } } }, { package_repair: { customer_company: { code: "ASC" } } }];
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'custCompanyName';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -418,7 +419,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     //if(this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent_Edit_Cost, {
       width: '80vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       // height: '80vh',
       data: {
@@ -450,7 +451,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     if (this.selection.isEmpty()) return;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '65vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       //height: '80vh',
       data: {
@@ -484,7 +485,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '65vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       //height: '80vh',
       data: {
@@ -529,17 +530,18 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   search() {
-    this.packRepairItems=[];
+    this.packRepairItems = [];
     const where: any = {
-      package_repair:{  and:[{customer_company: { delete_dt: { eq: null } }}]
+      package_repair: {
+        and: [{ customer_company: { delete_dt: { eq: null } } }]
       }
-  };
+    };
 
-   where.count ={gte:0};
+    where.count = { gte: 0 };
 
     if (this.selectedCustomers.length > 0) {
       var custGuids = this.selectedCustomers.map(c => c.guid);
-      where.package_repair.and.push({customer_company_guid : { in: custGuids }});
+      where.package_repair.and.push({ customer_company_guid: { in: custGuids } });
     }
 
     if (this.groupNameControl.value?.code_val) {
@@ -548,7 +550,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       var codes = cdValues.map(cc => cc.code_val);
       //where.tariff_repair = where.tariff_repair || {};
       //where.tariff_repair.group_name_cv = { in: codes };
-      where.package_repair.and.push({tariff_repair: {group_name_cv : { in: codes }}});
+      where.package_repair.and.push({ tariff_repair: { group_name_cv: { in: codes } } });
 
     }
 
@@ -558,30 +560,30 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       var codes = cdValues.map(cc => cc.code_val);
       //where.tariff_repair = where.tariff_repair || {};
       //where.tariff_repair.subgroup_name_cv = { in: codes };
-      where.package_repair.and.push({tariff_repair: {subgroup_name_cv : { in: codes }}});
+      where.package_repair.and.push({ tariff_repair: { subgroup_name_cv: { in: codes } } });
     }
 
     if (this.pcForm!.value["part_name"]) {
       const description: Text = this.pcForm!.value["part_name"];
       // where.tariff_repair = where.tariff_repair || {};
       // where.tariff_repair.alias = { contains: description }
-      where.package_repair.and.push({tariff_repair: {alias : { contains: description }}});
+      where.package_repair.and.push({ tariff_repair: { alias: { contains: description } } });
     }
 
     // Handling material_cost
     if (this.pcForm!.value["material_cost"]) {
       const selectedCost: number = Number(this.pcForm!.value["material_cost"]);
       // where.material_cost = { eq: selectedCost }
-      where.package_repair.and.push({material_cost : { eq: selectedCost }});
+      where.package_repair.and.push({ material_cost: { eq: selectedCost } });
     }
 
 
     if (this.pcForm!.value["handled_item_cv"]) {
       const handled = this.pcForm!.value["handled_item_cv"];
       if (handled.code_val === 'HANDLED') {
-         where.count ={gt:0};
+        where.count = { gt: 0 };
       } else if (handled.code_val === 'NON_HANDLED') {
-         where.count ={eq:0};
+        where.count = { eq: 0 };
       }
     }
 
@@ -684,7 +686,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     if (this.pcForm!.value["labour_hour"]) {
       const selectedHour: number = Number(this.pcForm!.value["labour_hour"]);
       //where.labour_hour = { eq: selectedHour }
-      where.package_repair.and.push({labour_hour:{eq:selectedHour}});
+      where.package_repair.and.push({ labour_hour: { eq: selectedHour } });
     }
     // if (this.pcForm!.value["min_labour"] && this.pcForm!.value["max_labour"]) {
     //   const minLabour: number = Number(this.pcForm!.value["min_labour"]);
@@ -703,8 +705,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
 
     this.lastSearchCriteria = where;
     //this.subs.sink = this.packRepairDS.SearchPackageRepair(where, this.lastOrderBy, this.pageSize).subscribe(data => 
-    this.subs.sink = this.packRepairDS.SearchPackageRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => 
-    {
+    this.subs.sink = this.packRepairDS.SearchPackageRepairWithCount(where, this.lastOrderBy, this.pageSize).subscribe(data => {
       this.packRepairItems = data;
       // data[0].storage_cal_cv
       this.previous_endCursor = undefined;
@@ -864,8 +865,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     this.CodeValuesDS?.connectAlias('handledItem').subscribe(data => {
       this.handledItemCvList = addDefaultSelectOption(data, 'All');
       this.pcForm?.get("handled_item_cv")!.setValue(
-      this.handledItemCvList.find(t => t.description === 'All')
-    );
+        this.handledItemCvList.find(t => t.description === 'All')
+      );
     });
     this.CodeValuesDS.connectAlias('unitType').subscribe(data => {
       this.unitTypeCvList = data;
@@ -874,15 +875,15 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   async loadCodeValues(subqueries: { alias: string, codeValType: string }[]) {
-  await firstValueFrom(this.CodeValuesDS!.getCodeValuesByType_observable(subqueries));
+    await firstValueFrom(this.CodeValuesDS!.getCodeValuesByType_observable(subqueries));
 
-  subqueries.forEach(s => {
-    this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
-      data = this.sortByDescription(data);
-      this.allSubGroupNameCvList.push(...data);
+    subqueries.forEach(s => {
+      this.CodeValuesDS?.connectAlias(s.alias).subscribe(data => {
+        data = this.sortByDescription(data);
+        this.allSubGroupNameCvList.push(...data);
+      });
     });
-  });
-}
+  }
 
 
   sortByDescription<T extends { description?: string }>(list: T[]): T[] {
@@ -946,8 +947,8 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   displaySubGroupNameCodeValue_Description(codeValue: String) {
-   // return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
-   return this.GetCodeValue_Description(codeValue, this.allSubGroupNameCvList);
+    // return this.GetCodeValue_Description(codeValue, this.subGroupNameCvList);
+    return this.GetCodeValue_Description(codeValue, this.allSubGroupNameCvList);
   }
 
   getTariffRepairAlias(row: TariffRepairItem) {
@@ -1096,7 +1097,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
       retval = `${this.selectedCustomers.length} ${this.translatedLangText.CUSTOMERS_SELECTED}`;
     }
     else if (this.selectedCustomers?.length == 1) {
-      const value=`${this.selectedCustomers[0].name}`;
+      const value = `${this.selectedCustomers[0].name}`;
       retval = `${value}`;
     }
     return retval;
@@ -1112,11 +1113,11 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
     const index = this.selectedCustomers.findIndex(c => c.code === customer.code);
     if (!(index >= 0)) {
       this.selectedCustomers.push(customer);
-      
+
     }
     else {
       this.selectedCustomers.splice(index, 1);
-      
+
     }
 
     if (this.custInput) {
@@ -1133,58 +1134,75 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   roundUpToNextCent(value: number): number {
-   return Math.ceil(value * 20) / 20;
+    return Math.ceil(value * 20) / 20;
   }
 
-
   onSortChange(event: Sort): void {
-      const { active: field, direction } = event;
-  
-      // reset if no direction
-      if (!direction) {
-        this.lastOrderBy = null;
-        return this.search();
-      }
-  
-      // convert to GraphQL enum (uppercase)
-      const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
-      // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
-  
-      switch (field) {
-        case 'last_update':
-          this.lastOrderBy = {
+    const { active: field, direction } = event;
+
+    // reset if no direction
+    if (!direction) {
+      this.lastOrderBy = null;
+      return this.search();
+    }
+
+    // convert to GraphQL enum (uppercase)
+    const dirEnum = direction.toUpperCase(); // 'ASC' or 'DESC'
+    // or: const dirEnum = SortEnumType[direction.toUpperCase() as 'ASC'|'DESC'];
+
+    switch (field) {
+      case 'last_update':
+        this.lastOrderBy = [
+          {
+            package_repair: {
+              tariff_repair: {
+                alias: "ASC"
+              }
+            }
+          },
+          {
             package_repair: {
               update_dt: dirEnum,
               create_dt: dirEnum,
             }
-          };
-          break;
+          }
+        ];
+        break;
 
-        case 'custCompanyName':
-          this.lastOrderBy = {
-            package_repair:{
-              customer_company:{
-                code: dirEnum,
-              }  
+      case 'custCompanyName':
+        this.lastOrderBy = [
+          {
+            package_repair: {
+              tariff_repair: {
+                alias: "ASC"
+              }
             }
-            
-          };
-          break;
-      
-        default:
-          this.lastOrderBy = null;
-      }
-  
+          },
+          {
+            package_repair: {
+              customer_company: {
+                code: dirEnum,
+              }
+            }
+
+          }
+        ];
+        break;
+
+      default:
+        this.lastOrderBy = null;
+    }
+
+    this.search();
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
       this.search();
     }
+  }
 
-    AutoSearch() {
-      if (Utility.IsAllowAutoSearch()) {
-        this.search();
-      }
-    }
-
-   displayCurrency(amount: any) {
+  displayCurrency(amount: any) {
     return Utility.formatNumberDisplay(amount);
   }
 }

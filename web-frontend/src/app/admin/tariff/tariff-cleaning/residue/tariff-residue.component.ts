@@ -123,6 +123,8 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
   lastOrderBy: any = { tariff_residue: { description: "ASC" } };
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'fName';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -799,7 +801,6 @@ export class TariffResidueComponent extends UnsubscribeOnDestroyAdapter
 
     switch (field) {
       case 'email':
-
         this.lastOrderBy = {
           tariff_residue: {
             update_dt: dirEnum,

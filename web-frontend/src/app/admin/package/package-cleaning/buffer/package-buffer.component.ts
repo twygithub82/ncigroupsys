@@ -117,7 +117,9 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { customer_company: { code: "ASC" } };
+  lastOrderBy: any = [{ tariff_buffer: { buffer_type: "ASC" } }, { customer_company: { code: "ASC" } }];
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'customer_name';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -902,18 +904,28 @@ export class PackageBufferComponent extends UnsubscribeOnDestroyAdapter
 
     switch (field) {
       case 'last_update_dt':
-        this.lastOrderBy = {
-          update_dt: dirEnum,
-          create_dt: dirEnum,
-        };
+        this.lastOrderBy = [{
+          tariff_buffer: {
+            buffer_type: "ASC"
+          }
+        },
+        { update_dt: dirEnum },
+        { create_dt: dirEnum, }
+        ];
         break;
 
       case 'customer_name':
-        this.lastOrderBy = {
+        this.lastOrderBy = [{
+          tariff_buffer: {
+            buffer_type: "ASC"
+          }
+        },
+        {
           customer_company: {
             name: dirEnum,
           }
-        };
+        }
+        ];
         break;
 
       default:

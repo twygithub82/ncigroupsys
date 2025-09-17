@@ -103,7 +103,9 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   pageIndex = 0;
   pageSize = pageSizeInfo.defaultSize;
   lastSearchCriteria: any;
-  lastOrderBy: any = { create_dt: "ASC" };
+  lastOrderBy: any = [{ customer_company: { name: "ASC", } }];
+  defaultSortDirection: 'asc' | 'desc' = 'asc';
+  defaultSortField = 'companyName';
   endCursor: string | undefined = undefined;
   previous_endCursor: string | undefined = undefined;
   startCursor: string | undefined = undefined;
@@ -681,13 +683,6 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
   }
 
   public loadData() {
-    this.sort.active = 'lastUpdate';
-    this.sort.direction = 'desc';
-
-    this.lastOrderBy = {
-      update_dt: 'DESC',
-      create_dt: 'DESC',
-    };
     this.search();
   }
 
