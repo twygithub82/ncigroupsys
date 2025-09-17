@@ -255,11 +255,9 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
           searchCriteria = value || '';
         }
         this.subs.sink = this.tfDepotDS.SearchTariffDepot({ or: [{ profile_name: { contains: searchCriteria } }] }, [{ profile_name: 'ASC' }]).subscribe(data => {
-
           this.profileList = data
             .map(item => item.profile_name)
             .filter((name): name is string => name !== undefined);
-
         });
       })
     ).subscribe();
@@ -294,7 +292,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_View, {
       width: '600px',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         action: 'new',
@@ -535,7 +533,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     //  var rows :CustomerCompanyCleaningCategoryItem[] =[] ;
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       width: '600px',
       height: 'auto',
@@ -593,7 +591,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '400px',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.ARE_YOU_SURE_DELETE,

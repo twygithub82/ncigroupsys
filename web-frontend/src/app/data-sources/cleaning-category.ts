@@ -249,3 +249,17 @@ export class CleaningCategoryDS extends BaseDataSource<CleaningCategoryItem> {
     );
   }
 }
+
+export function addDefaultCategoryOption(list: CleaningCategoryItem[] | undefined, desc: string = '-- Select --', val: string = ''): CleaningCategoryItem[] {
+  // Check if the list already contains the default value
+  list = list ?? [];
+  const containsDefault = list.some(item => item.name === val);
+
+  // If the default value is not present, add it to the list
+  if (!containsDefault) {
+    // Create a new array with the default option added at the beginning
+    return [{ guid: val, name: desc }, ...list];
+  }
+
+  return list;
+}

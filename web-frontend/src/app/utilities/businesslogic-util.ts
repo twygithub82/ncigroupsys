@@ -134,7 +134,7 @@ export class BusinessLogicUtil {
     }
 
     static emptyCompareWith(o1: any, o2: any): boolean {
-        return (o1?.code_val ?? '') === (o2?.code_val ?? '');
+        return (o1?.code_val ?? o1?.name ?? o1?.description ?? o1?.guid ?? '') == (o2?.code_val ?? o2?.name ?? o2?.description ?? o2?.guid ?? '');
     }
 
     static shouldUpdateLastTestDt(currentSurveyDetailItem: SurveyDetailItem, latestSurveyDetailItem?: SurveyDetailItem[]): { needUpdate: boolean; latestItem: SurveyDetailItem | null } {
