@@ -72,7 +72,7 @@
       <table mat-table [dataSource]="tariffDepotItems" matSort (matSortChange)="onSortChange($event)"
         class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
         <ng-container matColumnDef="fName">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.PROFILE_NAME
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{this.translatedLangText.PROFILE_NAME
             }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{this.translatedLangText.PROFILE_NAME
@@ -86,7 +86,7 @@
               }}:</span>{{row.tariff_depot?.description}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="mobile">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{translatedLangText.CLEANING_LAST_UPDATED_DT}}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{translatedLangText.CLEANING_LAST_UPDATED_DT}}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{translatedLangText.CLEANING_LAST_UPDATED_DT}}:</span>
             {{this.displayLastUpdated(row.tariff_depot)}}</mat-cell>

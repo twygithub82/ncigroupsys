@@ -57,7 +57,7 @@
               <table mat-table [dataSource]="userList" matSort  (matSortChange)="onSortChange($event)"
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                 <ng-container matColumnDef="fName">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header
+                  <mat-header-cell *matHeaderCellDef mat-sort-header disableClear
                     [ngClass]="'tbl-col-width-per-2'">{{this.translatedLangText.USERNAME }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-2'">

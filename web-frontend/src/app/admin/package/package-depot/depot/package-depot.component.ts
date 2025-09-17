@@ -400,6 +400,8 @@ export class PackageDepotComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
+         this.selectedPackEst = undefined;
+         this.allowSelectedAll = false;
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
     });

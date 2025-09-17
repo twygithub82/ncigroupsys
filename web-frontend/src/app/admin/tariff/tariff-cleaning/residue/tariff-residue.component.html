@@ -73,7 +73,7 @@
         </ng-container>
         <!-- ID Column -->
         <ng-container matColumnDef="fName">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DESCRIPTION
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{this.translatedLangText.DESCRIPTION
             }}</mat-header-cell>
           <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_residue)">
             <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
@@ -86,7 +86,7 @@
               }}:</span>{{parse2Decimal(row.tariff_residue?.cost)}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="email">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
           <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row.tariff_residue)">
             <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
             {{this.displayLastUpdated(row.tariff_residue)}}</mat-cell>

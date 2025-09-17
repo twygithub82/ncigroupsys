@@ -203,37 +203,39 @@ export class PDFUtility {
     pdf.line(leftMargin, topMargin, (pageWidth - rightMargin), topMargin);
 
     // Define header height
-    const heightHeader: number = 28;
+    const heightHeader: number = 22;
 
     // Draw bottom line
     pdf.line(leftMargin, topMargin + heightHeader, (pageWidth - rightMargin), topMargin + heightHeader);
 
     // Add company name
+    var bufferY_CompanyName =  6;
     pdf.setFontSize(12);
     const companyNameWidth = pdf.getStringUnitWidth(customerInfo.companyName) * pdf.getFontSize();
     let posX = leftMargin + 36.5; //pageWidth / 1.75;
-    let posY = topMargin + 8;
+    let posY = topMargin + bufferY_CompanyName;
     pdf.text(customerInfo.companyName, posX, posY);
 
     // Add company address
-    pdf.setFontSize(10);
-    posX -= 20.5;
-    posY += 10;
+    var fontSize =7.5;
+    pdf.setFontSize(fontSize);
+    posX -= 10.5;
+    posY += 8;
     pdf.text(customerInfo.companyAddress, posX, posY);
 
     // Add phone, fax
     let nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-    posX += 8;
-    posY += 5;
+    posX += 4;
+    posY += 4;
     pdf.text(nextLine, posX, posY);
     nextLine = `${translatedLangText.FAX}: ${customerInfo.companyFax}`;
     nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    pdf.text(nextLine, posX + 42, posY);
+    pdf.text(nextLine, posX + 39, posY);
 
     // Add website, company UEN
     // nextLine = `${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-    posX += 20;
-    posY = topMargin + 8 + 5;
+    posX += 15;
+    posY = topMargin + bufferY_CompanyName + 4;
     nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
     pdf.text(nextLine, posX, posY);
 
@@ -251,8 +253,9 @@ export class PDFUtility {
     // });
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
+    const bufferY_logo=2;
     const posX1_img = pageWidth / 1.5; //leftMargin + 5;
-    const posY1_img = topMargin + 6;
+    const posY1_img = topMargin + bufferY_logo;
     // Calculate dimensions to fit your desired space while maintaining aspect ratio
     // const maxWidth = 60.5; // Your desired width
     // const maxHeight = 20; // Maximum height you want to allow
@@ -271,17 +274,7 @@ export class PDFUtility {
 
     pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, finalWidth, finalHeight);
 
-    // // Add the image to the PDF
-    // const posX1_img = pageWidth / 1.7; //leftMargin + 5;
-    // const posY1_img = topMargin + 1;
-    // const aspectRatio= height/width;
-    // const w=77.5;
-    // const h=aspectRatio*w;
-
-    // pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
-    // const imgHeight = heightHeader - 0;
-    // const imgWidth = 80;
-    // pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, width, height); // (imageElement, format, x, y, width, height)
+   
   }
 
   static async addHeaderWithCompanyLogo_Landscape(

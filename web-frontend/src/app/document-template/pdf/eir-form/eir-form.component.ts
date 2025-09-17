@@ -566,7 +566,7 @@ console.log(body);
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
     await Utility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 37, false);
+    await Utility.addReportTitleToggleUnderline(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 32, false);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -603,10 +603,11 @@ console.log(body);
       theme: 'grid',
       margin: { left: leftMargin },
       styles: {
-        fontSize: fontSz,
+        fontSize: 6.5,
+        textColor: [0, 0, 0],
         minCellHeight: minHeightHeaderCol,
        // overflow:'ellipsize',
-        lineWidth: 0.45, // cell border thickness
+        lineWidth: 0.35, // cell border thickness
         lineColor: [0, 0, 0], // black
         cellPadding: 2, // ← Add some padding
       },

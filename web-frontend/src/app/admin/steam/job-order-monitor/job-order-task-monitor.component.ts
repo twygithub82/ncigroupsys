@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -351,10 +351,10 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   initForm() {
     this.steamForm = this.fb.group({
-      time: [''],
-      thermometer: [''],
-      top: [''],
-      bottom: [''],
+     time: ['', Validators.required],
+      thermometer: ['', Validators.required],
+      top: ['', Validators.required],
+      bottom: ['', Validators.required],
       remarks: [''],
       deList: ['']
     });
@@ -1051,7 +1051,11 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
 
   addEstDetails(event: Event) {
     this.preventDefault(event);
-
+     this.steamForm?.markAllAsTouched(); // show validation errors
+    if (this.steamForm?.invalid) {
+     
+      return;
+    }
     let guid = null;
     if (this.updateSelectedItem) {
       var stmTmp = this.updateSelectedItem.item;
@@ -1182,8 +1186,10 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
     } else {
       this.steamDS.recordSteamingTemp(steamTemp, action!, ReqTemp).subscribe(result => {
         if (result.data.recordSteamingTemp) {
-          this.QuerySteamTemp();
+          
           this.resetSelectedItemForUpdating();
+          this.QuerySteamTemp();
+          //this.resetSelectedItemForUpdating();
         }
       });
     }
@@ -1197,9 +1203,14 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
   }
   QuerySteamTemp() {
     this.steamDS.getSteamTemp(this.job_order_guid!).subscribe(temp => {
-      if (temp?.length) {
+      if (temp?.length) 
+        {
         console.log(temp);
         this.updateData(temp);
+      }
+      else
+      {
+        this.deList=[];
       }
     });
   }
@@ -1227,10 +1238,12 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
       bottom: '',
       remarks: '',
     }, { emitEvent: false });
-    this.steamForm?.get('time')?.setErrors(null);
-    this.steamForm?.get('thermometer')?.setErrors(null);
-    this.steamForm?.get('top')?.setErrors(null);
-    this.steamForm?.get('bottom')?.setErrors(null);
+    this.steamForm?.markAsPristine();
+  this.steamForm?.markAsUntouched();
+    // this.steamForm?.get('time')?.setErrors(null);
+    // this.steamForm?.get('thermometer')?.setErrors(null);
+    // this.steamForm?.get('top')?.setErrors(null);
+    // this.steamForm?.get('bottom')?.setErrors(null);
   }
 
   // completeSteamJob(event: Event, checkTemp: boolean, tempStatus: number) {
@@ -1380,8 +1393,9 @@ export class SteamJobOrderTaskMonitorComponent extends UnsubscribeOnDestroyAdapt
           });
         }
         else {
-          this.QuerySteamTemp();
           this.resetSelectedItemForUpdating();
+          this.QuerySteamTemp();
+          
         }
       });
     }

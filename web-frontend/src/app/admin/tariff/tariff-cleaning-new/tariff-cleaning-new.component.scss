@@ -6,8 +6,11 @@ wide-error {
   background-color: lightgray !important;  /* e.g., green */
   color: rgb(83, 83, 83) !important;
 }
-// ::ng-deep span.mdc-button__label {
-//   width:24px;
-//   height:24px;
-  
-// }
+
+.left-align {
+  display: flex;
+  justify-content: flex-start; /* aligns left */
+}
+element.style {
+    padding-left: 0px;
+}

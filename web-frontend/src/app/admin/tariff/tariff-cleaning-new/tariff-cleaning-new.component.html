@@ -219,7 +219,7 @@
                       <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-1">
                         <mat-form-field class="example-full-width" appearance="fill">
                           <mat-label>{{translatedLangText.CARGO_FLASH_POINT }}</mat-label>
-                          <input matInput formControlName="flash_point" required type="number">
+                          <input matInput formControlName="flash_point" type="number" [required]="isRequired_FlashPoint()">
                           <!-- @if (tcForm?.get('flash_point')?.hasError('required')) {
                           <mat-error>
                             {{translatedLangText.CARGO_FLASH_POINT }} {{translatedLangText.CARGO_REQUIRED }}
@@ -248,10 +248,10 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1">
+                      <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-1 d-flex align-items-center">
                         <mat-label>{{translatedLangText.SDS_FILE }}</mat-label>
                         <button mat-mini-fab  (click)="isFileSelectable ? fileInput.click() : null" type="button" matTooltip={{translatedLangText.ATTACH_FILE}}
-                          class="m-l-5" >
+                          class="m-l-15" >
                           <!-- [disabled]="!isFileSelectable"> -->
                           <i class="material-icons  ">attach_file</i>
                         </button>
@@ -271,12 +271,12 @@
                       </mat-error>
                       }
                       <!-- Display file name and preview button -->
-                      <div *ngIf="selectedFile">
+                      <div *ngIf="selectedFile" class="col-xl-1-5 col-lg-1-5 col-md-12 col-sm-12 col-xs-12 mb-1 ps-0" >
                         <!-- <p>{{ tcForm!.get('cargo_name')?.value??'' }}
                           <span *ngIf="selectedFileChanged">*</span>
                         </p> -->
                         <button mat-mini-fab  (click)="previewFile()" type="button" matTooltip={{translatedLangText.PREVIEW}}
-                          class="m-l-5" color="primary">
+                           color="primary">
                           <!-- [disabled]="!isFileSelectable"> -->
                           <i class="material-symbols-outlined m-t-5">preview</i>
                         </button>

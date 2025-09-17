@@ -57,7 +57,7 @@
               <table mat-table [dataSource]="teamItemsWithCountList" matSort    (matSortChange)="onSortChange($event)"
                 class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
                   <ng-container matColumnDef="description">
-                  <mat-header-cell *matHeaderCellDef  mat-sort-header
+                  <mat-header-cell *matHeaderCellDef  mat-sort-header disableClear
                     [ngClass]="'tbl-col-width-per-3'">{{this.translatedLangText.DESCRIPTION }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                     [ngClass]="'tbl-col-width-per-3'">
@@ -71,7 +71,7 @@
                       }}:</span>{{ShowDepartment(row)}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="last_update">
-                  <mat-header-cell *matHeaderCellDef mat-sort-header >{{this.translatedLangText.LAST_UPDATE
+                  <mat-header-cell *matHeaderCellDef mat-sort-header disableClear >{{this.translatedLangText.LAST_UPDATE
                     }}</mat-header-cell>
                   <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)">
                     <span class="mobile-label">{{this.translatedLangText.LAST_UPDATE}}:</span>

@@ -77,7 +77,7 @@
       <table mat-table [dataSource]="tariffBufferItems" matSort (matSortChange)="onSortChange($event)"
         class="mat-cell advance-table striped-rows hover-highlight dark-header curve-table">
         <ng-container matColumnDef="fName">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.DESCRIPTION
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{this.translatedLangText.DESCRIPTION
             }}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{this.translatedLangText.DESCRIPTION
@@ -90,7 +90,7 @@
               }}:</span>{{parse2Decimal(row.tariff_buffer?.cost)}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="email">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear>{{this.translatedLangText.LAST_UPDATED}}</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <span class="mobile-label">{{this.translatedLangText.LAST_UPDATED}}:</span>
             {{this.displayLastUpdated(row.tariff_buffer)}}</mat-cell>

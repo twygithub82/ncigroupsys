@@ -903,5 +903,11 @@ export class TariffCleaningNewComponent extends UnsubscribeOnDestroyAdapter impl
   isAllowAdd() {
     return this.modulePackageService.hasFunctions(['TARIFF_CLEANING_ADD']);
   }
+
+  isRequired_FlashPoint() {
+    const un_no : string = (this.tcForm?.get('un_no')?.value||'');
+    if (un_no == '') return false;
+    else return true;
+  }
 }
 
