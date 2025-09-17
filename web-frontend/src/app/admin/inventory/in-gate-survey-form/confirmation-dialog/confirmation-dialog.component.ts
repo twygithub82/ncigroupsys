@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,9 +34,11 @@ export interface DialogData {
   providers: [provideNgxMask()],
   standalone: true,
   imports: [
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
     MatButtonModule,
     MatIconModule,
-    MatDialogContent,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
