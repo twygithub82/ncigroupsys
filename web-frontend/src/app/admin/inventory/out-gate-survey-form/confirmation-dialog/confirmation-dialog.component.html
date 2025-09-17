@@ -1,7 +1,8 @@
 <div class="container confirmation-dialog p-2">
-  <h4 mat-dialog-title [ngClass]="{'pt-4 ': true, 'align-center': true}">{{dialogTitle}}
+  <h4 mat-dialog-title [ngClass]="{'pb-3 align-center': true}">{{dialogTitle}}
   </h4>
-  <div mat-dialog-content class="pt-2">
+  @if (description?.length) {
+  <div mat-dialog-content class="pb-2">
     <div class="row">
       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
         @for (d of description; track d) {
@@ -9,11 +10,12 @@
         }
       </div>
     </div>
-    <div mat-dialog-actions [ngClass]="{'pt-2 mb-1': true, 'd-flex justify-content-center': true}">
-      @if (canEdit()) {
-      <button mat-flat-button color="warn" class="me-2" (click)="submit()">{{data.translatedLangText.CONFIRM}}</button>
-      }
-      <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CANCEL}}</button>
-    </div>
+  </div>
+  }
+  <div mat-dialog-actions [ngClass]="{'pt-2 mb-2': true, 'd-flex justify-content-center': true}">
+    @if (canEdit()) {
+    <button mat-flat-button color="warn" (click)="submit()">{{data.translatedLangText.CONFIRM}}</button>
+    }
+    <button mat-stroked-button (click)="onNoClick()" tabindex="-1">{{data.translatedLangText.CLOSE}}</button>
   </div>
 </div>
