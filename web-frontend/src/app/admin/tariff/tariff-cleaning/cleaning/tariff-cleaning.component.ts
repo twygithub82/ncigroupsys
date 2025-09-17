@@ -810,8 +810,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   displayCategoryName(row: any): string {
     //if()
-    if (row.description) return row.description;
-    else return row.name;
+    // if (row.description) return row.description;
+    // else return row.name;
+    return row.name;
   }
 
   parse2Decimal(figure: number | string) {

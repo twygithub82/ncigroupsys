@@ -500,9 +500,9 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
   }
 
   displayRepairAlias(row: TariffRepairItem) {
-    if (row.length) {
+    if (row?.length) {
       return `${row.alias} ${row.length}`;
     }
-    return `${row.alias}`;
+    return `${row?.alias}`;
   }
 }
