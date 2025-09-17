@@ -88,6 +88,7 @@ export class FormDialogComponent {
   storingOrderTank: StoringOrderTankItem[];
   booking: BookingItem = new BookingItem();
   startDateToday = new Date();
+  startDateToday1 = new Date()
   existingBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
   existingFilteredBookTypeCvs: (BookingItem | undefined)[] | undefined = [];
 

@@ -178,7 +178,7 @@
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
           <mat-form-field class="example-full-width">
             <mat-label>{{data.translatedLangText.BOOKING_DATE}}</mat-label>
-            <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday"
+            <input matInput formControlName="booking_dt" [matDatepicker]="booking_dt_picker" [min]="startDateToday1"
               required>
             <mat-datepicker-toggle matSuffix [for]="booking_dt_picker"></mat-datepicker-toggle>
             <mat-datepicker #booking_dt_picker></mat-datepicker>
