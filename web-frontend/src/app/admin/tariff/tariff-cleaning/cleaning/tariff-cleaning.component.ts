@@ -31,7 +31,7 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TlxMatPaginatorIntl } from '@shared/components/tlx-paginator-intl/tlx-paginator-intl';
 import { Apollo } from 'apollo-angular';
-import { CleaningCategoryDS, CleaningCategoryItem } from 'app/data-sources/cleaning-category';
+import { CleaningCategoryDS, CleaningCategoryItem, addDefaultCategoryOption } from 'app/data-sources/cleaning-category';
 import { CleaningMethodDS, CleaningMethodItem } from 'app/data-sources/cleaning-method';
 import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
 import { CustomerCompanyDS, CustomerCompanyItem } from 'app/data-sources/customer-company';
@@ -266,24 +266,13 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
   }
 
   public loadData() {
-    //this.cCategoryDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => 
     this.cCategoryDS.loadAllItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
-      if (this.cCategoryDS.totalCount > 0) {
-        this.cCategoryList = addDefaultSelectOption(data, 'All');
-      }
+      this.cCategoryList = addDefaultCategoryOption(data, 'All');
     });
 
     this.cMethodDS.loadAllItems({ name: { neq: null } }, { name: 'ASC' }).subscribe(data => {
-      if (this.cMethodDS.totalCount > 0) {
-        this.cMethodList = addDefaultSelectOption(data, 'All');
-      }
+      this.cMethodList = addDefaultSelectOption(data, 'All');
     });
-
-    // this.cMethodDS.loadItems({ name: { neq: null } }, { sequence: 'ASC' }).subscribe(data => {
-    //   if (this.cMethodDS.totalCount > 0) {
-    //     this.cMethodList = addDefaultSelectOption(data, 'All');
-    //   }
-    // });
 
     const queries = [
       { alias: 'ctHazardLevelCv', codeValType: 'HAZARD_LEVEL' },
@@ -810,8 +799,9 @@ export class TariffCleaningComponent extends UnsubscribeOnDestroyAdapter impleme
 
   displayCategoryName(row: any): string {
     //if()
-    if (row.description) return row.description;
-    else return row.name;
+    // if (row.description) return row.description;
+    // else return row.name;
+    return row.name;
   }
 
   parse2Decimal(figure: number | string) {

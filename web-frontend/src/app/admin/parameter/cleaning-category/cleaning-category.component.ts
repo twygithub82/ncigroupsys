@@ -194,6 +194,7 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   initializeValueChanges() {
+     // EG :: Refresh auto complete list
     var searchObj = this.searchForm;
     searchObj?.get("name")!.valueChanges.pipe(
       startWith(''),
@@ -421,15 +422,14 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
         langText: this.langText,
         selectedItem: row
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-        //this.search();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-
+        this.refreshNameList();
+        this.refreshDescriptionList();
       }
     });
 
@@ -452,25 +452,18 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
         langText: this.langText,
         selectedItem: row
       }
-
     });
-
-
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
-
         this.handleSaveSuccess(result);
-        //this.search();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-
+        this.refreshNameList();
+        this.refreshDescriptionList();
       }
     });
 
   }
-
-
-
 
   handleSaveSuccess(count: any) {
     if ((count ?? 0) > 0) {
@@ -478,7 +471,6 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       this.translate.get(this.langText.SAVE_SUCCESS).subscribe((res: string) => {
         successMsg = res;
         ComponentUtil.showCustomNotification('check_circle', 'snackbar-success', successMsg, 'top', 'center', this.snackBar)
-
       });
     }
   }
@@ -557,11 +549,23 @@ export class CleaningCategoryComponent extends UnsubscribeOnDestroyAdapter imple
       if (result.data.deleteCleaningCategory) {
         this.handleSaveSuccess(result.data.deleteCleaningCategory);
         this.search();
+        this.refreshNameList(); // EG :: Refresh auto complete list
+        this.refreshDescriptionList();
       }
     })
-
   }
 
+  refreshNameList() {
+     // EG :: Refresh auto complete list
+    const existingValue = this.searchForm?.get('name')?.value;
+    this.searchForm?.get('name')?.setValue(existingValue);
+  }
+
+  refreshDescriptionList() {
+     // EG :: Refresh auto complete list
+    const existingValue = this.searchForm?.get('description')?.value;
+    this.searchForm?.get('description')?.setValue(existingValue);
+  }
 
   @ViewChild('nameInput', { static: true })
   nameInput?: ElementRef<HTMLInputElement>;

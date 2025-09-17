@@ -114,19 +114,19 @@
                     {{row.storing_order_tank!.tank_no}}
                   </span>
                 </div>
-                <div class="w-xl-25 w-lg-33">
+                <div class="w-xl-35 w-lg-33">
                   <span class="font-bold">{{data.translatedLangText.SCHEDULE_DATE}}:</span>
                   <span [class]="{'text-danger': false}" class="card-detail-value">
                     {{displayDate(row.scheduling_dt)}}
                   </span>
                 </div>
-                <div class="w-xl-25 w-lg-33">
+                <div class="w-xl-28 w-lg-33">
                   <span class="font-bold">{{data.translatedLangText.STATUS}}:</span>
                   <span [class]="{'text-danger': false}" class="card-detail-value">
                     {{getTankStatusDescription(row.storing_order_tank!.tank_status_cv)}}
                   </span>
                 </div>
-                <div class="">
+                <div class="w-xl-25 w-lg-33">
                   <span class="font-bold">{{data.translatedLangText.LOCATION}}:</span>
                   <span class="card-detail-value">
                     {{getYardDescription(getLastLocation(row.storing_order_tank))}}

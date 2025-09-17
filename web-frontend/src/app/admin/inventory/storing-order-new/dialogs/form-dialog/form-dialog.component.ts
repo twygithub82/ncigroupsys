@@ -82,7 +82,7 @@ export class FormDialogComponent {
   sotDS: StoringOrderTankDS;
   soDS: StoringOrderDS;
   lastCargoControl: UntypedFormControl;
-  today:Date=new Date();
+  today: Date = new Date();
   constructor(
     public dialogRef: MatDialogRef<FormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -294,9 +294,11 @@ export class FormDialogComponent {
                       }
                     } else {
                       // Additional logic if needed when no WAITING status is found
+                      this.isPreOrder = false;
                       this.isTankNoValidated = true;
                     }
                   } else {
+                    this.isPreOrder = false;
                     this.isTankNoValidated = true;
                   }
                 },
@@ -470,7 +472,7 @@ export class FormDialogComponent {
   }
 
   canEdit(): boolean {
-    return ((!!this.data?.soItem?.guid && this.isAllowEdit()) || (!this.data?.soItem?.guid && this.isAllowAdd())) && 
+    return ((!!this.data?.soItem?.guid && this.isAllowEdit()) || (!this.data?.soItem?.guid && this.isAllowAdd())) &&
       ((this.soDS.canAdd(this.data.soItem!)) && (this.sotDS.canEdit(this.storingOrderTank)) && (!this.storingOrderTank.actions?.length || ((this.storingOrderTank.actions?.length ?? 0) > 0) && !this.storingOrderTank.actions!.includes('cancel') && !this.storingOrderTank.actions!.includes('rollback')));
   }
 

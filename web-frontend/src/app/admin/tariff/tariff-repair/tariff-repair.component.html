@@ -232,7 +232,7 @@
                         <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 mb-0">
                           <mat-form-field class="example-full-width">
                             <mat-label>{{translatedLangText.HANDLED_ITEM}}</mat-label>
-                            <mat-select formControlName="handled_item_cv">
+                            <mat-select formControlName="handled_item_cv" (selectionChange)="AutoSearch()">
                               @for (cn of handledItemCvList; track cn) {
                               <mat-option [value]="cn.code_val">
                                 {{cn.description}}
