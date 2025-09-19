@@ -499,9 +499,9 @@ export class TariffRepairDS extends BaseDataSource<TariffRepairItem> {
     );
   }
 
-  displayRepairAlias(row: TariffRepairItem) {
+  displayRepairAlias(row: TariffRepairItem, unit_type_desc?: string) {
     if (row?.length) {
-      return `${row.alias} ${row.length}`;
+      return `${row.alias} [${row.length} ${unit_type_desc}]`;
     }
     return `${row?.alias}`;
   }

@@ -213,38 +213,6 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     this.loadData();
   }
 
-  addNew() {
-    let tempDirection: Direction;
-    if (localStorage.getItem('isRtl') === 'true') {
-      tempDirection = 'rtl';
-    } else {
-      tempDirection = 'ltr';
-    }
-    // const dialogRef = this.dialog.open(FormDialogComponent, {
-    //   data: {
-    //     advanceTable: this.advanceTable,
-    //     action: 'add',
-    //   },
-    //   direction: tempDirection,
-    // });
-    // this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-    //   if (result === 1) {
-    //     // After dialog is closed we're doing frontend updates
-    //     // For add we're just pushing a new row inside DataService
-    //     this.exampleDatabase?.dataChange.value.unshift(
-    //       this.advanceTableService.getDialogData()
-    //     );
-    //     this.refreshTable();
-    //     this.showNotification(
-    //       'snackbar-success',
-    //       'Add Record Successfully...!!!',
-    //       'bottom',
-    //       'center'
-    //     );
-    //   }
-    // });
-  }
-
   initializeFilterValues() {
     this.tdForm!.get('profile_name')!.valueChanges.pipe(
       startWith(''),
@@ -319,9 +287,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       updatedt = r.create_dt;
     }
     return this.displayDate(updatedt);
-
   }
-
 
   displayDate(input: number | undefined): string | undefined {
     return Utility.convertEpochToDateStr(input);
@@ -544,15 +510,13 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
         langText: this.langText,
         selectedItem: null
       }
-
     });
 
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
-
-        if (this.tariffDepotItems.length > 0)
-          this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        this.refreshProfileNameList();
+        this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
     });
   }
@@ -579,6 +543,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result > 0) {
         this.handleSaveSuccess(result);
+        this.refreshProfileNameList();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
       }
     });
@@ -613,6 +578,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
       let count = d.data.deleteTariffDepot;
       if (count > 0) {
         this.handleSaveSuccess(count);
+        this.refreshProfileNameList();
         this.search();
       }
     });
@@ -711,5 +677,10 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
     }
 
     this.search();
+  }
+
+  refreshProfileNameList() {
+    const existingValue = this.tdForm?.get('profile_name')?.value;
+    this.tdForm?.get('profile_name')?.setValue(existingValue);
   }
 }
