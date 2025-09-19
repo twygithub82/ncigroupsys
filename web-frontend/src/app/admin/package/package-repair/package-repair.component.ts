@@ -952,7 +952,7 @@ export class PackageRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getTariffRepairAlias(row: TariffRepairItem) {
-    const alias = `${this.trfRepairDS.displayRepairAlias(row)} ${this.getUnitTypeDescription(row.length_unit_cv)}`;
+    const alias = `${this.trfRepairDS.displayRepairAlias(row, this.getUnitTypeDescription(row.length_unit_cv))}`;
     return alias;
   }
 
