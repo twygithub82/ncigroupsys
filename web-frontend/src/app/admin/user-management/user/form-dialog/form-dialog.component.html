@@ -264,7 +264,7 @@
                         }@else if (updatedAdhocList.length) {
                         <div cdkDropList class="steps-list">
                           @for (f of updatedAdhocList; let i = $index; track f) {
-                          @if(f.adhoc && !f.is_deleted && f.delete_dt===null)
+                           @if(f.adhoc && !f.is_deleted && (f.delete_dt==undefined||f.delete_dt==null)) 
                           {
                           <div class="step-box-features cursor-pointer rounded  role-content">
                             <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
@@ -281,11 +281,7 @@
                           }
                         </div>
                         }
-                        @else {
-                        <!-- <div class="text-center">
-                            <h5>{{translatedLangText.NO_RESULT}}</h5>
-                          </div> -->
-                        }
+                       
                       </div>
                     </div>
                   </div>

@@ -328,17 +328,22 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
       this.cvDS.getCodeValuesByType(subqueries);
       this.cvDS.connectAlias(aliasName).subscribe(data => {
         this.subGroupNameCvList = data;
-        if (this.selectedItems.length == 1) {
-          var rec = this.selectedItems[0];
-          var subgroupNameCodeValue = this.GetCodeValue(rec.subgroup_name_cv!, this.subGroupNameCvList);
-          subGroupForm?.setValue(subgroupNameCodeValue);
-        }
+        // if (this.selectedItems.length == 1) {
+        //   var rec : any = this.selectedItems[0];
+        //   var subgroupNameCodeValue = this.GetCodeValue(rec.tariff_repair?.subgroup_name_cv!, this.subGroupNameCvList);
+        //   subGroupForm?.setValue(subgroupNameCodeValue);
+        // }
         this.partNameControl.reset('');
         const groupName = this.pcForm?.get('group_name_cv')?.value;
         this.trfRepairDS.searchDistinctPartName(groupName.code_val, '').subscribe(data => {
           this.partNameControl.reset('');
+          this.dimensionControl.reset('');
+          this.dimensionList = [];
+            this.lengthControl.reset('');
+            this.lengthList = [];
           this.partNameList = data;
           this.partNameFilteredList = data
+          
           this.updateValidators(this.partNameControl, this.partNameList);
         });
       });
@@ -352,6 +357,10 @@ export class FormDialogComponent_Edit_Cost extends UnsubscribeOnDestroyAdapter {
           const groupName = this.pcForm?.get('group_name_cv')?.value;
           this.trfRepairDS.searchDistinctPartName(groupName.code_val, codeValue).subscribe(data => {
             this.partNameControl.reset('');
+            this.dimensionControl.reset('');
+            this.dimensionList = [];
+            this.lengthControl.reset('');
+            this.lengthList = [];
             this.partNameList = data;
             this.partNameFilteredList = data
             this.updateValidators(this.partNameControl, this.partNameList);
