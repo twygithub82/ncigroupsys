@@ -300,6 +300,19 @@ export class PDFUtility {
     translateService: TranslateService // Inject TranslateService
   ): Promise<void> {
 
+     await this.addHeaderWithCompanyLogo_Landscape_r2(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+
+  }
+  static async addHeaderWithCompanyLogo_Landscape_old(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService // Inject TranslateService
+  ): Promise<void> {
+
     const translatedLangText: any = {};
     const langText = {
       PHONE: 'COMMON-FORM.PHONE',
@@ -848,7 +861,134 @@ export class PDFUtility {
   }
 
 
+
    static async addHeaderWithCompanyLogo_Portriat_r2(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService, // Inject TranslateService
+    // customerCompany: CustomerCompanyItem
+  ): Promise<void> {
+
+    const translatedLangText: any = {};
+    const langText = {
+      CUSTOMER: 'COMMON-FORM.CUSTOMER',
+      ISSUE_DATE: 'COMMON-FORM.ISSUE-DATE',
+      VALID_THROUGH: 'COMMON-FORM.VALID-THROUGH',
+
+    };
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+
+
+    const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
+
+    // const bufferX = 135;
+    // const posX1_img = leftMargin + bufferX;
+    const posY1_img = topMargin ;
+    const aspectRatio = height / width;
+    const w = 55;
+    const h = aspectRatio * w;
+    const posX1_img = pageWidth-rightMargin - w;
+    pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
+
+
+    pdf.setLineWidth(0.1);
+    // Set dashed line pattern
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+    var yPos = topMargin + 21;
+    // Draw top line
+    pdf.line(leftMargin, yPos, (pageWidth - rightMargin), yPos);
+
+    let posX = leftMargin;
+    let posY = topMargin+10;
+
+   await this.ReportHeader_CompanyInfo_Portrait_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+
+
+  }
+
+  static async ReportHeader_CompanyInfo_Portrait_r2(pdf: jsPDF,
+    pageWidth: number, topMargin: number,
+    bottomMargin: number, leftMargin: number,
+    rightMargin: number, translateService: TranslateService) {
+
+    const translatedLangText: any = {};
+    var posX = leftMargin;
+    var posY = topMargin;
+   
+    const langText = {
+      // GST_REG: 'COMMON-FORM.GST-REG',
+      // PHONE: 'COMMON-FORM.PHONE',
+        PHONE: 'COMMON-FORM.PHONE',
+      FAX: 'COMMON-FORM.FAX',
+      WEB: 'COMMON-FORM.WEB',
+      CRN: 'COMMON-FORM.CRN',
+      T: 'COMMON-FORM.T',
+      W:'COMMON-FORM.W',
+      
+
+    };
+    // Translate each key in langText
+    for (const key of Object.keys(langText) as (keyof typeof langText)[]) {
+      try {
+        translatedLangText[key] = await translateService.get(langText[key]).toPromise();
+      } catch (error) {
+        console.error(`Error translating key "${key}":`, error);
+        translatedLangText[key] = langText[key]; // Fallback to the original key
+      }
+    }
+
+   
+
+    
+    topMargin -=1.5;
+    var fontSize =9;
+    var startY = topMargin;
+     var textColor = '#666666';
+    var maxWidth=95;
+    var bufferY_CompanyName =  fontSize;
+    posY = topMargin;
+    
+    
+    
+    this.addText(pdf, customerInfo.companyName, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+
+    var bufferGap=3.5;
+    posY +=  bufferGap  ;
+    let nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
+    this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+
+
+    // Add company address
+    posY += bufferGap;
+    this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+    
+
+    // Add phone, fax
+     nextLine = `${translatedLangText.T}: ${customerInfo.companyPhone}`;
+     nextLine +=this.addSpaces(3);
+     nextLine +=`${translatedLangText.W}: ${customerInfo.companyWebsite}`;
+     posY += bufferGap;
+     this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
+    
+    
+   
+
+  }
+
+   static async addHeaderWithCompanyLogo_Landscape_r2(
     pdf: jsPDF,
     pageWidth: number,
     topMargin: number,
@@ -878,16 +1018,16 @@ export class PDFUtility {
 
     const { dataUrl, width, height } = await this.loadPDFImage(customerInfo.companyReportLogo, 1000, undefined);
 
-    const bufferX = 135;
-    const posX1_img = leftMargin + bufferX;
+    // const bufferX = 135;
+    
     const posY1_img = topMargin ;
     const aspectRatio = height / width;
     const w = 55;
     const h = aspectRatio * w;
-
+    const posX1_img = pageWidth-rightMargin - w;
     pdf.addImage(dataUrl, 'JPEG', posX1_img, posY1_img, w, h); // (imageElement, format, x, y, width, height)
 
-
+    
     pdf.setLineWidth(0.1);
     // Set dashed line pattern
     pdf.setLineDashPattern([0.01, 0.01], 0.1);
@@ -899,12 +1039,12 @@ export class PDFUtility {
     let posX = leftMargin;
     let posY = topMargin+10;
 
-    this.ReportHeader_CompanyInfo_portrait_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
+   await this.ReportHeader_CompanyInfo_Landscape_r2(pdf, pageWidth, posY, bottomMargin, leftMargin, rightMargin, translateService);
 
 
   }
 
-  static async ReportHeader_CompanyInfo_portrait_r2(pdf: jsPDF,
+  static async ReportHeader_CompanyInfo_Landscape_r2(pdf: jsPDF,
     pageWidth: number, topMargin: number,
     bottomMargin: number, leftMargin: number,
     rightMargin: number, translateService: TranslateService) {
@@ -916,10 +1056,13 @@ export class PDFUtility {
     const langText = {
       // GST_REG: 'COMMON-FORM.GST-REG',
       // PHONE: 'COMMON-FORM.PHONE',
-        PHONE: 'COMMON-FORM.PHONE',
+      PHONE: 'COMMON-FORM.PHONE',
       FAX: 'COMMON-FORM.FAX',
       WEB: 'COMMON-FORM.WEB',
       CRN: 'COMMON-FORM.CRN',
+      T:'COMMON-FORM.T',
+      W:'COMMON-FORM.W',
+      
 
     };
     // Translate each key in langText
@@ -932,8 +1075,9 @@ export class PDFUtility {
       }
     }
 
+    
     topMargin -=1.5;
-    var fontSize =10;
+    var fontSize =9;
     var startY = topMargin;
      var textColor = '#666666';
     var maxWidth=95;
@@ -956,45 +1100,13 @@ export class PDFUtility {
     
 
     // Add phone, fax
-     nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-     nextLine +=this.addSpaces(20);
-     nextLine +=`${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
-     posY += bufferGap;
-     this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
-
-
-    /*
-    topMargin -=1.5;
-    var fontSize =9;
-    var startY = topMargin;
-     var textColor = '#666666';
-    var maxWidth=85;
-    var bufferY_CompanyName =  fontSize;
-    posY = topMargin;
-    
-    
-    
-    this.addText(pdf, customerInfo.companyName, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
-
-    var bufferGap=3.5;
-    posY +=  bufferGap  ;
-    let nextLine = `${translatedLangText.CRN}: ${customerInfo.companyUen}`;
-    this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
-
-
-    // Add company address
-    posY += bufferGap;
-    this.addText(pdf, customerInfo.companyAddress, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
-    
-
-    // Add phone, fax
-     nextLine = `${translatedLangText.PHONE}: ${customerInfo.companyPhone}`;
-     nextLine +=this.addSpaces(24);
-     nextLine +=`${translatedLangText.WEB}: ${customerInfo.companyWebsite}`;
+     nextLine = `${translatedLangText.T}: ${customerInfo.companyPhone}`;
+     nextLine +=this.addSpaces(3);
+     nextLine +=`${translatedLangText.W}: ${customerInfo.companyWebsite}`;
      posY += bufferGap;
      this.addText(pdf, nextLine, posY, leftMargin, fontSize, false, 'helvetica', true, maxWidth, false, textColor);
     
-    */
+    
    
 
   }

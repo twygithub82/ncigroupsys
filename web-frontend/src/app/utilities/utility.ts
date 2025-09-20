@@ -1420,8 +1420,8 @@ export class Utility {
   }
 
   static async convertToImage_html2canvas(element: HTMLElement, type: 'png' | 'jpeg' = 'png'): Promise<string> {
-    var imgScale = 3;
-    var imgQty = 0.95;
+    var imgScale = 4;
+    var imgQty = 1;
     if (!element) throw new Error('Invalid element');
 
     // Ensure all fonts and images are loaded first

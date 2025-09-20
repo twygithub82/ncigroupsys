@@ -1388,7 +1388,9 @@
     "MUST-ONE-LOWERCASE": "Must have at least one lowercase letter",
     "MUST-ONE-NUMBER": "Must have at least one number",
     "MUST-ONE-SPECIAL": "Must have at least one special character",
-    "PASSSWORD-CHANGED-SUCCEED": "Password changed successfully"
+    "PASSSWORD-CHANGED-SUCCEED": "Password changed successfully",
+    "T": "T",
+    "W": "W"
     
   },
   "CLEAN-PROCEDURES": {
