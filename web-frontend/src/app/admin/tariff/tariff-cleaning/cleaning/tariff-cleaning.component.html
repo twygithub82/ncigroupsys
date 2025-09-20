@@ -220,7 +220,7 @@
             [ngClass]="'tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
             (contextmenu)="onContextMenu($event, row)">
             <span class="mobile-label">{{translatedLangText.CARGO_UN_NO }}:</span>
-            {{row.tariff_cleaning?.un_no}}</mat-cell>
+            {{row.tariff_cleaning?.un_no || '-' }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="category">
           <mat-header-cell *matHeaderCellDef
