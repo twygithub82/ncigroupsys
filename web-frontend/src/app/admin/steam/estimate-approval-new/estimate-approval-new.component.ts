@@ -365,6 +365,28 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
 
   private updateView(width: number): void {
     this.isMobile = width < 1024;
+    this.displayedColumns = this.isMobile
+      ?
+      [
+        'seq',
+        'desc',
+        'qty',
+        'unit_price',
+        'hour',
+        'cost',
+        'approve_part'
+      ]
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'unit_price',
+        'hour',
+        'cost',
+        'approve_part',
+        'actions'
+      ];
     this.labourCostDisplayedColumns = this.isMobile
       ? ['labourSummaryCost']
       :
@@ -615,6 +637,12 @@ export class SteamEstimateApprovalNewComponent extends UnsubscribeOnDestroyAdapt
         index: -1
       },
       direction: tempDirection
+    });
+    dialogRef.componentInstance.dataSubject.subscribe((result) => {
+      if (result) {
+        var newData = [...this.deList, result.item];
+        this.updateData(newData);
+      }
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {

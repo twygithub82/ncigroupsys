@@ -203,7 +203,26 @@
                       </ng-container>
                       <ng-container matColumnDef="seq">
                         <mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
-                        <mat-cell *matCellDef="let row;">{{row.index + 1}}</mat-cell>
+                        <mat-cell *matCellDef="let row;" class="d-flex justify-content-between">
+                          {{row.index + 1}}
+                          @if (isMobile) {
+                          <span>
+                            @if (hasMenuItems(row)) {
+                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventTrigger($event)">
+                              <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                              @if (canEdit()) {
+                              <button mat-menu-item (click)="handleDelete($event, row, row.index)">
+                                <mat-icon color="warn">delete_forever</mat-icon>
+                                <span>{{translatedLangText.DELETE}}</span>
+                              </button>
+                              }
+                            </mat-menu>
+                            }
+                          </span>
+                          }
+                        </mat-cell>
                       </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="id">

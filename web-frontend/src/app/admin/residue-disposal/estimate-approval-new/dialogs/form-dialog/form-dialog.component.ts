@@ -19,23 +19,20 @@ import { TranslateModule } from '@ngx-translate/core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Apollo } from 'apollo-angular';
-import { addDefaultSelectOption, CodeValuesDS, CodeValuesItem } from 'app/data-sources/code-values';
-import { PackageRepairDS } from 'app/data-sources/package-repair';
+import { CodeValuesDS } from 'app/data-sources/code-values';
+import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
 import { RepairPartItem } from 'app/data-sources/repair-part';
-import { RPDamageRepairDS, RPDamageRepairItem } from 'app/data-sources/rp-damage-repair';
+import { ResidueItem } from 'app/data-sources/residue';
+import { ResiduePartItem } from 'app/data-sources/residue-part';
+import { RPDamageRepairDS } from 'app/data-sources/rp-damage-repair';
 import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS } from 'app/data-sources/tariff-cleaning';
 import { TariffRepairDS } from 'app/data-sources/tariff-repair';
+import { NumericTextDirective } from 'app/directive/numeric-text.directive';
 import { PreventNonNumericDirective } from 'app/directive/prevent-non-numeric.directive';
-import { ComponentUtil } from 'app/utilities/component-util';
 import { Utility } from 'app/utilities/utility';
 import { provideNgxMask } from 'ngx-mask';
-import { debounceTime, startWith, Subject, tap } from 'rxjs';
-import { SearchFormDialogComponent } from '../search-form-dialog/search-form-dialog.component';
-import { PackageResidueDS, PackageResidueItem } from 'app/data-sources/package-residue';
-import { NumericTextDirective } from 'app/directive/numeric-text.directive';
-import { ResiduePartItem } from 'app/data-sources/residue-part';
-import { ResidueItem } from 'app/data-sources/residue';
+import { Subject, debounceTime, startWith, tap } from 'rxjs';
 
 
 export interface DialogData {

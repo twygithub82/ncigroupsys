@@ -209,6 +209,7 @@
             @if (!(sotDS.loadingSubject | async)) {
             @if (residueDS.canAmend(this.residueItem!)) {
             <div class="row">
+              @if (!isMobile) {
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1">
                 <mat-form-field class="example-full-width">
                   <mat-label>{{translatedLangText.DESCRIPTION}}</mat-label>
@@ -254,6 +255,7 @@
                   <input matInput [formControl]="newUnitPrice" type="number" min="0" required="true">
                 </mat-form-field>
               </div>
+              }
               <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 mb-1 mt-2 p-t-2">
                 <button mat-flat-button color="accent" type="button" [ngClass]="'m-r-10'"
                   (click)="addEstDetails($event)">
@@ -288,7 +290,26 @@
                     <mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
-                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">{{i+1}}</mat-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-between'">
+                      {{i+1}}
+                      @if (isMobile) {
+                      <span>
+                        @if (residueDS.canAmend(this.residueItem!)) {
+                        @if (!row.delete_dt){
+                        <button mat-icon-button (click)="handleDelete($event, row, row.index)"
+                          class="tbl-action-btn text-custom-danger">
+                          <mat-icon>delete_forever</mat-icon>
+                        </button>
+                        }
+                        @if (row.delete_dt) {
+                        <button mat-icon-button (click)="undeleteItem($event, row, row.index)">
+                          <mat-icon>undo</mat-icon>
+                        </button>
+                        }
+                        }
+                      </span>
+                      }
+                    </mat-cell>
                     <mat-footer-cell *matFooterCellDef class="bg-{{getFooterBackgroundColor()}}"
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"></mat-footer-cell>
                   </ng-container>

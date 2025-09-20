@@ -1188,6 +1188,12 @@ $breakpoints: (
   background-color: lighten(#b3cbff, 5%);
 }
 
+@media (max-width: 768px) {
+  .hover-highlight .mdc-data-table__row:hover {
+    background-color: transparent;
+  }
+}
+
 /* Ensure text color remains legible */
 .striped-rows .mdc-data-table__row:hover,
 .striped-rows .mdc-data-table__row:nth-child(odd),

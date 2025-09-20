@@ -339,6 +339,28 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
 
   private updateView(width: number): void {
     this.isMobile = width < 1024;
+    this.displayedColumns = this.isMobile
+      ?
+      [
+        'seq',
+        'desc',
+        'qty',
+        'qty_unit',
+        'unit_price',
+        'cost',
+        'approve_part'
+      ]
+      :
+      [
+        'seq',
+        'desc',
+        'qty',
+        'qty_unit',
+        'unit_price',
+        'cost',
+        'approve_part',
+        "actions"
+      ];
     this.totalCostDisplayedColumns = this.isMobile
       ? ['totalCost']
       :
@@ -655,6 +677,12 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
         index: -1
       },
       direction: tempDirection
+    });
+    dialogRef.componentInstance.dataSubject.subscribe((result) => {
+      if (result) {
+        var newData = [...this.deList, result.item];
+        this.updateData(newData);
+      }
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
       if (result) {
