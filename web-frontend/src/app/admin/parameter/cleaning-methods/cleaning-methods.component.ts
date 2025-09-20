@@ -194,7 +194,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       startWith(''),
       debounceTime(300),
       tap(value => {
-        this.mthAutoCompleteDS.search({ name: { contains: value } }, { name: "ASC" }, 100).subscribe(data => {
+        this.mthAutoCompleteDS.search({ name: { contains: value || '' } }, { name: "ASC" }, 100).subscribe(data => {
           this.processNameList = data.map(i => i.name || '');
         });
       })
@@ -204,7 +204,7 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
       startWith(''),
       debounceTime(300),
       tap(value => {
-        this.mthAutoCompleteDS.search({ description: { contains: value } }, { description: "ASC" }, 100).subscribe(data => {
+        this.mthAutoCompleteDS.search({ description: { contains: value || '' } }, { description: "ASC" }, 100).subscribe(data => {
           this.descriptionList = data.map(i => i.description || '');
         });
       })
@@ -407,7 +407,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
         this.handleSaveSuccess(result);
         //this.search();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-
+        this.refreshProcessList();
+        this.refreshDescriptionList();
       }
     });
   }
@@ -437,6 +438,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
         this.handleSaveSuccess(result);
         //this.search();
         this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+        this.refreshProcessList();
+        this.refreshDescriptionList();
       }
     });
   }
@@ -524,6 +527,8 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
         this.handleSaveSuccess(result.data.deleteCleaningMethod);
         this.pageIndex = 0;
         this.search();
+        this.refreshProcessList();
+        this.refreshDescriptionList();
       }
     })
   }
@@ -749,5 +754,15 @@ export class CleaningMethodsComponent extends UnsubscribeOnDestroyAdapter implem
     }
 
     this.search();
+  }
+
+  refreshProcessList() {
+    const existingValue = this.processNameControl?.value;
+    this.processNameControl?.setValue(existingValue);
+  }
+
+  refreshDescriptionList() {
+    const existingValue = this.descriptionControl?.value;
+    this.descriptionControl?.setValue(existingValue);
   }
 }
