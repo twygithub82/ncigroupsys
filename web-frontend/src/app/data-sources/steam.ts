@@ -1259,9 +1259,11 @@ export class SteamDS extends BaseDataSource<SteamItem> {
 
   canRollbackEstimate(re: SteamItem): boolean {
     const validStatus = ['NO_ACTION']
-    if (BusinessLogicUtil.isAutoApproveSteaming(re)) return false;
+    // NOTE:: note sure why previously added this to not allow auto steaming to reinstate from steaming estimate approval. Now commented it
+    // if (BusinessLogicUtil.isAutoApproveSteaming(re)) return false;
     return validStatus.includes(re?.status_cv!);
   }
+
   canRollback(re: SteamItem): boolean {
     const validStatus = ['PENDING', 'APPROVED', 'CANCELED', 'NO_ACTION']
     return validStatus.includes(re?.status_cv!);
@@ -1274,7 +1276,6 @@ export class SteamDS extends BaseDataSource<SteamItem> {
   canRollbackJobInProgress(re: SteamItem | undefined): boolean {
     return re?.status_cv === 'ASSIGNED' || re?.status_cv === 'PARTIAL_ASSIGNED' || re?.status_cv === 'JOB_IN_PROGRESS';
   }
-
 
   getApprovalTotalWithLabourCost(steamPartList: any[] | undefined, LabourCost: number): any {
     const totalSums = steamPartList?.filter(data => !data.delete_dt && (data.approve_part == 1 || data.approve_part || data.approve_part == null))?.reduce((totals: any, owner) => {
