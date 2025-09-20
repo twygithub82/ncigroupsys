@@ -183,7 +183,7 @@
               </mat-icon>
               {{translatedLangText.CLEAR}}
             </button>
-            <button mat-flat-button color="warn" [disabled]="selection.selected.length===0" class="m-r-5"
+            <button mat-flat-button color="warn" [disabled]="!AllowToDelete()" class="m-r-5"
               (click)="delete($event)">
               <mat-icon>
                 delete_forever

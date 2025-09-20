@@ -530,13 +530,267 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   async onDownloadClick() {
-    this.exportToPDF_r1();
+   await this.exportToPDF_r1();
   }
 
   @ViewChild('pdfTable') pdfTable!: ElementRef; // Reference to the HTML content
 
 
   async exportToPDF_r1(fileName: string = 'document.pdf') {
+    const pageWidth = 210; // A4 width in mm (portrait)
+    const pageHeight = 297; // A4 height in mm (portrait)
+    const leftMargin = 10;
+    const rightMargin = 10;
+    const topMargin = 5;
+    const bottomMargin = 5;
+    const contentWidth = pageWidth - leftMargin - rightMargin;
+    const maxContentHeight = pageHeight - topMargin - bottomMargin;
+
+    this.generatingPdfLoadingSubject.next(true);
+    this.generatingPdfProgress = 0;
+
+    const pdf = new jsPDF('p', 'mm', 'a4'); // Changed orientation to portrait
+    //const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    let pageNumber = 1;
+
+    let reportTitleCompanyLogo = 32;
+    let tableHeaderHeight = 12;
+    let tableRowHeight = 8.5;
+    let minHeightBodyCell = 5;
+    let minHeightHeaderCol = 3;
+    let fontSz = 6;
+    const pagePositions: { page: number; x: number; y: number }[] = [];
+    // const progressValue = 100 / cardElements.length;
+
+    const reportTitle = this.GetReportTitle();
+    const headers = [[
+      this.translatedLangText.S_N, this.translatedLangText.TANK_NO, this.translatedLangText.CODE,
+      this.translatedLangText.EIR_NO, this.translatedLangText.EIR_DATE,
+      this.translatedLangText.COMPLETED_DATE, this.translatedLangText.APPROVED_DATE,
+      this.translatedLangText.ESTIMATE_NO, this.translatedLangText.ESTIMATED
+    ]];
+
+    const comStyles: any = {
+      // Set columns 0 to 16 to be center aligned
+      0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      2: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
+      3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      5: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      6: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      7: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+    };
+
+    // Define headStyles with valid fontStyle
+    const headStyles: Partial<Styles> = {
+      fillColor: [211, 211, 211], // Background color
+      textColor: 0, // Text color (white)
+      fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz,
+      halign: 'center', // Centering header text
+      valign: 'middle',
+      lineColor: 201,
+      lineWidth: 0.1
+    };
+
+    let currentY = topMargin;
+    let scale = this.scale;
+    pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
+
+
+    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+
+    // Variable to store the final Y position of the last table
+    let lastTableFinalY = 46;
+
+    let date = PDFUtility.FormatColon(this.translatedLangText.INVENTORY_PERIOD, this.date);
+    //await Utility.AddTextAtCenterPage(pdf,date,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
+    await Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+    lastTableFinalY += 5;
+
+    let startY = lastTableFinalY; // Start table 20mm below the customer name
+    const data: any[][] = []; // Explicitly define data as a 2D array
+
+
+    var idx = 0;
+    let totalRepairCost = 0; // Initialize total repair cost
+    let GrandTotal = 0;
+
+    this.repData!.forEach(itm => {
+     
+      data.push([
+          (++idx).toString(),                          // S_N
+          itm?.tank_no || "",                          // TANK_NO
+          itm?.customer_code || "",                    // CODE
+          itm?.eir_no || "",                           // EIR_NO
+          Utility.convertEpochToDateStr(itm?.eir_dt) || "", 
+          Utility.convertEpochToDateStr(itm?.complete_dt) || "",
+          Utility.convertEpochToDateStr(itm?.approve_dt) || "",
+          itm?.estimate_no || "",                      // ESTIMATE_NO
+          Utility.formatNumberDisplay(itm?.est_cost)   // ESTIMATED
+        ]);
+    // data.push([
+        //   (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "",itm?.customer_code, Utility.convertEpochToDateStr(itm?.eir_dt) || "",
+        //   Utility.convertEpochToDateStr(itm?.complete_dt) || "", Utility.convertEpochToDateStr(itm?.approve_dt) || "",
+        //   itm?.estimate_no, Utility.formatNumberDisplay(itm?.est_cost)
+        // ]);
+
+
+      });
+
+    // var zeroCostRep = ZeroApprovalCostItem.groupByCustomer(this.repData!);
+    // var totalCust = Object.entries(zeroCostRep).length;
+    // var counter = 0;
+    // Object.entries(zeroCostRep).forEach(([customerCode, items]) => {
+    //   let CustomerTotal = 0;
+    //   counter++;
+    //   let customer = `${customerCode}-${items[0].customer_name}`;
+    //   data.push([
+    //     customer, "", "", "", "", "", ""
+    //   ]);
+    //   // Access individual items
+    //   items.forEach(itm => {
+    //     GrandTotal += itm?.est_cost || 0;
+    //     CustomerTotal += itm?.est_cost || 0;
+    //     data.push([
+    //       (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "", Utility.convertEpochToDateStr(itm?.eir_dt) || "",
+    //       Utility.convertEpochToDateStr(itm?.complete_dt) || "", Utility.convertEpochToDateStr(itm?.approve_dt) || "",
+    //       itm?.estimate_no, Utility.formatNumberDisplay(itm?.est_cost)
+    //     ]);
+    //   });
+    //   data.push([this.translatedLangText.CUSTOMER_TOTAL, "", "", "", "", "", "", Utility.formatNumberDisplay(CustomerTotal)]);
+    //   // Add table using autoTable plugin
+    // });
+
+    // data.push([this.translatedLangText.GRAND_TOTAL, "", "", "", "", "", "", Utility.formatNumberDisplay(GrandTotal)]);
+
+    pdf.setDrawColor(0, 0, 0); // red line color
+
+    pdf.setLineWidth(0.1);
+    pdf.setLineDashPattern([0.01, 0.01], 0.1);
+
+    let AllowedRowColSpan = -1;
+
+    autoTable(pdf, {
+      head: headers,
+      body: data,
+      startY: startY, // Start table at the current startY value
+      theme: 'grid',
+      margin: { left: leftMargin },
+      tableWidth: contentWidth,
+      styles: {
+        fontSize: fontSz,
+        minCellHeight: minHeightHeaderCol
+
+      },
+      columnStyles: comStyles,
+      headStyles: headStyles, // Custom header styles
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        //halign: 'left', // Left-align content for body by default
+        //valign: 'middle', // Vertically align content
+      },
+      didParseCell: (data: any) => {
+        // let colSpan: number = 7;
+        // let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+        // let bColSpan = false;
+
+        // if (data.cell.raw == this.translatedLangText.CUSTOMER_TOTAL && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
+        //   colSpan = 7;
+        //   data.cell.styles.halign = 'right';
+        //   data.cell.styles.fontStyle = 'bold';
+        //   data.cell.styles.fontSize = 8;
+        //   data.cell.colSpan = colSpan;
+        //   AllowedRowColSpan = data.row.index;
+        //   data.cell.styles.fillColor = [231, 231, 231];
+        // }
+
+        // if (data.cell.raw == this.translatedLangText.GRAND_TOTAL && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
+        //   colSpan = 7;
+        //   data.cell.styles.halign = 'right';
+        //   data.cell.styles.fontStyle = 'bold';
+        //   data.cell.styles.fontSize = 8;
+        //   data.cell.colSpan = colSpan;
+        //   data.cell.styles.fontSize = 8;
+        //   AllowedRowColSpan = data.row.index;
+        //   data.cell.styles.fillColor = [231, 231, 231];
+        // }
+        // if (data.column.index == 0 && !Utility.isParsableToNumber(data.cell.raw) && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
+        //   colSpan = 8;
+        //   data.cell.styles.halign = 'left';
+        //   data.cell.styles.fontStyle = 'bold';
+        //   data.cell.styles.fontSize = 8;
+        //   data.cell.colSpan = colSpan;
+        //   AllowedRowColSpan = data.row.index;
+        // }
+
+        // if ((AllowedRowColSpan == data.row.index) && data.section == 'body' && data.column.index > 0 && data.column.index < colSpan) {
+        //   data.cell.text = ''; // Remove text from hidden columns
+        //   data.cell.colSpan = 0; // Hide these columns
+        //   //bColSpan=false;
+        // }
+      },
+      didDrawPage: (d: any) => {
+        const pageCount = pdf.getNumberOfPages();
+
+        lastTableFinalY = d.cursor.y;
+
+        var pg = pagePositions.find(p => p.page == pageCount);
+        if (!pg) {
+          pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+          if (pageCount > 1) {
+            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+          }
+        }
+
+      },
+    });
+
+   
+
+
+    var gap = 7;
+
+    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+      pdf.addPage();
+      const pageCount = pdf.getNumberOfPages();
+      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    }
+
+    const totalPages = pdf.getNumberOfPages();
+
+
+    for (const { page, x, y } of pagePositions) {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      pdf.setFontSize(8);
+      pdf.setPage(page);
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      }
+    }// Add Second Page, Add For Loop
+
+    
+
+    this.generatingPdfProgress = 100;
+    //pdf.save(fileName);
+    this.generatingPdfProgress = 0;
+    this.generatingPdfLoadingSubject.next(false);
+    Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
+    this.dialogRef.close();
+  }
+
+   async exportToPDF_r1_backup(fileName: string = 'document.pdf') {
     const pageWidth = 210; // A4 width in mm (portrait)
     const pageHeight = 297; // A4 height in mm (portrait)
     const leftMargin = 10;
@@ -723,29 +977,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
       },
     });
 
-    // for (let n = 0; n < zeroCostRep.; n++) {
-
-    //   //let startY = lastTableFinalY + 15; // Start Y position for the current table
-    //   let itm = this.repData?.[n];
-    //   //const repairCost = itm?.repair_cost || 0;
-    //   //totalRepairCost += repairCost; // Add to the total
-    //   itm.
-    //     data.push([
-    //       (++idx).toString(), itm?.tank_no || "", itm?.eir_no || "",Utility.convertEpochToDateStr(itm?.eir_dt) ||"",
-    //       Utility.convertEpochToDateStr(itm?.complete_dt)||"",Utility.convertEpochToDateStr(itm?.approve_dt)||"",
-    //       itm?.estimate_no,Utility.formatNumberDisplay(itm?.est_cost)
-    //     ]);
-    // }
-
-
-
-
-
-
-
-    // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    // this.displayTotalWithRO()]);
+   
 
 
     var gap = 7;
@@ -775,16 +1007,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
       }
     }// Add Second Page, Add For Loop
 
-    // pagePositions.forEach(({ page, x, y }) => {
-    //   pdf.setDrawColor(0, 0, 0); // black line color
-    //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
-    //   pdf.setFontSize(8);
-    //   pdf.setPage(page);
-    //   var lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    // });
+    
 
     this.generatingPdfProgress = 100;
     //pdf.save(fileName);
@@ -793,7 +1016,6 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     Utility.previewPDF(pdf, `${this.GetReportTitle()}.pdf`);
     this.dialogRef.close();
   }
-
 
 
   async exportToPDF(fileName: string = 'document.pdf') {

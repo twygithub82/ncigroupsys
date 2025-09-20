@@ -183,7 +183,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
   startCursor: string | undefined = undefined;
   hasNextPage = false;
   hasPreviousPage = false;
-  selection = new GuidSelectionModel<ResidueItem>(true, []);
+  selection = new GuidSelectionModel<BillingSOTItem>(true, []);
   //selection = new SelectionModel<InGateCleaningItem>(true, []);
   invoiceNoControl = new FormControl('', [Validators.required]);
   invoiceDateControl = new FormControl('', [Validators.required]);
@@ -980,4 +980,18 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     this.resetForm();
     this.search();
   }
+
+    AllowToDelete() {
+  if (this.selection.selected.length === 0) {
+    return false;
+  }
+
+  for (const row of this.selection.selected) {
+    if (!row.preinsp_billing?.invoice_no) {
+      return false; // if empty, null, or undefined → false
+    }
+  }
+
+  return true;
+}
 }

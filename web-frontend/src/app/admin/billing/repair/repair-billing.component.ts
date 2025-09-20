@@ -1392,4 +1392,19 @@ filterCustomerCodeOnly() {
     return this.displayNumber(totalCost);
   }
 
+  AllowToDelete() {
+    if (this.reSelection.selected.length === 0) {
+      return false;
+    }
+
+    for (const row of this.reSelection.selected) {
+      var invoNo=this.getInvoiceNo(row);
+      if (!invoNo||invoNo==''||invoNo=='-') {
+        return false; // if empty, null, or undefined → false
+      }
+    }
+
+    return true;
+  }
+
 }

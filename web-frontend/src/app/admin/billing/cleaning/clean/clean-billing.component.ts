@@ -992,4 +992,18 @@ export class CleanBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.search();
   }
 
+  AllowToDelete() {
+  if (this.selection.selected.length === 0) {
+    return false;
+  }
+
+  for (const cln of this.selection.selected) {
+    if (!cln.customer_billing?.invoice_no) {
+      return false; // if empty, null, or undefined → false
+    }
+  }
+
+  return true;
+}
+
 }

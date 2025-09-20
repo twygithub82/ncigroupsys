@@ -944,13 +944,14 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40, 14, false);
 
+    var fontSz=6.5;
     let offset = 3;
     let currentY = topMargin + 40 + 5; // Start after header and title
     const invPeriod = this.repBillingCustomers?.[0].invoice_period;
     const invDate = `${this.translatedLangText.INVOICE_PERIOD}: ${invPeriod}`;
 
     // Add invoice period at top right
-    pdf.setFontSize(8);
+    pdf.setFontSize(fontSz);
     Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY + offset, 8);
 
     // Process each customer
@@ -977,7 +978,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       }
 
       // Add customer name
-      pdf.setFontSize(10);
+      pdf.setFontSize(fontSz);
       pdf.setTextColor(0, 0, 0);
       pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, currentY + offset);
 
@@ -1018,7 +1019,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
           margin: { horizontal: leftMargin },
           theme: 'grid',
           styles: {
-            fontSize: 6,
+            fontSize: fontSz,
             minCellHeight: minHeightBodyCell,
             cellPadding: 1
           },

@@ -1292,4 +1292,18 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
     }
     return retval;
   }
+
+  AllowToDelete() {
+  if (this.selection.selected.length === 0) {
+    return false;
+  }
+
+  for (const row of this.selection.selected) {
+    if (!this.isLiftOffInvoice(row) && !this.isLiftOnInvoice(row)) {
+      return false; // if empty, null, or undefined → false
+    }
+  }
+
+  return true;
+}
 }

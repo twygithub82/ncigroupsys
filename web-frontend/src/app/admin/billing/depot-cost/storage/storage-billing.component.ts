@@ -1506,4 +1506,18 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       // }
     });
   }
+
+   AllowToDelete() {
+  if (this.selection.selected.length === 0) {
+    return false;
+  }
+
+  for (const row of this.selection.selected) {
+    if ((row.storing_order_tank?.storage_detail?.length || 0) == 0) {
+      return false; // if empty, null, or undefined → false
+    }
+  }
+
+  return true;
+}
 }
