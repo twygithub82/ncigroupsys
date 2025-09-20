@@ -563,7 +563,7 @@
                   <mat-spinner color="primary" [diameter]="18"></mat-spinner>
                   }
                 </mat-icon>
-                {{translatedLangText.APPROVE}}
+                {{ isEstimateApproved() ? translatedLangText.UPDATE : translatedLangText.APPROVE }}
               </button>
               }
               @if (residueDS.canRollback(this.residueItem!)) {

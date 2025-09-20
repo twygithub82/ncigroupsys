@@ -455,7 +455,9 @@
                           }
                         </div>
                         }
-                        <div class="row justify-content-center">
+
+
+                        <!-- <div class="row justify-content-center">
                           <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 m-b-0">
                             <div class="row">
                               <div
@@ -597,7 +599,104 @@
                               </div>
                             </div>
                           </div>
+                        </div> -->
+
+                        <div class="row justify-content-center">
+                          <!-- IN_GATE Table -->
+                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-4">
+                            <div class="text-center mb-3">
+                              <span class="contact-detail-info font-bold text-decoration-underline cursor-pointer"
+                                (click)="onDownloadEir()">
+                                {{ translatedLangText.IN_GATE }}
+                              </span>
+                            </div>
+                            <div class="table-responsive">
+                              <table class="table table-bordered table-striped curve-table">
+                                <tbody>
+                                  <tr>
+                                    <th>{{ translatedLangText.SO_NO }}:</th>
+                                    <td>{{ sot?.storing_order?.so_no || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.JOB_NO }}:</th>
+                                    <td>{{ sot?.job_no || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.DATE }}:</th>
+                                    <td>{{ displayDateTime(ig?.eir_dt) || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.HAULIER }}:</th>
+                                    <td>{{ ig?.haulier || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.VEHICLE_NO }}:</th>
+                                    <td>{{ ig?.vehicle_no || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.DRIVER_NAME }}:</th>
+                                    <td>{{ ig?.driver_name || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.REMARKS }}:</th>
+                                    <td>{{ ig?.remarks || "-" }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <!-- OUT_GATE Table -->
+                          <div class="col-xl-5 col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-4">
+                            <div class="text-center mb-3">
+                              <span [ngClass]="{
+                                    'contact-detail-info font-bold': true,
+                                    'text-decoration-underline cursor-pointer': !!ogs?.guid
+                                  }" (click)="onDownloadEir(false)">
+                                {{ translatedLangText.OUT_GATE }}
+                              </span>
+                            </div>
+                            <div class="table-responsive">
+                              <table class="table table-bordered table-striped curve-table">
+                                <tbody>
+                                  <tr>
+                                    <th>{{ translatedLangText.RO_NO }}:</th>
+                                    <td>{{ sot?.release_order_sot?.[0]?.release_order?.ro_no || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.JOB_NO }}:</th>
+                                    <td>{{ sot?.release_job_no || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.DATE }}:</th>
+                                    <td>{{ displayDateTime(og?.eir_dt) || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.HAULIER }}:</th>
+                                    <td>{{ og?.haulier || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.VEHICLE_NO }}:</th>
+                                    <td>{{ og?.vehicle_no || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.DRIVER_NAME }}:</th>
+                                    <td>{{ og?.driver_name || "-" }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>{{ translatedLangText.REMARKS }}:</th>
+                                    <td>{{ og?.remarks || "-" }}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
                         </div>
+
+
+
+
+
                       </div>
                     </mat-card-content>
                     }

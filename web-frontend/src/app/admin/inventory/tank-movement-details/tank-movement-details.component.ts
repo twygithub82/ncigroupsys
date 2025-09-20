@@ -2949,7 +2949,8 @@ export class TankMovementDetailsComponent extends UnsubscribeOnDestroyAdapter im
   }
 
   canRollbackCleaningCompleted(row?: InGateCleaningItem) {
-    return this.isAllowCleaningReinstate() && (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !this.repairItem?.length)) && row?.status_cv === 'COMPLETED';
+    const validRepair = this.repairItem?.filter(x => x.status_cv != "CANCELED" && x.status_cv != "NO_ACTION")
+    return this.isAllowCleaningReinstate() && (this.sot?.tank_status_cv === "CLEANING" || this.sot?.tank_status_cv === "STORAGE" || (this.sot?.tank_status_cv === "REPAIR" && !validRepair?.length)) && row?.status_cv === 'COMPLETED';
   }
 
   onRollbackCleaningJobs(event: Event, row?: InGateCleaningItem) {

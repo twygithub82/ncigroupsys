@@ -52,6 +52,7 @@ import { CancelFormDialogComponent } from './dialogs/cancel-form-dialog/cancel-f
 import { FormDialogComponent } from './dialogs/form-dialog/form-dialog.component';
 import { BusinessLogicUtil } from 'app/utilities/businesslogic-util';
 import { SingletonNotificationService } from '@core/service/singletonNotification.service';
+import { ConfirmationDialogComponent } from '@shared/components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'job-order-task-details',
@@ -1087,25 +1088,24 @@ export class ResidueJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAda
     } else {
       tempDirection = 'ltr';
     }
-    const dialogRef = this.dialog.open(CancelFormDialogComponent, {
-      width: '380px',
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      disableClose: true,
       data: {
-        action: 'rollback',
-        dialogTitle: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
-        item: [this.residueItem],
-        translatedLangText: this.translatedLangText
+        headerText: this.translatedLangText.ARE_YOU_SURE_ROLLBACK,
+        translatedLangText: this.translatedLangText,
+        allowRemarks: true
       },
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result?.action == "confirmed") {
         const repJobOrder = new ResJobOrderRequest({
           guid: this.residueItem?.guid,
           sot_guid: this.residueItem?.sot_guid,
           estimate_no: this.residueItem?.estimate_no,
           job_order: [new JobOrderGO({ ...this.jobOrderItem, remarks: result.remarks })],
           sot_status: this.sotItem?.tank_status_cv,
-          remarks: result.item[0].remarks
+          remarks: result.remarks
         });
 
         console.log(repJobOrder)

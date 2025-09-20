@@ -269,10 +269,10 @@
           <mat-cell *matCellDef="let row">{{row.guid}}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="tank_no">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
             {{translatedLangText.TANK_NO}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
             <span class="mobile-label">{{translatedLangText.TANK_NO}}:</span>{{row.storing_order_tank?.tank_no}}
           </mat-cell>
         </ng-container>
@@ -359,10 +359,10 @@
         </ng-container>
 
         <ng-container matColumnDef="invoice_date">
-          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-header-cell mat-header-cell *matHeaderCellDef [ngClass]="'tbl-col-width-per-1'">
             {{translatedLangText.INVOICE_DATE}}
           </mat-header-cell>
-          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1_25'">
+          <mat-cell mat-cell *matCellDef="let row" [ngClass]="'tbl-col-width-per-1'">
             @if(row.invoiced)
             {
             <span class="mobile-label">{{translatedLangText.INVOICE_DATE}}:</span>
