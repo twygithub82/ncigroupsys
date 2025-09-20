@@ -118,7 +118,8 @@
                   class="mobile-label">{{this.translatedLangText.CUSTOMER}}:</span>{{row.customer_company.name}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="minTemp">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{this.translatedLangText.MIN_TEMP
+              <mat-header-cell *matHeaderCellDef mat-sort-header="minTemp" disableClear
+                [ngClass]="'justify-content-center'">{{this.translatedLangText.MIN_TEMP
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'justify-content-center'">
@@ -126,7 +127,8 @@
                   }}:</span>{{row.tariff_steaming?.temp_min}}</mat-cell>
             </ng-container>
             <ng-container matColumnDef="maxTemp">
-              <mat-header-cell *matHeaderCellDef [ngClass]="'justify-content-center'">{{this.translatedLangText.MAX_TEMP
+              <mat-header-cell *matHeaderCellDef mat-sort-header="maxTemp" disableClear
+                [ngClass]="'justify-content-center'">{{this.translatedLangText.MAX_TEMP
                 }}</mat-header-cell>
               <mat-cell *matCellDef="let row" (contextmenu)="onContextMenu($event, row)"
                 [ngClass]="'justify-content-center'">

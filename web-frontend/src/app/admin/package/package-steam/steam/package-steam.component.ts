@@ -892,11 +892,25 @@ export class PackageSteamComponent extends UnsubscribeOnDestroyAdapter
         break;
 
       case 'companyName':
-        this.lastOrderBy = {
-          customer_company: {
-            name: dirEnum,
-          }
-        };
+        this.lastOrderBy = [
+          { customer_company: { name: dirEnum, } },
+          { tariff_steaming: { temp_min: "ASC" } },
+          { tariff_steaming: { temp_max: "ASC" } }
+        ];
+        break;
+
+      case 'minTemp':
+        this.lastOrderBy = [
+          { tariff_steaming: { temp_min: dirEnum } },
+          { tariff_steaming: { temp_max: "ASC" } }
+        ];
+        break;
+
+      case 'maxTemp':
+        this.lastOrderBy = [
+          { tariff_steaming: { temp_max: dirEnum } },
+          { tariff_steaming: { temp_min: "ASC" } }
+        ];
         break;
 
       default:
