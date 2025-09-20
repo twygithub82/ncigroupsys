@@ -685,7 +685,7 @@ export class CleaningEstimatePdfComponent extends UnsubscribeOnDestroyAdapter im
 
     let startY = 37; // Start table 20mm below the customer name
 
-    await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
 
     pdf.setLineWidth(0.1);
     pdf.setLineDashPattern([0.01, 0.01], 0.1);

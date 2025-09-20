@@ -1034,7 +1034,7 @@ export class Utility {
     // }
   }
 
-  static async addHeaderWithCompanyLogo_Portriat(
+  static async addHeaderWithCompanyLogo_Portrait(
     pdf: jsPDF,
     pageWidth: number,
     topMargin: number,
@@ -1045,7 +1045,7 @@ export class Utility {
   ): Promise<void> {
 
     //await PDFUtility.addHeaderWithCompanyLogo_Portriat_r1(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
-    await PDFUtility.addHeaderWithCompanyLogo_Portriat(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+    await PDFUtility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
 
   }
 

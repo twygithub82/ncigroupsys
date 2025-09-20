@@ -248,7 +248,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     PART_SELECTED: 'COMMON-FORM.SELECTED',
   }
 
-
   @ViewChild('partInput', { static: true }) partInput?: ElementRef<HTMLInputElement>;
 
   constructor(
@@ -365,7 +364,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '65vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       //height: '90vh',
       data: {
@@ -380,6 +379,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         this.handleSaveSuccess(result);
         if (this.trfRepairDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
+          this.refreshPartNameList();
         }
       }
     });
@@ -397,7 +397,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     //  rows.push(row);
     const dialogRef = this.dialog.open(FormDialogComponent_New, {
       width: '65vw',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       //height: '90vh',
       data: {
@@ -412,8 +412,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
         this.handleSaveSuccess(result);
         if (this.trfRepairDS.totalCount > 0) {
           this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
-          //this.search();
-          // this.onPageEvent({pageIndex:this.pageIndex,pageSize:this.pageSize,length:this.pageSize});
+          this.refreshPartNameList();
         }
       }
     });
@@ -550,7 +549,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       //width: '500px',
-       autoFocus: false,
+      autoFocus: false,
       disableClose: true,
       data: {
         headerText: this.translatedLangText.CONFIRM_DELETE,
@@ -560,6 +559,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.action == "confirmed") {
+        this.refreshPartNameList();
         this.deleteTariffAndPackageRepair(row.guid!);
       }
     });
@@ -828,7 +828,7 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
   }
 
   getTariffRepairAlias(row: TariffRepairItem) {
-    const alias = `${this.trfRepairDS.displayRepairAlias(row)} ${this.getUnitTypeDescription(row.length_unit_cv)}`;
+    const alias = `${this.trfRepairDS.displayRepairAlias(row, this.getUnitTypeDescription(row.length_unit_cv))}`;
     return alias;
   }
 
@@ -950,8 +950,6 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     return pn || '';
   }
 
-
-
   itemSelected(pn: string): boolean {
     var retval: boolean = false;
     const index = this.selectedParts.findIndex(c => c === pn);
@@ -978,24 +976,18 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     return retval;
   }
 
-
-  // removeSelectedParts(): void {
-  //   this.selectedParts = [];
-  //  }
-
   removeSelectedPart(pro: any): void {
     const index = this.selectedParts.findIndex(c => c.guid === pro.guid);
     if (index >= 0) {
       this.selectedParts.splice(index, 1);
-
     }
     this.AutoSearch();
   }
+
   removeAllSelectedParts(): void {
     this.selectedParts = [];
     this.AutoSearch();
   }
-
 
   selected(event: MatAutocompleteSelectedEvent): void {
     const part = event.option.value;
@@ -1016,11 +1008,9 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
     this.AutoSearch();
   }
 
-
   onCheckboxPartClicked(row: any) {
     const fakeEvent = { option: { value: row } } as MatAutocompleteSelectedEvent;
     this.selected(fakeEvent);
-    // this.selectedParts(fakeEvent);
   }
 
   add(event: MatChipInputEvent): void {
@@ -1131,5 +1121,10 @@ export class TariffRepairComponent extends UnsubscribeOnDestroyAdapter
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['TARIFF_REPAIR_DELETE']);
+  }
+
+  refreshPartNameList() {
+    const existingValue = this.partNameControl?.value;
+    this.partNameControl?.setValue(existingValue);
   }
 }
