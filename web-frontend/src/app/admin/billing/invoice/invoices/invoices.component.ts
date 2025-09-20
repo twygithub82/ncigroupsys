@@ -901,7 +901,7 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
 
       where.and.push(itm);
     }
- this.pageIndex=0;
+    this.pageIndex = 0;
     this.lastSearchCriteria = this.billDS.addDeleteDtCriteria(where);
     this.performSearch(this.pageSize, this.pageIndex, this.pageSize, undefined, undefined, undefined);
   }
@@ -1079,6 +1079,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
     //   return this.soDS.canCancel(this.soList[index]);
     // });
     return this.selection.selected.length > 0 ? true : false;
+  }
+
+  hasSearchResult(): boolean {
+    return this.billList.length > 0 ? true : false;
   }
 
   handleDelete(event: Event) {
@@ -1275,8 +1279,8 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
         repCust.guid = b.customer_company?.guid;
         repCust.items = [];
       }
-      //repCust.customer = this.ccDS.displayName(b.customer_company);
-      repCust.customer = b.customer_company.code;
+      repCust.customer = b.customer_company.name;
+      //repCust.customer = b.customer_company.code;
       if (this.searchForm!.get('inv_dt_start')?.value && this.searchForm!.get('inv_dt_end')?.value) {
         repCust.invoice_period = `${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_start']))} - ${Utility.convertDateToStr(new Date(this.searchForm!.value['inv_dt_end']))}`;
       }

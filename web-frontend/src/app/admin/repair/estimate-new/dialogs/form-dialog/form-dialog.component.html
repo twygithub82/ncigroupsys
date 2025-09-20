@@ -168,16 +168,16 @@
           </mat-form-field>
         </div>
       </div>
-      <div mat-dialog-actions class="mb-1 align-right">
+      <div mat-dialog-actions class="align-right">
         @if(!isEdit()) {
-        <button mat-flat-button color="accent" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(true)">
-          <mat-icon>
+        <button mat-flat-button color="accent" class="mb-2" [disabled]="!this.repairPart.tariff_repair_guid" (click)="submit(true)">
+          <!-- <mat-icon>
             add
-          </mat-icon>
+          </mat-icon> -->
           {{data.translatedLangText.ADD_ANOTHER}}</button>
         }
         @if (canEdit()) {
-        <button mat-flat-button color="primary" class="me-1" [disabled]="!this.repairPart.tariff_repair_guid" class="m-l-5"
+        <button mat-flat-button color="primary" [disabled]="!this.repairPart.tariff_repair_guid" class="m-l-5 mb-2"
           (click)="submit(false)">
           <mat-icon>
             save
@@ -186,7 +186,7 @@
         </button>
         }
         <button mat-stroked-button (click)="onNoClick()" tabindex="-1"
-          class="m-l-5">{{data.translatedLangText.CANCEL}}</button>
+          class="m-l-5 mb-2">{{data.translatedLangText.CANCEL}}</button>
       </div>
     </form>
   </div>

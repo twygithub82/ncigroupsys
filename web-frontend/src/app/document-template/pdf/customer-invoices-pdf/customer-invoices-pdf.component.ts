@@ -31,6 +31,7 @@ import { StoringOrderTankDS } from 'app/data-sources/storing-order-tank';
 import autoTable, { Styles } from 'jspdf-autotable';
 import { Underline } from 'angular-feather/icons';
 import { offscreen } from 'canvg/dist/presets';
+import { PDFUtility } from 'app/utilities/pdf-utility';
 // import { fileSave } from 'browser-fs-access';
 
 export interface DialogData {
@@ -948,7 +949,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     let offset = 3;
     let currentY = topMargin + 40 + 5; // Start after header and title
     const invPeriod = this.repBillingCustomers?.[0].invoice_period;
-    const invDate = `${this.translatedLangText.INVOICE_PERIOD}: ${invPeriod}`;
+    const invDate =  PDFUtility.FormatColon(this.translatedLangText.INVOICE_PERIOD, invPeriod);
 
     // Add invoice period at top right
     pdf.setFontSize(fontSz);
@@ -974,13 +975,13 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
         await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, currentY + 40, 14, false);
         currentY = topMargin + 40 + 5;
-        Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY + offset, 8);
+        Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY + offset, PDFUtility.RightSubTitleFontSize());
       }
 
       // Add customer name
       pdf.setFontSize(fontSz);
       pdf.setTextColor(0, 0, 0);
-      pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.customer}`, leftMargin, currentY + offset);
+      pdf.text(`${cust.customer}`, leftMargin, currentY + offset);
 
       currentY += customerNameHeight;
 

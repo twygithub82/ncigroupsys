@@ -303,6 +303,34 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
   private updateView(width: number): void {
     console.log(width)
     this.isMobile = width < 1024;
+    this.displayedColumns = this.isMobile
+      ?
+      [
+        'seq',
+        'subgroup_name_cv',
+        'damange',
+        'repair',
+        'description',
+        'quantity',
+        'hour',
+        'price',
+        'material',
+        'isOwner'
+      ]
+      :
+      [
+        'seq',
+        'subgroup_name_cv',
+        'damange',
+        'repair',
+        'description',
+        'quantity',
+        'hour',
+        'price',
+        'material',
+        'isOwner',
+        'actions'
+      ]
   }
 
   initForm() {
@@ -1089,6 +1117,10 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
         'material',
         'actions'
       ];
+    }
+
+    if (this.isMobile) {
+      this.displayedColumns = this.displayedColumns.filter(x => x != "actions");
     }
   }
 

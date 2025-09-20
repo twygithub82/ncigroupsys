@@ -278,8 +278,25 @@
                     <mat-header-cell *matHeaderCellDef
                       [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'">#</mat-header-cell>
                     <mat-cell *matCellDef="let row; let i = index"
-                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm'"
-                      [class.justify-content-center]="isMobile">{{i+1}}</mat-cell>
+                      [ngClass]="'tbl-col-width-per-0_75-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-between'">
+                      {{i+1}}
+                      @if (isMobile) {
+                      <span>
+                        @if (steamDS.canAmend(this.steamItem!)) {
+                        @if (!row.delete_dt){
+                        <button mat-icon-button (click)="handleDelete($event, row, row.index)">
+                          <mat-icon color="warn">delete_forever</mat-icon>
+                        </button>
+                        }
+                        @if (row.delete_dt) {
+                        <button mat-icon-button (click)="undeleteItem($event, row, row.index)">
+                          <mat-icon>undo</mat-icon>
+                        </button>
+                        }
+                        }
+                      </span>
+                      }
+                    </mat-cell>
                     <mat-footer-cell *matFooterCellDef
                       class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
                     </mat-footer-cell>
@@ -541,7 +558,7 @@
                   </ng-container>
                   <ng-container matColumnDef="labourSummaryCost">
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm d-flex justify-content-end">
                       <span class="mobile-label footer-label">{{translatedLangText.LABOUR}}
                         @if (isSteamRepair) {
                         (${{parse2Decimal(getLabourCost())}} x {{getTotalLabourHours()}})
@@ -565,7 +582,7 @@
                   </ng-container>
                   <ng-container matColumnDef="totalSummaryCost">
                     <mat-footer-cell *matFooterCellDef
-                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm">
+                      class="bg-{{getFooterBackgroundColor()}} tbl-col-width-per-1_25-xl tbl-col-width-per-12-lg tbl-col-width-per-12-md tbl-col-width-per-12-sm  d-flex justify-content-end">
                       <span class="mobile-label footer-label">{{translatedLangText.TOTAL_COST}}:</span>
                       @if(this.isSteamRepair)
                       {

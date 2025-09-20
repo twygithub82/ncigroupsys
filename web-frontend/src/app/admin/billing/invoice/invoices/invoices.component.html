@@ -33,12 +33,21 @@
                         <mat-icon class="col-white">close</mat-icon>
                       </button>
                     </div>
-                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+
+                    <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                       <button mat-mini-fab class="orange-button" (click)="export_report()"
-                        (click)="$event.stopPropagation()" [disabled]="(billDS.actionLoading$| async)">
+                        (click)="$event.stopPropagation()" [disabled]="(billDS.actionLoading$| async) || !hasSearchResult()">
+                        <mat-icon>insert_drive_file</mat-icon>
+                      </button>
+                    </div> -->
+
+                    <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
+                      <button mat-mini-fab [class.orange-button]="hasSearchResult()" (click)="export_report()"
+                        (click)="$event.stopPropagation()" [disabled]="(billDS.actionLoading$| async) || !hasSearchResult()">
                         <mat-icon>insert_drive_file</mat-icon>
                       </button>
                     </div>
+
                     <!-- <div class="export-button m-l-10" [matTooltip]="translatedLangText.EXPORT">
                 <img src="assets/images/icons/xlsx.png" alt="" (click)="exportExcel()"
                   (click)="$event.stopPropagation()" />

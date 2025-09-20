@@ -382,6 +382,6 @@ export class FormDialogComponent_Edit extends UnsubscribeOnDestroyAdapter implem
     return this.modulePackageService.hasFunctions(['TARIFF_DEPOT_COST_EDIT']);
   }
   isAllowSave(){
-    return this.unit_type_control.value.length > 0;
+    return this.unit_type_control?.value?.length > 0;
   }
 }
