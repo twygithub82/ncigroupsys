@@ -228,6 +228,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
           this.profileList = data
             .map(item => item.profile_name)
             .filter((name): name is string => name !== undefined);
+          this.search();
         });
       })
     ).subscribe();
@@ -244,6 +245,7 @@ export class TariffDepotComponent extends UnsubscribeOnDestroyAdapter
         }
         this.subs.sink = this.tnkDS.search({ or: [{ unit_type: { contains: searchCriteria } }] }, [{ unit_type: 'ASC' }]).subscribe(data => {
           this.tankItemList = data;
+          this.search();
         });
       })
     ).subscribe();
