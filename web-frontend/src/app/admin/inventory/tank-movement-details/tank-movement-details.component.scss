@@ -33,3 +33,15 @@
 .striped-rows .mdc-data-table__row:nth-child(odd) {
   background-color: #ffffff;
 }
+
+::ng-deep .table.table-bordered tbody tr td,
+
+// ::ng-deep .table-striped tbody tr:nth-of-type(odd) {
+//   background-color: lighten(#b3cbff, 10%);
+// }
+// ::ng-deep .table-striped tbody tr:nth-of-type(even) {
+//   background-color: lighten(#b3cbff, 10%);
+// }
+::ng-deep .table.table-bordered tbody tr th {
+  border: 1px solid #dee2e6;
+}

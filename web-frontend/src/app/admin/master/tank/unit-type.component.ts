@@ -387,6 +387,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         // {
         this.handleSaveSuccess(result);
         this.refresh();
+        this.refreshUnitTypeList();
         //   if (this.packRepairItems.length > 1)
         //     this.onPageEvent({ pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.pageSize });
         //   //}
@@ -404,8 +405,6 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
   preventDefault(event: Event) {
     event.preventDefault(); // Prevents the form submission
   }
-
-
 
   editCall(row: TankItem) {
     // this.preventDefault(event);  // Prevents the form submission
@@ -711,6 +710,7 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
         if (result.data.deleteTank) {
           this.handleSaveSuccess(result.data.deleteTank);
           this.refresh();
+          this.refreshUnitTypeList();
         }
       })
     }
@@ -780,5 +780,10 @@ export class UnitTypeComponent extends UnsubscribeOnDestroyAdapter
 
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['MASTER_UNIT_TYPE_DELETE']);
+  }
+
+  refreshUnitTypeList() {
+    const existingValue = this.pcForm?.get('unit_type')?.value;
+    this.pcForm?.get('unit_type')?.setValue(existingValue);
   }
 }

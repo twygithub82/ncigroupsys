@@ -200,6 +200,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     this.loadData();
     this.initializeValueChanges();
   }
+
   refresh() {
     this.onPageEvent({
       pageIndex: this.pageIndex, pageSize: this.pageSize,
@@ -411,6 +412,7 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
       if (result > 0) {
         this.handleSaveSuccess(result);
         this.refresh();
+        this.refreshDescriptionList();
       }
     });
   }
@@ -521,12 +523,12 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
   }
 
   RmoveCleaningFormula(guids: string) {
-
     this.fmlDS.deleteCleaningFormula([guids]).subscribe(result => {
       if (result.data.deleteCleaningFormula) {
         this.handleSaveSuccess(result.data.deleteCleaningFormula);
         this.pageIndex = 0;
         this.search();
+        this.refreshDescriptionList();
       }
     })
 
@@ -664,5 +666,10 @@ export class CleaningFormulasComponent extends UnsubscribeOnDestroyAdapter imple
     }
 
     this.search();
+  }
+
+  refreshDescriptionList() {
+    const existingValue = this.searchForm?.get('description')?.value;
+    this.searchForm?.get('description')?.setValue(existingValue);
   }
 }

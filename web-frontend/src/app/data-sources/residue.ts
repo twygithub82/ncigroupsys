@@ -566,7 +566,7 @@ export const GET_RESIDUE_FOR_MOVEMENT = gql`
         update_dt
         customer_billing_guid
         owner_billing_guid
-        residue_part {
+        residue_part(where: {delete_dt:  {eq: null}}) {
           action
           approve_part
           cost
@@ -681,7 +681,7 @@ export const GET_RESIDUE_FOR_PDF = gql`
             cargo
           }
         }
-        residue_part {
+        residue_part(where: { delete_dt: { eq: null } }) {
           action
           approve_part
           cost

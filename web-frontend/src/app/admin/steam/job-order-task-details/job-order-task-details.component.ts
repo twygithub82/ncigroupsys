@@ -1144,7 +1144,7 @@ export class SteamJobOrderTaskDetailsComponent extends UnsubscribeOnDestroyAdapt
       direction: tempDirection
     });
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result?.action == "confirmed") {
         const stmJobOrder = new SteamJobOrderRequest({
           guid: this.steamItem?.guid,
           sot_guid: this.steamItem?.sot_guid,

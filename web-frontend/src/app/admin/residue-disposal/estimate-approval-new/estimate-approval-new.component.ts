@@ -1843,4 +1843,8 @@ export class ResidueDisposalEstimateApprovalNewComponent extends UnsubscribeOnDe
   roundUpCost(cost: number) {
     return BusinessLogicUtil.roundUpCost(cost);
   }
+
+  isEstimateApproved() {
+    return this.residueItem?.status_cv == "APPROVED";
+  }
 }

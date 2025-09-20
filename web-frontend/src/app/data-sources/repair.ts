@@ -1737,7 +1737,7 @@ export class RepairDS extends BaseDataSource<RepairItem> {
 
   getRepairForMovement(sot_guid: any): Observable<RepairItem[]> {
     this.loadingSubject.next(true);
-    const where: any = { sot_guid: { eq: sot_guid } }
+    const where: any = { sot_guid: { eq: sot_guid }, status_cv: { nin: ["CANCELED"] } }
     return this.apollo
       .query<any>({
         query: GET_REPAIR_FOR_MOVEMENT,
