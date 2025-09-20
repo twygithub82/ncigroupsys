@@ -1065,7 +1065,7 @@ export class PDFUtility {
   }
 
   static RightSubTitleFontSize(): number {
-    const fontSize = 8;
+    const fontSize = 9;
     return fontSize;
   }
 
