@@ -14,6 +14,7 @@ namespace IDMS.Billing.GqlTypes.LocalModel
         public string action { get; set; }
         [GraphQLIgnore]
         public string? billing_guid { get; set; }
+        public string? existing_billing_guid { get; set; } //existing invoice's billing_guid to be un-linked and checked for soft-delete
     }
 
     [NotMapped]
