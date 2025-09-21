@@ -101,7 +101,7 @@
           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 col-xs-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-              <mat-select formControlName="depot_status_cv">
+              <mat-select formControlName="depot_status_cv" (selectionChange)="AutoSearch()">
                 @for (codeValue of depotCvList; track codeValue) {
                 <mat-option [value]="codeValue.code_val">
                   {{codeValue.description}}

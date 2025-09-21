@@ -830,4 +830,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
   isAllowEdit() {
     return this.modulePackageService.hasFunctions(['REPAIR_JOBS_EDIT']);
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.onFilter();
+  }
 }

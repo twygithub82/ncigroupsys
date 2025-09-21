@@ -766,4 +766,9 @@ export class JobOrderComponent extends UnsubscribeOnDestroyAdapter implements On
       this.onTabFocused();
     }
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.onFilterRepair();
+  }
 }

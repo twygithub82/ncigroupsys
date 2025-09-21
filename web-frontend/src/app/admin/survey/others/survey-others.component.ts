@@ -783,4 +783,10 @@ export class SurveyOthersComponent extends UnsubscribeOnDestroyAdapter implement
     this.customerCodeControl.reset('');
     this.lastCargoControl.reset('');
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
+    }
+  }
 }

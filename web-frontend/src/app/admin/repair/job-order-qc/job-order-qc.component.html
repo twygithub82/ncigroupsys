@@ -44,7 +44,7 @@
           <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.REPAIR_TYPE}}</mat-label>
-              <mat-select multiple formControlName="repairOptionCv">
+              <mat-select multiple formControlName="repairOptionCv" (selectionChange)="AutoSearch()">
                 @for (codeValue of repairOptionCvList; track codeValue) {
                 <mat-option [value]="codeValue.code_val">
                   {{codeValue.description}}

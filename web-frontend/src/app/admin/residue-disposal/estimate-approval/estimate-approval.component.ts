@@ -998,4 +998,9 @@ export class ResidueDisposalEstimateApprovalComponent extends UnsubscribeOnDestr
 
     return bRetval;
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
 }

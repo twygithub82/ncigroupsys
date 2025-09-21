@@ -751,6 +751,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     addSot.repair_guid = addSot.repair_guid;
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         repair: this.repairItem,
         item: row ? row : addSot,
@@ -790,6 +791,7 @@ export class RepairEstimateNewComponent extends UnsubscribeOnDestroyAdapter impl
     }
     const dialogRef = this.dialog.open(FormDialogComponent, {
       width: '1000px',
+      disableClose: true,
       data: {
         repair: this.repairItem,
         item: row,

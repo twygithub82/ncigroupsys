@@ -577,6 +577,11 @@ export class JobOrderQCComponent extends UnsubscribeOnDestroyAdapter implements 
     this.onFilter();
   }
 
+    AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.onFilter();
+  }
+
   // private subscribeToJobOrderEvent(
   //   subscribeFn: (guid: string) => Observable<any>,
   //   job_order_guid: string

@@ -753,4 +753,9 @@ export class JobOrderTaskComponent extends UnsubscribeOnDestroyAdapter implement
     this.resetForm();
     this.onFilterJobOrder();
   }
+
+    AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.onFilterJobOrder();
+  }
 }

@@ -92,7 +92,7 @@
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill" required>
                       <mat-label>{{translatedLangText.INVOICE_TYPE }}</mat-label>
-                      <mat-select formControlName="invoice_type_cv">
+                      <mat-select formControlName="invoice_type_cv" (selectionChange)="AutoSearch()">
                         @for (codeValue of invoiceTypeCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
@@ -168,7 +168,7 @@
                   <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill">
                       <mat-label>{{translatedLangText.TANK_STATUS}}</mat-label>
-                      <mat-select formControlName="depot_status_cv">
+                      <mat-select formControlName="depot_status_cv" (selectionChange)="AutoSearch()">
                         @for (codeValue of depotCvList; track codeValue) {
                         <mat-option [value]="codeValue.code_val">
                           {{codeValue.description}}
@@ -180,7 +180,7 @@
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 mb-0">
                     <mat-form-field class="example-full-width" appearance="fill" required>
                       <mat-label>{{translatedLangText.BILLING_CURRENCY }}</mat-label>
-                      <mat-select formControlName="currency">
+                      <mat-select formControlName="currency" (selectionChange)="AutoSearch()">
                         <mat-option *ngFor="let cc of currencyList" [value]="cc">
                           <ng-container *ngIf="cc !== null">
                             {{cc.currency_code }}
@@ -188,9 +188,9 @@
                         </mat-option>
                       </mat-select>
                       @if (searchForm?.get('currency')?.hasError('required') ) {
-                      <mat-error>
+                      <!-- <mat-error>
                         {{translatedLangText.BILLING_CURRENCY }} {{translatedLangText.IS_REQUIRED}}
-                      </mat-error>
+                      </mat-error> -->
                       }
                     </mat-form-field>
                   </div>

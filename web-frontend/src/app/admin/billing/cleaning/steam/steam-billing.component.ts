@@ -394,18 +394,20 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
     //where.status_cv = { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] };
 
-   //For Steaming Temp
-   // where.status_cv = { in: ['COMPLETED'] }; 
+    //For Steaming Temp
+    // where.status_cv = { in: ['COMPLETED'] }; 
 
-    where.or= [
-      {  and: [
+    where.or = [
+      {
+        and: [
           { create_by: { neq: "system" } },
-          { status_cv: { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED']  }}
+          { status_cv: { in: ['QC_COMPLETED', 'COMPLETED', 'APPROVED', 'JOB_IN_PROGRESS', 'ASSIGNED', 'PARTIAL_ASSIGNED'] } }
         ]
       },
-      { and: [
+      {
+        and: [
           { create_by: { eq: "system" } },
-          { status_cv: {in: ['QC_COMPLETED', 'COMPLETED'] }}
+          { status_cv: { in: ['QC_COMPLETED', 'COMPLETED'] } }
         ]
       }
     ];
@@ -414,7 +416,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
 
 
     if (!where.storing_order_tank) where.storing_order_tank = {};
-         where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS};
+    where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
 
 
     if (this.searchForm?.get('depot_status_cv')?.value != "") {
@@ -458,7 +460,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       where.customer_billing_guid = { neq: null };
     }
 
-   if (this.searchForm!.get('branch_code')?.value) {
+    if (this.searchForm!.get('branch_code')?.value) {
       where.customer_company = { code: { eq: this.searchForm!.get('branch_code')?.value.code } }
     }
 
@@ -1126,17 +1128,23 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
     this.search();
   }
 
-   AllowToDelete() {
-  if (this.selection.selected.length === 0) {
-    return false;
+  AllowToDelete() {
+    if (this.selection.selected.length === 0) {
+      return false;
+    }
+
+    for (const cln of this.selection.selected) {
+      if (!cln.customer_billing?.invoice_no) {
+        return false; // if empty, null, or undefined → false
+      }
+    }
+
+    return true;
   }
 
-  for (const cln of this.selection.selected) {
-    if (!cln.customer_billing?.invoice_no) {
-      return false; // if empty, null, or undefined → false
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
     }
   }
-
-  return true;
-}
 }

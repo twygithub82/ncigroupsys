@@ -1142,20 +1142,26 @@ export class SteamEstimateApprovalComponent extends UnsubscribeOnDestroyAdapter 
     return footer.colspan ? (footer.colspan * 11.11) + '%' : '100%';
   }
 
-  IsEnable3Dots(steamRow:any):boolean{
-    var bRetval:boolean=false;
-    
+  IsEnable3Dots(steamRow: any): boolean {
+    var bRetval: boolean = false;
+
     // bRetval=this.steamDS.canApprove(residueRow);
     // if(bRetval) return bRetval;
-    bRetval=this.steamDS.canCopy(steamRow);
-    if(bRetval) return bRetval;
-    bRetval=this.steamDS.canRollbackEstimate(steamRow);
-    if(bRetval) return bRetval;
-    bRetval=this.steamDS.canCancel(steamRow);
-    if(bRetval) return bRetval;
+    bRetval = this.steamDS.canCopy(steamRow);
+    if (bRetval) return bRetval;
+    bRetval = this.steamDS.canRollbackEstimate(steamRow);
+    if (bRetval) return bRetval;
+    bRetval = this.steamDS.canCancel(steamRow);
+    if (bRetval) return bRetval;
     // bRetval=this.steamDS.canNoAction(residueRow);
     // if(bRetval) return bRetval;
 
     return bRetval;
+  }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
+    }
   }
 }

@@ -1005,18 +1005,23 @@ export class ResidueBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     this.search();
   }
 
-   AllowToDelete() {
-  if (this.selection.selected.length === 0) {
-    return false;
+  AllowToDelete() {
+    if (this.selection.selected.length === 0) {
+      return false;
+    }
+
+    for (const cln of this.selection.selected) {
+      if (!cln.customer_billing?.invoice_no) {
+        return false; // if empty, null, or undefined → false
+      }
+    }
+
+    return true;
   }
 
-  for (const cln of this.selection.selected) {
-    if (!cln.customer_billing?.invoice_no) {
-      return false; // if empty, null, or undefined → false
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
     }
   }
-
-  return true;
-}
-
 }
