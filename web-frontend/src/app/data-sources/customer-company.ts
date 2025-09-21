@@ -301,6 +301,10 @@ export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
           update_dt
           website
           main_customer_guid
+          main_customer_company {
+            code
+            name
+          }
           remarks
           cc_contact_person {
             create_by

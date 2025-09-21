@@ -377,8 +377,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
     where.and = [
-      { customer_company: { main_customer_guid: { neq: null } } },
-      { customer_company: { main_customer_guid: { neq: "" } } },
       { customer_company: { type_cv: { in: ["BRANCH"] } } },
       { customer_company: { delete_dt: { eq: null } } }
     ];
@@ -549,9 +547,8 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
         } else {
           searchCriteria = value || '';
         }
-        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["OWNER", "BRANCH", "LEESSEE"] } }, { code: 'ASC' }, 100).subscribe(data => {
+        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["OWNER", "BRANCH", "LEESSEE"] } }, { code: 'ASC' }).subscribe(data => {
           this.all_customer_companyList = data;
-          debugger
         });
       })
     ).subscribe();
