@@ -34,14 +34,27 @@
   background-color: #ffffff;
 }
 
+//-------- For the Gate Details table section -------------
 ::ng-deep .table.table-bordered tbody tr td,
-
-// ::ng-deep .table-striped tbody tr:nth-of-type(odd) {
-//   background-color: lighten(#b3cbff, 10%);
-// }
-// ::ng-deep .table-striped tbody tr:nth-of-type(even) {
-//   background-color: lighten(#b3cbff, 10%);
-// }
 ::ng-deep .table.table-bordered tbody tr th {
-  border: 1px solid #dee2e6;
+  border: 1px solid #cfcfd4;
 }
+
+.curve-table.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: lighten(#b3cbff, 10%) !important;
+}
+
+.curve-table {
+  th {
+    width: 200px;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+//-------------------------------------------------------
