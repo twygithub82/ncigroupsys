@@ -726,7 +726,7 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
     startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
       this.translate, reportTitle, repGeneratedDate,subtitlePos);
-      startY += PDFUtility.SubTitleFontSize_Landscape() / 2;
+      startY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 6, PDFUtility.CenterSubTitleFontSize());
 
     // if(this.customer)
@@ -842,7 +842,8 @@ export class CustomerMonthlySalesReportDetailsPdfComponent extends UnsubscribeOn
     });
 
     // Add footer
-    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,pagePositions);
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+       rightMargin,  this.translate, pagePositions);
 
 
     // const totalPages = pdf.getNumberOfPages();

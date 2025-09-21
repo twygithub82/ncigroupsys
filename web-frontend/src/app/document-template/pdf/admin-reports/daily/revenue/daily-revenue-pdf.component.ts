@@ -661,7 +661,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     var teamStr = PDFUtility.FormatColon(this.translatedLangText.TEAM, this.team);
     startY += PDFUtility.SubTitleFontSize_Portrait()/2;
     await Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-    startY += PDFUtility.TableStartTopBuffer();
+   startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
 
 
 
@@ -696,8 +696,8 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY,
-      margin: { left: leftMargin, right: rightMargin },
+      //startY: startY,
+      margin: { top:startY, left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
         fontSize: fontSz_body,

@@ -277,6 +277,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     NO_OF_TANKS_REQ_TEMP: "COMMON-FORM.NO-OF-TANKS-REQ-TEMP",
     NO_OF_TANKS_STEAM_CARGO: "COMMON-FORM.NO-OF-TANKS-STEAM-CARGO",
     S_N: 'COMMON-FORM.S_N',
+    CODE: 'COMMON-FORM.CODE',
 
   }
 
@@ -880,7 +881,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     let tableRowHeight = 8.5;
     let minHeightHeaderCol = 3;
     let minHeightBodyCell = 5;
-    let fontSize = 5.5;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
 
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -890,7 +892,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       { content: this.translatedLangText.S_N, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.TANK_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       // { content: this.translatedLangText.EIR_NO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },  
-      { content: this.translatedLangText.CUSTOMER, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
+      { content: this.translatedLangText.CODE, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.CARGO, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.COMPLETED_DATE, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
       { content: this.translatedLangText.DURATION, rowSpan: 3, styles: { halign: 'center', valign: 'bottom' } },
@@ -916,9 +918,9 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      3: { halign: 'left', valign: 'middle', cellWidth: 70, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      3: { halign: 'left', valign: 'middle', cellWidth: 62, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
       5: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
       6: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
@@ -938,6 +940,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -951,8 +954,8 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
@@ -963,7 +966,10 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     //const repGeneratedDate = await Utility.GetReportGeneratedDate(this.translate);
     // Replace with your actual cutoff date
     const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.STEAMING_PERIOD, this.date);
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, PDFUtility.RightSubTitleFontSize());
+    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin,
+       this.translate, reportTitle, cutoffDate);
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+    // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 8, PDFUtility.RightSubTitleFontSize());
     // Utility.AddTextAtCenterPage(pdf,cutoffDate,pageWidth,leftMargin,rightMargin+6,lastTableFinalY+8,8)
     //pdf.text(cutoffDate, pageWidth - rightMargin, lastTableFinalY + 10, { align: "right" });
 
@@ -988,7 +994,7 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       CurrentPage = repPage;
     }
 
-    let startY = lastTableFinalY + 13; // Start table 20mm below the customer name
+    //  startY = lastTableFinalY + 13; // Start table 20mm below the customer name
     for (let n = 0; n < this.repData.length; n++) {
       let itm = this.repData[n];
       data.push([
@@ -1009,9 +1015,9 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
       body: data,
       // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin, top: topMargin + 45 },
+      margin: { left: leftMargin, top: startY },
       styles: {
-        fontSize: fontSize,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -1033,9 +1039,11 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+             PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+             PDFUtility.addReportSubTitle_Landscape(pdf, cutoffDate, pageWidth, leftMargin, rightMargin);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
             //Utility.AddTextAtCenterPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin + 5, lastTableFinalY + 6, 9);
-            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.RightSubTitleFontSize());
+            // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.RightSubTitleFontSize());
           }
 
         }
@@ -1043,75 +1051,25 @@ export class SteamPerformanceDetailPdfComponent extends UnsubscribeOnDestroyAdap
     });
 
 
-    //   const cardElements = this.pdfTable.nativeElement.querySelectorAll('.card');
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin,rightMargin,  this.translate, pagePositions);
 
+    // const totalPages = pdf.getNumberOfPages();
 
-    //   if(cardElements.length==3)
-    //   {
-    //     pdf.addPage();
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-    //     var chartContentWidth=pageWidth/2.2;
-    //     var startX=leftMargin;
-    //     startY=50;
-    //     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 15);
-    //   for (var i = 0; i < cardElements.length; i++) {
-
-
-    //       const card1 = cardElements[i];
-    //       const canvas1 = await html2canvas(card1, { scale: scale });
-    //       const imgData1 = canvas1.toDataURL('image/jpeg', this.imageQuality);
-
-    //       // Calculate aspect ratio
-    //       const aspectRatio = canvas1.width / canvas1.height;
-
-    //       // Calculate scaled height based on available width
-    //       let imgHeight1 = chartContentWidth / aspectRatio;
-
-    //       // Check if the scaled height exceeds the available page height
-    //       const maxPageHeight = pdf.internal.pageSize.height - startY; // Remaining space on the page
-    //       if (imgHeight1 > maxPageHeight) {
-    //         // Adjust height to fit within the page
-    //         imgHeight1 = maxPageHeight;
-    //         // Recalculate width to maintain aspect ratio
-    //         chartContentWidth = imgHeight1 * aspectRatio;
-    //       }
-
-
-
-    //       // Add the image to the PDF
-    //       pdf.addImage(imgData1, 'JPEG', startX, startY, chartContentWidth, imgHeight1);
-    //       if((startX+chartContentWidth+leftMargin+rightMargin+50)>pageWidth )
-    //       {
-    //         startX=leftMargin;
-    //         startY+=imgHeight1+5;
-    //         chartContentWidth=chartContentWidth*2;
-    //       }
-    //       else
-    //       {
-    //         startX += chartContentWidth+2;
-    //       }
-
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
     //   }
-    // }
-
-    const totalPages = pdf.getNumberOfPages();
-
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    // }// Add Second Page, Add For Loop
 
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color

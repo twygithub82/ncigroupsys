@@ -669,7 +669,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
     startY +=PDFUtility.SubTitleFontSize_Portrait()/2;
     const approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
     Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
-    startY += PDFUtility.TableStartTopBuffer();
+    startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
 
     // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
     // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);

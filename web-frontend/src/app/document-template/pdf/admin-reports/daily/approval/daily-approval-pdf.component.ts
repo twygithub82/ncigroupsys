@@ -626,7 +626,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     const approvalDt = PDFUtility.FormatColon(this.translatedLangText.APPROVAL_DATE, this.date);
     let startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
        rightMargin, this.translate, reportTitle, approvalDt);
-    startY += PDFUtility.TableStartTopBuffer();
+    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
 
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost

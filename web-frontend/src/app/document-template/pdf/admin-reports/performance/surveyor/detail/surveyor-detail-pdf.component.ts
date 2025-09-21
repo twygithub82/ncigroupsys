@@ -526,7 +526,8 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     let reportTitleCompanyLogo = 32;
     let tableHeaderHeight = 12;
     let tableRowHeight = 8.5;
-
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait();
     const pagePositions: { page: number; x: number; y: number }[] = [];
     //   const progressValue = 100 / cardElements.length;
 
@@ -550,26 +551,13 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
         '', '' // Empty cells for DUE_DAYS and DUE_TYPE (they are spanned by rowSpan: 2)
       ]
     ];
-    //  const headers =  [[
-    //   { content:this.translatedLangText.NO,rowSpan: 2, styles: { halign: 'center' } }, 
-    //    {content:this.translatedLangText.TANK_NO, rowSpan: 2, styles: { halign: 'center' } }, 
-    //    {content:this.translatedLangText.EIR_NO, rowSpan: 2, styles: { halign: 'center' } }, 
-    //    {content:this.translatedLangText.EIR_DATE,rowSpan: 2, styles: { halign: 'center' } },  
-    //    {content:this.translatedLangText.OWNER, rowSpan: 2, styles: { halign: 'center' } }, 
-    //   { content: this.translatedLangText.LAST_PERIODIC_TEST, colSpan: 3, styles: { halign: 'center' } }, 
-    //   { content: this.translatedLangText.NEXT_PERIODIC_TEST, colSpan: 2, styles: { halign: 'center' } }, 
-    //   {content:this.translatedLangText.DUE_DAYS, rowSpan: 2, styles: { halign: 'center' } },
-    //   {content:this.translatedLangText.DUE_TYPE, rowSpan: 2, styles: { halign: 'center' } },
-    // ], [
-    //   '', '', '', '', '', this.translatedLangText.TYPE, this.translatedLangText.DATE,this.translatedLangText.CLASS
-    //   , this.translatedLangText.TYPE, this.translatedLangText.DATE, '', ''
-    // ]];
-
+    
     // Define headStyles with valid fontStyle
     const headStyles: Partial<Styles> = {
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -581,78 +569,77 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
     var gap = 8;
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
     let minHeightHeaderCol = 3;
-    let fontSize = 6;
+    
     const comStyles: any = {
       0: { halign: 'center', valign: 'middle', cellWidth: 10 },
-      1: { halign: 'left', valign: 'middle', cellWidth: 30 },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait() },
       // 2: { halign: 'left', valign: 'middle', cellWidth: 22 },
-      2: { halign: 'center', valign: 'middle' },
+      2: { halign: 'center', valign: 'middle', cellWidth: 25 },
       3: { halign: 'center', valign: 'middle' },
-      4: { halign: 'center', valign: 'middle' },
-      5: { halign: 'center', valign: 'middle' },
-      6: { halign: 'center', valign: 'middle' },
-      7: { halign: 'center', valign: 'middle' },
-      8: { halign: 'center', valign: 'middle' },
+      4: { halign: 'center', valign: 'middle', cellWidth: 25 },
+      5: { halign: 'center', valign: 'middle' , cellWidth: 20},
+      6: { halign: 'center', valign: 'middle' , cellWidth: 20},
+      7: { halign: 'center', valign: 'middle' , cellWidth: 20},
+      8: { halign: 'center', valign: 'middle' , cellWidth: 20},
       //  10: { halign: 'center', valign: 'middle', cellWidth: 15 },
     };
 
     lastTableFinalY += 4;
-    pdf.setFontSize(8);
+    // pdf.setFontSize(8);
     const invDate =  PDFUtility.FormatColon(this.translatedLangText.SURVEY_PERIOD, this.date);
-    Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, PDFUtility.RightSubTitleFontSize());
-    lastTableFinalY += PDFUtility.TableStartTopBuffer();
+    // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, lastTableFinalY + 6, PDFUtility.RightSubTitleFontSize());
+    let startPosY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate,
+      reportTitle, invDate);
+     startPosY+= PDFUtility.GapBetweenSubTitleAndTable_Portrait();  
+    // startPosY+= PDFUtility.GapBetweenLeftTitleAndTable();
+    lastTableFinalY=startPosY;
+    // lastTableFinalY += PDFUtility.TableStartTopBuffer();
     var CurrentPage = 1;
     var buffer = 20;
     for (let n = 0; n < this.repData.length; n++) {
       //if (n > 0) lastTableFinalY += 8;
-      if (n > 0) lastTableFinalY += 4; // 2nd table
-      else lastTableFinalY = 49; // First table of the page
-      const data: any[][] = []; // Explicitly define data as a 2D array
+      if (n > 0) lastTableFinalY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait(); // 2nd table
+      else lastTableFinalY = startPosY; // First table of the page
+       // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let sur = this.repData[n];
 
-      //   // Calculate space required for customer name and table
-      // var subTitleHeight = 20; // Height required for customer name
-      // var tableHeight = ((cust.in_yard_storing_order_tank?.length||0) * tableRowHeight + tableHeaderHeight); // Approximate table height
-
-      // // Check if there is enough space on the current page
-      // if (lastTableFinalY + subTitleHeight + tableHeight > maxContentHeight) {
-      //   // Add a new page if there isn't enough space
-      //   if(n>0) pdf.addPage();
-      //   pageNumber++;
-      //   lastTableFinalY = topMargin; // Reset Y position for the new page
-      //   if (n>0) lastTableFinalY+=8;
-      // }
+     
 
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      // if ((repPage == CurrentPage) && 
+      if((pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
-        lastTableFinalY = 5 + topMargin;
+        lastTableFinalY = startPosY;
       }
       else {
         CurrentPage = repPage;
       }
 
       //lastTableFinalY+=gap;
-      lastTableFinalY += 2;
-      pdf.setFontSize(PDFUtility.RightSubTitleFontSize());
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      let startY = 0;
       if ((sur.surveyor_details?.length || 0) > 0) {
-        lastTableFinalY += 3;
+
+      var surveyor=`${this.translatedLangText.SURVEYOR} : ${sur.surveyor}`;
+      await Utility.AddTextAtLeftCornerPage(pdf,surveyor,pageWidth,leftMargin,rightMargin,lastTableFinalY,PDFUtility.SubTitleFontSize_Portrait());
+
+      // pdf.setFontSize(PDFUtility.SubTitleFontSize_Portrait());
+      // pdf.setTextColor(0, 0, 0); // Black text
+      // pdf.text(surveyor, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      let startY = 0;
+      const data: any[][] = [];
+        lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
         //  pdf.setFontSize(8);
         //  var subTitle =  `${this.translatedLangText.AVAILABLE_IN_YARD}`;
         //  pdf.text(subTitle, leftMargin, lastTableFinalY);
         //  lastTableFinalY+=2;            
-        startY = lastTableFinalY; // Start table 20mm below the customer name
+        startY = startPosY+PDFUtility.GapBetweenLeftTitleAndTable(); // Start table 20mm below the customer name
 
         for (let b = 0; b < (sur.surveyor_details?.length || 0); b++) {
           var itm = sur.surveyor_details?.[b]!;
@@ -674,10 +661,10 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
           body: data,
           //  startY: startY, // Start table at the current startY value
           theme: 'grid',
-          margin: { left: leftMargin, top: topMargin + 47 },
+          margin: { left: leftMargin, top: startY },
           tableWidth: pageWidth - leftMargin - rightMargin,
           styles: {
-            fontSize: fontSize,
+            fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol
 
           },
@@ -689,37 +676,39 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
             halign: 'left', // Left-align content for body by default
             valign: 'middle', // Vertically align content
           },
-          didParseCell: (data: any) => {
+          didParseCell: (d: any) => {
             let colSpan: number = 5;
-            let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
+            let totalRowIndex = d.table.body.length - 1; // Ensure the correct last row index
 
 
             //if(data.row.index==totalRowIndex || data.row.index==averageRowIndex){
-            if (data.row.index == totalRowIndex) {
-              data.cell.styles.fontStyle = 'bold';
-              data.cell.styles.fillColor = [231, 231, 231];
-              data.cell.styles.valign = 'middle'; // Center text vertically
-              if (data.column.index === 0) {
-                data.cell.colSpan = colSpan;  // Merge 4 columns into one
-                data.cell.styles.halign = 'right'; // Center text horizontally
+            if (d.row.index == totalRowIndex) {
+              d.cell.styles.fontStyle = 'bold';
+              d.cell.styles.fillColor = [231, 231, 231];
+              d.cell.styles.valign = 'middle'; // Center text vertically
+              if (d.column.index === 0) {
+                d.cell.colSpan = colSpan;  // Merge 4 columns into one
+                d.cell.styles.halign = 'right'; // Center text horizontally
               }
             }
-            if ((data.row.index == totalRowIndex) && data.column.index > 0 && data.column.index < colSpan) {
-              data.cell.text = ''; // Remove text from hidden columns
-              data.cell.colSpan = 0; // Hide these columns
+            if ((d.row.index == totalRowIndex) && d.column.index > 0 && d.column.index < colSpan) {
+              d.cell.text = ''; // Remove text from hidden columns
+              d.cell.colSpan = 0; // Hide these columns
             }
           },
-          didDrawPage: (data: any) => {
+          didDrawPage: (d: any) => {
             const pageCount = pdf.getNumberOfPages();
 
-            lastTableFinalY = data.cursor.y;
+            lastTableFinalY = d.cursor.y;
 
             var pg = pagePositions.find(p => p.page == pageCount);
             if (!pg) {
               pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
               if (pageCount > 1) {
-                Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-                Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.RightSubTitleFontSize());
+                // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+                // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, 48, PDFUtility.RightSubTitleFontSize());
+                PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+                PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin);
               }
             }
           },
@@ -730,23 +719,25 @@ export class SurveyorDetailPerformancePdfComponent extends UnsubscribeOnDestroyA
 
     }
 
-    const totalPages = pdf.getNumberOfPages();
+   await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf,  pageWidth, topMargin, bottomMargin,
+       leftMargin, rightMargin, this.translate,pagePositions);
+    // const totalPages = pdf.getNumberOfPages();
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
 
 

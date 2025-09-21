@@ -176,7 +176,8 @@ export class PDFUtility {
     rightMargin: number,
     translateService: TranslateService, // Inject TranslateService
     title: string,
-    subTitle: string
+    subTitle: string,
+    subtitlePos:number =0
   ): Promise<number>
   {
     var startY=topMargin;
@@ -186,7 +187,7 @@ export class PDFUtility {
   }
 
   if(subTitle != null && subTitle != ''){
-     startY=this.addReportSubTitle_Portrait(pdf, subTitle, pageWidth, leftMargin, rightMargin);
+     startY=this.addReportSubTitle_Portrait(pdf, subTitle, pageWidth, leftMargin, rightMargin,subtitlePos);
   }
 
    return startY;
@@ -200,11 +201,18 @@ export class PDFUtility {
     return startY;
   }
 
-   static addReportSubTitle_Portrait(pdf: jsPDF, subTitle: string, pageWidth: number, leftMargin: number, rightMargin: number): number {
+   static addReportSubTitle_Portrait(pdf: jsPDF, subTitle: string, pageWidth: number, leftMargin: number, rightMargin: number ,subTitlePos:number=0): number {
     let startY = 0;
       var subTitleFontSize = this.SubTitleFontSize_Portrait();
      startY = this.SubTitlePositionY_Portrait();
-     this.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);
+    if(subTitlePos==0){
+      this.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);
+     }
+     else
+     {
+      this.AddTextAtCenterPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);
+     }
+    //  this.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);
     return startY;
   }
 
@@ -395,7 +403,7 @@ export class PDFUtility {
     return startY;
   }
 
-   static addReportSubTitle_Landscape(pdf: jsPDF, subTitle: string, pageWidth: number, leftMargin: number, rightMargin: number,subTitlePos:number): number {
+   static addReportSubTitle_Landscape(pdf: jsPDF, subTitle: string, pageWidth: number, leftMargin: number, rightMargin: number,subTitlePos:number=0): number {
     let startY = 0;
       var subTitleFontSize = this.SubTitleFontSize_Landscape();
      startY = this.SubTitlePositionY_Landscape();
@@ -409,8 +417,8 @@ export class PDFUtility {
     return startY;
   }
 
-   static async addFooterWithPageNumberAndCompanyLogo_Landscape(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number,
-     leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[]) {
+   static async addFooterWithPageNumberAndCompanyLogo_Landscape(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number, 
+    leftMargin: number, rightMargin: number,  translateService: TranslateService, pagePositions: { page: number; x: number; y: number; }[]) {
      var fontSize =8
      var totalPages=pdf.getNumberOfPages();
      for (const { page, x, y } of pagePositions) {
@@ -425,7 +433,7 @@ export class PDFUtility {
       pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
       if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+         await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
       }
     }// Add Second Page, Add For Loop
   }
@@ -1441,8 +1449,23 @@ export class PDFUtility {
 
   }
 
-  static async TankNo_ColWidth_Portrait()
+  static  TankNo_ColWidth_Portrait()
   {
     return 28;
+  }
+
+  static  GapBetweenLeftTitleAndTable()
+  {
+    return 2;
+  }
+
+  static  GapBetweenSubTitleAndTable_Portrait()
+  {
+    return ((this.SubTitleFontSize_Portrait()/2)+1);
+  }
+
+  static  GapBetweenSubTitleAndTable_Landscape()
+  {
+    return ((this.SubTitleFontSize_Landscape()/2)+1);;
   }
 }
