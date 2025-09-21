@@ -694,13 +694,15 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
 
-        lastTableFinalY = d.cursor.y;
+        // lastTableFinalY = d.cursor.y;
 
         var pg = pagePositions.find(p => p.page == pageCount);
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            //Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+           let posY= PDFUtility.addReportSubTitle_Portrait(pdf, approvalDt, pageWidth, leftMargin, rightMargin);
           }
         }
 
