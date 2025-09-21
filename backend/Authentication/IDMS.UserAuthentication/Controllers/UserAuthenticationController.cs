@@ -294,11 +294,15 @@ namespace IDMS.UserAuthentication.Controllers
 
         [HttpPost("forgot-password")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([Required] string mail)
+        public async Task<IActionResult> ForgotPassword([Required]string username, string mail="")
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(mail);
+                ApplicationUser? user; 
+                user = await _userManager.FindByNameAsync(username);
+                if (user == null && !string.IsNullOrEmpty(mail))
+                    user = await _userManager.FindByEmailAsync(mail);
+
                 if (user != null)
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -322,7 +326,7 @@ namespace IDMS.UserAuthentication.Controllers
 
 
                 }
-                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "The email is not yet registered" } });
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = new string[] { "User not found" } });
 
             }
             catch (Exception ex)

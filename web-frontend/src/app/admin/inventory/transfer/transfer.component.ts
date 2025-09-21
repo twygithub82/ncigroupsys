@@ -225,6 +225,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.code;
+          this.search();
         } else {
           searchCriteria = value || '';
         }
@@ -242,6 +243,7 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+          this.search();
         } else {
           searchCriteria = value || '';
         }
@@ -249,6 +251,30 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
           this.last_cargoList = data
           this.updateValidators(this.lastCargoControl, this.last_cargoList);
         });
+      })
+    ).subscribe();
+
+    this.searchForm!.get('purpose')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
+      })
+    ).subscribe();
+
+    this.searchForm!.get('tank_status_cv')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
+      })
+    ).subscribe();
+
+    this.searchForm!.get('yard_cv')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
       })
     ).subscribe();
   }
@@ -419,6 +445,31 @@ export class TransferComponent extends UnsubscribeOnDestroyAdapter implements On
         soSearch.customer_company = { guid: { contains: this.searchForm!.get('customer_code')?.value.guid } };
       }
       where.storing_order = soSearch;
+    }
+
+    const purpose = this.searchForm?.get('purpose')?.value;
+    if (purpose) {
+      if (purpose.includes('STORAGE')) {
+        where.purpose_storage = { eq: true };
+      }
+      if (purpose.includes('CLEANING')) {
+        where.purpose_cleaning = { eq: true };
+      }
+      if (purpose.includes('STEAM')) {
+        where.purpose_steam = { eq: true };
+      }
+
+      const repairPurposes = [];
+      if (purpose.includes('REPAIR')) {
+        repairPurposes.push('REPAIR');
+      }
+      if (purpose.includes('OFFHIRE')) {
+        repairPurposes.push('OFFHIRE');
+      }
+
+      if (repairPurposes.length > 0) {
+        where.purpose_repair_cv = { in: repairPurposes };
+      }
     }
 
     this.lastSearchCriteria = this.sotDS.addDeleteDtCriteria(where);

@@ -17,7 +17,12 @@ namespace IDMS.Models.Shared
         public string? action { get; set; }
         public string? code { get; set; }
         public string? opt { get; set; }
+
+        [UseFiltering]
         public virtual IEnumerable<role_functions>? role_functions { get; set; }
+
+        [UseFiltering]
+        [UseSorting]
         public virtual IEnumerable<user_functions>? user_functions { get; set; }
     }
 
@@ -34,7 +39,11 @@ namespace IDMS.Models.Shared
 
         [NotMapped]
         public string? action { get; set; }
+
+        [UseFiltering]
         public virtual functions? functions { get; set; }
+        
+        [UseFiltering]
         public virtual role? role { get; set; }
     }
 
@@ -45,13 +54,19 @@ namespace IDMS.Models.Shared
 
         [ForeignKey("functions")]
         public string? functions_guid { get; set; }
+
+        [ForeignKey("user")]
         public string? user_guid { get; set; }
         public bool? adhoc { get; set; }
         public string? remarks { get; set; }    
 
         [NotMapped]
         public string? action { get; set; }
+        
+        [UseFiltering]
         public virtual functions? functions { get; set; }
+        
+        [UseFiltering]
         public virtual aspnetusers? user { get; set; }
     }
 }

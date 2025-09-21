@@ -155,7 +155,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
                 if (string.IsNullOrEmpty(staff.Id))
                     staff = await _userManager.FindByNameAsync(staffModel.Username);
-             
+
                 //Continue to get actual user claims
                 var staffRoles = await _userManager.GetRolesAsync(staff);
                 staff.CurrentSessionId = Guid.NewGuid();
@@ -163,7 +163,7 @@ namespace IDMS.User.Authentication.API.Controllers
                 //var authClaims = Utilities.utils.GetClaims(2,staff.UserName,staff.Email,staffRoles);
 
                 bool tokenNeverExpired = false;
-                if(staff.CorporateID == 5)
+                if (staff.CorporateID == 5)
                     tokenNeverExpired = true;
 
                 UserType curUserType = UserType.Staff;
@@ -327,7 +327,7 @@ namespace IDMS.User.Authentication.API.Controllers
             try
             {
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
-                if(primarygroupSid == null)
+                if (primarygroupSid == null)
                     primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
 
 
@@ -409,7 +409,7 @@ namespace IDMS.User.Authentication.API.Controllers
                 if (statusCode != System.Net.HttpStatusCode.OK)
                     return StatusCode((int)statusCode, new { message = message });
 
-                
+
                 JObject JWT = JObject.Parse(message);
                 curStaff = await _userManager.FindByNameAsync(staffDTO.UserTag!);
                 curStaff.LicenseToken = JWT["token"].ToString();
@@ -439,7 +439,7 @@ namespace IDMS.User.Authentication.API.Controllers
                 var loginUser = User.FindFirstValue("name");
 
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
-                if(primarygroupSid == null)
+                if (primarygroupSid == null)
                     primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
 
                 if (primarygroupSid != "a1")
@@ -484,7 +484,7 @@ namespace IDMS.User.Authentication.API.Controllers
             try
             {
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
-                if(primarygroupSid == null)
+                if (primarygroupSid == null)
                     primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
 
 
@@ -519,7 +519,7 @@ namespace IDMS.User.Authentication.API.Controllers
                         ContactNo = usr.PhoneNumber,
                         ActivateCode = usr.ActivationCode,
                         LicenseToken = usr.LicenseToken
-                        
+
                     };
 
                     //var roles = await _userManager.GetRolesAsync(usr);
@@ -559,7 +559,7 @@ namespace IDMS.User.Authentication.API.Controllers
             try
             {
                 var primarygroupSid = User.FindFirstValue("primarygroupsid");
-                if(primarygroupSid == null)
+                if (primarygroupSid == null)
                     primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
 
                 var username = User.FindFirstValue("name");
@@ -567,7 +567,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
                 if (primarygroupSid != "a1")
                 {
-                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to create staff credential" } });
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to update staff credential" } });
                 }
 
                 List<QueryStaffResult> result = new List<QueryStaffResult>();
@@ -630,6 +630,47 @@ namespace IDMS.User.Authentication.API.Controllers
                 }
                 var ret = await _dbContext.SaveChangesAsync();
                 return StatusCode(StatusCodes.Status200OK, new { message = "Record update successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response() { Status = "Error", Message = new string[] { $"{ex.Message}" } });
+            }
+        }
+
+        [HttpPost("ResetStaffPassword")]
+        public async Task<IActionResult> ResetStaffPassword([FromBody] ResetStaff staff)
+        {
+            try
+            {
+                var primarygroupSid = User.FindFirstValue("primarygroupsid");
+                if (primarygroupSid == null)
+                    primarygroupSid = User.FindFirstValue(ClaimTypes.PrimaryGroupSid);
+
+
+                if (primarygroupSid != "a1")
+                    return Unauthorized(new Response() { Status = "Error", Message = new string[] { "Only administrators are allowed to reset staff credential" } });
+
+                var staffExist = await _userManager.FindByIdAsync(staff.Username!)
+                                ?? await _userManager.FindByNameAsync(staff.Username!);
+
+                if (staffExist == null)
+                    return NotFound(new { message = "User not found." });
+
+
+                // 2. Generate password reset token
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(staffExist);
+
+                // 3. Reset the password using the token
+                var result = await _userManager.ResetPasswordAsync(staffExist, resetToken, staff.NewPassword);
+
+                if (result.Succeeded)
+                {
+                    return Ok(new { message = "Password reset successful." });
+                }
+                else
+                {
+                    return BadRequest(new { message = result.Errors });
+                }
             }
             catch (Exception ex)
             {
@@ -869,7 +910,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
             try
             {
-                var kioskRoles = _configuration.GetSection("Kiosk:Role").Get<List<string>>(); 
+                var kioskRoles = _configuration.GetSection("Kiosk:Role").Get<List<string>>();
                 // var principal = _jwtTokenService.GetPrincipalFromExpiredToken(refreshRequest.Token);
                 var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
                 var sessionId = User.Claims.FirstOrDefault(x => x.Type == "sessionId")?.Value;
@@ -879,7 +920,7 @@ namespace IDMS.User.Authentication.API.Controllers
                 if (!kioskRoles.Contains(role))
                 {
                     // if (userName == null || refreshTokenKey.Token != refreshRequest.RefreshToken || $"{sessionId}" != $"{user?.CurrentSessionId}")
-                    if (userName == null ||  $"{sessionId}" != $"{user?.CurrentSessionId}")
+                    if (userName == null || $"{sessionId}" != $"{user?.CurrentSessionId}")
                     {
                         return Unauthorized();
                     }
@@ -902,7 +943,7 @@ namespace IDMS.User.Authentication.API.Controllers
                 });
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 var userName = User.Claims.FirstOrDefault(x => x.Type == "name")?.Value;
                 var user = await _userManager.FindByNameAsync(userName);
@@ -925,7 +966,7 @@ namespace IDMS.User.Authentication.API.Controllers
 
             }
 
-           
+
         }
 
     }

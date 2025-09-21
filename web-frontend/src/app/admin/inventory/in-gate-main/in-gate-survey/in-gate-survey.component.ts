@@ -188,6 +188,7 @@ export class InGateSurveyComponent extends UnsubscribeOnDestroyAdapter implement
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.code;
+          this.search();
         } else {
           searchCriteria = value || '';
         }

@@ -78,16 +78,82 @@ namespace IDMS.Models.Tariff.GqlTypes
         }
 
 
+        //public async Task<int> UpdateTariffDepot(ApplicationTariffDBContext context, [Service] IConfiguration config,
+        //    [Service] IHttpContextAccessor httpContextAccessor, tariff_depot UpdateTariffDepot)
+        //{
+        //    int retval = 0;
+        //    try
+        //    {
+
+        //        var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+        //        var guid = UpdateTariffDepot.guid;
+        //        var dbTariffDepot = context.tariff_depot.Where(t => t.guid == guid).Include(t => t.tanks).FirstOrDefault();
+
+        //        if (dbTariffDepot == null)
+        //        {
+        //            throw new GraphQLException(new Error("The Depot Cost not found", "500"));
+        //        }
+        //        dbTariffDepot.description = UpdateTariffDepot.description;
+        //        dbTariffDepot.profile_name = UpdateTariffDepot.profile_name;
+        //        // newTariffClean.cost = NewTariffClean.cost;
+        //        dbTariffDepot.preinspection_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.preinspection_cost);
+        //        dbTariffDepot.lolo_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.lolo_cost);
+        //        dbTariffDepot.storage_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.storage_cost);
+        //        dbTariffDepot.free_storage = UpdateTariffDepot.free_storage;
+        //        dbTariffDepot.gate_in_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.gate_in_cost);
+        //        dbTariffDepot.gate_out_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.gate_out_cost);
+        //        // dbTariffDepot.unit_type_cv = UpdateTariffDepot.unit_type_cv;
+        //        dbTariffDepot.tanks = UpdateTariffDepot.tanks;
+        //        dbTariffDepot.update_by = uid;
+        //        dbTariffDepot.update_dt = GqlUtils.GetNowEpochInSec();
+
+        //        if (UpdateTariffDepot.tanks != null)
+        //        {
+        //            var tankGuids = UpdateTariffDepot.tanks.Select(t1 => t1.guid).ToList();
+        //            var tanks = context.tank.Where(t => tankGuids.Contains(t.guid)).ToList();
+
+        //            // newTariffDepot.tanks = NewTariffDepot.tanks;
+        //            // context.tank.
+        //            //newTariffDepot.unit_type_cv = NewTariffDepot.unit_type_cv;
+        //            foreach (var t in dbTariffDepot.tanks)
+        //            {
+        //                t.tariff_depot_guid = null;
+        //                t.update_dt = GqlUtils.GetNowEpochInSec();
+        //                t.update_by = uid;
+        //            }
+        //            foreach (var t in tanks)
+        //            {
+        //                t.tariff_depot_guid = dbTariffDepot.guid;
+        //                t.update_dt = GqlUtils.GetNowEpochInSec();
+        //                t.update_by = uid;
+        //            }
+        //            dbTariffDepot.tanks = tanks;
+        //        }
+
+        //        retval = await context.SaveChangesAsync();
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.StackTrace);
+        //        throw ex;
+        //    }
+        //    return retval;
+        //}
+
+
         public async Task<int> UpdateTariffDepot(ApplicationTariffDBContext context, [Service] IConfiguration config,
-            [Service] IHttpContextAccessor httpContextAccessor, tariff_depot UpdateTariffDepot)
+                [Service] IHttpContextAccessor httpContextAccessor, tariff_depot UpdateTariffDepot)
         {
             int retval = 0;
             try
             {
 
                 var uid = GqlUtils.IsAuthorize(config, httpContextAccessor);
+                var currentDateTime = GqlUtils.GetNowEpochInSec();
+
                 var guid = UpdateTariffDepot.guid;
-                var dbTariffDepot = context.tariff_depot.Where(t => t.guid == guid).Include(t => t.tanks).FirstOrDefault();
+                var dbTariffDepot = context.tariff_depot.Where(t => t.guid == guid).FirstOrDefault();
 
                 if (dbTariffDepot == null)
                 {
@@ -103,31 +169,57 @@ namespace IDMS.Models.Tariff.GqlTypes
                 dbTariffDepot.gate_in_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.gate_in_cost);
                 dbTariffDepot.gate_out_cost = CalculateMaterialCostRoundedUp(UpdateTariffDepot.gate_out_cost);
                 // dbTariffDepot.unit_type_cv = UpdateTariffDepot.unit_type_cv;
-                dbTariffDepot.tanks = UpdateTariffDepot.tanks;
+                //dbTariffDepot.tanks = UpdateTariffDepot.tanks;
                 dbTariffDepot.update_by = uid;
-                dbTariffDepot.update_dt = GqlUtils.GetNowEpochInSec();
+                dbTariffDepot.update_dt = currentDateTime;
 
-                if (UpdateTariffDepot.tanks != null)
+                if (UpdateTariffDepot.tanks != null && UpdateTariffDepot.tanks.Count() > 0)
                 {
                     var tankGuids = UpdateTariffDepot.tanks.Select(t1 => t1.guid).ToList();
-                    var tanks = context.tank.Where(t => tankGuids.Contains(t.guid)).ToList();
 
-                    // newTariffDepot.tanks = NewTariffDepot.tanks;
-                    // context.tank.
-                    //newTariffDepot.unit_type_cv = NewTariffDepot.unit_type_cv;
-                    foreach (var t in dbTariffDepot.tanks)
+                    //First remove all any existing linked unit-type
+                    var existingTanks = context.tank.Where(t => t.tariff_depot_guid == dbTariffDepot.guid).ToList();
+                    foreach (var t in existingTanks)
                     {
                         t.tariff_depot_guid = null;
-                        t.update_dt = GqlUtils.GetNowEpochInSec();
+                        t.update_dt = currentDateTime;
                         t.update_by = uid;
                     }
+
+
+                    //var tankGuids = UpdateTariffDepot.tanks.Select(t1 => t1.guid).ToList();
+                    var tanks = context.tank.Where(t => tankGuids.Contains(t.guid)).ToList();
                     foreach (var t in tanks)
                     {
                         t.tariff_depot_guid = dbTariffDepot.guid;
-                        t.update_dt = GqlUtils.GetNowEpochInSec();
+                        t.update_dt = currentDateTime;
                         t.update_by = uid;
                     }
-                    dbTariffDepot.tanks = tanks;
+
+                    //foreach (var t in dbTariffDepot.tanks)
+                    //{
+                    //    t.tariff_depot_guid = null;
+                    //    t.update_dt = GqlUtils.GetNowEpochInSec();
+                    //    t.update_by = uid;
+                    //}
+
+                    //foreach (var t in tanks)
+                    //{
+                    //    t.tariff_depot_guid = dbTariffDepot.guid;
+                    //    t.update_dt = currentDateTime;
+                    //    t.update_by = uid;
+                    //}
+
+                }
+                else
+                {
+                    var tanks = context.tank.Where(t => t.tariff_depot_guid == dbTariffDepot.guid).ToList();
+                    foreach (var t in tanks)
+                    {
+                        t.tariff_depot_guid = null;
+                        t.update_dt = currentDateTime;
+                        t.update_by = uid;
+                    }
                 }
 
                 retval = await context.SaveChangesAsync();

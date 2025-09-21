@@ -287,17 +287,21 @@ namespace IDMS.Steaming.GqlTypes
                 {
                     if (item != null && !string.IsNullOrEmpty(item.guid))
                     {
-                        var rollbackSteaming = new steaming() { guid = item.guid };
-                        context.steaming.Attach(rollbackSteaming);
+                        var rollbackSteaming = await context.steaming.Where(s => s.guid == item.guid).FirstOrDefaultAsync();
 
-                        rollbackSteaming.update_by = user;
-                        rollbackSteaming.update_dt = currentDateTime;
-                        rollbackSteaming.remarks = item.remarks;
+                        if (rollbackSteaming != null)
+                        {
+                            rollbackSteaming.update_by = user;
+                            rollbackSteaming.update_dt = currentDateTime;
+                            rollbackSteaming.remarks = item.remarks;
 
-                        if (item.estimate_no.StartsWith("SE"))
-                            rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
-                        else
-                            rollbackSteaming.status_cv = CurrentServiceStatus.PENDING;
+                            //if (item.estimate_no.StartsWith("SE"))
+                            if (rollbackSteaming.create_by.EqualsIgnore("system") || rollbackSteaming.estimate_no.StartsWith("SE"))
+                                rollbackSteaming.status_cv = CurrentServiceStatus.APPROVED;
+                            else
+                                rollbackSteaming.status_cv = CurrentServiceStatus.PENDING;
+
+                        }
 
                         if (string.IsNullOrEmpty(item.customer_guid))
                             throw new GraphQLException(new Error($"Customer company guid cannot be null or empty", "ERROR"));
@@ -650,7 +654,7 @@ namespace IDMS.Steaming.GqlTypes
                             sql = $"UPDATE job_order SET status_cv = '{JobStatus.PENDING}', update_dt = {currentDateTime}, " +
                                     $"update_by = '{user}', remarks = '{jobRemark}' WHERE guid IN ({jobGuidString})";
                         }
-                    }   
+                    }
                     else
                     {
                         if (rollbackSteaming.create_by.EqualsIgnore("system"))

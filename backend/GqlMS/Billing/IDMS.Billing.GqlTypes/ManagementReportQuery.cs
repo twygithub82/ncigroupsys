@@ -673,7 +673,7 @@ namespace IDMS.Billing.GqlTypes
 
                 // Convert epoch timestamp to UTC
                 DateTimeOffset utcDateTime = DateTimeOffset.FromUnixTimeSeconds(resultType == ResultType.appvResutlType ? (long)item.appv_date : (long)item.complete_date);
-                
+
                 // Convert UTC to desired time zone
                 DateTimeOffset dateTimeOffset = TimeZoneInfo.ConvertTime(utcDateTime, timeZone);
                 item.date = dateTimeOffset.ToString("dd/MM/yyyy");
@@ -912,7 +912,7 @@ namespace IDMS.Billing.GqlTypes
                                  order_date = ro.create_dt,
                                  cancel_date = ro.status_cv.Equals(CANCELED) ? ro.update_dt : null,
                                  cancel_remarks = ro.status_cv.Equals(CANCELED) ? ro.remarks : "",
-                                 status = sot.status_cv,
+                                 status = ros.status_cv, //sot.status_cv,
                                  purpose_cleaning = sot.purpose_cleaning,
                                  purpose_steaming = sot.purpose_steam,
                                  purpose_repair = sot.purpose_repair_cv,
@@ -923,10 +923,14 @@ namespace IDMS.Billing.GqlTypes
                 {
                     query = (from so in context.storing_order
                              join sot in context.storing_order_tank on so.guid equals sot.so_guid
-                             join ros in context.Set<release_order_sot>() on sot.guid equals ros.sot_guid
-                             join ro in context.Set<release_order>() on ros.ro_guid equals ro.guid
-                             join cc in context.customer_company on so.customer_company_guid equals cc.guid
-                             join ig in context.in_gate on sot.guid equals ig.so_tank_guid
+                             join ros in context.Set<release_order_sot>() on sot.guid equals ros.sot_guid into rosGroup
+                             from ros in rosGroup.DefaultIfEmpty()
+                             join ro in context.Set<release_order>() on ros.ro_guid equals ro.guid into roGroup
+                             from ro in roGroup.DefaultIfEmpty()
+                             join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
+                             from cc in ccGroup.DefaultIfEmpty()
+                             join ig in context.in_gate on sot.guid equals ig.so_tank_guid into igGroup
+                             from ig in igGroup.DefaultIfEmpty()
                              join tc in context.Set<tariff_cleaning>() on sot.last_cargo_guid equals tc.guid
                              where so.create_dt >= sDate && so.create_dt <= eDate &&
                              (string.IsNullOrEmpty(orderTrackingRequest.job_no) || sot.job_no.Contains(orderTrackingRequest.job_no)) &&
@@ -972,6 +976,20 @@ namespace IDMS.Billing.GqlTypes
                 if (orderTrackingRequest.status != null && orderTrackingRequest.status.Any())
                 {
                     query = query.Where(tr => orderTrackingRequest.status.Contains(tr.status));
+                }
+                if (orderTrackingRequest != null && orderTrackingRequest.purpose.Any())
+                {
+                    foreach (var purpose in orderTrackingRequest.purpose)
+                    {
+                        if (purpose.EqualsIgnore("cleaning"))
+                            query = query.Where(tr => tr.purpose_cleaning == true);
+                        if (purpose.EqualsIgnore("steaming") || purpose.EqualsIgnore("steam"))
+                            query = query.Where(tr => tr.purpose_steaming == true);
+                        if (purpose.EqualsIgnore("storage"))
+                            query = query.Where(tr => tr.purpose_storage == true);
+                        if (purpose.EqualsIgnore("repair"))
+                            query = query.Where(tr => !string.IsNullOrEmpty(tr.purpose_repair));
+                    }
                 }
 
                 var resultList = await query.OrderBy(tr => tr.order_date).ToListAsync();
@@ -1251,7 +1269,7 @@ namespace IDMS.Billing.GqlTypes
                     }
 
 
-                    if (item.EqualsIgnore("gate"))
+                    if (item.EqualsIgnore("in_out"))
                     {
                         //var (approvedResult, completedResult) = await ProcessRevenueResults(context, query, "lolo", startEpoch, endEpoch, reportFormat, startMonthLastDayEpoch);
                         var revenueQuery = GetRevenueQuery(context, query, "gate", startEpoch, endEpoch);
@@ -1793,7 +1811,7 @@ namespace IDMS.Billing.GqlTypes
                 .Select(g => new
                 {
                     FormattedDate = g.Key,
-                    //Count = g.Count(),
+                    Count = g.Count(),
                     Cost = g.Select(n => n.cost).Sum() // Get distinct SotGuids
                 })
                 .OrderBy(g => g.FormattedDate) // Sort by date
@@ -1811,7 +1829,7 @@ namespace IDMS.Billing.GqlTypes
                 {
                     date = date,
                     day = DateTime.ParseExact(date, "dd/MM/yyyy", null).ToString("dddd"), // Get the day of the week (e.g., Monday)
-                    //count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
+                    count = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Count ?? 0,
                     cost = groupedNodes.FirstOrDefault(g => g.FormattedDate == date)?.Cost ?? 0.0
                 })
                 .OrderBy(g => g.date) // Sort by date

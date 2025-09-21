@@ -606,11 +606,12 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.code;
+          this.search();
         } else {
           searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-          this.customer_companyList = data
+          this.customer_companyList = data;
         });
       })
     ).subscribe();
@@ -622,6 +623,7 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+          this.search();
         } else {
           searchCriteria = value || '';
         }
@@ -629,6 +631,22 @@ export class StoringOrderComponent extends UnsubscribeOnDestroyAdapter implement
           this.last_cargoList = data
           this.updateValidators(this.last_cargoList);
         });
+      })
+    ).subscribe();
+
+    this.searchForm?.get('purpose')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
+      })
+    ).subscribe();
+
+    this.searchForm?.get('so_status')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
       })
     ).subscribe();
   }

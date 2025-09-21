@@ -72,6 +72,7 @@ namespace IDMS.Models.Service.GqlTypes.DB
 
         public DbSet<currency> currency { get; set; }
         public DbSet<team> team { get; set; }
+        public DbSet<team_user> team_user { get; set; }
         public DbSet<job_order> job_order { get; set; }
         public DbSet<time_table> time_table { get; set; }
         public DbSet<aspnetusers> aspnetusers { get; set; }

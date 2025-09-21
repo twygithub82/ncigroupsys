@@ -204,6 +204,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
 
   ccDS: CustomerCompanyDS;
   custCompDS: CustomerCompanyDS;
+  branchCompDS: CustomerCompanyDS;
 
   packResidueItems: PackageResidueItem[] = [];
   unit_typeList: TankItem[] = []
@@ -251,6 +252,7 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     this.initPcForm();
     this.ccDS = new CustomerCompanyDS(this.apollo);
     this.custCompDS = new CustomerCompanyDS(this.apollo);
+    this.branchCompDS = new CustomerCompanyDS(this.apollo);
     this.CodeValuesDS = new CodeValuesDS(this.apollo);
     this.tankDS = new TankDS(this.apollo);
   }
@@ -375,8 +377,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     const where: any = {};
 
     where.and = [
-      { customer_company: { main_customer_guid: { neq: null } } },
-      { customer_company: { main_customer_guid: { neq: "" } } },
       { customer_company: { type_cv: { in: ["BRANCH"] } } },
       { customer_company: { delete_dt: { eq: null } } }
     ];
@@ -485,9 +485,6 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
     let valCodeObject: CodeValuesItem = new CodeValuesItem();
     if (this.storageCalCvList.length > 0) {
       valCodeObject = this.storageCalCvList.find((d: CodeValuesItem) => d.code_val === valCode) || new CodeValuesItem();
-
-      // If no match is found, description will be undefined, so you can handle it accordingly
-
     }
     return valCodeObject.description || '-';
 
@@ -540,30 +537,40 @@ export class BillingBranchComponent extends UnsubscribeOnDestroyAdapter
   }
 
   initializeFilterCustomerCompany() {
-    // this.pcForm!.get('customer_code')!.valueChanges.pipe(
-    //   startWith(''),
-    //   debounceTime(300),
-    //   tap(value => {
-    //     var searchCriteria = '';
-    //     if (value && typeof value === 'object') {
-    //       searchCriteria = value.code;
-    //     } else {
-    //       searchCriteria = value || '';
-    //     }
-    //     this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
-    //       this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
-    //     });
-    //   })
-    // ).subscribe();
+    this.pcForm!.get('customer_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (value && typeof value === 'object') {
+          searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
+        }
+        this.subs.sink = this.custCompDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["OWNER", "BRANCH", "LEESSEE"] } }, { code: 'ASC' }).subscribe(data => {
+          this.all_customer_companyList = data;
+        });
+      })
+    ).subscribe();
+
+    this.pcForm!.get('branch_code')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        var searchCriteria = '';
+        if (value && typeof value === 'object') {
+          searchCriteria = value.code;
+        } else {
+          searchCriteria = value || '';
+        }
+        this.subs.sink = this.branchCompDS.getBranchSearch({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }], type_cv: { in: ["BRANCH"] } }, { code: 'ASC' }).subscribe(data => {
+          this.all_branch_List = data;
+        });
+      })
+    ).subscribe();
   }
 
   public loadData() {
-    var cond: any = {};
-    cond.type_cv = { in: ["OWNER", "BRANCH", "LEESSEE"] }
-    this.subs.sink = this.custCompDS.searchAll(cond, { code: 'ASC' }).subscribe(data => {
-      this.all_customer_companyList = data.filter(d => ["OWNER", "BRANCH", "LEESSEE"].includes(d.type_cv!))
-      this.all_branch_List = data.filter(d => d.type_cv == "BRANCH");
-    });
     this.subs.sink = this.tankDS.search({ tariff_depot_guid: { neq: null } }, { unit_type: 'ASC' }, 100).subscribe(data => {
       this.unit_typeList = [{ guid: '', unit_type: 'All' }, ...data]
       //this.unit_typeList = data;
