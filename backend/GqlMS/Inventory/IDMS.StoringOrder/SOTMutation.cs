@@ -124,6 +124,9 @@ namespace IDMS.StoringOrder.GqlTypes
 
                     clean.update_by = user;
                     clean.update_dt = currentDateTime;
+
+                    //Newly added for after change customer function
+                    clean.bill_to_guid = customerGuid;
                 }
 
 
@@ -170,6 +173,10 @@ namespace IDMS.StoringOrder.GqlTypes
 
                         steam.update_by = user;
                         steam.update_dt = currentDateTime;
+
+                        //Newly added for after change customer function
+                        if (steam.create_by.EqualsIgnore("system"))
+                            steam.bill_to_guid = customerGuid;
 
                         if (steam.steaming_part == null) continue;
                         foreach (var part in steam.steaming_part)
