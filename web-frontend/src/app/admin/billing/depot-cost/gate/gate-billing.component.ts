@@ -1395,17 +1395,22 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   AllowToDelete() {
-  if (this.selection.selected.length === 0) {
-    return false;
+    if (this.selection.selected.length === 0) {
+      return false;
+    }
+
+    for (const row of this.selection.selected) {
+      if (!this.isGateInInvoice(row) && !this.isGateOutInvoice(row)) {
+        return false; // if empty, null, or undefined → false
+      }
+    }
+
+    return true;
   }
 
-  for (const row of this.selection.selected) {
-    if (!this.isGateInInvoice(row) && !this.isGateOutInvoice(row)) {
-      return false; // if empty, null, or undefined → false
+    AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
     }
   }
-
-  return true;
-}
-
 }

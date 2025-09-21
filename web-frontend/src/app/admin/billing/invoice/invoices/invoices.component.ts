@@ -1662,4 +1662,10 @@ export class InvoicesComponent extends UnsubscribeOnDestroyAdapter implements On
   parse2Decimal(input: number | string | undefined) {
     return Utility.formatNumberDisplay(input);
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+        this.search();
+    }
+  }
 }

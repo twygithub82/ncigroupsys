@@ -40,7 +40,7 @@ import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/stori
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
 import { BusinessLogicUtil, invoice_type_mapping } from 'app/utilities/businesslogic-util';
 import { ComponentUtil } from 'app/utilities/component-util';
-import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility ,BILLING_TANK_STATUS,BILLING_TANK_STATUS_IN_YARD} from 'app/utilities/utility';
+import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
 
@@ -222,7 +222,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     this.loadData();
   }
 
-   initInvoiceForm() {
+  initInvoiceForm() {
     this.invForm = this.fb.group({
       inv_no: [''],
       inv_dt: ['']
@@ -399,7 +399,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
       ];
     }
 
-    where.storing_order_tank.tank_status_cv={ in: BILLING_TANK_STATUS };
+    where.storing_order_tank.tank_status_cv = { in: BILLING_TANK_STATUS };
 
     if (this.searchForm!.get('depot_status_cv')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -534,9 +534,9 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     this.performSearch(pageSize, pageIndex, first, after, last, before);
   }
 
-   onToggleInvoiced(event: MatSlideToggleChange) {
-      this.search();
-    }
+  onToggleInvoiced(event: MatSlideToggleChange) {
+    this.search();
+  }
 
   displayCustomerCompanyFn(cc: CustomerCompanyItem): string {
     return cc && cc.code ? `${cc.code} - ${cc.name}` : '';
@@ -802,7 +802,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
-        if(!billingEstimateRequests) billingEstimateRequests= [];
+        if (!billingEstimateRequests) billingEstimateRequests = [];
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -981,17 +981,22 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
     this.search();
   }
 
-    AllowToDelete() {
-  if (this.selection.selected.length === 0) {
-    return false;
+  AllowToDelete() {
+    if (this.selection.selected.length === 0) {
+      return false;
+    }
+
+    for (const row of this.selection.selected) {
+      if (!row.preinsp_billing?.invoice_no) {
+        return false; // if empty, null, or undefined → false
+      }
+    }
+    return true;
   }
 
-  for (const row of this.selection.selected) {
-    if (!row.preinsp_billing?.invoice_no) {
-      return false; // if empty, null, or undefined → false
+    AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
     }
   }
-
-  return true;
-}
 }

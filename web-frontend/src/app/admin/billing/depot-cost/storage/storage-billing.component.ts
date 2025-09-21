@@ -160,8 +160,8 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     FREE_STORAGE: "COMMON-FORM.FREE-STORAGE",
     STORAGE: 'COMMON-FORM.STORAGE',
     DAYS: 'COMMON-FORM.DAYS',
-    STORAGE_DAY:'COMMON-FORM.STORAGE-DAY',
-    START_DATE:'COMMON-FORM.START-DATE',
+    STORAGE_DAY: 'COMMON-FORM.STORAGE-DAY',
+    START_DATE: 'COMMON-FORM.START-DATE',
   }
 
   invForm?: UntypedFormGroup;
@@ -432,23 +432,23 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
 
     if (this.searchForm!.get('invoiced')?.value) {
 
-       
 
-      
 
-      
+
+
+
       // where.storing_order_tank= {  storage_detail: {
       //     some: { guid: { neq: null } }// this means "where there is at least one storage_detail"
       //         } };
 
-       where.and = [
-         {storing_order_tank:{storage_detail: { any: true}}},
-         {storing_order_tank:{storage_detail: {some: { delete_dt: { eq: null } } } }}
-       ];
-     // storing_order_tank: { storage_detail: { any: true, some: { delete_dt: { eq: null } } } }
+      where.and = [
+        { storing_order_tank: { storage_detail: { any: true } } },
+        { storing_order_tank: { storage_detail: { some: { delete_dt: { eq: null } } } } }
+      ];
+      // storing_order_tank: { storage_detail: { any: true, some: { delete_dt: { eq: null } } } }
     }
-       
-    
+
+
 
     if (this.searchForm!.get('customer_code')?.value) {
       if (!where.storing_order_tank) where.storing_order_tank = {};
@@ -1507,17 +1507,22 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
     });
   }
 
-   AllowToDelete() {
-  if (this.selection.selected.length === 0) {
-    return false;
+  AllowToDelete() {
+    if (this.selection.selected.length === 0) {
+      return false;
+    }
+
+    for (const row of this.selection.selected) {
+      if ((row.storing_order_tank?.storage_detail?.length || 0) == 0) {
+        return false; // if empty, null, or undefined → false
+      }
+    }
+    return true;
   }
 
-  for (const row of this.selection.selected) {
-    if ((row.storing_order_tank?.storage_detail?.length || 0) == 0) {
-      return false; // if empty, null, or undefined → false
+    AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
     }
   }
-
-  return true;
-}
 }

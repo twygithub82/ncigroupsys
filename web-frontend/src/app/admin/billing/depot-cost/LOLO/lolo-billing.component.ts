@@ -43,7 +43,7 @@ import { ComponentUtil } from 'app/utilities/component-util';
 import { pageSizeInfo, TANK_STATUS_IN_YARD, TANK_STATUS_POST_IN_YARD, Utility, BILLING_TANK_STATUS, BILLING_TANK_STATUS_IN_YARD } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { FormDialogComponent } from  './form-dialog/form-dialog.component';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { invoice_type_mapping } from 'app/utilities/businesslogic-util';
 
 
@@ -1294,16 +1294,21 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
   }
 
   AllowToDelete() {
-  if (this.selection.selected.length === 0) {
-    return false;
+    if (this.selection.selected.length === 0) {
+      return false;
+    }
+
+    for (const row of this.selection.selected) {
+      if (!this.isLiftOffInvoice(row) && !this.isLiftOnInvoice(row)) {
+        return false; // if empty, null, or undefined → false
+      }
+    }
+    return true;
   }
 
-  for (const row of this.selection.selected) {
-    if (!this.isLiftOffInvoice(row) && !this.isLiftOnInvoice(row)) {
-      return false; // if empty, null, or undefined → false
+    AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.search();
     }
   }
-
-  return true;
-}
 }
