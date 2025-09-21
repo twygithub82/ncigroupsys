@@ -38,6 +38,12 @@ namespace IDMS.UserAuthentication.Models.Authentication.SignUp
         public List<TeamDetails>? Teams { get; set; }
     }
 
+    [NotMapped]
+    public class ResetStaff
+    {
+        public string Username { get; set; }
+        public string NewPassword { get; set; }
+    }
 
     [NotMapped]
     public class RoleDetails
