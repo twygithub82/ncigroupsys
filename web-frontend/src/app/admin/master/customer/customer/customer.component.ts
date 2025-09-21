@@ -296,6 +296,7 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
         }
         this.subs.sink = this.custCompDS.getOwnerLessee({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyFilterList = data
+          this.search();
         });
       })
     ).subscribe();
@@ -761,21 +762,6 @@ export class CustomerComponent extends UnsubscribeOnDestroyAdapter implements On
 
     return retval;
   }
-
-
-  // CanDeleteCustomer(row: CustomerCompanyItem): boolean {
-  //       let retval: boolean = false;
-  //       var where: any = {};
-  //       try {
-  //         // Use firstValueFrom to convert Observable to Promise
-  //        retval = row.storing_order_tank?.length==0 && row.storing_orders?.length==0;
-
-  //       } catch (error) {
-  //         console.error("Error fetching tariff buffer guid:", error);
-  //       }
-
-  //       return retval;
-  //     }
 
   onTabFocused() {
     this.resetForm();

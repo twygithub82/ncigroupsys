@@ -1,3 +1,4 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -5,6 +6,7 @@ import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormContro
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,7 +19,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -33,13 +35,11 @@ import { InGateDS } from 'app/data-sources/in-gate';
 import { StoringOrderItem } from 'app/data-sources/storing-order';
 import { StoringOrderTankDS, StoringOrderTankItem } from 'app/data-sources/storing-order-tank';
 import { TariffCleaningDS, TariffCleaningItem } from 'app/data-sources/tariff-cleaning';
+import { ModulePackageService } from 'app/services/module-package.service';
 import { SearchStateService } from 'app/services/search-criteria.service';
-import { pageSizeInfo, Utility, maxLengthDisplaySingleSelectedItem } from 'app/utilities/utility';
+import { Utility, pageSizeInfo } from 'app/utilities/utility';
 import { AutocompleteSelectionValidator } from 'app/utilities/validator';
 import { debounceTime, startWith, tap } from 'rxjs/operators';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { ModulePackageService } from 'app/services/module-package.service';
 
 @Component({
   selector: 'app-tank-movement',
@@ -226,6 +226,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.code;
+          this.search();
         } else {
           searchCriteria = value || '';
         }
@@ -243,6 +244,7 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.cargo;
+          this.search();
         } else {
           searchCriteria = value || '';
         }
@@ -250,6 +252,30 @@ export class TankMovementComponent extends UnsubscribeOnDestroyAdapter implement
           this.last_cargoList = data
           this.updateValidators(this.lastCargoControl, this.last_cargoList);
         });
+      })
+    ).subscribe();
+
+    this.searchForm!.get('purpose')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
+      })
+    ).subscribe();
+
+    this.searchForm!.get('tank_status_cv')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
+      })
+    ).subscribe();
+
+    this.searchForm!.get('yard_cv')?.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
       })
     ).subscribe();
   }
