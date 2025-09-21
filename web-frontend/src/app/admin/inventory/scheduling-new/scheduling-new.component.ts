@@ -55,7 +55,6 @@ import { ConfirmationDialogComponent } from '@shared/components/confirmation-dia
   standalone: true,
   templateUrl: './scheduling-new.component.html',
   styleUrl: './scheduling-new.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BreadcrumbComponent,
     MatTooltipModule,
@@ -618,10 +617,11 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (typeof value === 'object') {
           searchCriteria = value.code;
+          this.search();
+        } else {
+          searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
@@ -635,15 +635,40 @@ export class SchedulingNewComponent extends UnsubscribeOnDestroyAdapter implemen
       debounceTime(300),
       tap(value => {
         var searchCriteria = '';
-        if (typeof value === 'string') {
-          searchCriteria = value;
-        } else {
+        if (typeof value === 'object') {
           searchCriteria = value.cargo;
+          this.search();
+        } else {
+          searchCriteria = value;
         }
         this.tcDS.loadItems({ cargo: { contains: searchCriteria } }, { cargo: 'ASC' }).subscribe(data => {
           this.last_cargoList = data
           this.updateValidators(this.lastCargoControl, this.last_cargoList);
         });
+      })
+    ).subscribe();
+
+    this.searchForm!.get('book_type_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+          this.search();
+      })
+    ).subscribe();
+
+    this.searchForm!.get('tank_status_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+          this.search();
+      })
+    ).subscribe();
+
+    this.searchForm!.get('yard_cv')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+          this.search();
       })
     ).subscribe();
   }

@@ -802,6 +802,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
+        billingEstReq.existing_billing_guid=cln.preinsp_billing?.guid||'';
         if (!billingEstimateRequests) billingEstimateRequests = [];
         billingEstimateRequests.push(billingEstReq);
       }
@@ -836,6 +837,7 @@ export class PreinspectionBillingComponent extends UnsubscribeOnDestroyAdapter i
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid;
       billingEstReq.process_type = this.processType;
+      billingEstReq.existing_billing_guid=c.preinsp_billing?.guid||'';
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {

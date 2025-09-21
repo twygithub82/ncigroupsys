@@ -622,12 +622,21 @@ export class ReleaseOrderComponent extends UnsubscribeOnDestroyAdapter implement
         var searchCriteria = '';
         if (value && typeof value === 'object') {
           searchCriteria = value.code;
+          this.search();
         } else {
           searchCriteria = value || '';
         }
         this.subs.sink = this.ccDS.loadItems({ or: [{ name: { contains: searchCriteria } }, { code: { contains: searchCriteria } }] }, { code: 'ASC' }).subscribe(data => {
           this.customer_companyList = data
         });
+      })
+    ).subscribe();
+
+    this.searchForm!.get('ro_status')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      tap(value => {
+        this.search();
       })
     ).subscribe();
   }

@@ -917,6 +917,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid.replace('-1', '').replace('-2', '');
         billingEstReq.process_type = `${this.invoiceTypeControl.value}`;
+        billingEstReq.existing_billing_guid=(billingEstReq.process_type=="GATE_IN"?(cln.gin_billing?.guid||''):(cln.gout_billing?.guid||''));
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -957,6 +958,7 @@ export class GateBillingComponent extends UnsubscribeOnDestroyAdapter implements
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid.replace('-1', '').replace('-2', '');
       billingEstReq.process_type = `${this.invoiceTypeControl.value}`;
+      billingEstReq.existing_billing_guid=(billingEstReq.process_type=="GATE_IN"?(c.gin_billing?.guid||''):(c.gout_billing?.guid||''));
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {

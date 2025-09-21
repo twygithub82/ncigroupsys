@@ -301,6 +301,10 @@ export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
           update_dt
           website
           main_customer_guid
+          main_customer_company {
+            code
+            name
+          }
           remarks
           cc_contact_person {
             create_by
@@ -332,18 +336,6 @@ export const SEARCH_CUSTOMER_COMPANY_WITH_COUNT = gql`
             sequence
             update_by
             update_dt
-          }
-          storing_orders{
-            guid
-            so_no
-          }
-          storing_order_tank{
-            guid
-            tank_no
-          }
-          tank {
-            guid
-            unit_type
           }
         }
         so_count
@@ -387,6 +379,35 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   loadItems(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
     where = { ...where, type_cv: { in: [...(where?.type_cv?.in || []), "BRANCH", "OWNER"] } };
+    where = this.addDeleteDtCriteria(where)
+    return this.apollo
+      .query<any>({
+        query: SEARCH_COMPANY_QUERY,
+        variables: { where, order, first, after, last, before },
+        fetchPolicy: 'no-cache' // Ensure fresh data
+      })
+      .pipe(
+        map((result) => result.data),
+        catchError((error: ApolloError) => {
+          console.error('GraphQL Error:', error);
+          return of([] as CustomerCompanyItem[]); // Return an empty array on error
+        }),
+        finalize(() =>
+          this.loadingSubject.next(false)
+        ),
+        map((result) => {
+          const list = result.companyList || { nodes: [], totalCount: 0 };
+          this.dataSubject.next(list.nodes);
+
+          this.totalCount = list.totalCount;
+          return list.nodes;
+        })
+      );
+  }
+
+  getBranchSearch(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
+    this.loadingSubject.next(true);
+    where = { ...where };
     where = this.addDeleteDtCriteria(where)
     return this.apollo
       .query<any>({
@@ -507,47 +528,45 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
   }
 
   searchAll(where?: any, order?: any): Observable<CustomerCompanyItem[]> {
-  this.loadingSubject.next(true);
-  let allNodes: CustomerCompanyItem[] = [];
-  let afterCursor: string | null = null;
+    this.loadingSubject.next(true);
+    let allNodes: CustomerCompanyItem[] = [];
+    let afterCursor: string | null = null;
 
-  return new Observable<CustomerCompanyItem[]>((observer) => {
-    const fetchPage = () => {
-      this.apollo.query<any>({
-        query: SEARCH_COMPANY_QUERY,
-        variables: { where, order, first: 100, after: afterCursor }, // batch size 100
-        fetchPolicy: 'no-cache'
-      }).subscribe({
-        next: (result) => {
-          const list = result.data.companyList || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 };
-          allNodes = [...allNodes, ...list.nodes];
-          this.pageInfo = list.pageInfo;
-          this.totalCount = list.totalCount;
+    return new Observable<CustomerCompanyItem[]>((observer) => {
+      const fetchPage = () => {
+        this.apollo.query<any>({
+          query: SEARCH_COMPANY_QUERY,
+          variables: { where, order, first: 100, after: afterCursor }, // batch size 100
+          fetchPolicy: 'no-cache'
+        }).subscribe({
+          next: (result) => {
+            const list = result.data.companyList || { nodes: [], pageInfo: { hasNextPage: false }, totalCount: 0 };
+            allNodes = [...allNodes, ...list.nodes];
+            this.pageInfo = list.pageInfo;
+            this.totalCount = list.totalCount;
 
-          if (list.pageInfo.hasNextPage) {
-            afterCursor = list.pageInfo.endCursor;
-            fetchPage(); // keep going
-          } else {
-            this.dataSubject.next(allNodes);
-            observer.next(allNodes);
+            if (list.pageInfo.hasNextPage) {
+              afterCursor = list.pageInfo.endCursor;
+              fetchPage(); // keep going
+            } else {
+              this.dataSubject.next(allNodes);
+              observer.next(allNodes);
+              observer.complete();
+              this.loadingSubject.next(false);
+            }
+          },
+          error: (err) => {
+            console.error('GraphQL Error:', err);
+            observer.next([] as CustomerCompanyItem[]);
             observer.complete();
             this.loadingSubject.next(false);
           }
-        },
-        error: (err) => {
-          console.error('GraphQL Error:', err);
-          observer.next([] as CustomerCompanyItem[]);
-          observer.complete();
-          this.loadingSubject.next(false);
-        }
-      });
-    };
+        });
+      };
 
-    fetchPage();
-  });
-}
-
-
+      fetchPage();
+    });
+  }
 
   searchWithSOT(where?: any, order?: any, first?: any, after?: any, last?: any, before?: any): Observable<CustomerCompanyItem[]> {
     this.loadingSubject.next(true);
@@ -709,8 +728,8 @@ export class CustomerCompanyDS extends BaseDataSource<CustomerCompanyItem> {
       );
   }
 
-   displayNameOnly(cc?: CustomerCompanyItem): string {
-    return cc?.name||'' ;
+  displayNameOnly(cc?: CustomerCompanyItem): string {
+    return cc?.name || '';
   }
 
   displayName(cc?: CustomerCompanyItem): string {

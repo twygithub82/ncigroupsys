@@ -829,6 +829,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
+        billingEstReq.existing_billing_guid=(billingEstReq.process_type=="LIFT_ON"?(cln.lon_billing?.guid||''):(cln.loff_billing?.guid||''));
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -867,6 +868,7 @@ export class LOLOBillingComponent extends UnsubscribeOnDestroyAdapter implements
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid;
       billingEstReq.process_type = this.processType;
+      billingEstReq.existing_billing_guid=(billingEstReq.process_type=="LIFT_ON"?(c.lon_billing?.guid||''):(c.loff_billing?.guid||''));
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {

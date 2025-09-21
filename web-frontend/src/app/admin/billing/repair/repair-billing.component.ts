@@ -275,6 +275,8 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       inv_no: [''],
       inv_dt: ['']
     })
+     const today = new Date().toISOString().substring(0, 10);
+    this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -937,6 +939,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
+        billingEstReq.existing_billing_guid=cln.customer_billing?.guid||'';
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -970,6 +973,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       billingEstReq.billing_party = c.type === 1 ? "CUSTOMER" : "OWNER"; //this.billingParty;
       billingEstReq.process_guid = c.guid.replace("_1", "");
       billingEstReq.process_type = this.processType;
+      billingEstReq.existing_billing_guid=c.customer_billing?.guid||'';
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {
@@ -1278,6 +1282,7 @@ export class RepairBillingComponent extends UnsubscribeOnDestroyAdapter implemen
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = g;
       billingEstReq.process_type = this.processType;
+      
       billingEstimateRequests.push(billingEstReq);
     });
 
