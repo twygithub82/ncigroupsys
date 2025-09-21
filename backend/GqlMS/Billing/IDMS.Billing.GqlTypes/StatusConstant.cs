@@ -1,4 +1,6 @@
 ﻿
+using System.CodeDom;
+
 namespace IDMS.Billing.GqlTypes
 {
     public class ObjectAction
@@ -41,9 +43,13 @@ namespace IDMS.Billing.GqlTypes
         public const string GATE = "GATE";
         public const string PREINSPECTION = "PREINSPECTION";
         public const string STORAGE = "STORAGE";
+        public const string IN_OUT = "IN_OUT";
 
         public static List<string> ProcessList = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.RESIDUE}", $"{ProcessType.GATE}",
                             $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
+
+        public static List<string> SalesList = new List<string> { $"{ProcessType.CLEANING}", $"{ProcessType.RESIDUE}", $"{ProcessType.IN_OUT}",
+                            $"{ProcessType.STEAMING}", $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}", $"{ProcessType.STORAGE}"  };
     }
 
     public class ReportType
