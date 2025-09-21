@@ -999,6 +999,7 @@ export class StorageBillingComponent extends UnsubscribeOnDestroyAdapter impleme
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid;
       billingEstReq.process_type = this.processType;
+      // billingEstReq.existing_billing_guid = c.gout_billing.guid;
       billingEstimateRequests.push(billingEstReq);
       billingStorageDetailReqs.push(c.currentStorageBilling as StorageDetailRequest);
     });

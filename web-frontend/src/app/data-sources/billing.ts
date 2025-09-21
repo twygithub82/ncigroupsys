@@ -347,6 +347,7 @@ export class BillingEstimateRequest {
   public billing_party?: string;
   public process_guid?: string;
   public process_type?: string;
+  public existing_billing_guid?: string;
 }
 
 export class StorageDetailRequest {

@@ -257,7 +257,8 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     QC_DATE: 'COMMON-FORM.QC-DATE',
     SIGN: 'COMMON-FORM.SIGN',
     VERIFIED_BY: 'COMMON-FORM.VERIFIED-BY',
-    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE'
+    APPROVAL_DATE: 'COMMON-FORM.APPROVAL-DATE',
+    S_N: 'COMMON-FORM.S_N'
   }
 
   type?: string | null;
@@ -600,7 +601,8 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 7;
+   let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -615,7 +617,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -629,6 +631,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -640,34 +643,27 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
+     const data: any[][] = []; // Explicitly define data as a 2D array
+   
+   
 
-    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
-    const data: any[][] = []; // Explicitly define data as a 2D array
-
-    var dtstr = await Utility.GetReportGeneratedDate(this.translate);
+    // var dtstr = await Utility.GetReportGeneratedDate(this.translate);
     var approvalDt = PDFUtility.FormatColon(this.translatedLangText.QC_DATE, this.date);
-
-    await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+     let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
+      this.translate, reportTitle, approvalDt);
+    // await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
 
     var teamStr = PDFUtility.FormatColon(this.translatedLangText.TEAM, this.team);
+    startY += PDFUtility.SubTitleFontSize_Portrait()/2;
     await Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
     startY += PDFUtility.TableStartTopBuffer();
 
 
-
-    // const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`; // Replace with your actual cutoff date
-    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 10, 9);
-
-    // if(this.customer)
-    // {
-    //   const customer=`${this.translatedLangText.CUSTOMER} : ${this.customer}`
-    //   Utility.addText(pdf, customer,startY - 2 , leftMargin+4, 9);
-    // }
 
 
     var idx = 0;
@@ -704,7 +700,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       margin: { left: leftMargin, right: rightMargin },
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -753,27 +749,31 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       },
     });
 
-    var gap = 7;
-
-    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
-      pdf.addPage();
-      const pageCount = pdf.getNumberOfPages();
-      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-    }
-
-    const totalPages = pdf.getNumberOfPages();
+    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
 
 
-    pagePositions.forEach(({ page, x, y }) => {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-      var lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    });
+    // var gap = 7;
+
+    // if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+    //   pdf.addPage();
+    //   const pageCount = pdf.getNumberOfPages();
+    //   pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    // }
+
+    // const totalPages = pdf.getNumberOfPages();
+
+
+    // pagePositions.forEach(({ page, x, y }) => {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
+    //   var lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
+    // });
 
 
 

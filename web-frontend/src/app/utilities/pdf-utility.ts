@@ -167,6 +167,57 @@ export class PDFUtility {
     // }
   }
 
+  static async addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(
+    pdf: jsPDF,
+    pageWidth: number,
+    topMargin: number,
+    bottomMargin: number,
+    leftMargin: number,
+    rightMargin: number,
+    translateService: TranslateService, // Inject TranslateService
+    title: string,
+    subTitle: string
+  ): Promise<number>
+  {
+    var startY=topMargin;
+   await this.addHeaderWithCompanyLogo_Portriat_r2(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+   if(title != null && title != ''){
+
+    var titleFontSize = this.TitleFontSize();
+    startY = this.TitlePositionY_Portrait();
+    this.AddTextAtCenterPage(pdf, title, pageWidth, leftMargin, rightMargin, startY, titleFontSize); 
+  
+  }
+
+  if(subTitle != null && subTitle != ''){
+     var subTitleFontSize = this.SubTitleFontSize_Portrait();
+     startY = this.SubTitlePositionY_Portrait();
+     this.AddTextAtRightCornerPage(pdf, subTitle, pageWidth, leftMargin, rightMargin, startY, subTitleFontSize);
+  }
+
+   return startY;
+  }
+
+  static async addFooterWithPageNumberAndCompanyLogo_Portrait(pdf: jsPDF, pageWidth: number, topMargin: number, bottomMargin: number,
+     leftMargin: number, rightMargin: number, translateService: TranslateService, pagePositions: { page: number, x: number, y: number }[]) {
+     var fontSize =8
+     var totalPages=pdf.getNumberOfPages();
+     for (const { page, x, y } of pagePositions) {
+      pdf.setDrawColor(0, 0, 0); // black line color
+      pdf.setLineWidth(0.1);
+      pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      pdf.setFontSize(fontSize);
+      pdf.setPage(page);
+
+      const lineBuffer = 13;
+      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+
+      if (page > 1) {
+        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, translateService);
+      }
+    }// Add Second Page, Add For Loop
+  }
   static async addHeaderWithCompanyLogo_Portrait(
     pdf: jsPDF,
     pageWidth: number,
@@ -837,30 +888,15 @@ export class PDFUtility {
     let posX = leftMargin;
     let posY = topMargin;
 
-    // posY+=40;
-    // pdf.setFontSize(10);
-    // pdf.text(`${translatedLangText.CUSTOMER}:`, posX, posY);
-    // posY+=5;
-    // pdf.text(customerCompany.name||'', posX, posY);
-    // posY+=5;
-    // pdf.text(customerCompany.address_line1||'', posX, posY);
-    // posY+=5;
-    // pdf.text(customerCompany.address_line2||'', posX, posY);
+    
 
 
     var buffer = 40
     var textColor = '#666666';
     var IssDate = `${translatedLangText.ISSUE_DATE}: ${Utility.convertDateToStr(new Date())}`;
-    // this.AddTextAtRightCornerPage(pdf, IssDate, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10,textColor);
-    // var validDate=new Date();
-    //validDate = this.addMonths(validDate, 2);
-    //buffer+=5;
-    //var validDateStr = `${translatedLangText.VALID_THROUGH}: ${Utility.convertDateToStr(validDate)}`;
-    //this.AddTextAtRightCornerPage(pdf, validDateStr, pageWidth, leftMargin, rightMargin, topMargin+buffer, 10);
+   
 
   }
-
-
 
    static async addHeaderWithCompanyLogo_Portriat_r2(
     pdf: jsPDF,
@@ -1176,8 +1212,50 @@ export class PDFUtility {
 
   }
 
+  static TableHeaderFontSize_Portrait(): number {
+    return 8;
+  }
+  static ContentFontSize_Portrait(): number {
+    return 8;
+  }
+
+  static TableHeaderFontSize_Landscape(): number {
+    return 8;
+  }
+  static ContentFontSize_Landscape(): number {
+    return 7;
+  }
+
+  static TitleFontSize(): number {
+    return 14
+  }
+
+  static SubTitleFontSize_Portrait(): number {
+    return 8
+  }
+
+  static TitlePositionY_Landscape(): number {
+    return this.TitlePositionY_Portrait();
+  }
+
+   static TitlePositionY_Portrait(): number {
+    return 38
+  }
+
+  static SubTitlePositionY_Landscape(): number {
+    return this.SubTitlePositionY_Portrait();
+  }
+
+   static SubTitlePositionY_Portrait(): number {
+    return (this.TitlePositionY_Portrait()+11)
+  }
+
+  static SubTitleFontSize_Landscape(): number {
+    return 8
+  }
+
   static RightSubTitleFontSize(): number {
-    const fontSize = 9;
+    const fontSize = 8;
     return fontSize;
   }
 
@@ -1272,5 +1350,10 @@ export class PDFUtility {
       pageBreak: 'avoid',
     });
 
+  }
+
+  static async TankNo_ColWidth_Portrait()
+  {
+    return 28;
   }
 }

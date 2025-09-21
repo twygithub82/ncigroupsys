@@ -566,7 +566,9 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 6;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
+
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -581,7 +583,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(),minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -594,6 +596,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -605,18 +608,24 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
-    // Variable to store the final Y position of the last table
+    // // Variable to store the final Y position of the last table
+    // let lastTableFinalY = 40;
+
+    // let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
+    // const data: any[][] = []; // Explicitly define data as a 2D array
+    // var dtstr = await Utility.GetReportGeneratedDate(this.translate);
+    // var approvalDt = PDFUtility.FormatColon(this.translatedLangText.APPROVAL_DATE, this.date);
+    // await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+   
     let lastTableFinalY = 40;
-
-    let startY = lastTableFinalY + 10; // Start table 20mm below the customer name
-    const data: any[][] = []; // Explicitly define data as a 2D array
+    const data: any[][] = [];
     var dtstr = await Utility.GetReportGeneratedDate(this.translate);
-    var approvalDt = PDFUtility.FormatColon(this.translatedLangText.APPROVAL_DATE, this.date);
-    await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
-    //await Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.ReportSubTitleFontSize());
+    const approvalDt = PDFUtility.FormatColon(this.translatedLangText.APPROVAL_DATE, this.date);
+    let startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+       rightMargin, this.translate, reportTitle, approvalDt);
     startY += PDFUtility.TableStartTopBuffer();
 
     var idx = 0;
@@ -636,11 +645,6 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     data.push([this.translatedLangText.TOTAL, "", "", "", "", Utility.formatNumberDisplay(totalRepairCost)]);
 
-
-    // data.push([this.translatedLangText.TOTAL, "", "", "", this.displayTotalSteam(), this.displayTotalClean(),
-    // this.displayTotalRepair(), this.displayTotalStorage(), this.displayTotal(), this.displayTotalPending(),
-    // this.displayTotalWithRO()]);
-
     pdf.setDrawColor(0, 0, 0); // red line color
 
     pdf.setLineWidth(0.1);
@@ -654,7 +658,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
       // startY: startY, // Start table at the current startY value
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -703,105 +707,36 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
       },
     });
 
-    var gap = 7;
+    // var gap = 7;
 
-    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
-      pdf.addPage();
-      const pageCount = pdf.getNumberOfPages();
-      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-    }
+    // if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+    //   pdf.addPage();
+    //   const pageCount = pdf.getNumberOfPages();
+    //   pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    // }
 
-    const totalPages = pdf.getNumberOfPages();
+    // const totalPages = pdf.getNumberOfPages();
 
+    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
-
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
-
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
-
-    // pagePositions.forEach(({ page, x, y }) => {
+    // for (const { page, x, y } of pagePositions) {
     //   pdf.setDrawColor(0, 0, 0); // black line color
     //   pdf.setLineWidth(0.1);
-    //   pdf.setLineDashPattern([0.001, 0.001], 0);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
     //   pdf.setFontSize(8);
     //   pdf.setPage(page);
-    //   var lineBuffer = 13;
-    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 10, { align: 'right' });
-    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, (pageWidth - rightMargin), pdf.internal.pageSize.height - lineBuffer);
-    // });
 
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
-    //Sign , verified tables-------------start--------------
-    // var content:string[]=[];
-    // var values:string[]=[];
-    // var maxSpace = 20;
-    // var str='';
-    // str= `${this.translatedLangText.SIGN}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": ");
-    // str= `${this.translatedLangText.REPORTED_BY}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": ");
-    // str= `${this.translatedLangText.APPROVED_DATE}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": "+`${this.date}`);
-    // str= `${this.translatedLangText.TEAM}`;
-    // content.push(str.padEnd(maxSpace," "));
-    // values.push(": "+`${this.team}`);
-    // var startX=leftMargin;
-
-    // startY = pageHeight-(bottomMargin+10);
-    // var buffer = maxSpace *3;
-
-    // pdf.setPage(pdf.getNumberOfPages());
-    // pdf.setLineWidth(0.01);
-    // pdf.setLineDashPattern([1,1], 1);
-    // pdf.setFontSize(8);
-    // var bufferStartXValue=1.1;
-    // var indx:number=0;
-    // content.forEach(c=>{
-    //   var startXValue=startX+(maxSpace *bufferStartXValue);
-    //   var valueContent = values[indx++];
-    //   pdf.line(startX-1, startY, startX+buffer,startY);
-    //   startY-=2;
-    //   pdf.text(c,startX, startY , { align: 'left' });
-    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
-    //   startY-=gap;
-    // });
-    // startX=pageWidth-rightMargin-(buffer);
-    // startY =  pageHeight-(bottomMargin+10);
-    // content=[];
-    // values=[];
-    // indx=0;
-    // maxSpace = 20;
-    // str= `${this.translatedLangText.SIGN}`;
-    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' ')  );
-    // values.push(": ");
-    // str= `${this.translatedLangText.VERIFIED_BY}`;
-    // content.push((str.padEnd(maxSpace," ")+"  ").padEnd(maxSpace*1.5,' '));
-    // values.push(": ");
-    // content.forEach(c=>{
-    //   var startXValue=startX+(maxSpace *bufferStartXValue);
-    //   var valueContent = values[indx++];
-    //   pdf.line(startX-1, startY, startX+buffer,startY);
-    //   startY-=2;
-    //   pdf.text(c,startX, startY, { align: 'left' });
-    //   pdf.text(valueContent,startXValue,startY , { align: 'left' });
-    //   startY-=gap;
-    // });
-    //Sign , verified tables-------------end--------------
+    
 
 
     this.generatingPdfProgress = 100;

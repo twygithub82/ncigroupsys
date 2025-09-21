@@ -234,6 +234,8 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       inv_no: [''],
       inv_dt: ['']
     })
+     const today = new Date().toISOString().substring(0, 10);
+    this.invoiceDateControl.setValue(today);
   }
   initSearchForm() {
 
@@ -845,6 +847,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
         billingEstReq.billing_party = this.billingParty;
         billingEstReq.process_guid = cln.guid;
         billingEstReq.process_type = this.processType;
+        billingEstReq.existing_billing_guid=cln.customer_billing?.guid||'';
         billingEstimateRequests.push(billingEstReq);
       }
     })
@@ -878,6 +881,7 @@ export class SteamBillingComponent extends UnsubscribeOnDestroyAdapter implement
       billingEstReq.billing_party = this.billingParty;
       billingEstReq.process_guid = c.guid;
       billingEstReq.process_type = this.processType;
+       billingEstReq.existing_billing_guid=c.customer_billing?.guid||'';
       billingEstimateRequests.push(billingEstReq);
     });
     this.billDS.addBilling(newBilling, billingEstimateRequests).subscribe(result => {
