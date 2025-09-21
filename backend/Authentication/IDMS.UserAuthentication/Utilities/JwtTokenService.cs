@@ -79,7 +79,8 @@ namespace IDMS.User.Authentication.API.Utilities
                         join t in _dbContext.team
                         on tu.team_guid equals t.guid
                         where (from u in _dbContext.Users where u.Id == userId select u.Id).Contains(tu.userId)
-                        select new { t.description, department = t.department_cv };
+                        && tu.delete_dt == null
+                        select new { t.guid, t.description, department = t.department_cv };
 
             JArray teamsArray = JArray.FromObject(teams);
             JArray functionNamesArray = new JArray(); //JArray.FromObject(functionNamesNew);
