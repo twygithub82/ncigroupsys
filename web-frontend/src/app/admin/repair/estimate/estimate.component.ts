@@ -915,4 +915,9 @@ export class RepairEstimateComponent extends UnsubscribeOnDestroyAdapter impleme
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['REPAIR_REPAIR_ESTIMATE_DELETE']);
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
 }

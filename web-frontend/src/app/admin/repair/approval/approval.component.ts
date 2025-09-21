@@ -756,4 +756,9 @@ export class RepairApprovalComponent extends UnsubscribeOnDestroyAdapter impleme
     this.subs.sink = dialogRef.afterClosed().subscribe((result) => {
     });
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.search();
+  }
 }
