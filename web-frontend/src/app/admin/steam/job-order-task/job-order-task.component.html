@@ -45,7 +45,7 @@
           <div class="col-xl-3 col-lg-4 col-md-12 col-sm-12 mb-0">
             <mat-form-field class="example-full-width" appearance="fill">
               <mat-label>{{translatedLangText.STATUS}}</mat-label>
-              <mat-select multiple formControlName="jobStatusCv">
+              <mat-select multiple formControlName="jobStatusCv" (selectionChange)="AutoSearch()">
                 @for (codeValue of jobStatusCvList; track codeValue) {
                 @if (availableJobStatus.includes(codeValue.code_val ?? '')){
                 <mat-option [value]="codeValue.code_val">

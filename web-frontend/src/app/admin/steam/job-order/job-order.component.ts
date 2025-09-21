@@ -812,4 +812,10 @@ export class JobOrderSteamComponent extends UnsubscribeOnDestroyAdapter implemen
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['STEAMING_JOB_ALLOCATION_DELETE']);
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch()) {
+      this.onFilterSteam();
+    }
+  }
 }
