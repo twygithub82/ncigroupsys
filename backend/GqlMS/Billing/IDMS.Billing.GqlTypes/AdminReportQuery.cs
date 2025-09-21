@@ -4,6 +4,7 @@ using HotChocolate.Types;
 using IDMS.Billing.Application;
 using IDMS.Billing.GqlTypes.BillingResult;
 using IDMS.Billing.GqlTypes.LocalModel;
+using IDMS.Models.Billing;
 using IDMS.Models.DB;
 using IDMS.Models.Parameter;
 using IDMS.Models.Service;
@@ -117,6 +118,7 @@ namespace IDMS.Billing.GqlTypes
                 GqlUtils.IsAuthorize(config, httpContextAccessor);
 
                 string completedStatus = "COMPLETED";
+                string generatedBy = "system";
 
                 long sDate = steamPerformanceRequest.start_date;
                 long eDate = steamPerformanceRequest.end_date;
@@ -130,7 +132,8 @@ namespace IDMS.Billing.GqlTypes
                              join sp in context.Set<steaming_part>() on r.guid equals sp.steaming_guid
                              join jo in context.job_order on sp.job_order_guid equals jo.guid
                              join t in context.team on jo.team_guid equals t.guid
-                             where r.estimate_no.StartsWith("SE") && r.status_cv.Equals(completedStatus)
+                             //where r.estimate_no.StartsWith("SE") && r.status_cv.Equals(completedStatus)
+                             where (r.create_by == generatedBy || r.estimate_no.StartsWith("SE")) && r.status_cv.Equals(completedStatus)
                              && r.delete_dt == null && sp.delete_dt == null && r.complete_dt >= sDate && r.complete_dt <= eDate
                              select new SteamPerformance
                              {
@@ -302,32 +305,31 @@ namespace IDMS.Billing.GqlTypes
                            {
                                surveyor_name = x.Surveyor,        // Just keep Surveyor, no Month here
                                est_count = x.Count,
-                               est_cost = x.Est_Cost,
-                               appv_cost = x.Appr_Cost,
-                               diff_cost = x.Diff_Cost,
-                               average = x.Appr_Cost / x.Count,
-                               rejected = x.Diff_Cost < 0 ? 0 : x.Diff_Cost / x.Est_Cost
+                               est_cost = RoundUpValue(x.Est_Cost),
+                               appv_cost = RoundUpValue(x.Appr_Cost),
+                               diff_cost = RoundUpValue(x.Diff_Cost),
+                               average = RoundUpValue(x.Appr_Cost / x.Count),
+                               rejected = x.Diff_Cost < 0 ? 0 : RoundUpValue(x.Diff_Cost / x.Est_Cost)
                            }).ToList(),
                            monthly_total_est_count = g.Sum(x => x.Count),
-                           monthly_total_est_cost = g.Sum(x => x.Est_Cost),
-                           monthly_total_appv_cost = g.Sum(x => x.Appr_Cost),
-                           monthly_total_diff_cost = g.Sum(x => x.Diff_Cost),
-                           monthly_total_average = g.Sum(x => x.Appr_Cost) / g.Sum(x => x.Count),
-                           //monthly_total_rejected = g.Sum(x => x.Diff_Cost < 0 ? 0 : x.Diff_Cost) / g.Sum(x => x.Est_Cost)
-                           monthly_total_rejected = (g.Sum(x => x.Diff_Cost)) < 0 ? 0 : g.Sum(x => x.Diff_Cost) / g.Sum(x => x.Est_Cost)
+                           monthly_total_est_cost = RoundUpValue(g.Sum(x => x.Est_Cost)),
+                           monthly_total_appv_cost = RoundUpValue(g.Sum(x => x.Appr_Cost)),
+                           monthly_total_diff_cost = RoundUpValue(g.Sum(x => x.Diff_Cost)),
+                           monthly_total_average = RoundUpValue(g.Sum(x => x.Appr_Cost) / g.Sum(x => x.Count)),
+                           monthly_total_rejected = (g.Sum(x => x.Diff_Cost)) < 0 ? 0 : RoundUpValue(g.Sum(x => x.Diff_Cost) / g.Sum(x => x.Est_Cost))
                        })
                        .ToList();
 
                 SurveyorPerformanceSummary surveyorPerformanceResult = new SurveyorPerformanceSummary();
                 surveyorPerformanceResult.monthly_summary = groupedNodes;
                 surveyorPerformanceResult.grand_total_est_count = groupedNodes.Sum(g => g.monthly_total_est_count);
-                surveyorPerformanceResult.grand_total_est_cost = groupedNodes.Sum(g => g.monthly_total_est_cost);
-                surveyorPerformanceResult.grand_total_appv_cost = groupedNodes.Sum(g => g.monthly_total_appv_cost);
-                surveyorPerformanceResult.grand_total_diff_cost = groupedNodes.Sum(g => g.monthly_total_diff_cost);
-                surveyorPerformanceResult.grand_total_average = surveyorPerformanceResult.grand_total_appv_cost < 0 ? 0 : surveyorPerformanceResult.grand_total_appv_cost
-                                                                / surveyorPerformanceResult.grand_total_est_count;
-                surveyorPerformanceResult.grand_total_rejected = surveyorPerformanceResult.grand_total_diff_cost < 0 ? 0 : surveyorPerformanceResult.grand_total_diff_cost
-                                                                / surveyorPerformanceResult.grand_total_est_cost;
+                surveyorPerformanceResult.grand_total_est_cost = RoundUpValue(groupedNodes.Sum(g => g.monthly_total_est_cost));
+                surveyorPerformanceResult.grand_total_appv_cost = RoundUpValue(groupedNodes.Sum(g => g.monthly_total_appv_cost));
+                surveyorPerformanceResult.grand_total_diff_cost = RoundUpValue(groupedNodes.Sum(g => g.monthly_total_diff_cost));
+                surveyorPerformanceResult.grand_total_average = surveyorPerformanceResult.grand_total_appv_cost < 0 ? 0 : RoundUpValue(surveyorPerformanceResult.grand_total_appv_cost
+                                                                / surveyorPerformanceResult.grand_total_est_count);
+                surveyorPerformanceResult.grand_total_rejected = surveyorPerformanceResult.grand_total_diff_cost < 0 ? 0 : RoundUpValue(surveyorPerformanceResult.grand_total_diff_cost
+                                                                / surveyorPerformanceResult.grand_total_est_cost);
 
 
                 return surveyorPerformanceResult;
@@ -336,6 +338,11 @@ namespace IDMS.Billing.GqlTypes
             {
                 throw new GraphQLException(new Error($"{ex.Message} -- {ex.InnerException}", "ERROR"));
             }
+        }
+
+        private double RoundUpValue(double? value)
+        {
+           return Math.Round(value ?? 0, 2); 
         }
 
 
@@ -643,7 +650,7 @@ namespace IDMS.Billing.GqlTypes
                 //    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
 
                 // Check if all elements in inputList are within the process list
-                if (!monthlySalesRequest.report_type.All(i => ProcessType.ProcessList.ContainsIgnore(i)))
+                if (!monthlySalesRequest.report_type.All(i => ProcessType.SalesList.ContainsIgnore(i)))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 MonthlySalesList monthlySalesReportResult = new MonthlySalesList();
@@ -735,6 +742,10 @@ namespace IDMS.Billing.GqlTypes
                         monthlySalesReportResult.preinspection_monthly_sales = monthlyReport;
                     else if (type.EqualsIgnore(ProcessType.LOLO))
                         monthlySalesReportResult.lolo_monthly_sales = monthlyReport;
+                    else if (type.EqualsIgnore(ProcessType.GATE) || type.EqualsIgnore(ProcessType.IN_OUT))
+                        monthlySalesReportResult.gate_monthly_sales = monthlyReport;
+                    else if (type.EqualsIgnore(ProcessType.STORAGE))
+                        monthlySalesReportResult.storage_monthly_sales = monthlyReport;
                     else if (type.EqualsIgnore(ProcessType.CLEANING))
                         monthlySalesReportResult.cleaning_monthly_sales = monthlyReport;
                     else if (type.EqualsIgnore(ProcessType.STEAMING))
@@ -764,7 +775,7 @@ namespace IDMS.Billing.GqlTypes
                 //    $"{ProcessType.REPAIR}", $"{ProcessType.PREINSPECTION}", $"{ProcessType.LOLO}" };
 
                 // Check if all elements in inputList are within the process list
-                if (!yearlySalesRequest.report_type.All(i => ProcessType.ProcessList.ContainsIgnore(i)))
+                if (!yearlySalesRequest.report_type.All(i => ProcessType.SalesList.ContainsIgnore(i)))
                     throw new GraphQLException(new Error($"Invalid Report Type", "ERROR"));
 
                 YearlySalesList yearlySalesReportResult = new YearlySalesList();
@@ -863,6 +874,10 @@ namespace IDMS.Billing.GqlTypes
                         yearlySalesReportResult.preinspection_yearly_sales = yearlySalesReport;
                     else if (type.EqualsIgnore(ProcessType.LOLO))
                         yearlySalesReportResult.lolo_yearly_sales = yearlySalesReport;
+                    else if (type.EqualsIgnore(ProcessType.GATE) || type.EqualsIgnore(ProcessType.IN_OUT))
+                        yearlySalesReportResult.gate_yearly_sales = yearlySalesReport;
+                    else if (type.EqualsIgnore(ProcessType.STORAGE))
+                        yearlySalesReportResult.storage_yearly_sales = yearlySalesReport;
                     else if (type.EqualsIgnore(ProcessType.CLEANING))
                         yearlySalesReportResult.cleaning_yearly_sales = yearlySalesReport;
                     else if (type.EqualsIgnore(ProcessType.STEAMING))
@@ -1301,7 +1316,7 @@ namespace IDMS.Billing.GqlTypes
                              }).AsQueryable();
 
                 }
-                else if (processType.EqualsIgnore(ProcessType.GATE))
+                else if (processType.EqualsIgnore(ProcessType.GATE) || processType.EqualsIgnore(ProcessType.IN_OUT))
                 {
                     query = (from result in query
                              join s in context.billing_sot on result.sot_guid equals s.sot_guid
@@ -1318,6 +1333,23 @@ namespace IDMS.Billing.GqlTypes
                                  date = (long)ig.eir_dt
                              }).AsQueryable();
 
+                }
+                else if (processType.EqualsIgnore("storage"))
+                {
+                    //query = (from result in query
+                    //         join s in context.storage_detail on result.sot_guid equals s.sot_guid
+                    //         join ig in context.in_gate on s.sot_guid equals ig.so_tank_guid into igJoin
+                    //         from ig in igJoin.DefaultIfEmpty()  // Left Join
+                    //         where (s.gate_in == true || s.gate_out == true) && ig.delete_dt == null && ig.eir_status_cv != yetSurvey && ig.eir_dt >= startEpoch && ig.eir_dt <= endEpoch
+                    //             && s.delete_dt == null
+                    //         select new TempReport
+                    //         {
+                    //             sot_guid = result.sot_guid,
+                    //             cost = ((s.gate_in == true ? 1.0 : 0.0) * s.gate_in_cost ?? 0.0) + ((s.gate_out == true ? 1.0 : 0.0) * s.gate_out_cost ?? 0.0),
+                    //             code = result.code,
+                    //             cc_name = result.cc_name,
+                    //             date = (long)ig.eir_dt
+                    //         }).AsQueryable();
                 }
                 else if (processType.EqualsIgnore("tankin"))
                 {
@@ -1493,15 +1525,15 @@ namespace IDMS.Billing.GqlTypes
                 List<DailyTeamApproval> result = new List<DailyTeamApproval>();
 
                 var query = (from r in context.repair
-                             //join rp in context.repair_part on r.guid equals rp.repair_guid
-                             //join jo in context.job_order on rp.job_order_guid equals jo.guid
-                             //join t in context.team on jo.team_guid equals t.guid
+                                 //join rp in context.repair_part on r.guid equals rp.repair_guid
+                                 //join jo in context.job_order on rp.job_order_guid equals jo.guid
+                                 //join t in context.team on jo.team_guid equals t.guid
                              join sot in context.storing_order_tank on r.sot_guid equals sot.guid
                              join so in context.storing_order on sot.so_guid equals so.guid into soGroup
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
-                             //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                                 //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
                              where r.delete_dt == null && !StatusCondition.BeforeEstimateApprove.Contains(r.status_cv) && r.approve_dt != null
                              && !string.IsNullOrEmpty(sot.purpose_repair_cv)
                              select new DailyTeamApproval
@@ -1607,7 +1639,7 @@ namespace IDMS.Billing.GqlTypes
                              from so in soGroup.DefaultIfEmpty()
                              join cc in context.customer_company on so.customer_company_guid equals cc.guid into ccGroup
                              from cc in ccGroup.DefaultIfEmpty()
-                             //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
+                                 //join ig in context.in_gate on r.sot_guid equals ig.so_tank_guid
                              where r.delete_dt == null && r.status_cv == repairStatus && !string.IsNullOrEmpty(sot.purpose_repair_cv)
                              select new DailyQCDetail
                              {
