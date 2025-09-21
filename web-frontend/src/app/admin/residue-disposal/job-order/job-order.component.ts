@@ -676,4 +676,9 @@ export class JobOrderResidueDisposalComponent extends UnsubscribeOnDestroyAdapte
   isAllowDelete() {
     return this.modulePackageService.hasFunctions(['RESIDUE_DISPOSAL_JOB_ALLOCATION_DELETE']);
   }
+
+  AutoSearch() {
+    if (Utility.IsAllowAutoSearch())
+      this.onFilterResidue();
+  }
 }
