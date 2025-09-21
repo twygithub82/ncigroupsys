@@ -7,6 +7,8 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     {
         public MonthlySales? preinspection_monthly_sales { get; set; }
         public MonthlySales? lolo_monthly_sales { get; set; }
+        public MonthlySales? storage_monthly_sales { get; set; }
+        public MonthlySales? gate_monthly_sales { get; set; }
         public MonthlySales? cleaning_monthly_sales { get; set; }
         public MonthlySales? residue_monthly_sales { get; set; }
         public MonthlySales? steaming_monthly_sales { get; set; }
@@ -41,6 +43,9 @@ namespace IDMS.Billing.GqlTypes.BillingResult
     {
         public YearlySales? preinspection_yearly_sales { get; set; }
         public YearlySales? lolo_yearly_sales { get; set; }
+        public YearlySales? storage_yearly_sales { get; set; }
+        public YearlySales? gate_yearly_sales { get; set; }
+
         public YearlySales? cleaning_yearly_sales { get; set; }
         public YearlySales? residue_yearly_sales { get; set; }
         public YearlySales? steaming_yearly_sales { get; set; }
