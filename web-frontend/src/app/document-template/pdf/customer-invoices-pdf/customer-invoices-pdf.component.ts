@@ -955,45 +955,161 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
     const invPeriod = this.repBillingCustomers?.[0].invoice_period;
     const invDate =  PDFUtility.FormatColon(this.translatedLangText.INVOICE_PERIOD, invPeriod);
 
-    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
       rightMargin, this.translate, reportTitle, invDate);
+      StartPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
     // Add invoice period at top right
     // pdf.setFontSize(fontSz);
     // Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY + offset, 8);
 
     // Process each customer
-    for (let n = 0; n < this.repBillingCustomers.length; n++) {
-      const cust: any = this.repBillingCustomers[n];
+    // for (let n = 0; n < this.repBillingCustomers.length; n++) {
+    //   const cust: any = this.repBillingCustomers[n];
 
-      // Calculate required space
-      const customerNameHeight = 6;
-      const tableHeight = (cust.items?.length || 0) * tableRowHeight + tableHeaderHeight;
-      const totalSectionHeight = customerNameHeight + tableHeight + customerGap;
+    //   // Calculate required space
+    //   const customerNameHeight = 6;
+    //   const tableHeight = (cust.items?.length || 0) * tableRowHeight + tableHeaderHeight;
+    //   const totalSectionHeight = customerNameHeight + tableHeight + customerGap;
 
     
-      // Check if we need a new page
-      if (currentY + totalSectionHeight > maxContentHeight - bottomMargin) {
-        pdf.addPage();
-        pageNumber++;
-        currentY = topMargin;
+    //   // Check if we need a new page
+    //   if (currentY + totalSectionHeight > maxContentHeight - bottomMargin) {
+    //     pdf.addPage();
+    //     pageNumber++;
+    //     currentY = topMargin;
 
-        // Add header to new page
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-        await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, currentY + 40, 14, false);
-        currentY = topMargin + 40 + 5;
-        Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY + offset, PDFUtility.RightSubTitleFontSize());
+    //     // Add header to new page
+    //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //     await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, currentY + 40, 14, false);
+    //     currentY = topMargin + 40 + 5;
+    //     Utility.AddTextAtRightCornerPage(pdf, invDate, pageWidth, leftMargin, rightMargin, currentY + offset, PDFUtility.RightSubTitleFontSize());
+    //   }
+
+    //   // Add customer name
+    //   pdf.setFontSize(fontSz_body);
+    //   pdf.setTextColor(0, 0, 0);
+    //   pdf.text(`${cust.customer}`, leftMargin, currentY + offset);
+
+    //   currentY += customerNameHeight;
+
+    //   // Prepare table data if items exist
+    //   if (cust.items?.length > 0) {
+    //     const data: any[][] = [];
+
+    //     for (let b = 0; b < cust.items.length; b++) {
+    //       const itm = cust.items[b];
+    //       data.push([
+    //         (b + 1).toString(),
+    //         itm.tank_no || "",
+    //         itm.eir_no || "",
+    //         itm.last_cargo || "",
+    //         itm.job_no || "",
+    //         itm.in_date || "",
+    //         itm.out_date || "",
+    //         (itm.gateio_cost === "0.00" ? '' : itm.gateio_cost),
+    //         (itm.preins_cost === "0.00" ? '' : itm.preins_cost),
+    //         (itm.lolo_cost === "0.00" ? '' : itm.lolo_cost),
+    //         itm.days,
+    //         (itm.storage_cost === "0.00" ? '' : itm.storage_cost),
+    //         (itm.steam_cost === "0.00" ? '' : itm.steam_cost),
+    //         (itm.clean_cost === "0.00" ? '' : itm.clean_cost),
+    //         (itm.residue_cost === "0.00" ? '' : itm.residue_cost),
+    //         (itm.repair_cost === "0.00" ? '' : itm.repair_cost),
+    //         (itm.total === "0.00" ? '' : itm.total),
+    //       ]);
+    //     }
+
+    //     // Add table
+    //     autoTable(pdf, {
+    //       head: headers,
+    //       body: data,
+    //       startY: currentY,
+    //       margin: { horizontal: leftMargin },
+    //       theme: 'grid',
+    //       styles: {
+    //         fontSize: fontSz_body,
+    //         minCellHeight: minHeightBodyCell,
+    //         cellPadding: 1
+    //       },
+    //       columnStyles: comStyles,
+    //       headStyles: headStyles,
+    //       bodyStyles: {
+    //         fillColor: [255, 255, 255],
+    //         halign: 'left',
+    //         valign: 'middle',
+    //       },
+    //         didDrawPage: (d: any) => {
+    //         const pageCount = pdf.getNumberOfPages();
+
+    //         // lastTableFinalY = d.cursor.y;
+
+    //         var pg = pagePositions.find(p => p.page == pageCount);
+    //         if (!pg) {
+    //           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    //           if (pageCount > 1) {
+    //             // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
+    //               PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+    //             let posY= PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin);
+    //               // posY +=PDFUtility.SubTitleFontSize_Portrait()/2;
+    //               // Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
+    //           }
+    //         }
+
+    //       },
+          
+    //     });
+
+    //     currentY += customerGap;
+    //   }
+    // }
+
+     let lastTableFinalY = 40;
+
+     var CurrentPage = 1;
+      var buffer = 20;
+     for (let n = 0; n < this.repBillingCustomers.length; n++) {
+     
+       if (n>0) lastTableFinalY+=6;
+        else lastTableFinalY=StartPosY;
+
+      let startY = 0;
+      const data: any[][] = [];
+
+
+      // Calculate required space
+      // const customerNameHeight = 6;
+      // const tableHeight = (cust.items?.length || 0) * tableRowHeight + tableHeaderHeight;
+      // const totalSectionHeight = customerNameHeight + tableHeight + customerGap;
+
+    
+       var repPage = pdf.getNumberOfPages();
+
+      // Check if we need a new page
+     if ( (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+        pdf.addPage();
+         lastTableFinalY =StartPosY; // buffer for 2nd page onward first table's Method
+      }
+      else {
+        CurrentPage = repPage;
       }
 
-      // Add customer name
-      pdf.setFontSize(fontSz_body);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text(`${cust.customer}`, leftMargin, currentY + offset);
+       const cust: any = this.repBillingCustomers[n];
 
-      currentY += customerNameHeight;
+       var customer=`${cust.customer}`;
+      await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+      startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
+
+      // Add customer name
+      // pdf.setFontSize(fontSz_body);
+      // pdf.setTextColor(0, 0, 0);
+      // pdf.text(`${cust.customer}`, leftMargin, currentY + offset);
+
+      // currentY += customerNameHeight;
 
       // Prepare table data if items exist
       if (cust.items?.length > 0) {
-        const data: any[][] = [];
+       
 
         for (let b = 0; b < cust.items.length; b++) {
           const itm = cust.items[b];
@@ -1022,8 +1138,8 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
         autoTable(pdf, {
           head: headers,
           body: data,
-          startY: currentY,
-          margin: { horizontal: leftMargin },
+          // startY: currentY,
+          margin: { top:startY, horizontal: leftMargin },
           theme: 'grid',
           styles: {
             fontSize: fontSz_body,
@@ -1040,7 +1156,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
             didDrawPage: (d: any) => {
             const pageCount = pdf.getNumberOfPages();
 
-            // lastTableFinalY = d.cursor.y;
+             lastTableFinalY = d.cursor.y;
 
             var pg = pagePositions.find(p => p.page == pageCount);
             if (!pg) {
@@ -1048,7 +1164,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
               if (pageCount > 1) {
                 // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin);
                   PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
-                let posY= PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin);
+                  PDFUtility.addReportSubTitle_Portrait(pdf, invDate, pageWidth, leftMargin, rightMargin);
                   // posY +=PDFUtility.SubTitleFontSize_Portrait()/2;
                   // Utility.AddTextAtLeftCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());   
               }
@@ -1062,7 +1178,7 @@ export class CustomerInvoicesPdfComponent extends UnsubscribeOnDestroyAdapter im
       }
     }
 
-    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions);
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate, pagePositions);
     // Add page numbers to all pages
     // const totalPages = pdf.getNumberOfPages();
     // for (let i = 1; i <= totalPages; i++) {

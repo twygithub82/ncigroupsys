@@ -719,7 +719,7 @@ export class DailyApprovalPdfComponent extends UnsubscribeOnDestroyAdapter imple
 
     // const totalPages = pdf.getNumberOfPages();
 
-    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
     rightMargin, this.translate,pagePositions);
 
     // for (const { page, x, y } of pagePositions) {

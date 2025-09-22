@@ -601,7 +601,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-   let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
     let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
@@ -659,7 +659,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
     // await Utility.AddTextAtRightCornerPage(pdf, approvalDt, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
 
     var teamStr = PDFUtility.FormatColon(this.translatedLangText.TEAM, this.team);
-    startY += PDFUtility.SubTitleFontSize_Portrait()/2;
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
     await Utility.AddTextAtLeftCornerPage(pdf, teamStr, pageWidth, leftMargin, rightMargin, startY, PDFUtility.RightSubTitleFontSize());
    startY +=  PDFUtility.GapBetweenLeftTitleAndTable();
 
@@ -753,7 +753,7 @@ export class DailyRevenuePdfComponent extends UnsubscribeOnDestroyAdapter implem
       },
     });
 
-    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
     rightMargin, this.translate,pagePositions);
 
 

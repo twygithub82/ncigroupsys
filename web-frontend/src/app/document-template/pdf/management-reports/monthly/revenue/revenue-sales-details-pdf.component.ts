@@ -681,7 +681,8 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 7;
+   let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -759,6 +760,7 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -770,21 +772,29 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
-    // Variable to store the final Y position of the last table
+    // // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
 
     let startY = lastTableFinalY + 8; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     const repGeneratedDate = `${this.date}`; // Replace with your actual cutoff date
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 1, PDFUtility.CenterSubTitleFontSize());
+    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 1, PDFUtility.CenterSubTitleFontSize());
+     const subtitlePos = 1;
+    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin,this.translate,reportTitle,repGeneratedDate,subtitlePos);
+    startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+
 
     if (this.customer) {
-      const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
-      Utility.addText(pdf, customer, startY + 2, leftMargin, PDFUtility.RightSubTitleFontSize());
+      // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
+      // Utility.addText(pdf, customer, startY + 2, leftMargin, PDFUtility.RightSubTitleFontSize());
+       const customer=`${this.customer}`;
+      Utility.AddTextAtLeftCornerPage(pdf, customer, leftMargin, pageWidth, rightMargin, startY, PDFUtility.SubTitleFontSize_Landscape());
+      startY += PDFUtility.GapBetweenLeftTitleAndTable();
     }
     startY += 3;
     var idx = 0;
@@ -878,13 +888,13 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
             if (showStorageSurcharge) s.data.push(entry.storage?.cost || 0);
             break;
           case this.translatedLangText.STEAM:
-            if (showSteamSurcharge) s.data.push(entry.steaming?.completed_count || 0);
+            if (showSteamSurcharge) s.data.push(entry.steaming?.cost || 0);
             break;
           case this.translatedLangText.CLEANING:
-            if (showCleanSurcharge) s.data.push(entry.cleaning?.completed_count || 0);
+            if (showCleanSurcharge) s.data.push(entry.cleaning?.cost || 0);
             break;
           case this.translatedLangText.REPAIR:
-            if (showRepairSurcharge) s.data.push(entry.repair?.completed_hour || 0);
+            if (showRepairSurcharge) s.data.push(entry.repair?.cost || 0);
             break;
           case this.translatedLangText.RESIDUE:
             if (showResidueSurcharge) s.data.push(entry.residue?.cost || 0);
@@ -992,10 +1002,10 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       head: headers,
       body: data,
       // startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 + PDFUtility.TableStartTopBuffer()},
+      margin: { left: leftMargin, right: rightMargin, top: startY},
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -1092,8 +1102,10 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48 - 1, PDFUtility.CenterSubTitleFontSize());
+            PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 48 - 1, PDFUtility.CenterSubTitleFontSize());
           }
         }
 
@@ -1150,9 +1162,11 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
       for (var i = 0; i < cardElements.length; i++) {
         {
           pdf.addPage();
-          Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+          // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+          PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+          startY= PDFUtility.addReportSubTitle_Landscape(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin,subtitlePos);
           pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-          startY = topMargin + 50;
+          // startY = topMargin + 50;
         }
         const card1 = cardElements[i];
         await Utility.DrawCardForImageAtCenterPage(pdf, card1, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, this.imageQuality);
@@ -1161,24 +1175,27 @@ export class RevenueMonthlySalesReportDetailsPdfComponent extends UnsubscribeOnD
 
       }
 
-      const totalPages = pdf.getNumberOfPages();
+       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate,pagePositions);
+
+      // const totalPages = pdf.getNumberOfPages();
 
 
-      for (const { page, x, y } of pagePositions) {
-        pdf.setDrawColor(0, 0, 0); // black line color
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0.01, 0.01], 0.1);
-        pdf.setFontSize(8);
-        pdf.setPage(page);
+      // for (const { page, x, y } of pagePositions) {
+      //   pdf.setDrawColor(0, 0, 0); // black line color
+      //   pdf.setLineWidth(0.1);
+      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      //   pdf.setFontSize(8);
+      //   pdf.setPage(page);
 
-        const lineBuffer = 13;
-        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+      //   const lineBuffer = 13;
+      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-        if (page > 1) {
-          await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-        }
-      }// Add Second Page, Add For Loop
+      //   if (page > 1) {
+      //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      //   }
+      // }// Add Second Page, Add For Loop
 
       // pagePositions.forEach(({ page, x, y }) => {
       //   pdf.setDrawColor(0, 0, 0); // black line color

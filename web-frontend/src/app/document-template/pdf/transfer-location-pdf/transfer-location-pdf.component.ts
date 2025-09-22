@@ -639,7 +639,8 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
     
     let StartPosY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
     rightMargin,this.translate,reportTitle,invDate);
-     StartPosY += PDFUtility.SubTitleFontSize_Portrait()/2;
+     StartPosY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
+     
     var CurrentPage = 1;
     var buffer = 20;
     
@@ -647,7 +648,10 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       //if (n > 0) lastTableFinalY += 9;
         if (n>0) lastTableFinalY+=6;
         else lastTableFinalY=StartPosY;
-      const data: any[][] = []; // Explicitly define data as a 2D array
+
+      let startY = 0;
+      const data: any[][] = [];
+       // Explicitly define data as a 2D array
       //let startY = lastTableFinalY + 15; // Start Y position for the current table
       let cust = this.report_transfer_location[n];
 
@@ -656,7 +660,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       var repPage = pdf.getNumberOfPages();
       // if(repPage==1)lastTableFinalY=45;
 
-      if ((repPage == CurrentPage) && (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
+      if ( (pageHeight - bottomMargin - topMargin) < (lastTableFinalY + buffer + topMargin)) {
         pdf.addPage();
          lastTableFinalY =StartPosY; // buffer for 2nd page onward first table's Method
       }
@@ -665,10 +669,14 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
       }
 
       //lastTableFinalY+=gap;
-      pdf.setFontSize(10);
-      pdf.setTextColor(0, 0, 0); // Black text
-      pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.code}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
-      lastTableFinalY += 3;
+      // pdf.setFontSize(10);
+      // pdf.setTextColor(0, 0, 0); // Black text
+      // pdf.text(`${this.translatedLangText.CUSTOMER} : ${cust.code}`, leftMargin, lastTableFinalY); // Add customer name 10mm below the last table
+      var customer=`${cust.customer}`;
+      await Utility.AddTextAtLeftCornerPage(pdf,customer, pageWidth, leftMargin, rightMargin, lastTableFinalY, PDFUtility.RightSubTitleFontSize());
+      lastTableFinalY += PDFUtility.GapBetweenLeftTitleAndTable();
+      startY= StartPosY+ PDFUtility.GapBetweenLeftTitleAndTable();
+
       if ((cust.storing_order_tank?.length || 0) > 0) {
         // lastTableFinalY+=5;
         // pdf.setFontSize(8);
@@ -696,7 +704,7 @@ export class TransferLocationPdfComponent extends UnsubscribeOnDestroyAdapter im
           body: data,
          // startY: startY, // Start table at the current startY value
           theme: 'grid',
-           margin: {left:leftMargin, top:topMargin+45 },
+           margin: {left:leftMargin, top:startY },
           styles: {
             fontSize: fontSz_body,
             minCellHeight: minHeightHeaderCol

@@ -774,7 +774,7 @@ export class DailyQCDetailPdfComponent extends UnsubscribeOnDestroyAdapter imple
       },
     });
 
-    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
     rightMargin, this.translate,pagePositions);
 
     // var gap = 7;

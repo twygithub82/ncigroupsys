@@ -558,7 +558,8 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 6;
+   let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -573,7 +574,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 8, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
       3: { halign: 'center', valign: 'middle', cellWidth: 25, minCellHeight: minHeightBodyCell },
       4: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell },
@@ -588,7 +589,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
-      fontSize: fontSz,
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -600,18 +601,25 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
+
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 40);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 46;
 
     let date = PDFUtility.FormatColon(this.translatedLangText.INVENTORY_PERIOD, this.date);
     //await Utility.AddTextAtCenterPage(pdf,date,pageWidth,leftMargin,rightMargin,lastTableFinalY,8);
-    await Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+    // await Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+    const subTitlePos = 1;
+    let startY = await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin,this.translate,reportTitle,date,subTitlePos);
+
+    startY+=PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+
     lastTableFinalY += 5;
 
-    let startY = lastTableFinalY; // Start table 20mm below the customer name
+    // let startY = lastTableFinalY; // Start table 20mm below the customer name
     const data: any[][] = []; // Explicitly define data as a 2D array
 
 
@@ -677,12 +685,12 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     autoTable(pdf, {
       head: headers,
       body: data,
-      startY: startY, // Start table at the current startY value
+      // startY: startY, // Start table at the current startY value
       theme: 'grid',
-      margin: { left: leftMargin },
+      margin: { top:startY, left: leftMargin },
       tableWidth: contentWidth,
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -694,44 +702,7 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
         //valign: 'middle', // Vertically align content
       },
       didParseCell: (data: any) => {
-        // let colSpan: number = 7;
-        // let totalRowIndex = data.table.body.length - 1; // Ensure the correct last row index
-        // let bColSpan = false;
-
-        // if (data.cell.raw == this.translatedLangText.CUSTOMER_TOTAL && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
-        //   colSpan = 7;
-        //   data.cell.styles.halign = 'right';
-        //   data.cell.styles.fontStyle = 'bold';
-        //   data.cell.styles.fontSize = 8;
-        //   data.cell.colSpan = colSpan;
-        //   AllowedRowColSpan = data.row.index;
-        //   data.cell.styles.fillColor = [231, 231, 231];
-        // }
-
-        // if (data.cell.raw == this.translatedLangText.GRAND_TOTAL && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
-        //   colSpan = 7;
-        //   data.cell.styles.halign = 'right';
-        //   data.cell.styles.fontStyle = 'bold';
-        //   data.cell.styles.fontSize = 8;
-        //   data.cell.colSpan = colSpan;
-        //   data.cell.styles.fontSize = 8;
-        //   AllowedRowColSpan = data.row.index;
-        //   data.cell.styles.fillColor = [231, 231, 231];
-        // }
-        // if (data.column.index == 0 && !Utility.isParsableToNumber(data.cell.raw) && data.section == 'body' && AllowedRowColSpan !== data.row.index) {
-        //   colSpan = 8;
-        //   data.cell.styles.halign = 'left';
-        //   data.cell.styles.fontStyle = 'bold';
-        //   data.cell.styles.fontSize = 8;
-        //   data.cell.colSpan = colSpan;
-        //   AllowedRowColSpan = data.row.index;
-        // }
-
-        // if ((AllowedRowColSpan == data.row.index) && data.section == 'body' && data.column.index > 0 && data.column.index < colSpan) {
-        //   data.cell.text = ''; // Remove text from hidden columns
-        //   data.cell.colSpan = 0; // Hide these columns
-        //   //bColSpan=false;
-        // }
+      
       },
       didDrawPage: (d: any) => {
         const pageCount = pdf.getNumberOfPages();
@@ -742,8 +713,10 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            // Utility.AddTextAtRightCornerPage(pdf, date, pageWidth, leftMargin, rightMargin, 50, PDFUtility.RightSubTitleFontSize());
+             PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+             PDFUtility.addReportSubTitle_Portrait(pdf, date, pageWidth, leftMargin, rightMargin,subTitlePos);
           }
         }
 
@@ -751,34 +724,36 @@ export class ZeroApprovalCostPdfComponent extends UnsubscribeOnDestroyAdapter im
     });
 
    
+    PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
 
 
-    var gap = 7;
+    // var gap = 7;
 
-    if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
-      pdf.addPage();
-      const pageCount = pdf.getNumberOfPages();
-      pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
-    }
+    // if (lastTableFinalY + topMargin + bottomMargin + (gap * 4.5) > pageHeight) {
+    //   pdf.addPage();
+    //   const pageCount = pdf.getNumberOfPages();
+    //   pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
+    // }
 
-    const totalPages = pdf.getNumberOfPages();
+    // const totalPages = pdf.getNumberOfPages();
 
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
     
 

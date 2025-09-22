@@ -750,7 +750,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     //let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 7;
+    let fontSz_hdr = PDFUtility.TableHeaderFontSize_Portrait();
+    let fontSz_body= PDFUtility.ContentFontSize_Portrait()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -834,6 +835,7 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -845,8 +847,8 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
 
-    await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 40;
@@ -855,12 +857,19 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
     //const repGeneratedDate = `${this.translatedLangText.MONTH} : ${this.date}`;
     const repGeneratedDate = `${this.date}`;
-    Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, PDFUtility.CenterSubTitleFontSize());
+    startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin,
+    rightMargin, this.translate, reportTitle, repGeneratedDate);
+    startY +=  PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+
+    // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, startY - 8, PDFUtility.CenterSubTitleFontSize());
 
     if (this.customer) {
-      const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
-      Utility.addText(pdf, customer, startY - 2, leftMargin, PDFUtility.RightSubTitleFontSize());
-      tableTopMargin = 47;
+        const customer = `${this.customer}`// `${this.translatedLangText.CUSTOMER} : ${this.customer}`
+      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+      startY+=PDFUtility.GapBetweenLeftTitleAndTable();
+      // const customer = PDFUtility.FormatColon(this.translatedLangText.CUSTOMER, this.customer);
+      // Utility.addText(pdf, customer, startY - 2, leftMargin, PDFUtility.RightSubTitleFontSize());
+      // tableTopMargin = 47;
     }
     var idx = 0;
 
@@ -969,10 +978,10 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: topMargin + tableTopMargin + PDFUtility.TableStartTopBuffer()},
+      margin: { left: leftMargin, right: rightMargin, top: startY},
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -1076,8 +1085,10 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 47, PDFUtility.CenterSubTitleFontSize());
+            PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+             PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            // Utility.AddTextAtCenterPage(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin + 5, 47, PDFUtility.CenterSubTitleFontSize());
           }
         }
 
@@ -1243,9 +1254,12 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
       if (this.chartLine?.nativeElement) {
         pdf.addPage();
-        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+        PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+        startY=PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+        startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+        // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-        startY = topMargin + 50;
+        // startY = topMargin + 50;
         const canvas = this.chartLine.nativeElement;
         const base64Image = Utility.ConvertCanvasElementToImage64String(canvas);
         const imgInfo = await Utility.getImageSizeFromBase64(base64Image);
@@ -1258,32 +1272,39 @@ export class InventoryYearlySalesReportDetailsPdfComponent extends UnsubscribeOn
 
       if (this.chartPie?.nativeElement) {
         pdf.addPage();
-        Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+        PDFUtility.addReportTitle_Portrait(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+        startY=PDFUtility.addReportSubTitle_Portrait(pdf, repGeneratedDate, pageWidth, leftMargin, rightMargin);
+        startY += PDFUtility.GapBetweenSubTitleAndTable_Portrait();
+        // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
         pagePositions.push({ page: pdf.getNumberOfPages(), x: 0, y: 0 });
-        startY = topMargin + 50;
+        // startY = topMargin + 50;
         await Utility.DrawCardForImageAtCenterPage(pdf, this.chartPie.nativeElement, pageWidth, leftMargin, rightMargin, startY, chartContentWidth, 1);
       }
 
 
-      const totalPages = pdf.getNumberOfPages();
+       await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin, this.translate,pagePositions);
+
+
+      // const totalPages = pdf.getNumberOfPages();
 
 
 
-      for (const { page, x, y } of pagePositions) {
-        pdf.setDrawColor(0, 0, 0); // black line color
-        pdf.setLineWidth(0.1);
-        pdf.setLineDashPattern([0.01, 0.01], 0.1);
-        pdf.setFontSize(8);
-        pdf.setPage(page);
+      // for (const { page, x, y } of pagePositions) {
+      //   pdf.setDrawColor(0, 0, 0); // black line color
+      //   pdf.setLineWidth(0.1);
+      //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+      //   pdf.setFontSize(8);
+      //   pdf.setPage(page);
 
-        const lineBuffer = 13;
-        pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-        pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+      //   const lineBuffer = 13;
+      //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+      //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-        if (page > 1) {
-          await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-        }
-      }// Add Second Page, Add For Loop
+      //   if (page > 1) {
+      //     await Utility.addHeaderWithCompanyLogo_Portrait(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+      //   }
+      // }// Add Second Page, Add For Loop
 
       // pagePositions.forEach(({ page, x, y }) => {
       //   pdf.setDrawColor(0, 0, 0); // black line color

@@ -518,7 +518,8 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     let tableRowHeight = 8.5;
     let minHeightBodyCell = 5;
     let minHeightHeaderCol = 3;
-    let fontSz = 6;
+     let fontSz_hdr = PDFUtility.TableHeaderFontSize_Landscape();
+    let fontSz_body= PDFUtility.ContentFontSize_Landscape()
     const pagePositions: { page: number; x: number; y: number }[] = [];
     // const progressValue = 100 / cardElements.length;
 
@@ -534,17 +535,17 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     const comStyles: any = {
       // Set columns 0 to 16 to be center aligned
       0: { halign: 'center', valign: 'middle', cellWidth: 10, minCellHeight: minHeightBodyCell },
-      1: { halign: 'center', valign: 'middle', cellWidth: 20, minCellHeight: minHeightBodyCell },
+      1: { halign: 'center', valign: 'middle', cellWidth: PDFUtility.TankNo_ColWidth_Portrait(), minCellHeight: minHeightBodyCell },
       2: { halign: 'center', valign: 'middle', cellWidth: 23, minCellHeight: minHeightBodyCell },
-      3: { halign: 'center', valign: 'middle', cellWidth: 14, minCellHeight: minHeightBodyCell },
-      4: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      5: { halign: 'left', valign: 'middle', cellWidth: 68, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
+      3: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      4: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      5: { halign: 'left', valign: 'middle', cellWidth: 65, minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
       6: { halign: 'left', valign: 'middle', cellWidth: 30, minCellHeight: minHeightBodyCell },
       7: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
-      8: { halign: 'center', valign: 'middle', cellWidth: 15, minCellHeight: minHeightBodyCell },
-      9: { halign: 'center', valign: 'middle', cellWidth: 18, minCellHeight: minHeightBodyCell },
+      8: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      9: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
       10: { halign: 'center', valign: 'middle', minCellHeight: minHeightBodyCell, overflow: 'ellipsize' },
-      11: { halign: 'center', valign: 'middle', cellWidth: 16, minCellHeight: minHeightBodyCell },
+      11: { halign: 'center', valign: 'middle', cellWidth: 17, minCellHeight: minHeightBodyCell },
     };
 
     // Define headStyles with valid fontStyle
@@ -552,6 +553,7 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
       fillColor: [211, 211, 211], // Background color
       textColor: 0, // Text color (white)
       fontStyle: "bold", // Valid fontStyle value
+      fontSize: fontSz_hdr,
       halign: 'center', // Centering header text
       valign: 'middle',
       lineColor: 201,
@@ -562,8 +564,8 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     let scale = this.scale;
     pagePositions.push({ page: pageNumber, x: pageWidth - rightMargin, y: pageHeight - bottomMargin / 1.5 });
 
-    await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-    await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
+    // await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    // await Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 35);
 
     // Variable to store the final Y position of the last table
     let lastTableFinalY = 50;
@@ -572,7 +574,11 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     const data: any[][] = []; // Explicitly define data as a 2D array
 
     const cutoffDate = PDFUtility.FormatColon(this.translatedLangText.DATE, (Utility.convertEpochToDateStr(this.data.start_dt) + " - " + Utility.convertEpochToDateStr(this.data.end_dt))); // Replace with your actual cutoff date
-    Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin , startY - 2, PDFUtility.RightSubTitleFontSize());
+    // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin , startY - 2, PDFUtility.RightSubTitleFontSize());
+    const subtitlePos = 0;
+    startY=await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+    rightMargin,this.translate,reportTitle,cutoffDate,subtitlePos);
+    startY+= PDFUtility.GapBetweenSubTitleAndTable_Landscape();
 
     var idx = 0;
     let totalRepairCost = 0; // Initialize total repair cost
@@ -605,10 +611,10 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
       head: headers,
       body: data,
       //startY: startY, // Start table at the current startY value
-      margin: { left: leftMargin, right: rightMargin, top: topMargin + 45 },
+      margin: { left: leftMargin, right: rightMargin, top: startY },
       theme: 'grid',
       styles: {
-        fontSize: fontSz,
+        fontSize: fontSz_body,
         minCellHeight: minHeightHeaderCol
 
       },
@@ -660,12 +666,17 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
         if (!pg) {
           pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
           if (pageCount > 1) {
-            Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
-            Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, startY - 2, PDFUtility.RightSubTitleFontSize());
+            PDFUtility.addReportTitle_Landscape(pdf, reportTitle, pageWidth, leftMargin, rightMargin);
+            PDFUtility.addReportSubTitle_Landscape(pdf, cutoffDate, pageWidth, leftMargin, rightMargin,subtitlePos);
+            // Utility.addReportTitle(pdf, reportTitle, pageWidth, leftMargin, rightMargin, topMargin + 45);
+            // Utility.AddTextAtRightCornerPage(pdf, cutoffDate, pageWidth, leftMargin, rightMargin, startY - 2, PDFUtility.RightSubTitleFontSize());
           }
         }
       },
     });
+
+      await PDFUtility.addFooterWithPageNumberAndCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, 
+      rightMargin, this.translate,pagePositions);
 
     // var gap = 7;
 
@@ -675,23 +686,23 @@ export class OrderTrackingDetailPdfComponent extends UnsubscribeOnDestroyAdapter
     //   pagePositions.push({ page: pageCount, x: pdf.internal.pageSize.width - 20, y: pdf.internal.pageSize.height - 10 });
     // }
 
-    const totalPages = pdf.getNumberOfPages();
+    // const totalPages = pdf.getNumberOfPages();
 
-    for (const { page, x, y } of pagePositions) {
-      pdf.setDrawColor(0, 0, 0); // black line color
-      pdf.setLineWidth(0.1);
-      pdf.setLineDashPattern([0.01, 0.01], 0.1);
-      pdf.setFontSize(8);
-      pdf.setPage(page);
+    // for (const { page, x, y } of pagePositions) {
+    //   pdf.setDrawColor(0, 0, 0); // black line color
+    //   pdf.setLineWidth(0.1);
+    //   pdf.setLineDashPattern([0.01, 0.01], 0.1);
+    //   pdf.setFontSize(8);
+    //   pdf.setPage(page);
 
-      const lineBuffer = 13;
-      pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
-      pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
+    //   const lineBuffer = 13;
+    //   pdf.text(`Page ${page} of ${totalPages}`, pdf.internal.pageSize.width - 14, pdf.internal.pageSize.height - 8, { align: 'right' });
+    //   pdf.line(leftMargin, pdf.internal.pageSize.height - lineBuffer, pageWidth - rightMargin, pdf.internal.pageSize.height - lineBuffer);
 
-      if (page > 1) {
-        await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
-      }
-    }// Add Second Page, Add For Loop
+    //   if (page > 1) {
+    //     await Utility.addHeaderWithCompanyLogo_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, this.translate);
+    //   }
+    // }// Add Second Page, Add For Loop
 
     // pagePositions.forEach(({ page, x, y }) => {
     //   pdf.setDrawColor(0, 0, 0); // black line color

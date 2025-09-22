@@ -228,6 +228,7 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
   noCond: boolean = false;
   isGeneratingReport = false;
   repData: any;
+  // allProcesses :string[] = ['STEAM', 'CLEANING', 'REPAIR', 'RESIDUE'];
   constructor(
     public httpClient: HttpClient,
     public dialog: MatDialog,
@@ -453,11 +454,13 @@ export class OrderTrackReportComponent extends UnsubscribeOnDestroyAdapter imple
       cond_counter++;
     }
 
+   
     if (this.searchForm!.get('last_cargo')?.value) {
       where.last_cargo = `${this.searchForm!.get('last_cargo')?.value.cargo}`;
       cond_counter++;
     }
 
+     where.purpose =[];
      if (this.searchForm!.get('purpose')?.value) {
       where.purpose = [`${this.searchForm!.get('purpose')?.value}`];
       cond_counter++;

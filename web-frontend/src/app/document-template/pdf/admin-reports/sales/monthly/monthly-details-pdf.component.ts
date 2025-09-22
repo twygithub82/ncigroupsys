@@ -784,12 +784,13 @@ export class MonthlySalesReportDetailsPdfComponent extends UnsubscribeOnDestroyA
 
     startY= await PDFUtility.addHeaderWithCompanyLogoWithTitleSubTitle_Landscape(pdf, pageWidth, topMargin, bottomMargin, leftMargin, rightMargin, 
     this.translate, reportTitle, repGeneratedDate, subtitlePos);
-    startY += PDFUtility.SubTitleFontSize_Landscape()/2;
+    startY += PDFUtility.GapBetweenSubTitleAndTable_Landscape();
 
     if (this.customer) {
       const customer = `${this.customer}`// `${this.translatedLangText.CUSTOMER} : ${this.customer}`
-      Utility.addText(pdf, customer, startY, leftMargin, fontSz_hdr);
-      startY+= fontSz_hdr/2;
+      Utility.AddTextAtLeftCornerPage(pdf, customer, pageWidth,leftMargin,rightMargin, startY, PDFUtility.RightSubTitleFontSize());
+     // Utility.addText(pdf, customer, startY, leftMargin, fontSz_hdr);
+      startY+=PDFUtility.GapBetweenLeftTitleAndTable();
     }
     var idx = 0;
 
